@@ -52,7 +52,11 @@ defmodule DataAggregator.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:ash, "~> 2.13"},
       {:ash_postgres, "~> 1.3"},
-      {:ash_phoenix, "~> 1.2"}
+      {:ash_phoenix, "~> 1.2"},
+      {:ash_admin, "~> 0.9.0"},
+      {:ash_graphql, "~> 0.25.13"},
+      {:absinthe_plug, "~> 1.5.8"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -70,7 +74,8 @@ defmodule DataAggregator.MixProject do
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default"],
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
+      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
+      lint: ["format --check-formatted", "credo --strict"]
     ]
   end
 end

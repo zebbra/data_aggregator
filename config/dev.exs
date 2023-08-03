@@ -2,8 +2,8 @@ import Config
 
 # Configure your database
 config :data_aggregator, DataAggregator.Repo,
-  username: "postgres",
-  password: "postgres",
+  # username: "postgres",
+  # password: "postgres",
   hostname: "localhost",
   database: "data_aggregator_dev",
   stacktrace: true,

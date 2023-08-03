@@ -1,6 +1,8 @@
 defmodule DataAggregatorWeb.Router do
   use DataAggregatorWeb, :router
 
+  import AshAdmin.Router
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -14,10 +16,30 @@ defmodule DataAggregatorWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :graphql do
+    plug AshGraphql.Plug
+  end
+
   scope "/", DataAggregatorWeb do
     pipe_through :browser
 
     get "/", PageController, :home
+  end
+
+  scope "/" do
+    pipe_through :browser
+    ash_admin "/admin"
+  end
+
+  scope "/" do
+    pipe_through :graphql
+
+    forward "/gql", Absinthe.Plug, schema: DataAggregator.Schema
+
+    forward "/playground",
+            Absinthe.Plug.GraphiQL,
+            schema: DataAggregator.Schema,
+            interface: :playground
   end
 
   # Other scopes may use custom stacks.

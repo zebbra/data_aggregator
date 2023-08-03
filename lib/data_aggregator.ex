@@ -13,7 +13,7 @@ defmodule DataAggregator do
 
   """
   def hello do
-  :test
+    :test
     :world
   end
 end

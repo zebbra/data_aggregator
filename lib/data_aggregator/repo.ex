@@ -1,5 +1,8 @@
 defmodule DataAggregator.Repo do
-  use Ecto.Repo,
-    otp_app: :data_aggregator,
-    adapter: Ecto.Adapters.Postgres
+  use AshPostgres.Repo, otp_app: :data_aggregator
+
+  # Installs Postgres extensions that ash commonly uses
+  def installed_extensions do
+    ["uuid-ossp", "citext"]
+  end
 end
