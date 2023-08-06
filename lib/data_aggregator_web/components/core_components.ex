@@ -16,8 +16,8 @@ defmodule DataAggregatorWeb.CoreComponents do
   """
   use Phoenix.Component
 
-  alias Phoenix.HTML.Form
   alias Phoenix.LiveView.JS
+  alias Phoenix.HTML.Form
   import DataAggregatorWeb.Gettext
 
   @doc """
