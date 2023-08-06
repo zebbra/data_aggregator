@@ -30,6 +30,7 @@ steps:
     environment:
       MIX_ENV: test
     commands:
+      - apt-get update
       - apt-get install make
       - mix local.rebar --force
       - mix local.hex --force
