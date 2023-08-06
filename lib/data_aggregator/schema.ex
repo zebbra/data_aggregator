@@ -7,7 +7,6 @@ defmodule DataAggregator.Schema do
 
   # The query and mutation blocks is where you can add custom absinthe code
   query do
-
   end
 
   mutation do
