@@ -6,12 +6,13 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :data_aggregator, DataAggregator.Repo,
-  # username: "postgres",
-  # password: "postgres",
-  # port: 5432,
-  # hostname: "localhost",
+  username: "postgres",
+  password: "postgres",
+  port: 5432,
+  hostname: "localhost",
   # database: "data_aggregator_test#{System.get_env("MIX_TEST_PARTITION")}",
-  # pool_size: 10,
+  database: "data_aggregator_test",
+  pool_size: 10,
   pool: Ecto.Adapters.SQL.Sandbox
 
 
