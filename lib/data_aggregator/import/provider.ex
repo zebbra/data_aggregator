@@ -10,7 +10,6 @@ defmodule DataAggregator.Import.Provider do
 
   calculations do
     calculate :test, :string, expr("#" <> " " <> name)
-    calculate :contains_test, :boolean, expr("contains(#, ?)", "test")
   end
 
   attributes do
