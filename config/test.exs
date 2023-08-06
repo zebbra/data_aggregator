@@ -6,8 +6,8 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :data_aggregator, DataAggregator.Repo,
-  username: "postgres",
-  password: "postgres",
+  # username: "postgres",
+  # password: "postgres",
   port: 5432,
   hostname: "localhost",
   # database: "data_aggregator_test#{System.get_env("MIX_TEST_PARTITION")}",
