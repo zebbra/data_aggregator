@@ -11,8 +11,8 @@ services:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: data_aggregator_test
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      # POSTGRES_USER: postgres
+      # POSTGRES_PASSWORD: postgres
     ports:
       - 5432
 
