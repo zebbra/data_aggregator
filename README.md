@@ -1,18 +1,56 @@
-# DataAggregator
+# SVNHC-data-aggregator
 
-To start your Phoenix server:
+Data Aggregator to integrate biodiversity data to a darwin core compatible data format
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+## Project
+
+create an issue on [`jira`](https://infofauna-support.atlassian.net/jira/your-work)
+
+checkout the documentation on [`confluence`](https://infofauna-support.atlassian.net/wiki/spaces/SCN/pages/3342625/Project+SwissCollNet+--+Implementation)
+
+contribute by submittinga [`PR`] (https://github.com/zebbra/data_aggregator)
+
+## Development
+
+setup your machine to start contributing code
+
+### Database
+
+you need a running postgres 15 instance on your local machine
+
+either use a native installation or a docker setup.
+
+#### native installation
+
+ensure you have a running instance on `port 5432`
+if you used brew to install postgres on your mac ensure your default user and password is set to `user: postgres, password: postgres`. if you can't login with this credentials execute the following command on your cli:
+`/usr/local/opt/postgres@15/bin/createuser -s postgres -h localhost -p 5432` then login with `psql -h localhost -p 5432` and execute `\password postgres` to set the password of your `postgres`user
+
+#### docker setup
+
+alternatively you can start a docker container doing all the magic for you.
+a good starting point is to use the docker compose setup [`here`](https://github.com/felipewom/docker-compose-postgres/blob/main/docker-compose.yml)
+
+### install OSX system dependencies
+
+- install erlang `brew install erlang`
+- install elixir `brew install elixir`
+
+for windows or linux use your favourite package manager
+
+### Start coding
+
+- Run `mix setup` to install and setup dependencies
+- Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
-## Learn more
+### Learn more
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+- Official website: https://www.phoenixframework.org/
+- Guides: https://hexdocs.pm/phoenix/overview.html
+- Docs: https://hexdocs.pm/phoenix
+- Forum: https://elixirforum.com/c/phoenix-forum
+- Source: https://github.com/phoenixframework/phoenix
