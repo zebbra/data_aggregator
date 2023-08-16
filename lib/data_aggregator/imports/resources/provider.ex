@@ -1,4 +1,4 @@
-defmodule DataAggregator.Import.Provider do
+defmodule DataAggregator.Imports.Provider do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshGraphql.Resource]
@@ -6,10 +6,6 @@ defmodule DataAggregator.Import.Provider do
   postgres do
     table "providers"
     repo DataAggregator.Repo
-  end
-
-  calculations do
-    calculate :test, :string, expr("#" <> " " <> name)
   end
 
   attributes do
@@ -45,7 +41,7 @@ defmodule DataAggregator.Import.Provider do
   end
 
   code_interface do
-    define_for DataAggregator.Import
+    define_for DataAggregator.Imports
     define :create, action: :create
     define :read_all, action: :read
     define :update, action: :update

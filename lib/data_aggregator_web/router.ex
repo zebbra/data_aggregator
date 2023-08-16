@@ -24,6 +24,12 @@ defmodule DataAggregatorWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    live "/imports", ImportLive.Index, :index
+    live "/imports/new", ImportLive.Index, :new
+    live "/imports/:id/edit", ImportLive.Index, :edit
+    live "/imports/:id", ImportLive.Show, :show
+    live "/imports/:id/show/edit", ImportLive.Show, :edit
   end
 
   scope "/" do

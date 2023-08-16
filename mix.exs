@@ -54,6 +54,7 @@ defmodule DataAggregator.MixProject do
       {:ash_postgres, "~> 1.3"},
       {:ash_phoenix, "~> 1.2"},
       {:ash_admin, "~> 0.9.0"},
+      {:ash_uuid, "~> 0.4"},
       {:ash_graphql, "~> 0.25.13"},
       {:absinthe_plug, "~> 1.5.8"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}

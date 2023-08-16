@@ -1,8 +1,8 @@
-defmodule DataAggregator.Import do
+defmodule DataAggregator.Imports do
   use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api]
 
   resources do
-    registry DataAggregator.Import.Registry
+    registry DataAggregator.Imports.Registry
   end
 
   admin do

@@ -1,0 +1,49 @@
+<.header>
+  Listing Imports
+  <:actions>
+    <.link patch={~p"/imports/new"}>
+      <.button>New Import</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="imports"
+  rows={@streams.imports}
+  row_click={fn {_id, import} -> JS.navigate(~p"/imports/#{import}") end}
+>
+  <:col :let={{_id, import}} label="ID"><%= import.id %></:col>
+  <:col :let={{_id, import}} label="URL"><%= import.url %></:col>
+
+  <:action :let={{_id, import}}>
+    <div class="sr-only">
+      <.link navigate={~p"/imports/#{import}"}>Show</.link>
+    </div>
+    <.link patch={~p"/imports/#{import}/edit"}>Edit</.link>
+  </:action>
+
+  <:action :let={{id, import}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: import.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="import-modal"
+  show
+  on_cancel={JS.patch(~p"/imports")}
+>
+  <.live_component
+    module={DataAggregatorWeb.ImportLive.FormComponent}
+    id={@import.id || :new}
+    title={@page_title}
+    action={@live_action}
+    import={@import}
+    patch={~p"/imports"}
+  />
+</.modal>

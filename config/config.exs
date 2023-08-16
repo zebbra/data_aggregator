@@ -15,7 +15,19 @@ config :data_aggregator,
 config :ash, :use_all_identities_in_manage_relationship?, false
 config :ash_graphql, :default_managed_relationship_type_name_template, :action_name
 
-config :data_aggregator, ash_apis: [DataAggregator.Import]
+config :data_aggregator, ash_apis: [DataAggregator.Imports]
+
+config :data_aggregator, :ash_uuid,
+  version: 7,
+  encoded?: true,
+  prefixed?: true,
+  migration_default?: true
+
+# Ash: Type shorthands, not required
+config :ash, :custom_types, uuid: AshUUID.UUID
+
+# Ash: Default belongs_to type, not required
+config :ash, :default_belongs_to_type, AshUUID.UUID
 
 # Configures the endpoint
 config :data_aggregator, DataAggregatorWeb.Endpoint,

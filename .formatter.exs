@@ -7,7 +7,8 @@
     :ash_phoenix,
     :ash_postgres,
     :ash_admin,
-    :ash_graphql
+    :ash_graphql,
+    :ash_uuid
   ],
   subdirectories: ["priv/*/migrations"],
   plugins: [Phoenix.LiveView.HTMLFormatter],
