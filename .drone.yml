@@ -26,7 +26,7 @@ steps:
       mount: ["_build", "deps"]
 
   - name: test
-    image: hexpm/elixir:1.15.4-erlang-26.0.2-debian-bullseye-20230612-slim
+    image: elixir:1.15.4-otp-25-alpine
     environment:
       MIX_ENV: test
     commands:
@@ -64,12 +64,12 @@ steps:
       registry: quay.io
       username: { from_secret: quay_username }
       password: { from_secret: quay_password }
-      repo: quay.io/zebbra/medi-data_aggregator
+      repo: quay.io/zebbra/data_aggregator
       target: builder
       tags: builder
       mtu: 1300
       cache_from:
-        - quay.io/zebbra/medi-data_aggregator:builder
+        - quay.io/zebbra/data_aggregator:builder
 
   - <<: *docker
     name: release
@@ -116,4 +116,4 @@ steps:
       deploy: true
       deploy_environment: "prod"
       deploy_name: "Deploying ${DRONE_COMMIT_SHA:0:7} to production"
-      deploy_url: "https://data_aggregator.medi.ch"
+      deploy_url: "https://data-aggregator.zebbra.ch"
