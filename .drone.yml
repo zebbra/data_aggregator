@@ -54,7 +54,7 @@ name: build
 
 trigger:
   event: [push]
-  branch: [master]
+  branch: [main]
 
 steps:
   - &docker
@@ -88,7 +88,7 @@ depends_on:
 
 trigger:
   event: [push]
-  branch: [master]
+  branch: [main]
 
 steps:
   - name: helm
