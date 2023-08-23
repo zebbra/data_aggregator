@@ -1,6 +1,5 @@
 # SVNHC-data-aggregator
 
-Hi Nils
 Data Aggregator to integrate biodiversity data to a darwin core compatible data format
 
 ## Project
@@ -9,7 +8,11 @@ create an issue on [`jira`](https://infofauna-support.atlassian.net/jira/your-wo
 
 checkout the documentation on [`confluence`](https://infofauna-support.atlassian.net/wiki/spaces/SCN/pages/3342625/Project+SwissCollNet+--+Implementation)
 
-contribute by submittinga [`PR`] (https://github.com/zebbra/data_aggregator)
+contribute by submitting a [`PR`](https://github.com/zebbra/data_aggregator)
+
+checkout the [`data model`](https://dbdiagram.io/d/64a2d76802bd1c4a5e6b7071)
+
+checkout our notes on [`miro`](https://miro.com/app/board/uXjVMBLi0fk=/)
 
 ## Development
 
