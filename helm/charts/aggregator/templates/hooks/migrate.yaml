@@ -34,4 +34,4 @@ spec:
             - /bin/sh
           args:
             - -c
-            - "/app/bin/migrate && /app/bin/seed"
+            - "/app/bin/migrate"
