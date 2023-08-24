@@ -39,6 +39,8 @@ defmodule DataAggregator.MixProject do
       {:gettext, "~> 0.20"},
       {:swoosh, "~> 1.3"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
+      {:hackney, "~> 1.18"},
+      {:envy, "~> 1.1.1"},
 
       # db / orm / api
       {:ash, "~> 2.13"},
