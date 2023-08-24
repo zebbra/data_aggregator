@@ -41,6 +41,7 @@ defmodule DataAggregator.MixProject do
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:hackney, "~> 1.18"},
       {:envy, "~> 1.1.1"},
+      {:earmark, "~> 1.4"},
 
       # db / orm / api
       {:ash, "~> 2.13"},
@@ -53,6 +54,7 @@ defmodule DataAggregator.MixProject do
       {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
       {:finch, "~> 0.13"},
+      {:ecto_erd, "~> 0.5", only: :dev},
 
       # frontend / ui
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
