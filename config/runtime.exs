@@ -11,7 +11,6 @@ if config_env() in [:dev, :test] do
   Envy.load(["config/.env.#{config_env()}"])
 end
 
-
 # ## Using releases
 #
 # If you use `mix release`, you need to explicitly enable the server
@@ -36,11 +35,9 @@ if config_env() == :prod do
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
   config :data_aggregator, DataAggregator.Repo,
-    # ssl: true,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
     socket_options: maybe_ipv6
-
 
   ## Configure the Endpoint
 
