@@ -100,7 +100,7 @@ steps:
       chart: ./helm/charts/aggregator
       release: aggregator
       namespace: scnat
-      values_files: [./deploy/staging.yaml]
+      values_files: [./helm/staging.yaml]
       values: image.tag=git-${DRONE_COMMIT_SHA:0:7}
 
   - name: sentry
