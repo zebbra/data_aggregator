@@ -7,6 +7,10 @@ import Config
 # any compile-time configuration in here, as it won't be applied.
 # The block below contains prod specific runtime configuration.
 
+if config_env() in [:dev, :test] do
+  Envy.load(["config/.env.#{config_env()}"])
+end
+
 # ## Using releases
 #
 # If you use `mix release`, you need to explicitly enable the server
@@ -31,10 +35,29 @@ if config_env() == :prod do
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
   config :data_aggregator, DataAggregator.Repo,
-    # ssl: true,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
     socket_options: maybe_ipv6
+
+  ## Configure the Endpoint
+
+  # Listen IP supports IPv4 and IPv6 addresses.
+  {:ok, listen_ip} =
+    System.get_env("LISTEN_IP", "127.0.0.1")
+    |> String.to_charlist()
+    |> :inet.parse_address()
+
+  port =
+    System.get_env("PORT", "4000")
+    |> String.to_integer()
+
+  base_url =
+    System.get_env("BASE_URL", "http://localhost:4000")
+    |> URI.parse()
+
+  if base_url.scheme not in ["http", "https"] do
+    raise "BASE_URL must start with `http` or `https`. Currently configured as `#{System.get_env("BASE_URL")}`"
+  end
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
@@ -48,19 +71,9 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  host = System.get_env("PHX_HOST") || "example.com"
-  port = String.to_integer(System.get_env("PORT") || "4000")
-
   config :data_aggregator, DataAggregatorWeb.Endpoint,
-    url: [host: host, port: 443, scheme: "https"],
-    http: [
-      # Enable IPv6 and bind on all interfaces.
-      # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
-      # See the documentation on https://hexdocs.pm/plug_cowboy/Plug.Cowboy.html
-      # for details about using IPv6 vs IPv4 and loopback vs public addresses.
-      ip: {0, 0, 0, 0, 0, 0, 0, 0},
-      port: port
-    ],
+    url: [scheme: base_url.scheme, host: base_url.host, path: base_url.path, port: base_url.port],
+    http: [port: port, ip: listen_ip, transport_options: [max_connections: :infinity]],
     secret_key_base: secret_key_base
 
   # ## SSL Support
