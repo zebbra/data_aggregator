@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:14
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-q', '-d', 'postgres', '-U', 'root']
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - APP_DB_USER=postgres
+      - APP_DB_PASS=postgres
+      - APP_DB_NAME=aggregator
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d/
+      - ./db/data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  aggregator:
+    image: quay.io/zebbra/data_aggregator:latest
+    pull_policy: always
+    container_name: data-aggregator
+    depends_on:
+      - db
+    env_file:
+      - config/.env.dev
+    ports:
+      - 4000:4000
+    networks:
+      - aggregator
+
+networks:
+  aggregator:
+    driver: bridge
