@@ -1,0 +1,5 @@
+releases:
+  - name: aggregator
+    namespace: scnat
+    chart: ./charts/aggregator
+    values: [./staging.yaml]

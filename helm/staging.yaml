@@ -1,0 +1,28 @@
+imagePullSecrets:
+  - name: zebbra-kube-pull-secret
+
+replicaCount: 3
+
+image:
+  tag: latest
+
+env:
+  BASE_URL: https://staging.aggregator.scnat.zebbra.ch
+  SENTRY_DSN: https://128c60631cb044ec8c353307d9352673@sentry.zebbra.ch/325
+  LOG_LEVEL: info
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: staging.aggregator.scnat.zebbra.ch
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+
+  tls:
+    - secretName: staging-aggregator-tls
+      hosts:
+        - staging.aggregator.scnat.zebbra.ch

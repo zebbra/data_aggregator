@@ -76,43 +76,44 @@ steps:
     settings:
       target: null
       tags: "latest,git-${DRONE_COMMIT_SHA:0:7}"
-# ---
-# kind: pipeline
-# type: kubernetes
-# name: deploy
 
-# depends_on:
-#   - test
-#   - build
+---
+kind: pipeline
+type: kubernetes
+name: deploy staging
 
-# trigger:
-#   event: [push]
-#   branch: [main]
+depends_on:
+  - test
+  - build
 
-# steps:
-#   - name: helm
-#     image: pelotech/drone-helm3
-#     settings:
-#       kube_api_server: https://kubernetes.default
-#       kube_token: { from_secret: kubernetes_token }
-#       kube_certificate: { from_secret: kubernetes_certificate }
-#       chart: ./deploy/charts/data_aggregator
-#       release: data_aggregator
-#       namespace: medi
-#       values_files: [./deploy/production.yaml]
-#       values: image.tag=git-${DRONE_COMMIT_SHA:0:7}
+trigger:
+  event: [push]
+  branch: [main]
 
-#   - name: sentry
-#     image: sierrasoftworks/drone-sentry
-#     settings:
-#       server: https://sentry.zebbra.ch
-#       organization: zebbra
-#       project: data_aggregator
-#       token: { from_secret: sentry_token }
-#       release: true
-#       release_version: "${DRONE_COMMIT_SHA}"
-#       release_url: "${DRONE_COMMIT_LINK}"
-#       deploy: true
-#       deploy_environment: "prod"
-#       deploy_name: "Deploying ${DRONE_COMMIT_SHA:0:7} to production"
-#       deploy_url: "https://data-aggregator.zebbra.ch"
+steps:
+  - name: helm
+    image: pelotech/drone-helm3
+    settings:
+      kube_api_server: https://kubernetes.default
+      kube_token: { from_secret: kubernetes_token }
+      kube_certificate: { from_secret: kubernetes_certificate }
+      chart: ./helm/charts/aggregator
+      release: aggregator
+      namespace: scnat
+      values_files: [./deploy/staging.yaml]
+      values: image.tag=git-${DRONE_COMMIT_SHA:0:7}
+
+  - name: sentry
+    image: sierrasoftworks/drone-sentry
+    settings:
+      server: https://sentry.zebbra.ch
+      organization: zebbra
+      project: scnat-data-aggregator
+      token: { from_secret: sentry_token }
+      release: true
+      release_version: "${DRONE_COMMIT_SHA}"
+      release_url: "${DRONE_COMMIT_LINK}"
+      deploy: true
+      deploy_environment: "staging"
+      deploy_name: "Deploying ${DRONE_COMMIT_SHA:0:7} to staging"
+      deploy_url: "https://staging.aggregator.scnat.zebbra.ch"
