@@ -1,5 +1,9 @@
 defmodule DataAggregatorWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :data_aggregator
+  use Sentry.PlugCapture
+
+  # add /health endpoint for liveness probes
+  plug DataAggregatorWeb.Plug.Health, path: "/health"
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
@@ -48,4 +52,5 @@ defmodule DataAggregatorWeb.Endpoint do
   plug Plug.Head
   plug Plug.Session, @session_options
   plug DataAggregatorWeb.Router
+  plug Sentry.PlugContext
 end
