@@ -6,7 +6,7 @@ import Config
 # which you should run after static files are built and
 # before starting your production server.
 config :data_aggregator, DataAggregatorWeb.Endpoint,
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  cache_static_manifest: "priv/static/cache_manifest.json",
   check_origin: false,
   code_reloader: false
   server: true,
