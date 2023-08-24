@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.Endpoint do
   use Sentry.PlugCapture
 
   # add /health endpoint for liveness probes
-  plug PortfolioWeb.Plug.Health, path: "/health"
+  plug DataAggregatorWeb.Plug.Health, path: "/health"
 
 
   # The session will be stored in the cookie and signed,
