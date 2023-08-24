@@ -24,5 +24,6 @@ defmodule DataAggregator.Release do
 
   defp load_app do
     Application.load(@app)
+    Application.ensure_all_started(:ssl)
   end
 end
