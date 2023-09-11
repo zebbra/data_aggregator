@@ -13,8 +13,8 @@ function header {
 header 'Deps Audit'
 mix deps.audit
 
-header 'Format'
-mix format
+header 'Lint'
+mix lint
 
 header 'I18n'
 mix gettext.extract --merge
