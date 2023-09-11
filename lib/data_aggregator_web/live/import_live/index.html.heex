@@ -1,8 +1,8 @@
 <.header>
-  Listing Imports
+  <%= ~t"Listing Imports"m %>
   <:actions>
     <.link patch={~p"/imports/new"}>
-      <.button>New Import</.button>
+      <.button><%= ~t"New Import"m %></.button>
     </.link>
   </:actions>
 </.header>
@@ -17,15 +17,15 @@
 
   <:action :let={{_id, import}}>
     <div class="sr-only">
-      <.link navigate={~p"/imports/#{import}"}>Show</.link>
+      <.link navigate={~p"/imports/#{import}"}><%= ~t"Show"m %></.link>
     </div>
-    <.link patch={~p"/imports/#{import}/edit"}>Edit</.link>
+    <.link patch={~p"/imports/#{import}/edit"}><%= ~t"Edit"m %></.link>
   </:action>
 
   <:action :let={{id, import}}>
     <.link
       phx-click={JS.push("delete", value: %{id: import.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
+      data-confirm={~t"Are you sure?"m}
     >
       Delete
     </.link>

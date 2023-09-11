@@ -39,6 +39,16 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
   pubsub_server: DataAggregator.PubSub,
   live_view: [signing_salt: "0w2X+IQm"]
 
+# Configure gettext
+config :data_aggregator, DataAggregatorWeb.Gettext,
+  default_locale: "en",
+  locales: ~w(de fr)
+
+# Configure Cldr
+config :ex_cldr,
+  default_backend: DataAggregatorWeb.Cldr,
+  json_library: Jason
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails
@@ -53,7 +63,7 @@ config :esbuild,
   version: "0.17.11",
   default: [
     args:
-      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+      ~w(js/app.ts js/color-mode.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
@@ -74,6 +84,9 @@ config :tailwind,
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
+
+# Filter sensitive data from logs
+config :phoenix, :filter_parameters, ["password", "account_token"]
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason

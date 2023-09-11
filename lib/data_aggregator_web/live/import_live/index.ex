@@ -20,19 +20,19 @@ defmodule DataAggregatorWeb.ImportLive.Index do
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
-    |> assign(:page_title, "Edit Import")
+    |> assign(:page_title, ~t"Edit Import"m)
     |> assign(:import, Import.get_by_id!(id))
   end
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "New Import")
+    |> assign(:page_title, ~t"New Import"m)
     |> assign(:import, %Import{})
   end
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Imports")
+    |> assign(:page_title, ~t"Listing Imports"m)
     |> assign(:import, nil)
   end
 

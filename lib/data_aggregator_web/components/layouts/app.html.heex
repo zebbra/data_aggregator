@@ -1,32 +1,17 @@
-<header class="px-4 sm:px-6 lg:px-8">
-  <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
-    <div class="flex items-center gap-4">
-      <a href="/">
-        <img src={~p"/images/logo.svg"} width="36" />
-      </a>
-      <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
-        v<%= Application.spec(:phoenix, :vsn) %>
-      </p>
-    </div>
-    <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
-      <a href="https://twitter.com/elixirphoenix" class="hover:text-zinc-700">
-        @elixirphoenix
-      </a>
-      <a href="https://github.com/phoenixframework/phoenix" class="hover:text-zinc-700">
-        GitHub
-      </a>
-      <a
-        href="https://hexdocs.pm/phoenix/overview.html"
-        class="rounded-lg bg-zinc-100 px-2 py-1 hover:bg-zinc-200/80"
-      >
-        Get Started <span aria-hidden="true">&rarr;</span>
-      </a>
-    </div>
+<div x-data="{ open: false }" @keydown.window.escape="open = false">
+  <%!-- Dynamic slideover sidebar nav for mobile --%>
+  <.hero_slideover description="Off-canvas menu for mobile, show/hide based on off-canvas menu state.">
+    <!-- Sidebar component, swap this element with another sidebar if you like -->
+    <.sidebar_nav active_link={@active_link} />
+  </.hero_slideover>
+  <!-- Static sidebar for desktop -->
+  <div class="lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col hidden">
+    <.sidebar_nav active_link={@active_link} />
   </div>
-</header>
-<main class="px-4 py-20 sm:px-6 lg:px-8">
-  <div class="mx-auto max-w-2xl">
+  <%!-- Main content --%>
+  <div class="lg:pl-72">
+    <.sticky_topbar />
     <.flash_group flash={@flash} />
     <%= @inner_content %>
   </div>
-</main>
+</div>

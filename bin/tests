@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+
+function header {
+  echo
+  echo "=================================================="
+  echo " Running $1 ..."
+  echo "=================================================="
+  echo
+}
+
+header 'Deps Audit'
+mix deps.audit
+
+header 'Format'
+mix format
+
+header 'I18n'
+mix gettext.extract --merge
+
+header 'Test'
+mix test

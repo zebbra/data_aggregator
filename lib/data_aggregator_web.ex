@@ -85,6 +85,7 @@ defmodule DataAggregatorWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import DataAggregatorWeb.CoreComponents
+      import DataAggregatorWeb.HeroComponents
       import DataAggregatorWeb.Gettext
 
       # Shortcut for generating JS commands

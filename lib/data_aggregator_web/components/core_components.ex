@@ -16,8 +16,8 @@ defmodule DataAggregatorWeb.CoreComponents do
   """
   use Phoenix.Component
 
-  alias Phoenix.LiveView.JS
   alias Phoenix.HTML.Form
+  alias Phoenix.LiveView.JS
   import DataAggregatorWeb.Gettext
 
   @doc """
@@ -144,17 +144,18 @@ defmodule DataAggregatorWeb.CoreComponents do
 
   def flash_group(assigns) do
     ~H"""
-    <.flash kind={:info} title="Success!" flash={@flash} />
-    <.flash kind={:error} title="Error!" flash={@flash} />
+    <.flash kind={:info} title={~t"Success!"m} flash={@flash} />
+    <.flash kind={:error} title={~t"Error!"m} flash={@flash} />
     <.flash
       id="client-error"
       kind={:error}
-      title="We can't find the internet"
+      title={~t"We can't find the internet"m}
       phx-disconnected={show(".phx-client-error #client-error")}
       phx-connected={hide("#client-error")}
       hidden
     >
-      Attempting to reconnect <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
+      <%= ~t"Attempting to reconnect"m %>
+      <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
     </.flash>
 
     <.flash
@@ -165,7 +166,7 @@ defmodule DataAggregatorWeb.CoreComponents do
       phx-connected={hide("#server-error")}
       hidden
     >
-      Hang in there while we get back on track
+      <%= ~t"Hang in there while we get back on track"m %>
       <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
     </.flash>
     """
@@ -423,10 +424,10 @@ defmodule DataAggregatorWeb.CoreComponents do
     ~H"""
     <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
       <div>
-        <h1 class="text-zinc-800 text-lg font-semibold leading-8">
+        <h1 class="text-zinc-800 dark:text-white text-lg font-semibold leading-8">
           <%= render_slot(@inner_block) %>
         </h1>
-        <p :if={@subtitle != []} class="text-zinc-600 mt-2 text-sm leading-6">
+        <p :if={@subtitle != []} class="text-zinc-600 dark:text-gray-400 mt-2 text-sm leading-6">
           <%= render_slot(@subtitle) %>
         </p>
       </div>
@@ -585,7 +586,7 @@ defmodule DataAggregatorWeb.CoreComponents do
 
   def icon(%{name: "hero-" <> _} = assigns) do
     ~H"""
-    <span class={[@name, @class]} />
+    <span class={[@name, @class]} aria-hidden="true" />
     """
   end
 

@@ -18,7 +18,7 @@ defmodule DataAggregatorWeb.ImportLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage import records in your database.</:subtitle>
+        <:subtitle><%= ~t"Use this form to manage import records in your database."m %></:subtitle>
       </.header>
 
       <.simple_form
@@ -31,7 +31,7 @@ defmodule DataAggregatorWeb.ImportLive.FormComponent do
         <.input field={@form[:url]} label="URL" />
 
         <:actions>
-          <.button phx-disable-with="Saving...">Save Import</.button>
+          <.button phx-disable-with={~t"Saving..."m}><%= ~t"Save Import"m %></.button>
         </:actions>
       </.simple_form>
     </div>
@@ -68,8 +68,8 @@ defmodule DataAggregatorWeb.ImportLive.FormComponent do
 
           message =
             case socket.assigns.action do
-              :new -> "Import created successfully"
-              :edit -> "Import updated successfully"
+              :new -> ~t"Import created successfully"m
+              :edit -> ~t"Import updated successfully"m
             end
 
           socket
