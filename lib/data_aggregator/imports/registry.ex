@@ -8,5 +8,6 @@ defmodule DataAggregator.Imports.Registry do
   entries do
     entry DataAggregator.Imports.Provider
     entry DataAggregator.Imports.Import
+    entry DataAggregator.Imports.Collection
   end
 end

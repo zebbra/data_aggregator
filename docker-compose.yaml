@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+  # use this setup if you do not have a running postgres instance on your machine already
   # db:
   #   image: postgres:14
   #   healthcheck:

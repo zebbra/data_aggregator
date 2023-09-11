@@ -1,16 +1,16 @@
-defmodule DataAggregator.Imports.Import do
+defmodule DataAggregator.Imports.Collection do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID]
 
   postgres do
-    table "imports"
+    table "collections"
     repo DataAggregator.Repo
   end
 
   attributes do
-    uuid_attribute :id, prefix: "imp"
-    attribute :url, :string, allow_nil?: false
+    uuid_primary_key :id
+    attribute :name, :string, allow_nil?: false
     attribute :metaData, :map
     timestamps()
   end
@@ -29,6 +29,7 @@ defmodule DataAggregator.Imports.Import do
   end
 
   relationships do
-    belongs_to :collection, DataAggregator.Imports.Collection
+    has_many :imports, DataAggregator.Imports.Import
+    belongs_to :provider, DataAggregator.Imports.Provider
   end
 end

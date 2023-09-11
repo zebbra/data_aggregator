@@ -19,6 +19,8 @@ defmodule DataAggregator.Imports.Provider do
     attribute :address, :string do
       allow_nil? false
     end
+
+    timestamps()
   end
 
   actions do
@@ -46,5 +48,9 @@ defmodule DataAggregator.Imports.Provider do
     define :read_all, action: :read
     define :update, action: :update
     define :destroy, action: :destroy
+  end
+
+  relationships do
+    has_many :collections, DataAggregator.Imports.Collection
   end
 end

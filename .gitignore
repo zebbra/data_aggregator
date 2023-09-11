@@ -39,4 +39,4 @@ npm-debug.log
 /assets/node_modules/
 
 # minio
-/minio/*
+/minio/data/*

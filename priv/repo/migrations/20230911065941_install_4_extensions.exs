@@ -1,4 +1,4 @@
-defmodule DataAggregator.Repo.Migrations.Install3Extensions do
+defmodule DataAggregator.Repo.Migrations.Install4Extensions do
   @moduledoc """
   Installs any extensions that are mentioned in the repo's `installed_extensions/0` callback
 
@@ -67,6 +67,9 @@ defmodule DataAggregator.Repo.Migrations.Install3Extensions do
     IMMUTABLE;
     """)
 
+    execute("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
+    execute("CREATE EXTENSION IF NOT EXISTS \"citext\"")
+
     execute("""
     CREATE OR REPLACE FUNCTION uuid_generate_v7()
     RETURNS uuid
@@ -94,6 +97,8 @@ defmodule DataAggregator.Repo.Migrations.Install3Extensions do
       "DROP FUNCTION IF EXISTS ash_elixir_and(BOOLEAN, ANYCOMPATIBLE), ash_elixir_and(ANYCOMPATIBLE, ANYCOMPATIBLE), ash_elixir_or(ANYCOMPATIBLE, ANYCOMPATIBLE), ash_elixir_or(BOOLEAN, ANYCOMPATIBLE)"
     )
 
+    # execute("DROP EXTENSION IF EXISTS \"uuid-ossp\"")
+    # execute("DROP EXTENSION IF EXISTS \"citext\"")
     # execute("DROP FUNCTION IF EXISTS uuid_generate_v7()")
   end
 end
