@@ -1,23 +1,31 @@
-defmodule DataAggregator.Imports.Provider do
+defmodule DataAggregator.Imports.Dataset do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource]
 
   postgres do
-    table "providers"
+    table "datasets"
     repo DataAggregator.Repo
   end
 
   attributes do
-    uuid_attribute :id, prefix: "provider"
+    uuid_attribute :id, prefix: "dataset"
+
+    attribute :unique_id, :string do
+      allow_nil? false
+      filterable? true
+    end
 
     attribute :name, :string do
       allow_nil? false
       filterable? true
     end
 
-    attribute :address, :string do
+    attribute :metaData, :map
+
+    attribute :version, :integer do
       allow_nil? false
+      filterable? true
     end
 
     timestamps()
@@ -28,17 +36,17 @@ defmodule DataAggregator.Imports.Provider do
   end
 
   graphql do
-    type :provider
+    type :dataset
 
     queries do
-      get :get_provider, :read
-      list :list_providers, :read
+      get :get_dataset, :read
+      list :list_datasets, :read
     end
 
     mutations do
-      create :create_provider, :create
-      update :update_provider, :update
-      destroy :destroy_provider, :destroy
+      create :create_dataset, :create
+      update :update_dataset, :update
+      destroy :destroy_dataset, :destroy
     end
   end
 
@@ -52,6 +60,8 @@ defmodule DataAggregator.Imports.Provider do
   end
 
   relationships do
-    has_many :collections, DataAggregator.Imports.Collection
+    has_many :static_assets, DataAggregator.Imports.StaticAsset
+    has_many :imports, DataAggregator.Imports.Import
+    belongs_to :collection, DataAggregator.Imports.Collection
   end
 end

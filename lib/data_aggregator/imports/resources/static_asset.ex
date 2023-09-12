@@ -1,20 +1,17 @@
-defmodule DataAggregator.Imports.Collection do
+defmodule DataAggregator.Imports.StaticAsset do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource]
 
   postgres do
-    table "collections"
+    table "static_assets"
     repo DataAggregator.Repo
   end
 
   attributes do
-    uuid_attribute :id, prefix: "collection"
-
-    attribute :name, :string, allow_nil?: false
-
+    uuid_attribute :id, prefix: "static_asset"
+    attribute :url, :string, allow_nil?: false
     attribute :metaData, :map
-
     timestamps()
   end
 
@@ -23,17 +20,17 @@ defmodule DataAggregator.Imports.Collection do
   end
 
   graphql do
-    type :collection
+    type :static_asset
 
     queries do
-      get :get_collection, :read
-      list :list_collections, :read
+      get :get_static_asset, :read
+      list :list_static_assets, :read
     end
 
     mutations do
-      create :create_collection, :create
-      update :update_collection, :update
-      destroy :destroy_collection, :destroy
+      create :create_static_asset, :create
+      update :update_static_asset, :update
+      destroy :destroy_static_asset, :destroy
     end
   end
 
@@ -47,7 +44,6 @@ defmodule DataAggregator.Imports.Collection do
   end
 
   relationships do
-    has_many :datasets, DataAggregator.Imports.Dataset
-    belongs_to :provider, DataAggregator.Imports.Provider
+    belongs_to :dataset, DataAggregator.Imports.Dataset
   end
 end
