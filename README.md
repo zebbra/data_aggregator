@@ -107,3 +107,35 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 - Docs: https://hexdocs.pm/phoenix
 - Forum: https://elixirforum.com/c/phoenix-forum
 - Source: https://github.com/phoenixframework/phoenix
+
+## Darwincore data model
+
+to have the list of all Darwincore terms in our db schema documentation in the DBML format, we can:
+
+- download the official rdf schema of the [DwC standard](http://rs.tdwg.org/dwc/terms.ttl) and save it as `schema/darwin-terms.ttl`
+- convert the rdf file to a local sqlite database with [rdf-to-sqlite](https://pypi.org/project/rdf-to-sqlite/)
+  like:
+
+```bash
+  rdf-to-sqlite darwin.db darwin-terms.ttl --format turtle --context http://rs.tdwg.org/dwc/terms.json
+```
+
+- with sqlite3 we can now open the database and export it as `schema/darwin-sql.sql` for further processing
+  like:
+
+```bash
+  docker run --rm -it -v "$(pwd):/schema" -w /schema keinos/sqlite3
+  .open schema/darwin.db
+  .output schema/darwin-sql.sql
+  .dump
+```
+
+!! this currently doesn't work:
+
+- now we use `dbml cli` to convert it to a dbml file to use it in our [db documentation](https://dbdiagram.io/d/64a2d76802bd1c4a5e6b7071) for further customization
+  like:
+
+```bash
+  npm install -g @dbml/cli
+  sql2dbml --postgres schema/darwin-sql.sql -o schema/darwin.dbml
+```
