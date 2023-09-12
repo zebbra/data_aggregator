@@ -30,6 +30,7 @@
 /test/
 /tmp/
 .elixir_ls
+.elixir-tools
 
 # Mix artifacts
 /_build/

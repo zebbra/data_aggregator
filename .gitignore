@@ -40,3 +40,6 @@ npm-debug.log
 
 # minio
 /minio/data/*
+
+# other generated code
+.elixir-tools
