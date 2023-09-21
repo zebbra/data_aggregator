@@ -15,14 +15,6 @@ defmodule DataAggregator.FileUpload do
     end
   end
 
-  def transform(:thumb, _) do
-    {:convert, "-thumbnail 100x100^ -gravity center -extent 100x100 -format png", :png}
-  end
-
-  def filename(version, _) do
-    version
-  end
-
   @spec file_extension(
           atom
           | %{
