@@ -3,6 +3,8 @@ defmodule DataAggregator.Imports.Import do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource]
 
+  alias Waffle.Storage.File
+
   postgres do
     table "imports"
     repo DataAggregator.Repo
@@ -17,6 +19,22 @@ defmodule DataAggregator.Imports.Import do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+
+    create :upload_file do
+      argument :file, File do
+        allow_nil? false
+      end
+
+      # TODO: this is test code
+      provider = %{id: "1", name: "bla"}
+      collection = %{id: "1", name: "bla", metaData: "{}"}
+      dataset = %{id: "2", unique_id: "test", name: "dfsd", metaData: "{}", version: 1}
+
+      DataAggregator.FileUpload.store(
+        {"https://www.beta-schweiz.ch/images/6494/enduro-rr-4t-350-390-430-480-my-2024.jpg",
+         %{provider: provider, collection: collection, dataset: dataset}}
+      )
+    end
   end
 
   graphql do

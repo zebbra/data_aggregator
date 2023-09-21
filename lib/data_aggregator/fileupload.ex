@@ -2,7 +2,7 @@ defmodule DataAggregator.FileUpload do
   use Waffle.Definition
 
   @versions [:original]
-  @extension_whitelist ~w(.csv .jpeg .png)
+  @extension_whitelist ~w(.csv .jpeg .jpg .png)
 
   def acl(:original, _), do: :public_read
 
@@ -23,8 +23,8 @@ defmodule DataAggregator.FileUpload do
           file :: Waffle.Storage.File.t(),
           scope :: Scope.t()
         }) :: String.t()
-  def storage_dir(:original, {file, {provider, collection, dataset}}) do
-    "providers/#{provider.name}/collections/#{collection.name}/datasets/#{dataset.id}/imports/#{file_extension(file)}/#{:original}"
+  def storage_dir(:original, {file, scope}) do
+    "providers/#{scope.provider.name}/collections/#{scope.collection.name}/datasets/#{scope.dataset.id}/imports/#{file_extension(file)}/#{:original}"
   end
 end
 
