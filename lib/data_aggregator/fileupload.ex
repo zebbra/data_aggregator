@@ -15,18 +15,6 @@ defmodule DataAggregator.FileUpload do
     end
   end
 
-  @spec file_extension(
-          atom
-          | %{
-              :file_name =>
-                binary
-                | maybe_improper_list(
-                    binary | maybe_improper_list(any, binary | []) | char,
-                    binary | []
-                  ),
-              optional(any) => any
-            }
-        ) :: binary
   def file_extension(file) do
     file.file_name |> Path.extname() |> String.downcase()
   end
