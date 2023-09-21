@@ -69,7 +69,13 @@ defmodule DataAggregator.MixProject do
       # metrix and observation
       {:sentry, "~> 8.1"},
       {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 1.0"}
+      {:telemetry_poller, "~> 1.0"},
+
+      # file handling and S3:
+      {:waffle, "~> 1.1"},
+      {:ex_aws, "~> 2.1.2"},
+      {:ex_aws_s3, "~> 2.0"},
+      {:sweet_xml, "~> 0.6"}
     ]
   end
 

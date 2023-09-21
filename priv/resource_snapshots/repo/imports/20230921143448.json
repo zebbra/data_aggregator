@@ -65,15 +65,15 @@
           "global": null,
           "strategy": null
         },
-        "name": "imports_collection_id_fkey",
+        "name": "imports_dataset_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "collections"
+        "table": "datasets"
       },
       "size": null,
-      "source": "collection_id",
+      "source": "dataset_id",
       "type": "uuid"
     }
   ],
@@ -82,7 +82,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "E56DD1543379F5A3C8C8F2754662F3AEC37BB8EE0B27EF44F8FF10EDC96D6396",
+  "hash": "35E1BDFE14A6D5CA7315A89677A5F8F1F84D99C0E338FDE4BE6361725D871BA7",
   "identities": [],
   "multitenancy": {
     "attribute": null,

@@ -78,6 +78,16 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :waffle,
+  storage: Waffle.Storage.S3,
+  bucket: {:system, "S3_BUCKET"},
+  asset_host: {:system, "S3_HOST"}
+
+config :ex_aws,
+  json_codec: Jason
+
+# any configurations provided by https://github.com/ex-aws/ex_aws
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

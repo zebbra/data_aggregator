@@ -58,10 +58,10 @@ hard init whole system including reset of all migrations (during development):
 
 ```bash
 # delete snapshots
-rm -f /priv/resource_snapshots/*
+rm -rf priv/resource_snapshots/*
 
 # delete all migrations
-rm -f /priv/repo/migrations/*_*.exs
+rm -rf priv/repo/migrations/*_*.exs
 
 # drop database
 mix ash_postgres.drop
