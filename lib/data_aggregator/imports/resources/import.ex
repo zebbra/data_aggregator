@@ -56,7 +56,7 @@ defmodule DataAggregator.UploadFile do
   use Ash.Resource.ManualCreate
 
   def create(_file, _, _) do
-    # TODO: this is test code, test it!
+    # this is test code, test it!
     provider = %{id: "1", name: "bla"}
     collection = %{id: "1", name: "bla", metaData: "{}"}
     dataset = %{id: "2", unique_id: "test", name: "dfsd", metaData: "{}", version: 1}
