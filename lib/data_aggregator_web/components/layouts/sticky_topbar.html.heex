@@ -2,9 +2,9 @@
 <div class="shrink-0 gap-x-6 dark:border-white/5 dark:bg-gray-900 sm:px-6 lg:px-8 sticky top-0 z-40 flex items-center h-16 px-4 bg-white border-b border-gray-200 shadow-sm">
   <%!-- Mobile sidebar nav toggler --%>
   <button
+    phx-click="toggle-sidebar-nav"
     type="button"
     class="-m-2.5 p-2.5 text-gray-700 dark:text-white lg:hidden"
-    @click="open = true"
   >
     <span class="sr-only">Open sidebar</span>
     <.icon name="hero-bars-3-mini" class="w-5 h-5" />
@@ -14,28 +14,30 @@
 
   <div class="gap-x-4 lg:gap-x-6 flex self-stretch flex-1">
     <%!-- Search form --%>
-    <form class="relative flex items-center flex-1" action="#" method="GET">
-      <label for="search-field" class="sr-only">Search</label>
-      <.icon
-        name="hero-magnifying-glass-mini"
-        class="dark:text-gray-500 w-5 h-5 text-gray-400 pointer-events-none"
-      />
-      <input
-        id="search-field"
-        class="dark:bg-transparent dark:text-white placeholder:text-gray-400 focus:ring-0 sm:text-sm block w-full h-full py-0 pl-3 pr-0 text-gray-900 border-0"
-        placeholder={~t"Search..."m}
-        type="search"
-        name="search"
-      />
-    </form>
-    <%!-- Language toggler --%>
+    <%= if @search == true do %>
+      <form class="relative flex items-center flex-1" action="#" method="GET">
+        <label for="search-field" class="sr-only">Search</label>
+        <.icon
+          name="hero-magnifying-glass-mini"
+          class="dark:text-gray-500 w-5 h-5 text-gray-400 pointer-events-none"
+        />
+        <input
+          id="search-field"
+          class="dark:bg-transparent dark:text-white placeholder:text-gray-400 focus:ring-0 sm:text-sm block w-full h-full py-0 pl-3 pr-0 text-gray-900 border-0"
+          placeholder={~t"Search..."m}
+          type="search"
+          name="search"
+        />
+      </form>
+    <% else %>
+      <div class="flex flex-1" />
+    <% end %>
     <div class="gap-x-4 lg:gap-x-6 flex items-center">
-      <div id="locale-select-hook-wrapper" phx-hook="LocaleSelect">
-        <.live_component module={DataAggregatorWeb.LocaleSelect} id="locale-select" />
-      </div>
+      <%!-- Language toggler --%>
+      <.locale_select />
       <!-- Separator -->
       <div
-        class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10 dark:bg-white/5"
+        class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10 lg:dark:bg-white/5"
         aria-hidden="true"
       />
       <div id="color-mode-hook-wrapper" phx-hook="ColorMode">

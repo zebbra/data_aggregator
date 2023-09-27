@@ -4,7 +4,9 @@ defmodule DataAggregatorWeb.DashboardLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <.header class="p-4 sm:px-6 lg:px-8">Dashboard</.header>
+    <main>
+      <.header>Dashboard</.header>
+    </main>
     """
   end
 

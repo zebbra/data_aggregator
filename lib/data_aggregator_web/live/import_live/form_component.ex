@@ -16,10 +16,15 @@ defmodule DataAggregatorWeb.ImportLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.header>
+      <.dialog_title id="import-modal__title" class="text-zinc-800 text-base font-semibold leading-9">
         <%= @title %>
-        <:subtitle><%= ~t"Use this form to manage import records in your database."m %></:subtitle>
-      </.header>
+      </.dialog_title>
+      <.dialog_description
+        id="import-modal__description"
+        class="text-zinc-600 dark:text-gray-400 mt-2 text-sm leading-6"
+      >
+        <%= ~t"Use this form to manage import records in your database."m %>
+      </.dialog_description>
 
       <.simple_form
         for={@form}

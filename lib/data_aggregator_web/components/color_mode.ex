@@ -12,7 +12,7 @@ defmodule DataAggregatorWeb.ColorMode do
       <label class="sr-only">Toggle color mode</label>
       <button
         phx-click={JS.dispatch("toggle-color-mode")}
-        class="relative rounded-full bg-white dark:bg-gray-900 p-1 text-gray-400 hover:text-gray-500 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-white focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+        class="relative rounded-full bg-white dark:bg-gray-900 p-1 text-gray-400 hover:text-gray-500 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-white focus:ring-offset-2 dark:focus:ring-offset-gray-900"
       >
         <span class="absolute -inset-1.5" />
         <svg

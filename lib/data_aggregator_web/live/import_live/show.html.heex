@@ -3,7 +3,7 @@
   <:subtitle>This is a import record from your database.</:subtitle>
   <:actions>
     <.link patch={~p"/imports/#{@import}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit import</.button>
+      <.button id="import-modal__button">Edit import</.button>
     </.link>
   </:actions>
 </.header>
@@ -15,18 +15,27 @@
 
 <.back navigate={~p"/imports"}>Back to imports</.back>
 
-<.modal
+<.dialog
   :if={@live_action == :edit}
   id="import-modal"
   show
   on_cancel={JS.patch(~p"/imports/#{@import}")}
 >
-  <.live_component
-    module={DataAggregatorWeb.ImportLive.FormComponent}
-    id={@import.id}
-    title={@page_title}
-    action={@live_action}
-    import={@import}
-    patch={~p"/imports/#{@import}"}
-  />
-</.modal>
+  <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+    <div class="sm:items-center sm:p-0 flex items-end justify-center min-h-full p-4 text-center">
+      <.dialog_panel
+        id="import-modal__panel"
+        class="sm:my-8 sm:w-full sm:max-w-lg sm:p-6 relative px-4 pt-5 pb-4 overflow-hidden text-left bg-white rounded-lg shadow-xl"
+      >
+        <.live_component
+          module={DataAggregatorWeb.ImportLive.FormComponent}
+          id={@import.id}
+          title={@page_title}
+          action={@live_action}
+          import={@import}
+          patch={~p"/imports/#{@import}"}
+        />
+      </.dialog_panel>
+    </div>
+  </div>
+</.dialog>

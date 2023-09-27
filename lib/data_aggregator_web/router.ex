@@ -46,6 +46,7 @@ defmodule DataAggregatorWeb.Router do
 
       user_hooks = [
         DataAggregatorWeb.LiveLogger,
+        DataAggregatorWeb.LiveState,
         DataAggregatorWeb.LiveLocale,
         DataAggregatorWeb.LiveNavigator
       ]

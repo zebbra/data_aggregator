@@ -11,16 +11,27 @@ defmodule DataAggregator.Imports.Import do
   attributes do
     uuid_attribute :id, prefix: "imp"
     attribute :url, :string, allow_nil?: false
-    timestamps()
+    timestamps(private?: false)
   end
 
   actions do
-    defaults [:create, :read, :update, :destroy]
+    defaults [:create, :update, :destroy]
+
+    read :read do
+      argument :sort, :string, default: "url"
+
+      prepare fn query, _ ->
+        query
+        |> Ash.Query.sort(Ash.Sort.parse_input!(__MODULE__, query.arguments.sort))
+      end
+    end
   end
 
   code_interface do
     define_for DataAggregator.Imports
-    define :read
+
+    define :read, args: [:sort]
+
     define :create
     define :update
     define :destroy

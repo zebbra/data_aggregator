@@ -20,9 +20,7 @@ import "phoenix_html";
 // Establish Phoenix Socket and LiveView configuration.
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
-import Alpine from "alpinejs";
-import focus from "@alpinejs/focus";
-import ui from "@alpinejs/ui";
+import { consola } from "consola";
 
 import hooks from "./hooks";
 import topbar from "../vendor/topbar";
@@ -30,19 +28,11 @@ import topbar from "../vendor/topbar";
 // Global type definitions
 declare global {
   interface Window {
-    Alpine: typeof Alpine;
     liveSocket: LiveSocket;
-  }
-  interface HTMLElement {
-    _x_dataStack?: any;
   }
 }
 
-// Load Alpine
-Alpine.plugin(ui);
-Alpine.plugin(focus);
-window.Alpine = Alpine;
-Alpine.start();
+consola.level = 3;
 
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")
@@ -50,16 +40,6 @@ const csrfToken = document
 const liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
   hooks,
-  dom: {
-    // AlpineJS integration with LiveView (no sure if this is needed)
-    onBeforeElUpdated(from, to) {
-      if (from._x_dataStack) {
-        window.Alpine.clone(from, to);
-      }
-
-      return false;
-    },
-  },
 });
 
 // Show progress bar on live navigation and form submits

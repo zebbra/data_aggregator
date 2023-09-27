@@ -7,7 +7,12 @@ const path = require("path");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./js/**/*.js", "../lib/*_web.ex", "../lib/*_web/**/*.*ex"],
+  content: [
+    "./js/**/*.js",
+    "./js/**/*.ts",
+    "../lib/*_web.ex",
+    "../lib/*_web/**/*.*ex",
+  ],
   darkMode: "class",
   theme: {
     extend: {

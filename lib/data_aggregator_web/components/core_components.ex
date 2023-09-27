@@ -227,8 +227,10 @@ defmodule DataAggregatorWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        "phx-submit-loading:opacity-75 rounded-md py-2 px-3",
+        "text-sm font-semibold text-white active:text-white/80",
+        "dark:bg-indigo-500 dark:hover:bg-indigo-400 bg-indigo-600 hover:bg-indigo-500",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-500",
         @class
       ]}
       {@rest}
@@ -415,6 +417,7 @@ defmodule DataAggregatorWeb.CoreComponents do
   Renders a header with title.
   """
   attr :class, :string, default: nil
+  attr :action_class, :string, default: "flex-none"
 
   slot :inner_block, required: true
   slot :subtitle
@@ -422,16 +425,21 @@ defmodule DataAggregatorWeb.CoreComponents do
 
   def header(assigns) do
     ~H"""
-    <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
+    <header class={[
+      "border-b dark:border-white/5 border-gray-200 p-4 sm:py-5 sm:px-6 lg:px-8",
+      @actions != [] &&
+        "flex items-center justify-between gap-6",
+      @class
+    ]}>
       <div>
-        <h1 class="text-zinc-800 dark:text-white text-lg font-semibold leading-8">
+        <h1 class="text-zinc-800 dark:text-white text-base font-semibold leading-9">
           <%= render_slot(@inner_block) %>
         </h1>
         <p :if={@subtitle != []} class="text-zinc-600 dark:text-gray-400 mt-2 text-sm leading-6">
           <%= render_slot(@subtitle) %>
         </p>
       </div>
-      <div class="flex-none"><%= render_slot(@actions) %></div>
+      <div class={@action_class}><%= render_slot(@actions) %></div>
     </header>
     """
   end

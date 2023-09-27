@@ -1,13 +1,39 @@
-<.header>
-  <%= ~t"Listing Imports"m %>
-  <:actions>
-    <.link patch={~p"/imports/new"}>
-      <.button><%= ~t"New Import"m %></.button>
-    </.link>
-  </:actions>
-</.header>
+<main class="xl:pr-96">
+  <.header action_class="flex gap-x-3">
+    <%= ~t"Listing Imports"m %>
+    <:actions>
+      <%!-- <.hero_menu
+        label={~t"Sort by"m}
+        items={@sort_options}
+        value={@current_order_by}
+        button_class="flex items-center gap-x-1 text-sm font-medium leading-9 dark:text-white text-zinc-800"
+      /> --%>
+      <.button class="inline-flex xl:hidden">
+        <.icon name="hero-funnel-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
+        <span class="hidden sm:inline-block"><%= ~t"Filter"m %></span>
+      </.button>
+      <.link patch={~p"/imports/new"} class="focus-visible:outline-none">
+        <.button class="inline-flex" id="import-modal__button">
+          <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
+          <span class="hidden sm:inline-block"><%= ~t"New Import"m %></span>
+        </.button>
+      </.link>
+    </:actions>
+  </.header>
+</main>
 
-<.table
+<aside class="hidden xl:block dark:bg-black/10 bg-gray-100/30 xl:fixed xl:bottom-0 xl:right-0 xl:top-16 xl:w-96 xl:overflow-y-auto xl:border-l xl:border-gray-200 dark:xl:border-white/5">
+  <.header>
+    <%= ~t"Filters"m %>
+    <:actions>
+      <a href="#" class="text-sm font-semibold leading-6 dark:text-indigo-400 text-indigo-600">
+        <%= ~t"Reset"m %>
+      </a>
+    </:actions>
+  </.header>
+</aside>
+
+<%!-- <.table
   id="imports"
   rows={@streams.imports}
   row_click={fn {_id, import} -> JS.navigate(~p"/imports/#{import}") end}
@@ -30,20 +56,29 @@
       Delete
     </.link>
   </:action>
-</.table>
+</.table> --%>
 
-<.modal
+<.dialog
   :if={@live_action in [:new, :edit]}
   id="import-modal"
   show
   on_cancel={JS.patch(~p"/imports")}
 >
-  <.live_component
-    module={DataAggregatorWeb.ImportLive.FormComponent}
-    id={@import.id || :new}
-    title={@page_title}
-    action={@live_action}
-    import={@import}
-    patch={~p"/imports"}
-  />
-</.modal>
+  <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+    <div class="sm:items-center sm:p-0 flex items-end justify-center min-h-full p-4 text-center">
+      <.dialog_panel
+        id="import-modal__panel"
+        class="sm:my-8 sm:w-full sm:max-w-lg sm:p-6 relative px-4 pt-5 pb-4 overflow-hidden text-left bg-white rounded-lg shadow-xl"
+      >
+        <.live_component
+          module={DataAggregatorWeb.ImportLive.FormComponent}
+          id={@import.id || :new}
+          title={@page_title}
+          action={@live_action}
+          import={@import}
+          patch={~p"/imports"}
+        />
+      </.dialog_panel>
+    </div>
+  </div>
+</.dialog>
