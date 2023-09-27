@@ -29,6 +29,9 @@ config :ash, :custom_types, uuid: AshUUID.UUID
 # Ash: Default belongs_to type, not required
 config :ash, :default_belongs_to_type, AshUUID.UUID
 
+# prevent deprecated warning for wrong usage of timestamp dateformat
+config :ash, :utc_datetime_type, :naive_datetime
+
 # Configures the endpoint
 config :data_aggregator, DataAggregatorWeb.Endpoint,
   url: [host: "localhost"],
