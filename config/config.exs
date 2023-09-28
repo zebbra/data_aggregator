@@ -15,6 +15,15 @@ config :data_aggregator,
 config :ash, :use_all_identities_in_manage_relationship?, false
 config :ash_graphql, :default_managed_relationship_type_name_template, :action_name
 
+# mime type config for json api
+# config :mime, :types, %{
+#   "application/vnd.api+json" => ["json"]
+# }
+
+# config :mime, :extensions, %{
+#   "json" => "application/vnd.api+json"
+# }
+
 config :data_aggregator, ash_apis: [DataAggregator.Imports]
 
 config :data_aggregator, :ash_uuid,

@@ -55,6 +55,9 @@ defmodule DataAggregator.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:finch, "~> 0.13"},
       {:ecto_erd, "~> 0.5", only: :dev},
+      {:open_api_spex, "~> 3.18"},
+      {:ash_json_api, "~> 0.33.1"},
+      {:redoc_ui_plug, "~> 0.2.1"},
 
       # frontend / ui
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},

@@ -86,6 +86,14 @@ mix ash_postgres.generate_migrations --name your_migration_name
 mix ash_postgres.migrate
 ```
 
+### api's
+
+check and extend our [postman collection](https://martian-spaceship-337286.postman.co/workspace/Team-Workspace~5cea633a-4d4e-4e43-8460-39c3fc2774e7/collection/16163919-5357e4b8-3f23-4fb8-b105-139db31bfac5?action=share&creator=16163919&active-environment=16163919-86e22979-e529-484e-9372-a4f869876b27)
+
+our [open-api schema](http://localhost:4000/api/json/open_api)
+
+our [swagger-ui](http://localhost:4000/api/swaggerui)
+
 ## Staging
 
 to deploy the application to our staging environment on the zebbra cloud

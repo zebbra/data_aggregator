@@ -1,7 +1,7 @@
 defmodule DataAggregator.Imports.Import do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   postgres do
     table "imports"
@@ -20,6 +20,20 @@ defmodule DataAggregator.Imports.Import do
 
     create :upload_file do
       manual DataAggregator.UploadFile
+    end
+  end
+
+  json_api do
+    type "import"
+
+    routes do
+      base("/imports")
+
+      get(:read)
+      index(:read)
+      post(:create)
+      patch(:update)
+      delete(:destroy)
     end
   end
 
