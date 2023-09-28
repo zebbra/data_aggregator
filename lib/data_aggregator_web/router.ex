@@ -51,22 +51,18 @@ defmodule DataAggregatorWeb.Router do
   scope "/api/json" do
     pipe_through(:api)
 
-    forward "/", DataAggregatorWeb.JsonApiRouter
-  end
-
-  scope "/api" do
-    forward "/swaggerui",
+    forward "/swagger",
             OpenApiSpex.Plug.SwaggerUI,
             path: "/api/json/open_api",
-            title: "Myapp's JSON-API - Swagger UI",
+            title: "Data Aggregator JSON-API - Swagger UI",
             default_model_expand_depth: 4
 
     forward "/redoc",
             Redoc.Plug.RedocUI,
             spec_url: "/api/json/open_api"
-  end
 
-  # forward "/api/json", DataAggregatorWeb.JsonApiRouter
+    forward "/", DataAggregatorWeb.JsonApiRouter
+  end
 
   # Other scopes may use custom stacks.
   # scope "/api", DataAggregatorWeb do

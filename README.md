@@ -92,7 +92,9 @@ check and extend our [postman collection](https://martian-spaceship-337286.postm
 
 our [open-api schema](http://localhost:4000/api/json/open_api)
 
-our [swagger-ui](http://localhost:4000/api/swaggerui)
+our [swagger-ui](http://localhost:4000/api/json/swagger)
+
+our [redoc](http://localhost:4000/api/json/redoc)
 
 ## Staging
 
