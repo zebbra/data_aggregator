@@ -32,6 +32,7 @@ defmodule DataAggregator.Imports.Import do
       get(:read)
       index(:read)
       post(:create)
+      post(:upload_file, route: "/upload")
       patch(:update)
       delete(:destroy)
     end
@@ -69,15 +70,29 @@ end
 defmodule DataAggregator.UploadFile do
   use Ash.Resource.ManualCreate
 
-  def create(_file, _, _) do
-    # this is test code, test it!
-    provider = %{id: "1", name: "bla"}
-    collection = %{id: "1", name: "bla", metaData: "{}"}
-    dataset = %{id: "2", unique_id: "test", name: "dfsd", metaData: "{}", version: 1}
+  alias DataAggregator.Imports.Import
 
-    DataAggregator.FileUpload.store(
-      {"https://www.beta-schweiz.ch/images/6494/enduro-rr-4t-350-390-430-480-my-2024.jpg",
+  def create(file, _, _) do
+    # this is test code, test it!
+    provider = %{id: "1", name: "museum1"}
+    collection = %{id: "1", name: "first-collection", metaData: "{}"}
+    dataset = %{id: "2", unique_id: "test-dataset", name: "my-dataset", metaData: "{}", version: 1}
+
+    path = file.attributes.url
+    meta_data = file.attributes.metaData
+
+    {:ok, file_name} = DataAggregator.FileUpload.store(
+      {path,
        %{provider: provider, collection: collection, dataset: dataset}}
     )
+
+    import = %Import{url: "#{path}/#{file_name}", metaData: meta_data}
+
+    # for reasons this doesn't work at all...
+    # Import
+    #   |> Ash.Changeset.for_create(:create)
+    #   |> DataAggregator.Imports.create!(import)
+
+    {:ok, import}
   end
 end

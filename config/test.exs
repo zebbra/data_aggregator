@@ -10,7 +10,7 @@ config :data_aggregator, DataAggregator.Repo,
   password: "postgres",
   port: 5432,
   hostname: "localhost",
-  # database: "data_aggregator_test#{System.get_env("MIX_TEST_PARTITION")}",
+  # database: "data-aggregator-test#{System.get_env("MIX_TEST_PARTITION")}",
   database: "data_aggregator_test",
   pool_size: 10,
   pool: Ecto.Adapters.SQL.Sandbox

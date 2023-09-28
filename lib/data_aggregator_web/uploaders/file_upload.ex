@@ -79,8 +79,8 @@ defmodule DataAggregator.FileUpload do
           file :: Waffle.Storage.File.t(),
           scope :: Scope.t()
         }) :: String.t()
-  def storage_dir(:original, {file, scope}) do
-    "providers/#{scope.provider.name}/collections/#{scope.collection.name}/datasets/#{scope.dataset.id}/imports/#{file_extension(file)}/#{:original}"
+  def storage_dir(:original, {_file, scope}) do
+    "providers/#{scope.provider.name}/collections/#{scope.collection.name}/imports"
   end
 end
 

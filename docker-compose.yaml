@@ -43,7 +43,7 @@ services:
     environment:
       - MINIO_ROOT_USER=ROOTUSER
       - MINIO_ROOT_PASSWORD=CHANGEME123
-      - MINIO_DEFAULT_BUCKETS=data_aggregator_dev
+      - MINIO_DEFAULT_BUCKETS=data-aggregator-dev
     volumes:
       - ./minio/data:/data
     ports:
