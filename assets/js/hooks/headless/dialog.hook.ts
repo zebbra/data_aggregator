@@ -22,6 +22,22 @@ type StateDefinition = {
   close(): void;
 };
 
+// window.resize callback function
+function resizeFunction() {
+  if (window.innerWidth > 1024) {
+    document.body.click();
+  }
+}
+
+const delay = 250; // delay after event is "complete" to run callback
+let timeout: number; // holder for timeout id
+function onResizeHandler() {
+  // clear the timeout
+  clearTimeout(timeout);
+  // start timing for event "completion"
+  timeout = setTimeout(() => resizeFunction(), delay);
+}
+
 const DialogContext = Symbol("DialogContext") as InjectionKey<StateDefinition>;
 function useDialogContext(instance: string, component: string) {
   let context = inject(instance, DialogContext);
@@ -39,6 +55,7 @@ function useDialogContext(instance: string, component: string) {
 const Dialog = {
   reset() {
     consola.debug("Dialog hook reset", this.el.id);
+    window.removeEventListener("resize", onResizeHandler);
     provide(this.el.id, DialogContext, undefined as any);
   },
   destroyed() {
@@ -90,6 +107,11 @@ const Dialog = {
 
     provide(this.el.id, DialogContext, api);
 
+    if (this.el.dataset["dialog_type"] === "slideover") {
+      window.addEventListener("resize", onResizeHandler);
+      resizeFunction();
+    }
+
     nextFrame(() => {
       if (titleId.value) {
         this.el.setAttribute("aria-labelledby", titleId.value!);
@@ -106,7 +128,6 @@ const Dialog = {
 const DialogPanel = {
   reset() {
     consola.debug("DialogPanel hook reset", this.el.id);
-    this.el.removeEventListener("phx:hide-start", null);
   },
   destroyed() {
     consola.debug("DialogPanel hook destroyed", this.el.id);
@@ -133,7 +154,7 @@ const DialogTitle = {
   reset() {
     consola.debug("DialogTitle hook reset", this.el.id);
     const api = useDialogContext(rootId(this.el.id), "DialogTitle");
-    api.setTitleId(null);
+    api?.setTitleId(null);
   },
   destroyed() {
     consola.debug("DialogTitle hook destroyed", this.el.id);

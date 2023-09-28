@@ -40,16 +40,23 @@ defmodule DataAggregatorWeb.Helpers do
   # https://spapas.github.io/2019/10/17/declarative-ecto-query-sorting/
   def order_by_options(active_link, params, sort_fields \\ []) do
     sort_fields
-    |> Enum.map(fn {k, v} ->
-      name = k |> to_string
-      %{id: name, label: v, value: create_order_url(active_link, params, to_string(k))}
-    end)
+    |> Enum.into(%{}, fn key -> {key, create_order_url(active_link, params, to_string(key))} end)
   end
 
   def get_current_order_by(params) do
     params
     |> Map.get("order_by", "")
     |> String.replace("-", "")
+  end
+
+  def get_current_order_dir(params) do
+    if params
+       |> Map.get("order_by", "")
+       |> String.starts_with?("-") do
+      "desc"
+    else
+      "asc"
+    end
   end
 
   defp create_order_url(

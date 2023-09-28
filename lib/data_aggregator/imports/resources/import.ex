@@ -19,7 +19,11 @@ defmodule DataAggregator.Imports.Import do
 
     read :read do
       primary? true
-      argument :sort, :string, default: "url"
+
+      argument :sort, :string do
+        allow_nil? true
+        default "id"
+      end
 
       prepare fn query, _ ->
         query
@@ -45,7 +49,9 @@ defmodule DataAggregator.Imports.Import do
 
   code_interface do
     define_for DataAggregator.Imports
-    define :read, args: [:sort]
+
+    define :read, args: [{:optional, :sort}]
+
     define :create
     define :update
     define :destroy

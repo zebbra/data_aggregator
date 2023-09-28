@@ -3,6 +3,8 @@ defmodule DataAggregatorWeb.ImportLive.Index do
 
   alias DataAggregator.Imports.Import
 
+  @sort_options [:inserted_at, :updated_at, :url]
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket}
@@ -16,14 +18,16 @@ defmodule DataAggregatorWeb.ImportLive.Index do
     socket =
       socket
       |> assign(:current_order_by, get_current_order_by(params))
+      |> assign(:current_order_dir, get_current_order_dir(params))
       |> assign(
         :sort_options,
         order_by_options(
           socket.assigns.active_link,
           params,
-          sort_options()
+          @sort_options
         )
       )
+      |> assign(:show_filters, false)
       |> stream(:imports, imports)
 
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
@@ -60,11 +64,8 @@ defmodule DataAggregatorWeb.ImportLive.Index do
     {:noreply, stream_delete(socket, :imports, import)}
   end
 
-  defp sort_options do
-    [
-      inserted_at: ~t"Inserted At"m,
-      updated_at: ~t"Updated At"m,
-      url: ~t"URL"m
-    ]
+  @impl true
+  def handle_event("toggle-filters", _params, socket) do
+    {:noreply, assign(socket, :show_filters, !socket.assigns.show_filters)}
   end
 end

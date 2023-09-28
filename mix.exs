@@ -76,6 +76,7 @@ defmodule DataAggregator.MixProject do
       {:hackney, "~> 1.18"},
       {:jason, "~> 1.2"},
       {:earmark, "~> 1.4"},
+      {:timex, "~> 3.0"},
 
       # metrix and observation
       {:sentry, "~> 8.1"},

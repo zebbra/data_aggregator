@@ -270,9 +270,6 @@ const Menu = {
 const MenuButton = {
   reset() {
     consola.debug("MenuButton hook reset", this.el.id);
-    this.el.removeEventListener("keydown", this.handleKeyDown);
-    this.el.removeEventListener("keyup", this.handleKeyUp);
-    this.el.removeEventListener("click", this.handleClick);
   },
   destroyed() {
     consola.debug("MenuButton hook destroyed", this.el.id);
@@ -347,9 +344,6 @@ const MenuButton = {
 const MenuItems = {
   reset() {
     consola.debug("MenuItems hook reset", this.el.id);
-    this.el.removeEventListener("keydown", this.handleKeyDown);
-    this.el.removeEventListener("keyup", this.handleKeyUp);
-    this.el.removeEventListener("phx:hide-start", this.handleClick);
   },
   destroyed() {
     consola.debug("MenuItems hook destroyed", this.el.id);
@@ -467,14 +461,6 @@ const MenuItem = {
     consola.debug("MenuItem hook reset", this.el.id);
     const api = useMenuContext(rootId(this.el.id), "MenuItem");
     api?.unregisterItem(this.el.id);
-    this.el.removeEventListener("click", this.handleClick);
-    this.el.removeEventListener("focus", this.handleFocus);
-    this.el.removeEventListener("pointerenter", this.handleEnter);
-    this.el.removeEventListener("mouseenter", this.handleEnter);
-    this.el.removeEventListener("pointermove", this.handleMove);
-    this.el.removeEventListener("mousemove", this.handleMove);
-    this.el.removeEventListener("pointerleave", this.handleLeave);
-    this.el.removeEventListener("mouseleave", this.handleLeave);
   },
   destroyed() {
     consola.debug("MenuItem hook destroyed", this.el.id);

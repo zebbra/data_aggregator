@@ -1,62 +1,124 @@
 <main class="xl:pr-96">
-  <.header action_class="flex gap-x-3">
+  <.header class="top-16 dark:bg-gray-900 sticky z-10 bg-white" action_class="flex gap-x-3">
     <%= ~t"Listing Imports"m %>
     <:actions>
-      <%!-- <.hero_menu
-        label={~t"Sort by"m}
-        items={@sort_options}
-        value={@current_order_by}
-        button_class="flex items-center gap-x-1 text-sm font-medium leading-9 dark:text-white text-zinc-800"
-      /> --%>
-      <.button class="inline-flex xl:hidden">
+      <.button
+        phx-click="toggle-filters"
+        id="import-filters__button"
+        class="xl:hidden inline-flex"
+      >
         <.icon name="hero-funnel-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
-        <span class="hidden sm:inline-block"><%= ~t"Filter"m %></span>
+        <span class="sm:inline-block hidden"><%= ~t"Filter"m %></span>
       </.button>
       <.link patch={~p"/imports/new"} class="focus-visible:outline-none">
         <.button class="inline-flex" id="import-modal__button">
           <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
-          <span class="hidden sm:inline-block"><%= ~t"New Import"m %></span>
+          <span class="sm:inline-block hidden"><%= ~t"New Import"m %></span>
         </.button>
       </.link>
     </:actions>
   </.header>
+
+  <.table
+    id="imports"
+    rows={@streams.imports}
+    row_click={fn {_id, import} -> JS.navigate(~p"/imports/#{import}") end}
+    order_by={@current_order_by}
+    order_dir={@current_order_dir}
+  >
+    <:col :let={{_id, import}} label={~t"ID"m} field="id" sort={@sort_options[:id]}>
+      <%= import.id %>
+    </:col>
+    <:col :let={{_id, import}} label={~t"URL"m} field="url" sort={@sort_options[:url]}>
+      <%= import.url %>
+    </:col>
+    <:col
+      :let={{_id, import}}
+      label={~t"Inserted At"m}
+      field="inserted_at"
+      sort={@sort_options[:inserted_at]}
+    >
+      <%= format_datetime(import.inserted_at) %>
+    </:col>
+    <:col
+      :let={{_id, import}}
+      label={~t"Updated At"m}
+      field="updated_at"
+      sort={@sort_options[:updated_at]}
+    >
+      <%= format_datetime(import.updated_at) %>
+    </:col>
+
+    <:action :let={{_id, import}}>
+      <div class="sr-only">
+        <.link navigate={~p"/imports/#{import}"}><%= ~t"Show"m %></.link>
+      </div>
+      <.link patch={~p"/imports/#{import}/edit"}><%= ~t"Edit"m %></.link>
+    </:action>
+
+    <:action :let={{id, import}}>
+      <.link
+        phx-click={JS.push("delete", value: %{id: import.id}) |> hide("##{id}")}
+        data-confirm={~t"Are you sure?"m}
+      >
+        <%= ~t"Delete"m %>
+      </.link>
+    </:action>
+  </.table>
 </main>
 
-<aside class="hidden xl:block dark:bg-black/10 bg-gray-100/30 xl:fixed xl:bottom-0 xl:right-0 xl:top-16 xl:w-96 xl:overflow-y-auto xl:border-l xl:border-gray-200 dark:xl:border-white/5">
+<aside class="xl:block dark:bg-black/10 bg-gray-100/30 xl:fixed xl:bottom-0 xl:right-0 xl:top-16 xl:w-96 xl:overflow-y-auto xl:border-l xl:border-gray-200 dark:xl:border-white/5 hidden">
   <.header>
     <%= ~t"Filters"m %>
     <:actions>
-      <a href="#" class="text-sm font-semibold leading-6 dark:text-indigo-400 text-indigo-600">
+      <a href="#" class="dark:text-indigo-400 text-sm font-semibold leading-6 text-indigo-600">
         <%= ~t"Reset"m %>
       </a>
     </:actions>
   </.header>
 </aside>
 
-<%!-- <.table
-  id="imports"
-  rows={@streams.imports}
-  row_click={fn {_id, import} -> JS.navigate(~p"/imports/#{import}") end}
+<.dialog
+  :if={@show_filters}
+  id="import-filters"
+  dialog_type="slideover"
+  class="relative z-50 hidden"
+  show
+  on_cancel={JS.push("toggle-filters")}
 >
-  <:col :let={{_id, import}} label="ID"><%= import.id %></:col>
-  <:col :let={{_id, import}} label="URL"><%= import.url %></:col>
-
-  <:action :let={{_id, import}}>
-    <div class="sr-only">
-      <.link navigate={~p"/imports/#{import}"}><%= ~t"Show"m %></.link>
+  <div class="fixed inset-0 overflow-hidden">
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="fixed inset-y-0 right-0 flex max-w-full pl-10 pointer-events-none">
+        <.dialog_panel
+          id="import-filters__panel"
+          dialog_type="slideover"
+          class="relative w-screen max-w-md pointer-events-auto bg-white dark:bg-gray-900"
+        >
+          <div class="flex flex-col h-full overflow-y-scroll bg-gray-100/30 dark:bg-black/10 shadow-xl border-l border-gray-200 dark:border-white/5">
+            <header class="border-b dark:border-white/5 border-gray-200 p-4 sm:py-5 sm:px-6 lg:px-8 flex items-center justify-between gap-6">
+              <div>
+                <.dialog_title
+                  id="import-filters__title"
+                  class="text-gray-800 dark:text-white text-base font-semibold leading-9"
+                >
+                  <%= ~t"Filters"m %>
+                </.dialog_title>
+              </div>
+              <div class="flex-none">
+                <a
+                  href="#"
+                  class="dark:text-indigo-400 text-sm font-semibold leading-6 text-indigo-600"
+                >
+                  <%= ~t"Reset"m %>
+                </a>
+              </div>
+            </header>
+          </div>
+        </.dialog_panel>
+      </div>
     </div>
-    <.link patch={~p"/imports/#{import}/edit"}><%= ~t"Edit"m %></.link>
-  </:action>
-
-  <:action :let={{id, import}}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: import.id}) |> hide("##{id}")}
-      data-confirm={~t"Are you sure?"m}
-    >
-      Delete
-    </.link>
-  </:action>
-</.table> --%>
+  </div>
+</.dialog>
 
 <.dialog
   :if={@live_action in [:new, :edit]}
@@ -68,11 +130,12 @@
     <div class="sm:items-center sm:p-0 flex items-end justify-center min-h-full p-4 text-center">
       <.dialog_panel
         id="import-modal__panel"
-        class="sm:my-8 sm:w-full sm:max-w-lg sm:p-6 relative px-4 pt-5 pb-4 overflow-hidden text-left bg-white rounded-lg shadow-xl"
+        class="sm:my-8 sm:w-full sm:max-w-lg sm:p-6 relative px-4 pt-5 pb-4 overflow-hidden text-left bg-white dark:bg-gray-900 rounded-lg shadow-xl"
       >
         <.live_component
           module={DataAggregatorWeb.ImportLive.FormComponent}
           id={@import.id || :new}
+          icon="hero-plus-circle-mini"
           title={@page_title}
           action={@live_action}
           import={@import}

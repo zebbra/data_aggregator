@@ -139,12 +139,12 @@
         </ul>
       </li>
       <%!-- Internal links --%>
-      <li>
+      <li :if={Mix.env() == :dev}>
         <div class="text-xs font-semibold leading-6 text-gray-400">Internal Resources</div>
         <ul role="list" class="mt-2 -mx-2 space-y-1">
           <li>
             <.link
-              href="http://localhost:4000/admin"
+              href="/admin"
               target="_blank"
               rel="noopener noreferrer"
               class="group gap-x-3 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
@@ -159,7 +159,7 @@
           </li>
           <li>
             <.link
-              href="http://localhost:4000/dev/dashboard"
+              href="/dev/dashboard"
               target="_blank"
               rel="noopener noreferrer"
               class="group gap-x-3 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
@@ -174,7 +174,7 @@
           </li>
           <li>
             <.link
-              href="http://localhost:4000/playground"
+              href="/playground"
               target="_blank"
               rel="noopener noreferrer"
               class="group gap-x-3 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
@@ -189,7 +189,7 @@
           </li>
           <li>
             <.link
-              href="http://localhost:4000/dev/mailbox"
+              href="/dev/mailbox"
               target="_blank"
               rel="noopener noreferrer"
               class="group gap-x-3 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"

@@ -16,6 +16,6 @@ defmodule DataAggregatorWeb.ImportLive.Show do
      |> assign(:import, Import.get_by_id!(id))}
   end
 
-  defp page_title(:show), do: "Show Import"
-  defp page_title(:edit), do: "Edit Import"
+  defp page_title(:show), do: ~t"Show Import"m
+  defp page_title(:edit), do: ~t"Edit Import"m
 end

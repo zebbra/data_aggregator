@@ -11,7 +11,7 @@ defmodule DataAggregatorWeb.Headless.Dialog do
 
   import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Headless.Description
-  import DataAggregatorWeb.CoreComponents, only: [icon: 1]
+  import DataAggregatorWeb.CoreComponents, only: [icon: 1, button: 1]
 
   attr :id, :string, required: true
   attr :as, :string, default: "div"
@@ -39,6 +39,7 @@ defmodule DataAggregatorWeb.Headless.Dialog do
       }
       data-apply={JS.exec(@on_confirm, "phx-remove")}
       data-cancel={JS.exec(@on_cancel, "phx-remove")}
+      data-dialog_type={@dialog_type}
       id={@id}
       name={@as}
       role={@role}
@@ -50,7 +51,7 @@ defmodule DataAggregatorWeb.Headless.Dialog do
           id={@id <> "__backdrop"}
           class={[
             "hidden fixed inset-0",
-            (@dialog_type == "modal" && "bg-black dark:bg-gray-500 dark:bg-opacity-75 bg-opacity-50") ||
+            (@dialog_type == "modal" && "bg-black/50 dark:bg-white/5") ||
               "bg-gray-900/80"
           ]}
           aria-hidden="true"
@@ -69,11 +70,11 @@ defmodule DataAggregatorWeb.Headless.Dialog do
   attr :rest, :global
   slot :inner_block, required: true
 
-  slot :confirm do
+  slot :submit do
     attr :class, :string
   end
 
-  slot :info do
+  slot :confirm do
     attr :class, :string
   end
 
@@ -98,48 +99,41 @@ defmodule DataAggregatorWeb.Headless.Dialog do
         {@rest}
       >
         <%= render_slot(@inner_block) %>
-        <%= if Enum.empty?(@info) == false || Enum.empty?(@confirm) == false || Enum.empty?(@cancel) == false do %>
+        <%= if Enum.empty?(@submit) == false || Enum.empty?(@confirm) == false || Enum.empty?(@cancel) == false do %>
           <div class="sm:mt-4 sm:flex sm:flex-row-reverse mt-5">
-            <%= for info <- @info do %>
-              <button
-                id={"#{@id |> root_id}__info"}
-                class={
-                  info[:class] ||
-                    "inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                }
+            <%= for submit <- @submit do %>
+              <.button
+                id={"#{@id |> root_id}__submit"}
+                class={submit[:class] || "sm:ml-3 sm:w-auto inline-flex justify-center w-full"}
                 phx-click={JS.exec("data-apply", to: "##{@id |> root_id}")}
                 phx-disable-with
-                {assigns_to_attributes(info)}
+                {assigns_to_attributes(submit)}
               >
-                <%= render_slot(info) %>
-              </button>
+                <%= render_slot(submit) %>
+              </.button>
             <% end %>
             <%= for confirm <- @confirm do %>
-              <button
+              <.button
                 id={"#{@id |> root_id}__confirm"}
-                class={
-                  confirm[:class] ||
-                    "hover:bg-red-500 sm:ml-3 sm:w-auto inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-white bg-red-600 rounded-md shadow-sm"
-                }
+                variant="accent"
+                class={confirm[:class] || "sm:ml-3 sm:w-auto inline-flex justify-center w-full"}
                 phx-click={JS.exec("data-apply", to: "##{@id |> root_id}")}
                 phx-disable-with
                 {assigns_to_attributes(confirm)}
               >
                 <%= render_slot(confirm) %>
-              </button>
+              </.button>
             <% end %>
             <%= for cancel <- @cancel do %>
-              <button
+              <.button
                 id={"#{@id |> root_id}__cancel"}
-                class={
-                  cancel[:class] ||
-                    "ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm"
-                }
+                variant="secondary"
+                class={cancel[:class] || "mt-3 sm:mt-0 sm:w-auto inline-flex justify-center w-full"}
                 phx-click={JS.exec("data-cancel", to: "##{@id |> root_id}")}
                 {assigns_to_attributes(cancel)}
               >
                 <%= render_slot(cancel) %>
-              </button>
+              </.button>
             <% end %>
           </div>
         <% end %>
@@ -148,7 +142,7 @@ defmodule DataAggregatorWeb.Headless.Dialog do
             <button
               phx-click={JS.exec("data-cancel", to: "##{@id |> root_id}")}
               type="button"
-              class="hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-gray-400 bg-white rounded-md"
+              class="hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-gray-400 bg-white dark:bg-gray-900 rounded-md"
               aria-label={gettext("close")}
             >
               <.icon name="hero-x-mark" class="w-6 h-6" />
@@ -291,13 +285,13 @@ defmodule DataAggregatorWeb.Headless.Dialog do
     display = if direction == :right, do: "block", else: "flex"
 
     js
-    |> show_close_button(selector)
     |> JS.show(
       to: "##{selector}__panel",
       display: display,
       time: 300,
       transition: {"ease-in-out duration-300", target, "translate-x-0"}
     )
+    |> show_close_button(selector)
   end
 
   defp hide_panel(js, selector, dialog_type, direction)

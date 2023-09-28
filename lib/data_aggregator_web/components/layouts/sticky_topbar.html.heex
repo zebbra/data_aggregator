@@ -3,14 +3,13 @@
   <%!-- Mobile sidebar nav toggler --%>
   <button
     phx-click="toggle-sidebar-nav"
+    id="sidebar-nav__button"
     type="button"
     class="-m-2.5 p-2.5 text-gray-700 dark:text-white lg:hidden"
   >
     <span class="sr-only">Open sidebar</span>
     <.icon name="hero-bars-3-mini" class="w-5 h-5" />
   </button>
-  <!-- Separator -->
-  <div class="bg-gray-900/10 dark:bg-white/5 lg:hidden w-px h-6" aria-hidden="true" />
 
   <div class="gap-x-4 lg:gap-x-6 flex self-stretch flex-1">
     <%!-- Search form --%>
@@ -37,7 +36,7 @@
       <.locale_select />
       <!-- Separator -->
       <div
-        class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10 lg:dark:bg-white/5"
+        class="lg:block lg:h-6 lg:w-px lg:bg-gray-900/10 lg:dark:bg-white/5 hidden"
         aria-hidden="true"
       />
       <div id="color-mode-hook-wrapper" phx-hook="ColorMode">
