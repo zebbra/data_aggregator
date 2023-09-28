@@ -84,7 +84,7 @@ defmodule DataAggregator.UploadFile do
     {:ok, file_name} =
       DataAggregator.FileUpload.store(
         {path, %{provider: provider, collection: collection, dataset: dataset}}
-    )
+      )
 
     import = %Import{url: "#{path}/#{file_name}", metaData: meta_data}
 
