@@ -1,7 +1,11 @@
 defmodule DataAggregator.Transition.RecordChangeEvent do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID]
+
+  alias DataAggregator.TaxonomyCatalog.DwcAttribute
+  alias DataAggregator.TaxonomyCatalog.Catalog
+  alias DataAggregator.TaxonomyData.Record
 
   postgres do
     table "record_change_events"
@@ -27,26 +31,17 @@ defmodule DataAggregator.Transition.RecordChangeEvent do
 
     attribute :catalog_value_ref, :integer
 
+    attribute :dwc_attribute_id, :uuid
+
+    attribute :catalog_id, :uuid
+
+    attribute :record_id, :uuid
+
     timestamps()
   end
 
   actions do
     defaults [:create, :read, :update, :destroy]
-  end
-
-  graphql do
-    type :record_change_event
-
-    queries do
-      get :get_record_change_event, :read
-      list :list_record_change_events, :read
-    end
-
-    mutations do
-      create :create_record_change_event, :create
-      update :update_record_change_event, :update
-      destroy :destroy_record_change_event, :destroy
-    end
   end
 
   code_interface do
@@ -59,8 +54,5 @@ defmodule DataAggregator.Transition.RecordChangeEvent do
   end
 
   relationships do
-    belongs_to :dwc_attribute, DataAggregator.TaxonomyCatalog.DwcAttribute
-    belongs_to :catalog, DataAggregator.TaxonomyCatalog.Catalog
-    belongs_to :record, DataAggregator.TaxonomyData.Record
   end
 end

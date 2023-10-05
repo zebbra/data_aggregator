@@ -1,7 +1,9 @@
 defmodule DataAggregator.TaxonomyCatalog.Entity do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID]
+
+  alias DataAggregator.TaxonomyCatalog.EntityEdge
 
   postgres do
     table "entities"
@@ -30,21 +32,6 @@ defmodule DataAggregator.TaxonomyCatalog.Entity do
     defaults [:create, :read, :update, :destroy]
   end
 
-  graphql do
-    type :entity
-
-    queries do
-      get :get_entity, :read
-      list :list_entities, :read
-    end
-
-    mutations do
-      create :create_entity, :create
-      update :update_entity, :update
-      destroy :destroy_entity, :destroy
-    end
-  end
-
   code_interface do
     define_for DataAggregator.TaxonomyCatalog
     define :create, action: :create
@@ -55,10 +42,10 @@ defmodule DataAggregator.TaxonomyCatalog.Entity do
   end
 
   relationships do
-    has_many :parents, DataAggregator.TaxonomyCatalog.EntityEdge do
+    has_many :parents, EntityEdge do
       destination_attribute :parent
     end
-    has_many :children, DataAggregator.TaxonomyCatalog.EntityEdge do
+    has_many :children, EntityEdge do
       destination_attribute :child
     end
   end

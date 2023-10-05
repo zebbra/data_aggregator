@@ -1,7 +1,10 @@
 defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID]
+
+  alias DataAggregator.TaxonomyCatalog.Catalog
+  alias DataAggregator.TaxonomyCatalog.DwcAttribute
 
   postgres do
     table "attribute_resolving_strategies"
@@ -23,26 +26,15 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
 
     attribute :meta_data, :map
 
+    attribute :catalog_id, :uuid
+
+    attribute :dwc_attribute_id, :uuid
+
     timestamps()
   end
 
   actions do
     defaults [:create, :read, :update, :destroy]
-  end
-
-  graphql do
-    type :attribute_resolving_strategy
-
-    queries do
-      get :get_attribute_resolving_strategy, :read
-      list :list_attribute_resolving_strategies, :read
-    end
-
-    mutations do
-      create :create_attribute_resolving_strategy, :create
-      update :update_attribute_resolving_strategy, :update
-      destroy :destroy_attribute_resolving_strategy, :destroy
-    end
   end
 
   code_interface do
@@ -55,7 +47,5 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
   end
 
   relationships do
-    belongs_to :catalog, DataAggregator.TaxonomyCatalog.Catalog
-    belongs_to :dwc_attribute, DataAggregator.TaxonomyCatalog.DwcAttribute
   end
 end

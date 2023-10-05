@@ -1,7 +1,11 @@
 defmodule DataAggregator.TaxonomyData.Record do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID]
+
+  alias DataAggregator.Imports.Import
+  alias DataAggregator.Transition.Annotation
+  alias DataAggregator.Transition.RecordChangeEvent
 
   postgres do
     table "records"
@@ -32,21 +36,6 @@ defmodule DataAggregator.TaxonomyData.Record do
     defaults [:create, :read, :update, :destroy]
   end
 
-  graphql do
-    type :record
-
-    queries do
-      get :get_record, :read
-      list :list_records, :read
-    end
-
-    mutations do
-      create :create_record, :create
-      update :update_record, :update
-      destroy :destroy_record, :destroy
-    end
-  end
-
   code_interface do
     define_for DataAggregator.TaxonomyData
     define :create, action: :create
@@ -57,9 +46,9 @@ defmodule DataAggregator.TaxonomyData.Record do
   end
 
   relationships do
-    belongs_to :import, DataAggregator.Imports.Import
-    has_many :annotations, DataAggregator.Transition.Annotation
-    has_many :record_change_events, DataAggregator.Transition.RecordChangeEvent
+    belongs_to :import, Import
+    has_many :annotations, Annotation
+    has_many :record_change_events, RecordChangeEvent
 
     # relate to all the other entities of the taxonomy...
   end

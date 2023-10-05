@@ -1,5 +1,5 @@
 defmodule DataAggregator.Transition do
-  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api]
+  use Ash.Api, extensions: [AshAdmin.Api, AshJsonApi.Api]
 
   resources do
     registry DataAggregator.Transition.Registry
@@ -9,7 +9,4 @@ defmodule DataAggregator.Transition do
     show? true
   end
 
-  graphql do
-    authorize? false
-  end
 end

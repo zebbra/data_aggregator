@@ -1,7 +1,9 @@
 defmodule DataAggregator.Imports.Institution do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID]
+
+  alias DataAggregator.Imports.Collection
 
   postgres do
     table "institutions"
@@ -27,20 +29,20 @@ defmodule DataAggregator.Imports.Institution do
     defaults [:create, :read, :update, :destroy]
   end
 
-  graphql do
-    type :institution
+  # graphql do
+  #   type :institution
 
-    queries do
-      get :get_institution, :read
-      list :list_institutions, :read
-    end
+  #   queries do
+  #     get :get_institution, :read
+  #     list :list_institutions, :read
+  #   end
 
-    mutations do
-      create :create_institution, :create
-      update :update_institution, :update
-      destroy :destroy_institution, :destroy
-    end
-  end
+  #   mutations do
+  #     create :create_institution, :create
+  #     update :update_institution, :update
+  #     destroy :destroy_institution, :destroy
+  #   end
+  # end
 
   code_interface do
     define_for DataAggregator.Imports
@@ -52,6 +54,6 @@ defmodule DataAggregator.Imports.Institution do
   end
 
   relationships do
-    has_many :collections, DataAggregator.Imports.Collection
+    has_many :collections, Collection
   end
 end

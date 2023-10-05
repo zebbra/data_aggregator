@@ -1,7 +1,12 @@
 defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID]
+
+  alias DataAggregator.TaxonomyCatalog.Entity
+  alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
+  alias DataAggregator.Transition.RecordChangeEvent
+  alias DataAggregator.Transition.Annotation
 
   postgres do
     table "dwc_attributes"
@@ -30,21 +35,6 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
     defaults [:create, :read, :update, :destroy]
   end
 
-  graphql do
-    type :dwc_attribute
-
-    queries do
-      get :get_dwc_attribute, :read
-      list :list_dwc_attributes, :read
-    end
-
-    mutations do
-      create :create_dwc_attribute, :create
-      update :update_dwc_attribute, :update
-      destroy :destroy_dwc_attribute, :destroy
-    end
-  end
-
   code_interface do
     define_for DataAggregator.TaxonomyCatalog
     define :create, action: :create
@@ -55,9 +45,9 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   end
 
   relationships do
-    belongs_to :entity, DataAggregator.TaxonomyCatalog.Entity
-    has_one :attribute_resolving_strategy, DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
-    has_many :record_change_events, DataAggregator.Transition.RecordChangeEvent
-    has_many :annotations, DataAggregator.Transition.Annotation
+    belongs_to :entity, Entity
+    has_one :attribute_resolving_strategy, AttributeResolvingStrategy
+    has_many :record_change_events, RecordChangeEvent
+    has_many :annotations, Annotation
   end
 end

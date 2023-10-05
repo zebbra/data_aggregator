@@ -1,7 +1,11 @@
 defmodule DataAggregator.Imports.Import do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID]
+
+  alias DataAggregator.Imports.Collection
+  alias DataAggregator.Imports.StaticAsset
+  alias DataAggregator.Imports.ImportFile
 
   postgres do
     table "imports"
@@ -30,6 +34,8 @@ defmodule DataAggregator.Imports.Import do
 
     attribute :import_data, :map
 
+    attribute :collection_id, :uuid
+
     timestamps()
   end
 
@@ -37,20 +43,20 @@ defmodule DataAggregator.Imports.Import do
     defaults [:create, :read, :update, :destroy]
   end
 
-  graphql do
-    type :import
+  # graphql do
+  #   type :import
 
-    queries do
-      get :get_import, :read
-      list :list_imports, :read
-    end
+  #   queries do
+  #     get :get_import, :read
+  #     list :list_imports, :read
+  #   end
 
-    mutations do
-      create :create_import, :create
-      update :update_import, :update
-      destroy :destroy_import, :destroy
-    end
-  end
+  #   mutations do
+  #     create :create_import, :create
+  #     update :update_import, :update
+  #     destroy :destroy_import, :destroy
+  #   end
+  # end
 
   code_interface do
     define_for DataAggregator.Imports
@@ -63,9 +69,8 @@ defmodule DataAggregator.Imports.Import do
   end
 
   relationships do
-    belongs_to :collection, DataAggregator.Imports.Collection
-    has_many :static_assets, DataAggregator.Imports.StaticAsset
-    has_many :import_files, DataAggregator.Imports.ImportFile
+    has_many :static_assets, StaticAsset
+    has_many :import_files, ImportFile
   end
 end
 
