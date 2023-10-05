@@ -1,31 +1,23 @@
-defmodule DataAggregator.Imports.Dataset do
+defmodule DataAggregator.Imports.Institution do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource]
 
   postgres do
-    table "datasets"
+    table "institutions"
     repo DataAggregator.Repo
   end
 
   attributes do
-    uuid_attribute :id, prefix: "dataset"
-
-    attribute :unique_id, :string do
-      allow_nil? false
-      filterable? true
-    end
+    uuid_attribute :id, prefix: "institution"
 
     attribute :name, :string do
       allow_nil? false
       filterable? true
     end
 
-    attribute :metaData, :map
-
-    attribute :version, :integer do
+    attribute :address, :string do
       allow_nil? false
-      filterable? true
     end
 
     timestamps()
@@ -36,17 +28,17 @@ defmodule DataAggregator.Imports.Dataset do
   end
 
   graphql do
-    type :dataset
+    type :institution
 
     queries do
-      get :get_dataset, :read
-      list :list_datasets, :read
+      get :get_institution, :read
+      list :list_institutions, :read
     end
 
     mutations do
-      create :create_dataset, :create
-      update :update_dataset, :update
-      destroy :destroy_dataset, :destroy
+      create :create_institution, :create
+      update :update_institution, :update
+      destroy :destroy_institution, :destroy
     end
   end
 
@@ -60,8 +52,6 @@ defmodule DataAggregator.Imports.Dataset do
   end
 
   relationships do
-    has_many :static_assets, DataAggregator.Imports.StaticAsset
-    has_many :imports, DataAggregator.Imports.Import
-    belongs_to :collection, DataAggregator.Imports.Collection
+    has_many :collections, DataAggregator.Imports.Collection
   end
 end

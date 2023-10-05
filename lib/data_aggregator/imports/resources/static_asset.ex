@@ -11,7 +11,7 @@ defmodule DataAggregator.Imports.StaticAsset do
   attributes do
     uuid_attribute :id, prefix: "static_asset"
     attribute :url, :string, allow_nil?: false
-    attribute :metaData, :map
+    attribute :meta_data, :map
     timestamps()
   end
 
@@ -44,6 +44,6 @@ defmodule DataAggregator.Imports.StaticAsset do
   end
 
   relationships do
-    belongs_to :dataset, DataAggregator.Imports.Dataset
+    belongs_to :import, DataAggregator.Imports.Import
   end
 end

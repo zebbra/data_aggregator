@@ -1,7 +1,7 @@
 defmodule DataAggregator.Imports.Import do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
+    extensions: [AshUUID, AshGraphql.Resource]
 
   postgres do
     table "imports"
@@ -10,32 +10,31 @@ defmodule DataAggregator.Imports.Import do
 
   attributes do
     uuid_attribute :id, prefix: "import"
-    attribute :url, :string, allow_nil?: false
-    attribute :metaData, :map
+
+    attribute :unique_id, :string do
+      allow_nil? false
+      filterable? true
+    end
+
+    attribute :name, :string do
+      allow_nil? false
+      filterable? true
+    end
+
+    attribute :meta_data, :map
+
+    attribute :version, :integer do
+      allow_nil? false
+      filterable? true
+    end
+
+    attribute :import_data, :map
+
     timestamps()
   end
 
   actions do
     defaults [:create, :read, :update, :destroy]
-
-    create :upload_file do
-      manual DataAggregator.UploadFile
-    end
-  end
-
-  json_api do
-    type "import"
-
-    routes do
-      base("/imports")
-
-      get(:read)
-      index(:read)
-      post(:create)
-      post(:upload_file, route: "/upload")
-      patch(:update)
-      delete(:destroy)
-    end
   end
 
   graphql do
@@ -56,50 +55,53 @@ defmodule DataAggregator.Imports.Import do
   code_interface do
     define_for DataAggregator.Imports
     define :read
-    define :create
-    define :update
-    define :destroy
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
   end
 
   relationships do
-    belongs_to :dataset, DataAggregator.Imports.Dataset
+    belongs_to :collection, DataAggregator.Imports.Collection
+    has_many :static_assets, DataAggregator.Imports.StaticAsset
+    has_many :import_files, DataAggregator.Imports.ImportFile
   end
 end
 
 defmodule DataAggregator.UploadFile do
   use Ash.Resource.ManualCreate
 
-  alias DataAggregator.Imports.Import
+  alias DataAggregator.Imports.ImportFile
 
   def create(file, _, _) do
     # this is test code, test it!
-    provider = %{id: "1", name: "museum1"}
-    collection = %{id: "1", name: "first-collection", metaData: "{}"}
+    institution = %{id: "1", name: "museum1"}
+    collection = %{id: "1", name: "first-collection", meta_data: "{}"}
 
-    dataset = %{
+    import = %{
       id: "2",
       unique_id: "test-dataset",
       name: "my-dataset",
-      metaData: "{}",
+      meta_data: "{}",
       version: 1
     }
 
     path = file.attributes.url
-    meta_data = file.attributes.metaData
+    meta_data = file.attributes.meta_data
 
     {:ok, file_name} =
       DataAggregator.FileUpload.store(
-        {path, %{provider: provider, collection: collection, dataset: dataset}}
+        {path, %{institution: institution, collection: collection, import: import}}
       )
 
-    import = %Import{url: "#{path}/#{file_name}", metaData: meta_data}
+    import_file = %ImportFile{url: "#{path}/#{file_name}", meta_data: meta_data}
 
     # for reasons this doesn't work at all...
-    # Import
+    # ImportFile
     #   |> Ash.Changeset.for_create(:create)
-    #   |> DataAggregator.Imports.create!(import)
+    #   |> DataAggregator.Imports.ImportFile.create!(import_file)
 
-    {:ok, import}
+    {:ok, import_file}
   end
 end

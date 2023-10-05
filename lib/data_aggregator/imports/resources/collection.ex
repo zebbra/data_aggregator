@@ -13,7 +13,7 @@ defmodule DataAggregator.Imports.Collection do
 
     attribute :name, :string, allow_nil?: false
 
-    attribute :metaData, :map
+    attribute :meta_data, :map
 
     timestamps()
   end
@@ -47,7 +47,7 @@ defmodule DataAggregator.Imports.Collection do
   end
 
   relationships do
-    has_many :datasets, DataAggregator.Imports.Dataset
-    belongs_to :provider, DataAggregator.Imports.Provider
+    has_many :imports, DataAggregator.Imports.Import
+    belongs_to :institution, DataAggregator.Imports.Institution
   end
 end

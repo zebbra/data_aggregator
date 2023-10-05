@@ -1,24 +1,27 @@
-defmodule DataAggregator.Imports.Provider do
+defmodule DataAggregator.TaxonomyCatalog.Catalog do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource]
 
   postgres do
-    table "providers"
+    table "catalogs"
     repo DataAggregator.Repo
   end
 
   attributes do
-    uuid_attribute :id, prefix: "provider"
+    uuid_attribute :id, prefix: "catalog"
 
-    attribute :name, :string do
+    attribute :version, :integer do
       allow_nil? false
       filterable? true
     end
 
-    attribute :address, :string do
+    attribute :state, :string do
       allow_nil? false
+      filterable? true
     end
+
+    attribute :meta_data, :map
 
     timestamps()
   end
@@ -28,22 +31,22 @@ defmodule DataAggregator.Imports.Provider do
   end
 
   graphql do
-    type :provider
+    type :catalog
 
     queries do
-      get :get_provider, :read
-      list :list_providers, :read
+      get :get_catalog, :read
+      list :list_catalogs, :read
     end
 
     mutations do
-      create :create_provider, :create
-      update :update_provider, :update
-      destroy :destroy_provider, :destroy
+      create :create_catalog, :create
+      update :update_catalog, :update
+      destroy :destroy_catalog, :destroy
     end
   end
 
   code_interface do
-    define_for DataAggregator.Imports
+    define_for DataAggregator.TaxonomyCatalog
     define :create, action: :create
     define :read_all, action: :read
     define :update, action: :update
@@ -52,6 +55,7 @@ defmodule DataAggregator.Imports.Provider do
   end
 
   relationships do
-    has_many :collections, DataAggregator.Imports.Collection
+    has_one :attribute_resolving_strategy, DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
+    has_many :record_change_events, DataAggregator.Transition.RecordChangeEvent
   end
 end

@@ -24,7 +24,7 @@ config :mime, :extensions, %{
   "json" => "application/vnd.api+json"
 }
 
-config :data_aggregator, ash_apis: [DataAggregator.Imports]
+config :data_aggregator, ash_apis: [DataAggregator.Imports, DataAggregator.TaxonomyData, DataAggregator.TaxonomyCatalog, DataAggregator.Transition]
 
 config :data_aggregator, :ash_uuid,
   version: 7,

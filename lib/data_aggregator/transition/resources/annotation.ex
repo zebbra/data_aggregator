@@ -1,0 +1,63 @@
+defmodule DataAggregator.Transition.Annotation do
+  use Ash.Resource,
+    data_layer: AshPostgres.DataLayer,
+    extensions: [AshUUID, AshGraphql.Resource]
+
+  postgres do
+    table "annotations"
+    repo DataAggregator.Repo
+  end
+
+  attributes do
+    uuid_attribute :id, prefix: "annotation"
+
+    attribute :state, :string do
+      allow_nil? false
+      filterable? true
+    end
+
+    attribute :comment, :string do
+      allow_nil? false
+      filterable? true
+    end
+
+    attribute :value_suggestion, :string
+
+    attribute :user, :string
+
+    timestamps()
+  end
+
+  actions do
+    defaults [:create, :read, :update, :destroy]
+  end
+
+  graphql do
+    type :annotation
+
+    queries do
+      get :get_annotation, :read
+      list :list_annotations, :read
+    end
+
+    mutations do
+      create :create_annotation, :create
+      update :update_annotation, :update
+      destroy :destroy_annotation, :destroy
+    end
+  end
+
+  code_interface do
+    define_for DataAggregator.Transition
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
+    define :get_by_id, action: :read, get_by: [:id]
+  end
+
+  relationships do
+    belongs_to :dwcAttribute, DataAggregator.TaxonomyCatalog.DwcAttribute
+    belongs_to :record, DataAggregator.TaxonomyData.Record
+  end
+end
