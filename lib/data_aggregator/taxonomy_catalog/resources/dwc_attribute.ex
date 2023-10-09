@@ -16,17 +16,12 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   attributes do
     uuid_attribute :id, prefix: "dwc_attribute"
 
-    attribute :version, :integer do
+    attribute :name, :string
+
+    attribute :entity_id, :uuid do
       allow_nil? false
       filterable? true
     end
-
-    attribute :state, :string do
-      allow_nil? false
-      filterable? true
-    end
-
-    attribute :meta_data, :map
 
     timestamps()
   end
@@ -45,7 +40,6 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   end
 
   relationships do
-    belongs_to :entity, Entity
     has_one :attribute_resolving_strategy, AttributeResolvingStrategy
     has_many :record_change_events, RecordChangeEvent
     has_many :annotations, Annotation

@@ -14,21 +14,19 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
   attributes do
     uuid_attribute :id, prefix: "attr_res_strategy"
 
-    attribute :version, :integer do
+    attribute :name, :string
+
+    attribute :url, :string
+
+    attribute :catalog_id, :uuid do
       allow_nil? false
       filterable? true
     end
 
-    attribute :state, :string do
+    attribute :dwc_attribute_id, :uuid do
       allow_nil? false
       filterable? true
     end
-
-    attribute :meta_data, :map
-
-    attribute :catalog_id, :uuid
-
-    attribute :dwc_attribute_id, :uuid
 
     timestamps()
   end

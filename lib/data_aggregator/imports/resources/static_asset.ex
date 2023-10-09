@@ -12,9 +12,16 @@ defmodule DataAggregator.Imports.StaticAsset do
 
   attributes do
     uuid_attribute :id, prefix: "static_asset"
+
     attribute :url, :string, allow_nil?: false
+
     attribute :meta_data, :map
-    attribute :import_id, :uuid
+
+    attribute :import_id, :uuid do
+      allow_nil? false
+      filterable? true
+    end
+
     timestamps()
   end
 

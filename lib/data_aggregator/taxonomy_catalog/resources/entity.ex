@@ -4,6 +4,7 @@ defmodule DataAggregator.TaxonomyCatalog.Entity do
     extensions: [AshUUID]
 
   alias DataAggregator.TaxonomyCatalog.EntityEdge
+  alias DataAggregator.TaxonomyCatalog.DwcAttribute
 
   postgres do
     table "entities"
@@ -13,17 +14,9 @@ defmodule DataAggregator.TaxonomyCatalog.Entity do
   attributes do
     uuid_attribute :id, prefix: "entity"
 
-    attribute :version, :integer do
+    attribute :name, :string do
       allow_nil? false
-      filterable? true
     end
-
-    attribute :state, :string do
-      allow_nil? false
-      filterable? true
-    end
-
-    attribute :meta_data, :map
 
     timestamps()
   end
@@ -42,11 +35,14 @@ defmodule DataAggregator.TaxonomyCatalog.Entity do
   end
 
   relationships do
+    has_many :dwc_attributes, DwcAttribute
+
     has_many :parents, EntityEdge do
-      destination_attribute :parent
+      destination_attribute :parent_id
     end
+
     has_many :children, EntityEdge do
-      destination_attribute :child
+      destination_attribute :child_id
     end
   end
 end

@@ -14,17 +14,14 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
   attributes do
     uuid_attribute :id, prefix: "catalog"
 
+    attribute :name, :string
+
+    attribute :description, :string
+
     attribute :version, :integer do
       allow_nil? false
       filterable? true
     end
-
-    attribute :state, :string do
-      allow_nil? false
-      filterable? true
-    end
-
-    attribute :meta_data, :map
 
     timestamps()
   end
@@ -43,7 +40,7 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
   end
 
   relationships do
-    has_one :attribute_resolving_strategy, AttributeResolvingStrategy
+    has_many :attribute_resolving_strategy, AttributeResolvingStrategy
     has_many :record_change_events, RecordChangeEvent
   end
 end

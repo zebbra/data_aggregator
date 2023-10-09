@@ -14,11 +14,16 @@ defmodule DataAggregator.Imports.Collection do
   attributes do
     uuid_attribute :id, prefix: "collection"
 
-    attribute :name, :string, allow_nil?: false
+    attribute :name, :string do
+      allow_nil? false
+    end
 
     attribute :meta_data, :map
 
-    attribute :institution_id, :uuid
+    attribute :institution_id, :uuid do
+      allow_nil? false
+      filterable? true
+    end
 
     timestamps()
   end

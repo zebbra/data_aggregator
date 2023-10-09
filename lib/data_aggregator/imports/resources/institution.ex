@@ -15,12 +15,21 @@ defmodule DataAggregator.Imports.Institution do
 
     attribute :name, :string do
       allow_nil? false
-      filterable? true
     end
 
-    attribute :address, :string do
-      allow_nil? false
-    end
+    attribute :address, :string
+
+    attribute :zip_code, :string
+
+    attribute :city, :string
+
+    attribute :country, :string
+
+    attribute :mail, :string
+
+    attribute :tel, :string
+
+    attribute :contact_person, :string
 
     timestamps()
   end

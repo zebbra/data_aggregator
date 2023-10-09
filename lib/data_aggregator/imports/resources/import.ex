@@ -6,6 +6,7 @@ defmodule DataAggregator.Imports.Import do
   alias DataAggregator.Imports.Collection
   alias DataAggregator.Imports.StaticAsset
   alias DataAggregator.Imports.ImportFile
+  alias DataAggregator.TaxonomyData.Record
 
   postgres do
     table "imports"
@@ -15,14 +16,8 @@ defmodule DataAggregator.Imports.Import do
   attributes do
     uuid_attribute :id, prefix: "import"
 
-    attribute :unique_id, :string do
-      allow_nil? false
-      filterable? true
-    end
-
     attribute :name, :string do
       allow_nil? false
-      filterable? true
     end
 
     attribute :meta_data, :map
@@ -34,7 +29,10 @@ defmodule DataAggregator.Imports.Import do
 
     attribute :import_data, :map
 
-    attribute :collection_id, :uuid
+    attribute :collection_id, :uuid do
+      allow_nil? false
+      filterable? true
+    end
 
     timestamps()
   end
@@ -69,6 +67,7 @@ defmodule DataAggregator.Imports.Import do
   end
 
   relationships do
+    has_many :records, Record
     has_many :static_assets, StaticAsset
     has_many :import_files, ImportFile
   end

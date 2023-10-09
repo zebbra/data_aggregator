@@ -15,9 +15,8 @@ defmodule DataAggregator.TaxonomyData.Record do
   attributes do
     uuid_attribute :id, prefix: "record"
 
-    attribute :version, :integer do
+    attribute :unique_qualifier, :string do
       allow_nil? false
-      filterable? true
     end
 
     attribute :state, :string do
@@ -26,6 +25,11 @@ defmodule DataAggregator.TaxonomyData.Record do
     end
 
     attribute :meta_data, :map
+
+    attribute :import_id, :uuid do
+      allow_nil? false
+      filterable? true
+    end
 
     # further (mandatory) attributes of the core record
 
@@ -46,7 +50,6 @@ defmodule DataAggregator.TaxonomyData.Record do
   end
 
   relationships do
-    belongs_to :import, Import
     has_many :annotations, Annotation
     has_many :record_change_events, RecordChangeEvent
 

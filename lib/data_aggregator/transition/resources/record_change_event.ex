@@ -20,11 +20,6 @@ defmodule DataAggregator.Transition.RecordChangeEvent do
       filterable? true
     end
 
-    attribute :state, :string do
-      allow_nil? false
-      filterable? true
-    end
-
     attribute :value, :string
 
     attribute :previous_value, :string

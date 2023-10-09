@@ -12,10 +12,20 @@ defmodule DataAggregator.Imports.ImportFile do
 
   attributes do
     uuid_attribute :id, prefix: "import_file"
-    attribute :url, :string, allow_nil?: false
+
+    attribute :url, :string do
+      allow_nil? false
+    end
+
     attribute :parsed_data, :map
+
     attribute :meta_data, :map
-    attribute :import_id, :uuid
+
+    attribute :import_id, :uuid do
+      allow_nil? false
+      filterable? true
+    end
+
     timestamps()
   end
 
