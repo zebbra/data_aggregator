@@ -3,9 +3,6 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID]
 
-  alias DataAggregator.TaxonomyCatalog.Catalog
-  alias DataAggregator.TaxonomyCatalog.DwcAttribute
-
   postgres do
     table "attribute_resolving_strategies"
     repo DataAggregator.Repo

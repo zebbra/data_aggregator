@@ -3,8 +3,6 @@ defmodule DataAggregator.Imports.StaticAsset do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID]
 
-  alias DataAggregator.Imports.Import
-
   postgres do
     table "static_assets"
     repo DataAggregator.Repo

@@ -3,7 +3,6 @@ defmodule DataAggregator.Imports.Import do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID]
 
-  alias DataAggregator.Imports.Collection
   alias DataAggregator.Imports.StaticAsset
   alias DataAggregator.Imports.ImportFile
   alias DataAggregator.TaxonomyData.Record

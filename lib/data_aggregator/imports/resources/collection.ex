@@ -4,7 +4,6 @@ defmodule DataAggregator.Imports.Collection do
     extensions: [AshUUID]
 
   alias DataAggregator.Imports.Import
-  alias DataAggregator.Imports.Institution
 
   postgres do
     table "collections"

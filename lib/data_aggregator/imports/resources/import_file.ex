@@ -3,8 +3,6 @@ defmodule DataAggregator.Imports.ImportFile do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshJsonApi.Resource]
 
-  alias DataAggregator.Imports.Import
-
   postgres do
     table "import_files"
     repo DataAggregator.Repo

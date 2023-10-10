@@ -3,10 +3,6 @@ defmodule DataAggregator.Transition.RecordChangeEvent do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID]
 
-  alias DataAggregator.TaxonomyCatalog.DwcAttribute
-  alias DataAggregator.TaxonomyCatalog.Catalog
-  alias DataAggregator.TaxonomyData.Record
-
   postgres do
     table "record_change_events"
     repo DataAggregator.Repo

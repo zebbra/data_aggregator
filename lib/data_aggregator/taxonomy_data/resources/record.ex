@@ -3,7 +3,6 @@ defmodule DataAggregator.TaxonomyData.Record do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID]
 
-  alias DataAggregator.Imports.Import
   alias DataAggregator.Transition.Annotation
   alias DataAggregator.Transition.RecordChangeEvent
 
