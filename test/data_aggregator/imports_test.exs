@@ -6,7 +6,8 @@ defmodule DataAggregator.ImportsTest do
 
     import DataAggregator.ImportsFixtures
 
-    @invalid_attrs %{url: nil}
+    @invalid_attrs %{name: nil}
+    @valid_attrs %{name: "import1", version: 1, collection_id: "496752bc-6743-11ee-8c99-0242ac120002"}
 
     test "read!/0 returns all imports" do
       import = import_fixture()
@@ -19,8 +20,7 @@ defmodule DataAggregator.ImportsTest do
     end
 
     test "create/1 with valid data creates a import" do
-      valid_attrs = %{url: "https://example.com"}
-      assert {:ok, %Import{} = _import} = Import.create(valid_attrs)
+      assert {:ok, %Import{} = _import} = Import.create(@valid_attrs)
     end
 
     test "create/1 with invalid data returns error changeset" do
@@ -29,7 +29,7 @@ defmodule DataAggregator.ImportsTest do
 
     test "update/2 with valid data updates the import" do
       import = import_fixture()
-      update_attrs = %{}
+      update_attrs = %{name: "import2"}
 
       assert {:ok, %Import{} = _import} = Import.update(import, update_attrs)
     end

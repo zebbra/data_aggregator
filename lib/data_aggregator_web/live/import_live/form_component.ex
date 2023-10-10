@@ -28,7 +28,9 @@ defmodule DataAggregatorWeb.ImportLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:url]} label="URL" />
+        <.input field={@form[:name]} label="Name" />
+        <.input field={@form[:version]} label="Version" />
+        <.input field={@form[:collection_id]} label="Collection ID" />
 
         <:actions>
           <.button phx-disable-with="Saving...">Save Import</.button>

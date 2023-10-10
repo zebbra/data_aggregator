@@ -4,9 +4,9 @@ defmodule DataAggregatorWeb.ImportLiveTest do
   import Phoenix.LiveViewTest
   import DataAggregator.ImportsFixtures
 
-  @create_attrs %{url: "https://example.com"}
-  @update_attrs %{url: "https://example.com"}
-  @invalid_attrs %{url: nil}
+  @create_attrs %{name: "import1", version: 1, collection_id: "496752bc-6743-11ee-8c99-0242ac120002"}
+  @update_attrs %{name: "import2", version: 1, collection_id: "496752bc-6743-11ee-8c99-0242ac120002"}
+  @invalid_attrs %{name: nil, version: 1, collection_id: "496752bc-6743-11ee-8c99-0242ac120002"}
 
   defp create_import(_) do
     import = import_fixture()
@@ -30,9 +30,10 @@ defmodule DataAggregatorWeb.ImportLiveTest do
 
       assert_patch(index_live, ~p"/imports/new")
 
+
       assert index_live
-             |> form("#import-form", import: @invalid_attrs)
-             |> render_change() =~ "is required"
+      |> form("#import-form", import: @invalid_attrs)
+      |> render_change() =~ "is required"
 
       assert index_live
              |> form("#import-form", import: @create_attrs)

@@ -87,7 +87,8 @@ defmodule DataAggregator.UploadFile do
       unique_id: "test-dataset",
       name: "my-dataset",
       meta_data: "{}",
-      version: 1
+      version: 1,
+      collection_id: "496752bc-6743-11ee-8c99-0242ac120002"
     }
 
     path = file.attributes.url

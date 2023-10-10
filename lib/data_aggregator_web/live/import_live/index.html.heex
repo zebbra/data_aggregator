@@ -13,7 +13,9 @@
   row_click={fn {_id, import} -> JS.navigate(~p"/imports/#{import}") end}
 >
   <:col :let={{_id, import}} label="ID"><%= import.id %></:col>
-  <:col :let={{_id, import}} label="URL"><%= import.url %></:col>
+  <:col :let={{_id, import}} label="Name"><%= import.name %></:col>
+  <:col :let={{_id, import}} label="Version"><%= import.version %></:col>
+  <:col :let={{_id, import}} label="Collection ID"><%= import.collection_id %></:col>
 
   <:action :let={{_id, import}}>
     <div class="sr-only">
