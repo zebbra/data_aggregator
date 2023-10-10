@@ -7,7 +7,11 @@ defmodule DataAggregator.ImportsTest do
     import DataAggregator.ImportsFixtures
 
     @invalid_attrs %{name: nil}
-    @valid_attrs %{name: "import1", version: 1, collection_id: "496752bc-6743-11ee-8c99-0242ac120002"}
+    @valid_attrs %{
+      name: "import1",
+      version: 1,
+      collection_id: "496752bc-6743-11ee-8c99-0242ac120002"
+    }
 
     test "read!/0 returns all imports" do
       import = import_fixture()
