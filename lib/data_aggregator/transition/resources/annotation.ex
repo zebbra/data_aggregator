@@ -1,7 +1,7 @@
 defmodule DataAggregator.Transition.Annotation do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   postgres do
     table "annotations"
@@ -34,6 +34,20 @@ defmodule DataAggregator.Transition.Annotation do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  json_api do
+    type "annotation"
+
+    routes do
+      base("/annotations")
+
+      get(:read)
+      index(:read)
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   graphql do

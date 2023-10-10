@@ -1,7 +1,7 @@
 defmodule DataAggregator.Imports.Collection do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.Imports.Import
 
@@ -29,6 +29,20 @@ defmodule DataAggregator.Imports.Collection do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  json_api do
+    type "collection"
+
+    routes do
+      base("/collections")
+
+      get(:read)
+      index(:read)
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   graphql do

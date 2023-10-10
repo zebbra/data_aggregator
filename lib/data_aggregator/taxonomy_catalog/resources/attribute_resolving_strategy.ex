@@ -1,7 +1,7 @@
 defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   postgres do
     table "attribute_resolving_strategies"
@@ -30,6 +30,20 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  json_api do
+    type "attribute_resolving_strategy"
+
+    routes do
+      base("/attribute_resolving_strategies")
+
+      get(:read)
+      index(:read)
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   graphql do

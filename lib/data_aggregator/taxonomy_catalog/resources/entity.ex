@@ -1,7 +1,7 @@
 defmodule DataAggregator.TaxonomyCatalog.Entity do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.TaxonomyCatalog.EntityEdge
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
@@ -23,6 +23,20 @@ defmodule DataAggregator.TaxonomyCatalog.Entity do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  json_api do
+    type "entity"
+
+    routes do
+      base("/entities")
+
+      get(:read)
+      index(:read)
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   graphql do

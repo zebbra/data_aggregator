@@ -1,7 +1,7 @@
 defmodule DataAggregator.TaxonomyData.Record do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.Transition.Annotation
   alias DataAggregator.Transition.RecordChangeEvent
@@ -39,6 +39,20 @@ defmodule DataAggregator.TaxonomyData.Record do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  json_api do
+    type "record"
+
+    routes do
+      base("/records")
+
+      get(:read)
+      index(:read)
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   graphql do

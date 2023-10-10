@@ -1,7 +1,7 @@
 defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.TaxonomyCatalog.Entity
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
@@ -28,6 +28,20 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  json_api do
+    type "dwc_attribute"
+
+    routes do
+      base("/dwc_attributes")
+
+      get(:read)
+      index(:read)
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   graphql do

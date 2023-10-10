@@ -1,7 +1,7 @@
 defmodule DataAggregator.TaxonomyData.Record2Tag do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.TaxonomyData.Record
   alias DataAggregator.TaxonomyData.Tag
@@ -13,6 +13,25 @@ defmodule DataAggregator.TaxonomyData.Record2Tag do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  json_api do
+    type "record2tag"
+
+    primary_key do
+      keys([:record_id, :tag_id])
+      delimiter("~")
+    end
+
+    routes do
+      base("/records2tags")
+
+      get(:read)
+      index(:read)
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   graphql do

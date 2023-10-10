@@ -1,7 +1,7 @@
 defmodule DataAggregator.TaxonomyData.Tag do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   postgres do
     table "tags"
@@ -22,6 +22,20 @@ defmodule DataAggregator.TaxonomyData.Tag do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  json_api do
+    type "tag"
+
+    routes do
+      base("/tags")
+
+      get(:read)
+      index(:read)
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   graphql do

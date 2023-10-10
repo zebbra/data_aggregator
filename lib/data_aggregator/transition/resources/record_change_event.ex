@@ -1,7 +1,7 @@
 defmodule DataAggregator.Transition.RecordChangeEvent do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   postgres do
     table "record_change_events"
@@ -33,6 +33,20 @@ defmodule DataAggregator.Transition.RecordChangeEvent do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  json_api do
+    type "record_change_event"
+
+    routes do
+      base("/record_change_events")
+
+      get(:read)
+      index(:read)
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   graphql do
