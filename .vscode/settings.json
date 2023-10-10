@@ -6,9 +6,6 @@
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
-  // Provides smart completion for "do" and "fn ->" blocks. Does not run the Elixir formatter.
-  // "editor.formatOnType": true,
-  // "editor.formatOnSave": true,
   // Misc
   "editor.wordBasedSuggestions": false,
   "editor.trimAutoWhitespace": false,
