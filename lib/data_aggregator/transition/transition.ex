@@ -8,5 +8,4 @@ defmodule DataAggregator.Transition do
   admin do
     show? true
   end
-
 end
