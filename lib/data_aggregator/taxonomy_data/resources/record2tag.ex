@@ -20,7 +20,7 @@ defmodule DataAggregator.TaxonomyData.Record2Tag do
 
     primary_key do
       keys([:record_id, :tag_id])
-      delimiter("~")
+      delimiter("_")
     end
 
     routes do
