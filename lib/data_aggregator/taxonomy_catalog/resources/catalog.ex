@@ -1,7 +1,7 @@
 defmodule DataAggregator.TaxonomyCatalog.Catalog do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID]
+    extensions: [AshUUID, AshGraphql.Resource]
 
   alias DataAggregator.Transition.RecordChangeEvent
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
@@ -28,6 +28,21 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  graphql do
+    type :catalog
+
+    queries do
+      get :get_catalog, :read
+      list :list_catalogs, :read
+    end
+
+    mutations do
+      create :create_catalog, :create
+      update :update_catalog, :update
+      destroy :destroy_catalog, :destroy
+    end
   end
 
   code_interface do

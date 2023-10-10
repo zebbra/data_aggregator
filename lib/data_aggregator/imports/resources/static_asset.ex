@@ -1,7 +1,7 @@
 defmodule DataAggregator.Imports.StaticAsset do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID]
+    extensions: [AshUUID, AshGraphql.Resource]
 
   postgres do
     table "static_assets"
@@ -27,20 +27,20 @@ defmodule DataAggregator.Imports.StaticAsset do
     defaults [:create, :read, :update, :destroy]
   end
 
-  # graphql do
-  #   type :static_asset
+  graphql do
+    type :static_asset
 
-  #   queries do
-  #     get :get_static_asset, :read
-  #     list :list_static_assets, :read
-  #   end
+    queries do
+      get :get_static_asset, :read
+      list :list_static_assets, :read
+    end
 
-  #   mutations do
-  #     create :create_static_asset, :create
-  #     update :update_static_asset, :update
-  #     destroy :destroy_static_asset, :destroy
-  #   end
-  # end
+    mutations do
+      create :create_static_asset, :create
+      update :update_static_asset, :update
+      destroy :destroy_static_asset, :destroy
+    end
+  end
 
   code_interface do
     define_for DataAggregator.Imports

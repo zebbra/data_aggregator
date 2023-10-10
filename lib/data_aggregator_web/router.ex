@@ -38,7 +38,7 @@ defmodule DataAggregatorWeb.Router do
   end
 
   scope "/" do
-    pipe_through :graphql
+    pipe_through [:graphql]
 
     forward "/gql", Absinthe.Plug, schema: DataAggregator.Schema
 

@@ -39,7 +39,7 @@ config :data_aggregator, :ash_uuid,
   migration_default?: true
 
 # Ash: Type shorthands, not required
-config :ash, :custom_types, uuid: AshUUID.UUID
+# config :ash, :custom_types, uuid: AshUUID.UUID
 
 # Ash: Default belongs_to type, not required
 config :ash, :default_belongs_to_type, AshUUID.UUID

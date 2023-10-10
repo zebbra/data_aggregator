@@ -1,7 +1,7 @@
 defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID]
+    extensions: [AshUUID, AshGraphql.Resource]
 
   postgres do
     table "attribute_resolving_strategies"
@@ -30,6 +30,21 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  graphql do
+    type :attribute_resolving_strategy
+
+    queries do
+      get :get_attribute_resolving_strategy, :read
+      list :list_attribute_resolving_strategies, :read
+    end
+
+    mutations do
+      create :create_attribute_resolving_strategy, :create
+      update :update_attribute_resolving_strategy, :update
+      destroy :destroy_attribute_resolving_strategy, :destroy
+    end
   end
 
   code_interface do

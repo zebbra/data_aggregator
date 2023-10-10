@@ -1,7 +1,7 @@
 defmodule DataAggregator.TaxonomyCatalog.EntityEdge do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID]
+    extensions: [AshUUID, AshGraphql.Resource]
 
   alias DataAggregator.TaxonomyCatalog.Entity
 
@@ -26,6 +26,21 @@ defmodule DataAggregator.TaxonomyCatalog.EntityEdge do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  graphql do
+    type :entity_edge
+
+    queries do
+      get :get_entity_edge, :read
+      list :list_entity_edges, :read
+    end
+
+    mutations do
+      create :create_entity_edge, :create
+      update :update_entity_edge, :update
+      destroy :destroy_entity_edge, :destroy
+    end
   end
 
   code_interface do
