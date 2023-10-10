@@ -14,5 +14,7 @@ defmodule DataAggregator.Imports.Registry do
     entry DataAggregator.TaxonomyData.Record
     entry DataAggregator.Transition.Annotation
     entry DataAggregator.Transition.RecordChangeEvent
+    entry DataAggregator.TaxonomyData.Record2Tag
+    entry DataAggregator.TaxonomyData.Tag
   end
 end

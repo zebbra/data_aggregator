@@ -7,6 +7,8 @@ defmodule DataAggregator.TaxonomyData.Registry do
 
   entries do
     entry DataAggregator.TaxonomyData.Record
+    entry DataAggregator.TaxonomyData.Tag
+    entry DataAggregator.TaxonomyData.Record2Tag
     entry DataAggregator.Imports.Import
     entry DataAggregator.Transition.Annotation
     entry DataAggregator.Transition.RecordChangeEvent

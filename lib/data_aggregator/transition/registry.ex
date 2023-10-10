@@ -19,5 +19,7 @@ defmodule DataAggregator.Transition.Registry do
     entry DataAggregator.Imports.StaticAsset
     entry DataAggregator.Imports.ImportFile
     entry DataAggregator.Imports.Institution
+    entry DataAggregator.TaxonomyData.Record2Tag
+    entry DataAggregator.TaxonomyData.Tag
   end
 end

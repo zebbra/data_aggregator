@@ -5,6 +5,8 @@ defmodule DataAggregator.TaxonomyData.Record do
 
   alias DataAggregator.Transition.Annotation
   alias DataAggregator.Transition.RecordChangeEvent
+  alias DataAggregator.TaxonomyData.Tag
+  alias DataAggregator.TaxonomyData.Record2Tag
 
   postgres do
     table "records"
@@ -51,6 +53,11 @@ defmodule DataAggregator.TaxonomyData.Record do
   relationships do
     has_many :annotations, Annotation
     has_many :record_change_events, RecordChangeEvent
+    many_to_many :tags, Tag do
+      through Record2Tag
+      source_attribute_on_join_resource :record_id
+      destination_attribute_on_join_resource :tag_id
+    end
 
     # relate to all the other entities of the taxonomy...
   end
