@@ -1,0 +1,167 @@
+
+
+Table collections {
+  id uuid [pk]
+  name varchar
+  meta_data jsonb
+  institution_id uuid
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table imports {
+  id uuid [pk]
+  name varchar
+  meta_data jsonb
+  version integer
+  import_data jsonb
+  collection_id uuid
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table import_files {
+  id uuid [pk]
+  url varchar
+  parsed_data jsonb
+  meta_data jsonb
+  import_id uuid
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table institutions {
+  id uuid [pk]
+  name varchar
+  address varchar
+  zip_code varchar
+  city varchar
+  country varchar
+  mail varchar
+  tel varchar
+  contact_person varchar
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table static_assets {
+  id uuid [pk]
+  url varchar
+  meta_data jsonb
+  import_id uuid
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table attribute_resolving_strategies {
+  id uuid [pk]
+  name varchar
+  url varchar
+  catalog_id uuid
+  dwc_attribute_id uuid
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table catalogs {
+  id uuid [pk]
+  name varchar
+  description varchar
+  version integer
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table dwc_attributes {
+  id uuid [pk]
+  name varchar
+  entity_id uuid
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table entities {
+  id uuid [pk]
+  name varchar
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table entity_edges {
+  id uuid [pk]
+  parent_id uuid
+  child_id uuid
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table records {
+  id uuid [pk]
+  unique_qualifier varchar
+  state varchar
+  meta_data jsonb
+  import_id uuid
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table records2tags {
+  record_id uuid [pk]
+  tag_id uuid [pk]
+}
+
+Table tags {
+  id uuid [pk]
+  tag varchar
+  meta_data jsonb
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table annotations {
+  id uuid [pk]
+  state varchar
+  comment varchar
+  value_suggestion varchar
+  user varchar
+  dwc_attribute_id uuid
+  record_id uuid
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table record_change_events {
+  id uuid [pk]
+  category varchar
+  value varchar
+  previous_value varchar
+  catalog_value_ref integer
+  dwc_attribute_id uuid
+  catalog_id uuid
+  record_id uuid
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table schema_migrations {
+  version integer
+  inserted_at timestamp
+}
+
+Ref: catalogs.id < attribute_resolving_strategies.catalog_id
+Ref: catalogs.id < record_change_events.catalog_id
+Ref: collections.id < imports.collection_id
+Ref: dwc_attributes.id < annotations.dwc_attribute_id
+Ref: dwc_attributes.id - attribute_resolving_strategies.dwc_attribute_id
+Ref: dwc_attributes.id < record_change_events.dwc_attribute_id
+Ref: entities.id < dwc_attributes.entity_id
+Ref: entities.id < entity_edges.child_id
+Ref: entities.id < entity_edges.parent_id
+Ref: imports.id < import_files.import_id
+Ref: imports.id < records.import_id
+Ref: imports.id < static_assets.import_id
+Ref: institutions.id < collections.institution_id
+Ref: records.id < annotations.record_id
+Ref: records.id < record_change_events.record_id
+Ref: records.id < records2tags.record_id
+Ref: tags.id < records2tags.tag_id

@@ -58,6 +58,8 @@ defmodule DataAggregator.MixProject do
       {:open_api_spex, "~> 3.18"},
       {:ash_json_api, "~> 0.33.1"},
       {:redoc_ui_plug, "~> 0.2.1"},
+      {:typed_struct, "~> 0.3.0"},
+      {:typed_ecto_schema, "~> 0.4.1", runtime: false},
 
       # frontend / ui
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
