@@ -17,17 +17,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "unique_qualifier",
-      "type": "text"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "state",
+      "source": "name",
       "type": "text"
     },
     {
@@ -45,9 +35,25 @@
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
-      "references": null,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "collections_institution_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "institutions"
+      },
       "size": null,
-      "source": "import_id",
+      "source": "institution_id",
       "type": "uuid"
     },
     {
@@ -76,7 +82,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "7D8D8BBF96983E3B16DB3E14EA5A32861E5B1AC8C5463EB6599FAC96AD303B3E",
+  "hash": "009EDBA63CB31CCE6D270003DCA42FDB0E9D54D6B5898A8714F526BD11FBA6FE",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -85,5 +91,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "records"
+  "table": "collections"
 }

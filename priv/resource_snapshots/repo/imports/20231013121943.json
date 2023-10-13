@@ -17,7 +17,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "url",
+      "source": "name",
       "type": "text"
     },
     {
@@ -37,8 +37,18 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "import_id",
-      "type": "uuid"
+      "source": "version",
+      "type": "bigint"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "import_data",
+      "type": "map"
     },
     {
       "allow_nil?": false,
@@ -59,6 +69,32 @@
       "size": null,
       "source": "updated_at",
       "type": "utc_datetime_usec"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "imports_collection_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "collections"
+      },
+      "size": null,
+      "source": "collection_id",
+      "type": "uuid"
     }
   ],
   "base_filter": null,
@@ -66,7 +102,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "5075C3C7ADA90380887031C1407A3129977B99C4534364C4C4B548B69074CC90",
+  "hash": "2E985F092F0F264BB2D4962D59A76A62B4C29D60BAF0264127F2D60236083E10",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -75,5 +111,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "static_assets"
+  "table": "imports"
 }

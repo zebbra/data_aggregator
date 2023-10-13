@@ -17,8 +17,28 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "parent_id",
-      "type": "uuid"
+      "source": "comment",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "value_suggestion",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "user",
+      "type": "text"
     },
     {
       "allow_nil?": false,
@@ -27,7 +47,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "child_id",
+      "source": "dwc_attribute_id",
       "type": "uuid"
     },
     {
@@ -49,6 +69,32 @@
       "size": null,
       "source": "updated_at",
       "type": "utc_datetime_usec"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "annotations_record_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "records"
+      },
+      "size": null,
+      "source": "record_id",
+      "type": "uuid"
     }
   ],
   "base_filter": null,
@@ -56,7 +102,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "82C02E07AB3A53B3F729004BE8DF5650968F69341AD92309CA8D8B1773601F46",
+  "hash": "466193AB33AB28D95F52CC2499A2AA94C896C79DA5D65C82C7132F1B9841958F",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -65,5 +111,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "entity_edges"
+  "table": "annotations"
 }

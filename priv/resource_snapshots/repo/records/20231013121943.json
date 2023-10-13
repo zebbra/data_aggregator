@@ -17,7 +17,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "name",
+      "source": "unique_qualifier",
       "type": "text"
     },
     {
@@ -29,36 +29,6 @@
       "size": null,
       "source": "meta_data",
       "type": "map"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "version",
-      "type": "bigint"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "import_data",
-      "type": "map"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "collection_id",
-      "type": "uuid"
     },
     {
       "allow_nil?": false,
@@ -79,6 +49,32 @@
       "size": null,
       "source": "updated_at",
       "type": "utc_datetime_usec"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "records_import_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "imports"
+      },
+      "size": null,
+      "source": "import_id",
+      "type": "uuid"
     }
   ],
   "base_filter": null,
@@ -86,7 +82,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "7D0D46EFB57A856563583DA98D365BADFDE7FF2FAEEABEBB02E1CB4CD92B8AE5",
+  "hash": "C682B78F71E849C40DC1CAD93F84D2B0BDBB1197FFB7C9F0B6983A6D86ABFE73",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -95,5 +91,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "imports"
+  "table": "records"
 }

@@ -17,17 +17,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "state",
-      "type": "text"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "comment",
+      "source": "url",
       "type": "text"
     },
     {
@@ -37,38 +27,8 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "value_suggestion",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "user",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "dwc_attribute_id",
-      "type": "uuid"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "record_id",
-      "type": "uuid"
+      "source": "meta_data",
+      "type": "map"
     },
     {
       "allow_nil?": false,
@@ -89,6 +49,32 @@
       "size": null,
       "source": "updated_at",
       "type": "utc_datetime_usec"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "static_assets_import_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "imports"
+      },
+      "size": null,
+      "source": "import_id",
+      "type": "uuid"
     }
   ],
   "base_filter": null,
@@ -96,7 +82,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "2493C10CF1D0BF03CED9BCA43679C93EEEE40734625C2225E2FCA928674CAC58",
+  "hash": "9BD611DA5BBFC31F33E1691F1236E7B77C926F21C06ADD1D8B0DF83FF88C5133",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -105,5 +91,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "annotations"
+  "table": "static_assets"
 }

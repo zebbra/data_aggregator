@@ -11,7 +11,7 @@
       "type": "uuid"
     },
     {
-      "allow_nil?": false,
+      "allow_nil?": true,
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
@@ -27,18 +27,8 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "meta_data",
-      "type": "map"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "institution_id",
-      "type": "uuid"
+      "source": "url",
+      "type": "text"
     },
     {
       "allow_nil?": false,
@@ -59,6 +49,32 @@
       "size": null,
       "source": "updated_at",
       "type": "utc_datetime_usec"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "attribute_resolving_strategies_catalog_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "catalogs"
+      },
+      "size": null,
+      "source": "catalog_id",
+      "type": "uuid"
     }
   ],
   "base_filter": null,
@@ -66,7 +82,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "092EDEF85649203BD5AA5BACB51FEDA0670FA840307C9A57C8375F9B7BD8594D",
+  "hash": "955CD26053268004FA51F19BE7816B715832EA0F80C9655DCA111B38C3F6B906",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -75,5 +91,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "collections"
+  "table": "attribute_resolving_strategies"
 }

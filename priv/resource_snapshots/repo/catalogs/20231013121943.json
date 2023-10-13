@@ -21,14 +21,24 @@
       "type": "text"
     },
     {
-      "allow_nil?": false,
+      "allow_nil?": true,
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "entity_id",
-      "type": "uuid"
+      "source": "description",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
+      "default": "1",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "version",
+      "type": "bigint"
     },
     {
       "allow_nil?": false,
@@ -56,7 +66,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "1ADC8D72FCDA546FAC193D2AF46C0B9A8082DF549F167447D63707E08206792A",
+  "hash": "91D1FF0B17DE99DC67DF887A68B3F073D980C9B3B0F8BD7997DC218E971E9091",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -65,5 +75,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "dwc_attributes"
+  "table": "catalogs"
 }

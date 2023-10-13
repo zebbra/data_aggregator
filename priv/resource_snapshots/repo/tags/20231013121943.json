@@ -17,18 +17,8 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "url",
+      "source": "tag",
       "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "parsed_data",
-      "type": "map"
     },
     {
       "allow_nil?": true,
@@ -39,16 +29,6 @@
       "size": null,
       "source": "meta_data",
       "type": "map"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "import_id",
-      "type": "uuid"
     },
     {
       "allow_nil?": false,
@@ -76,7 +56,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "7E9409384E77739C0D78ED0F6B2068E111297B79358792CEBCF84836A7D561EF",
+  "hash": "29A0970636A9029E438A2F1949292B0FE64E1840065EA9E513917BA48A969222",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -85,5 +65,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "import_files"
+  "table": "tags"
 }
