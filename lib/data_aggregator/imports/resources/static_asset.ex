@@ -3,6 +3,8 @@ defmodule DataAggregator.Imports.StaticAsset do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias DataAggregator.Imports.Import
+
   postgres do
     table "static_assets"
     repo DataAggregator.Repo
@@ -14,11 +16,6 @@ defmodule DataAggregator.Imports.StaticAsset do
     attribute :url, :string, allow_nil?: false
 
     attribute :meta_data, :map
-
-    attribute :import_id, :uuid do
-      allow_nil? false
-      filterable? true
-    end
 
     timestamps()
   end
@@ -66,5 +63,6 @@ defmodule DataAggregator.Imports.StaticAsset do
   end
 
   relationships do
+    belongs_to :import, Import
   end
 end

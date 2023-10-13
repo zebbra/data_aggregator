@@ -7,6 +7,7 @@ defmodule DataAggregator.TaxonomyData.Record do
   alias DataAggregator.Transition.RecordChangeEvent
   alias DataAggregator.TaxonomyData.Tag
   alias DataAggregator.TaxonomyData.Record2Tag
+  alias DataAggregator.Imports.Import
 
   postgres do
     table "records"
@@ -20,17 +21,7 @@ defmodule DataAggregator.TaxonomyData.Record do
       allow_nil? false
     end
 
-    attribute :state, :string do
-      allow_nil? false
-      filterable? true
-    end
-
     attribute :meta_data, :map
-
-    attribute :import_id, :uuid do
-      allow_nil? false
-      filterable? true
-    end
 
     # further (mandatory) attributes of the core record
 
@@ -80,8 +71,17 @@ defmodule DataAggregator.TaxonomyData.Record do
   end
 
   relationships do
-    has_many :annotations, Annotation
-    has_many :record_change_events, RecordChangeEvent
+    belongs_to :import, Import do
+      api DataAggregator.Imports
+    end
+
+    has_many :annotations, Annotation do
+      api DataAggregator.Transition
+    end
+
+    has_many :record_change_events, RecordChangeEvent do
+      api DataAggregator.Transition
+    end
 
     many_to_many :tags, Tag do
       through Record2Tag

@@ -2,7 +2,10 @@ defmodule DataAggregator.Schema do
   use Absinthe.Schema
 
   @apis [
-    DataAggregator.Imports
+    DataAggregator.Imports,
+    DataAggregator.TaxonomyCatalog,
+    DataAggregator.TaxonomyData,
+    DataAggregator.Transition
   ]
 
   use AshGraphql, apis: @apis

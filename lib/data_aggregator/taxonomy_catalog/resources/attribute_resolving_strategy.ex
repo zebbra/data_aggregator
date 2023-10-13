@@ -3,6 +3,9 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias DataAggregator.TaxonomyCatalog.DwcAttribute
+  alias DataAggregator.TaxonomyCatalog.Catalog
+
   postgres do
     table "attribute_resolving_strategies"
     repo DataAggregator.Repo
@@ -14,16 +17,6 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
     attribute :name, :string
 
     attribute :url, :string
-
-    attribute :catalog_id, :uuid do
-      allow_nil? false
-      filterable? true
-    end
-
-    attribute :dwc_attribute_id, :uuid do
-      allow_nil? false
-      filterable? true
-    end
 
     timestamps()
   end
@@ -71,5 +64,7 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
   end
 
   relationships do
+    belongs_to :catalog, Catalog
+    has_many :dwc_attributes, DwcAttribute
   end
 end

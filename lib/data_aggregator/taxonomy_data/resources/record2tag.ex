@@ -37,6 +37,8 @@ defmodule DataAggregator.TaxonomyData.Record2Tag do
   graphql do
     type :record2tag
 
+    relationships [:record, :tag]
+
     queries do
       get :get_record2tag, :read
       list :list_records2tags, :read

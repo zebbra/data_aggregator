@@ -6,15 +6,10 @@ defmodule DataAggregator.Imports.Registry do
     ]
 
   entries do
-    entry DataAggregator.Imports.Institution
-    entry DataAggregator.Imports.ImportFile
-    entry DataAggregator.Imports.Collection
     entry DataAggregator.Imports.Import
+    entry DataAggregator.Imports.Institution
+    entry DataAggregator.Imports.Collection
     entry DataAggregator.Imports.StaticAsset
-    entry DataAggregator.TaxonomyData.Record
-    entry DataAggregator.Transition.Annotation
-    entry DataAggregator.Transition.RecordChangeEvent
-    entry DataAggregator.TaxonomyData.Record2Tag
-    entry DataAggregator.TaxonomyData.Tag
+    entry DataAggregator.Imports.ImportFile
   end
 end

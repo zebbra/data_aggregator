@@ -4,6 +4,7 @@ defmodule DataAggregator.Imports.Collection do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.Imports.Import
+  alias DataAggregator.Imports.Institution
 
   postgres do
     table "collections"
@@ -71,5 +72,6 @@ defmodule DataAggregator.Imports.Collection do
 
   relationships do
     has_many :imports, Import
+    belongs_to :institution, Institution
   end
 end

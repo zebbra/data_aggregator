@@ -3,6 +3,8 @@ defmodule DataAggregator.Transition.Annotation do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias DataAggregator.TaxonomyData.Record
+
   postgres do
     table "annotations"
     repo DataAggregator.Repo
@@ -10,11 +12,6 @@ defmodule DataAggregator.Transition.Annotation do
 
   attributes do
     uuid_attribute :id, prefix: "annotation"
-
-    attribute :state, :string do
-      allow_nil? false
-      filterable? true
-    end
 
     attribute :comment, :string do
       allow_nil? false
@@ -25,9 +22,10 @@ defmodule DataAggregator.Transition.Annotation do
 
     attribute :user, :string
 
-    attribute :dwc_attribute_id, :uuid
-
-    attribute :record_id, :uuid
+    attribute :dwc_attribute_id, :uuid do
+      allow_nil? false
+      filterable? true
+    end
 
     timestamps()
   end
@@ -53,6 +51,8 @@ defmodule DataAggregator.Transition.Annotation do
   graphql do
     type :annotation
 
+    relationships [:record]
+
     queries do
       get :get_annotation, :read
       list :list_annotations, :read
@@ -75,5 +75,8 @@ defmodule DataAggregator.Transition.Annotation do
   end
 
   relationships do
+    belongs_to :record, Record do
+      api DataAggregator.TaxonomyData
+    end
   end
 end

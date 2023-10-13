@@ -15,9 +15,9 @@ Table imports {
   meta_data jsonb
   version integer
   import_data jsonb
-  collection_id uuid
   inserted_at timestamp
   updated_at timestamp
+  collection_id uuid
 }
 
 Table import_files {
@@ -25,9 +25,9 @@ Table import_files {
   url varchar
   parsed_data jsonb
   meta_data jsonb
-  import_id uuid
   inserted_at timestamp
   updated_at timestamp
+  import_id uuid
 }
 
 Table institutions {
@@ -48,19 +48,18 @@ Table static_assets {
   id uuid [pk]
   url varchar
   meta_data jsonb
-  import_id uuid
   inserted_at timestamp
   updated_at timestamp
+  import_id uuid
 }
 
 Table attribute_resolving_strategies {
   id uuid [pk]
   name varchar
   url varchar
-  catalog_id uuid
-  dwc_attribute_id uuid
   inserted_at timestamp
   updated_at timestamp
+  catalog_id uuid
 }
 
 Table catalogs {
@@ -75,9 +74,10 @@ Table catalogs {
 Table dwc_attributes {
   id uuid [pk]
   name varchar
-  entity_id uuid
   inserted_at timestamp
   updated_at timestamp
+  attribute_resolving_strategy_id uuid
+  entity_id uuid
 }
 
 Table entities {
@@ -89,20 +89,19 @@ Table entities {
 
 Table entity_edges {
   id uuid [pk]
-  parent_id uuid
-  child_id uuid
   inserted_at timestamp
   updated_at timestamp
+  child_id uuid
+  parent_id uuid
 }
 
 Table records {
   id uuid [pk]
   unique_qualifier varchar
-  state varchar
   meta_data jsonb
-  import_id uuid
   inserted_at timestamp
   updated_at timestamp
+  import_id uuid
 }
 
 Table records2tags {
@@ -120,14 +119,13 @@ Table tags {
 
 Table annotations {
   id uuid [pk]
-  state varchar
   comment varchar
   value_suggestion varchar
   user varchar
   dwc_attribute_id uuid
-  record_id uuid
   inserted_at timestamp
   updated_at timestamp
+  record_id uuid
 }
 
 Table record_change_events {
@@ -136,11 +134,11 @@ Table record_change_events {
   value varchar
   previous_value varchar
   catalog_value_ref integer
-  dwc_attribute_id uuid
-  catalog_id uuid
-  record_id uuid
   inserted_at timestamp
   updated_at timestamp
+  record_id uuid
+  catalog_id uuid
+  dwc_attribute_id uuid
 }
 
 Table schema_migrations {
@@ -148,11 +146,11 @@ Table schema_migrations {
   inserted_at timestamp
 }
 
+Ref: attribute_resolving_strategies.id < dwc_attributes.attribute_resolving_strategy_id
 Ref: catalogs.id < attribute_resolving_strategies.catalog_id
 Ref: catalogs.id < record_change_events.catalog_id
 Ref: collections.id < imports.collection_id
 Ref: dwc_attributes.id < annotations.dwc_attribute_id
-Ref: dwc_attributes.id - attribute_resolving_strategies.dwc_attribute_id
 Ref: dwc_attributes.id < record_change_events.dwc_attribute_id
 Ref: entities.id < dwc_attributes.entity_id
 Ref: entities.id < entity_edges.child_id

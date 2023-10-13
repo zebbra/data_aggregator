@@ -4,9 +4,9 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.TaxonomyCatalog.Entity
-  alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
   alias DataAggregator.Transition.RecordChangeEvent
   alias DataAggregator.Transition.Annotation
+  alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
 
   postgres do
     table "dwc_attributes"
@@ -17,11 +17,6 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
     uuid_attribute :id, prefix: "dwc_attribute"
 
     attribute :name, :string
-
-    attribute :entity_id, :uuid do
-      allow_nil? false
-      filterable? true
-    end
 
     timestamps()
   end
@@ -69,8 +64,18 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   end
 
   relationships do
-    has_one :attribute_resolving_strategy, AttributeResolvingStrategy
-    has_many :record_change_events, RecordChangeEvent
-    has_many :annotations, Annotation
+    belongs_to :attribute_resolving_strategy, AttributeResolvingStrategy do
+      allow_nil? true
+    end
+
+    belongs_to :entity, Entity
+
+    has_many :record_change_events, RecordChangeEvent do
+      api DataAggregator.Transition
+    end
+
+    has_many :annotations, Annotation do
+      api DataAggregator.Transition
+    end
   end
 end

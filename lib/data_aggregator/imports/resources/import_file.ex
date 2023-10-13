@@ -3,6 +3,8 @@ defmodule DataAggregator.Imports.ImportFile do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias DataAggregator.Imports.Import
+
   postgres do
     table "import_files"
     repo DataAggregator.Repo
@@ -18,11 +20,6 @@ defmodule DataAggregator.Imports.ImportFile do
     attribute :parsed_data, :map
 
     attribute :meta_data, :map
-
-    attribute :import_id, :uuid do
-      allow_nil? false
-      filterable? true
-    end
 
     timestamps()
   end
@@ -75,6 +72,7 @@ defmodule DataAggregator.Imports.ImportFile do
   end
 
   relationships do
+    belongs_to :import, Import
   end
 end
 

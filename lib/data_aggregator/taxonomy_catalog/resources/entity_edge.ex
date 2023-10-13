@@ -13,14 +13,6 @@ defmodule DataAggregator.TaxonomyCatalog.EntityEdge do
   attributes do
     uuid_attribute :id, prefix: "entity_edge"
 
-    attribute :parent_id, :uuid do
-      allow_nil? false
-    end
-
-    attribute :child_id, :uuid do
-      allow_nil? false
-    end
-
     timestamps()
   end
 
@@ -67,5 +59,14 @@ defmodule DataAggregator.TaxonomyCatalog.EntityEdge do
   end
 
   relationships do
+    belongs_to :child, Entity do
+      allow_nil? true
+      source_attribute :child_id
+    end
+
+    belongs_to :parent, Entity do
+      allow_nil? true
+      source_attribute :parent_id
+    end
   end
 end

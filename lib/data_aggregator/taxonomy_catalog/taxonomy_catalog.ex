@@ -1,5 +1,5 @@
 defmodule DataAggregator.TaxonomyCatalog do
-  use Ash.Api, extensions: [AshAdmin.Api, AshJsonApi.Api]
+  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api]
 
   resources do
     registry DataAggregator.TaxonomyCatalog.Registry
@@ -7,5 +7,9 @@ defmodule DataAggregator.TaxonomyCatalog do
 
   admin do
     show? true
+  end
+
+  graphql do
+    authorize? false
   end
 end

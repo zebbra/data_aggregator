@@ -19,6 +19,7 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
     attribute :description, :string
 
     attribute :version, :integer do
+      default 1
       allow_nil? false
       filterable? true
     end
@@ -70,6 +71,9 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
 
   relationships do
     has_many :attribute_resolving_strategy, AttributeResolvingStrategy
-    has_many :record_change_events, RecordChangeEvent
+
+    has_many :record_change_events, RecordChangeEvent do
+      api DataAggregator.Transition
+    end
   end
 end
