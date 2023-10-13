@@ -5,7 +5,6 @@ defmodule DataAggregator.ImportsFixtures do
   """
 
   alias DataAggregator.Imports.Import
-  alias DataAggregator.Imports.ImportFile
 
   @doc """
   Generate a import.
@@ -21,21 +20,5 @@ defmodule DataAggregator.ImportsFixtures do
       |> Import.create()
 
     Import.get_by_id!(import.id)
-  end
-
-  @doc """
-  Generate a import_file.
-  """
-  def import_file_fixture(attrs \\ %{}) do
-    {:ok, import_file} =
-      attrs
-      |> Enum.into(%{
-        import: %{id: "496752bc-6743-11ee-8c99-0242ac120042"},
-        meta_data: "{}",
-        url: "https://example.com/my_file_1.csv"
-      })
-      |> ImportFile.create()
-
-    ImportFile.get_by_id!(import_file.id)
   end
 end
