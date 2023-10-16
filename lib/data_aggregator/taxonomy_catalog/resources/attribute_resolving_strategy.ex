@@ -5,6 +5,8 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
 
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
   alias DataAggregator.TaxonomyCatalog.Catalog
+  alias DataAggregator.Imports.Institution
+  alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run
 
   postgres do
     table "attribute_resolving_strategies"
@@ -13,10 +15,6 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
 
   attributes do
     uuid_attribute :id, prefix: "attr_res_strategy"
-
-    attribute :name, :string
-
-    attribute :url, :string
 
     timestamps()
   end
@@ -65,6 +63,13 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
 
   relationships do
     belongs_to :catalog, Catalog
-    has_many :dwc_attributes, DwcAttribute
+
+    belongs_to :dwc_attribute, DwcAttribute
+
+    has_many :attribute_resolving_strategies2runs, AttributeResolvingStrategy2Run
+
+    belongs_to :institution, Institution do
+      api DataAggregator.Imports
+    end
   end
 end

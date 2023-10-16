@@ -1,7 +1,7 @@
 defmodule DataAggregatorWeb.ImportLive.Show do
   use DataAggregatorWeb, :live_view
 
-  alias DataAggregator.Imports.Import
+  alias DataAggregator.Imports.ImportRecord
 
   @impl true
   def mount(_params, _session, socket) do
@@ -13,9 +13,9 @@ defmodule DataAggregatorWeb.ImportLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:import, Import.get_by_id!(id))}
+     |> assign(:import_record, ImportRecord.get_by_id!(id))}
   end
 
-  defp page_title(:show), do: "Show Import"
-  defp page_title(:edit), do: "Edit Import"
+  defp page_title(:show), do: "Show Import Record"
+  defp page_title(:edit), do: "Edit Import Record"
 end

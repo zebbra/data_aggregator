@@ -1,21 +1,18 @@
-defmodule DataAggregator.Imports.StaticAsset do
+defmodule DataAggregator.Imports.ImportChangeEvent do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.Imports.ImportRecord
+  alias DataAggregator.Transition.ChangeEvent
 
   postgres do
-    table "static_assets"
+    table "import_change_events"
     repo DataAggregator.Repo
   end
 
   attributes do
-    uuid_attribute :id, prefix: "static_asset"
-
-    attribute :url, :string, allow_nil?: false
-
-    attribute :meta_data, :map
+    uuid_attribute :id, prefix: "import_change_event"
 
     timestamps()
   end
@@ -25,10 +22,10 @@ defmodule DataAggregator.Imports.StaticAsset do
   end
 
   json_api do
-    type "static_asset"
+    type "import_change_event"
 
     routes do
-      base("/static_assets")
+      base("/import_change_events")
 
       get(:read)
       index(:read)
@@ -39,17 +36,17 @@ defmodule DataAggregator.Imports.StaticAsset do
   end
 
   graphql do
-    type :static_asset
+    type :import_change_event
 
     queries do
-      get :get_static_asset, :read
-      list :list_static_assets, :read
+      get :get_import_change_event, :read
+      list :list_import_change_events, :read
     end
 
     mutations do
-      create :create_static_asset, :create
-      update :update_static_asset, :update
-      destroy :destroy_static_asset, :destroy
+      create :create_import_change_event, :create
+      update :update_import_change_event, :update
+      destroy :destroy_import_change_event, :destroy
     end
   end
 
@@ -64,5 +61,9 @@ defmodule DataAggregator.Imports.StaticAsset do
 
   relationships do
     belongs_to :import_record, ImportRecord
+
+    belongs_to :change_event, ChangeEvent do
+      api DataAggregator.Transition
+    end
   end
 end

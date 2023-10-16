@@ -4,10 +4,10 @@ defmodule DataAggregator.TaxonomyData.Record do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.Transition.Annotation
-  alias DataAggregator.Transition.RecordChangeEvent
-  alias DataAggregator.TaxonomyData.Tag
-  alias DataAggregator.TaxonomyData.Record2Tag
-  alias DataAggregator.Imports.Import
+  alias DataAggregator.Transition.EncodingChangeEvent
+  alias DataAggregator.TaxonomyData.Record2Run
+  alias DataAggregator.Imports.ImportRecord
+  alias DataAggregator.Transition.Run
 
   postgres do
     table "records"
@@ -71,7 +71,7 @@ defmodule DataAggregator.TaxonomyData.Record do
   end
 
   relationships do
-    belongs_to :import, Import do
+    belongs_to :import_record, ImportRecord do
       api DataAggregator.Imports
     end
 
@@ -79,16 +79,18 @@ defmodule DataAggregator.TaxonomyData.Record do
       api DataAggregator.Transition
     end
 
-    has_many :record_change_events, RecordChangeEvent do
+    has_many :record_change_events, EncodingChangeEvent do
       api DataAggregator.Transition
     end
 
-    many_to_many :tags, Tag do
-      through Record2Tag
+    many_to_many :runs, Run do
+      api DataAggregator.Transition
+      through Record2Run
       source_attribute_on_join_resource :record_id
-      destination_attribute_on_join_resource :tag_id
+      destination_attribute_on_join_resource :run_id
     end
 
-    # relate to all the other entities of the taxonomy...
+    has_many :runs_join_assoc, DataAggregator.TaxonomyData.Record2Run do
+    end
   end
 end

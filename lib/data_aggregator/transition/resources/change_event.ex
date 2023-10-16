@@ -1,36 +1,30 @@
-defmodule DataAggregator.Transition.Annotation do
+defmodule DataAggregator.Transition.ChangeEvent do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.TaxonomyData.Record
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
+  alias DataAggregator.Imports.ImportChangeEvent
+  alias DataAggregator.Transition.EncodingChangeEvent
 
   postgres do
-    table "annotations"
+    table "change_events"
     repo DataAggregator.Repo
   end
 
   attributes do
-    uuid_attribute :id, prefix: "annotation"
+    uuid_attribute :id, prefix: "change_event"
 
-    attribute :comment, :string do
-      filterable? true
-    end
-
-    attribute :state, :string do
-      default "open"
-      filterable? true
-    end
-
-    attribute :value_suggestion, :string
-
-    attribute :user, :string
-
-    attribute :dwc_attribute_id, :uuid do
+    attribute :category, :string do
       allow_nil? false
       filterable? true
     end
+
+    attribute :value, :string
+
+    attribute :previous_value, :string
+
+    attribute :catalog_value_reference, :string
 
     timestamps()
   end
@@ -40,10 +34,10 @@ defmodule DataAggregator.Transition.Annotation do
   end
 
   json_api do
-    type "annotation"
+    type "change_event"
 
     routes do
-      base("/annotations")
+      base("/change_events")
 
       get(:read)
       index(:read)
@@ -54,19 +48,17 @@ defmodule DataAggregator.Transition.Annotation do
   end
 
   graphql do
-    type :annotation
-
-    relationships [:record]
+    type :change_event
 
     queries do
-      get :get_annotation, :read
-      list :list_annotations, :read
+      get :get_change_event, :read
+      list :list_change_events, :read
     end
 
     mutations do
-      create :create_annotation, :create
-      update :update_annotation, :update
-      destroy :destroy_annotation, :destroy
+      create :create_change_event, :create
+      update :update_change_event, :update
+      destroy :destroy_change_event, :destroy
     end
   end
 
@@ -80,12 +72,14 @@ defmodule DataAggregator.Transition.Annotation do
   end
 
   relationships do
-    belongs_to :record, Record do
-      api DataAggregator.TaxonomyData
-    end
-
     belongs_to :dwc_attribute, DwcAttribute do
       api DataAggregator.TaxonomyCatalog
+    end
+
+    has_many :encoding_change_events, EncodingChangeEvent
+
+    has_many :import_change_events, ImportChangeEvent do
+      api DataAggregator.Imports
     end
   end
 end

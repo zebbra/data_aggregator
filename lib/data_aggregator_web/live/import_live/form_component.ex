@@ -2,7 +2,7 @@ defmodule DataAggregatorWeb.ImportLive.FormComponent do
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form
-  alias DataAggregator.Imports.Import
+  alias DataAggregator.Imports.ImportRecord
 
   @impl true
   def update(assigns, socket) do
@@ -18,12 +18,12 @@ defmodule DataAggregatorWeb.ImportLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage import records in your database.</:subtitle>
+        <:subtitle>Use this form to manage import_record records in your database.</:subtitle>
       </.header>
 
       <.simple_form
         for={@form}
-        id="import-form"
+        id="import_record-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
@@ -45,24 +45,24 @@ defmodule DataAggregatorWeb.ImportLive.FormComponent do
   end
 
   defp build_form(%{action: :new}) do
-    Import
-    |> Form.for_create(:create, api: DataAggregator.Imports, as: "import")
+    ImportRecord
+    |> Form.for_create(:create, api: DataAggregator.Imports, as: "import_record")
     |> to_form()
   end
 
-  defp build_form(%{action: :edit, import: import}) do
-    import
-    |> Form.for_update(:update, api: DataAggregator.Imports, as: "import")
+  defp build_form(%{action: :edit, import_record: import_record}) do
+    import_record
+    |> Form.for_update(:update, api: DataAggregator.Imports, as: "import_record")
     |> to_form()
   end
 
   @impl true
-  def handle_event("validate", %{"import" => params}, socket) do
+  def handle_event("validate", %{"import_record" => params}, socket) do
     form = Form.validate(socket.assigns.form, params)
     {:noreply, assign(socket, form: form)}
   end
 
-  def handle_event("save", %{"import" => params}, socket) do
+  def handle_event("save", %{"import_record" => params}, socket) do
     socket =
       case Form.submit(socket.assigns.form, params: params) do
         {:ok, course} ->
@@ -70,8 +70,8 @@ defmodule DataAggregatorWeb.ImportLive.FormComponent do
 
           message =
             case socket.assigns.action do
-              :new -> "Import created successfully"
-              :edit -> "Import updated successfully"
+              :new -> "Import Record created successfully"
+              :edit -> "Import Record updated successfully"
             end
 
           socket

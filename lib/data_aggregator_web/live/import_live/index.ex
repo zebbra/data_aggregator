@@ -1,14 +1,14 @@
-defmodule DataAggregatorWeb.ImportLive.Index do
+defmodule DataAggregatorWeb.ImportRecordLive.Index do
   use DataAggregatorWeb, :live_view
 
-  alias DataAggregator.Imports.Import
+  alias DataAggregator.Imports.ImportRecord
 
   @impl true
   def mount(_params, _session, socket) do
     socket =
       socket
       |> assign(:current_time, DateTime.utc_now())
-      |> stream(:imports, Import.read!())
+      |> stream(:import_records, ImportRecord.read!())
 
     {:ok, socket}
   end
@@ -20,32 +20,35 @@ defmodule DataAggregatorWeb.ImportLive.Index do
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
-    |> assign(:page_title, "Edit Import")
-    |> assign(:import, Import.get_by_id!(id))
+    |> assign(:page_title, "Edit ImportRecord")
+    |> assign(:import_record, ImportRecord.get_by_id!(id))
   end
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "New Import")
-    |> assign(:import, %Import{})
+    |> assign(:page_title, "New ImportRecord")
+    |> assign(:import_record, %ImportRecord{})
   end
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Imports")
-    |> assign(:import, nil)
+    |> assign(:page_title, "Listing ImportRecords")
+    |> assign(:import_record, nil)
   end
 
   @impl true
-  def handle_info({DataAggregatorWeb.ImportLive.FormComponent, {:saved, import}}, socket) do
-    {:noreply, stream_insert(socket, :imports, import)}
+  def handle_info(
+        {DataAggregatorWeb.ImportRecordLive.FormComponent, {:saved, import_record}},
+        socket
+      ) do
+    {:noreply, stream_insert(socket, :import_records, import_record)}
   end
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
-    import = Import.get_by_id!(id)
-    :ok = Import.destroy(import)
+    import_record = ImportRecord.get_by_id!(id)
+    :ok = ImportRecord.destroy(import_record)
 
-    {:noreply, stream_delete(socket, :imports, import)}
+    {:noreply, stream_delete(socket, :import_records, import_record)}
   end
 end

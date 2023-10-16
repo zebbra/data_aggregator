@@ -3,8 +3,8 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Transition.RecordChangeEvent
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
+  alias DataAggregator.Transition.EncodingChangeEvent
 
   postgres do
     table "catalogs"
@@ -17,6 +17,8 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
     attribute :name, :string
 
     attribute :description, :string
+
+    attribute :url, :string
 
     attribute :version, :integer do
       default 1
@@ -70,9 +72,9 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
   end
 
   relationships do
-    has_many :attribute_resolving_strategy, AttributeResolvingStrategy
+    has_many :attribute_resolving_strategies, AttributeResolvingStrategy
 
-    has_many :record_change_events, RecordChangeEvent do
+    has_many :encoding_change_events, EncodingChangeEvent do
       api DataAggregator.Transition
     end
   end

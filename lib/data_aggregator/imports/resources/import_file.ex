@@ -3,7 +3,8 @@ defmodule DataAggregator.Imports.ImportFile do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Imports.Import
+  alias DataAggregator.Imports.Institution
+  alias DataAggregator.Imports.ImportRecord2ImportFile
 
   postgres do
     table "import_files"
@@ -16,8 +17,6 @@ defmodule DataAggregator.Imports.ImportFile do
     attribute :url, :string do
       allow_nil? false
     end
-
-    attribute :parsed_data, :map
 
     attribute :meta_data, :map
 
@@ -72,51 +71,51 @@ defmodule DataAggregator.Imports.ImportFile do
   end
 
   relationships do
-    belongs_to :import, Import
+    has_many :import_records2import_files, ImportRecord2ImportFile
+    belongs_to :institution, Institution
   end
 end
 
-defmodule DataAggregator.UploadFile do
-  use Ash.Resource.ManualCreate
+# defmodule DataAggregator.UploadFile do
+#   use Ash.Resource.ManualCreate
 
-  alias DataAggregator.Imports.Collection
-  alias DataAggregator.Imports.Institution
-  alias DataAggregator.Imports.ImportFile
-  alias DataAggregator.Imports.Import
+#   alias DataAggregator.Imports.Institution
+#   alias DataAggregator.Imports.ImportFile
+#   alias DataAggregator.Imports.Import
 
-  def create(file, _, _) do
-    # this is test code, test it!
-    institution = %Institution{
-      id: "1",
-      name: "museum1"
-    }
+#   def create(file, _, _) do
+#     # this is test code, test it!
+#     institution = %Institution{
+#       id: "1",
+#       name: "museum1"
+#     }
 
-    collection = %Collection{id: "1", name: "first-collection", meta_data: "{}"}
+#     collection = %Collection{id: "1", name: "first-collection", meta_data: "{}"}
 
-    import = %Import{
-      id: "2",
-      name: "my-dataset",
-      meta_data: "{}",
-      import_data: "{}",
-      version: 1,
-      collection_id: "496752bc-6743-11ee-8c99-0242ac120002"
-    }
+#     import = %Import{
+#       id: "2",
+#       name: "my-dataset",
+#       meta_data: "{}",
+#       import_data: "{}",
+#       version: 1,
+#       collection_id: "496752bc-6743-11ee-8c99-0242ac120002"
+#     }
 
-    path = file.attributes.url
-    meta_data = file.attributes.meta_data
+#     path = file.attributes.url
+#     meta_data = file.attributes.meta_data
 
-    {:ok, file_name} =
-      DataAggregator.FileUpload.store(
-        {path, %{institution: institution, collection: collection, import: import}}
-      )
+#     {:ok, file_name} =
+#       DataAggregator.FileUpload.store(
+#         {path, %{institution: institution, collection: collection, import: import}}
+#       )
 
-    import_file = %ImportFile{url: "#{path}/#{file_name}", meta_data: meta_data}
+#     import_file = %ImportFile{url: "#{path}/#{file_name}", meta_data: meta_data}
 
-    # for reasons this doesn't work at all...
-    # ImportFile
-    #   |> Ash.Changeset.for_create(:create)
-    #   |> DataAggregator.Imports.ImportFile.create!(import_file)
+#     # for reasons this doesn't work at all...
+#     # ImportFile
+#     #   |> Ash.Changeset.for_create(:create)
+#     #   |> DataAggregator.Imports.ImportFile.create!(import_file)
 
-    {:ok, import_file}
-  end
-end
+#     {:ok, import_file}
+#   end
+# end

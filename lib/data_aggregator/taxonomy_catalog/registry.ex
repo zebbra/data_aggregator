@@ -8,8 +8,7 @@ defmodule DataAggregator.TaxonomyCatalog.Registry do
   entries do
     entry DataAggregator.TaxonomyCatalog.DwcAttribute
     entry DataAggregator.TaxonomyCatalog.Catalog
-    entry DataAggregator.TaxonomyCatalog.Entity
     entry DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
-    entry DataAggregator.TaxonomyCatalog.EntityEdge
+    entry DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run
   end
 end

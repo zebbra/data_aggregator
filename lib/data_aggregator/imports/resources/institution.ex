@@ -3,7 +3,8 @@ defmodule DataAggregator.Imports.Institution do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Imports.Collection
+  alias DataAggregator.Imports.ImportFile
+  alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
 
   postgres do
     table "institutions"
@@ -77,6 +78,10 @@ defmodule DataAggregator.Imports.Institution do
   end
 
   relationships do
-    has_many :collections, Collection
+    has_many :import_files, ImportFile
+
+    has_many :attribute_resolving_strategies, AttributeResolvingStrategy do
+      api DataAggregator.TaxonomyCatalog
+    end
   end
 end

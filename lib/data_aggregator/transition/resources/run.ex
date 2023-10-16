@@ -1,18 +1,20 @@
-defmodule DataAggregator.Transition.Annotation do
+defmodule DataAggregator.Transition.Run do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias DataAggregator.TaxonomyData.Record2Run
+  alias DataAggregator.Imports.ImportRecord2Run
   alias DataAggregator.TaxonomyData.Record
-  alias DataAggregator.TaxonomyCatalog.DwcAttribute
+  alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run
 
   postgres do
-    table "annotations"
+    table "runs"
     repo DataAggregator.Repo
   end
 
   attributes do
-    uuid_attribute :id, prefix: "annotation"
+    uuid_attribute :id, prefix: "run"
 
     attribute :comment, :string do
       filterable? true
@@ -27,11 +29,6 @@ defmodule DataAggregator.Transition.Annotation do
 
     attribute :user, :string
 
-    attribute :dwc_attribute_id, :uuid do
-      allow_nil? false
-      filterable? true
-    end
-
     timestamps()
   end
 
@@ -40,10 +37,10 @@ defmodule DataAggregator.Transition.Annotation do
   end
 
   json_api do
-    type "annotation"
+    type "run"
 
     routes do
-      base("/annotations")
+      base("/runs")
 
       get(:read)
       index(:read)
@@ -54,19 +51,19 @@ defmodule DataAggregator.Transition.Annotation do
   end
 
   graphql do
-    type :annotation
+    type :run
 
     relationships [:record]
 
     queries do
-      get :get_annotation, :read
-      list :list_annotations, :read
+      get :get_run, :read
+      list :list_runs, :read
     end
 
     mutations do
-      create :create_annotation, :create
-      update :update_annotation, :update
-      destroy :destroy_annotation, :destroy
+      create :create_run, :create
+      update :update_run, :update
+      destroy :destroy_run, :destroy
     end
   end
 
@@ -80,12 +77,23 @@ defmodule DataAggregator.Transition.Annotation do
   end
 
   relationships do
-    belongs_to :record, Record do
-      api DataAggregator.TaxonomyData
+    has_many :importRecords2runs, ImportRecord2Run do
+      api DataAggregator.Imports
     end
 
-    belongs_to :dwc_attribute, DwcAttribute do
+    has_many :attribute_resolving_strategies2runs, AttributeResolvingStrategy2Run do
       api DataAggregator.TaxonomyCatalog
+    end
+
+    many_to_many :records, Record do
+      api DataAggregator.TaxonomyData
+      through Record2Run
+      source_attribute_on_join_resource :record_id
+      destination_attribute_on_join_resource :run_id
+    end
+
+    has_many :runs_join_assoc, DataAggregator.TaxonomyData.Record2Run do
+      api DataAggregator.TaxonomyData
     end
   end
 end

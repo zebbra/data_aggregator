@@ -1,23 +1,18 @@
-defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
+defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Transition.ChangeEvent
-  alias DataAggregator.Transition.Annotation
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
+  alias DataAggregator.Transition.Run
 
   postgres do
-    table "dwc_attributes"
+    table "attribute_resolving_strategies2runs"
     repo DataAggregator.Repo
   end
 
   attributes do
-    uuid_attribute :id, prefix: "dwc_attribute"
-
-    attribute :name, :string
-
-    # further attributes to describe a dwc-attribute
+    uuid_attribute :id, prefix: "attribute_resolving_strategy2run"
 
     timestamps()
   end
@@ -27,10 +22,10 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   end
 
   json_api do
-    type "dwc_attribute"
+    type "attribute_resolving_strategy2run"
 
     routes do
-      base("/dwc_attributes")
+      base("/attribute_resolving_strategies2runs")
 
       get(:read)
       index(:read)
@@ -41,17 +36,17 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   end
 
   graphql do
-    type :dwc_attribute
+    type :attribute_resolving_strategy2run
 
     queries do
-      get :get_dwc_attribute, :read
-      list :list_dwc_attributes, :read
+      get :get_attribute_resolving_strategy2run, :read
+      list :list_attribute_resolving_strategies2runs, :read
     end
 
     mutations do
-      create :create_dwc_attribute, :create
-      update :update_dwc_attribute, :update
-      destroy :destroy_dwc_attribute, :destroy
+      create :create_attribute_resolving_strategy2run, :create
+      update :update_attribute_resolving_strategy2run, :update
+      destroy :destroy_attribute_resolving_strategy2run, :destroy
     end
   end
 
@@ -65,13 +60,9 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   end
 
   relationships do
-    has_many :attribute_resolving_strategies, AttributeResolvingStrategy
+    belongs_to :attribute_resolving_strategy, AttributeResolvingStrategy
 
-    has_many :change_events, ChangeEvent do
-      api DataAggregator.Transition
-    end
-
-    has_many :annotations, Annotation do
+    belongs_to :run, Run do
       api DataAggregator.Transition
     end
   end
