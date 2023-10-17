@@ -80,16 +80,14 @@ defmodule DataAggregator.FileUpload do
           scope :: Scope.t()
         }) :: String.t()
   def storage_dir(:original, {_file, scope}) do
-    "providers/#{scope.provider.name}/collections/#{scope.collection.name}/imports"
+    "institutions/#{scope.institution.name}/import_records"
   end
 end
 
 defmodule DataAggregator.FileUpload.Scope do
-  alias DataAggregator.Imports.Collection
-  alias DataAggregator.Imports.Dataset
-  alias DataAggregator.Imports.Provider
+  alias DataAggregator.Imports.Institution
+  alias DataAggregator.Imports.ImportRecord
 
-  @type provider :: Provider.t()
-  @type collection :: Collection.t()
-  @type dataset :: Dataset.t()
+  @type provider :: Institution.t()
+  @type import_record :: ImportRecord.t()
 end

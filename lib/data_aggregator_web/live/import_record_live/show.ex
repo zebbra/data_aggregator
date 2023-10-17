@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.ImportLive.Show do
+defmodule DataAggregatorWeb.ImportRecordLive.Show do
   use DataAggregatorWeb, :live_view
 
   alias DataAggregator.Imports.ImportRecord
@@ -9,6 +9,10 @@ defmodule DataAggregatorWeb.ImportLive.Show do
   end
 
   @impl true
+  @spec handle_params(map(), any(), %{
+          :assigns => atom() | %{:live_action => :edit | :show, optional(any()) => any()},
+          optional(any()) => any()
+        }) :: {:noreply, map()}
   def handle_params(%{"id" => id}, _, socket) do
     {:noreply,
      socket

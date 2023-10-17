@@ -13,7 +13,7 @@ defmodule DataAggregator.Imports.ImportRecord do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "import_record"
+    uuid_attribute :id, prefix: "irec"
 
     attribute :unique_qualifier, :string do
       allow_nil? false
@@ -72,7 +72,9 @@ defmodule DataAggregator.Imports.ImportRecord do
       api DataAggregator.TaxonomyData
     end
 
-    has_many :static_assets, StaticAsset
+    has_many :static_assets, StaticAsset do
+    end
+
     has_many :import_records2import_files, ImportRecord2ImportFile
   end
 end

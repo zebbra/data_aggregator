@@ -1,116 +1,118 @@
-defmodule DataAggregatorWeb.ImportLiveTest do
+defmodule DataAggregatorWeb.ImportRecordLiveTest do
   use DataAggregatorWeb.ConnCase
 
   import Phoenix.LiveViewTest
-  import DataAggregator.ImportsFixtures
+  import DataAggregator.ImportRecordsFixtures
 
   @create_attrs %{
-    name: "import1",
-    version: 1,
-    collection_id: "496752bc-6743-11ee-8c99-0242ac120002"
+    unique_qualifier: "import_record1"
   }
   @update_attrs %{
-    name: "import2",
-    version: 1,
-    collection_id: "496752bc-6743-11ee-8c99-0242ac120002"
+    unique_qualifier: "import_record2"
   }
-  @invalid_attrs %{name: nil, version: 1, collection_id: "496752bc-6743-11ee-8c99-0242ac120002"}
+  @invalid_attrs %{unique_qualifier: nil}
 
-  defp create_import(_) do
-    import = import_fixture()
-    %{import: import}
+  defp create_import_record(_) do
+    import_record = import_record_fixture()
+
+    %{import_record: import_record}
   end
 
   describe "Index" do
-    setup [:create_import]
+    setup [:create_import_record]
 
-    test "lists all imports", %{conn: conn} do
-      {:ok, _index_live, html} = live(conn, ~p"/imports")
+    test "lists all import_records", %{conn: conn} do
+      {:ok, _index_live, html} = live(conn, ~p"/import_records")
 
-      assert html =~ "Listing Imports"
+      assert html =~ "Listing Import Records"
     end
 
-    test "saves new import", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, ~p"/imports")
+    test "saves new import_record", %{conn: conn} do
+      {:ok, index_live, _html} = live(conn, ~p"/import_records")
 
-      assert index_live |> element("a", "New Import") |> render_click() =~
-               "New Import"
+      assert index_live |> element("a", "New Import Record") |> render_click() =~
+               "New Import Record"
 
-      assert_patch(index_live, ~p"/imports/new")
+      assert_patch(index_live, ~p"/import_records/new")
 
       assert index_live
-             |> form("#import-form", import: @invalid_attrs)
+             |> form("#import_record-form", import_record: @invalid_attrs)
              |> render_change() =~ "is required"
 
       assert index_live
-             |> form("#import-form", import: @create_attrs)
+             |> form("#import_record-form", import_record: @create_attrs)
              |> render_submit()
 
-      assert_patch(index_live, ~p"/imports")
+      assert_patch(index_live, ~p"/import_records")
 
       html = render(index_live)
-      assert html =~ "Import created successfully"
+      assert html =~ "Import Record created successfully"
     end
 
-    test "updates import in listing", %{conn: conn, import: import} do
-      {:ok, index_live, _html} = live(conn, ~p"/imports")
-
-      assert index_live |> element("#imports-#{import.id} a", "Edit") |> render_click() =~
-               "Edit Import"
-
-      assert_patch(index_live, ~p"/imports/#{import}/edit")
+    test "updates import_record in listing", %{conn: conn, import_record: import_record} do
+      {:ok, index_live, _html} = live(conn, ~p"/import_records")
 
       assert index_live
-             |> form("#import-form", import: @invalid_attrs)
+             |> element("#import_records-#{import_record.id} a", "Edit")
+             |> render_click() =~
+               "Edit Import Record"
+
+      assert_patch(index_live, ~p"/import_records/#{import_record}/edit")
+
+      assert index_live
+             |> form("#import_record-form", import_record: @invalid_attrs)
              |> render_change() =~ "is required"
 
       assert index_live
-             |> form("#import-form", import: @update_attrs)
+             |> form("#import_record-form", import_record: @update_attrs)
              |> render_submit()
 
-      assert_patch(index_live, ~p"/imports")
+      assert_patch(index_live, ~p"/import_records")
 
       html = render(index_live)
-      assert html =~ "Import updated successfully"
+      assert html =~ "Import Record updated successfully"
     end
 
-    test "deletes import in listing", %{conn: conn, import: import} do
-      {:ok, index_live, _html} = live(conn, ~p"/imports")
+    test "deletes import_record in listing", %{conn: conn, import_record: import_record} do
+      {:ok, index_live, _html} = live(conn, ~p"/import_records")
 
-      assert index_live |> element("#imports-#{import.id} a", "Delete") |> render_click()
-      refute has_element?(index_live, "#imports-#{import.id}")
+      assert index_live
+             |> element("#import_records-#{import_record.id} a", "Delete")
+             |> render_click()
+
+      refute has_element?(index_live, "#import_records-#{import_record.id}")
     end
   end
 
   describe "Show" do
-    setup [:create_import]
+    setup [:create_import_record]
 
-    test "displays import", %{conn: conn, import: import} do
-      {:ok, _show_live, html} = live(conn, ~p"/imports/#{import}")
+    test "displays import_record", %{conn: conn, import_record: import_record} do
+      {:ok, _show_live, html} = live(conn, ~p"/import_records/#{import_record}")
 
-      assert html =~ "Show Import"
+      assert html =~ "Show Import Record"
     end
 
-    test "updates import within modal", %{conn: conn, import: import} do
-      {:ok, show_live, _html} = live(conn, ~p"/imports/#{import}")
+    test "updates import_record within modal", %{conn: conn, import_record: import_record} do
+      {:ok, show_live, _html} = live(conn, ~p"/import_records/#{import_record}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~
-               "Edit Import"
+               "Edit Import Record"
 
-      assert_patch(show_live, ~p"/imports/#{import}/show/edit")
+      assert_patch(show_live, ~p"/import_records/#{import_record}/show/edit")
 
       assert show_live
-             |> form("#import-form", import: @invalid_attrs)
+             |> form("#import_record-form", import_record: @invalid_attrs)
              |> render_change() =~ "is required"
 
       assert show_live
-             |> form("#import-form", import: @update_attrs)
+             |> form("#import_record-form", import_record: @update_attrs)
              |> render_submit()
 
-      assert_patch(show_live, ~p"/imports/#{import}")
+      assert_patch(show_live, ~p"/import_records/#{import_record}")
 
       html = render(show_live)
-      assert html =~ "Import updated successfully"
+      assert html =~ "Import Record updated successfully"
     end
   end
 end

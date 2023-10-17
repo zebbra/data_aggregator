@@ -25,11 +25,11 @@ defmodule DataAggregatorWeb.Router do
 
     get "/", PageController, :home
 
-    live "/imports", ImportLive.Index, :index
-    live "/imports/new", ImportLive.Index, :new
-    live "/imports/:id/edit", ImportLive.Index, :edit
-    live "/imports/:id", ImportLive.Show, :show
-    live "/imports/:id/show/edit", ImportLive.Show, :edit
+    live "/import_records", ImportRecordLive.Index, :index
+    live "/import_records/new", ImportRecordLive.Index, :new
+    live "/import_records/:id/edit", ImportRecordLive.Index, :edit
+    live "/import_records/:id", ImportRecordLive.Show, :show
+    live "/import_records/:id/show/edit", ImportRecordLive.Show, :edit
   end
 
   scope "/" do
