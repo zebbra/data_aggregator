@@ -9,7 +9,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
 
   def up do
     create table(:static_assets, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
       add :url, :text, null: false
       add :meta_data, :map
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
@@ -18,7 +18,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     create table(:runs, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
       add :comment, :text
       add :state, :text, default: "open"
       add :value_suggestion, :text
@@ -28,12 +28,15 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     create table(:records2runs, primary_key: false) do
+      add :id, :uuid, null: false, primary_key: true
+      add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
+      add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :record_id, :uuid, null: false, primary_key: true
       add :run_id, :uuid, null: false, primary_key: true
     end
 
     create table(:records, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
     end
 
     alter table(:records2runs) do
@@ -63,7 +66,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     create table(:institutions, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
       add :name, :text, null: false
       add :address, :text
       add :zip_code, :text
@@ -77,7 +80,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     create table(:import_records2runs, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :import_record_id, :uuid, null: false, primary_key: true
@@ -85,7 +88,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     create table(:import_records2import_files, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :import_record_id, :uuid, null: false, primary_key: true
@@ -93,7 +96,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     create table(:import_records, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
     end
 
     alter table(:static_assets) do
@@ -146,13 +149,14 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
 
     alter table(:import_records) do
       add :unique_qualifier, :text, null: false
+      add :import_data, :map
       add :meta_data, :map
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
     end
 
     create table(:import_files, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
     end
 
     alter table(:import_records2import_files) do
@@ -181,7 +185,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     create table(:import_change_events, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
 
@@ -197,7 +201,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     create table(:encoding_change_events, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
       add :catalog_value_reference, :text
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
@@ -207,14 +211,15 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     create table(:dwc_attributes, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
       add :name, :text
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
+      add :default_catalog_id, :uuid
     end
 
     create table(:change_events, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
     end
 
     alter table(:import_change_events) do
@@ -255,7 +260,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     create table(:catalogs, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
     end
 
     alter table(:encoding_change_events) do
@@ -276,6 +281,16 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
              )
     end
 
+    alter table(:dwc_attributes) do
+      modify :default_catalog_id,
+             references(:catalogs,
+               column: :id,
+               name: "dwc_attributes_default_catalog_id_fkey",
+               type: :uuid,
+               prefix: "public"
+             )
+    end
+
     alter table(:catalogs) do
       add :name, :text
       add :description, :text
@@ -286,7 +301,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     create table(:attribute_resolving_strategies2runs, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :attribute_resolving_strategy_id, :uuid
@@ -294,7 +309,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     create table(:attribute_resolving_strategies, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
     end
 
     alter table(:attribute_resolving_strategies2runs) do
@@ -316,6 +331,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     alter table(:attribute_resolving_strategies) do
+      add :do_not_encode, :boolean, default: false
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
 
@@ -345,7 +361,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     create table(:annotations, primary_key: false) do
-      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :id, :uuid, null: false, primary_key: true
       add :comment, :text
       add :state, :text, default: "open"
       add :value_suggestion, :text
@@ -401,6 +417,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       remove :catalog_id
       remove :updated_at
       remove :inserted_at
+      remove :do_not_encode
     end
 
     drop constraint(
@@ -429,6 +446,12 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       remove :url
       remove :description
       remove :name
+    end
+
+    drop constraint(:dwc_attributes, "dwc_attributes_default_catalog_id_fkey")
+
+    alter table(:dwc_attributes) do
+      modify :default_catalog_id, :uuid
     end
 
     drop constraint(:encoding_change_events, "encoding_change_events_catalog_id_fkey")
@@ -501,6 +524,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       remove :updated_at
       remove :inserted_at
       remove :meta_data
+      remove :import_data
       remove :unique_qualifier
     end
 

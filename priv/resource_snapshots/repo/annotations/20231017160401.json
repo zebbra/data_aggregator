@@ -2,7 +2,7 @@
   "attributes": [
     {
       "allow_nil?": false,
-      "default": "fragment(\"uuid_generate_v7()\")",
+      "default": "nil",
       "generated?": false,
       "primary_key?": true,
       "references": null,
@@ -17,8 +17,64 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "catalog_value_reference",
+      "source": "comment",
       "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"open\"",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "state",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "value_suggestion",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "user",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "annotations_dwc_attribute_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "dwc_attributes"
+      },
+      "size": null,
+      "source": "dwc_attribute_id",
+      "type": "uuid"
     },
     {
       "allow_nil?": false,
@@ -55,59 +111,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "encoding_change_events_change_event_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "change_events"
-      },
-      "size": null,
-      "source": "change_event_id",
-      "type": "uuid"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "encoding_change_events_catalog_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "catalogs"
-      },
-      "size": null,
-      "source": "catalog_id",
-      "type": "uuid"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "encoding_change_events_record_id_fkey",
+        "name": "annotations_record_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
@@ -124,7 +128,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "2488A0BC46F8C31084BDED3278D2B918B28E3C551A55A9E6255CCD032B27B871",
+  "hash": "2A2A08C66C566EBBC116A43CC605B688BB1AD0D03721414860F0A7086BE32BDF",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -133,5 +137,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "encoding_change_events"
+  "table": "annotations"
 }

@@ -12,7 +12,7 @@ defmodule DataAggregator.Imports.ImportRecord2Run do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "import_record2run"
+    uuid_attribute :id, prefix: "ir2r"
 
     timestamps()
   end

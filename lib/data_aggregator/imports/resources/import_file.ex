@@ -12,7 +12,7 @@ defmodule DataAggregator.Imports.ImportFile do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "import_file"
+    uuid_attribute :id, prefix: "if"
 
     attribute :url, :string do
       allow_nil? false
@@ -76,46 +76,41 @@ defmodule DataAggregator.Imports.ImportFile do
   end
 end
 
-# defmodule DataAggregator.UploadFile do
-#   use Ash.Resource.ManualCreate
+defmodule DataAggregator.UploadFile do
+  use Ash.Resource.ManualCreate
 
-#   alias DataAggregator.Imports.Institution
-#   alias DataAggregator.Imports.ImportFile
-#   alias DataAggregator.Imports.Import
+  alias DataAggregator.Imports.Institution
+  alias DataAggregator.Imports.ImportFile
+  # alias DataAggregator.Imports.ImportRecord
 
-#   def create(file, _, _) do
-#     # this is test code, test it!
-#     institution = %Institution{
-#       id: "1",
-#       name: "museum1"
-#     }
+  def create(file, _, _) do
+    # this is test code, test it!
+    institution = %Institution{
+      id: "1",
+      name: "museum1"
+    }
 
-#     collection = %Collection{id: "1", name: "first-collection", meta_data: "{}"}
+    # get the import_record according to its id and then add it to the import_file
+    # import_record = %ImportRecord{
+    #   id: "2",
+    #   unique_qualifier: "my-dataset",
+    #   meta_data: "{}",
+    #   import_data: "{}"
+    # }
 
-#     import = %Import{
-#       id: "2",
-#       name: "my-dataset",
-#       meta_data: "{}",
-#       import_data: "{}",
-#       version: 1,
-#       collection_id: "496752bc-6743-11ee-8c99-0242ac120002"
-#     }
+    path = file.attributes.url
+    meta_data = file.attributes.meta_data
 
-#     path = file.attributes.url
-#     meta_data = file.attributes.meta_data
+    {:ok, file_name} =
+      DataAggregator.FileUpload.store({path, %{institution: institution}})
 
-#     {:ok, file_name} =
-#       DataAggregator.FileUpload.store(
-#         {path, %{institution: institution, collection: collection, import: import}}
-#       )
+    import_file = %ImportFile{url: "#{path}/#{file_name}", meta_data: meta_data}
 
-#     import_file = %ImportFile{url: "#{path}/#{file_name}", meta_data: meta_data}
+    # for reasons this doesn't work at all...
+    # ImportFile
+    #   |> Ash.Changeset.for_create(:create)
+    #   |> DataAggregator.Imports.ImportFile.create!(import_file)
 
-#     # for reasons this doesn't work at all...
-#     # ImportFile
-#     #   |> Ash.Changeset.for_create(:create)
-#     #   |> DataAggregator.Imports.ImportFile.create!(import_file)
-
-#     {:ok, import_file}
-#   end
-# end
+    {:ok, import_file}
+  end
+end

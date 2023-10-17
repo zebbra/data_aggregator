@@ -19,6 +19,7 @@ defmodule DataAggregator.Imports.ImportRecord do
       allow_nil? false
     end
 
+    attribute :import_data, :map
     attribute :meta_data, :map
 
     timestamps()

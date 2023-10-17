@@ -12,7 +12,7 @@ defmodule DataAggregator.Imports.ImportChangeEvent do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "import_change_event"
+    uuid_attribute :id, prefix: "ice"
 
     timestamps()
   end

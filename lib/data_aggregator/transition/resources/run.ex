@@ -5,6 +5,7 @@ defmodule DataAggregator.Transition.Run do
 
   alias DataAggregator.TaxonomyData.Record2Run
   alias DataAggregator.Imports.ImportRecord2Run
+  alias DataAggregator.Imports.ImportRecord
   alias DataAggregator.TaxonomyData.Record
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run
 
@@ -77,10 +78,6 @@ defmodule DataAggregator.Transition.Run do
   end
 
   relationships do
-    has_many :importRecords2runs, ImportRecord2Run do
-      api DataAggregator.Imports
-    end
-
     has_many :attribute_resolving_strategies2runs, AttributeResolvingStrategy2Run do
       api DataAggregator.TaxonomyCatalog
     end
@@ -88,12 +85,15 @@ defmodule DataAggregator.Transition.Run do
     many_to_many :records, Record do
       api DataAggregator.TaxonomyData
       through Record2Run
-      source_attribute_on_join_resource :record_id
-      destination_attribute_on_join_resource :run_id
+      source_attribute_on_join_resource :run_id
+      destination_attribute_on_join_resource :record_id
     end
 
-    has_many :runs_join_assoc, DataAggregator.TaxonomyData.Record2Run do
-      api DataAggregator.TaxonomyData
+    many_to_many :import_records, ImportRecord do
+      api DataAggregator.Imports
+      through ImportRecord2Run
+      source_attribute_on_join_resource :run_id
+      destination_attribute_on_join_resource :import_record_id
     end
   end
 end

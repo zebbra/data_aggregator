@@ -2,7 +2,7 @@
   "attributes": [
     {
       "allow_nil?": false,
-      "default": "fragment(\"uuid_generate_v7()\")",
+      "default": "nil",
       "generated?": false,
       "primary_key?": true,
       "references": null,
@@ -31,10 +31,10 @@
       "type": "utc_datetime_usec"
     },
     {
-      "allow_nil?": true,
+      "allow_nil?": false,
       "default": "nil",
       "generated?": false,
-      "primary_key?": false,
+      "primary_key?": true,
       "references": {
         "deferrable": false,
         "destination_attribute": "id",
@@ -45,22 +45,22 @@
           "global": null,
           "strategy": null
         },
-        "name": "attribute_resolving_strategies2runs_attribute_resolving_strategy_id_fkey",
+        "name": "import_records2import_files_import_record_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "attribute_resolving_strategies"
+        "table": "import_records"
       },
       "size": null,
-      "source": "attribute_resolving_strategy_id",
+      "source": "import_record_id",
       "type": "uuid"
     },
     {
-      "allow_nil?": true,
+      "allow_nil?": false,
       "default": "nil",
       "generated?": false,
-      "primary_key?": false,
+      "primary_key?": true,
       "references": {
         "deferrable": false,
         "destination_attribute": "id",
@@ -71,15 +71,15 @@
           "global": null,
           "strategy": null
         },
-        "name": "attribute_resolving_strategies2runs_run_id_fkey",
+        "name": "import_records2import_files_import_file_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "runs"
+        "table": "import_files"
       },
       "size": null,
-      "source": "run_id",
+      "source": "import_file_id",
       "type": "uuid"
     }
   ],
@@ -88,7 +88,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "F863D0511086A655505B8D6749D9F42E15A7FB609195E7DC56983C4D643F5391",
+  "hash": "52C3F3DBBD498F4C3C48F3C1B522BE4249E7DC97AC72A475982C3031F7563639",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -97,5 +97,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "attribute_resolving_strategies2runs"
+  "table": "import_records2import_files"
 }

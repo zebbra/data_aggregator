@@ -12,7 +12,7 @@ defmodule DataAggregator.Imports.Institution do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "institution"
+    uuid_attribute :id, prefix: "inst"
 
     attribute :name, :string do
       allow_nil? false

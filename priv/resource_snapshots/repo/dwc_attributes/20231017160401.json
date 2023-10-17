@@ -2,7 +2,7 @@
   "attributes": [
     {
       "allow_nil?": false,
-      "default": "fragment(\"uuid_generate_v7()\")",
+      "default": "nil",
       "generated?": false,
       "primary_key?": true,
       "references": null,
@@ -11,24 +11,14 @@
       "type": "uuid"
     },
     {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "url",
-      "type": "text"
-    },
-    {
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "meta_data",
-      "type": "map"
+      "source": "name",
+      "type": "text"
     },
     {
       "allow_nil?": false,
@@ -65,15 +55,15 @@
           "global": null,
           "strategy": null
         },
-        "name": "static_assets_import_record_id_fkey",
+        "name": "dwc_attributes_default_catalog_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "import_records"
+        "table": "catalogs"
       },
       "size": null,
-      "source": "import_record_id",
+      "source": "default_catalog_id",
       "type": "uuid"
     }
   ],
@@ -82,7 +72,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "D23792AFFC40324B4368AE64C4842ECD277DD3A0C4C57D82215321C827596379",
+  "hash": "0CE99B23C5B1AF0EE29928BF68BD1A9D23F927948B15F5CFE43701D2068D2CDC",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -91,5 +81,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "static_assets"
+  "table": "dwc_attributes"
 }

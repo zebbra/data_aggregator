@@ -86,8 +86,6 @@ end
 
 defmodule DataAggregator.FileUpload.Scope do
   alias DataAggregator.Imports.Institution
-  alias DataAggregator.Imports.ImportRecord
 
   @type provider :: Institution.t()
-  @type import_record :: ImportRecord.t()
 end

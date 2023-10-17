@@ -6,6 +6,7 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   alias DataAggregator.Transition.ChangeEvent
   alias DataAggregator.Transition.Annotation
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
+  alias DataAggregator.TaxonomyCatalog.Catalog
 
   postgres do
     table "dwc_attributes"
@@ -13,7 +14,7 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "dwc_attribute"
+    uuid_attribute :id, prefix: "da"
 
     attribute :name, :string
 
@@ -65,6 +66,10 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   end
 
   relationships do
+    belongs_to :catalog, Catalog do
+      source_attribute :default_catalog_id
+    end
+
     has_many :attribute_resolving_strategies, AttributeResolvingStrategy
 
     has_many :change_events, ChangeEvent do

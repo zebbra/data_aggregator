@@ -13,7 +13,7 @@ defmodule DataAggregator.Transition.ChangeEvent do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "change_event"
+    uuid_attribute :id, prefix: "ce"
 
     attribute :category, :string do
       allow_nil? false

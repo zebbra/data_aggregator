@@ -2,7 +2,7 @@
   "attributes": [
     {
       "allow_nil?": false,
-      "default": "fragment(\"uuid_generate_v7()\")",
+      "default": "nil",
       "generated?": false,
       "primary_key?": true,
       "references": null,
@@ -45,15 +45,15 @@
           "global": null,
           "strategy": null
         },
-        "name": "attribute_resolving_strategies_catalog_id_fkey",
+        "name": "import_change_events_import_record_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "catalogs"
+        "table": "import_records"
       },
       "size": null,
-      "source": "catalog_id",
+      "source": "import_record_id",
       "type": "uuid"
     },
     {
@@ -71,41 +71,15 @@
           "global": null,
           "strategy": null
         },
-        "name": "attribute_resolving_strategies_dwc_attribute_id_fkey",
+        "name": "import_change_events_change_event_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "dwc_attributes"
+        "table": "change_events"
       },
       "size": null,
-      "source": "dwc_attribute_id",
-      "type": "uuid"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "attribute_resolving_strategies_institution_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "institutions"
-      },
-      "size": null,
-      "source": "institution_id",
+      "source": "change_event_id",
       "type": "uuid"
     }
   ],
@@ -114,7 +88,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "A2217988CD926EB8E781CF9EA2E5FED1D9E96C730BF347E21C589AA38ABEBEDA",
+  "hash": "A8D05410AED17AD76C30999EDF22724B2089A8A2312AA3BCAD19EB8B2E584B25",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -123,5 +97,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "attribute_resolving_strategies"
+  "table": "import_change_events"
 }

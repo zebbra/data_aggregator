@@ -2,7 +2,7 @@
   "attributes": [
     {
       "allow_nil?": false,
-      "default": "fragment(\"uuid_generate_v7()\")",
+      "default": "nil",
       "generated?": false,
       "primary_key?": true,
       "references": null,
@@ -11,13 +11,23 @@
       "type": "uuid"
     },
     {
-      "allow_nil?": false,
+      "allow_nil?": true,
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "unique_qualifier",
+      "source": "comment",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "\"open\"",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "state",
       "type": "text"
     },
     {
@@ -27,8 +37,18 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "meta_data",
-      "type": "map"
+      "source": "value_suggestion",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "user",
+      "type": "text"
     },
     {
       "allow_nil?": false,
@@ -56,7 +76,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "8EAC94B17B25781A6EFD09208049D20468BACE9E81A504057CB47E14FD963542",
+  "hash": "7A6E43F3430738C8E87E19A62BFC7F9B8896A0F45EE82C2FB57E8CDC21638280",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -65,5 +85,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "import_records"
+  "table": "runs"
 }

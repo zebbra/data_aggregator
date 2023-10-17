@@ -11,6 +11,12 @@ defmodule DataAggregator.TaxonomyData.Record2Run do
     repo DataAggregator.Repo
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "rec2run"
+
+    timestamps()
+  end
+
   actions do
     defaults [:create, :read, :update, :destroy]
   end

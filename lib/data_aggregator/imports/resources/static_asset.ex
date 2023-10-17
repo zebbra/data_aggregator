@@ -11,7 +11,7 @@ defmodule DataAggregator.Imports.StaticAsset do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "static_asset"
+    uuid_attribute :id, prefix: "sa"
 
     attribute :url, :string, allow_nil?: false
 

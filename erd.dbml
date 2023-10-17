@@ -1,33 +1,45 @@
 
 
-Table collections {
+Table import_change_events {
   id uuid [pk]
-  name varchar
-  meta_data jsonb
-  institution_id uuid
   inserted_at timestamp
   updated_at timestamp
-}
-
-Table imports {
-  id uuid [pk]
-  name varchar
-  meta_data jsonb
-  version integer
-  import_data jsonb
-  inserted_at timestamp
-  updated_at timestamp
-  collection_id uuid
+  import_record_id uuid
+  change_event_id uuid
 }
 
 Table import_files {
   id uuid [pk]
   url varchar
-  parsed_data jsonb
   meta_data jsonb
   inserted_at timestamp
   updated_at timestamp
-  import_id uuid
+  institution_id uuid
+}
+
+Table import_records {
+  id uuid [pk]
+  unique_qualifier varchar
+  import_data jsonb
+  meta_data jsonb
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table import_records2import_files {
+  id uuid [pk]
+  inserted_at timestamp
+  updated_at timestamp
+  import_record_id uuid [pk]
+  import_file_id uuid [pk]
+}
+
+Table import_records2runs {
+  id uuid [pk]
+  inserted_at timestamp
+  updated_at timestamp
+  import_record_id uuid [pk]
+  run_id uuid [pk]
 }
 
 Table institutions {
@@ -50,22 +62,32 @@ Table static_assets {
   meta_data jsonb
   inserted_at timestamp
   updated_at timestamp
-  import_id uuid
+  import_record_id uuid
 }
 
 Table attribute_resolving_strategies {
   id uuid [pk]
-  name varchar
-  url varchar
+  do_not_encode boolean
   inserted_at timestamp
   updated_at timestamp
   catalog_id uuid
+  dwc_attribute_id uuid
+  institution_id uuid
+}
+
+Table attribute_resolving_strategies2runs {
+  id uuid [pk]
+  inserted_at timestamp
+  updated_at timestamp
+  attribute_resolving_strategy_id uuid
+  run_id uuid
 }
 
 Table catalogs {
   id uuid [pk]
   name varchar
   description varchar
+  url varchar
   version integer
   inserted_at timestamp
   updated_at timestamp
@@ -76,23 +98,7 @@ Table dwc_attributes {
   name varchar
   inserted_at timestamp
   updated_at timestamp
-  attribute_resolving_strategy_id uuid
-  entity_id uuid
-}
-
-Table entities {
-  id uuid [pk]
-  name varchar
-  inserted_at timestamp
-  updated_at timestamp
-}
-
-Table entity_edges {
-  id uuid [pk]
-  inserted_at timestamp
-  updated_at timestamp
-  child_id uuid
-  parent_id uuid
+  default_catalog_id uuid
 }
 
 Table records {
@@ -101,25 +107,21 @@ Table records {
   meta_data jsonb
   inserted_at timestamp
   updated_at timestamp
-  import_id uuid
+  import_record_id uuid
 }
 
-Table records2tags {
-  record_id uuid [pk]
-  tag_id uuid [pk]
-}
-
-Table tags {
+Table records2runs {
   id uuid [pk]
-  tag varchar
-  meta_data jsonb
   inserted_at timestamp
   updated_at timestamp
+  record_id uuid [pk]
+  run_id uuid [pk]
 }
 
 Table annotations {
   id uuid [pk]
   comment varchar
+  state varchar
   value_suggestion varchar
   user varchar
   dwc_attribute_id uuid
@@ -128,17 +130,35 @@ Table annotations {
   record_id uuid
 }
 
-Table record_change_events {
+Table change_events {
   id uuid [pk]
   category varchar
   value varchar
   previous_value varchar
-  catalog_value_ref integer
+  catalog_value_reference varchar
   inserted_at timestamp
   updated_at timestamp
-  record_id uuid
-  catalog_id uuid
   dwc_attribute_id uuid
+}
+
+Table encoding_change_events {
+  id uuid [pk]
+  catalog_value_reference varchar
+  inserted_at timestamp
+  updated_at timestamp
+  change_event_id uuid
+  catalog_id uuid
+  record_id uuid
+}
+
+Table runs {
+  id uuid [pk]
+  comment varchar
+  state varchar
+  value_suggestion varchar
+  user varchar
+  inserted_at timestamp
+  updated_at timestamp
 }
 
 Table schema_migrations {
@@ -146,20 +166,26 @@ Table schema_migrations {
   inserted_at timestamp
 }
 
-Ref: attribute_resolving_strategies.id < dwc_attributes.attribute_resolving_strategy_id
+Ref: attribute_resolving_strategies.id < attribute_resolving_strategies2runs.attribute_resolving_strategy_id
 Ref: catalogs.id < attribute_resolving_strategies.catalog_id
-Ref: catalogs.id < record_change_events.catalog_id
-Ref: collections.id < imports.collection_id
+Ref: catalogs.id < dwc_attributes.default_catalog_id
+Ref: catalogs.id < encoding_change_events.catalog_id
+Ref: change_events.id < encoding_change_events.change_event_id
+Ref: change_events.id < import_change_events.change_event_id
 Ref: dwc_attributes.id < annotations.dwc_attribute_id
-Ref: dwc_attributes.id < record_change_events.dwc_attribute_id
-Ref: entities.id < dwc_attributes.entity_id
-Ref: entities.id < entity_edges.child_id
-Ref: entities.id < entity_edges.parent_id
-Ref: imports.id < import_files.import_id
-Ref: imports.id < records.import_id
-Ref: imports.id < static_assets.import_id
-Ref: institutions.id < collections.institution_id
+Ref: dwc_attributes.id < attribute_resolving_strategies.dwc_attribute_id
+Ref: dwc_attributes.id < change_events.dwc_attribute_id
+Ref: import_files.id < import_records2import_files.import_file_id
+Ref: import_records.id < import_change_events.import_record_id
+Ref: import_records.id < import_records2import_files.import_record_id
+Ref: import_records.id < import_records2runs.import_record_id
+Ref: import_records.id - records.import_record_id
+Ref: import_records.id < static_assets.import_record_id
+Ref: institutions.id < attribute_resolving_strategies.institution_id
+Ref: institutions.id < import_files.institution_id
 Ref: records.id < annotations.record_id
-Ref: records.id < record_change_events.record_id
-Ref: records.id < records2tags.record_id
-Ref: tags.id < records2tags.tag_id
+Ref: records.id < encoding_change_events.record_id
+Ref: records.id < records2runs.record_id
+Ref: runs.id < attribute_resolving_strategies2runs.run_id
+Ref: runs.id < import_records2runs.run_id
+Ref: runs.id < records2runs.run_id

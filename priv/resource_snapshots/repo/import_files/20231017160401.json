@@ -2,7 +2,7 @@
   "attributes": [
     {
       "allow_nil?": false,
-      "default": "fragment(\"uuid_generate_v7()\")",
+      "default": "nil",
       "generated?": false,
       "primary_key?": true,
       "references": null,
@@ -17,7 +17,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "unique_qualifier",
+      "source": "url",
       "type": "text"
     },
     {
@@ -65,15 +65,15 @@
           "global": null,
           "strategy": null
         },
-        "name": "records_import_record_id_fkey",
+        "name": "import_files_institution_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "import_records"
+        "table": "institutions"
       },
       "size": null,
-      "source": "import_record_id",
+      "source": "institution_id",
       "type": "uuid"
     }
   ],
@@ -82,7 +82,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "6AA4056BBE5BE5441AEC1D8110C430B40625D199D4E03D39C5DD1453DC62ED80",
+  "hash": "1309C6C2A819B9FF4E57D2ADF14B8EA0AC38D4CC01A450F2BF45CAAA6EAFFA85",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -91,5 +91,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "records"
+  "table": "import_files"
 }

@@ -14,7 +14,11 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "attr_res_strategy"
+    uuid_attribute :id, prefix: "ars"
+
+    attribute :do_not_encode, :boolean do
+      default false
+    end
 
     timestamps()
   end

@@ -2,7 +2,7 @@
   "attributes": [
     {
       "allow_nil?": false,
-      "default": "fragment(\"uuid_generate_v7()\")",
+      "default": "nil",
       "generated?": false,
       "primary_key?": true,
       "references": null,
@@ -11,14 +11,34 @@
       "type": "uuid"
     },
     {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "unique_qualifier",
+      "type": "text"
+    },
+    {
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "name",
-      "type": "text"
+      "source": "import_data",
+      "type": "map"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "meta_data",
+      "type": "map"
     },
     {
       "allow_nil?": false,
@@ -46,7 +66,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "84E3C1B2A4E8D2E76F2300086E00107060B5E61555F7832E9A3448F8BEFC65EF",
+  "hash": "4056336101AC344F2AD1C01CC3BEF3C32C7285DD4B6ABC41B02BF30023A489BB",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -55,5 +75,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "dwc_attributes"
+  "table": "import_records"
 }

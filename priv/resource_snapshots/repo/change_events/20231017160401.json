@@ -2,7 +2,7 @@
   "attributes": [
     {
       "allow_nil?": false,
-      "default": "fragment(\"uuid_generate_v7()\")",
+      "default": "nil",
       "generated?": false,
       "primary_key?": true,
       "references": null,
@@ -17,7 +17,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "name",
+      "source": "category",
       "type": "text"
     },
     {
@@ -27,7 +27,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "address",
+      "source": "value",
       "type": "text"
     },
     {
@@ -37,7 +37,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "zip_code",
+      "source": "previous_value",
       "type": "text"
     },
     {
@@ -47,47 +47,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "city",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "country",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "mail",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "tel",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "contact_person",
+      "source": "catalog_value_reference",
       "type": "text"
     },
     {
@@ -109,6 +69,32 @@
       "size": null,
       "source": "updated_at",
       "type": "utc_datetime_usec"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "change_events_dwc_attribute_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "dwc_attributes"
+      },
+      "size": null,
+      "source": "dwc_attribute_id",
+      "type": "uuid"
     }
   ],
   "base_filter": null,
@@ -116,7 +102,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "6D8251171C2BB4B19A9E949C15BA851D07E1A6B856D60D52D6FE8C3052DFA350",
+  "hash": "4A5041B1620CFA9685708AAD92A9F17B467B1C91D424A2506AF474061F88B5E8",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -125,5 +111,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "institutions"
+  "table": "change_events"
 }

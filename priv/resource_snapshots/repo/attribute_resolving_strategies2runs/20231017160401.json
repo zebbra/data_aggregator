@@ -2,53 +2,13 @@
   "attributes": [
     {
       "allow_nil?": false,
-      "default": "fragment(\"uuid_generate_v7()\")",
+      "default": "nil",
       "generated?": false,
       "primary_key?": true,
       "references": null,
       "size": null,
       "source": "id",
       "type": "uuid"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "category",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "value",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "previous_value",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "catalog_value_reference",
-      "type": "text"
     },
     {
       "allow_nil?": false,
@@ -85,15 +45,41 @@
           "global": null,
           "strategy": null
         },
-        "name": "change_events_dwc_attribute_id_fkey",
+        "name": "attribute_resolving_strategies2runs_attribute_resolving_strategy_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "dwc_attributes"
+        "table": "attribute_resolving_strategies"
       },
       "size": null,
-      "source": "dwc_attribute_id",
+      "source": "attribute_resolving_strategy_id",
+      "type": "uuid"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "attribute_resolving_strategies2runs_run_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "runs"
+      },
+      "size": null,
+      "source": "run_id",
       "type": "uuid"
     }
   ],
@@ -102,7 +88,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "1ECB95C31FA7436C3E76A8D7BC639F445F0B3FF910797F19116A71D351B66AB9",
+  "hash": "A838872BFA0A06A5E7239D6CC16CE67A8550CBCC6C9389C065332A861934C544",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -111,5 +97,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "change_events"
+  "table": "attribute_resolving_strategies2runs"
 }

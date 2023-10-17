@@ -12,7 +12,7 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "attribute_resolving_strategy2run"
+    uuid_attribute :id, prefix: "ars2r"
 
     timestamps()
   end

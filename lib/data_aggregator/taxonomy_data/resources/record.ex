@@ -5,9 +5,7 @@ defmodule DataAggregator.TaxonomyData.Record do
 
   alias DataAggregator.Transition.Annotation
   alias DataAggregator.Transition.EncodingChangeEvent
-  alias DataAggregator.TaxonomyData.Record2Run
   alias DataAggregator.Imports.ImportRecord
-  alias DataAggregator.Transition.Run
 
   postgres do
     table "records"
@@ -15,7 +13,7 @@ defmodule DataAggregator.TaxonomyData.Record do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "record"
+    uuid_attribute :id, prefix: "rec"
 
     attribute :unique_qualifier, :string do
       allow_nil? false
@@ -23,7 +21,7 @@ defmodule DataAggregator.TaxonomyData.Record do
 
     attribute :meta_data, :map
 
-    # further (mandatory) attributes of the core record
+    # further attributes of the core record
 
     timestamps()
   end
@@ -81,16 +79,6 @@ defmodule DataAggregator.TaxonomyData.Record do
 
     has_many :record_change_events, EncodingChangeEvent do
       api DataAggregator.Transition
-    end
-
-    many_to_many :runs, Run do
-      api DataAggregator.Transition
-      through Record2Run
-      source_attribute_on_join_resource :record_id
-      destination_attribute_on_join_resource :run_id
-    end
-
-    has_many :runs_join_assoc, DataAggregator.TaxonomyData.Record2Run do
     end
   end
 end

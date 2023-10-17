@@ -13,7 +13,7 @@ defmodule DataAggregator.Transition.EncodingChangeEvent do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "encoding_change_event"
+    uuid_attribute :id, prefix: "ece"
 
     attribute :catalog_value_reference, :string
 

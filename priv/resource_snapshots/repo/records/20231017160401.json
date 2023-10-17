@@ -2,13 +2,33 @@
   "attributes": [
     {
       "allow_nil?": false,
-      "default": "fragment(\"uuid_generate_v7()\")",
+      "default": "nil",
       "generated?": false,
       "primary_key?": true,
       "references": null,
       "size": null,
       "source": "id",
       "type": "uuid"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "unique_qualifier",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "meta_data",
+      "type": "map"
     },
     {
       "allow_nil?": false,
@@ -31,10 +51,10 @@
       "type": "utc_datetime_usec"
     },
     {
-      "allow_nil?": false,
+      "allow_nil?": true,
       "default": "nil",
       "generated?": false,
-      "primary_key?": true,
+      "primary_key?": false,
       "references": {
         "deferrable": false,
         "destination_attribute": "id",
@@ -45,7 +65,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "import_records2import_files_import_record_id_fkey",
+        "name": "records_import_record_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
@@ -55,32 +75,6 @@
       "size": null,
       "source": "import_record_id",
       "type": "uuid"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": true,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "import_records2import_files_import_file_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "import_files"
-      },
-      "size": null,
-      "source": "import_file_id",
-      "type": "uuid"
     }
   ],
   "base_filter": null,
@@ -88,7 +82,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "F48D9546E6FCF65F961CB8308B8E8A8CC25E1358FF92EB142084277CE33327D8",
+  "hash": "9064941D22A9DF10FF8DA1A1765A82CAC9A6571D5C4023D81E20512EE1F34DB0",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -97,5 +91,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "import_records2import_files"
+  "table": "records"
 }

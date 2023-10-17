@@ -12,7 +12,7 @@ defmodule DataAggregator.Transition.Annotation do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "annotation"
+    uuid_attribute :id, prefix: "ann"
 
     attribute :comment, :string do
       filterable? true
