@@ -1,46 +1,116 @@
-<.header>
-  Listing Imports
-  <:actions>
-    <.link patch={~p"/imports/new"}>
-      <.button>New Import</.button>
-    </.link>
-  </:actions>
-</.header>
+<main class="2xl:pr-96">
+  <.header class="top-16 sticky">
+    <%= ~t"Listing Imports"m %>
+    <:actions>
+      <.button
+        phx-click="toggle-filters"
+        id="import-filters__button"
+        class="2xl:hidden inline-flex"
+      >
+        <.icon name="hero-funnel-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
+        <span class="sm:inline-block hidden"><%= ~t"Filter"m %></span>
+      </.button>
+      <.link patch={~p"/imports/new"} class="focus-visible:outline-none">
+        <.button class="inline-flex" id="import-modal__button">
+          <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
+          <span class="sm:inline-block hidden"><%= ~t"New Import"m %></span>
+        </.button>
+      </.link>
+    </:actions>
+  </.header>
 
-<.table
-  id="imports"
-  rows={@streams.imports}
-  row_click={fn {_id, import} -> JS.navigate(~p"/imports/#{import}") end}
->
-  <:col :let={{_id, import}} label="ID"><%= import.id %></:col>
-  <:col :let={{_id, import}} label="URL"><%= import.url %></:col>
-
-  <:action :let={{_id, import}}>
-    <div class="sr-only">
-      <.link navigate={~p"/imports/#{import}"}>Show</.link>
-    </div>
-    <.link patch={~p"/imports/#{import}/edit"}>Edit</.link>
-  </:action>
-
-  <:action :let={{id, import}}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: import.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
+  <.table
+    id="imports"
+    rows={@streams.imports}
+    row_click={fn {_id, import} -> JS.patch(~p"/imports/#{import}") end}
+    order_by={@current_order_by}
+    order_dir={@current_order_dir}
+  >
+    <:col :let={{_id, import}} label={~t"ID"m} field="id" sort={@sort_options[:id]}>
+      <%= import.id %>
+    </:col>
+    <:col :let={{_id, import}} label={~t"URL"m} field="url" sort={@sort_options[:url]}>
+      <%= import.url %>
+    </:col>
+    <:col
+      :let={{_id, import}}
+      label={~t"Inserted At"m}
+      field="inserted_at"
+      sort={@sort_options[:inserted_at]}
     >
-      Delete
-    </.link>
-  </:action>
-</.table>
+      <%= format_datetime(import.inserted_at) %>
+    </:col>
+    <:col
+      :let={{_id, import}}
+      label={~t"Updated At"m}
+      field="updated_at"
+      sort={@sort_options[:updated_at]}
+    >
+      <%= format_datetime(import.updated_at) %>
+    </:col>
 
-<.modal
-  :if={@live_action in [:new, :edit]}
-  id="import-modal"
-  show
-  on_cancel={JS.patch(~p"/imports")}
+    <:action :let={{_id, import}}>
+      <div class="sr-only">
+        <.link patch={~p"/imports/#{import}"}><%= ~t"Show"m %></.link>
+      </div>
+      <.link patch={~p"/imports/#{import}/edit"}><%= ~t"Edit"m %></.link>
+    </:action>
+
+    <:action :let={{id, import}}>
+      <.link
+        phx-click={JS.push("delete", value: %{id: import.id}) |> hide("##{id}")}
+        data-confirm={~t"Are you sure?"m}
+      >
+        <%= ~t"Delete"m %>
+      </.link>
+    </:action>
+  </.table>
+</main>
+
+<aside class="2xl:block dark:bg-black/10 bg-gray-100/30 2xl:fixed 2xl:bottom-0 2xl:right-0 2xl:top-16 2xl:w-96 2xl:overflow-y-auto 2xl:border-l 2xl:border-gray-200 dark:2xl:border-white/5 hidden">
+  <.header class="sticky top-0">
+    <%= ~t"Filters"m %>
+    <:actions>
+      <a href="#" class="dark:text-indigo-400 text-sm font-semibold leading-6 text-indigo-600">
+        <%= ~t"Reset"m %>
+      </a>
+    </:actions>
+  </.header>
+</aside>
+
+<.slideover
+  :if={@show_filters}
+  id="import-filters"
+  resize_listener
+  on_cancel={JS.push("toggle-filters")}
 >
+  <.sidebar>
+    <:header>
+      <.header id="import-filters" class="sticky top-0">
+        <%= ~t"Filters"m %>
+        <:actions>
+          <a href="#" class="dark:text-indigo-400 text-sm font-semibold leading-6 text-indigo-600">
+            <%= ~t"Reset"m %>
+          </a>
+        </:actions>
+      </.header>
+    </:header>
+  </.sidebar>
+</.slideover>
+
+<.slideover :if={@live_action in [:show]} id="import-slideover" on_cancel={JS.patch(~p"/imports")}>
+  <.live_component
+    module={DataAggregatorWeb.ImportLive.ShowComponent}
+    id={@import.id}
+    import={@import}
+  />
+</.slideover>
+
+<.modal :if={@live_action in [:new, :edit]} id="import-modal" on_cancel={JS.patch(~p"/imports")}>
   <.live_component
     module={DataAggregatorWeb.ImportLive.FormComponent}
     id={@import.id || :new}
+    icon="hero-plus-circle-mini"
     title={@page_title}
     action={@live_action}
     import={@import}

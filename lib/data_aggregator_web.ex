@@ -68,7 +68,7 @@ defmodule DataAggregatorWeb do
 
   def html do
     quote do
-      use Phoenix.Component
+      use Phoenix.Component, global_prefixes: ~w(x-)
 
       # Import convenience functions from controllers
       import Phoenix.Controller,
@@ -85,10 +85,14 @@ defmodule DataAggregatorWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import DataAggregatorWeb.CoreComponents
+      import DataAggregatorWeb.HeadlessComponents
+      import DataAggregatorWeb.Headless.Dialog, only: [dialog_title: 1, dialog_description: 1]
       import DataAggregatorWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
+
+      import DataAggregatorWeb.Helpers
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())
