@@ -1,4 +1,4 @@
-import { ref, Ref } from "@vue/reactivity";
+import { ComputedRef, ref, Ref } from "@vue/reactivity";
 import { consola } from "consola";
 
 import { inject, provide, type InjectionKey } from "./utils/inject-provide";
@@ -15,6 +15,7 @@ type StateDefinition = {
   dialogState: Ref<DialogStates>;
 
   titleId: Ref<string | null>;
+  describedby: ComputedRef<string | undefined>;
   panelRef: Ref<HTMLDivElement | null>;
 
   setTitleId(id: string | null): void;
@@ -64,6 +65,7 @@ const Dialog = {
   },
   updated() {
     consola.debug("Dialog hook updated", this.el.id);
+    this.render();
   },
   mounted() {
     this.reset();
@@ -85,6 +87,7 @@ const Dialog = {
     const api: StateDefinition = {
       dialogState,
       titleId,
+      describedby,
       panelRef,
       setTitleId(id: string | null) {
         if (titleId.value === id) return;
@@ -107,21 +110,25 @@ const Dialog = {
 
     provide(this.el.id, DialogContext, api);
 
-    if (this.el.dataset["dialog_type"] === "slideover") {
+    if (this.el.dataset["dialog_resize_listener"]) {
       window.addEventListener("resize", onResizeHandler);
       resizeFunction();
     }
 
     nextFrame(() => {
-      if (titleId.value) {
-        this.el.setAttribute("aria-labelledby", titleId.value!);
-      }
-      if (describedby.value) {
-        this.el.setAttribute("aria-describedby", describedby.value!);
-      }
+      this.render();
     });
 
     consola.debug("Dialog hook mounted", this.el.id);
+  },
+  render() {
+    const api = useDialogContext(rootId(this.el.id), "Dialog");
+    if (api.titleId.value) {
+      this.el.setAttribute("aria-labelledby", api.titleId.value!);
+    }
+    if (api.describedby.value) {
+      this.el.setAttribute("aria-describedby", api.describedby.value!);
+    }
   },
 };
 

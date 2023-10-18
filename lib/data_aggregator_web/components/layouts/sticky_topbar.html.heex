@@ -8,7 +8,13 @@
     class="-m-2.5 p-2.5 text-gray-700 dark:text-white lg:hidden"
   >
     <span class="sr-only">Open sidebar</span>
-    <.icon name="hero-bars-3-mini" class="w-5 h-5" />
+    <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path
+        fill-rule="evenodd"
+        d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10zm0 5.25a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z"
+        clip-rule="evenodd"
+      />
+    </svg>
   </button>
 
   <div class="gap-x-4 lg:gap-x-6 flex self-stretch flex-1">
@@ -22,7 +28,7 @@
         />
         <input
           id="search-field"
-          class="dark:bg-transparent dark:text-white placeholder:text-gray-400 focus:ring-0 sm:text-sm block w-full h-full py-0 pl-3 pr-0 text-gray-900 border-0"
+          class="dark:bg-transparent dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-0 sm:text-sm block w-full h-full py-0 pl-3 pr-0 text-gray-900 border-0"
           placeholder={~t"Search..."m}
           type="search"
           name="search"

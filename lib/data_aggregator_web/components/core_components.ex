@@ -20,6 +20,7 @@ defmodule DataAggregatorWeb.CoreComponents do
   alias Phoenix.LiveView.JS
 
   import DataAggregatorWeb.Gettext
+  import DataAggregatorWeb.Headless.Dialog, only: [dialog_title: 1]
 
   @doc """
   Renders flash notices.
@@ -42,24 +43,65 @@ defmodule DataAggregatorWeb.CoreComponents do
     <div
       :if={msg = render_slot(@inner_block) || Phoenix.Flash.get(@flash, @kind)}
       id={@id}
+      phx-mounted={Enum.member?(["server-error", "client-error"], @id) == false && show("##{@id}")}
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
       class={[
-        "fixed top-2 right-2 w-80 sm:w-96 z-50 rounded-lg p-3 ring-1",
-        @kind == :info && "bg-emerald-50 text-emerald-800 ring-emerald-500 fill-cyan-900",
-        @kind == :error && "bg-rose-50 text-rose-900 shadow-md ring-rose-500 fill-rose-900"
+        "pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg shadow-lg ring-1",
+        @kind == :info && "bg-green-50 ring-green-500",
+        @kind == :error && "bg-red-50 ring-red-500"
       ]}
       {@rest}
     >
-      <p :if={@title} class="flex gap-1.5 items-center text-sm font-semibold leading-6">
-        <.icon :if={@kind == :info} name="hero-information-circle-mini" class="w-4 h-4" />
-        <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="w-4 h-4" />
-        <%= @title %>
-      </p>
-      <p class="mt-2 text-sm leading-5"><%= msg %></p>
-      <button type="button" class="group absolute top-1 right-1 p-2" aria-label={gettext("close")}>
-        <.icon name="hero-x-mark-solid" class="group-hover:opacity-70 w-5 h-5 opacity-40" />
-      </button>
+      <div class="p-4">
+        <div class="flex items-start">
+          <div :if={@title} class="flex-shrink-0">
+            <.icon
+              :if={@kind == :info}
+              name="hero-information-circle-mini text-green-400"
+              class="w-6 h-6"
+            />
+            <.icon
+              :if={@kind == :error}
+              name="hero-exclamation-circle-mini text-red-400"
+              class="w-6 h-6"
+            />
+          </div>
+
+          <div class="ml-3 w-0 flex-1 pt-0.5">
+            <p class={[
+              "text-sm font-medium text-gray-900",
+              @kind == :info && "text-green-800",
+              @kind == :error && "text-red-800"
+            ]}>
+              <%= @title %>
+            </p>
+            <p class={[
+              "mt-2 text-sm",
+              @kind == :info && "text-green-700",
+              @kind == :error && "text-red-700"
+            ]}>
+              <%= msg %>
+            </p>
+          </div>
+
+          <div class="ml-4 flex flex-shrink-0">
+            <button
+              type="button"
+              class={[
+                "inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2",
+                @kind == :info &&
+                  "bg-green-50 text-green-500 hover:bg-green-100 focus:ring-green-600 focus:ring-offset-green-50",
+                @kind == :error &&
+                  "bg-red-50 text-red-500 hover:bg-red-100 focus:ring-red-600 focus:ring-offset-red-50"
+              ]}
+              aria-label={gettext("close")}
+            >
+              <.icon name="hero-x-mark-solid" class="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
     """
   end
@@ -75,31 +117,38 @@ defmodule DataAggregatorWeb.CoreComponents do
 
   def flash_group(assigns) do
     ~H"""
-    <.flash kind={:info} title={~t"Success!"m} flash={@flash} />
-    <.flash kind={:error} title={~t"Error!"m} flash={@flash} />
-    <.flash
-      id="client-error"
-      kind={:error}
-      title={~t"We can't find the internet"m}
-      phx-disconnected={show(".phx-client-error #client-error")}
-      phx-connected={hide("#client-error")}
-      hidden
+    <div
+      aria-live="assertive"
+      class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6 z-50"
     >
-      <%= ~t"Attempting to reconnect"m %>
-      <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
-    </.flash>
+      <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
+        <.flash kind={:info} title={~t"Success!"m} flash={@flash} hidden />
+        <.flash kind={:error} title={~t"Error!"m} flash={@flash} hidden />
+        <.flash
+          id="client-error"
+          kind={:error}
+          title={~t"We can't find the internet"m}
+          phx-disconnected={show(".phx-client-error #client-error")}
+          phx-connected={hide("#client-error")}
+          hidden
+        >
+          <%= ~t"Attempting to reconnect"m %>
+          <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
+        </.flash>
 
-    <.flash
-      id="server-error"
-      kind={:error}
-      title="Something went wrong!"
-      phx-disconnected={show(".phx-server-error #server-error")}
-      phx-connected={hide("#server-error")}
-      hidden
-    >
-      <%= ~t"Hang in there while we get back on track"m %>
-      <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
-    </.flash>
+        <.flash
+          id="server-error"
+          kind={:error}
+          title="Something went wrong!"
+          phx-disconnected={show(".phx-server-error #server-error")}
+          phx-connected={hide("#server-error")}
+          hidden
+        >
+          <%= ~t"Hang in there while we get back on track"m %>
+          <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
+        </.flash>
+      </div>
+    </div>
     """
   end
 
@@ -375,7 +424,8 @@ defmodule DataAggregatorWeb.CoreComponents do
   Renders a header with title.
   """
   attr :class, :string, default: nil
-  attr :action_class, :string, default: "flex-none"
+  attr :action_class, :string, default: "flex gap-x-3"
+  attr :id, :string, default: nil
 
   slot :inner_block, required: true
   slot :subtitle
@@ -384,13 +434,20 @@ defmodule DataAggregatorWeb.CoreComponents do
   def header(assigns) do
     ~H"""
     <header class={[
-      "border-b dark:border-white/5 border-gray-200 p-4 sm:py-5 sm:px-6 lg:px-8",
+      "dark:bg-gray-900 z-10 bg-white border-b dark:border-white/5 border-gray-200 p-4 sm:py-5 sm:px-6 lg:px-8",
       @actions != [] &&
         "flex items-center justify-between gap-6",
       @class
     ]}>
       <div>
-        <h1 class="text-gray-800 dark:text-white text-base font-semibold leading-9">
+        <.dialog_title
+          :if={@id}
+          id={@id <> "__title"}
+          class="text-gray-800 dark:text-white text-base font-semibold leading-9"
+        >
+          <%= render_slot(@inner_block) %>
+        </.dialog_title>
+        <h1 :if={!@id} class="text-gray-800 dark:text-white text-base font-semibold leading-9">
           <%= render_slot(@inner_block) %>
         </h1>
         <p :if={@subtitle != []} class="text-gray-600 dark:text-gray-400 mt-2 text-sm leading-6">
@@ -399,6 +456,41 @@ defmodule DataAggregatorWeb.CoreComponents do
       </div>
       <div class={@action_class}><%= render_slot(@actions) %></div>
     </header>
+    """
+  end
+
+  @doc ~S"""
+  Renders a sidebar with header, inner_block, and footer slots.
+  """
+  attr :class, :string, default: nil
+  attr :as, :string, default: "div"
+
+  slot :inner_block, required: true
+  slot :header
+  slot :footer
+
+  def sidebar(assigns) do
+    ~H"""
+    <.dynamic_tag
+      name={@as}
+      class={[
+        "flex flex-col h-full bg-gray-100/30 dark:bg-black/10 shadow-xl border-l border-gray-200 dark:border-white/10 divide-y divide-gray-200 dark:divide-white/5",
+        @class
+      ]}
+    >
+      <div class="flex min-h-0 flex-1 flex-col overflow-y-scroll pb-6">
+        <%= render_slot(@header) %>
+        <div class="flex-1 relative">
+          <%= render_slot(@inner_block) %>
+        </div>
+      </div>
+      <div
+        :if={@footer != []}
+        class="flex flex-shrink-0 justify-end px-4 py-4 bg-white dark:bg-gray-900"
+      >
+        <%= render_slot(@footer) %>
+      </div>
+    </.dynamic_tag>
     """
   end
 
@@ -442,7 +534,10 @@ defmodule DataAggregatorWeb.CoreComponents do
       <div class="mt-4 sm:mt-6 lg:mt-8 flow-root">
         <div class="table-container -mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div class="inline-block min-w-full py-2 align-middle">
-            <table role="table" class="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
+            <table
+              role="table"
+              class="min-w-full table-auto will-change-scroll divide-y divide-gray-300 dark:divide-gray-700"
+            >
               <thead role="rowgroup">
                 <tr role="row">
                   <th
@@ -513,7 +608,7 @@ defmodule DataAggregatorWeb.CoreComponents do
                   :for={row <- @rows}
                   role="rowgroup"
                   id={@row_id && @row_id.(row)}
-                  class="group dark:hover:bg-black/10 hover:bg-gray-50"
+                  class="group dark:hover:bg-black/10 hover:bg-gray-400/10"
                 >
                   <td
                     :for={{col, _i} <- Enum.with_index(@col)}
@@ -564,14 +659,16 @@ defmodule DataAggregatorWeb.CoreComponents do
 
   def list(assigns) do
     ~H"""
-    <div class="mt-14 px-4 sm:px-6 lg:px-8">
-      <dl class="divide-gray-100 dark:divide-gray-700 -my-4 divide-y">
-        <div :for={item <- @item} class="sm:gap-8 flex gap-4 py-4 text-sm leading-6">
-          <dt class="text-gray-500 dark:text-white flex-none w-1/4"><%= item.title %></dt>
-          <dd class="text-gray-700 dark:text-gray-200"><%= render_slot(item) %></dd>
-        </div>
-      </dl>
-    </div>
+    <dl class="divide-y divide-gray-200 dark:divide-white/5">
+      <div :for={item <- @item} class="px-6 py-5">
+        <dt class="text-sm font-medium text-gray-500 dark:text-white">
+          <%= item.title %>
+        </dt>
+        <dd class="mt-1 text-sm text-gray-700 dark:text-gray-200">
+          <%= render_slot(item) %>
+        </dd>
+      </div>
+    </dl>
     """
   end
 
@@ -629,23 +726,22 @@ defmodule DataAggregatorWeb.CoreComponents do
   ## JS Commands
 
   def show(js \\ %JS{}, selector) do
-    JS.show(js,
+    js
+    |> JS.show(
       to: selector,
       transition:
         {"transition-all transform ease-out duration-300",
-         "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
-         "opacity-100 translate-y-0 sm:scale-100"}
+         "opacity-0 translate-y-2 sm:translate-y-0 sm:translate-x-2",
+         "opacity-100 translate-y-0 sm:translate-x-0"}
     )
+    |> JS.remove_attribute("hidden", to: selector)
   end
 
   def hide(js \\ %JS{}, selector) do
     JS.hide(js,
       to: selector,
-      time: 200,
-      transition:
-        {"transition-all transform ease-in duration-200",
-         "opacity-100 translate-y-0 sm:scale-100",
-         "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"}
+      time: 100,
+      transition: {"transition-all transform ease-in duration-100", "opacity-100", "opacity-0"}
     )
   end
 

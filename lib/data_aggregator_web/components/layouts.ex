@@ -9,11 +9,11 @@ defmodule DataAggregatorWeb.Layouts do
       <.menu id="locale-select">
         <.menu_button
           id="locale-select__button"
-          class="relative rounded-full bg-white dark:bg-gray-900 p-1 text-gray-400 hover:text-gray-500 dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 dark:focus-visible:ring-white focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
+          class="flex items-center relative rounded-full bg-white dark:bg-gray-900 p-1 text-gray-400 hover:text-gray-500 dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 dark:focus-visible:ring-white focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
         >
           <span class="absolute -inset-1.5" />
           <.icon name="hero-globe-alt" class="w-6 h-6" />
-          <span class="pr-1"><%= current_locale() %></span>
+          <span class="px-1"><%= current_locale() %></span>
         </.menu_button>
         <.menu_items id="locale-select__items" width="w-20">
           <div class="py-1" role="none">
@@ -26,11 +26,9 @@ defmodule DataAggregatorWeb.Layouts do
               }
             >
               <%= locale.label %>
-              <%= if current_locale() == locale.label do %>
-                <span class="text-cyan-600 font-bold">
-                  &check;
-                </span>
-              <% end %>
+              <span :if={current_locale() == locale.label} class="text-cyan-600 font-bold">
+                &check;
+              </span>
             </.menu_item>
           </div>
         </.menu_items>

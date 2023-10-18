@@ -8,41 +8,47 @@ defmodule DataAggregatorWeb.Headless.Menu do
 
   alias Phoenix.LiveView.JS
 
+  import DataAggregatorWeb.Headless.Helpers
+
   @doc """
   Renders a menu component.
 
   ## Examples
 
-    <.menu id="menu">
-      <.menu_button id="menu__button">
-        <.span aria-hidden="true">...</.span>
-        <.span class="sr-only">...</.span>
-      </.menu_button>
-      <.menu_items id="menu__items">
-        <.menu_item id="menu__item-1" href="#">...</.menu_item>
-      </.menu_items>
-    </.menu>
+  <.headless_menu id="menu">
+    <.headless_menu_button id="menu__button">
+      Button
+    </.headless_menu_button>
+    <.headless_menu_items id="menu__items">
+      <div class="py-1" role="none">
+        <.headless_menu_item id="menu__item-1" href="#">Item 1</.headless_menu_item>
+        <.headless_menu_item id="menu__item-2" href="#">Item 2</.headless_menu_item>
+        <.headless_menu_item id="menu__item-3" href="#">Item 3</.headless_menu_item>
+      </div>
+    </.headless_menu_items>
+  </.headless_menu>
 
   ## Usage
 
-  The `Menu` component is a wrapper for the `MenuButton` and `MenuItems` components.
-  It is responsible for managing the state of the menu and rendering the `MenuButton`
-  and `MenuItems` components. It also provides the `showMenu` and `hideMenu` functions
+  The `HeadlessMenu` component is a wrapper for the `HeadlessMenuButton` and `HeadlessMenuItems` components.
+  It is responsible for managing the state of the menu and rendering the `HeadlessMenuButton`
+  and `HeadlessMenuItems` components. It also provides the `showMenu` and `hideMenu` functions
   to show and hide the menu.
   The componen ids must follow the pattern `<id>__button`, `<id>__items`, and
   `<id>__<item-suffix>` to work properly.
   """
   attr :id, :string, required: true
   attr :as, :string, default: "div"
-  attr :class, :string, default: "relative inline-block text-left"
+  attr :class, :string, default: nil
+  attr :hide_transition, :map, default: nil
   attr :rest, :global
   slot :inner_block, required: true
 
-  def menu(assigns) do
+  def headless_menu(assigns) do
     ~H"""
     <.dynamic_tag
       phx-hook="Menu"
-      phx-remove={hide_menu(@id)}
+      phx-remove={hide_menu(@id, @hide_transition)}
       id={@id}
       name={@as}
       class={@class}
@@ -55,19 +61,16 @@ defmodule DataAggregatorWeb.Headless.Menu do
 
   attr :id, :string, required: true
   attr :as, :string, default: "button"
-
-  attr :class, :string,
-    default:
-      "inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-
+  attr :class, :string, default: nil
+  attr :show_transition, :map, default: nil
   attr :rest, :global
   slot :inner_block, required: true
 
-  def menu_button(assigns) do
+  def headless_menu_button(assigns) do
     ~H"""
     <.dynamic_tag
       phx-hook="MenuButton"
-      phx-click={@id |> root_id |> show_menu}
+      phx-click={@id |> root_id |> show_menu(@show_transition)}
       id={@id}
       name={@as}
       type={(@as == "button" && "button") || @rest.type}
@@ -82,16 +85,12 @@ defmodule DataAggregatorWeb.Headless.Menu do
 
   attr :id, :string, required: true
   attr :as, :string, default: "div"
-
-  attr :class, :string,
-    default:
-      "ring-1 ring-black ring-opacity-5 focus:outline-none absolute right-0 z-10 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg"
-
-  attr :width, :string, default: "w-56"
+  attr :class, :string, default: nil
+  attr :width, :string, default: nil
   attr :rest, :global
   slot :inner_block, required: true
 
-  def menu_items(assigns) do
+  def headless_menu_items(assigns) do
     ~H"""
     <.dynamic_tag
       phx-hook="MenuItems"
@@ -111,16 +110,12 @@ defmodule DataAggregatorWeb.Headless.Menu do
   end
 
   attr :id, :string, required: true
-
-  attr :class, :string,
-    default:
-      "group aria-selected:bg-gray-100 focus:outline-none aria-selected:text-gray-900 flex justify-between cursor-pointer items-center px-4 py-2 text-sm text-gray-700"
-
+  attr :class, :string, default: nil
   attr :rest, :global, include: ~w(navigate patch href replace method csrf_token disabled)
   attr :as, :string, default: nil
   slot :inner_block, required: true
 
-  def menu_item(assigns) do
+  def headless_menu_item(assigns) do
     ~H"""
     <%= if @as do %>
       <.dynamic_tag phx-hook="MenuItem" id={@id} role="menuitem" class={@class} {@rest} name={@as}>
@@ -134,33 +129,27 @@ defmodule DataAggregatorWeb.Headless.Menu do
     """
   end
 
-  defp root_id(id) do
-    id
-    |> String.split("__")
-    |> List.first()
-  end
+  defp show_menu(js \\ %JS{}, id, transition) when is_binary(id) do
+    time = extract_duration(transition)
 
-  defp show_menu(js \\ %JS{}, id) when is_binary(id) do
     js
     |> JS.show(
       to: "##{id}__items",
-      time: 100,
-      transition:
-        {"transition ease-out duration-100", "transform opacity-0 scale-95",
-         "transform opacity-100 scale-100"}
+      time: time,
+      transition: transition
     )
     |> JS.set_attribute({"aria-expanded", "true"}, to: "##{id}-button")
     |> JS.set_attribute({"aria-controls", "#{id}__items"}, to: "##{id}__button")
   end
 
-  defp hide_menu(js \\ %JS{}, id) do
+  defp hide_menu(js \\ %JS{}, id, transition) do
+    time = extract_duration(transition)
+
     js
     |> JS.hide(
       to: "##{id}__items",
-      time: 75,
-      transition:
-        {"transition ease-in duration-75", "transform opacity-100 scale-100",
-         "transform opacity-0 scale-95"}
+      time: time,
+      transition: transition
     )
     |> JS.set_attribute({"aria-expanded", "false"}, to: "##{id}__button")
     |> JS.remove_attribute("aria-controls", to: "##{id}__button")

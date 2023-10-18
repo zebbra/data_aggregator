@@ -15,17 +15,17 @@ defmodule DataAggregatorWeb.Headless.Switch do
 
   ## Examples
 
-      <.switch_group id="switch-2__group" class="flex items-center">
-        <.switch id="switch-2" checked />
-        <.switch_label id="switch-2__label" class="ml-3 text-sm">
-          <span class="font-medium text-gray-900">Annual billing</span>
-        </.switch_label>
-      </.switch_group>
+  <.headless_switch_group id="switch-1__group">
+    <.headless_switch id="switch-1" checked />
+    <.headless_switch_label id="switch-1__label">
+      Switch 1
+    </.headless_switch_label>
+  </.headless_switch_group>
 
   ## Usage
 
-  The `SwitchGroup` component is a wrapper for the `Switch`, `SwitchLabel` and
-  `SwitchDescription` components.
+  The `HeadlessSwitchGroup` component is a wrapper for the `HeadlessSwitch`,
+  `HeadlessSwitchLabel` and `HeadlessSwitchDescription` components.
   The componen ids must follow the pattern `<id>__group`, `<id>__label`, and
   `<id>__description` to work properly.
   """
@@ -34,7 +34,7 @@ defmodule DataAggregatorWeb.Headless.Switch do
   attr :rest, :global
   slot :inner_block, required: true
 
-  def switch_group(assigns) do
+  def headless_switch_group(assigns) do
     ~H"""
     <.dynamic_tag phx-hook="SwitchGroup" id={@id} name={@as} {@rest}>
       <%= render_slot(@inner_block) %>
@@ -48,15 +48,12 @@ defmodule DataAggregatorWeb.Headless.Switch do
   attr :value, :string, default: "on"
   attr :form, :string, default: nil
   attr :name, :string, default: nil
-
-  attr :class, :string,
-    default:
-      "bg-gray-200 aria-checked:bg-indigo-600 w-11 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer"
-
+  attr :class, :string, default: nil
+  attr :slot_class, :string, default: nil
   attr :rest, :global
   slot :inner_block
 
-  def switch(assigns) do
+  def headless_switch(assigns) do
     ~H"""
     <%= if @name != nil && @checked != nil do %>
       <.hidden
@@ -89,10 +86,7 @@ defmodule DataAggregatorWeb.Headless.Switch do
   defp default_switch(assigns) do
     ~H"""
     <span class="sr-only">Toggle</span>
-    <span
-      aria-hidden="true"
-      class="ring-0 group-[.is-checked]/checked:translate-x-5 inline-block w-5 h-5 transition duration-200 ease-in-out transform translate-x-0 bg-white rounded-full shadow pointer-events-none"
-    />
+    <span aria-hidden="true" class={@slot_class} />
     """
   end
 
@@ -102,7 +96,7 @@ defmodule DataAggregatorWeb.Headless.Switch do
   attr :rest, :global
   slot :inner_block, required: true
 
-  def switch_label(assigns) do
+  def headless_switch_label(assigns) do
     ~H"""
     <.label phx-hook="Label" id={@id} passive={@passive} as={@as} {@rest}>
       <%= render_slot(@inner_block) %>
@@ -115,7 +109,7 @@ defmodule DataAggregatorWeb.Headless.Switch do
   attr :rest, :global
   slot :inner_block, required: true
 
-  def switch_description(assigns) do
+  def headless_switch_description(assigns) do
     ~H"""
     <.description phx-hook="Description" id={@id} as={@as} {@rest}>
       <%= render_slot(@inner_block) %>

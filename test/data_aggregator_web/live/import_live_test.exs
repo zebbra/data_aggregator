@@ -86,7 +86,7 @@ defmodule DataAggregatorWeb.ImportLiveTest do
     test "updates import within modal", %{conn: conn, import: import} do
       {:ok, show_live, _html} = live(conn, ~p"/imports/#{import}")
 
-      assert show_live |> element("a", "Edit") |> render_click() =~
+      assert show_live |> element("a", "Edit import") |> render_click() =~
                "Edit Import"
 
       assert_patch(show_live, ~p"/imports/#{import}/show/edit")
@@ -99,7 +99,7 @@ defmodule DataAggregatorWeb.ImportLiveTest do
              |> form("#import-form", import: @update_attrs)
              |> render_submit()
 
-      assert_patch(show_live, ~p"/imports/#{import}")
+      assert_patch(show_live, ~p"/imports")
 
       html = render(show_live)
       assert html =~ "Import updated successfully"

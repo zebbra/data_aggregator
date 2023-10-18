@@ -20,6 +20,7 @@ export function match<
       .map((key) => `"${key}"`)
       .join(", ")}.`
   );
+  // @ts-expect-error
   if (Error.captureStackTrace) Error.captureStackTrace(error, match);
   throw error;
 }

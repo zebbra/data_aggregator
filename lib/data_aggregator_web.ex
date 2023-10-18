@@ -85,9 +85,8 @@ defmodule DataAggregatorWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import DataAggregatorWeb.CoreComponents
-      import DataAggregatorWeb.Headless.Menu
-      import DataAggregatorWeb.Headless.Switch
-      import DataAggregatorWeb.Headless.Dialog
+      import DataAggregatorWeb.HeadlessComponents
+      import DataAggregatorWeb.Headless.Dialog, only: [dialog_title: 1, dialog_description: 1]
       import DataAggregatorWeb.Gettext
 
       # Shortcut for generating JS commands

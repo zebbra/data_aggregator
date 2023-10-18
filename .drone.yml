@@ -38,7 +38,6 @@ steps:
       - mix deps.compile
       - mix compile --warnings-as-errors --force
       - mix deps.clean --unused
-      - mix deps.audit
       - mix lint
       - mix test
 

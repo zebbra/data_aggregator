@@ -5,6 +5,7 @@ import {
   computed,
   UnwrapNestedRefs,
 } from "@vue/reactivity";
+import { watchEffect } from "@vue-reactivity/watch";
 import { consola } from "consola";
 
 import { Focus, calculateActiveIndex } from "./utils/calculate-active-index";
@@ -20,6 +21,7 @@ import { Keys } from "./utils/keyboard";
 import { nextFrame, rootId, unwrap } from "./utils/helpers";
 import { useTextValue } from "./utils/get-text-value";
 import { useTrackedPointer } from "./utils/use-tracked-pointer";
+import { useTreeWalker } from "./utils/use-tree-walker";
 
 enum MenuStates {
   Open,
@@ -356,6 +358,23 @@ const MenuItems = {
 
     const searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null);
 
+    useTreeWalker({
+      container: computed(() => dom(api.itemsRef)),
+      enabled: computed(() => api.menuState.value === MenuStates.Open),
+      accept(node) {
+        if (node.getAttribute("role") === "menuitem") {
+          return NodeFilter.FILTER_REJECT;
+        }
+        if (node.hasAttribute("role")) {
+          return NodeFilter.FILTER_SKIP;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      },
+      walk(node) {
+        node.setAttribute("role", "none");
+      },
+    });
+
     function handleKeyDown(event: KeyboardEvent) {
       if (searchDebounce.value) clearTimeout(searchDebounce.value);
 
@@ -497,6 +516,15 @@ const MenuItem = {
 
     api.registerItem(this.el.id, dataRef);
     this.dataRef = dataRef;
+
+    watchEffect(() => {
+      if (api.menuState.value !== MenuStates.Open) return;
+      if (!active.value) return;
+      if (api.activationTrigger.value === ActivationTrigger.Pointer) return;
+      nextFrame(() =>
+        dom(internalItemRef)?.scrollIntoView?.({ block: "nearest" })
+      );
+    });
 
     function handleClick(event: MouseEvent) {
       if (disabled) return event.preventDefault();

@@ -33,6 +33,12 @@ defmodule DataAggregatorWeb.ImportLive.Index do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
+  defp apply_action(socket, :show, %{"id" => id}) do
+    socket
+    |> assign(:page_title, ~t"Show Import"m)
+    |> assign(:import, Import.get_by_id!(id))
+  end
+
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, ~t"Edit Import"m)
