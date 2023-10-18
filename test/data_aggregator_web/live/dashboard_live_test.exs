@@ -1,0 +1,13 @@
+defmodule DataAggregatorWeb.DashboardLiveTest do
+  use DataAggregatorWeb.ConnCase
+
+  import Phoenix.LiveViewTest
+
+  describe "Index" do
+    test "renders dashboard", %{conn: conn} do
+      {:ok, _index_live, html} = live(conn, ~p"/")
+
+      assert html =~ "Dashboard"
+    end
+  end
+end

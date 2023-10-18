@@ -3,36 +3,57 @@ defmodule DataAggregatorWeb.ImportRecordLive.Index do
 
   alias DataAggregator.Imports.ImportRecord
 
+  @sort_options [:inserted_at, :updated_at, :url]
+
   @impl true
   def mount(_params, _session, socket) do
-    socket =
-      socket
-      |> assign(:current_time, DateTime.utc_now())
-      |> stream(:import_records, ImportRecord.read!())
-
     {:ok, socket}
   end
 
   @impl true
   def handle_params(params, _url, socket) do
+    import_records =
+      ImportRecord.read!(Map.get(params, "order_by", ""))
+
+    socket =
+      socket
+      |> assign(:current_order_by, get_current_order_by(params))
+      |> assign(:current_order_dir, get_current_order_dir(params))
+      |> assign(
+        :sort_options,
+        order_by_options(
+          socket.assigns.active_link,
+          params,
+          @sort_options
+        )
+      )
+      |> assign(:show_filters, false)
+      |> stream(:import_records, import_records)
+
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  defp apply_action(socket, :show, %{"id" => id}) do
+    socket
+    |> assign(:page_title, ~t"Show ImportRecord"m)
+    |> assign(:import_record, ImportRecord.get_by_id!(id))
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
-    |> assign(:page_title, "Edit Import Record")
+    |> assign(:page_title, ~t"Edit ImportRecord"m)
     |> assign(:import_record, ImportRecord.get_by_id!(id))
   end
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "New Import Record")
+    |> assign(:page_title, ~t"New ImportRecord"m)
     |> assign(:import_record, %ImportRecord{})
   end
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Import Records")
+    |> assign(:page_title, ~t"Listing ImportRecords"m)
     |> assign(:import_record, nil)
   end
 
@@ -50,5 +71,10 @@ defmodule DataAggregatorWeb.ImportRecordLive.Index do
     :ok = ImportRecord.destroy(import_record)
 
     {:noreply, stream_delete(socket, :import_records, import_record)}
+  end
+
+  @impl true
+  def handle_event("toggle-filters", _params, socket) do
+    {:noreply, assign(socket, :show_filters, !socket.assigns.show_filters)}
   end
 end

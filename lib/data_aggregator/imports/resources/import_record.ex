@@ -22,11 +22,25 @@ defmodule DataAggregator.Imports.ImportRecord do
     attribute :import_data, :map
     attribute :meta_data, :map
 
-    timestamps()
+    timestamps(private?: false)
   end
 
   actions do
-    defaults [:create, :read, :update, :destroy]
+    defaults [:create, :update, :destroy]
+
+    read :read do
+      primary? true
+
+      argument :sort, :string do
+        allow_nil? true
+        default "id"
+      end
+
+      prepare fn query, _ ->
+        query
+        |> Ash.Query.sort(Ash.Sort.parse_input!(__MODULE__, query.arguments.sort))
+      end
+    end
   end
 
   json_api do
@@ -44,27 +58,28 @@ defmodule DataAggregator.Imports.ImportRecord do
   end
 
   graphql do
-    type :import
+    type :import_record
 
     queries do
-      get :get_import, :read
-      list :list_imports, :read
+      get :get_import_record, :read
+      list :list_import_records, :read
     end
 
     mutations do
-      create :create_import, :create
-      update :update_import, :update
-      destroy :destroy_import, :destroy
+      create :create_import_record, :create
+      update :update_import_record, :update
+      destroy :destroy_import_record, :destroy
     end
   end
 
   code_interface do
     define_for DataAggregator.Imports
-    define :read
-    define :create, action: :create
-    define :read_all, action: :read
-    define :update, action: :update
-    define :destroy, action: :destroy
+
+    define :read, args: [{:optional, :sort}]
+
+    define :create
+    define :update
+    define :destroy
     define :get_by_id, action: :read, get_by: [:id]
   end
 

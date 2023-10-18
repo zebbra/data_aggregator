@@ -2,14 +2,32 @@ defmodule DataAggregatorWeb.Router do
   use DataAggregatorWeb, :router
 
   import AshAdmin.Router
+  import DataAggregatorWeb.Locale, only: [assign_current_locale: 2]
+
+  pipeline :locale do
+    plug :fetch_session
+
+    plug Cldr.Plug.PutLocale,
+      apps: [:cldr, :gettext],
+      cldr: DataAggregatorWeb.Cldr,
+      gettext: DataAggregatorWeb.Gettext,
+      from: [:query, :session, :accept_language],
+      param: "locale"
+
+    plug :assign_current_locale
+
+    plug Cldr.Plug.PutSession, as: :language_tag
+  end
 
   pipeline :browser do
     plug :accepts, ["html"]
-    plug :fetch_session
     plug :fetch_live_flash
-    plug :put_root_layout, html: {DataAggregatorWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+  end
+
+  pipeline :with_root_layout do
+    plug :put_root_layout, html: {DataAggregatorWeb.Layouts, :root}
   end
 
   pipeline :api do
@@ -20,20 +38,36 @@ defmodule DataAggregatorWeb.Router do
     plug AshGraphql.Plug
   end
 
-  scope "/", DataAggregatorWeb do
-    pipe_through :browser
+  scope "/" do
+    pipe_through [:locale, :browser]
 
-    get "/", PageController, :home
+    scope "/", DataAggregatorWeb do
+      pipe_through [:with_root_layout]
 
-    live "/import_records", ImportRecordLive.Index, :index
-    live "/import_records/new", ImportRecordLive.Index, :new
-    live "/import_records/:id/edit", ImportRecordLive.Index, :edit
-    live "/import_records/:id", ImportRecordLive.Show, :show
-    live "/import_records/:id/show/edit", ImportRecordLive.Show, :edit
+      user_hooks = [
+        DataAggregatorWeb.LiveLogger,
+        DataAggregatorWeb.LiveState,
+        DataAggregatorWeb.LiveLocale,
+        DataAggregatorWeb.LiveNavigator
+      ]
+
+      live_session :default, on_mount: user_hooks do
+        live "/", DashboardLive.Index, :index
+
+        live "/import_records", ImportRecordLive.Index, :index
+        live "/import_records/new", ImportRecordLive.Index, :new
+        live "/import_records/:id/edit", ImportRecordLive.Index, :edit
+        live "/import_records/:id", ImportRecordLive.Show, :show
+        live "/import_records/:id/show/edit", ImportRecordLive.Show, :edit
+      end
+    end
+
+    # Used by JS hook to update locale from component
+    get "/locale", DataAggregatorWeb.LocaleController, :set
   end
 
   scope "/" do
-    pipe_through :browser
+    pipe_through [:locale, :browser]
     ash_admin "/admin"
   end
 
@@ -79,7 +113,7 @@ defmodule DataAggregatorWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
-      pipe_through :browser
+      pipe_through [:locale, :browser]
 
       live_dashboard "/dashboard", metrics: DataAggregatorWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview

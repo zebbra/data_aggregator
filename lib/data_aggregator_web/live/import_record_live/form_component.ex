@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.ImportRecordLive.FormComponent do
+defmodule DataAggregatorWeb.ImportLive.FormComponent do
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form
@@ -16,10 +16,28 @@ defmodule DataAggregatorWeb.ImportRecordLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.header>
-        <%= @title %>
-        <:subtitle>Use this form to manage import_record in your database.</:subtitle>
-      </.header>
+      <div class="sm:flex sm:items-start">
+        <div
+          :if={assigns[:icon]}
+          class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10"
+        >
+          <.icon name={@icon} class="h-6 w-6 text-indigo-600" />
+        </div>
+        <div class={["mt-3 text-center sm:mt-0 sm:text-left", assigns[:icon] && "sm:ml-4"]}>
+          <.dialog_title
+            id="import_record-modal__title"
+            class="text-gray-900 dark:text-white text-base font-semibold leading-6"
+          >
+            <%= @title %>
+          </.dialog_title>
+          <.dialog_description
+            id="import_record-modal__description"
+            class="text-gray-500 dark:text-gray-400 mt-2 text-sm"
+          >
+            <%= ~t"Use this form to manage import records in your database."m %>
+          </.dialog_description>
+        </div>
+      </div>
 
       <.simple_form
         for={@form}
@@ -28,10 +46,24 @@ defmodule DataAggregatorWeb.ImportRecordLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:unique_qualifier]} label="Unique Qualifier" />
+        <.input field={@form[:url]} label={~t"URL"m} placeholder={~t"URL"m} />
 
         <:actions>
-          <.button phx-disable-with="Saving...">Save Import Record</.button>
+          <.button
+            type="submit"
+            class="sm:ml-3 sm:w-auto inline-flex justify-center w-full"
+            phx-disable-with={~t"Saving..."m}
+          >
+            <%= ~t"Save ImportRecord"m %>
+          </.button>
+          <.button
+            variant="secondary"
+            class="mt-3 sm:mt-0 sm:w-auto inline-flex justify-center w-full"
+            phx-click={JS.exec("data-cancel", to: "#import_record-modal")}
+            phx-disable-with
+          >
+            <%= ~t"Cancel"m %>
+          </.button>
         </:actions>
       </.simple_form>
     </div>
@@ -55,54 +87,6 @@ defmodule DataAggregatorWeb.ImportRecordLive.FormComponent do
   end
 
   @impl true
-  @spec handle_event(
-          <<_::32, _::_*32>>,
-          map(),
-          atom()
-          | %{
-              :assigns =>
-                atom()
-                | %{
-                    :form => %{
-                      :__struct__ => AshPhoenix.Form | Phoenix.HTML.Form,
-                      :action => atom() | binary(),
-                      :data => nil | map(),
-                      :errors => boolean() | list(),
-                      :id => any(),
-                      :name => any(),
-                      :params => map(),
-                      :source => any(),
-                      optional(:added?) => any(),
-                      optional(:any_removed?) => any(),
-                      optional(:api) => any(),
-                      optional(:changed?) => any(),
-                      optional(:form_keys) => list(),
-                      optional(:forms) => map(),
-                      optional(:hidden) => list(),
-                      optional(:impl) => atom(),
-                      optional(:index) => nil | non_neg_integer(),
-                      optional(:just_submitted?) => boolean(),
-                      optional(:method) => binary(),
-                      optional(:options) => list(),
-                      optional(:opts) => list(),
-                      optional(:original_data) => any(),
-                      optional(:prepare_params) => any(),
-                      optional(:prepare_source) => nil | (any() -> any()),
-                      optional(:resource) => atom(),
-                      optional(:submit_errors) => nil | list(),
-                      optional(:submitted_once?) => boolean(),
-                      optional(:touched_forms) => any(),
-                      optional(:transform_errors) => nil | (any(), any() -> any()),
-                      optional(:transform_params) => nil | (any() -> any()),
-                      optional(:type) => :create | :destroy | :read | :update,
-                      optional(:valid?) => boolean(),
-                      optional(:warn_on_unhandled_errors?) => any()
-                    },
-                    optional(any()) => any()
-                  },
-              optional(any()) => any()
-            }
-        ) :: {:noreply, any()}
   def handle_event("validate", %{"import_record" => params}, socket) do
     form = Form.validate(socket.assigns.form, params)
     {:noreply, assign(socket, form: form)}
@@ -116,8 +100,8 @@ defmodule DataAggregatorWeb.ImportRecordLive.FormComponent do
 
           message =
             case socket.assigns.action do
-              :new -> "Import Record created successfully"
-              :edit -> "Import Record updated successfully"
+              :new -> ~t"ImportRecord created successfully"m
+              :edit -> ~t"ImportRecord updated successfully"m
             end
 
           socket

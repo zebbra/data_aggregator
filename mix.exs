@@ -5,7 +5,7 @@ defmodule DataAggregator.MixProject do
     [
       app: :data_aggregator,
       version: "0.1.0",
-      elixir: "~> 1.14",
+      elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -32,49 +32,67 @@ defmodule DataAggregator.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      # misc
+      # phoenix framework
       {:plug_cowboy, "~> 2.5"},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:jason, "~> 1.2"},
-      {:gettext, "~> 0.20"},
+      {:phoenix, "~> 1.7.7"},
+      {:phoenix_ecto, "~> 4.4"},
+      {:phoenix_html, "~> 3.3"},
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:phoenix_live_view, "~> 0.19.5"},
       {:swoosh, "~> 1.3"},
-      {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
-      {:hackney, "~> 1.18"},
-      {:envy, "~> 1.1.1"},
-      {:earmark, "~> 1.4"},
 
-      # db / orm / api
+      # ash framework
       {:ash, "~> 2.13"},
       {:ash_postgres, "~> 1.3"},
       {:ash_phoenix, "~> 1.2"},
       {:ash_admin, "~> 0.9.0"},
       {:ash_uuid, "~> 0.4"},
       {:ash_graphql, "~> 0.25.13"},
+
+      # db / orm / api
       {:absinthe_plug, "~> 1.5.8"},
       {:ecto_sql, "~> 3.10"},
+      {:ecto_erd, "~> 0.5", only: :dev},
       {:postgrex, ">= 0.0.0"},
       {:finch, "~> 0.13"},
-      {:ecto_erd, "~> 0.5", only: :dev},
       {:open_api_spex, "~> 3.18"},
       {:ash_json_api, "~> 0.33.1"},
       {:redoc_ui_plug, "~> 0.2.1"},
       {:typed_struct, "~> 0.3.0"},
       {:typed_ecto_schema, "~> 0.4.1", runtime: false},
 
-      # frontend / ui
+      # assets
+      {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
-      {:phoenix, "~> 1.7.7"},
-      {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_live_dashboard, "~> 0.8.1"},
-      {:phoenix_html, "~> 3.3"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.19.0"},
+
+      # i18n
+      {:gettext, "~> 0.20"},
+      {:ex_cldr, "~> 2.37"},
+      {:ex_cldr_numbers, "~> 2.31"},
+      {:ex_cldr_dates_times, "~> 2.14"},
+      {:ex_cldr_units, "~> 3.16"},
+      {:ex_cldr_plugs, "~> 1.3"},
+      {:ex_cldr_locale_display, "~> 1.4"},
+      {:cldr_html, "~> 1.5"},
+
+      # misc
+      {:envy, "~> 1.1.1"},
       {:floki, ">= 0.30.0", only: :test},
+      {:hackney, "~> 1.18"},
+      {:jason, "~> 1.2"},
+      {:earmark, "~> 1.4"},
+      {:timex, "~> 3.0"},
 
       # metrix and observation
       {:sentry, "~> 8.1"},
-      {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
+      {:telemetry_metrics, "~> 0.6"},
+      {:phoenix_live_dashboard, "~> 0.8.1"},
+
+      # linting
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.3", only: [:dev, :test], runtime: false},
+      {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
 
       # file handling and S3:
       {:waffle, "~> 1.1"},
@@ -96,7 +114,11 @@ defmodule DataAggregator.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      "assets.setup": [
+        "tailwind.install --if-missing",
+        "esbuild.install --if-missing",
+        "cmd yarn --cwd assets install"
+      ],
       "assets.build": ["tailwind default", "esbuild default"],
       "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
       lint: ["format --check-formatted", "credo --strict"],
