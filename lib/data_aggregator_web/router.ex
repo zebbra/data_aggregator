@@ -54,11 +54,11 @@ defmodule DataAggregatorWeb.Router do
       live_session :default, on_mount: user_hooks do
         live "/", DashboardLive.Index, :index
 
-        live "/imports", ImportLive.Index, :index
-        live "/imports/new", ImportLive.Index, :new
-        live "/imports/:id/edit", ImportLive.Index, :edit
-        live "/imports/:id", ImportLive.Index, :show
-        live "/imports/:id/show/edit", ImportLive.Index, :edit
+        live "/import_records", ImportRecordLive.Index, :index
+        live "/import_records/new", ImportRecordLive.Index, :new
+        live "/import_records/:id/edit", ImportRecordLive.Index, :edit
+        live "/import_records/:id", ImportRecordLive.Index, :show
+        live "/import_records/:id/show/edit", ImportRecordLive.Index, :edit
       end
     end
 
@@ -72,7 +72,7 @@ defmodule DataAggregatorWeb.Router do
   end
 
   scope "/" do
-    pipe_through :graphql
+    pipe_through [:graphql]
 
     forward "/gql", Absinthe.Plug, schema: DataAggregator.Schema
 
@@ -80,6 +80,22 @@ defmodule DataAggregatorWeb.Router do
             Absinthe.Plug.GraphiQL,
             schema: DataAggregator.Schema,
             interface: :playground
+  end
+
+  scope "/api/json" do
+    pipe_through(:api)
+
+    forward "/swagger",
+            OpenApiSpex.Plug.SwaggerUI,
+            path: "/api/json/open_api",
+            title: "Data Aggregator JSON-API - Swagger UI",
+            default_model_expand_depth: 4
+
+    forward "/redoc",
+            Redoc.Plug.RedocUI,
+            spec_url: "/api/json/open_api"
+
+    forward "/", DataAggregatorWeb.JsonApiRouter
   end
 
   # Other scopes may use custom stacks.

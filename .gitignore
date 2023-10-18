@@ -39,4 +39,9 @@ npm-debug.log
 /assets/node_modules/
 
 # minio
-/minio/*
+/minio/data/*
+
+# other generated code
+.elixir-tools
+
+*.log

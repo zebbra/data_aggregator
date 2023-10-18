@@ -35,16 +35,16 @@
           </li>
           <li>
             <.link
-              navigate={~p"/imports"}
+              navigate={~p"/import_records"}
               class={[
                 "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold",
-                if(@active_link == :imports,
+                if(@active_link == :import_records,
                   do: "bg-gray-50 dark:bg-gray-800 text-indigo-600 dark:text-white",
                   else:
                     "text-gray-700 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                 )
               ]}
-              aria-current={if(@active_link == :imports, do: "page", else: nil)}
+              aria-current={if(@active_link == :import_records, do: "page", else: nil)}
             >
               <.icon
                 name="hero-arrow-down-tray"

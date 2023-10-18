@@ -55,6 +55,11 @@ defmodule DataAggregator.MixProject do
       {:ecto_erd, "~> 0.5", only: :dev},
       {:postgrex, ">= 0.0.0"},
       {:finch, "~> 0.13"},
+      {:open_api_spex, "~> 3.18"},
+      {:ash_json_api, "~> 0.33.1"},
+      {:redoc_ui_plug, "~> 0.2.1"},
+      {:typed_struct, "~> 0.3.0"},
+      {:typed_ecto_schema, "~> 0.4.1", runtime: false},
 
       # assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
@@ -87,7 +92,13 @@ defmodule DataAggregator.MixProject do
       # linting
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.3", only: [:dev, :test], runtime: false},
-      {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false}
+      {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
+
+      # file handling and S3:
+      {:waffle, "~> 1.1"},
+      {:ex_aws, "~> 2.1.2"},
+      {:ex_aws_s3, "~> 2.0"},
+      {:sweet_xml, "~> 0.6"}
     ]
   end
 
@@ -110,7 +121,8 @@ defmodule DataAggregator.MixProject do
       ],
       "assets.build": ["tailwind default", "esbuild default"],
       "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
-      lint: ["format --check-formatted", "credo --strict"]
+      lint: ["format --check-formatted", "credo --strict"],
+      "generate.erd": ["ecto.gen.erd --output-path=erd.dbml"]
     ]
   end
 end

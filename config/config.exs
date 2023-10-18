@@ -15,7 +15,22 @@ config :data_aggregator,
 config :ash, :use_all_identities_in_manage_relationship?, false
 config :ash_graphql, :default_managed_relationship_type_name_template, :action_name
 
-config :data_aggregator, ash_apis: [DataAggregator.Imports]
+# mime type config for json api
+config :mime, :types, %{
+  "application/vnd.api+json" => ["json"]
+}
+
+config :mime, :extensions, %{
+  "json" => "application/vnd.api+json"
+}
+
+config :data_aggregator,
+  ash_apis: [
+    DataAggregator.Imports,
+    DataAggregator.TaxonomyData,
+    DataAggregator.TaxonomyCatalog,
+    DataAggregator.Transition
+  ]
 
 config :data_aggregator, :ash_uuid,
   version: 7,
@@ -24,7 +39,7 @@ config :data_aggregator, :ash_uuid,
   migration_default?: true
 
 # Ash: Type shorthands, not required
-config :ash, :custom_types, uuid: AshUUID.UUID
+# config :ash, :custom_types, uuid: AshUUID.UUID
 
 # Ash: Default belongs_to type, not required
 config :ash, :default_belongs_to_type, AshUUID.UUID
@@ -93,6 +108,21 @@ config :phoenix, :filter_parameters, ["password", "account_token"]
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+config :waffle,
+  storage: Waffle.Storage.S3,
+  bucket: {:system, "S3_BUCKET"}
+
+# any configurations provided by https://github.com/ex-aws/ex_aws
+config :ex_aws,
+  json_codec: Jason,
+  access_key_id: [{:system, "S3_ACCESS_KEY"}, :instance_role],
+  secret_access_key: [{:system, "S3_SECRET_KEY"}, :instance_role],
+  s3: [
+    scheme: {:system, "S3_SCHEME"},
+    host: {:system, "S3_HOST"},
+    port: {:system, "S3_PORT"}
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

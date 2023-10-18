@@ -18,8 +18,8 @@ defmodule DataAggregatorWeb.LiveNavigator do
         {DataAggregatorWeb.DashboardLive.Index, _} ->
           :dashboard
 
-        {DataAggregatorWeb.ImportLive.Index, _} ->
-          :imports
+        {DataAggregatorWeb.ImportRecordLive.Index, _} ->
+          :import_records
 
         {_, _} ->
           nil

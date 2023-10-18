@@ -44,10 +44,69 @@ for windows or linux use your favourite package manager
 
 ### Start coding
 
+- Run `docker compose up` in one of your terminals, to start services around our application
 - Run `mix setup` to install and setup dependencies
 - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+Now you can visit [`localhost:4000`](http://localhost:4000) from your browser to see the app
+
+on [`localhost:9000`](http://localhost:9000) minio, our S3 storage is running. you can check uploaded files there as well
+
+#### modifying the database
+
+hard init whole system including reset of all migrations (during development):
+
+```bash
+# delete snapshots
+rm -rf priv/resource_snapshots/*
+
+# delete all migrations
+rm -rf priv/repo/migrations/*_*.exs
+
+# drop database
+mix ash_postgres.drop
+
+# generate migration to setup database
+mix ash_postgres.generate_migrations --name initial_migration
+
+# create database
+mix ash_postgres.create
+
+# run migrations
+mix ash_postgres.migrate
+```
+
+gradualy apply changes to the database (regular development):
+
+```bash
+# generate migration with new database changes
+mix ash_postgres.generate_migrations --name your_migration_name
+
+# run migrations
+mix ash_postgres.migrate
+```
+
+### api's
+
+check and extend our [postman collection](https://martian-spaceship-337286.postman.co/workspace/Team-Workspace~5cea633a-4d4e-4e43-8460-39c3fc2774e7/collection/16163919-5357e4b8-3f23-4fb8-b105-139db31bfac5?action=share&creator=16163919&active-environment=16163919-86e22979-e529-484e-9372-a4f869876b27)
+
+our [open-api schema](http://localhost:4000/api/json/open_api)
+
+our [swagger-ui](http://localhost:4000/api/json/swagger)
+
+our [redoc](http://localhost:4000/api/json/redoc)
+
+## Staging
+
+to deploy the application to our staging environment on the zebbra cloud
+
+- deploy the helm under `/helm` with `helmfile apply helmfile.yaml`
+
+or
+
+- push your changes to the `main` branch and it will be deployed automatically
+
+## Production
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 

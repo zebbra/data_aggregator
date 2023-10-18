@@ -6,7 +6,12 @@ defmodule DataAggregator.Imports.Registry do
     ]
 
   entries do
-    entry DataAggregator.Imports.Provider
-    entry DataAggregator.Imports.Import
+    entry DataAggregator.Imports.ImportChangeEvent
+    entry DataAggregator.Imports.ImportRecord2Run
+    entry DataAggregator.Imports.Institution
+    entry DataAggregator.Imports.ImportRecord
+    entry DataAggregator.Imports.StaticAsset
+    entry DataAggregator.Imports.ImportFile
+    entry DataAggregator.Imports.Collection
   end
 end
