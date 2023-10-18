@@ -3,8 +3,8 @@ defmodule DataAggregator.Transition.ChangeEvent do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.TaxonomyCatalog.DwcAttribute
   alias DataAggregator.Imports.ImportChangeEvent
+  alias DataAggregator.TaxonomyCatalog.DwcAttribute
   alias DataAggregator.Transition.EncodingChangeEvent
 
   postgres do

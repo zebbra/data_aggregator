@@ -3,9 +3,9 @@ defmodule DataAggregator.TaxonomyData.Record do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias DataAggregator.Imports.ImportRecord
   alias DataAggregator.Transition.Annotation
   alias DataAggregator.Transition.EncodingChangeEvent
-  alias DataAggregator.Imports.ImportRecord
 
   postgres do
     table "records"

@@ -4,8 +4,8 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
-  alias DataAggregator.Transition.EncodingChangeEvent
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
+  alias DataAggregator.Transition.EncodingChangeEvent
 
   postgres do
     table "catalogs"

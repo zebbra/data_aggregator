@@ -3,9 +3,9 @@ defmodule DataAggregator.Transition.EncodingChangeEvent do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Transition.ChangeEvent
   alias DataAggregator.TaxonomyCatalog.Catalog
   alias DataAggregator.TaxonomyData.Record
+  alias DataAggregator.Transition.ChangeEvent
 
   postgres do
     table "encoding_change_events"

@@ -3,8 +3,8 @@ defmodule DataAggregator.Transition.Annotation do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.TaxonomyData.Record
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
+  alias DataAggregator.TaxonomyData.Record
 
   postgres do
     table "annotations"

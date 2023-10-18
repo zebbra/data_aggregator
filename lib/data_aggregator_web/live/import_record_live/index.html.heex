@@ -1,26 +1,26 @@
 <main class="2xl:pr-96">
   <.header class="top-16 sticky">
-    <%= ~t"Listing ImportRecords"m %>
+    <%= ~t"Listing Import Records"m %>
     <:actions>
       <.button
         phx-click="toggle-filters"
-        id="import_record-filters__button"
+        id="import-record-filters__button"
         class="2xl:hidden inline-flex"
       >
         <.icon name="hero-funnel-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
         <span class="sm:inline-block hidden"><%= ~t"Filter"m %></span>
       </.button>
       <.link patch={~p"/import_records/new"} class="focus-visible:outline-none">
-        <.button class="inline-flex" id="import_record-modal__button">
+        <.button class="inline-flex" id="import-record-modal__button">
           <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
-          <span class="sm:inline-block hidden"><%= ~t"New ImportRecord"m %></span>
+          <span class="sm:inline-block hidden"><%= ~t"New Import Record"m %></span>
         </.button>
       </.link>
     </:actions>
   </.header>
 
   <.table
-    id="import_records"
+    id="import-records"
     rows={@streams.import_records}
     row_click={fn {_id, import_record} -> JS.patch(~p"/import_records/#{import_record}") end}
     order_by={@current_order_by}
@@ -85,13 +85,13 @@
 
 <.slideover
   :if={@show_filters}
-  id="import_record-filters"
+  id="import-record-filters"
   resize_listener
   on_cancel={JS.push("toggle-filters")}
 >
   <.sidebar>
     <:header>
-      <.header id="import_record-filters" class="sticky top-0">
+      <.header id="import-record-filters" class="sticky top-0">
         <%= ~t"Filters"m %>
         <:actions>
           <a href="#" class="dark:text-indigo-400 text-sm font-semibold leading-6 text-indigo-600">
@@ -105,7 +105,7 @@
 
 <.slideover
   :if={@live_action in [:show]}
-  id="import_record-slideover"
+  id="import-record-slideover"
   on_cancel={JS.patch(~p"/import_records")}
 >
   <.live_component
@@ -117,7 +117,7 @@
 
 <.modal
   :if={@live_action in [:new, :edit]}
-  id="import_record-modal"
+  id="import-record-modal"
   on_cancel={JS.patch(~p"/import_records")}
 >
   <.live_component

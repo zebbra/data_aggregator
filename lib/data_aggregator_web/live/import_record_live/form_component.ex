@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.ImportLive.FormComponent do
+defmodule DataAggregatorWeb.ImportRecordLive.FormComponent do
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form
@@ -25,13 +25,13 @@ defmodule DataAggregatorWeb.ImportLive.FormComponent do
         </div>
         <div class={["mt-3 text-center sm:mt-0 sm:text-left", assigns[:icon] && "sm:ml-4"]}>
           <.dialog_title
-            id="import_record-modal__title"
+            id="import-record-modal__title"
             class="text-gray-900 dark:text-white text-base font-semibold leading-6"
           >
             <%= @title %>
           </.dialog_title>
           <.dialog_description
-            id="import_record-modal__description"
+            id="import-record-modal__description"
             class="text-gray-500 dark:text-gray-400 mt-2 text-sm"
           >
             <%= ~t"Use this form to manage import records in your database."m %>
@@ -41,12 +41,16 @@ defmodule DataAggregatorWeb.ImportLive.FormComponent do
 
       <.simple_form
         for={@form}
-        id="import_record-form"
+        id="import-record-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:url]} label={~t"URL"m} placeholder={~t"URL"m} />
+        <.input
+          field={@form[:unique_qualifier]}
+          label={~t"Unique Qualifier"m}
+          placeholder={~t"Unique Qualifier"m}
+        />
 
         <:actions>
           <.button
@@ -54,12 +58,12 @@ defmodule DataAggregatorWeb.ImportLive.FormComponent do
             class="sm:ml-3 sm:w-auto inline-flex justify-center w-full"
             phx-disable-with={~t"Saving..."m}
           >
-            <%= ~t"Save ImportRecord"m %>
+            <%= ~t"Save Import Record"m %>
           </.button>
           <.button
             variant="secondary"
             class="mt-3 sm:mt-0 sm:w-auto inline-flex justify-center w-full"
-            phx-click={JS.exec("data-cancel", to: "#import_record-modal")}
+            phx-click={JS.exec("data-cancel", to: "#import-record-modal")}
             phx-disable-with
           >
             <%= ~t"Cancel"m %>
@@ -100,8 +104,8 @@ defmodule DataAggregatorWeb.ImportLive.FormComponent do
 
           message =
             case socket.assigns.action do
-              :new -> ~t"ImportRecord created successfully"m
-              :edit -> ~t"ImportRecord updated successfully"m
+              :new -> ~t"Import Record created successfully"m
+              :edit -> ~t"Import Record updated successfully"m
             end
 
           socket

@@ -36,11 +36,11 @@ defmodule DataAggregatorWeb.ImportRecordLiveTest do
       assert_patch(index_live, ~p"/import_records/new")
 
       assert index_live
-             |> form("#import_record-form", import_record: @invalid_attrs)
+             |> form("#import-record-form", import_record: @invalid_attrs)
              |> render_change() =~ "is required"
 
       assert index_live
-             |> form("#import_record-form", import_record: @create_attrs)
+             |> form("#import-record-form", import_record: @create_attrs)
              |> render_submit()
 
       assert_patch(index_live, ~p"/import_records")
@@ -60,11 +60,11 @@ defmodule DataAggregatorWeb.ImportRecordLiveTest do
       assert_patch(index_live, ~p"/import_records/#{import_record}/edit")
 
       assert index_live
-             |> form("#import_record-form", import_record: @invalid_attrs)
+             |> form("#import-record-form", import_record: @invalid_attrs)
              |> render_change() =~ "is required"
 
       assert index_live
-             |> form("#import_record-form", import_record: @update_attrs)
+             |> form("#import-record-form", import_record: @update_attrs)
              |> render_submit()
 
       assert_patch(index_live, ~p"/import_records")
@@ -96,20 +96,20 @@ defmodule DataAggregatorWeb.ImportRecordLiveTest do
     test "updates import_record within modal", %{conn: conn, import_record: import_record} do
       {:ok, show_live, _html} = live(conn, ~p"/import_records/#{import_record}")
 
-      assert show_live |> element("a", "Edit") |> render_click() =~
+      assert show_live |> element("a", "Edit Import Record") |> render_click() =~
                "Edit Import Record"
 
       assert_patch(show_live, ~p"/import_records/#{import_record}/show/edit")
 
       assert show_live
-             |> form("#import_record-form", import_record: @invalid_attrs)
+             |> form("#import-record-form", import_record: @invalid_attrs)
              |> render_change() =~ "is required"
 
       assert show_live
-             |> form("#import_record-form", import_record: @update_attrs)
+             |> form("#import-record-form", import_record: @update_attrs)
              |> render_submit()
 
-      assert_patch(show_live, ~p"/import_records/#{import_record}")
+      assert_patch(show_live, ~p"/import_records")
 
       html = render(show_live)
       assert html =~ "Import Record updated successfully"

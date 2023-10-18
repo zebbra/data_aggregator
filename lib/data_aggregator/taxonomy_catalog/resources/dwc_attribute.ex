@@ -3,10 +3,10 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Transition.ChangeEvent
-  alias DataAggregator.Transition.Annotation
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
   alias DataAggregator.TaxonomyCatalog.Catalog
+  alias DataAggregator.Transition.Annotation
+  alias DataAggregator.Transition.ChangeEvent
 
   postgres do
     table "dwc_attributes"

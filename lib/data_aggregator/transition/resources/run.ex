@@ -3,11 +3,11 @@ defmodule DataAggregator.Transition.Run do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.TaxonomyData.Record2Run
-  alias DataAggregator.Imports.ImportRecord2Run
   alias DataAggregator.Imports.ImportRecord
-  alias DataAggregator.TaxonomyData.Record
+  alias DataAggregator.Imports.ImportRecord2Run
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run
+  alias DataAggregator.TaxonomyData.Record
+  alias DataAggregator.TaxonomyData.Record2Run
 
   postgres do
     table "runs"

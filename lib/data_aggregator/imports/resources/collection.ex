@@ -3,9 +3,9 @@ defmodule DataAggregator.Imports.Collection do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Imports.Institution
   alias DataAggregator.Imports.ImportFile
   alias DataAggregator.Imports.ImportRecord
+  alias DataAggregator.Imports.Institution
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
 
   postgres do

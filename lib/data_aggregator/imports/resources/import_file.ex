@@ -77,8 +77,8 @@ end
 defmodule DataAggregator.UploadFile do
   use Ash.Resource.ManualCreate
 
-  alias DataAggregator.Imports.Institution
   alias DataAggregator.Imports.ImportFile
+  alias DataAggregator.Imports.Institution
   # alias DataAggregator.Imports.ImportRecord
 
   def create(file, _, _) do
