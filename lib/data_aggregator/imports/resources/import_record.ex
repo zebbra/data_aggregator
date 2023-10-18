@@ -3,8 +3,8 @@ defmodule DataAggregator.Imports.ImportRecord do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias DataAggregator.Imports.Collection
   alias DataAggregator.Imports.StaticAsset
-  alias DataAggregator.Imports.ImportRecord2ImportFile
   alias DataAggregator.TaxonomyData.Record
 
   postgres do
@@ -69,13 +69,13 @@ defmodule DataAggregator.Imports.ImportRecord do
   end
 
   relationships do
+    belongs_to :collection, Collection
+
     has_one :record, Record do
       api DataAggregator.TaxonomyData
     end
 
     has_many :static_assets, StaticAsset do
     end
-
-    has_many :import_records2import_files, ImportRecord2ImportFile
   end
 end

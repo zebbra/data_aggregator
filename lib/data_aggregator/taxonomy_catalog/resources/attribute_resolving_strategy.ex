@@ -5,7 +5,7 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
 
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
   alias DataAggregator.TaxonomyCatalog.Catalog
-  alias DataAggregator.Imports.Institution
+  alias DataAggregator.Imports.Collection
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run
 
   postgres do
@@ -72,7 +72,7 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
 
     has_many :attribute_resolving_strategies2runs, AttributeResolvingStrategy2Run
 
-    belongs_to :institution, Institution do
+    belongs_to :collection, Collection do
       api DataAggregator.Imports
     end
   end

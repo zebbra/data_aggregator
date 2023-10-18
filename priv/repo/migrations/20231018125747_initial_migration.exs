@@ -87,14 +87,6 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       add :run_id, :uuid, null: false, primary_key: true
     end
 
-    create table(:import_records2import_files, primary_key: false) do
-      add :id, :uuid, null: false, primary_key: true
-      add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
-      add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
-      add :import_record_id, :uuid, null: false, primary_key: true
-      add :import_file_id, :uuid, null: false, primary_key: true
-    end
-
     create table(:import_records, primary_key: false) do
       add :id, :uuid, null: false, primary_key: true
     end
@@ -137,51 +129,22 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
              )
     end
 
-    alter table(:import_records2import_files) do
-      modify :import_record_id,
-             references(:import_records,
-               column: :id,
-               name: "import_records2import_files_import_record_id_fkey",
-               type: :uuid,
-               prefix: "public"
-             )
-    end
-
     alter table(:import_records) do
       add :unique_qualifier, :text, null: false
       add :import_data, :map
       add :meta_data, :map
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
+      add :collection_id, :uuid
     end
 
     create table(:import_files, primary_key: false) do
       add :id, :uuid, null: false, primary_key: true
-    end
-
-    alter table(:import_records2import_files) do
-      modify :import_file_id,
-             references(:import_files,
-               column: :id,
-               name: "import_records2import_files_import_file_id_fkey",
-               type: :uuid,
-               prefix: "public"
-             )
-    end
-
-    alter table(:import_files) do
       add :url, :text, null: false
       add :meta_data, :map
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
-
-      add :institution_id,
-          references(:institutions,
-            column: :id,
-            name: "import_files_institution_id_fkey",
-            type: :uuid,
-            prefix: "public"
-          )
+      add :collection_id, :uuid
     end
 
     create table(:import_change_events, primary_key: false) do
@@ -216,6 +179,50 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :default_catalog_id, :uuid
+    end
+
+    create table(:collections, primary_key: false) do
+      add :id, :uuid, null: false, primary_key: true
+    end
+
+    alter table(:import_records) do
+      modify :collection_id,
+             references(:collections,
+               column: :id,
+               name: "import_records_collection_id_fkey",
+               type: :uuid,
+               prefix: "public"
+             )
+    end
+
+    alter table(:import_files) do
+      modify :collection_id,
+             references(:collections,
+               column: :id,
+               name: "import_files_collection_id_fkey",
+               type: :uuid,
+               prefix: "public"
+             )
+    end
+
+    alter table(:collections) do
+      add :name, :text, null: false
+      add :code, :text
+      add :description, :text
+      add :owner, :text
+      add :collection_type, :text, null: false, default: "other"
+      add :digitization_status, :text, null: false, default: "planned"
+      add :collection_size, :bigint
+      add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
+      add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
+
+      add :institution_id,
+          references(:institutions,
+            column: :id,
+            name: "collections_institution_id_fkey",
+            type: :uuid,
+            prefix: "public"
+          )
     end
 
     create table(:change_events, primary_key: false) do
@@ -351,10 +358,10 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
             prefix: "public"
           )
 
-      add :institution_id,
-          references(:institutions,
+      add :collection_id,
+          references(:collections,
             column: :id,
-            name: "attribute_resolving_strategies_institution_id_fkey",
+            name: "attribute_resolving_strategies_collection_id_fkey",
             type: :uuid,
             prefix: "public"
           )
@@ -408,11 +415,11 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
 
     drop constraint(
            :attribute_resolving_strategies,
-           "attribute_resolving_strategies_institution_id_fkey"
+           "attribute_resolving_strategies_collection_id_fkey"
          )
 
     alter table(:attribute_resolving_strategies) do
-      remove :institution_id
+      remove :collection_id
       remove :dwc_attribute_id
       remove :catalog_id
       remove :updated_at
@@ -491,6 +498,35 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
 
     drop table(:change_events)
 
+    drop constraint(:collections, "collections_institution_id_fkey")
+
+    alter table(:collections) do
+      remove :institution_id
+      remove :updated_at
+      remove :inserted_at
+      remove :collection_size
+      remove :digitization_status
+      remove :collection_type
+      remove :owner
+      remove :description
+      remove :code
+      remove :name
+    end
+
+    drop constraint(:import_files, "import_files_collection_id_fkey")
+
+    alter table(:import_files) do
+      modify :collection_id, :uuid
+    end
+
+    drop constraint(:import_records, "import_records_collection_id_fkey")
+
+    alter table(:import_records) do
+      modify :collection_id, :uuid
+    end
+
+    drop table(:collections)
+
     drop table(:dwc_attributes)
 
     drop table(:encoding_change_events)
@@ -499,42 +535,15 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
 
     drop table(:import_change_events)
 
-    drop constraint(:import_files, "import_files_institution_id_fkey")
-
-    alter table(:import_files) do
-      remove :institution_id
-      remove :updated_at
-      remove :inserted_at
-      remove :meta_data
-      remove :url
-    end
-
-    drop constraint(
-           :import_records2import_files,
-           "import_records2import_files_import_file_id_fkey"
-         )
-
-    alter table(:import_records2import_files) do
-      modify :import_file_id, :uuid
-    end
-
     drop table(:import_files)
 
     alter table(:import_records) do
+      remove :collection_id
       remove :updated_at
       remove :inserted_at
       remove :meta_data
       remove :import_data
       remove :unique_qualifier
-    end
-
-    drop constraint(
-           :import_records2import_files,
-           "import_records2import_files_import_record_id_fkey"
-         )
-
-    alter table(:import_records2import_files) do
-      modify :import_record_id, :uuid
     end
 
     drop constraint(:import_records2runs, "import_records2runs_import_record_id_fkey")
@@ -559,8 +568,6 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     end
 
     drop table(:import_records)
-
-    drop table(:import_records2import_files)
 
     drop table(:import_records2runs)
 

@@ -3,8 +3,7 @@ defmodule DataAggregator.Imports.ImportFile do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Imports.Institution
-  alias DataAggregator.Imports.ImportRecord2ImportFile
+  alias DataAggregator.Imports.Collection
 
   postgres do
     table "import_files"
@@ -71,8 +70,7 @@ defmodule DataAggregator.Imports.ImportFile do
   end
 
   relationships do
-    has_many :import_records2import_files, ImportRecord2ImportFile
-    belongs_to :institution, Institution
+    belongs_to :collection, Collection
   end
 end
 

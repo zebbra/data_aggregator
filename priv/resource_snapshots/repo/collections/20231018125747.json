@@ -11,14 +11,74 @@
       "type": "uuid"
     },
     {
-      "allow_nil?": true,
-      "default": "false",
+      "allow_nil?": false,
+      "default": "nil",
       "generated?": false,
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "do_not_encode",
-      "type": "boolean"
+      "source": "name",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "code",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "description",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "owner",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
+      "default": "\"other\"",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "collection_type",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
+      "default": "\"planned\"",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "digitization_status",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "collection_size",
+      "type": "bigint"
     },
     {
       "allow_nil?": false,
@@ -55,59 +115,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "attribute_resolving_strategies_catalog_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "catalogs"
-      },
-      "size": null,
-      "source": "catalog_id",
-      "type": "uuid"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "attribute_resolving_strategies_dwc_attribute_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "dwc_attributes"
-      },
-      "size": null,
-      "source": "dwc_attribute_id",
-      "type": "uuid"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "attribute_resolving_strategies_institution_id_fkey",
+        "name": "collections_institution_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
@@ -124,7 +132,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "D052029A1F0547D702549675B2ABC0BE5FA84E4D9768C3CB02B6D11A933DFC78",
+  "hash": "2A249B66DA60DD68B3DED446CF1E97FEA7846E485DDFA8BE782B895601F8FE1E",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -133,5 +141,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "attribute_resolving_strategies"
+  "table": "collections"
 }

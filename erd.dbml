@@ -1,5 +1,19 @@
 
 
+Table collections {
+  id uuid [pk]
+  name varchar
+  code varchar
+  description varchar
+  owner varchar
+  collection_type varchar
+  digitization_status varchar
+  collection_size integer
+  inserted_at timestamp
+  updated_at timestamp
+  institution_id uuid
+}
+
 Table import_change_events {
   id uuid [pk]
   inserted_at timestamp
@@ -14,7 +28,7 @@ Table import_files {
   meta_data jsonb
   inserted_at timestamp
   updated_at timestamp
-  institution_id uuid
+  collection_id uuid
 }
 
 Table import_records {
@@ -24,14 +38,7 @@ Table import_records {
   meta_data jsonb
   inserted_at timestamp
   updated_at timestamp
-}
-
-Table import_records2import_files {
-  id uuid [pk]
-  inserted_at timestamp
-  updated_at timestamp
-  import_record_id uuid [pk]
-  import_file_id uuid [pk]
+  collection_id uuid
 }
 
 Table import_records2runs {
@@ -72,7 +79,7 @@ Table attribute_resolving_strategies {
   updated_at timestamp
   catalog_id uuid
   dwc_attribute_id uuid
-  institution_id uuid
+  collection_id uuid
 }
 
 Table attribute_resolving_strategies2runs {
@@ -172,17 +179,17 @@ Ref: catalogs.id < dwc_attributes.default_catalog_id
 Ref: catalogs.id < encoding_change_events.catalog_id
 Ref: change_events.id < encoding_change_events.change_event_id
 Ref: change_events.id < import_change_events.change_event_id
+Ref: collections.id < attribute_resolving_strategies.collection_id
+Ref: collections.id < import_files.collection_id
+Ref: collections.id < import_records.collection_id
 Ref: dwc_attributes.id < annotations.dwc_attribute_id
 Ref: dwc_attributes.id < attribute_resolving_strategies.dwc_attribute_id
 Ref: dwc_attributes.id < change_events.dwc_attribute_id
-Ref: import_files.id < import_records2import_files.import_file_id
 Ref: import_records.id < import_change_events.import_record_id
-Ref: import_records.id < import_records2import_files.import_record_id
 Ref: import_records.id < import_records2runs.import_record_id
 Ref: import_records.id - records.import_record_id
 Ref: import_records.id < static_assets.import_record_id
-Ref: institutions.id < attribute_resolving_strategies.institution_id
-Ref: institutions.id < import_files.institution_id
+Ref: institutions.id < collections.institution_id
 Ref: records.id < annotations.record_id
 Ref: records.id < encoding_change_events.record_id
 Ref: records.id < records2runs.record_id

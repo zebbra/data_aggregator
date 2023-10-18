@@ -12,6 +12,6 @@ defmodule DataAggregator.Imports.Registry do
     entry DataAggregator.Imports.ImportRecord
     entry DataAggregator.Imports.StaticAsset
     entry DataAggregator.Imports.ImportFile
-    entry DataAggregator.Imports.ImportRecord2ImportFile
+    entry DataAggregator.Imports.Collection
   end
 end
