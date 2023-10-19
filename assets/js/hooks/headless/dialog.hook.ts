@@ -93,7 +93,7 @@ const Dialog = {
         if (titleId.value === id) return;
         titleId.value = id;
       },
-      close(withDocumentClick = true) {
+      close() {
         if (dialogState.value === DialogStates.Closed) return;
 
         dialogState.value = DialogStates.Closed;

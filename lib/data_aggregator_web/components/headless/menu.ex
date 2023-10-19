@@ -138,7 +138,7 @@ defmodule DataAggregatorWeb.Headless.Menu do
       time: time,
       transition: transition
     )
-    |> JS.set_attribute({"aria-expanded", "true"}, to: "##{id}-button")
+    |> JS.set_attribute({"aria-expanded", "true"}, to: "##{id}__button")
     |> JS.set_attribute({"aria-controls", "#{id}__items"}, to: "##{id}__button")
   end
 

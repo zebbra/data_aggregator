@@ -8,7 +8,8 @@
 import Config
 
 config :data_aggregator,
-  ecto_repos: [DataAggregator.Repo]
+  ecto_repos: [DataAggregator.Repo],
+  generators: [timestamp_type: :utc_datetime]
 
 # For backwards compatibility, the following configuration is required.
 # see https://ash-hq.org/docs/guides/ash/latest/get-started#temporary-config for more details

@@ -12,14 +12,16 @@ defmodule DataAggregator.Application do
       DataAggregatorWeb.Telemetry,
       # Start the Ecto repository
       DataAggregator.Repo,
+      # Start the DNS cluster
+      {DNSCluster, query: Application.get_env(:data_aggregator, :dns_cluster_query) || :ignore},
       # Start the PubSub system
       {Phoenix.PubSub, name: DataAggregator.PubSub},
-      # Start Finch
+      # Start the Finch HTTP client for sending emails
       {Finch, name: DataAggregator.Finch},
+      # Start a worker by calling: DataAggregator.Worker.start_link(arg)
+      # {DataAggregator.Worker, arg},
       # Start the Endpoint (http/https)
       DataAggregatorWeb.Endpoint
-      # Start a worker by calling: DataAggregator.Worker.start_link(arg)
-      # {DataAggregator.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
