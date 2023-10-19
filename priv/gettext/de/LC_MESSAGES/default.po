@@ -11,7 +11,7 @@ msgstr ""
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: lib/data_aggregator_web/components/core_components.ex:599
+#: lib/data_aggregator_web/components/core_components.ex:602
 #, elixir-autogen, elixir-format
 msgid "Actions"
 msgstr "Aktionen"
@@ -30,31 +30,31 @@ msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Dashboard"
 msgstr ""
 
-#: lib/data_aggregator_web/components/core_components.ex:137
+#: lib/data_aggregator_web/components/core_components.ex:139
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "Attempting to reconnect"
 msgstr "Wiederverbindung wird versucht"
 
-#: lib/data_aggregator_web/components/core_components.ex:128
+#: lib/data_aggregator_web/components/core_components.ex:130
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "Error!"
 msgstr "Fehler!"
 
-#: lib/data_aggregator_web/components/core_components.ex:149
+#: lib/data_aggregator_web/components/core_components.ex:151
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "Hang in there while we get back on track"
 msgstr "Bleibe dran, während wir wieder auf den richtigen Weg kommen"
 
-#: lib/data_aggregator_web/components/core_components.ex:127
+#: lib/data_aggregator_web/components/core_components.ex:129
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "Success!"
 msgstr "Erfolgreich!"
 
-#: lib/data_aggregator_web/components/core_components.ex:132
+#: lib/data_aggregator_web/components/core_components.ex:134
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "We can't find the internet"
