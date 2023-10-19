@@ -75,7 +75,11 @@ if config_env() == :prod do
 
   config :data_aggregator, DataAggregatorWeb.Endpoint,
     url: [scheme: base_url.scheme, host: base_url.host, path: base_url.path, port: base_url.port],
-    http: [port: port, ip: listen_ip, transport_options: [max_connections: :infinity]],
+    http: [
+      port: port,
+      ip: listen_ip,
+      thousand_island_options: [transport_options: [max_connections: :infinity]]
+    ],
     secret_key_base: secret_key_base
 
   # ## SSL Support
