@@ -41,12 +41,13 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
 
   def render(assigns) do
     ~H"""
+     <.link navigate={~p"/collections/#{@collection}/import"}>Import</.link>
+
     <div :if={@import_file}>
-      <ul>
-        <%= for {col, type} <- @import_file.data |> Explorer.DataFrame.dtypes() do %>
-          <li> <%= col %>: <%= type %></li>
-        <% end %>
-      </ul>
+      <.table id="columns" rows={@import_file.data |> Explorer.DataFrame.dtypes()}>
+        <:col :let={{name, _}}><%= name %></:col>
+        <:col :let={{_, type}}><%= type %></:col>
+      </.table>
     </div>
 
     <.modal
