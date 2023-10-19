@@ -77,8 +77,8 @@ if config_env() == :prod do
     url: [scheme: base_url.scheme, host: base_url.host, path: base_url.path, port: base_url.port],
     http: [
       port: port,
-      ip: listen_ip,
-      thousand_island_options: [transport_options: [max_connections: :infinity]]
+      ip: listen_ip
+      # transport_options: [max_connections: :infinity] # not valid for bandit
     ],
     secret_key_base: secret_key_base
 
