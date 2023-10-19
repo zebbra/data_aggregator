@@ -7,12 +7,8 @@ defmodule DataAggregator.Transition.EncodingChangeEvent do
   alias DataAggregator.TaxonomyData.Record
   alias DataAggregator.Transition.ChangeEvent
 
-  attributes do
-    uuid_attribute :id, prefix: "ece"
-
-    attribute :catalog_value_reference, :string
-
-    timestamps()
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   graphql do
@@ -44,6 +40,14 @@ defmodule DataAggregator.Transition.EncodingChangeEvent do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "ece"
+
+    attribute :catalog_value_reference, :string
+
+    timestamps()
+  end
+
   relationships do
     belongs_to :change_event, ChangeEvent
 
@@ -59,10 +63,6 @@ defmodule DataAggregator.Transition.EncodingChangeEvent do
   postgres do
     table "encoding_change_events"
     repo DataAggregator.Repo
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do

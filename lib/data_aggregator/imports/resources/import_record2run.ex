@@ -6,10 +6,8 @@ defmodule DataAggregator.Imports.ImportRecord2Run do
   alias DataAggregator.Imports.ImportRecord
   alias DataAggregator.Transition.Run
 
-  attributes do
-    uuid_attribute :id, prefix: "ir2r"
-
-    timestamps()
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   graphql do
@@ -46,6 +44,12 @@ defmodule DataAggregator.Imports.ImportRecord2Run do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "ir2r"
+
+    timestamps()
+  end
+
   relationships do
     belongs_to :import_record, ImportRecord, primary_key?: true, allow_nil?: false
 
@@ -59,10 +63,6 @@ defmodule DataAggregator.Imports.ImportRecord2Run do
   postgres do
     table "import_records2runs"
     repo DataAggregator.Repo
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do

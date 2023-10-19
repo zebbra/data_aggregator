@@ -7,22 +7,8 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
   alias DataAggregator.Transition.EncodingChangeEvent
 
-  attributes do
-    uuid_attribute :id, prefix: "cat"
-
-    attribute :name, :string
-
-    attribute :description, :string
-
-    attribute :url, :string
-
-    attribute :version, :integer do
-      default 1
-      allow_nil? false
-      filterable? true
-    end
-
-    timestamps()
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   graphql do
@@ -54,6 +40,24 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "cat"
+
+    attribute :name, :string
+
+    attribute :description, :string
+
+    attribute :url, :string
+
+    attribute :version, :integer do
+      default 1
+      allow_nil? false
+      filterable? true
+    end
+
+    timestamps()
+  end
+
   relationships do
     has_many :dwc_attributes, DwcAttribute do
       destination_attribute :default_catalog_id
@@ -69,10 +73,6 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
   postgres do
     table "catalogs"
     repo DataAggregator.Repo
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do

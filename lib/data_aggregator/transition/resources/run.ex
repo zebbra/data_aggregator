@@ -9,23 +9,8 @@ defmodule DataAggregator.Transition.Run do
   alias DataAggregator.TaxonomyData.Record
   alias DataAggregator.TaxonomyData.Record2Run
 
-  attributes do
-    uuid_attribute :id, prefix: "run"
-
-    attribute :comment, :string do
-      filterable? true
-    end
-
-    attribute :state, :string do
-      default "open"
-      filterable? true
-    end
-
-    attribute :value_suggestion, :string
-
-    attribute :user, :string
-
-    timestamps()
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   graphql do
@@ -59,6 +44,25 @@ defmodule DataAggregator.Transition.Run do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "run"
+
+    attribute :comment, :string do
+      filterable? true
+    end
+
+    attribute :state, :string do
+      default "open"
+      filterable? true
+    end
+
+    attribute :value_suggestion, :string
+
+    attribute :user, :string
+
+    timestamps()
+  end
+
   relationships do
     has_many :attribute_resolving_strategies2runs, AttributeResolvingStrategy2Run do
       api DataAggregator.TaxonomyCatalog
@@ -82,10 +86,6 @@ defmodule DataAggregator.Transition.Run do
   postgres do
     table "runs"
     repo DataAggregator.Repo
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do

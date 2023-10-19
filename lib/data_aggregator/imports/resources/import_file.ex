@@ -5,16 +5,12 @@ defmodule DataAggregator.Imports.ImportFile do
 
   alias DataAggregator.Imports.Collection
 
-  attributes do
-    uuid_attribute :id, prefix: "if"
+  actions do
+    defaults [:create, :read, :update, :destroy]
 
-    attribute :url, :string do
-      allow_nil? false
+    create :upload_file do
+      manual DataAggregator.UploadFile
     end
-
-    attribute :meta_data, :map
-
-    timestamps()
   end
 
   graphql do
@@ -47,6 +43,18 @@ defmodule DataAggregator.Imports.ImportFile do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "if"
+
+    attribute :url, :string do
+      allow_nil? false
+    end
+
+    attribute :meta_data, :map
+
+    timestamps()
+  end
+
   relationships do
     belongs_to :collection, Collection
   end
@@ -54,14 +62,6 @@ defmodule DataAggregator.Imports.ImportFile do
   postgres do
     table "import_files"
     repo DataAggregator.Repo
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
-
-    create :upload_file do
-      manual DataAggregator.UploadFile
-    end
   end
 
   code_interface do

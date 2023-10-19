@@ -7,18 +7,8 @@ defmodule DataAggregator.TaxonomyData.Record do
   alias DataAggregator.Transition.Annotation
   alias DataAggregator.Transition.EncodingChangeEvent
 
-  attributes do
-    uuid_attribute :id, prefix: "rec"
-
-    attribute :unique_qualifier, :string do
-      allow_nil? false
-    end
-
-    attribute :meta_data, :map
-
-    # further attributes of the core record
-
-    timestamps()
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   graphql do
@@ -50,6 +40,20 @@ defmodule DataAggregator.TaxonomyData.Record do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "rec"
+
+    attribute :unique_qualifier, :string do
+      allow_nil? false
+    end
+
+    attribute :meta_data, :map
+
+    # further attributes of the core record
+
+    timestamps()
+  end
+
   relationships do
     belongs_to :import_record, ImportRecord do
       api DataAggregator.Imports
@@ -67,10 +71,6 @@ defmodule DataAggregator.TaxonomyData.Record do
   postgres do
     table "records"
     repo DataAggregator.Repo
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do

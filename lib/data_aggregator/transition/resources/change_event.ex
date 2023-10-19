@@ -7,21 +7,8 @@ defmodule DataAggregator.Transition.ChangeEvent do
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
   alias DataAggregator.Transition.EncodingChangeEvent
 
-  attributes do
-    uuid_attribute :id, prefix: "ce"
-
-    attribute :category, :string do
-      allow_nil? false
-      filterable? true
-    end
-
-    attribute :value, :string
-
-    attribute :previous_value, :string
-
-    attribute :catalog_value_reference, :string
-
-    timestamps()
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   graphql do
@@ -53,6 +40,23 @@ defmodule DataAggregator.Transition.ChangeEvent do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "ce"
+
+    attribute :category, :string do
+      allow_nil? false
+      filterable? true
+    end
+
+    attribute :value, :string
+
+    attribute :previous_value, :string
+
+    attribute :catalog_value_reference, :string
+
+    timestamps()
+  end
+
   relationships do
     belongs_to :dwc_attribute, DwcAttribute do
       api DataAggregator.TaxonomyCatalog
@@ -68,10 +72,6 @@ defmodule DataAggregator.Transition.ChangeEvent do
   postgres do
     table "change_events"
     repo DataAggregator.Repo
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do

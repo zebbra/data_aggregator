@@ -5,14 +5,8 @@ defmodule DataAggregator.Imports.StaticAsset do
 
   alias DataAggregator.Imports.ImportRecord
 
-  attributes do
-    uuid_attribute :id, prefix: "sa"
-
-    attribute :url, :string, allow_nil?: false
-
-    attribute :meta_data, :map
-
-    timestamps()
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   graphql do
@@ -44,6 +38,16 @@ defmodule DataAggregator.Imports.StaticAsset do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "sa"
+
+    attribute :url, :string, allow_nil?: false
+
+    attribute :meta_data, :map
+
+    timestamps()
+  end
+
   relationships do
     belongs_to :import_record, ImportRecord
   end
@@ -51,10 +55,6 @@ defmodule DataAggregator.Imports.StaticAsset do
   postgres do
     table "static_assets"
     repo DataAggregator.Repo
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do

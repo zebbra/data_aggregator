@@ -8,14 +8,8 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   alias DataAggregator.Transition.Annotation
   alias DataAggregator.Transition.ChangeEvent
 
-  attributes do
-    uuid_attribute :id, prefix: "da"
-
-    attribute :name, :string
-
-    # further attributes to describe a dwc-attribute
-
-    timestamps()
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   graphql do
@@ -47,6 +41,16 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "da"
+
+    attribute :name, :string
+
+    # further attributes to describe a dwc-attribute
+
+    timestamps()
+  end
+
   relationships do
     belongs_to :catalog, Catalog do
       source_attribute :default_catalog_id
@@ -66,10 +70,6 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   postgres do
     table "dwc_attributes"
     repo DataAggregator.Repo
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do

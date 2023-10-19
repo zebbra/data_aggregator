@@ -8,34 +8,8 @@ defmodule DataAggregator.Imports.Collection do
   alias DataAggregator.Imports.Institution
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
 
-  attributes do
-    uuid_attribute :id, prefix: "col"
-
-    attribute :name, :string do
-      allow_nil? false
-    end
-
-    attribute :code, :string
-
-    attribute :description, :string
-
-    attribute :owner, :string
-
-    # which types are possible?
-    attribute :collection_type, :string do
-      default "other"
-      allow_nil? false
-    end
-
-    # planned, in progress, finished
-    attribute :digitization_status, :string do
-      default "planned"
-      allow_nil? false
-    end
-
-    attribute :collection_size, :integer
-
-    timestamps()
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   graphql do
@@ -67,6 +41,36 @@ defmodule DataAggregator.Imports.Collection do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "col"
+
+    attribute :name, :string do
+      allow_nil? false
+    end
+
+    attribute :code, :string
+
+    attribute :description, :string
+
+    attribute :owner, :string
+
+    # which types are possible?
+    attribute :collection_type, :string do
+      default "other"
+      allow_nil? false
+    end
+
+    # planned, in progress, finished
+    attribute :digitization_status, :string do
+      default "planned"
+      allow_nil? false
+    end
+
+    attribute :collection_size, :integer
+
+    timestamps()
+  end
+
   relationships do
     belongs_to :institution, Institution
 
@@ -84,12 +88,9 @@ defmodule DataAggregator.Imports.Collection do
     repo DataAggregator.Repo
   end
 
-  actions do
-    defaults [:create, :read, :update, :destroy]
-  end
-
   code_interface do
     define_for DataAggregator.Imports
+    define :read
     define :create, action: :create
     define :read_all, action: :read
     define :update, action: :update

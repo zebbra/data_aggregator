@@ -8,14 +8,8 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
   alias DataAggregator.TaxonomyCatalog.Catalog
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
 
-  attributes do
-    uuid_attribute :id, prefix: "ars"
-
-    attribute :do_not_encode, :boolean do
-      default false
-    end
-
-    timestamps()
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   graphql do
@@ -47,6 +41,16 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "ars"
+
+    attribute :do_not_encode, :boolean do
+      default false
+    end
+
+    timestamps()
+  end
+
   relationships do
     belongs_to :catalog, Catalog
 
@@ -62,10 +66,6 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
   postgres do
     table "attribute_resolving_strategies"
     repo DataAggregator.Repo
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do

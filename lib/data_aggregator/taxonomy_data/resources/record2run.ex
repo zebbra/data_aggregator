@@ -6,10 +6,8 @@ defmodule DataAggregator.TaxonomyData.Record2Run do
   alias DataAggregator.TaxonomyData.Record
   alias DataAggregator.Transition.Run
 
-  attributes do
-    uuid_attribute :id, prefix: "rec2run"
-
-    timestamps()
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   graphql do
@@ -48,6 +46,12 @@ defmodule DataAggregator.TaxonomyData.Record2Run do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "rec2run"
+
+    timestamps()
+  end
+
   relationships do
     belongs_to :record, Record, primary_key?: true, allow_nil?: false
 
@@ -61,10 +65,6 @@ defmodule DataAggregator.TaxonomyData.Record2Run do
   postgres do
     table "records2runs"
     repo DataAggregator.Repo
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do

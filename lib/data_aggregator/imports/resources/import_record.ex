@@ -7,17 +7,18 @@ defmodule DataAggregator.Imports.ImportRecord do
   alias DataAggregator.Imports.StaticAsset
   alias DataAggregator.TaxonomyData.Record
 
-  attributes do
-    uuid_attribute :id, prefix: "irec"
+  actions do
+    defaults [:create, :update, :destroy]
 
-    attribute :unique_qualifier, :string do
-      allow_nil? false
+    read :read do
+      primary? true
+      argument :sort, :string, allow_nil?: true
     end
+  end
 
-    attribute :import_data, :map
-    attribute :meta_data, :map
-
-    timestamps(private?: false)
+  preparations do
+    prepare build(sort: [id: :asc])
+    prepare DataAggregator.Preparations.Sort
   end
 
   graphql do
@@ -49,6 +50,19 @@ defmodule DataAggregator.Imports.ImportRecord do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "irec"
+
+    attribute :unique_qualifier, :string do
+      allow_nil? false
+    end
+
+    attribute :import_data, :map
+    attribute :meta_data, :map
+
+    timestamps(private?: false)
+  end
+
   relationships do
     belongs_to :collection, Collection
 
@@ -65,29 +79,9 @@ defmodule DataAggregator.Imports.ImportRecord do
     repo DataAggregator.Repo
   end
 
-  actions do
-    defaults [:create, :update, :destroy]
-
-    read :read do
-      primary? true
-
-      argument :sort, :string do
-        allow_nil? true
-        default "id"
-      end
-
-      prepare fn query, _ ->
-        query
-        |> Ash.Query.sort(Ash.Sort.parse_input!(__MODULE__, query.arguments.sort))
-      end
-    end
-  end
-
   code_interface do
     define_for DataAggregator.Imports
-
-    define :read, args: [{:optional, :sort}]
-
+    define :read
     define :create
     define :update
     define :destroy

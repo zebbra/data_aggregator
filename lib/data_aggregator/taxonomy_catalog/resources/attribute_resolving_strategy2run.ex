@@ -6,10 +6,8 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run do
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
   alias DataAggregator.Transition.Run
 
-  attributes do
-    uuid_attribute :id, prefix: "ars2r"
-
-    timestamps()
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   graphql do
@@ -41,6 +39,12 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "ars2r"
+
+    timestamps()
+  end
+
   relationships do
     belongs_to :attribute_resolving_strategy, AttributeResolvingStrategy
 
@@ -52,10 +56,6 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run do
   postgres do
     table "attribute_resolving_strategies2runs"
     repo DataAggregator.Repo
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do

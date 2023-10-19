@@ -133,6 +133,7 @@ config :spark, :formatter,
     section_order: [
       :authentication,
       :token,
+      :actions,
       :attributes,
       :relationships,
       :policies,

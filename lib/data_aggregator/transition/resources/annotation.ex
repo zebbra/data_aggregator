@@ -6,28 +6,8 @@ defmodule DataAggregator.Transition.Annotation do
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
   alias DataAggregator.TaxonomyData.Record
 
-  attributes do
-    uuid_attribute :id, prefix: "ann"
-
-    attribute :comment, :string do
-      filterable? true
-    end
-
-    attribute :state, :string do
-      default "open"
-      filterable? true
-    end
-
-    attribute :value_suggestion, :string
-
-    attribute :user, :string
-
-    attribute :dwc_attribute_id, :uuid do
-      allow_nil? false
-      filterable? true
-    end
-
-    timestamps()
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   graphql do
@@ -61,6 +41,30 @@ defmodule DataAggregator.Transition.Annotation do
     end
   end
 
+  attributes do
+    uuid_attribute :id, prefix: "ann"
+
+    attribute :comment, :string do
+      filterable? true
+    end
+
+    attribute :state, :string do
+      default "open"
+      filterable? true
+    end
+
+    attribute :value_suggestion, :string
+
+    attribute :user, :string
+
+    attribute :dwc_attribute_id, :uuid do
+      allow_nil? false
+      filterable? true
+    end
+
+    timestamps()
+  end
+
   relationships do
     belongs_to :record, Record do
       api DataAggregator.TaxonomyData
@@ -74,10 +78,6 @@ defmodule DataAggregator.Transition.Annotation do
   postgres do
     table "annotations"
     repo DataAggregator.Repo
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do
