@@ -139,7 +139,7 @@
         </ul>
       </li>
       <%!-- Internal links --%>
-      <li :if={Mix.env() == :dev}>
+      <li :if={@environment == :dev}>
         <div class="text-xs font-semibold leading-6 text-gray-400">Internal Resources</div>
         <ul role="list" class="mt-2 -mx-2 space-y-1">
           <li>

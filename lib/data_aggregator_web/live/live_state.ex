@@ -10,6 +10,7 @@ defmodule DataAggregatorWeb.LiveState do
     {:cont,
      socket
      |> assign(sidebar_nav: false)
+     |> assign(environment: Application.get_env(:data_aggregator, :environment))
      |> attach_hook(:global_state, :handle_event, &handle_event/3)}
   end
 

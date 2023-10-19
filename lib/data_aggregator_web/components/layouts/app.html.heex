@@ -1,7 +1,7 @@
 <div class="dark:bg-gray-900 h-screen overflow-y-auto">
   <!-- Static sidebar for desktop -->
   <div class="lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col hidden">
-    <.sidebar_nav active_link={@active_link} />
+    <.sidebar_nav active_link={@active_link} environment={@environment} />
   </div>
   <%!-- Main content --%>
   <div class="lg:pl-72">
@@ -15,7 +15,7 @@
     on_cancel={JS.push("toggle-sidebar-nav")}
   >
     <!-- Sidebar component, swap this element with another sidebar if you like -->
-    <.sidebar_nav active_link={@active_link} />
+    <.sidebar_nav active_link={@active_link} environment={@environment} />
   </.mobile_slideover_nav>
   <.flash_group flash={@flash} />
 </div>
