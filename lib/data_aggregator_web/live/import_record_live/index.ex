@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.ImportRecordLive.Index do
 
   alias DataAggregator.Imports.ImportRecord
 
-  @sort_options [:inserted_at, :updated_at, :url]
+  @sort_options [:inserted_at, :updated_at, :unique_qualifier]
 
   @impl true
   def mount(_params, _session, socket) do

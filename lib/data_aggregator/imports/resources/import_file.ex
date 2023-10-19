@@ -5,11 +5,6 @@ defmodule DataAggregator.Imports.ImportFile do
 
   alias DataAggregator.Imports.Collection
 
-  postgres do
-    table "import_files"
-    repo DataAggregator.Repo
-  end
-
   attributes do
     uuid_attribute :id, prefix: "if"
 
@@ -20,29 +15,6 @@ defmodule DataAggregator.Imports.ImportFile do
     attribute :meta_data, :map
 
     timestamps()
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
-
-    create :upload_file do
-      manual DataAggregator.UploadFile
-    end
-  end
-
-  json_api do
-    type "import_file"
-
-    routes do
-      base("/import_files")
-
-      get(:read)
-      index(:read)
-      post(:create)
-      post(:upload_file, route: "/upload")
-      patch(:update)
-      delete(:destroy)
-    end
   end
 
   graphql do
@@ -60,6 +32,38 @@ defmodule DataAggregator.Imports.ImportFile do
     end
   end
 
+  json_api do
+    type "import_file"
+
+    routes do
+      base("/import_files")
+
+      get(:read)
+      index :read
+      post(:create)
+      post(:upload_file, route: "/upload")
+      patch(:update)
+      delete(:destroy)
+    end
+  end
+
+  relationships do
+    belongs_to :collection, Collection
+  end
+
+  postgres do
+    table "import_files"
+    repo DataAggregator.Repo
+  end
+
+  actions do
+    defaults [:create, :read, :update, :destroy]
+
+    create :upload_file do
+      manual DataAggregator.UploadFile
+    end
+  end
+
   code_interface do
     define_for DataAggregator.Imports
     define :read
@@ -67,10 +71,6 @@ defmodule DataAggregator.Imports.ImportFile do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
-  end
-
-  relationships do
-    belongs_to :collection, Collection
   end
 end
 

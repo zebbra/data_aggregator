@@ -7,11 +7,6 @@ defmodule DataAggregator.Imports.ImportRecord do
   alias DataAggregator.Imports.StaticAsset
   alias DataAggregator.TaxonomyData.Record
 
-  postgres do
-    table "import_records"
-    repo DataAggregator.Repo
-  end
-
   attributes do
     uuid_attribute :id, prefix: "irec"
 
@@ -23,6 +18,51 @@ defmodule DataAggregator.Imports.ImportRecord do
     attribute :meta_data, :map
 
     timestamps(private?: false)
+  end
+
+  graphql do
+    type :import_record
+
+    queries do
+      get :get_import_record, :read
+      list :list_import_records, :read
+    end
+
+    mutations do
+      create :create_import_record, :create
+      update :update_import_record, :update
+      destroy :destroy_import_record, :destroy
+    end
+  end
+
+  json_api do
+    type "import_records"
+
+    routes do
+      base("/import_records")
+
+      get(:read)
+      index :read
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
+  end
+
+  relationships do
+    belongs_to :collection, Collection
+
+    has_one :record, Record do
+      api DataAggregator.TaxonomyData
+    end
+
+    has_many :static_assets, StaticAsset do
+    end
+  end
+
+  postgres do
+    table "import_records"
+    repo DataAggregator.Repo
   end
 
   actions do
@@ -43,35 +83,6 @@ defmodule DataAggregator.Imports.ImportRecord do
     end
   end
 
-  json_api do
-    type "import_records"
-
-    routes do
-      base("/import_records")
-
-      get(:read)
-      index(:read)
-      post(:create)
-      patch(:update)
-      delete(:destroy)
-    end
-  end
-
-  graphql do
-    type :import_record
-
-    queries do
-      get :get_import_record, :read
-      list :list_import_records, :read
-    end
-
-    mutations do
-      create :create_import_record, :create
-      update :update_import_record, :update
-      destroy :destroy_import_record, :destroy
-    end
-  end
-
   code_interface do
     define_for DataAggregator.Imports
 
@@ -81,16 +92,5 @@ defmodule DataAggregator.Imports.ImportRecord do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
-  end
-
-  relationships do
-    belongs_to :collection, Collection
-
-    has_one :record, Record do
-      api DataAggregator.TaxonomyData
-    end
-
-    has_many :static_assets, StaticAsset do
-    end
   end
 end

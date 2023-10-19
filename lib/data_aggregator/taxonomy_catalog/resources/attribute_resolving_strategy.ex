@@ -8,11 +8,6 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
   alias DataAggregator.TaxonomyCatalog.Catalog
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
 
-  postgres do
-    table "attribute_resolving_strategies"
-    repo DataAggregator.Repo
-  end
-
   attributes do
     uuid_attribute :id, prefix: "ars"
 
@@ -21,24 +16,6 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
     end
 
     timestamps()
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
-  end
-
-  json_api do
-    type "attribute_resolving_strategy"
-
-    routes do
-      base("/attribute_resolving_strategies")
-
-      get(:read)
-      index(:read)
-      post(:create)
-      patch(:update)
-      delete(:destroy)
-    end
   end
 
   graphql do
@@ -56,13 +33,18 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
     end
   end
 
-  code_interface do
-    define_for DataAggregator.TaxonomyCatalog
-    define :create, action: :create
-    define :read_all, action: :read
-    define :update, action: :update
-    define :destroy, action: :destroy
-    define :get_by_id, action: :read, get_by: [:id]
+  json_api do
+    type "attribute_resolving_strategy"
+
+    routes do
+      base("/attribute_resolving_strategies")
+
+      get(:read)
+      index :read
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   relationships do
@@ -75,5 +57,23 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
     belongs_to :collection, Collection do
       api DataAggregator.Imports
     end
+  end
+
+  postgres do
+    table "attribute_resolving_strategies"
+    repo DataAggregator.Repo
+  end
+
+  actions do
+    defaults [:create, :read, :update, :destroy]
+  end
+
+  code_interface do
+    define_for DataAggregator.TaxonomyCatalog
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
+    define :get_by_id, action: :read, get_by: [:id]
   end
 end

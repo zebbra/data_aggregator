@@ -5,11 +5,6 @@ defmodule DataAggregator.Imports.StaticAsset do
 
   alias DataAggregator.Imports.ImportRecord
 
-  postgres do
-    table "static_assets"
-    repo DataAggregator.Repo
-  end
-
   attributes do
     uuid_attribute :id, prefix: "sa"
 
@@ -18,24 +13,6 @@ defmodule DataAggregator.Imports.StaticAsset do
     attribute :meta_data, :map
 
     timestamps()
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
-  end
-
-  json_api do
-    type "static_asset"
-
-    routes do
-      base("/static_assets")
-
-      get(:read)
-      index(:read)
-      post(:create)
-      patch(:update)
-      delete(:destroy)
-    end
   end
 
   graphql do
@@ -53,6 +30,33 @@ defmodule DataAggregator.Imports.StaticAsset do
     end
   end
 
+  json_api do
+    type "static_asset"
+
+    routes do
+      base("/static_assets")
+
+      get(:read)
+      index :read
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
+  end
+
+  relationships do
+    belongs_to :import_record, ImportRecord
+  end
+
+  postgres do
+    table "static_assets"
+    repo DataAggregator.Repo
+  end
+
+  actions do
+    defaults [:create, :read, :update, :destroy]
+  end
+
   code_interface do
     define_for DataAggregator.Imports
     define :read
@@ -60,9 +64,5 @@ defmodule DataAggregator.Imports.StaticAsset do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
-  end
-
-  relationships do
-    belongs_to :import_record, ImportRecord
   end
 end

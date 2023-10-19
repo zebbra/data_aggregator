@@ -6,33 +6,10 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run do
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
   alias DataAggregator.Transition.Run
 
-  postgres do
-    table "attribute_resolving_strategies2runs"
-    repo DataAggregator.Repo
-  end
-
   attributes do
     uuid_attribute :id, prefix: "ars2r"
 
     timestamps()
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
-  end
-
-  json_api do
-    type "attribute_resolving_strategy2run"
-
-    routes do
-      base("/attribute_resolving_strategies2runs")
-
-      get(:read)
-      index(:read)
-      post(:create)
-      patch(:update)
-      delete(:destroy)
-    end
   end
 
   graphql do
@@ -50,13 +27,18 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run do
     end
   end
 
-  code_interface do
-    define_for DataAggregator.TaxonomyCatalog
-    define :create, action: :create
-    define :read_all, action: :read
-    define :update, action: :update
-    define :destroy, action: :destroy
-    define :get_by_id, action: :read, get_by: [:id]
+  json_api do
+    type "attribute_resolving_strategy2run"
+
+    routes do
+      base("/attribute_resolving_strategies2runs")
+
+      get(:read)
+      index :read
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   relationships do
@@ -65,5 +47,23 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run do
     belongs_to :run, Run do
       api DataAggregator.Transition
     end
+  end
+
+  postgres do
+    table "attribute_resolving_strategies2runs"
+    repo DataAggregator.Repo
+  end
+
+  actions do
+    defaults [:create, :read, :update, :destroy]
+  end
+
+  code_interface do
+    define_for DataAggregator.TaxonomyCatalog
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
+    define :get_by_id, action: :read, get_by: [:id]
   end
 end

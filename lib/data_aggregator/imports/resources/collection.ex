@@ -8,11 +8,6 @@ defmodule DataAggregator.Imports.Collection do
   alias DataAggregator.Imports.Institution
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
 
-  postgres do
-    table "collections"
-    repo DataAggregator.Repo
-  end
-
   attributes do
     uuid_attribute :id, prefix: "col"
 
@@ -43,24 +38,6 @@ defmodule DataAggregator.Imports.Collection do
     timestamps()
   end
 
-  actions do
-    defaults [:create, :read, :update, :destroy]
-  end
-
-  json_api do
-    type "collection"
-
-    routes do
-      base("/collections")
-
-      get(:read)
-      index(:read)
-      post(:create)
-      patch(:update)
-      delete(:destroy)
-    end
-  end
-
   graphql do
     type :collection
 
@@ -76,13 +53,18 @@ defmodule DataAggregator.Imports.Collection do
     end
   end
 
-  code_interface do
-    define_for DataAggregator.Imports
-    define :create, action: :create
-    define :read_all, action: :read
-    define :update, action: :update
-    define :destroy, action: :destroy
-    define :get_by_id, action: :read, get_by: [:id]
+  json_api do
+    type "collection"
+
+    routes do
+      base("/collections")
+
+      get(:read)
+      index :read
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   relationships do
@@ -95,5 +77,23 @@ defmodule DataAggregator.Imports.Collection do
     has_many :attribute_resolving_strategies, AttributeResolvingStrategy do
       api DataAggregator.TaxonomyCatalog
     end
+  end
+
+  postgres do
+    table "collections"
+    repo DataAggregator.Repo
+  end
+
+  actions do
+    defaults [:create, :read, :update, :destroy]
+  end
+
+  code_interface do
+    define_for DataAggregator.Imports
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
+    define :get_by_id, action: :read, get_by: [:id]
   end
 end

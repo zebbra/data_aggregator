@@ -6,38 +6,10 @@ defmodule DataAggregator.TaxonomyData.Record2Run do
   alias DataAggregator.TaxonomyData.Record
   alias DataAggregator.Transition.Run
 
-  postgres do
-    table "records2runs"
-    repo DataAggregator.Repo
-  end
-
   attributes do
     uuid_attribute :id, prefix: "rec2run"
 
     timestamps()
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
-  end
-
-  json_api do
-    type "record2run"
-
-    primary_key do
-      keys([:record_id, :run_id])
-      delimiter("_")
-    end
-
-    routes do
-      base("/records2runs")
-
-      get(:read)
-      index(:read)
-      post(:create)
-      patch(:update)
-      delete(:destroy)
-    end
   end
 
   graphql do
@@ -57,13 +29,23 @@ defmodule DataAggregator.TaxonomyData.Record2Run do
     end
   end
 
-  code_interface do
-    define_for DataAggregator.TaxonomyData
-    define :create, action: :create
-    define :read_all, action: :read
-    define :update, action: :update
-    define :destroy, action: :destroy
-    define :get_by_id, action: :read, get_by: [:id]
+  json_api do
+    type "record2run"
+
+    primary_key do
+      keys([:record_id, :run_id])
+      delimiter("_")
+    end
+
+    routes do
+      base("/records2runs")
+
+      get(:read)
+      index :read
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   relationships do
@@ -74,5 +56,23 @@ defmodule DataAggregator.TaxonomyData.Record2Run do
       primary_key? true
       allow_nil? false
     end
+  end
+
+  postgres do
+    table "records2runs"
+    repo DataAggregator.Repo
+  end
+
+  actions do
+    defaults [:create, :read, :update, :destroy]
+  end
+
+  code_interface do
+    define_for DataAggregator.TaxonomyData
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
+    define :get_by_id, action: :read, get_by: [:id]
   end
 end

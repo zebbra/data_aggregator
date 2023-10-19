@@ -5,11 +5,6 @@ defmodule DataAggregator.Imports.Institution do
 
   alias DataAggregator.Imports.Collection
 
-  postgres do
-    table "institutions"
-    repo DataAggregator.Repo
-  end
-
   attributes do
     uuid_attribute :id, prefix: "inst"
 
@@ -34,24 +29,6 @@ defmodule DataAggregator.Imports.Institution do
     timestamps()
   end
 
-  actions do
-    defaults [:create, :read, :update, :destroy]
-  end
-
-  json_api do
-    type "institution"
-
-    routes do
-      base("/institutions")
-
-      get(:read)
-      index(:read)
-      post(:create)
-      patch(:update)
-      delete(:destroy)
-    end
-  end
-
   graphql do
     type :institution
 
@@ -67,6 +44,33 @@ defmodule DataAggregator.Imports.Institution do
     end
   end
 
+  json_api do
+    type "institution"
+
+    routes do
+      base("/institutions")
+
+      get(:read)
+      index :read
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
+  end
+
+  relationships do
+    has_many :collections, Collection
+  end
+
+  postgres do
+    table "institutions"
+    repo DataAggregator.Repo
+  end
+
+  actions do
+    defaults [:create, :read, :update, :destroy]
+  end
+
   code_interface do
     define_for DataAggregator.Imports
     define :create, action: :create
@@ -74,9 +78,5 @@ defmodule DataAggregator.Imports.Institution do
     define :update, action: :update
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
-  end
-
-  relationships do
-    has_many :collections, Collection
   end
 end

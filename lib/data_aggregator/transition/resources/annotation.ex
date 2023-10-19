@@ -6,11 +6,6 @@ defmodule DataAggregator.Transition.Annotation do
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
   alias DataAggregator.TaxonomyData.Record
 
-  postgres do
-    table "annotations"
-    repo DataAggregator.Repo
-  end
-
   attributes do
     uuid_attribute :id, prefix: "ann"
 
@@ -35,24 +30,6 @@ defmodule DataAggregator.Transition.Annotation do
     timestamps()
   end
 
-  actions do
-    defaults [:create, :read, :update, :destroy]
-  end
-
-  json_api do
-    type "annotation"
-
-    routes do
-      base("/annotations")
-
-      get(:read)
-      index(:read)
-      post(:create)
-      patch(:update)
-      delete(:destroy)
-    end
-  end
-
   graphql do
     type :annotation
 
@@ -70,13 +47,18 @@ defmodule DataAggregator.Transition.Annotation do
     end
   end
 
-  code_interface do
-    define_for DataAggregator.Transition
-    define :create, action: :create
-    define :read_all, action: :read
-    define :update, action: :update
-    define :destroy, action: :destroy
-    define :get_by_id, action: :read, get_by: [:id]
+  json_api do
+    type "annotation"
+
+    routes do
+      base("/annotations")
+
+      get(:read)
+      index :read
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   relationships do
@@ -87,5 +69,23 @@ defmodule DataAggregator.Transition.Annotation do
     belongs_to :dwc_attribute, DwcAttribute do
       api DataAggregator.TaxonomyCatalog
     end
+  end
+
+  postgres do
+    table "annotations"
+    repo DataAggregator.Repo
+  end
+
+  actions do
+    defaults [:create, :read, :update, :destroy]
+  end
+
+  code_interface do
+    define_for DataAggregator.Transition
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
+    define :get_by_id, action: :read, get_by: [:id]
   end
 end

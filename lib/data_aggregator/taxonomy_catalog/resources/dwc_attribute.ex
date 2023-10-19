@@ -8,11 +8,6 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   alias DataAggregator.Transition.Annotation
   alias DataAggregator.Transition.ChangeEvent
 
-  postgres do
-    table "dwc_attributes"
-    repo DataAggregator.Repo
-  end
-
   attributes do
     uuid_attribute :id, prefix: "da"
 
@@ -21,24 +16,6 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
     # further attributes to describe a dwc-attribute
 
     timestamps()
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
-  end
-
-  json_api do
-    type "dwc_attribute"
-
-    routes do
-      base("/dwc_attributes")
-
-      get(:read)
-      index(:read)
-      post(:create)
-      patch(:update)
-      delete(:destroy)
-    end
   end
 
   graphql do
@@ -56,13 +33,18 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
     end
   end
 
-  code_interface do
-    define_for DataAggregator.TaxonomyCatalog
-    define :create, action: :create
-    define :read_all, action: :read
-    define :update, action: :update
-    define :destroy, action: :destroy
-    define :get_by_id, action: :read, get_by: [:id]
+  json_api do
+    type "dwc_attribute"
+
+    routes do
+      base("/dwc_attributes")
+
+      get(:read)
+      index :read
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   relationships do
@@ -79,5 +61,23 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
     has_many :annotations, Annotation do
       api DataAggregator.Transition
     end
+  end
+
+  postgres do
+    table "dwc_attributes"
+    repo DataAggregator.Repo
+  end
+
+  actions do
+    defaults [:create, :read, :update, :destroy]
+  end
+
+  code_interface do
+    define_for DataAggregator.TaxonomyCatalog
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
+    define :get_by_id, action: :read, get_by: [:id]
   end
 end

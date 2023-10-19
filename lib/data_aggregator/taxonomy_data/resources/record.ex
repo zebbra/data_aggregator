@@ -7,11 +7,6 @@ defmodule DataAggregator.TaxonomyData.Record do
   alias DataAggregator.Transition.Annotation
   alias DataAggregator.Transition.EncodingChangeEvent
 
-  postgres do
-    table "records"
-    repo DataAggregator.Repo
-  end
-
   attributes do
     uuid_attribute :id, prefix: "rec"
 
@@ -24,24 +19,6 @@ defmodule DataAggregator.TaxonomyData.Record do
     # further attributes of the core record
 
     timestamps()
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
-  end
-
-  json_api do
-    type "record"
-
-    routes do
-      base("/records")
-
-      get(:read)
-      index(:read)
-      post(:create)
-      patch(:update)
-      delete(:destroy)
-    end
   end
 
   graphql do
@@ -59,13 +36,18 @@ defmodule DataAggregator.TaxonomyData.Record do
     end
   end
 
-  code_interface do
-    define_for DataAggregator.TaxonomyData
-    define :create, action: :create
-    define :read_all, action: :read
-    define :update, action: :update
-    define :destroy, action: :destroy
-    define :get_by_id, action: :read, get_by: [:id]
+  json_api do
+    type "record"
+
+    routes do
+      base("/records")
+
+      get(:read)
+      index :read
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 
   relationships do
@@ -80,5 +62,23 @@ defmodule DataAggregator.TaxonomyData.Record do
     has_many :record_change_events, EncodingChangeEvent do
       api DataAggregator.Transition
     end
+  end
+
+  postgres do
+    table "records"
+    repo DataAggregator.Repo
+  end
+
+  actions do
+    defaults [:create, :read, :update, :destroy]
+  end
+
+  code_interface do
+    define_for DataAggregator.TaxonomyData
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
+    define :get_by_id, action: :read, get_by: [:id]
   end
 end
