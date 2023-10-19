@@ -161,7 +161,7 @@ const Menu = {
       closeMenu: (withDocumentClick = true) => {
         if (menuState.value === MenuStates.Closed) return;
         if (withDocumentClick) {
-          document.body.click();
+          this.liveSocket.execJS(this.el, this.el.getAttribute("phx-remove"));
         } else {
           handleActiveStateChange(items.value, activeItemIndex, null);
           menuState.value = MenuStates.Closed;

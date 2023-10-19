@@ -294,9 +294,9 @@ defmodule DataAggregatorWeb.CoreComponents do
     |> input()
   end
 
-  def input(%{type: "checkbox", value: value} = assigns) do
+  def input(%{type: "checkbox"} = assigns) do
     assigns =
-      assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", value) end)
+      assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", assigns[:value]) end)
 
     ~H"""
     <div phx-feedback-for={@name}>

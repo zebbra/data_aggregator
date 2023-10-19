@@ -95,16 +95,12 @@ const Dialog = {
       },
       close(withDocumentClick = true) {
         if (dialogState.value === DialogStates.Closed) return;
-        if (withDocumentClick) {
-          document.body.click();
-        } else {
-          dialogState.value = DialogStates.Closed;
 
-          const triggerButton = getFocusableElements().find(
-            (el) => el.id === `${dialogId}__button`
-          );
-          if (triggerButton) nextFrame(() => focusElement(triggerButton));
-        }
+        dialogState.value = DialogStates.Closed;
+        const triggerButton = getFocusableElements().find(
+          (el) => el.id === `${dialogId}__button`
+        );
+        if (triggerButton) nextFrame(() => focusElement(triggerButton));
       },
     };
 

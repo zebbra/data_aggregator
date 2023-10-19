@@ -50,6 +50,7 @@ config :ash, :utc_datetime_type, :naive_datetime
 # Configures the endpoint
 config :data_aggregator, DataAggregatorWeb.Endpoint,
   url: [host: "localhost"],
+  adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: DataAggregatorWeb.ErrorHTML, json: DataAggregatorWeb.ErrorJSON],
     layout: false
