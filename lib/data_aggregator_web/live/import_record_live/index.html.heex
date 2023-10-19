@@ -48,6 +48,7 @@
       label={~t"Inserted At"m}
       field="inserted_at"
       sort={@sort_options[:inserted_at]}
+      align="right"
     >
       <%= format_datetime(import_record.inserted_at) %>
     </:col>
@@ -56,6 +57,7 @@
       label={~t"Updated At"m}
       field="updated_at"
       sort={@sort_options[:updated_at]}
+      align="right"
     >
       <%= format_datetime(import_record.updated_at) %>
     </:col>

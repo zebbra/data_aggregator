@@ -524,6 +524,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     attr :label, :string
     attr :field, :string
     attr :sort, :string
+    attr :align, :string
   end
 
   slot :action, doc: "the slot for showing user actions in the last table column"
@@ -552,13 +553,21 @@ defmodule DataAggregatorWeb.CoreComponents do
                     :for={col <- @col}
                     role="columnheader"
                     scope="col"
-                    class="whitespace-nowrap py-3.5 px-3 first:pl-4 last:pl-3 first:pr-3 last:pr-4 text-left uppercase tracking-wide text-sm font-semibold text-gray-900 dark:text-white first:sm:pl-6 first:lg:pl-8 last:sm:pr-6 last:lg:pr-8"
+                    class={[
+                      "whitespace-nowrap py-3.5 px-3 first:pl-4 last:pl-3 first:pr-3 last:pr-4 uppercase tracking-wide text-sm font-semibold text-gray-900 dark:text-white first:sm:pl-6 first:lg:pl-8 last:sm:pr-6 last:lg:pr-8",
+                      col[:align] == nil && "text-left",
+                      col[:align] == "left" && "text-left",
+                      col[:align] == "center" && "text-center",
+                      col[:align] == "right" && "text-right"
+                    ]}
                   >
                     <%= if col[:sort] do %>
                       <.link navigate={col[:sort]} class="group inline-flex">
-                        <%= col[:label] %>
+                        <span :if={col[:align] != "right"}><%= col[:label] %></span>
                         <span class={[
-                          "ml-2 flex-none rounded text-gray-400 dark:text-gray-500",
+                          "flex-none rounded text-gray-400 dark:text-gray-500",
+                          col[:align] == "right" && "mr-2",
+                          col[:align] != "right" && "ml-2",
                           @order_attr != col[:field] &&
                             "invisible group-hover:visible group-focus:visible",
                           @order_attr == col[:field] &&
@@ -592,6 +601,7 @@ defmodule DataAggregatorWeb.CoreComponents do
                             </path>
                           </svg>
                         </span>
+                        <span :if={col[:align] == "right"}><%= col[:label] %></span>
                       </.link>
                     <% else %>
                       <%= col[:label] %>
@@ -624,7 +634,11 @@ defmodule DataAggregatorWeb.CoreComponents do
                     role="cell"
                     class={[
                       "whitespace-nowrap py-4 px-3 first:pl-4 first:pr-3 last:pl-3 last:pr-4 text-sm first:font-medium text-gray-900 dark:text-white first:sm:pl-6 first:lg:pl-8 last:sm:pr-6 last:lg:pr-8",
-                      @row_click && "hover:cursor-pointer"
+                      @row_click && "hover:cursor-pointer",
+                      col[:align] == nil && "text-left",
+                      col[:align] == "left" && "text-left",
+                      col[:align] == "center" && "text-center",
+                      col[:align] == "right" && "text-right"
                     ]}
                   >
                     <%= render_slot(col, @row_item.(row)) %>
