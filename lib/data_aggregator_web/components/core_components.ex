@@ -21,6 +21,7 @@ defmodule DataAggregatorWeb.CoreComponents do
 
   import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Headless.Dialog, only: [dialog_title: 1]
+  import DataAggregatorWeb.Helpers, only: [get_current_order_attr: 1, get_current_order_dir: 1]
 
   @doc """
   Renders flash notices.
@@ -514,7 +515,6 @@ defmodule DataAggregatorWeb.CoreComponents do
   attr :row_id, :any, default: nil, doc: "the function for generating the row id"
   attr :row_click, :any, default: nil, doc: "the function for handling phx-click on each row"
   attr :order_by, :string, default: nil
-  attr :order_dir, :string, default: nil
 
   attr :row_item, :any,
     default: &Function.identity/1,
@@ -533,6 +533,9 @@ defmodule DataAggregatorWeb.CoreComponents do
       with %{rows: %Phoenix.LiveView.LiveStream{}} <- assigns do
         assign(assigns, row_id: assigns.row_id || fn {id, _item} -> id end)
       end
+
+    assigns = assign(assigns, :order_dir, get_current_order_dir(assigns.order_by))
+    assigns = assign(assigns, :order_attr, get_current_order_attr(assigns.order_by))
 
     ~H"""
     <div class="px-4 sm:px-6 lg:px-8">
@@ -556,9 +559,9 @@ defmodule DataAggregatorWeb.CoreComponents do
                         <%= col[:label] %>
                         <span class={[
                           "ml-2 flex-none rounded text-gray-400 dark:text-gray-500",
-                          @order_by != col[:field] &&
+                          @order_attr != col[:field] &&
                             "invisible group-hover:visible group-focus:visible",
-                          @order_by == col[:field] &&
+                          @order_attr == col[:field] &&
                             "rounded bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white group-hover:bg-gray-200 dark:group-hover:bg-gray-700"
                         ]}>
                           <svg

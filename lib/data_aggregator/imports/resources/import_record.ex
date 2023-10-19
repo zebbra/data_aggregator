@@ -16,11 +16,6 @@ defmodule DataAggregator.Imports.ImportRecord do
     end
   end
 
-  preparations do
-    prepare build(sort: [id: :asc])
-    prepare DataAggregator.Preparations.Sort
-  end
-
   graphql do
     type :import_record
 
@@ -86,5 +81,10 @@ defmodule DataAggregator.Imports.ImportRecord do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
+  end
+
+  preparations do
+    prepare build(sort: [id: :asc])
+    prepare DataAggregator.Preparations.Sort
   end
 end

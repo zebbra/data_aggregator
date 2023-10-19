@@ -13,12 +13,11 @@ defmodule DataAggregatorWeb.ImportRecordLive.Index do
   @impl true
   def handle_params(params, _url, socket) do
     import_records =
-      ImportRecord.read!(Map.get(params, "order_by", ""))
+      ImportRecord.read!(%{sort: Map.get(params, "order_by", "")})
 
     socket =
       socket
-      |> assign(:current_order_by, get_current_order_by(params))
-      |> assign(:current_order_dir, get_current_order_dir(params))
+      |> assign(:serialized_params, serialize_params(params))
       |> assign(
         :sort_options,
         order_by_options(
