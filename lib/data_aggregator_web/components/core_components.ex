@@ -30,7 +30,7 @@ defmodule DataAggregatorWeb.CoreComponents do
       <.flash kind={:info} flash={@flash} />
       <.flash kind={:info} phx-mounted={show("#flash")}>Welcome Back!</.flash>
   """
-  attr :id, :string, default: nil, doc: "the optional id of flash container"
+  attr :id, :string, doc: "the optional id of flash container"
   attr :flash, :map, default: %{}, doc: "the map of flash messages to display"
   attr :title, :string, default: nil
   attr :kind, :atom, values: [:info, :error], doc: "used for styling and flash lookup"
@@ -116,39 +116,42 @@ defmodule DataAggregatorWeb.CoreComponents do
       <.flash_group flash={@flash} />
   """
   attr :flash, :map, required: true, doc: "the map of flash messages"
+  attr :id, :string, default: "flash-group", doc: "the optional id of flash container"
 
   def flash_group(assigns) do
     ~H"""
-    <div
-      aria-live="assertive"
-      class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6 z-50"
-    >
-      <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
-        <.flash kind={:info} title={~t"Success!"m} flash={@flash} hidden />
-        <.flash kind={:error} title={~t"Error!"m} flash={@flash} hidden />
-        <.flash
-          id="client-error"
-          kind={:error}
-          title={~t"We can't find the internet"m}
-          phx-disconnected={show(".phx-client-error #client-error")}
-          phx-connected={hide("#client-error")}
-          hidden
-        >
-          <%= ~t"Attempting to reconnect"m %>
-          <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
-        </.flash>
+    <div id={@id}>
+      <div
+        aria-live="assertive"
+        class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6 z-50"
+      >
+        <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
+          <.flash kind={:info} title={~t"Success!"m} flash={@flash} hidden />
+          <.flash kind={:error} title={~t"Error!"m} flash={@flash} hidden />
+          <.flash
+            id="client-error"
+            kind={:error}
+            title={~t"We can't find the internet"m}
+            phx-disconnected={show(".phx-client-error #client-error")}
+            phx-connected={hide("#client-error")}
+            hidden
+          >
+            <%= ~t"Attempting to reconnect"m %>
+            <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
+          </.flash>
 
-        <.flash
-          id="server-error"
-          kind={:error}
-          title="Something went wrong!"
-          phx-disconnected={show(".phx-server-error #server-error")}
-          phx-connected={hide("#server-error")}
-          hidden
-        >
-          <%= ~t"Hang in there while we get back on track"m %>
-          <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
-        </.flash>
+          <.flash
+            id="server-error"
+            kind={:error}
+            title="Something went wrong!"
+            phx-disconnected={show(".phx-server-error #server-error")}
+            phx-connected={hide("#server-error")}
+            hidden
+          >
+            <%= ~t"Hang in there while we get back on track"m %>
+            <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
+          </.flash>
+        </div>
       </div>
     </div>
     """
