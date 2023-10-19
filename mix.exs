@@ -83,6 +83,7 @@ defmodule DataAggregator.MixProject do
       {:jason, "~> 1.2"},
       {:earmark, "~> 1.4"},
       {:timex, "~> 3.0"},
+      {:explorer, "~> 0.7.0"},
 
       # metrix and observation
       {:sentry, "~> 8.1"},

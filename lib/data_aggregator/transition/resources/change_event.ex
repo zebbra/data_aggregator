@@ -7,39 +7,6 @@ defmodule DataAggregator.Transition.ChangeEvent do
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
   alias DataAggregator.Transition.EncodingChangeEvent
 
-  actions do
-    defaults [:create, :read, :update, :destroy]
-  end
-
-  graphql do
-    type :change_event
-
-    queries do
-      get :get_change_event, :read
-      list :list_change_events, :read
-    end
-
-    mutations do
-      create :create_change_event, :create
-      update :update_change_event, :update
-      destroy :destroy_change_event, :destroy
-    end
-  end
-
-  json_api do
-    type "change_event"
-
-    routes do
-      base("/change_events")
-
-      get(:read)
-      index :read
-      post(:create)
-      patch(:update)
-      delete(:destroy)
-    end
-  end
-
   attributes do
     uuid_attribute :id, prefix: "ce"
 
@@ -69,9 +36,8 @@ defmodule DataAggregator.Transition.ChangeEvent do
     end
   end
 
-  postgres do
-    table "change_events"
-    repo DataAggregator.Repo
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do
@@ -81,5 +47,39 @@ defmodule DataAggregator.Transition.ChangeEvent do
     define :update, action: :update
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
+  end
+
+  postgres do
+    table "change_events"
+    repo DataAggregator.Repo
+  end
+
+  graphql do
+    type :change_event
+
+    queries do
+      get :get_change_event, :read
+      list :list_change_events, :read
+    end
+
+    mutations do
+      create :create_change_event, :create
+      update :update_change_event, :update
+      destroy :destroy_change_event, :destroy
+    end
+  end
+
+  json_api do
+    type "change_event"
+
+    routes do
+      base("/change_events")
+
+      get(:read)
+      index :read
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 end

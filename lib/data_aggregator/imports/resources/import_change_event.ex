@@ -6,8 +6,36 @@ defmodule DataAggregator.Imports.ImportChangeEvent do
   alias DataAggregator.Imports.ImportRecord
   alias DataAggregator.Transition.ChangeEvent
 
+  attributes do
+    uuid_attribute :id, prefix: "ice"
+
+    timestamps()
+  end
+
+  relationships do
+    belongs_to :import_record, ImportRecord
+
+    belongs_to :change_event, ChangeEvent do
+      api DataAggregator.Transition
+    end
+  end
+
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  code_interface do
+    define_for DataAggregator.Imports
+    define :read
+    define :create
+    define :update
+    define :destroy
+    define :get_by_id, action: :read, get_by: [:id]
+  end
+
+  postgres do
+    table "import_change_events"
+    repo DataAggregator.Repo
   end
 
   graphql do
@@ -37,33 +65,5 @@ defmodule DataAggregator.Imports.ImportChangeEvent do
       patch(:update)
       delete(:destroy)
     end
-  end
-
-  attributes do
-    uuid_attribute :id, prefix: "ice"
-
-    timestamps()
-  end
-
-  relationships do
-    belongs_to :import_record, ImportRecord
-
-    belongs_to :change_event, ChangeEvent do
-      api DataAggregator.Transition
-    end
-  end
-
-  postgres do
-    table "import_change_events"
-    repo DataAggregator.Repo
-  end
-
-  code_interface do
-    define_for DataAggregator.Imports
-    define :read
-    define :create
-    define :update
-    define :destroy
-    define :get_by_id, action: :read, get_by: [:id]
   end
 end

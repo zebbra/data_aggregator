@@ -8,39 +8,6 @@ defmodule DataAggregator.Imports.Collection do
   alias DataAggregator.Imports.Institution
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
 
-  actions do
-    defaults [:create, :read, :update, :destroy]
-  end
-
-  graphql do
-    type :collection
-
-    queries do
-      get :get_collection, :read
-      list :list_collections, :read
-    end
-
-    mutations do
-      create :create_collection, :create
-      update :update_collection, :update
-      destroy :destroy_collection, :destroy
-    end
-  end
-
-  json_api do
-    type "collection"
-
-    routes do
-      base("/collections")
-
-      get(:read)
-      index :read
-      post(:create)
-      patch(:update)
-      delete(:destroy)
-    end
-  end
-
   attributes do
     uuid_attribute :id, prefix: "col"
 
@@ -83,9 +50,13 @@ defmodule DataAggregator.Imports.Collection do
     end
   end
 
-  postgres do
-    table "collections"
-    repo DataAggregator.Repo
+  actions do
+    defaults [:create, :update, :destroy]
+
+    read :read do
+      primary? true
+      argument :sort, :string, allow_nil?: true
+    end
   end
 
   code_interface do
@@ -96,5 +67,44 @@ defmodule DataAggregator.Imports.Collection do
     define :update, action: :update
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
+  end
+
+  postgres do
+    table "collections"
+    repo DataAggregator.Repo
+  end
+
+  preparations do
+    prepare build(sort: [id: :asc])
+    prepare DataAggregator.Preparations.Sort
+  end
+
+  graphql do
+    type :collection
+
+    queries do
+      get :get_collection, :read
+      list :list_collections, :read
+    end
+
+    mutations do
+      create :create_collection, :create
+      update :update_collection, :update
+      destroy :destroy_collection, :destroy
+    end
+  end
+
+  json_api do
+    type "collection"
+
+    routes do
+      base("/collections")
+
+      get(:read)
+      index :read
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 end

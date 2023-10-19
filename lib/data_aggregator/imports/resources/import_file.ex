@@ -5,12 +5,47 @@ defmodule DataAggregator.Imports.ImportFile do
 
   alias DataAggregator.Imports.Collection
 
+  attributes do
+    uuid_attribute :id, prefix: "if"
+    attribute :url, :string, allow_nil?: false
+    attribute :meta_data, :map
+    timestamps()
+  end
+
+  calculations do
+    calculate :data, :map, DataAggregator.Imports.Calculations.Dataframe
+  end
+
+  relationships do
+    belongs_to :collection, Collection do
+      # attribute_writable? true
+    end
+  end
+
   actions do
     defaults [:create, :read, :update, :destroy]
 
     create :upload_file do
-      manual DataAggregator.UploadFile
+      argument :path, :string, allow_nil?: false
+      argument :collection_id, :string, allow_nil?: false
+      change manage_relationship(:collection_id, :collection, type: :append)
+      change DataAggregator.Imports.Changes.AttachFile, only_when_valid?: true
     end
+  end
+
+  code_interface do
+    define_for DataAggregator.Imports
+    define :upload_file
+    define :read
+    define :create
+    define :update
+    define :destroy
+    define :get_by_id, action: :read, get_by: [:id]
+  end
+
+  postgres do
+    table "import_files"
+    repo DataAggregator.Repo
   end
 
   graphql do
@@ -41,36 +76,6 @@ defmodule DataAggregator.Imports.ImportFile do
       patch(:update)
       delete(:destroy)
     end
-  end
-
-  attributes do
-    uuid_attribute :id, prefix: "if"
-
-    attribute :url, :string do
-      allow_nil? false
-    end
-
-    attribute :meta_data, :map
-
-    timestamps()
-  end
-
-  relationships do
-    belongs_to :collection, Collection
-  end
-
-  postgres do
-    table "import_files"
-    repo DataAggregator.Repo
-  end
-
-  code_interface do
-    define_for DataAggregator.Imports
-    define :read
-    define :create
-    define :update
-    define :destroy
-    define :get_by_id, action: :read, get_by: [:id]
   end
 end
 

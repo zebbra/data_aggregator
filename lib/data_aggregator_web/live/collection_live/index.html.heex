@@ -1,0 +1,127 @@
+<main class="2xl:pr-96">
+  <.header class="sticky top-16">
+    <%= ~t"Listing Collections"m %>
+    <:actions>
+      <.button
+        phx-click="toggle-filters"
+        id="collection-filters__button"
+        class="inline-flex 2xl:hidden"
+      >
+        <.icon name="hero-funnel-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
+        <span class="hidden sm:inline-block"><%= ~t"Filter"m %></span>
+      </.button>
+      <.link patch={~p"/collections/new"} class="focus-visible:outline-none">
+        <.button class="inline-flex" id="collection-modal__button">
+          <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
+          <span class="hidden sm:inline-block"><%= ~t"New Collection"m %></span>
+        </.button>
+      </.link>
+    </:actions>
+  </.header>
+
+  <.table
+    id="collections"
+    rows={@streams.collections}
+    row_click={fn {_id, collection} -> JS.patch(~p"/collections/#{collection}") end}
+    order_by={@current_order_by}
+    order_dir={@current_order_dir}
+  >
+    <:col :let={{_id, collection}} label={~t"ID"m} field="id" sort={@sort_options[:id]}>
+      <%= collection.id %>
+    </:col>
+    <:col :let={{_id, collection}} label={~t"Name"m} field="name" sort={@sort_options[:name]}>
+      <%= collection.name %>
+    </:col>
+    <:col
+      :let={{_id, collection}}
+      label={~t"Inserted At"m}
+      field="inserted_at"
+      sort={@sort_options[:inserted_at]}
+    >
+      <%= format_datetime(collection.inserted_at) %>
+    </:col>
+    <:col
+      :let={{_id, collection}}
+      label={~t"Updated At"m}
+      field="updated_at"
+      sort={@sort_options[:updated_at]}
+    >
+      <%= format_datetime(collection.updated_at) %>
+    </:col>
+
+    <:action :let={{_id, collection}}>
+      <div class="sr-only">
+        <.link patch={~p"/collections/#{collection}"}><%= ~t"Show"m %></.link>
+      </div>
+      <.link patch={~p"/collections/#{collection}/edit"}><%= ~t"Edit"m %></.link>
+    </:action>
+
+    <:action :let={{id, collection}}>
+      <.link
+        phx-click={JS.push("delete", value: %{id: collection.id}) |> hide("##{id}")}
+        data-confirm={~t"Are you sure?"m}
+      >
+        <%= ~t"Delete"m %>
+      </.link>
+    </:action>
+  </.table>
+</main>
+
+<aside class="hidden 2xl:block dark:bg-black/10 bg-gray-100/30 2xl:fixed 2xl:bottom-0 2xl:right-0 2xl:top-16 2xl:w-96 2xl:overflow-y-auto 2xl:border-l 2xl:border-gray-200 dark:2xl:border-white/5">
+  <.header class="sticky top-0">
+    <%= ~t"Filters"m %>
+    <:actions>
+      <a href="#" class="text-sm font-semibold leading-6 text-indigo-600 dark:text-indigo-400">
+        <%= ~t"Reset"m %>
+      </a>
+    </:actions>
+  </.header>
+</aside>
+
+<.slideover
+  :if={@show_filters}
+  id="collection-filters"
+  resize_listener
+  on_cancel={JS.push("toggle-filters")}
+>
+  <.sidebar>
+    <:header>
+      <.header id="collection-filters" class="sticky top-0">
+        <%= ~t"Filters"m %>
+        <:actions>
+          <a href="#" class="text-sm font-semibold leading-6 text-indigo-600 dark:text-indigo-400">
+            <%= ~t"Reset"m %>
+          </a>
+        </:actions>
+      </.header>
+    </:header>
+  </.sidebar>
+</.slideover>
+
+<.slideover
+  :if={@live_action in [:show]}
+  id="collection-slideover"
+  on_cancel={JS.patch(~p"/collections")}
+>
+  <.live_component
+    module={DataAggregatorWeb.CollectionLive.ShowComponent}
+    id={@collection.id}
+    collection={@collection}
+  />
+</.slideover>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="collection-modal"
+  on_cancel={JS.patch(~p"/collections")}
+>
+  <.live_component
+    module={DataAggregatorWeb.CollectionLive.FormComponent}
+    id={@collection.id || :new}
+    icon="hero-plus-circle-mini"
+    title={@page_title}
+    action={@live_action}
+    collection={@collection}
+    patch={~p"/collections"}
+  />
+</.modal>

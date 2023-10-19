@@ -7,39 +7,6 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
   alias DataAggregator.Transition.EncodingChangeEvent
 
-  actions do
-    defaults [:create, :read, :update, :destroy]
-  end
-
-  graphql do
-    type :catalog
-
-    queries do
-      get :get_catalog, :read
-      list :list_catalogs, :read
-    end
-
-    mutations do
-      create :create_catalog, :create
-      update :update_catalog, :update
-      destroy :destroy_catalog, :destroy
-    end
-  end
-
-  json_api do
-    type "catalog"
-
-    routes do
-      base("/catalogs")
-
-      get(:read)
-      index :read
-      post(:create)
-      patch(:update)
-      delete(:destroy)
-    end
-  end
-
   attributes do
     uuid_attribute :id, prefix: "cat"
 
@@ -70,9 +37,8 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
     end
   end
 
-  postgres do
-    table "catalogs"
-    repo DataAggregator.Repo
+  actions do
+    defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do
@@ -82,5 +48,39 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
     define :update, action: :update
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
+  end
+
+  postgres do
+    table "catalogs"
+    repo DataAggregator.Repo
+  end
+
+  graphql do
+    type :catalog
+
+    queries do
+      get :get_catalog, :read
+      list :list_catalogs, :read
+    end
+
+    mutations do
+      create :create_catalog, :create
+      update :update_catalog, :update
+      destroy :destroy_catalog, :destroy
+    end
+  end
+
+  json_api do
+    type "catalog"
+
+    routes do
+      base("/catalogs")
+
+      get(:read)
+      index :read
+      post(:create)
+      patch(:update)
+      delete(:destroy)
+    end
   end
 end

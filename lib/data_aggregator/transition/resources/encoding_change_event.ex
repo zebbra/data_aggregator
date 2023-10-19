@@ -7,8 +7,42 @@ defmodule DataAggregator.Transition.EncodingChangeEvent do
   alias DataAggregator.TaxonomyData.Record
   alias DataAggregator.Transition.ChangeEvent
 
+  attributes do
+    uuid_attribute :id, prefix: "ece"
+
+    attribute :catalog_value_reference, :string
+
+    timestamps()
+  end
+
+  relationships do
+    belongs_to :change_event, ChangeEvent
+
+    belongs_to :catalog, Catalog do
+      api DataAggregator.TaxonomyCatalog
+    end
+
+    belongs_to :record, Record do
+      api DataAggregator.TaxonomyData
+    end
+  end
+
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  code_interface do
+    define_for DataAggregator.Transition
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
+    define :get_by_id, action: :read, get_by: [:id]
+  end
+
+  postgres do
+    table "encoding_change_events"
+    repo DataAggregator.Repo
   end
 
   graphql do
@@ -38,39 +72,5 @@ defmodule DataAggregator.Transition.EncodingChangeEvent do
       patch(:update)
       delete(:destroy)
     end
-  end
-
-  attributes do
-    uuid_attribute :id, prefix: "ece"
-
-    attribute :catalog_value_reference, :string
-
-    timestamps()
-  end
-
-  relationships do
-    belongs_to :change_event, ChangeEvent
-
-    belongs_to :catalog, Catalog do
-      api DataAggregator.TaxonomyCatalog
-    end
-
-    belongs_to :record, Record do
-      api DataAggregator.TaxonomyData
-    end
-  end
-
-  postgres do
-    table "encoding_change_events"
-    repo DataAggregator.Repo
-  end
-
-  code_interface do
-    define_for DataAggregator.Transition
-    define :create, action: :create
-    define :read_all, action: :read
-    define :update, action: :update
-    define :destroy, action: :destroy
-    define :get_by_id, action: :read, get_by: [:id]
   end
 end
