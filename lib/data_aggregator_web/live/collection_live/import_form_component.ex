@@ -133,7 +133,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   end
 
   @impl true
-  def handle_event("save", params, socket) do
+  def handle_event("save", _params, socket) do
     collection = socket.assigns.collection
 
     import_files =
@@ -157,5 +157,5 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   defp error_to_string(:too_many_files), do: "You have selected too many files"
   defp error_to_string(:not_accepted), do: "You have selected an unacceptable file type"
 
-  defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
+  # defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 end

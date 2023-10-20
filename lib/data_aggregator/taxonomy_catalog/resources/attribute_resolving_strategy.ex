@@ -4,7 +4,6 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.Imports.Collection
-  alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run
   alias DataAggregator.TaxonomyCatalog.Catalog
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
 
@@ -22,8 +21,6 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
     belongs_to :catalog, Catalog
 
     belongs_to :dwc_attribute, DwcAttribute
-
-    has_many :attribute_resolving_strategies2runs, AttributeResolvingStrategy2Run
 
     belongs_to :collection, Collection do
       api DataAggregator.Imports

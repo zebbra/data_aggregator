@@ -40,6 +40,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
     {:noreply, assign(socket, :collection, collection)}
   end
 
+  @impl true
   def render(assigns) do
     ~H"""
     <main>

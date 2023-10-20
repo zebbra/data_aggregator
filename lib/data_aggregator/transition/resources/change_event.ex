@@ -6,6 +6,7 @@ defmodule DataAggregator.Transition.ChangeEvent do
   alias DataAggregator.Imports.ImportChangeEvent
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
   alias DataAggregator.Transition.EncodingChangeEvent
+  alias DataAggregator.Transition.Run
 
   attributes do
     uuid_attribute :id, prefix: "ce"
@@ -28,6 +29,8 @@ defmodule DataAggregator.Transition.ChangeEvent do
     belongs_to :dwc_attribute, DwcAttribute do
       api DataAggregator.TaxonomyCatalog
     end
+
+    belongs_to :run, Run
 
     has_many :encoding_change_events, EncodingChangeEvent
 

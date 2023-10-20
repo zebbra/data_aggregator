@@ -3,11 +3,7 @@ defmodule DataAggregator.Transition.Run do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Imports.ImportRecord
-  alias DataAggregator.Imports.ImportRecord2Run
-  alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run
-  alias DataAggregator.TaxonomyData.Record
-  alias DataAggregator.TaxonomyData.Record2Run
+  alias DataAggregator.Transition.ChangeEvent
 
   attributes do
     uuid_attribute :id, prefix: "run"
@@ -29,22 +25,8 @@ defmodule DataAggregator.Transition.Run do
   end
 
   relationships do
-    has_many :attribute_resolving_strategies2runs, AttributeResolvingStrategy2Run do
-      api DataAggregator.TaxonomyCatalog
-    end
-
-    many_to_many :records, Record do
-      api DataAggregator.TaxonomyData
-      through Record2Run
-      source_attribute_on_join_resource :run_id
-      destination_attribute_on_join_resource :record_id
-    end
-
-    many_to_many :import_records, ImportRecord do
-      api DataAggregator.Imports
-      through ImportRecord2Run
-      source_attribute_on_join_resource :run_id
-      destination_attribute_on_join_resource :import_record_id
+    has_many :change_events, ChangeEvent do
+      api DataAggregator.Transition
     end
   end
 

@@ -27,37 +27,8 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
     end
 
-    create table(:records2runs, primary_key: false) do
-      add :id, :uuid, null: false, primary_key: true
-      add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
-      add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
-      add :record_id, :uuid, null: false, primary_key: true
-      add :run_id, :uuid, null: false, primary_key: true
-    end
-
     create table(:records, primary_key: false) do
       add :id, :uuid, null: false, primary_key: true
-    end
-
-    alter table(:records2runs) do
-      modify :record_id,
-             references(:records,
-               column: :id,
-               name: "records2runs_record_id_fkey",
-               type: :uuid,
-               prefix: "public"
-             )
-
-      modify :run_id,
-             references(:runs,
-               column: :id,
-               name: "records2runs_run_id_fkey",
-               type: :uuid,
-               prefix: "public"
-             )
-    end
-
-    alter table(:records) do
       add :unique_qualifier, :text, null: false
       add :meta_data, :map
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
@@ -79,14 +50,6 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
     end
 
-    create table(:import_records2runs, primary_key: false) do
-      add :id, :uuid, null: false, primary_key: true
-      add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
-      add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
-      add :import_record_id, :uuid, null: false, primary_key: true
-      add :run_id, :uuid, null: false, primary_key: true
-    end
-
     create table(:import_records, primary_key: false) do
       add :id, :uuid, null: false, primary_key: true
     end
@@ -106,24 +69,6 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
              references(:import_records,
                column: :id,
                name: "records_import_record_id_fkey",
-               type: :uuid,
-               prefix: "public"
-             )
-    end
-
-    alter table(:import_records2runs) do
-      modify :import_record_id,
-             references(:import_records,
-               column: :id,
-               name: "import_records2runs_import_record_id_fkey",
-               type: :uuid,
-               prefix: "public"
-             )
-
-      modify :run_id,
-             references(:runs,
-               column: :id,
-               name: "import_records2runs_run_id_fkey",
                type: :uuid,
                prefix: "public"
              )
@@ -264,6 +209,14 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
             type: :uuid,
             prefix: "public"
           )
+
+      add :run_id,
+          references(:runs,
+            column: :id,
+            name: "change_events_run_id_fkey",
+            type: :uuid,
+            prefix: "public"
+          )
     end
 
     create table(:catalogs, primary_key: false) do
@@ -307,37 +260,8 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
     end
 
-    create table(:attribute_resolving_strategies2runs, primary_key: false) do
-      add :id, :uuid, null: false, primary_key: true
-      add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
-      add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
-      add :attribute_resolving_strategy_id, :uuid
-      add :run_id, :uuid
-    end
-
     create table(:attribute_resolving_strategies, primary_key: false) do
       add :id, :uuid, null: false, primary_key: true
-    end
-
-    alter table(:attribute_resolving_strategies2runs) do
-      modify :attribute_resolving_strategy_id,
-             references(:attribute_resolving_strategies,
-               column: :id,
-               name: "attribute_resolving_strategies2runs_attribute_resolving_strategy_id_fkey",
-               type: :uuid,
-               prefix: "public"
-             )
-
-      modify :run_id,
-             references(:runs,
-               column: :id,
-               name: "attribute_resolving_strategies2runs_run_id_fkey",
-               type: :uuid,
-               prefix: "public"
-             )
-    end
-
-    alter table(:attribute_resolving_strategies) do
       add :do_not_encode, :boolean, default: false
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
@@ -418,33 +342,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
            "attribute_resolving_strategies_collection_id_fkey"
          )
 
-    alter table(:attribute_resolving_strategies) do
-      remove :collection_id
-      remove :dwc_attribute_id
-      remove :catalog_id
-      remove :updated_at
-      remove :inserted_at
-      remove :do_not_encode
-    end
-
-    drop constraint(
-           :attribute_resolving_strategies2runs,
-           "attribute_resolving_strategies2runs_attribute_resolving_strategy_id_fkey"
-         )
-
-    drop constraint(
-           :attribute_resolving_strategies2runs,
-           "attribute_resolving_strategies2runs_run_id_fkey"
-         )
-
-    alter table(:attribute_resolving_strategies2runs) do
-      modify :run_id, :uuid
-      modify :attribute_resolving_strategy_id, :uuid
-    end
-
     drop table(:attribute_resolving_strategies)
-
-    drop table(:attribute_resolving_strategies2runs)
 
     alter table(:catalogs) do
       remove :updated_at
@@ -474,7 +372,10 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
 
     drop constraint(:change_events, "change_events_dwc_attribute_id_fkey")
 
+    drop constraint(:change_events, "change_events_run_id_fkey")
+
     alter table(:change_events) do
+      remove :run_id
       remove :dwc_attribute_id
       remove :updated_at
       remove :inserted_at
@@ -546,15 +447,6 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       remove :unique_qualifier
     end
 
-    drop constraint(:import_records2runs, "import_records2runs_import_record_id_fkey")
-
-    drop constraint(:import_records2runs, "import_records2runs_run_id_fkey")
-
-    alter table(:import_records2runs) do
-      modify :run_id, :uuid
-      modify :import_record_id, :uuid
-    end
-
     drop constraint(:records, "records_import_record_id_fkey")
 
     alter table(:records) do
@@ -569,30 +461,9 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
 
     drop table(:import_records)
 
-    drop table(:import_records2runs)
-
     drop table(:institutions)
 
-    alter table(:records) do
-      remove :import_record_id
-      remove :updated_at
-      remove :inserted_at
-      remove :meta_data
-      remove :unique_qualifier
-    end
-
-    drop constraint(:records2runs, "records2runs_record_id_fkey")
-
-    drop constraint(:records2runs, "records2runs_run_id_fkey")
-
-    alter table(:records2runs) do
-      modify :run_id, :uuid
-      modify :record_id, :uuid
-    end
-
     drop table(:records)
-
-    drop table(:records2runs)
 
     drop table(:runs)
 
