@@ -2,6 +2,7 @@ defmodule DataAggregatorWeb.Router do
   use DataAggregatorWeb, :router
 
   import AshAdmin.Router
+  import PhoenixStorybook.Router
   import DataAggregatorWeb.Locale, only: [assign_current_locale: 2]
 
   pipeline :locale do
@@ -66,11 +67,23 @@ defmodule DataAggregatorWeb.Router do
     get "/locale", DataAggregatorWeb.LocaleController, :set
   end
 
+  # Phoenix Storybook
+  scope "/" do
+    storybook_assets()
+
+    scope "/", DataAggregatorWeb do
+      pipe_through [:locale, :browser]
+      live_storybook "/storybook", backend_module: DataAggregatorWeb.Storybook
+    end
+  end
+
+  # Ash Admin
   scope "/" do
     pipe_through [:locale, :browser]
     ash_admin "/admin"
   end
 
+  # GraphSQL
   scope "/" do
     pipe_through [:graphql]
 

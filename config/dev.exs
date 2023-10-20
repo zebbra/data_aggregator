@@ -27,7 +27,8 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
   secret_key_base: "rs4+NR9FM90SkkrmYTJDIn0wK0Cac6qKzU82uKfNirNVIvYjdulbQ7lIUvIx2S4m",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]},
+    storybook: {Tailwind, :install_and_run, [:storybook, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -59,7 +60,8 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/data_aggregator_web/(controllers|live|components)/.*(ex|heex)$"
+      ~r"lib/data_aggregator_web/(controllers|live|components)/.*(ex|heex)$",
+      ~r"storybook/.*(exs)$"
     ]
   ]
 
