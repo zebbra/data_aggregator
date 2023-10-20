@@ -28,7 +28,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
 
   defp apply_action(socket, :import, _params) do
     socket
-    |> assign(:page_title, ~t"Import Collection"m)
+    |> assign(:page_title, ~t"Import File"m)
   end
 
   @impl true
@@ -41,30 +41,43 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
 
   def render(assigns) do
     ~H"""
-     <.link navigate={~p"/collections/#{@collection}/import"}>Import</.link>
+    <main class="2xl:pr-96">
+      <.header class="sticky top-16">
+        <%= @collection.name %>
 
-    <div :if={@import_file}>
-      <.table id="columns" rows={@import_file.data |> Explorer.DataFrame.dtypes()}>
-        <:col :let={{name, _}}><%= name %></:col>
-        <:col :let={{_, type}}><%= type %></:col>
-      </.table>
-    </div>
+        <:actions>
+          <.link navigate={~p"/collections/#{@collection}/import"} class="focus-visible:outline-none">
+            <.button class="inline-flex">
+              <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
+              <span class="sm:inline-block hidden"><%= ~t"Import File"m %></span>
+            </.button>
+          </.link>
+        </:actions>
+      </.header>
 
-    <.modal
-      :if={@live_action == :import}
-      id="collection-modal"
-      on_cancel={JS.patch(~p"/collections/#{@collection}")}
-    >
-      <.live_component
-        module={DataAggregatorWeb.CollectionLive.ImportFormComponent}
-        id={@collection.id}
-        icon="hero-plus-circle-mini"
-        title={@page_title}
-        action={:new}
-        collection={@collection}
-        patch={~p"/collections/#{@collection}"}
-      />
-    </.modal>
+      <div :if={@import_file}>
+        <.table id="columns" rows={@import_file.data |> Explorer.DataFrame.dtypes()}>
+          <:col :let={{name, _}}><%= name %></:col>
+          <:col :let={{_, type}}><%= type %></:col>
+        </.table>
+      </div>
+
+      <.modal
+        :if={@live_action == :import}
+        id="collection-modal"
+        on_cancel={JS.patch(~p"/collections/#{@collection}")}
+      >
+        <.live_component
+          module={DataAggregatorWeb.CollectionLive.ImportFormComponent}
+          id={@collection.id}
+          icon="hero-plus-circle-mini"
+          title={@page_title}
+          action={:new}
+          collection={@collection}
+          patch={~p"/collections/#{@collection}"}
+        />
+      </.modal>
+    </main>
     """
   end
 end

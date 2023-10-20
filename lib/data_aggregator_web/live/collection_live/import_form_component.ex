@@ -21,11 +21,25 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
     <div>
       <.form_header icon={@icon} title={@title} />
 
-      <ul>
-        <li :for={upload <- @uploaded_files}>
-          <%= upload %>
-        </li>
-      </ul>
+      <%!-- use phx-drop-target with the upload ref to enable file drag and drop --%>
+      <section phx-drop-target={@uploads.file.ref} class="bg-slate-200 p-4 rounded">
+
+        <%!-- render each file entry --%>
+        <article :for={entry <- @uploads.file.entries} class="upload-entry">
+          <%= entry.client_name %>
+          <progress value={entry.progress} max="100"> <%= entry.progress %>% </progress>
+          <button type="button" phx-click="cancel-upload" phx-target={@myself} phx-value-ref={entry.ref} aria-label="cancel">&times;</button>
+
+          <div>
+            <%= for err <- upload_errors(@uploads.file, entry) do %>
+              <p class="alert alert-danger"><%= error_to_string(err) %></p>
+            <% end %>
+          </div>
+        </article>
+
+        Drop files here
+
+      </section>
 
       <.simple_form
         for={@form}
@@ -34,39 +48,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-          <.live_file_input upload={@uploads.file} />
-
-        <%!-- use phx-drop-target with the upload ref to enable file drag and drop --%>
-        <section phx-drop-target={@uploads.file.ref}>
-
-          <%!-- render each file entry --%>
-          <%= for entry <- @uploads.file.entries do %>
-            <article class="upload-entry">
-
-              <figure>
-                <.live_img_preview entry={entry} />
-                <figcaption><%= entry.client_name %></figcaption>
-              </figure>
-
-              <%!-- entry.progress will update automatically for in-flight entries --%>
-              <progress value={entry.progress} max="100"> <%= entry.progress %>% </progress>
-
-              <%!-- a regular click event whose handler will invoke Phoenix.LiveView.cancel_upload/3 --%>
-              <button type="button" phx-click="cancel-upload" phx-target={@myself} phx-value-ref={entry.ref} aria-label="cancel">&times;</button>
-
-              <%!-- Phoenix.Component.upload_errors/2 returns a list of error atoms --%>
-              <%= for err <- upload_errors(@uploads.file, entry) do %>
-                <p class="alert alert-danger"><%= error_to_string(err) %></p>
-              <% end %>
-
-            </article>
-          <% end %>
-
-          <%!-- Phoenix.Component.upload_errors/1 returns a list of error atoms --%>
-          <%= for err <- upload_errors(@uploads.file) do %>
-            <p class="alert alert-danger"><%= error_to_string(err) %></p>
-          <% end %>
-        </section>
+        <.live_file_input upload={@uploads.file} />
 
         <:actions>
           <.button
