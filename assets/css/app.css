@@ -4,4 +4,4 @@
 
 /* This file is for your main application CSS */
 
-@import "components/table.scss";
+@import "./components/table.css";

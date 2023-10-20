@@ -51,16 +51,17 @@ defmodule DataAggregatorWeb.Helpers do
   end
 
   def get_current_order_attr(order_by) do
-    order_by
-    |> String.replace("-", "")
+    case order_by do
+      "-" <> order -> order
+      order when is_binary(order) -> order
+      _ -> nil
+    end
   end
 
   def get_current_order_dir(order_by) do
-    if order_by
-       |> String.starts_with?("-") do
-      "desc"
-    else
-      "asc"
+    case order_by do
+      "-" <> _ -> "desc"
+      _ -> "asc"
     end
   end
 

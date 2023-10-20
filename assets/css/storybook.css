@@ -12,3 +12,11 @@
     font-family: ui-sans-serif, system-ui;
   }
 }
+
+.theme-default, .theme-dark {
+  @apply p-4 rounded;
+}
+
+.theme-dark {
+  @apply text-white bg-gray-900;
+}

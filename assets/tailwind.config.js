@@ -7,14 +7,14 @@ const path = require("path");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  important: ".lsb-sandbox",
+  important: ".data-aggregator",
   content: [
     "./js/**/*.js",
     "./js/**/*.ts",
     "../lib/*_web.ex",
     "../lib/*_web/**/*.*ex",
   ],
-  darkMode: "class",
+  darkMode: ["class", ".theme-dark"],
   theme: {
     extend: {
       colors: {

@@ -5,5 +5,9 @@ defmodule DataAggregatorWeb.Storybook do
     # assets path are remote path, not local file-system paths
     css_path: "/assets/storybook.css",
     js_path: "/assets/storybook.js",
-    sandbox_class: "data-aggregator-web"
+    sandbox_class: "data-aggregator",
+    themes: [
+      default: [name: "Default"],
+      dark: [name: "Dark"]
+    ]
 end
