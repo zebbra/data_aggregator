@@ -58,7 +58,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     >
       <div class="p-4">
         <div class="flex items-start">
-          <div :if={@title} class="flex-shrink-0">
+          <div class="flex-shrink-0">
             <.icon
               :if={@kind == :info}
               name="hero-information-circle-mini text-green-400"
@@ -71,16 +71,16 @@ defmodule DataAggregatorWeb.CoreComponents do
             />
           </div>
 
-          <div class="flex-1 pt-0.5 ml-3 w-0">
-            <p class={[
-              "text-sm font-medium text-gray-900",
+          <div class="flex-1 pt-1 ml-3 w-0">
+            <p :if={@title} class={[
+              "text-sm font-medium text-gray-900 mb-2",
               @kind == :info && "text-green-800",
               @kind == :error && "text-red-800"
             ]}>
               <%= @title %>
             </p>
             <p class={[
-              "mt-2 text-sm",
+              "text-sm",
               @kind == :info && "text-green-700",
               @kind == :error && "text-red-700"
             ]}>
