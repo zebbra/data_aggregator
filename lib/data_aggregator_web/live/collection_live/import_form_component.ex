@@ -11,7 +11,12 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
      socket
      |> assign(assigns)
      |> assign(:uploaded_files, [])
-     |> allow_upload(:file, max_entries: 5, accept: ~w(.csv .jpg), max_file_size: 80_000_000, auto_upload: true)
+     |> allow_upload(:file,
+       max_entries: 5,
+       accept: ~w(.csv .jpg),
+       max_file_size: 80_000_000,
+       auto_upload: true
+     )
      |> assign_form()}
   end
 
@@ -23,12 +28,19 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
 
       <%!-- use phx-drop-target with the upload ref to enable file drag and drop --%>
       <section phx-drop-target={@uploads.file.ref} class="bg-slate-200 p-4 rounded">
-
         <%!-- render each file entry --%>
         <article :for={entry <- @uploads.file.entries} class="upload-entry">
           <%= entry.client_name %>
-          <progress value={entry.progress} max="100"> <%= entry.progress %>% </progress>
-          <button type="button" phx-click="cancel-upload" phx-target={@myself} phx-value-ref={entry.ref} aria-label="cancel">&times;</button>
+          <progress value={entry.progress} max="100"><%= entry.progress %>%</progress>
+          <button
+            type="button"
+            phx-click="cancel-upload"
+            phx-target={@myself}
+            phx-value-ref={entry.ref}
+            aria-label="cancel"
+          >
+            &times;
+          </button>
 
           <div>
             <%= for err <- upload_errors(@uploads.file, entry) do %>
@@ -36,9 +48,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
             <% end %>
           </div>
         </article>
-
         Drop files here
-
       </section>
 
       <.simple_form
@@ -126,15 +136,17 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   def handle_event("save", params, socket) do
     collection = socket.assigns.collection
 
-    import_files = consume_uploaded_entries(socket, :file, fn %{path: path}, _entry ->
-      handle_upload(collection, path)
-    end)
+    import_files =
+      consume_uploaded_entries(socket, :file, fn %{path: path}, _entry ->
+        handle_upload(collection, path)
+      end)
 
     # notify_parent({:saved, socket.assigns.collection})
 
-    {:noreply, socket
-    |> put_flash(:info, "Imported #{length(import_files)} files")
-    |> push_patch(to: socket.assigns.patch)}
+    {:noreply,
+     socket
+     |> put_flash(:info, "Imported #{length(import_files)} files")
+     |> push_patch(to: socket.assigns.patch)}
   end
 
   defp handle_upload(collection, path) do

@@ -12,14 +12,14 @@ defmodule DataAggregator.Imports.ImportFile do
     timestamps()
   end
 
-  calculations do
-    calculate :data, :map, DataAggregator.Imports.Calculations.Dataframe
-  end
-
   relationships do
     belongs_to :collection, Collection do
       # attribute_writable? true
     end
+  end
+
+  calculations do
+    calculate :data, :map, DataAggregator.Imports.Calculations.Dataframe
   end
 
   actions do

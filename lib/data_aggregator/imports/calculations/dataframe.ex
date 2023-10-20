@@ -7,7 +7,7 @@ defmodule DataAggregator.Imports.Calculations.Dataframe do
       %{url: url} ->
         Explorer.DataFrame.from_csv!(url, delimiter: ";", lazy: true)
 
-      # _other -> nil
+        # _other -> nil
     end)
   end
 

@@ -13,10 +13,11 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
     collection = Collection.get_by_id!(id, load: [import_files: [:data]])
     import_file = collection.import_files |> List.last()
 
-    socket =  socket
-    |> assign(:collection, collection)
-    |> assign(:import_file, import_file)
-    |> apply_action(socket.assigns.live_action, params)
+    socket =
+      socket
+      |> assign(:collection, collection)
+      |> assign(:import_file, import_file)
+      |> apply_action(socket.assigns.live_action, params)
 
     {:noreply, socket}
   end
