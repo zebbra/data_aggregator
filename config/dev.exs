@@ -81,3 +81,19 @@ config :swoosh, :api_client, false
 
 # Add heex debug annotations via
 config :phoenix_live_view, debug_heex_annotations: true
+
+config :git_hooks,
+  auto_install: true,
+  verbose: true,
+  hooks: [
+    pre_commit: [
+      tasks: [
+        {:cmd, "mix lint"}
+      ]
+    ],
+    pre_push: [
+      tasks: [
+        {:cmd, "mix test --color"}
+      ]
+    ]
+  ]
