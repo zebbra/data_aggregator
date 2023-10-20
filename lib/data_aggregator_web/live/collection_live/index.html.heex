@@ -5,15 +5,15 @@
       <.button
         phx-click="toggle-filters"
         id="collection-filters__button"
-        class="inline-flex 2xl:hidden"
+        class="2xl:hidden inline-flex"
       >
-        <.icon name="hero-funnel-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
-        <span class="hidden sm:inline-block"><%= ~t"Filter"m %></span>
+        <.icon name="hero-funnel-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
+        <span class="sm:inline-block hidden"><%= ~t"Filter"m %></span>
       </.button>
       <.link patch={~p"/collections/new"} class="focus-visible:outline-none">
         <.button class="inline-flex" id="collection-modal__button">
-          <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
-          <span class="hidden sm:inline-block"><%= ~t"New Collection"m %></span>
+          <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
+          <span class="sm:inline-block hidden"><%= ~t"New Collection"m %></span>
         </.button>
       </.link>
     </:actions>
@@ -26,12 +26,10 @@
     order_by={@current_order_by}
     order_dir={@current_order_dir}
   >
-    <:col :let={{_id, collection}} label={~t"ID"m} field="id" sort={@sort_options[:id]}>
-      <%= collection.id %>
-    </:col>
     <:col :let={{_id, collection}} label={~t"Name"m} field="name" sort={@sort_options[:name]}>
       <%= collection.name %>
     </:col>
+
     <:col
       :let={{_id, collection}}
       label={~t"Inserted At"m}
@@ -67,11 +65,11 @@
   </.table>
 </main>
 
-<aside class="hidden 2xl:block dark:bg-black/10 bg-gray-100/30 2xl:fixed 2xl:bottom-0 2xl:right-0 2xl:top-16 2xl:w-96 2xl:overflow-y-auto 2xl:border-l 2xl:border-gray-200 dark:2xl:border-white/5">
+<aside class="2xl:block dark:bg-black/10 bg-gray-100/30 2xl:fixed 2xl:bottom-0 2xl:right-0 2xl:top-16 2xl:w-96 2xl:overflow-y-auto 2xl:border-l 2xl:border-gray-200 dark:2xl:border-white/5 hidden">
   <.header class="sticky top-0">
     <%= ~t"Filters"m %>
     <:actions>
-      <a href="#" class="text-sm font-semibold leading-6 text-indigo-600 dark:text-indigo-400">
+      <a href="#" class="dark:text-indigo-400 text-sm font-semibold leading-6 text-indigo-600">
         <%= ~t"Reset"m %>
       </a>
     </:actions>
@@ -89,7 +87,7 @@
       <.header id="collection-filters" class="sticky top-0">
         <%= ~t"Filters"m %>
         <:actions>
-          <a href="#" class="text-sm font-semibold leading-6 text-indigo-600 dark:text-indigo-400">
+          <a href="#" class="dark:text-indigo-400 text-sm font-semibold leading-6 text-indigo-600">
             <%= ~t"Reset"m %>
           </a>
         </:actions>

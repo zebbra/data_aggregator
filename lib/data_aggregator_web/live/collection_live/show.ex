@@ -42,7 +42,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
 
   def render(assigns) do
     ~H"""
-    <main class="2xl:pr-96">
+    <main>
       <.header class="sticky top-16">
         <%= @collection.name %>
 
@@ -58,8 +58,8 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
 
       <div :if={@import_file}>
         <.table id="columns" rows={@import_file.data |> Explorer.DataFrame.dtypes()}>
-          <:col :let={{name, _}}><%= name %></:col>
-          <:col :let={{_, type}}><%= type %></:col>
+          <:col :let={{name, _}} label="Name"><%= name %></:col>
+          <:col :let={{_, type}} label="Type"><%= type %></:col>
         </.table>
       </div>
 

@@ -35,7 +35,8 @@ defmodule DataAggregator.Imports.Collection do
 
     attribute :collection_size, :integer
 
-    timestamps()
+    # allow sorting by inserted_at/updated_at
+    timestamps private?: false, writable?: false
   end
 
   relationships do

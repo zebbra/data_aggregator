@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
   alias DataAggregator.Imports.Collection
 
-  @sort_options [:inserted_at, :updated_at, :unique_qualifier]
+  @sort_options [:name, :inserted_at, :updated_at]
 
   @impl true
   def mount(_params, _session, socket) do
@@ -12,7 +12,8 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    collections = Collection.read!()
+    sort = Map.get(params, "order_by", nil)
+    collections = Collection.read!(%{sort: sort})
 
     socket =
       socket
