@@ -73,7 +73,6 @@ defmodule DataAggregator.MixProject do
       {:ex_cldr_dates_times, "~> 2.14"},
       {:ex_cldr_units, "~> 3.16"},
       {:ex_cldr_plugs, "~> 1.3"},
-      {:ex_cldr_locale_display, "~> 1.4"},
 
       # misc
       {:envy, "~> 1.1.1"},
