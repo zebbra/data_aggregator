@@ -7,7 +7,7 @@ defmodule DataAggregator.Imports.ImportRecord do
   alias DataAggregator.Imports.StaticAsset
   alias DataAggregator.TaxonomyData.Record
 
-  @default_limit 5
+  @default_limit 15
   def default_limit, do: @default_limit
 
   actions do

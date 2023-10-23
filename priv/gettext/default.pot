@@ -60,12 +60,6 @@ msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "We can't find the internet"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:156
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Layouts"
-msgid "Admin"
-msgstr ""
-
 #: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:120
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
@@ -73,7 +67,7 @@ msgid "Chat on Libera IRC"
 msgstr ""
 
 #: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:32
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:171
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:156
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "Dashboard"
@@ -97,7 +91,7 @@ msgctxt "DataAggregatorWeb.Layouts"
 msgid "Follow on Twitter"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:186
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:171
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "GQL Playground"
@@ -115,7 +109,7 @@ msgctxt "DataAggregatorWeb.Layouts"
 msgid "Join the Discord Server"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:201
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:186
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "Mailbox"

@@ -7,6 +7,9 @@ defmodule DataAggregator.Application do
 
   @impl true
   def start(_type, _args) do
+    # Add logger handlers (eg. Sentry)
+    :ok = Logger.add_handlers(:data_aggregator)
+
     children = [
       # Start the Telemetry supervisor
       DataAggregatorWeb.Telemetry,
