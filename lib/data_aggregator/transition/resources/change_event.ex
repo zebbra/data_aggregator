@@ -20,8 +20,6 @@ defmodule DataAggregator.Transition.ChangeEvent do
 
     attribute :previous_value, :string
 
-    attribute :catalog_value_reference, :string
-
     timestamps()
   end
 

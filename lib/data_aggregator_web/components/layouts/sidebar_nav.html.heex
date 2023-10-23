@@ -79,6 +79,60 @@
           </li>
         </ul>
       </li>
+      <%!-- External links --%>
+      <li>
+        <div class="text-xs font-semibold leading-6 text-gray-400">External Resources</div>
+        <ul role="list" class="-mx-2 mt-2 space-y-1">
+          <li>
+            <.link
+              href="https://github.com/zebbra/data_aggregator"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
+            >
+              <.icon
+                name="hero-code-bracket"
+                class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
+              />
+              <span class="truncate">
+                <%= ~t"Github"m %>
+              </span>
+            </.link>
+          </li>
+          <li>
+            <.link
+              href="https://www.gbif.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
+            >
+              <.icon
+                name="hero-circle-stack"
+                class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
+              />
+              <span class="truncate">
+                <%= ~t"GBIF"m %>
+              </span>
+            </.link>
+          </li>
+          <li>
+            <.link
+              href="https://scnat.ch/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
+            >
+              <.icon
+                name="hero-academic-cap"
+                class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
+              />
+              <span class="truncate">
+                <%= ~t"scnat"m %>
+              </span>
+            </.link>
+          </li>
+        </ul>
+      </li>
       <%!-- Internal links --%>
       <li :if={@environment == :dev}>
         <div class="text-xs font-semibold leading-6 text-gray-400">Internal Resources</div>

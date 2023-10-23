@@ -1,4 +1,3 @@
-
 Table collections {
   id uuid [pk]
   name varchar
@@ -117,7 +116,6 @@ Table change_events {
   category varchar
   value varchar
   previous_value varchar
-  catalog_value_reference varchar
   inserted_at timestamp
   updated_at timestamp
   dwc_attribute_id uuid
