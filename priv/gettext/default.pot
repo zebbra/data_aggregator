@@ -16,7 +16,7 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: lib/data_aggregator_web/components/core_components.ex:101
+#: lib/data_aggregator_web/components/core_components.ex:100
 #: lib/data_aggregator_web/components/headless_components.ex:306
 #: lib/data_aggregator_web/components/headless_components.ex:386
 #: lib/data_aggregator_web/components/headless_components.ex:463
@@ -30,31 +30,31 @@ msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Dashboard"
 msgstr ""
 
-#: lib/data_aggregator_web/components/core_components.ex:140
+#: lib/data_aggregator_web/components/core_components.ex:139
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "Attempting to reconnect"
 msgstr ""
 
-#: lib/data_aggregator_web/components/core_components.ex:131
+#: lib/data_aggregator_web/components/core_components.ex:130
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "Error!"
 msgstr ""
 
-#: lib/data_aggregator_web/components/core_components.ex:152
+#: lib/data_aggregator_web/components/core_components.ex:151
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "Hang in there while we get back on track"
 msgstr ""
 
-#: lib/data_aggregator_web/components/core_components.ex:130
+#: lib/data_aggregator_web/components/core_components.ex:129
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "Success!"
 msgstr ""
 
-#: lib/data_aggregator_web/components/core_components.ex:135
+#: lib/data_aggregator_web/components/core_components.ex:134
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "We can't find the internet"
@@ -170,25 +170,25 @@ msgctxt "DataAggregatorWeb.ImportRecordLive.FormComponent"
 msgid "Use this form to manage import records in your database."
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_record_live/index.html.heex:77
+#: lib/data_aggregator_web/live/import_record_live/index.html.heex:67
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_record_live/index.html.heex:79
+#: lib/data_aggregator_web/live/import_record_live/index.html.heex:69
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Delete"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_record_live/index.html.heex:70
+#: lib/data_aggregator_web/live/import_record_live/index.html.heex:61
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Edit"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_record_live/index.ex:43
+#: lib/data_aggregator_web/live/import_record_live/index.ex:44
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Edit Import Record"
@@ -200,65 +200,65 @@ msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Filter"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_record_live/index.html.heex:87
-#: lib/data_aggregator_web/live/import_record_live/index.html.heex:105
+#: lib/data_aggregator_web/live/import_record_live/index.html.heex:77
+#: lib/data_aggregator_web/live/import_record_live/index.html.heex:95
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Filters"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_record_live/index.html.heex:35
+#: lib/data_aggregator_web/live/import_record_live/index.html.heex:29
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "ID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_record_live/index.html.heex:48
+#: lib/data_aggregator_web/live/import_record_live/index.html.heex:42
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Inserted At"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_record_live/index.ex:55
+#: lib/data_aggregator_web/live/import_record_live/index.ex:56
 #: lib/data_aggregator_web/live/import_record_live/index.html.heex:3
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Listing Import Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_record_live/index.ex:49
-#: lib/data_aggregator_web/live/import_record_live/index.html.heex:19
+#: lib/data_aggregator_web/live/import_record_live/index.ex:50
+#: lib/data_aggregator_web/live/import_record_live/index.html.heex:16
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "New Import Record"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_record_live/index.html.heex:90
-#: lib/data_aggregator_web/live/import_record_live/index.html.heex:108
+#: lib/data_aggregator_web/live/import_record_live/index.html.heex:80
+#: lib/data_aggregator_web/live/import_record_live/index.html.heex:98
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Reset"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_record_live/index.html.heex:67
+#: lib/data_aggregator_web/live/import_record_live/index.html.heex:59
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Show"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_record_live/index.ex:37
+#: lib/data_aggregator_web/live/import_record_live/index.ex:38
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Show Import Record"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_record_live/index.html.heex:40
+#: lib/data_aggregator_web/live/import_record_live/index.html.heex:34
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Unique Qualifier"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_record_live/index.html.heex:57
+#: lib/data_aggregator_web/live/import_record_live/index.html.heex:50
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Updated At"
