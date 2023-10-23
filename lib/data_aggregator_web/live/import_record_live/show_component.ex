@@ -19,16 +19,14 @@ defmodule DataAggregatorWeb.ImportRecordLive.ShowComponent do
           <:item title={~t"Unique Qualifier"m}><%= @import_record.unique_qualifier %></:item>
         </.list>
         <:footer>
-          <.link
-            patch={~p"/import_records/#{@import_record}/show/edit?#{@serialized_params}"}
-            phx-click={JS.push_focus()}
-            class="focus-visible:outline-none"
+          <.styled_link
+            patch={~p"/import_records/#{@import_record}/show/edit?#{@current_path_params}"}
+            id="import-record-modal-edit__button"
+            class="inline-flex"
           >
-            <.button id="import-record-modal-edit__button" class="inline-flex">
-              <.icon name="hero-pencil-square-mini" class="-ml-0.5 mr-1.5 h-5 w-5" />
-              <span><%= ~t"Edit Import Record"m %></span>
-            </.button>
-          </.link>
+            <.icon name="hero-pencil-square-mini" class="-ml-0.5 mr-1.5 h-5 w-5" />
+            <span><%= ~t"Edit Import Record"m %></span>
+          </.styled_link>
         </:footer>
       </.sidebar>
     </div>

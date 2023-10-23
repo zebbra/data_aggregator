@@ -7,12 +7,17 @@ defmodule DataAggregator.Imports.ImportRecord do
   alias DataAggregator.Imports.StaticAsset
   alias DataAggregator.TaxonomyData.Record
 
+  @default_limit 5
+  def default_limit, do: @default_limit
+
   actions do
     defaults [:create, :update, :destroy]
 
     read :read do
       primary? true
       argument :sort, :string, allow_nil?: true
+
+      pagination offset?: true, default_limit: @default_limit, countable: true
     end
   end
 

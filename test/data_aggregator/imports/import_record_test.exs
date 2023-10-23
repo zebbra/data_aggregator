@@ -13,7 +13,8 @@ defmodule DataAggregator.ImportRecordsTest do
 
     test "read!/0 returns all import_records" do
       import_record = import_record_fixture()
-      assert ImportRecord.read!() == [import_record]
+      page = ImportRecord.read!()
+      assert page.results == [import_record]
     end
 
     test "get_by_id!/1 returns the import_record with given id" do

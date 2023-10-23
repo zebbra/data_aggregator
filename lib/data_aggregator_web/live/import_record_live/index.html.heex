@@ -10,15 +10,14 @@
         <.icon name="hero-funnel-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
         <span class="sm:inline-block hidden"><%= ~t"Filter"m %></span>
       </.button>
-      <.link
-        patch={~p"/import_records/new?#{@serialized_params}"}
-        class="focus-visible:outline-none"
+      <.styled_link
+        patch={~p"/import_records/new?#{@current_path_params}"}
+        class="inline-flex"
+        id="import-record-modal__button"
       >
-        <.button class="inline-flex" id="import-record-modal__button">
-          <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
-          <span class="sm:inline-block hidden"><%= ~t"New Import Record"m %></span>
-        </.button>
-      </.link>
+        <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
+        <span class="sm:inline-block hidden"><%= ~t"New Import Record"m %></span>
+      </.styled_link>
     </:actions>
   </.header>
 
@@ -27,27 +26,22 @@
     rows={@streams.import_records}
     row_click={
       fn {_id, import_record} ->
-        JS.patch(~p"/import_records/#{import_record}?#{@serialized_params}")
+        JS.patch(~p"/import_records/#{import_record}?#{@current_path_params}")
       end
     }
-    order_by={@serialized_params |> Map.get(:order_by, "")}
+    sort={@current_sort}
   >
-    <:col :let={{_id, import_record}} label={~t"ID"m} field="id" sort={@sort_options[:id]}>
+    <:col :let={{_id, import_record}} label={~t"ID"m} field="id" sort>
       <%= import_record.id %>
     </:col>
-    <:col
-      :let={{_id, import_record}}
-      label={~t"Unique Qualifier"m}
-      field="unique_qualifier"
-      sort={@sort_options[:unique_qualifier]}
-    >
+    <:col :let={{_id, import_record}} label={~t"Unique Qualifier"m} field="unique_qualifier" sort>
       <%= import_record.unique_qualifier %>
     </:col>
     <:col
       :let={{_id, import_record}}
       label={~t"Inserted At"m}
       field="inserted_at"
-      sort={@sort_options[:inserted_at]}
+      sort
       align="right"
     >
       <%= format_datetime(import_record.inserted_at) %>
@@ -56,7 +50,7 @@
       :let={{_id, import_record}}
       label={~t"Updated At"m}
       field="updated_at"
-      sort={@sort_options[:updated_at]}
+      sort
       align="right"
     >
       <%= format_datetime(import_record.updated_at) %>
@@ -66,7 +60,7 @@
       <div class="sr-only">
         <.link patch={~p"/import_records/#{import_record}"}><%= ~t"Show"m %></.link>
       </div>
-      <.link patch={~p"/import_records/#{import_record}/edit?#{@serialized_params}"}>
+      <.link patch={~p"/import_records/#{import_record}/edit?#{@current_path_params}"}>
         <%= ~t"Edit"m %>
       </.link>
     </:action>
@@ -80,6 +74,8 @@
       </.link>
     </:action>
   </.table>
+
+  <.pagination page_meta={@page_meta} />
 </main>
 
 <aside class="2xl:block dark:bg-black/10 bg-gray-100/30 2xl:fixed 2xl:bottom-0 2xl:right-0 2xl:top-16 2xl:w-96 2xl:overflow-y-auto 2xl:border-l 2xl:border-gray-200 dark:2xl:border-white/5 hidden">
@@ -116,20 +112,20 @@
 <.slideover
   :if={@live_action in [:show]}
   id="import-record-slideover"
-  on_cancel={JS.patch(~p"/import_records?#{@serialized_params}")}
+  on_cancel={JS.patch(~p"/import_records?#{@current_path_params}")}
 >
   <.live_component
     module={DataAggregatorWeb.ImportRecordLive.ShowComponent}
     id={@import_record.id}
     import_record={@import_record}
-    serialized_params={@serialized_params}
+    current_path_params={@current_path_params}
   />
 </.slideover>
 
 <.modal
   :if={@live_action in [:new, :edit]}
   id="import-record-modal"
-  on_cancel={JS.patch(~p"/import_records?#{@serialized_params}")}
+  on_cancel={JS.patch(~p"/import_records?#{@current_path_params}")}
 >
   <.live_component
     module={DataAggregatorWeb.ImportRecordLive.FormComponent}
@@ -138,6 +134,6 @@
     title={@page_title}
     action={@live_action}
     import_record={@import_record}
-    patch={~p"/import_records?#{@serialized_params}"}
+    patch={~p"/import_records?#{@current_path_params}"}
   />
 </.modal>

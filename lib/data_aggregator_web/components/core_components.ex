@@ -16,12 +16,13 @@ defmodule DataAggregatorWeb.CoreComponents do
   """
   use Phoenix.Component
 
+  alias DataAggregatorWeb.HeadlessComponents
   alias Phoenix.HTML.Form
   alias Phoenix.LiveView.JS
 
   import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Headless.Dialog, only: [dialog_title: 1]
-  import DataAggregatorWeb.Helpers, only: [get_current_order_attr: 1, get_current_order_dir: 1]
+  import DataAggregatorWeb.QueryBuilder
 
   @doc """
   Renders flash notices.
@@ -214,7 +215,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-md shadow-sm py-2 px-3 text-sm font-semibold",
+        "phx-submit-loading:opacity-75 py-2 px-3 text-sm font-semibold disabled:opacity-75 disabled:pointer-events-none select-none",
         button_class(@variant),
         @class
       ]}
@@ -225,19 +226,51 @@ defmodule DataAggregatorWeb.CoreComponents do
     """
   end
 
+  @doc """
+  Renders a link with the same styling variants as the buttons.
+
+  ## Examples
+
+      <.style_link navigate={~p"/"} >Home</.style_link>
+  """
+  attr :class, :string, default: nil
+  attr :variant, :string, default: "primary"
+  attr :rest, :global, include: ~w(navigate patch href replace method csrf_token disabled)
+
+  slot :inner_block, required: true
+
+  def styled_link(assigns) do
+    ~H"""
+    <.link
+      class={[
+        "phx-submit-loading:opacity-75 py-2 px-3 text-sm font-semibold select-none",
+        button_class(@variant),
+        @rest[:disabled] && "opacity-75 pointer-events-none",
+        @class
+      ]}
+      {@rest}
+    >
+      <%= render_slot(@inner_block) %>
+    </.link>
+    """
+  end
+
   defp button_class(variant) do
     case variant do
       "primary" ->
         [
-          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-500",
-          "dark:bg-indigo-500 dark:hover:bg-indigo-400 bg-indigo-600 hover:bg-indigo-500 text-white active:text-white/80"
+          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-500 rounded-md shadow-sm",
+          "dark:bg-indigo-500 dark:hover:bg-indigo-400 bg-indigo-600 hover:bg-indigo-500 text-white active:text-white/80 rounded-md shadow-sm"
         ]
 
       "secondary" ->
-        "hover:bg-gray-50 ring-1 ring-inset ring-gray-300 text-gray-900 bg-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:ring-0 dark:text-white dark:bg-gray-900"
+        "hover:bg-gray-50 ring-1 ring-inset ring-gray-300 text-gray-900 bg-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:ring-0 dark:text-white dark:bg-gray-900 rounded-md shadow-sm"
 
       "accent" ->
-        "bg-red-600 dark:bg-red-500 hover:bg-red-500 dark:hover:bg-red-400 text-white active:text-white/80"
+        "bg-red-600 dark:bg-red-500 hover:bg-red-500 dark:hover:bg-red-400 text-white active:text-white/80 rounded-md shadow-sm"
+
+      "nav" ->
+        "relative inline-flex items-center bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-400/10 focus:z-10 dark:text-white dark:bg-white/10 dark:ring-0 dark:hover:bg-white/20"
     end
   end
 
@@ -514,7 +547,7 @@ defmodule DataAggregatorWeb.CoreComponents do
   attr :rows, :list, required: true
   attr :row_id, :any, default: nil, doc: "the function for generating the row id"
   attr :row_click, :any, default: nil, doc: "the function for handling phx-click on each row"
-  attr :order_by, :string, default: nil
+  attr :sort, :string, default: nil, doc: "the current sort order"
 
   attr :row_item, :any,
     default: &Function.identity/1,
@@ -523,7 +556,7 @@ defmodule DataAggregatorWeb.CoreComponents do
   slot :col, required: true do
     attr :label, :string
     attr :field, :string
-    attr :sort, :string
+    attr :sort, :boolean
     attr :align, :string
   end
 
@@ -535,8 +568,8 @@ defmodule DataAggregatorWeb.CoreComponents do
         assign(assigns, row_id: assigns.row_id || fn {id, _item} -> id end)
       end
 
-    assigns = assign(assigns, :order_dir, get_current_order_dir(assigns.order_by))
-    assigns = assign(assigns, :order_attr, get_current_order_attr(assigns.order_by))
+    assigns = assign(assigns, :sort_dir, current_sort_dir(assigns.sort))
+    assigns = assign(assigns, :sort_field, current_sort_field(assigns.sort))
 
     ~H"""
     <div class="px-4 sm:px-6 lg:px-8">
@@ -562,19 +595,23 @@ defmodule DataAggregatorWeb.CoreComponents do
                     ]}
                   >
                     <%= if col[:sort] do %>
-                      <.link navigate={col[:sort]} class="group inline-flex">
+                      <span
+                        class="group inline-flex cursor-pointer select-none"
+                        phx-click="sort:select"
+                        phx-value-sort={col[:field]}
+                      >
                         <span :if={col[:align] != "right"}><%= col[:label] %></span>
                         <span class={[
                           "flex-none rounded text-gray-400 dark:text-gray-500",
                           col[:align] == "right" && "mr-2",
                           col[:align] != "right" && "ml-2",
-                          @order_attr != col[:field] &&
+                          @sort_field != col[:field] &&
                             "invisible group-hover:visible group-focus:visible",
-                          @order_attr == col[:field] &&
+                          @sort_field == col[:field] &&
                             "rounded bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white group-hover:bg-gray-200 dark:group-hover:bg-gray-700"
                         ]}>
                           <svg
-                            :if={@order_dir == "asc"}
+                            :if={@sort_dir == "asc"}
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
@@ -587,7 +624,7 @@ defmodule DataAggregatorWeb.CoreComponents do
                             />
                           </svg>
                           <svg
-                            :if={@order_dir == "desc"}
+                            :if={@sort_dir == "desc"}
                             class="h-5 w-5"
                             viewBox="0 0 20 20"
                             fill="currentColor"
@@ -602,7 +639,7 @@ defmodule DataAggregatorWeb.CoreComponents do
                           </svg>
                         </span>
                         <span :if={col[:align] == "right"}><%= col[:label] %></span>
-                      </.link>
+                      </span>
                     <% else %>
                       <%= col[:label] %>
                     <% end %>
@@ -661,6 +698,120 @@ defmodule DataAggregatorWeb.CoreComponents do
           </div>
         </div>
       </div>
+    </div>
+    """
+  end
+
+  @doc ~S"""
+  Renders offset pagination with generic styling.
+  """
+
+  attr :page_meta, Ash.Page.Offset, required: true
+
+  def pagination(assigns) do
+    [from, to] = paginate_page_meta(assigns.page_meta)
+
+    assigns =
+      assigns
+      |> assign(:from, from)
+      |> assign(:to, to)
+
+    ~H"""
+    <div
+      class="flex items-center justify-between border-y border-gray-200 dark:border-white/10 bg-gray-100/30 dark:bg-black/10 py-3 px-4 sm:px-6 lg:px-8"
+      role="navigation"
+    >
+      <div class="flex flex-1 justify-between sm:hidden">
+        <.styled_link
+          variant="nav"
+          class="rounded-md"
+          aria-label={~t"Previous"m}
+          disabled={@page_meta.offset == 0}
+          phx-click="page:prev"
+        >
+          <%= ~t"Prev"m %>
+        </.styled_link>
+        <.page_size_select id="page-size-select-mobile" current_limit={@page_meta.limit} />
+        <.styled_link
+          variant="nav"
+          class="rounded-md"
+          aria-label={~t"Next"m}
+          disabled={@page_meta.more? == false}
+          phx-click="page:next"
+        >
+          <%= ~t"Next"m %>
+        </.styled_link>
+      </div>
+      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm text-gray-700 dark:text-gray-400">
+            <%= ~t"Showing"m %> <span class="font-medium"><%= @from %></span>
+            <%= ~t"to"m %>
+            <span class="font-medium"><%= @to %></span>
+            <%= ~t"of"m %> <span class="font-medium"><%= @page_meta.count %></span>
+            <%= ~t"results"m %>
+          </p>
+        </div>
+        <div class="flex items-center">
+          <.page_size_select id="page-size-select" current_limit={@page_meta.limit} />
+          <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+            <.styled_link
+              variant="nav"
+              class="rounded-l-md"
+              aria-label={~t"Previous"m}
+              disabled={@page_meta.offset == 0}
+              phx-click="page:prev"
+            >
+              <%= ~t"Prev"m %>
+            </.styled_link>
+            <.styled_link
+              variant="nav"
+              class="-ml-px rounded-r-md"
+              aria-label={~t"Next"m}
+              disabled={@page_meta.more? == false}
+              phx-click="page:next"
+            >
+              <%= ~t"Next"m %>
+            </.styled_link>
+          </nav>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  attr :id, :string, required: true
+  attr :current_limit, :integer, required: true
+
+  defp page_size_select(assigns) do
+    ~H"""
+    <div class="flex items-center space-x-2 mr-2">
+      <.label for={@id}>
+        <%= ~t"Page size"m %>
+      </.label>
+      <HeadlessComponents.menu id={@id}>
+        <HeadlessComponents.menu_button id={@id <> "__button"} as="div" class="">
+          <.button variant="nav" class="rounded-md">
+            <%= @current_limit %>
+          </.button>
+        </HeadlessComponents.menu_button>
+        <HeadlessComponents.menu_items id={@id <> "__items"} position="bottom-right" width="w-16">
+          <div class="py-1" role="none">
+            <HeadlessComponents.menu_item
+              :for={page_size <- [5, 10, 15, 20, 25, 50, 100]}
+              id={@id <> "__item-" <> to_string(page_size)}
+              as="div"
+              phx-click="page:change"
+              phx-value-limit={page_size}
+            >
+              <%= page_size %>
+              <span :if={@current_limit == page_size} class="text-cyan-600 font-bold">
+                &check;
+              </span>
+            </HeadlessComponents.menu_item>
+          </div>
+        </HeadlessComponents.menu_items>
+      </HeadlessComponents.menu>
     </div>
     """
   end

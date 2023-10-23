@@ -123,7 +123,6 @@ defmodule DataAggregatorWeb.Headless.Dialog do
     |> JS.hide(to: "##{id}", transition: {"block", "block", "hidden"})
     |> JS.remove_attribute("aria-modal", to: "##{id}")
     |> JS.remove_class("overflow-hidden", to: "body")
-    |> JS.pop_focus()
   end
 
   defp show_backdrop(js, selector, transition) do

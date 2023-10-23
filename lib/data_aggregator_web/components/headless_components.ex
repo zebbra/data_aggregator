@@ -154,7 +154,9 @@ defmodule DataAggregatorWeb.HeadlessComponents do
 
   attr :class, :string,
     default:
-      "ring-1 ring-black ring-opacity-5 focus:outline-none absolute right-0 z-50 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg"
+      "ring-1 ring-black ring-opacity-5 focus:outline-none absolute right-0 z-50 bg-white divide-y divide-gray-100 rounded-md shadow-lg"
+
+  attr :position, :string, default: "top-right"
 
   attr :width, :string, default: "w-56"
   attr :rest, :global
@@ -163,10 +165,23 @@ defmodule DataAggregatorWeb.HeadlessComponents do
 
   def menu_items(assigns) do
     ~H"""
-    <.headless_menu_items id={@id} as={@as} class={@class} width={@width} {@rest}>
+    <.headless_menu_items
+      id={@id}
+      as={@as}
+      class={Enum.join([@class, position_class(@position)])}
+      width={@width}
+      {@rest}
+    >
       <%= render_slot(@inner_block) %>
     </.headless_menu_items>
     """
+  end
+
+  defp position_class(position) do
+    case position do
+      "bottom-right" -> "origin-bottom-right mb-11 bottom-0"
+      _ -> "origin-top-right mt-2"
+    end
   end
 
   attr :id, :string, required: true
