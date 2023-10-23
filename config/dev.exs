@@ -84,7 +84,7 @@ config :phoenix_live_view, debug_heex_annotations: true
 
 config :git_hooks,
   auto_install: true,
-  verbose: true,
+  verbose: false,
   hooks: [
     pre_commit: [
       tasks: [
