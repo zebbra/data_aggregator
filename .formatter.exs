@@ -6,10 +6,8 @@
     :ash,
     :ash_phoenix,
     :ash_postgres,
-    :ash_admin,
     :ash_graphql,
-    :ash_uuid,
-    :typed_struct
+    :ash_uuid
   ],
   subdirectories: ["priv/*/migrations"],
   plugins: [Phoenix.LiveView.HTMLFormatter, Spark.Formatter],

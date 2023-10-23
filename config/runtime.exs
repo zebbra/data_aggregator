@@ -29,7 +29,6 @@ config :sentry,
   server_name: System.get_env("HOSTNAME"),
   log_level: System.get_env("SENTRY_LOG_LEVEL", "warning") |> String.to_atom()
 
-
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
