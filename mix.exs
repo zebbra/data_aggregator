@@ -120,7 +120,7 @@ defmodule DataAggregator.MixProject do
       ],
       "assets.build": ["tailwind default", "esbuild default"],
       "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
-      lint: ["format --check-formatted", "credo --strict"],
+      lint: ["format --check-formatted", "credo --strict", "deps.audit"],
       "generate.erd": ["ecto.gen.erd --output-path=erd.dbml"]
     ]
   end
