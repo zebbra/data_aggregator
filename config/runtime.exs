@@ -24,6 +24,11 @@ if System.get_env("PHX_SERVER") do
   config :data_aggregator, DataAggregatorWeb.Endpoint, server: true
 end
 
+# Configure Sentry runtime environment
+config :sentry,
+  server_name: System.get_env("HOSTNAME"),
+  log_level: System.get_env("SENTRY_LOG_LEVEL", "warning") |> String.to_atom()
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
@@ -34,12 +39,13 @@ if config_env() == :prod do
 
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
-  config :data_aggregator, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
-
   config :data_aggregator, DataAggregator.Repo,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
     socket_options: maybe_ipv6
+
+  ## Configure Erlang clustering using DNS cluster
+  config :data_aggregator, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
   ## Configure the Endpoint
 
