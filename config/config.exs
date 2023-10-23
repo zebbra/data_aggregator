@@ -126,6 +126,7 @@ config :ex_aws,
     port: {:system, "S3_PORT"}
   ]
 
+# Configure Spark DSL formatter
 config :spark, :formatter,
   remove_parens?: true,
   "Ash.Resource": [
@@ -142,6 +143,27 @@ config :spark, :formatter,
   ]
 
 config :data_aggregator, :environment, Mix.env()
+
+# Configure error reporting using Sentry. The Sentry DSN is configured
+# dynamically based on the SENTRY_DSN environment variable.
+config :sentry,
+  environment_name: Mix.env(),
+  included_environments: [:prod],
+  enable_source_code_context: true,
+  root_source_code_paths: [File.cwd!()]
+
+# Configure Sentry logger handler, which will send logs to Sentry
+# See https://hexdocs.pm/sentry/Sentry.LoggerHandler.html
+config :data_aggregator, :logger, [
+  {:handler, :sentry, Sentry.LoggerHandler,
+   %{
+     config: %{
+       level: :error,
+       metadata: :all,
+       capture_log_messages: true
+     }
+   }}
+]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

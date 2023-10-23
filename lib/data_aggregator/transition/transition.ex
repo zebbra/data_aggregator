@@ -5,10 +5,6 @@ defmodule DataAggregator.Transition do
     registry DataAggregator.Transition.Registry
   end
 
-  admin do
-    show? true
-  end
-
   graphql do
     authorize? false
   end

@@ -5,10 +5,6 @@ defmodule DataAggregator.TaxonomyCatalog do
     registry DataAggregator.TaxonomyCatalog.Registry
   end
 
-  admin do
-    show? true
-  end
-
   graphql do
     authorize? false
   end
