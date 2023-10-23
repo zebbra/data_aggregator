@@ -21,6 +21,36 @@
       "primary_key?": false
     },
     {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "description",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "url",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "1",
+      "size": null,
+      "type": "bigint",
+      "source": "version",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
       "default": "fragment(\"now()\")",
       "size": null,
       "type": "utc_datetime_usec",
@@ -39,39 +69,13 @@
       "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "default_catalog_id",
-      "references": {
-        "name": "dwc_attributes_default_catalog_id_fkey",
-        "table": "catalogs",
-        "schema": "public",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "destination_attribute": "id",
-        "on_delete": null,
-        "deferrable": false,
-        "on_update": null,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null
-      },
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
     }
   ],
-  "table": "dwc_attributes",
-  "hash": "8CBDC12371D1620034B40D86802AFDDBBC2419EB0769E8B05D283694391DFDA5",
+  "table": "catalogs",
+  "hash": "CFC5B5B85BBE70D98BF67552974DEFBC56E1195B10DAE6D21D8241B15BF4EF15",
   "repo": "Elixir.DataAggregator.Repo",
-  "schema": null,
   "identities": [],
+  "schema": null,
   "multitenancy": {
     "global": null,
     "attribute": null,

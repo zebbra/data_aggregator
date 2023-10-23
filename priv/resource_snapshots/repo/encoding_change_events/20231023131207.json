@@ -14,65 +14,9 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "comment",
+      "source": "catalog_value_reference",
       "references": null,
       "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "\"open\"",
-      "size": null,
-      "type": "text",
-      "source": "state",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "text",
-      "source": "value_suggestion",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "text",
-      "source": "user",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "dwc_attribute_id",
-      "references": {
-        "name": "annotations_dwc_attribute_id_fkey",
-        "table": "dwc_attributes",
-        "schema": "public",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "destination_attribute": "id",
-        "on_delete": null,
-        "deferrable": false,
-        "on_update": null,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null
-      },
-      "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
     },
@@ -100,9 +44,61 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
+      "source": "change_event_id",
+      "references": {
+        "name": "encoding_change_events_change_event_id_fkey",
+        "table": "change_events",
+        "schema": "public",
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "primary_key?": true,
+        "destination_attribute": "id",
+        "on_delete": null,
+        "deferrable": false,
+        "on_update": null,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null
+      },
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "catalog_id",
+      "references": {
+        "name": "encoding_change_events_catalog_id_fkey",
+        "table": "catalogs",
+        "schema": "public",
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "primary_key?": true,
+        "destination_attribute": "id",
+        "on_delete": null,
+        "deferrable": false,
+        "on_update": null,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null
+      },
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
       "source": "record_id",
       "references": {
-        "name": "annotations_record_id_fkey",
+        "name": "encoding_change_events_record_id_fkey",
         "table": "records",
         "schema": "public",
         "multitenancy": {
@@ -123,11 +119,11 @@
       "primary_key?": false
     }
   ],
-  "table": "annotations",
-  "hash": "F980E7B8191971A0EB42D65DA1F2434A90E818F4986C98941906411C7B3045C6",
+  "table": "encoding_change_events",
+  "hash": "90B4700D14F6EF5AE50FC2FDC60712E6B902593A07A5E2034C62552A29A07CBB",
   "repo": "Elixir.DataAggregator.Repo",
-  "schema": null,
   "identities": [],
+  "schema": null,
   "multitenancy": {
     "global": null,
     "attribute": null,

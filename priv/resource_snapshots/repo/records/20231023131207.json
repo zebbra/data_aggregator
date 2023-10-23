@@ -11,6 +11,26 @@
       "primary_key?": true
     },
     {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "unique_qualifier",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "map",
+      "source": "meta_data",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
       "default": "fragment(\"now()\")",
       "size": null,
       "type": "utc_datetime_usec",
@@ -36,34 +56,8 @@
       "type": "uuid",
       "source": "import_record_id",
       "references": {
-        "name": "import_change_events_import_record_id_fkey",
+        "name": "records_import_record_id_fkey",
         "table": "import_records",
-        "schema": "public",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "destination_attribute": "id",
-        "on_delete": null,
-        "deferrable": false,
-        "on_update": null,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null
-      },
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "change_event_id",
-      "references": {
-        "name": "import_change_events_change_event_id_fkey",
-        "table": "change_events",
         "schema": "public",
         "multitenancy": {
           "global": null,
@@ -83,11 +77,11 @@
       "primary_key?": false
     }
   ],
-  "table": "import_change_events",
-  "hash": "7CE3C3A5DE336E25D6FCECAE27F28389FEA0E4EAB7A415A3A7E7CE7534275AB1",
+  "table": "records",
+  "hash": "3E14148397ADFBE7F58B57F3F5BCEE3FEF64B041B60577E1476D0C8BF6894963",
   "repo": "Elixir.DataAggregator.Repo",
-  "schema": null,
   "identities": [],
+  "schema": null,
   "multitenancy": {
     "global": null,
     "attribute": null,

@@ -120,10 +120,10 @@
     }
   ],
   "table": "attribute_resolving_strategies",
-  "hash": "4524F896A463E4F48EEE704AEF6D67444C09141D37E75E88F6DEDE7F4FD6D91A",
+  "hash": "081BA64F1C81782AECB3BAF94CACC689F523FA7B386DFBA316BF296EA8944700",
   "repo": "Elixir.DataAggregator.Repo",
-  "schema": null,
   "identities": [],
+  "schema": null,
   "multitenancy": {
     "global": null,
     "attribute": null,

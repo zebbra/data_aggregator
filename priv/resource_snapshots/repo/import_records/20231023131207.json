@@ -14,9 +14,19 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "url",
+      "source": "unique_qualifier",
       "references": null,
       "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "map",
+      "source": "import_data",
+      "references": null,
+      "allow_nil?": true,
       "generated?": false,
       "primary_key?": false
     },
@@ -56,7 +66,7 @@
       "type": "uuid",
       "source": "collection_id",
       "references": {
-        "name": "import_files_collection_id_fkey",
+        "name": "import_records_collection_id_fkey",
         "table": "collections",
         "schema": "public",
         "multitenancy": {
@@ -77,11 +87,11 @@
       "primary_key?": false
     }
   ],
-  "table": "import_files",
-  "hash": "A48BB9637491B38471A159FC311C86A8BA25AF9AECCB94F77022D0BBEAF59DF3",
+  "table": "import_records",
+  "hash": "1560B8A02F6B5CFC47B60EB8974C4E895C50FE7128DFE922768B816776BC79DA",
   "repo": "Elixir.DataAggregator.Repo",
-  "schema": null,
   "identities": [],
+  "schema": null,
   "multitenancy": {
     "global": null,
     "attribute": null,

@@ -14,7 +14,17 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "name",
+      "source": "comment",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "\"open\"",
+      "size": null,
+      "type": "text",
+      "source": "state",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -24,7 +34,7 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "description",
+      "source": "value_suggestion",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -34,19 +44,9 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "url",
+      "source": "user",
       "references": null,
       "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "1",
-      "size": null,
-      "type": "bigint",
-      "source": "version",
-      "references": null,
-      "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
     },
@@ -71,11 +71,11 @@
       "primary_key?": false
     }
   ],
-  "table": "catalogs",
-  "hash": "29BC6347B9F1B1ED515B5234088475B4B4E56C1466520528CE93DEF24BC00EDA",
+  "table": "runs",
+  "hash": "6DE5D516FDC54BB2C9EBE3C70E8EC984ECE2194CB53E84848FDBC954744999D0",
   "repo": "Elixir.DataAggregator.Repo",
-  "schema": null,
   "identities": [],
+  "schema": null,
   "multitenancy": {
     "global": null,
     "attribute": null,

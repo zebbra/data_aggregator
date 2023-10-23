@@ -14,7 +14,7 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "unique_qualifier",
+      "source": "category",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -23,8 +23,18 @@
     {
       "default": "nil",
       "size": null,
-      "type": "map",
-      "source": "meta_data",
+      "type": "text",
+      "source": "value",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "previous_value",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -54,10 +64,36 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "import_record_id",
+      "source": "dwc_attribute_id",
       "references": {
-        "name": "records_import_record_id_fkey",
-        "table": "import_records",
+        "name": "change_events_dwc_attribute_id_fkey",
+        "table": "dwc_attributes",
+        "schema": "public",
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "primary_key?": true,
+        "destination_attribute": "id",
+        "on_delete": null,
+        "deferrable": false,
+        "on_update": null,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null
+      },
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "run_id",
+      "references": {
+        "name": "change_events_run_id_fkey",
+        "table": "runs",
         "schema": "public",
         "multitenancy": {
           "global": null,
@@ -77,11 +113,11 @@
       "primary_key?": false
     }
   ],
-  "table": "records",
-  "hash": "7B86D8A1940EC0A52297068551808061AC6FBDD58C49067DDF2CD78316F3E2C4",
+  "table": "change_events",
+  "hash": "F1B5B67175C624F37B80F69FAFC972C79405CACF9AEEBE0FB51D54F71C54EF29",
   "repo": "Elixir.DataAggregator.Repo",
-  "schema": null,
   "identities": [],
+  "schema": null,
   "multitenancy": {
     "global": null,
     "attribute": null,

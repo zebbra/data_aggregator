@@ -14,7 +14,17 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "catalog_value_reference",
+      "source": "url",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "map",
+      "source": "meta_data",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -44,62 +54,10 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "change_event_id",
+      "source": "collection_id",
       "references": {
-        "name": "encoding_change_events_change_event_id_fkey",
-        "table": "change_events",
-        "schema": "public",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "destination_attribute": "id",
-        "on_delete": null,
-        "deferrable": false,
-        "on_update": null,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null
-      },
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "catalog_id",
-      "references": {
-        "name": "encoding_change_events_catalog_id_fkey",
-        "table": "catalogs",
-        "schema": "public",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "destination_attribute": "id",
-        "on_delete": null,
-        "deferrable": false,
-        "on_update": null,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null
-      },
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "record_id",
-      "references": {
-        "name": "encoding_change_events_record_id_fkey",
-        "table": "records",
+        "name": "import_files_collection_id_fkey",
+        "table": "collections",
         "schema": "public",
         "multitenancy": {
           "global": null,
@@ -119,11 +77,11 @@
       "primary_key?": false
     }
   ],
-  "table": "encoding_change_events",
-  "hash": "2DE90CE658F326F82B813EB7BF8C4A57B9A8E94319374A337230CDB1FFEB840B",
+  "table": "import_files",
+  "hash": "2156BC7A907E0BD708CD1FA52F427D695745A262F2AFC1C2073D7AD3DA8AC620",
   "repo": "Elixir.DataAggregator.Repo",
-  "schema": null,
   "identities": [],
+  "schema": null,
   "multitenancy": {
     "global": null,
     "attribute": null,

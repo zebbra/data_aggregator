@@ -198,7 +198,6 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       add :category, :text, null: false
       add :value, :text
       add :previous_value, :text
-      add :catalog_value_reference, :text
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
 
@@ -379,7 +378,6 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       remove :dwc_attribute_id
       remove :updated_at
       remove :inserted_at
-      remove :catalog_value_reference
       remove :previous_value
       remove :value
       remove :category

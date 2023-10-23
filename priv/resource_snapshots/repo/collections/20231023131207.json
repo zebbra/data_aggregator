@@ -14,7 +14,7 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "url",
+      "source": "name",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -23,8 +23,58 @@
     {
       "default": "nil",
       "size": null,
-      "type": "map",
-      "source": "meta_data",
+      "type": "text",
+      "source": "code",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "description",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "owner",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "\"other\"",
+      "size": null,
+      "type": "text",
+      "source": "collection_type",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "\"planned\"",
+      "size": null,
+      "type": "text",
+      "source": "digitization_status",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "bigint",
+      "source": "collection_size",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -54,10 +104,10 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "import_record_id",
+      "source": "institution_id",
       "references": {
-        "name": "static_assets_import_record_id_fkey",
-        "table": "import_records",
+        "name": "collections_institution_id_fkey",
+        "table": "institutions",
         "schema": "public",
         "multitenancy": {
           "global": null,
@@ -77,11 +127,11 @@
       "primary_key?": false
     }
   ],
-  "table": "static_assets",
-  "hash": "F9FAD622BEC7E215ECFC22BF5696A29F3DE546794B9DC11263102D8A710079DD",
+  "table": "collections",
+  "hash": "B5793477ED2FA4E6FB2106EC980AC21889F2FE41166D4FDDCB27D5696941E0FF",
   "repo": "Elixir.DataAggregator.Repo",
-  "schema": null,
   "identities": [],
+  "schema": null,
   "multitenancy": {
     "global": null,
     "attribute": null,

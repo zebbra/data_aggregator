@@ -1,8 +1,9 @@
 defmodule DataAggregatorWeb.Router do
   use DataAggregatorWeb, :router
 
-  import AshAdmin.Router
   import DataAggregatorWeb.Locale, only: [assign_current_locale: 2]
+
+  # Browser
 
   pipeline :locale do
     plug :fetch_session
@@ -28,14 +29,6 @@ defmodule DataAggregatorWeb.Router do
 
   pipeline :with_root_layout do
     plug :put_root_layout, html: {DataAggregatorWeb.Layouts, :root}
-  end
-
-  pipeline :api do
-    plug :accepts, ["json"]
-  end
-
-  pipeline :graphql do
-    plug AshGraphql.Plug
   end
 
   scope "/" do
@@ -71,18 +64,16 @@ defmodule DataAggregatorWeb.Router do
         # live "/collections/:id/mappings/import", MappingLive.Index, :import
       end
     end
+  end
 
-    # Used by JS hook to update locale from component
-    get "/locale", DataAggregatorWeb.LocaleController, :set
+  # GraphQL API
+
+  pipeline :graphql do
+    plug AshGraphql.Plug
   end
 
   scope "/" do
-    pipe_through [:locale, :browser]
-    ash_admin "/admin"
-  end
-
-  scope "/" do
-    pipe_through [:graphql]
+    pipe_through :graphql
 
     forward "/gql", Absinthe.Plug, schema: DataAggregator.Schema
 
@@ -92,8 +83,14 @@ defmodule DataAggregatorWeb.Router do
             interface: :playground
   end
 
+  # JSON API
+
+  pipeline :api do
+    plug :accepts, ["json"]
+  end
+
   scope "/api/json" do
-    pipe_through(:api)
+    pipe_through :api
 
     forward "/swagger",
             OpenApiSpex.Plug.SwaggerUI,
@@ -107,11 +104,6 @@ defmodule DataAggregatorWeb.Router do
 
     forward "/", DataAggregatorWeb.JsonApiRouter
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", DataAggregatorWeb do
-  #   pipe_through :api
-  # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:data_aggregator, :dev_routes) do
