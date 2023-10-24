@@ -8,19 +8,6 @@ defmodule DataAggregator.Transition.Run do
   attributes do
     uuid_attribute :id, prefix: "run"
 
-    attribute :comment, :string do
-      filterable? true
-    end
-
-    attribute :state, :string do
-      default "open"
-      filterable? true
-    end
-
-    attribute :value_suggestion, :string
-
-    attribute :user, :string
-
     timestamps private?: false, writable?: false
   end
 

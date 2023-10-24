@@ -13,11 +13,6 @@ defmodule DataAggregator.Transition.Annotation do
       filterable? true
     end
 
-    attribute :state, :string do
-      default "open"
-      filterable? true
-    end
-
     attribute :value_suggestion, :string
 
     attribute :user, :string
