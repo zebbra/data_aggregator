@@ -14,7 +14,7 @@ defmodule DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy do
       default false
     end
 
-    timestamps()
+    timestamps private?: false, writable?: false
   end
 
   relationships do

@@ -15,7 +15,7 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
 
     # further attributes to describe a dwc-attribute
 
-    timestamps()
+    timestamps private?: false, writable?: false
   end
 
   relationships do

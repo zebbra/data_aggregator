@@ -9,7 +9,7 @@ defmodule DataAggregator.Imports.ImportChangeEvent do
   attributes do
     uuid_attribute :id, prefix: "ice"
 
-    timestamps()
+    timestamps private?: false, writable?: false
   end
 
   relationships do

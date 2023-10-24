@@ -17,7 +17,7 @@ defmodule DataAggregator.Imports.ImportRecord do
     attribute :import_data, :map
     attribute :meta_data, :map
 
-    timestamps(private?: false)
+    timestamps private?: false, writable?: false
   end
 
   relationships do

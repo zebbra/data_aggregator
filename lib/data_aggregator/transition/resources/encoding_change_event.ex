@@ -12,7 +12,7 @@ defmodule DataAggregator.Transition.EncodingChangeEvent do
 
     attribute :catalog_value_reference, :string
 
-    timestamps()
+    timestamps private?: false, writable?: false
   end
 
   relationships do

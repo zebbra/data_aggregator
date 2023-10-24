@@ -9,7 +9,7 @@ defmodule DataAggregator.Imports.ImportFile do
     uuid_attribute :id, prefix: "if"
     attribute :url, :string, allow_nil?: false
     attribute :meta_data, :map
-    timestamps()
+    timestamps private?: false, writable?: false
   end
 
   relationships do

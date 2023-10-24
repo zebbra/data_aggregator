@@ -12,7 +12,7 @@ defmodule DataAggregator.Imports.StaticAsset do
 
     attribute :meta_data, :map
 
-    timestamps()
+    timestamps private?: false, writable?: false
   end
 
   relationships do

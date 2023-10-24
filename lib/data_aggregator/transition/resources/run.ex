@@ -21,7 +21,7 @@ defmodule DataAggregator.Transition.Run do
 
     attribute :user, :string
 
-    timestamps()
+    timestamps private?: false, writable?: false
   end
 
   relationships do

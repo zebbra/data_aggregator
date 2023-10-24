@@ -27,7 +27,7 @@ defmodule DataAggregator.Transition.Annotation do
       filterable? true
     end
 
-    timestamps()
+    timestamps private?: false, writable?: false
   end
 
   relationships do

@@ -20,7 +20,7 @@ defmodule DataAggregator.Transition.ChangeEvent do
 
     attribute :previous_value, :string
 
-    timestamps()
+    timestamps private?: false, writable?: false
   end
 
   relationships do

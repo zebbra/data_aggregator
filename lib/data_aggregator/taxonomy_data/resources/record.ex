@@ -18,7 +18,7 @@ defmodule DataAggregator.TaxonomyData.Record do
 
     # further attributes of the core record
 
-    timestamps()
+    timestamps private?: false, writable?: false
   end
 
   relationships do

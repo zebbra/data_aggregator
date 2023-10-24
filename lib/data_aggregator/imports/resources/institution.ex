@@ -26,7 +26,7 @@ defmodule DataAggregator.Imports.Institution do
 
     attribute :contact_person, :string
 
-    timestamps()
+    timestamps private?: false, writable?: false
   end
 
   relationships do

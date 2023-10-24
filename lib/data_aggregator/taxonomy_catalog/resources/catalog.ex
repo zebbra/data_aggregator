@@ -22,7 +22,7 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
       filterable? true
     end
 
-    timestamps()
+    timestamps private?: false, writable?: false
   end
 
   relationships do
