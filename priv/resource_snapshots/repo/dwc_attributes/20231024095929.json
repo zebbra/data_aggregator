@@ -14,17 +14,7 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "url",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "map",
-      "source": "meta_data",
+      "source": "name",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -54,11 +44,12 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "collection_id",
+      "source": "default_catalog_id",
       "references": {
-        "name": "import_files_collection_id_fkey",
-        "table": "collections",
+        "name": "dwc_attributes_default_catalog_id_fkey",
+        "table": "catalogs",
         "schema": "public",
+        "on_delete": null,
         "multitenancy": {
           "global": null,
           "attribute": null,
@@ -66,7 +57,6 @@
         },
         "primary_key?": true,
         "destination_attribute": "id",
-        "on_delete": null,
         "deferrable": false,
         "on_update": null,
         "destination_attribute_default": null,
@@ -77,8 +67,8 @@
       "primary_key?": false
     }
   ],
-  "table": "import_files",
-  "hash": "2156BC7A907E0BD708CD1FA52F427D695745A262F2AFC1C2073D7AD3DA8AC620",
+  "table": "dwc_attributes",
+  "hash": "FEFC98EE628B767134F8C703D1A8EA69D1D29A7E11560AB78C6B4776F2D3B73F",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,

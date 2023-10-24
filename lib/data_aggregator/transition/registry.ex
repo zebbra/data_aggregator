@@ -7,7 +7,6 @@ defmodule DataAggregator.Transition.Registry do
 
   entries do
     entry DataAggregator.Transition.Annotation
-    entry DataAggregator.Transition.EncodingChangeEvent
     entry DataAggregator.Transition.ChangeEvent
     entry DataAggregator.Transition.Run
   end

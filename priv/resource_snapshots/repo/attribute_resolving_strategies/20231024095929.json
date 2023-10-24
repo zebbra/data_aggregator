@@ -11,10 +11,10 @@
       "primary_key?": true
     },
     {
-      "default": "nil",
+      "default": "false",
       "size": null,
-      "type": "text",
-      "source": "catalog_value_reference",
+      "type": "boolean",
+      "source": "do_not_encode",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -44,37 +44,12 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "change_event_id",
-      "references": {
-        "name": "encoding_change_events_change_event_id_fkey",
-        "table": "change_events",
-        "schema": "public",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "destination_attribute": "id",
-        "on_delete": null,
-        "deferrable": false,
-        "on_update": null,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null
-      },
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
       "source": "catalog_id",
       "references": {
-        "name": "encoding_change_events_catalog_id_fkey",
+        "name": "attribute_resolving_strategies_catalog_id_fkey",
         "table": "catalogs",
         "schema": "public",
+        "on_delete": null,
         "multitenancy": {
           "global": null,
           "attribute": null,
@@ -82,7 +57,6 @@
         },
         "primary_key?": true,
         "destination_attribute": "id",
-        "on_delete": null,
         "deferrable": false,
         "on_update": null,
         "destination_attribute_default": null,
@@ -96,11 +70,12 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "record_id",
+      "source": "dwc_attribute_id",
       "references": {
-        "name": "encoding_change_events_record_id_fkey",
-        "table": "records",
+        "name": "attribute_resolving_strategies_dwc_attribute_id_fkey",
+        "table": "dwc_attributes",
         "schema": "public",
+        "on_delete": null,
         "multitenancy": {
           "global": null,
           "attribute": null,
@@ -108,7 +83,32 @@
         },
         "primary_key?": true,
         "destination_attribute": "id",
+        "deferrable": false,
+        "on_update": null,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null
+      },
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "collection_id",
+      "references": {
+        "name": "attribute_resolving_strategies_collection_id_fkey",
+        "table": "collections",
+        "schema": "public",
         "on_delete": null,
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "primary_key?": true,
+        "destination_attribute": "id",
         "deferrable": false,
         "on_update": null,
         "destination_attribute_default": null,
@@ -119,8 +119,8 @@
       "primary_key?": false
     }
   ],
-  "table": "encoding_change_events",
-  "hash": "90B4700D14F6EF5AE50FC2FDC60712E6B902593A07A5E2034C62552A29A07CBB",
+  "table": "attribute_resolving_strategies",
+  "hash": "99E3F80E98B7A87F3B973707229C83A52A8EC4367DD3CDE151B0ECE8993F34F8",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,

@@ -60,62 +60,20 @@ msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "We can't find the internet"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:178
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Layouts"
-msgid "Admin"
-msgstr ""
-
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:142
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Layouts"
-msgid "Chat on Libera IRC"
-msgstr ""
-
 #: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:32
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:193
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:151
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "Dashboard"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:112
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Layouts"
-msgid "Deploy your application"
-msgstr ""
-
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:127
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Layouts"
-msgid "Discuss on the Elixir Forum"
-msgstr ""
-
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:156
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Layouts"
-msgid "Follow on Twitter"
-msgstr ""
-
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:208
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:166
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "GQL Playground"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:54
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Layouts"
-msgid "Imports"
-msgstr ""
-
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:97
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Layouts"
-msgid "Join the Discord Server"
-msgstr ""
-
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:223
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:181
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "Mailbox"
@@ -480,8 +438,32 @@ msgctxt "DataAggregatorWeb.CollectionLive.ShowComponent"
 msgid "This is an import record from your database."
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:76
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:54
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "Collections"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:114
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts"
+msgid "GBIF"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:98
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts"
+msgid "Github"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:76
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts"
+msgid "Import Records"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:130
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts"
+msgid "scnat"
 msgstr ""

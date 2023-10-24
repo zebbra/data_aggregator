@@ -11,6 +11,26 @@
       "primary_key?": true
     },
     {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "url",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "map",
+      "source": "meta_data",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
       "default": "fragment(\"now()\")",
       "size": null,
       "type": "utc_datetime_usec",
@@ -34,11 +54,12 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "import_record_id",
+      "source": "collection_id",
       "references": {
-        "name": "import_change_events_import_record_id_fkey",
-        "table": "import_records",
+        "name": "import_files_collection_id_fkey",
+        "table": "collections",
         "schema": "public",
+        "on_delete": null,
         "multitenancy": {
           "global": null,
           "attribute": null,
@@ -46,33 +67,6 @@
         },
         "primary_key?": true,
         "destination_attribute": "id",
-        "on_delete": null,
-        "deferrable": false,
-        "on_update": null,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null
-      },
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "change_event_id",
-      "references": {
-        "name": "import_change_events_change_event_id_fkey",
-        "table": "change_events",
-        "schema": "public",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "destination_attribute": "id",
-        "on_delete": null,
         "deferrable": false,
         "on_update": null,
         "destination_attribute_default": null,
@@ -83,8 +77,8 @@
       "primary_key?": false
     }
   ],
-  "table": "import_change_events",
-  "hash": "50E7B9CDDC74456CE579F5F48DBFF2A685C0F34DB551184440B92325C3539921",
+  "table": "import_files",
+  "hash": "4EC91F3512170196B0B0EE92441E6446AEF3D70A206FE99F8D9BA45A12602021",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,

@@ -12,14 +12,6 @@ Table collections {
   institution_id uuid
 }
 
-Table import_change_events {
-  id uuid [pk]
-  inserted_at timestamp
-  updated_at timestamp
-  import_record_id uuid
-  change_event_id uuid
-}
-
 Table import_files {
   id uuid [pk]
   url varchar
@@ -102,7 +94,6 @@ Table records {
 Table annotations {
   id uuid [pk]
   comment varchar
-  state varchar
   value_suggestion varchar
   user varchar
   dwc_attribute_id uuid
@@ -114,30 +105,19 @@ Table annotations {
 Table change_events {
   id uuid [pk]
   category varchar
+  dwc_attribute varchar
   value varchar
   previous_value varchar
   inserted_at timestamp
   updated_at timestamp
-  dwc_attribute_id uuid
   run_id uuid
-}
-
-Table encoding_change_events {
-  id uuid [pk]
-  catalog_value_reference varchar
-  inserted_at timestamp
-  updated_at timestamp
-  change_event_id uuid
-  catalog_id uuid
+  import_record_id uuid
   record_id uuid
+  catalog_id uuid
 }
 
 Table runs {
   id uuid [pk]
-  comment varchar
-  state varchar
-  value_suggestion varchar
-  user varchar
   inserted_at timestamp
   updated_at timestamp
 }
@@ -148,20 +128,17 @@ Table schema_migrations {
 }
 
 Ref: catalogs.id < attribute_resolving_strategies.catalog_id
+Ref: catalogs.id < change_events.catalog_id
 Ref: catalogs.id < dwc_attributes.default_catalog_id
-Ref: catalogs.id < encoding_change_events.catalog_id
-Ref: change_events.id < encoding_change_events.change_event_id
-Ref: change_events.id < import_change_events.change_event_id
 Ref: collections.id < attribute_resolving_strategies.collection_id
 Ref: collections.id < import_files.collection_id
 Ref: collections.id < import_records.collection_id
 Ref: dwc_attributes.id < annotations.dwc_attribute_id
 Ref: dwc_attributes.id < attribute_resolving_strategies.dwc_attribute_id
-Ref: dwc_attributes.id < change_events.dwc_attribute_id
-Ref: import_records.id < import_change_events.import_record_id
+Ref: import_records.id < change_events.import_record_id
 Ref: import_records.id - records.import_record_id
 Ref: import_records.id < static_assets.import_record_id
 Ref: institutions.id < collections.institution_id
 Ref: records.id < annotations.record_id
-Ref: records.id < encoding_change_events.record_id
+Ref: records.id < change_events.record_id
 Ref: runs.id < change_events.run_id

@@ -14,7 +14,7 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "category",
+      "source": "unique_qualifier",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -23,18 +23,8 @@
     {
       "default": "nil",
       "size": null,
-      "type": "text",
-      "source": "value",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "text",
-      "source": "previous_value",
+      "type": "map",
+      "source": "meta_data",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -64,11 +54,12 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "dwc_attribute_id",
+      "source": "import_record_id",
       "references": {
-        "name": "change_events_dwc_attribute_id_fkey",
-        "table": "dwc_attributes",
+        "name": "records_import_record_id_fkey",
+        "table": "import_records",
         "schema": "public",
+        "on_delete": null,
         "multitenancy": {
           "global": null,
           "attribute": null,
@@ -76,33 +67,6 @@
         },
         "primary_key?": true,
         "destination_attribute": "id",
-        "on_delete": null,
-        "deferrable": false,
-        "on_update": null,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null
-      },
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "run_id",
-      "references": {
-        "name": "change_events_run_id_fkey",
-        "table": "runs",
-        "schema": "public",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "destination_attribute": "id",
-        "on_delete": null,
         "deferrable": false,
         "on_update": null,
         "destination_attribute_default": null,
@@ -113,8 +77,8 @@
       "primary_key?": false
     }
   ],
-  "table": "change_events",
-  "hash": "F1B5B67175C624F37B80F69FAFC972C79405CACF9AEEBE0FB51D54F71C54EF29",
+  "table": "records",
+  "hash": "A2AD5DB4D466715205150AFC98ACB6782496C49E4492D3495C2A90DF92EC1438",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,

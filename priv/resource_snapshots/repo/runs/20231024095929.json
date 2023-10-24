@@ -11,46 +11,6 @@
       "primary_key?": true
     },
     {
-      "default": "nil",
-      "size": null,
-      "type": "text",
-      "source": "comment",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "\"open\"",
-      "size": null,
-      "type": "text",
-      "source": "state",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "text",
-      "source": "value_suggestion",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "text",
-      "source": "user",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
       "default": "fragment(\"now()\")",
       "size": null,
       "type": "utc_datetime_usec",
@@ -72,7 +32,7 @@
     }
   ],
   "table": "runs",
-  "hash": "6DE5D516FDC54BB2C9EBE3C70E8EC984ECE2194CB53E84848FDBC954744999D0",
+  "hash": "5CC1072C436BC14F92812D6D466C6B830A02F019C84FDCE297B59A4C24AA5E21",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,

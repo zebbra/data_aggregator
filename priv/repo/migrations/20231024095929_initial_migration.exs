@@ -19,10 +19,6 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
 
     create table(:runs, primary_key: false) do
       add :id, :uuid, null: false, primary_key: true
-      add :comment, :text
-      add :state, :text, default: "open"
-      add :value_suggestion, :text
-      add :user, :text
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
     end
@@ -92,32 +88,6 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       add :collection_id, :uuid
     end
 
-    create table(:import_change_events, primary_key: false) do
-      add :id, :uuid, null: false, primary_key: true
-      add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
-      add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
-
-      add :import_record_id,
-          references(:import_records,
-            column: :id,
-            name: "import_change_events_import_record_id_fkey",
-            type: :uuid,
-            prefix: "public"
-          )
-
-      add :change_event_id, :uuid
-    end
-
-    create table(:encoding_change_events, primary_key: false) do
-      add :id, :uuid, null: false, primary_key: true
-      add :catalog_value_reference, :text
-      add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
-      add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
-      add :change_event_id, :uuid
-      add :catalog_id, :uuid
-      add :record_id, :uuid
-    end
-
     create table(:dwc_attributes, primary_key: false) do
       add :id, :uuid, null: false, primary_key: true
       add :name, :text
@@ -172,42 +142,12 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
 
     create table(:change_events, primary_key: false) do
       add :id, :uuid, null: false, primary_key: true
-    end
-
-    alter table(:import_change_events) do
-      modify :change_event_id,
-             references(:change_events,
-               column: :id,
-               name: "import_change_events_change_event_id_fkey",
-               type: :uuid,
-               prefix: "public"
-             )
-    end
-
-    alter table(:encoding_change_events) do
-      modify :change_event_id,
-             references(:change_events,
-               column: :id,
-               name: "encoding_change_events_change_event_id_fkey",
-               type: :uuid,
-               prefix: "public"
-             )
-    end
-
-    alter table(:change_events) do
       add :category, :text, null: false
+      add :dwc_attribute, :text
       add :value, :text
       add :previous_value, :text
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
-
-      add :dwc_attribute_id,
-          references(:dwc_attributes,
-            column: :id,
-            name: "change_events_dwc_attribute_id_fkey",
-            type: :uuid,
-            prefix: "public"
-          )
 
       add :run_id,
           references(:runs,
@@ -216,28 +156,28 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
             type: :uuid,
             prefix: "public"
           )
+
+      add :import_record_id,
+          references(:import_records,
+            column: :id,
+            name: "change_events_import_record_id_fkey",
+            type: :uuid,
+            prefix: "public"
+          )
+
+      add :record_id,
+          references(:records,
+            column: :id,
+            name: "change_events_record_id_fkey",
+            type: :uuid,
+            prefix: "public"
+          )
+
+      add :catalog_id, :uuid
     end
 
     create table(:catalogs, primary_key: false) do
       add :id, :uuid, null: false, primary_key: true
-    end
-
-    alter table(:encoding_change_events) do
-      modify :catalog_id,
-             references(:catalogs,
-               column: :id,
-               name: "encoding_change_events_catalog_id_fkey",
-               type: :uuid,
-               prefix: "public"
-             )
-
-      modify :record_id,
-             references(:records,
-               column: :id,
-               name: "encoding_change_events_record_id_fkey",
-               type: :uuid,
-               prefix: "public"
-             )
     end
 
     alter table(:dwc_attributes) do
@@ -245,6 +185,16 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
              references(:catalogs,
                column: :id,
                name: "dwc_attributes_default_catalog_id_fkey",
+               type: :uuid,
+               prefix: "public"
+             )
+    end
+
+    alter table(:change_events) do
+      modify :catalog_id,
+             references(:catalogs,
+               column: :id,
+               name: "change_events_catalog_id_fkey",
                type: :uuid,
                prefix: "public"
              )
@@ -293,7 +243,6 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     create table(:annotations, primary_key: false) do
       add :id, :uuid, null: false, primary_key: true
       add :comment, :text
-      add :state, :text, default: "open"
       add :value_suggestion, :text
       add :user, :text
 
@@ -352,48 +301,25 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       remove :name
     end
 
+    drop constraint(:change_events, "change_events_catalog_id_fkey")
+
+    alter table(:change_events) do
+      modify :catalog_id, :uuid
+    end
+
     drop constraint(:dwc_attributes, "dwc_attributes_default_catalog_id_fkey")
 
     alter table(:dwc_attributes) do
       modify :default_catalog_id, :uuid
     end
 
-    drop constraint(:encoding_change_events, "encoding_change_events_catalog_id_fkey")
-
-    drop constraint(:encoding_change_events, "encoding_change_events_record_id_fkey")
-
-    alter table(:encoding_change_events) do
-      modify :record_id, :uuid
-      modify :catalog_id, :uuid
-    end
-
     drop table(:catalogs)
-
-    drop constraint(:change_events, "change_events_dwc_attribute_id_fkey")
 
     drop constraint(:change_events, "change_events_run_id_fkey")
 
-    alter table(:change_events) do
-      remove :run_id
-      remove :dwc_attribute_id
-      remove :updated_at
-      remove :inserted_at
-      remove :previous_value
-      remove :value
-      remove :category
-    end
+    drop constraint(:change_events, "change_events_import_record_id_fkey")
 
-    drop constraint(:encoding_change_events, "encoding_change_events_change_event_id_fkey")
-
-    alter table(:encoding_change_events) do
-      modify :change_event_id, :uuid
-    end
-
-    drop constraint(:import_change_events, "import_change_events_change_event_id_fkey")
-
-    alter table(:import_change_events) do
-      modify :change_event_id, :uuid
-    end
+    drop constraint(:change_events, "change_events_record_id_fkey")
 
     drop table(:change_events)
 
@@ -427,12 +353,6 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     drop table(:collections)
 
     drop table(:dwc_attributes)
-
-    drop table(:encoding_change_events)
-
-    drop constraint(:import_change_events, "import_change_events_import_record_id_fkey")
-
-    drop table(:import_change_events)
 
     drop table(:import_files)
 

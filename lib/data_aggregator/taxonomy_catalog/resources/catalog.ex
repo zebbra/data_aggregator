@@ -5,7 +5,7 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
 
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
-  alias DataAggregator.Transition.EncodingChangeEvent
+  alias DataAggregator.Transition.ChangeEvent
 
   attributes do
     uuid_attribute :id, prefix: "cat"
@@ -32,7 +32,7 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
 
     has_many :attribute_resolving_strategies, AttributeResolvingStrategy
 
-    has_many :encoding_change_events, EncodingChangeEvent do
+    has_many :change_events, ChangeEvent do
       api DataAggregator.Transition
     end
   end

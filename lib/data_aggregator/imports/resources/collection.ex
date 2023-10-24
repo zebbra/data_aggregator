@@ -21,7 +21,6 @@ defmodule DataAggregator.Imports.Collection do
 
     attribute :owner, :string
 
-    # which types are possible?
     attribute :collection_type, :string do
       default "other"
       allow_nil? false

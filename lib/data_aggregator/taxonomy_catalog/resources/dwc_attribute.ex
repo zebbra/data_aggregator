@@ -6,7 +6,6 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
   alias DataAggregator.TaxonomyCatalog.Catalog
   alias DataAggregator.Transition.Annotation
-  alias DataAggregator.Transition.ChangeEvent
 
   attributes do
     uuid_attribute :id, prefix: "da"
@@ -24,10 +23,6 @@ defmodule DataAggregator.TaxonomyCatalog.DwcAttribute do
     end
 
     has_many :attribute_resolving_strategies, AttributeResolvingStrategy
-
-    has_many :change_events, ChangeEvent do
-      api DataAggregator.Transition
-    end
 
     has_many :annotations, Annotation do
       api DataAggregator.Transition

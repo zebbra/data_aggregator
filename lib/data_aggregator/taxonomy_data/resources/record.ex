@@ -5,7 +5,7 @@ defmodule DataAggregator.TaxonomyData.Record do
 
   alias DataAggregator.Imports.ImportRecord
   alias DataAggregator.Transition.Annotation
-  alias DataAggregator.Transition.EncodingChangeEvent
+  alias DataAggregator.Transition.ChangeEvent
 
   attributes do
     uuid_attribute :id, prefix: "rec"
@@ -30,7 +30,7 @@ defmodule DataAggregator.TaxonomyData.Record do
       api DataAggregator.Transition
     end
 
-    has_many :record_change_events, EncodingChangeEvent do
+    has_many :change_events, ChangeEvent do
       api DataAggregator.Transition
     end
   end

@@ -3,9 +3,9 @@ defmodule DataAggregator.Transition.ChangeEvent do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Imports.ImportChangeEvent
-  alias DataAggregator.TaxonomyCatalog.DwcAttribute
-  alias DataAggregator.Transition.EncodingChangeEvent
+  alias DataAggregator.Imports.ImportRecord
+  alias DataAggregator.TaxonomyCatalog.Catalog
+  alias DataAggregator.TaxonomyData.Record
   alias DataAggregator.Transition.Run
 
   attributes do
@@ -16,6 +16,8 @@ defmodule DataAggregator.Transition.ChangeEvent do
       filterable? true
     end
 
+    attribute :dwc_attribute, :string
+
     attribute :value, :string
 
     attribute :previous_value, :string
@@ -24,16 +26,18 @@ defmodule DataAggregator.Transition.ChangeEvent do
   end
 
   relationships do
-    belongs_to :dwc_attribute, DwcAttribute do
-      api DataAggregator.TaxonomyCatalog
-    end
-
     belongs_to :run, Run
 
-    has_many :encoding_change_events, EncodingChangeEvent
-
-    has_many :import_change_events, ImportChangeEvent do
+    belongs_to :import_record, ImportRecord do
       api DataAggregator.Imports
+    end
+
+    belongs_to :record, Record do
+      api DataAggregator.TaxonomyData
+    end
+
+    belongs_to :catalog, Catalog do
+      api DataAggregator.TaxonomyCatalog
     end
   end
 

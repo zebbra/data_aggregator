@@ -8,6 +8,10 @@ defmodule DataAggregator.Transition.Run do
   attributes do
     uuid_attribute :id, prefix: "run"
 
+    # attribute :start, :datetime
+
+    # attribute :end, :datetime
+
     timestamps private?: false, writable?: false
   end
 
@@ -38,7 +42,7 @@ defmodule DataAggregator.Transition.Run do
   graphql do
     type :run
 
-    relationships [:record]
+    relationships [:record, :import_record]
 
     queries do
       get :get_run, :read
