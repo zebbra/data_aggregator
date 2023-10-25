@@ -44,6 +44,7 @@ for windows or linux use your favourite package manager
 
 ### Start coding
 
+- Run `mix deps.get && mix compile --force && mix git_hooks.install` to work with the project specific git hooks
 - Run `docker compose up` in one of your terminals, to start services around our application
 - Run `mix setup` to install and setup dependencies
 - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
