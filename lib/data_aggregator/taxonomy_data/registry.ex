@@ -7,6 +7,5 @@ defmodule DataAggregator.TaxonomyData.Registry do
 
   entries do
     entry DataAggregator.TaxonomyData.Record
-    entry DataAggregator.TaxonomyData.Record2Run
   end
 end

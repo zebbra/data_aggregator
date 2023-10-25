@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.ImportRecordLive.ShowComponent do
         </.list>
         <:footer>
           <.link
-            patch={~p"/import_records/#{@import_record}/show/edit?#{@serialized_params}"}
+            patch={~p"/import_records/#{@import_record}/show/edit"}
             phx-click={JS.push_focus()}
             class="focus-visible:outline-none"
           >

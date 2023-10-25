@@ -21,6 +21,12 @@ defmodule DataAggregatorWeb.LiveNavigator do
         {DataAggregatorWeb.ImportRecordLive.Index, _} ->
           :import_records
 
+        {DataAggregatorWeb.CollectionLive.Index, _} ->
+          :collections
+
+        {DataAggregatorWeb.CollectionLive.Show, _} ->
+          :collections
+
         {_, _} ->
           nil
       end

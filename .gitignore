@@ -45,3 +45,6 @@ npm-debug.log
 .elixir-tools
 
 *.log
+
+# ignore uploaded files
+/priv/static/uploads/*

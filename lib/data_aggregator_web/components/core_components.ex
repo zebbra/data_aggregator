@@ -21,7 +21,6 @@ defmodule DataAggregatorWeb.CoreComponents do
 
   import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Headless.Dialog, only: [dialog_title: 1]
-  import DataAggregatorWeb.Helpers, only: [get_current_order_attr: 1, get_current_order_dir: 1]
 
   @doc """
   Renders flash notices.
@@ -71,7 +70,7 @@ defmodule DataAggregatorWeb.CoreComponents do
             />
           </div>
 
-          <div class="ml-3 w-0 flex-1 pt-0.5">
+          <div class="flex-1 pt-0.5 ml-3 w-0">
             <p class={[
               "text-sm font-medium text-gray-900",
               @kind == :info && "text-green-800",
@@ -88,7 +87,7 @@ defmodule DataAggregatorWeb.CoreComponents do
             </p>
           </div>
 
-          <div class="ml-4 flex flex-shrink-0">
+          <div class="flex flex-shrink-0 ml-4">
             <button
               type="button"
               class={[
@@ -124,9 +123,9 @@ defmodule DataAggregatorWeb.CoreComponents do
     <div id={@id}>
       <div
         aria-live="assertive"
-        class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6 z-50"
+        class="sm:items-start sm:p-6 flex fixed inset-0 z-50 items-end py-6 px-4 pointer-events-none"
       >
-        <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
+        <div class="sm:items-end flex flex-col items-center space-y-4 w-full">
           <.flash kind={:info} title={~t"Success!"m} flash={@flash} hidden />
           <.flash kind={:error} title={~t"Error!"m} flash={@flash} hidden />
           <.flash
@@ -184,7 +183,7 @@ defmodule DataAggregatorWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="mt-8 space-y-8 bg-white dark:bg-gray-900">
+      <div class="dark:bg-gray-900 mt-8 space-y-8 bg-white">
         <%= render_slot(@inner_block, f) %>
         <div :for={action <- @actions} class="sm:mt-4 sm:flex sm:flex-row-reverse mt-5">
           <%= render_slot(action, f) %>
@@ -306,7 +305,7 @@ defmodule DataAggregatorWeb.CoreComponents do
 
     ~H"""
     <div phx-feedback-for={@name}>
-      <label class="text-gray-600 flex gap-4 items-center text-sm leading-6">
+      <label class="flex gap-4 items-center text-sm leading-6 text-gray-600">
         <input type="hidden" name={@name} value="false" />
         <input
           type="checkbox"
@@ -314,7 +313,7 @@ defmodule DataAggregatorWeb.CoreComponents do
           name={@name}
           value="true"
           checked={@checked}
-          class="border-gray-300 text-gray-900 focus:ring-0 rounded"
+          class="focus:ring-0 text-gray-900 rounded border-gray-300"
           {@rest}
         />
         <%= @label %>
@@ -388,9 +387,9 @@ defmodule DataAggregatorWeb.CoreComponents do
         />
         <div
           :if={@errors != []}
-          class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
+          class="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none"
         >
-          <.icon name="hero-exclamation-circle-mini" class="h-5 w-5 text-red-500" />
+          <.icon name="hero-exclamation-circle-mini" class="w-5 h-5 text-red-500" />
         </div>
       </div>
       <.error :for={msg <- @errors} id={"#{@id}-error"}><%= msg %></.error>
@@ -406,7 +405,7 @@ defmodule DataAggregatorWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-medium leading-6 text-gray-900 dark:text-white">
+    <label for={@for} class="dark:text-white block text-sm font-medium leading-6 text-gray-900">
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -449,14 +448,14 @@ defmodule DataAggregatorWeb.CoreComponents do
         <.dialog_title
           :if={@id}
           id={@id <> "__title"}
-          class="text-gray-800 dark:text-white text-base font-semibold leading-9"
+          class="dark:text-white text-base font-semibold leading-9 text-gray-800"
         >
           <%= render_slot(@inner_block) %>
         </.dialog_title>
-        <h1 :if={!@id} class="text-gray-800 dark:text-white text-base font-semibold leading-9">
+        <h1 :if={!@id} class="dark:text-white text-base font-semibold leading-9 text-gray-800">
           <%= render_slot(@inner_block) %>
         </h1>
-        <p :if={@subtitle != []} class="text-gray-600 dark:text-gray-400 mt-2 text-sm leading-6">
+        <p :if={@subtitle != []} class="dark:text-gray-400 mt-2 text-sm leading-6 text-gray-600">
           <%= render_slot(@subtitle) %>
         </p>
       </div>
@@ -484,15 +483,15 @@ defmodule DataAggregatorWeb.CoreComponents do
         @class
       ]}
     >
-      <div class="flex min-h-0 flex-1 flex-col overflow-y-scroll pb-6">
+      <div class="flex overflow-y-scroll flex-col flex-1 pb-6 min-h-0">
         <%= render_slot(@header) %>
-        <div class="flex-1 relative">
+        <div class="relative flex-1">
           <%= render_slot(@inner_block) %>
         </div>
       </div>
       <div
         :if={@footer != []}
-        class="flex flex-shrink-0 justify-end px-4 py-4 bg-white dark:bg-gray-900"
+        class="dark:bg-gray-900 flex flex-shrink-0 justify-end py-4 px-4 bg-white"
       >
         <%= render_slot(@footer) %>
       </div>
@@ -515,6 +514,7 @@ defmodule DataAggregatorWeb.CoreComponents do
   attr :row_id, :any, default: nil, doc: "the function for generating the row id"
   attr :row_click, :any, default: nil, doc: "the function for handling phx-click on each row"
   attr :order_by, :string, default: nil
+  attr :order_dir, :string, default: nil
 
   attr :row_item, :any,
     default: &Function.identity/1,
@@ -524,7 +524,6 @@ defmodule DataAggregatorWeb.CoreComponents do
     attr :label, :string
     attr :field, :string
     attr :sort, :string
-    attr :align, :string
   end
 
   slot :action, doc: "the slot for showing user actions in the last table column"
@@ -535,17 +534,14 @@ defmodule DataAggregatorWeb.CoreComponents do
         assign(assigns, row_id: assigns.row_id || fn {id, _item} -> id end)
       end
 
-    assigns = assign(assigns, :order_dir, get_current_order_dir(assigns.order_by))
-    assigns = assign(assigns, :order_attr, get_current_order_attr(assigns.order_by))
-
     ~H"""
-    <div class="px-4 sm:px-6 lg:px-8">
-      <div class="mt-4 sm:mt-6 lg:mt-8 flow-root">
-        <div class="table-container -mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div class="inline-block min-w-full py-2 align-middle">
+    <div class="sm:px-6 lg:px-8 px-4">
+      <div class="sm:mt-6 lg:mt-8 flow-root mt-4">
+        <div class="table-container sm:-mx-6 lg:-mx-8 overflow-x-auto -my-2 -mx-4">
+          <div class="inline-block py-2 min-w-full align-middle">
             <table
               role="table"
-              class="min-w-full table-auto will-change-scroll divide-y divide-gray-300 dark:divide-gray-700"
+              class="will-change-scroll dark:divide-gray-700 min-w-full divide-y divide-gray-300 table-auto"
             >
               <thead role="rowgroup">
                 <tr role="row">
@@ -553,24 +549,16 @@ defmodule DataAggregatorWeb.CoreComponents do
                     :for={col <- @col}
                     role="columnheader"
                     scope="col"
-                    class={[
-                      "whitespace-nowrap py-3.5 px-3 first:pl-4 last:pl-3 first:pr-3 last:pr-4 uppercase tracking-wide text-sm font-semibold text-gray-900 dark:text-white first:sm:pl-6 first:lg:pl-8 last:sm:pr-6 last:lg:pr-8",
-                      col[:align] == nil && "text-left",
-                      col[:align] == "left" && "text-left",
-                      col[:align] == "center" && "text-center",
-                      col[:align] == "right" && "text-right"
-                    ]}
+                    class="first:pl-4 last:pl-3 first:pr-3 last:pr-4 dark:text-white first:sm:pl-6 first:lg:pl-8 last:sm:pr-6 last:lg:pr-8 py-3.5 px-3 text-sm font-semibold tracking-wide text-left text-gray-900 uppercase whitespace-nowrap"
                   >
                     <%= if col[:sort] do %>
                       <.link navigate={col[:sort]} class="group inline-flex">
-                        <span :if={col[:align] != "right"}><%= col[:label] %></span>
+                        <%= col[:label] %>
                         <span class={[
-                          "flex-none rounded text-gray-400 dark:text-gray-500",
-                          col[:align] == "right" && "mr-2",
-                          col[:align] != "right" && "ml-2",
-                          @order_attr != col[:field] &&
+                          "ml-2 flex-none rounded text-gray-400 dark:text-gray-500",
+                          @order_by != col[:field] &&
                             "invisible group-hover:visible group-focus:visible",
-                          @order_attr == col[:field] &&
+                          @order_by == col[:field] &&
                             "rounded bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white group-hover:bg-gray-200 dark:group-hover:bg-gray-700"
                         ]}>
                           <svg
@@ -588,7 +576,7 @@ defmodule DataAggregatorWeb.CoreComponents do
                           </svg>
                           <svg
                             :if={@order_dir == "desc"}
-                            class="h-5 w-5"
+                            class="w-5 h-5"
                             viewBox="0 0 20 20"
                             fill="currentColor"
                             aria-hidden="true"
@@ -601,16 +589,16 @@ defmodule DataAggregatorWeb.CoreComponents do
                             </path>
                           </svg>
                         </span>
-                        <span :if={col[:align] == "right"}><%= col[:label] %></span>
                       </.link>
                     <% else %>
                       <%= col[:label] %>
                     <% end %>
                   </th>
                   <th
+                    :if={@action != []}
                     role="columnheader"
                     scope="col"
-                    class="relative py-3.5 pl-3 pr-4 sm:pr-6 lg:pr-8"
+                    class="sm:pr-6 lg:pr-8 relative py-3.5 pr-4 pl-3"
                   >
                     <span class="sr-only"><%= gettext("Actions") %></span>
                   </th>
@@ -620,7 +608,7 @@ defmodule DataAggregatorWeb.CoreComponents do
                 id={@id}
                 role="rowgroup"
                 phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
-                class="divide-y divide-gray-200 dark:divide-gray-800"
+                class="dark:divide-gray-800 divide-y divide-gray-200"
               >
                 <tr
                   :for={row <- @rows}
@@ -634,11 +622,7 @@ defmodule DataAggregatorWeb.CoreComponents do
                     role="cell"
                     class={[
                       "whitespace-nowrap py-4 px-3 first:pl-4 first:pr-3 last:pl-3 last:pr-4 text-sm first:font-medium text-gray-900 dark:text-white first:sm:pl-6 first:lg:pl-8 last:sm:pr-6 last:lg:pr-8",
-                      @row_click && "hover:cursor-pointer",
-                      col[:align] == nil && "text-left",
-                      col[:align] == "left" && "text-left",
-                      col[:align] == "center" && "text-center",
-                      col[:align] == "right" && "text-right"
+                      @row_click && "hover:cursor-pointer"
                     ]}
                   >
                     <%= render_slot(col, @row_item.(row)) %>
@@ -646,11 +630,11 @@ defmodule DataAggregatorWeb.CoreComponents do
                   <td
                     :if={@action != []}
                     role="cell"
-                    class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8"
+                    class="sm:pr-6 lg:pr-8 relative py-4 pr-4 pl-3 text-sm font-medium text-right whitespace-nowrap"
                   >
                     <span
                       :for={action <- @action}
-                      class="hover:text-indigo-900 text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 relative ml-4 font-semibold leading-6"
+                      class="hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 relative ml-4 font-semibold leading-6 text-indigo-600"
                     >
                       <%= render_slot(action, @row_item.(row)) %>
                     </span>
@@ -681,12 +665,12 @@ defmodule DataAggregatorWeb.CoreComponents do
 
   def list(assigns) do
     ~H"""
-    <dl class="divide-y divide-gray-200 dark:divide-white/5">
-      <div :for={item <- @item} class="px-6 py-5">
-        <dt class="text-sm font-medium text-gray-500 dark:text-white">
+    <dl class="dark:divide-white/5 divide-y divide-gray-200">
+      <div :for={item <- @item} class="py-5 px-6">
+        <dt class="dark:text-white text-sm font-medium text-gray-500">
           <%= item.title %>
         </dt>
-        <dd class="mt-1 text-sm text-gray-700 dark:text-gray-200">
+        <dd class="dark:text-gray-200 mt-1 text-sm text-gray-700">
           <%= render_slot(item) %>
         </dd>
       </div>
@@ -706,10 +690,10 @@ defmodule DataAggregatorWeb.CoreComponents do
 
   def back(assigns) do
     ~H"""
-    <div class="mt-16 px-4 sm:px-6 lg:px-8">
+    <div class="sm:px-6 lg:px-8 px-4 mt-16">
       <.link
         navigate={@navigate}
-        class="text-gray-900 hover:text-gray-700 dark:text-white dark:hover:text-gray-300 text-sm font-semibold leading-6"
+        class="hover:text-gray-700 dark:text-white dark:hover:text-gray-300 text-sm font-semibold leading-6 text-gray-900"
       >
         <.icon name="hero-arrow-left-solid" class="w-3 h-3" />
         <%= render_slot(@inner_block) %>

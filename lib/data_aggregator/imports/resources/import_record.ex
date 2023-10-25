@@ -7,6 +7,30 @@ defmodule DataAggregator.Imports.ImportRecord do
   alias DataAggregator.Imports.StaticAsset
   alias DataAggregator.TaxonomyData.Record
 
+  attributes do
+    uuid_attribute :id, prefix: "irec"
+
+    attribute :unique_qualifier, :string do
+      allow_nil? false
+    end
+
+    attribute :import_data, :map
+    attribute :meta_data, :map
+
+    timestamps private?: false, writable?: false
+  end
+
+  relationships do
+    belongs_to :collection, Collection
+
+    has_one :record, Record do
+      api DataAggregator.TaxonomyData
+    end
+
+    has_many :static_assets, StaticAsset do
+    end
+  end
+
   actions do
     defaults [:create, :update, :destroy]
 
@@ -14,6 +38,25 @@ defmodule DataAggregator.Imports.ImportRecord do
       primary? true
       argument :sort, :string, allow_nil?: true
     end
+  end
+
+  code_interface do
+    define_for DataAggregator.Imports
+    define :read
+    define :create
+    define :update
+    define :destroy
+    define :get_by_id, action: :read, get_by: [:id]
+  end
+
+  postgres do
+    table "import_records"
+    repo DataAggregator.Repo
+  end
+
+  preparations do
+    prepare build(sort: [id: :asc])
+    prepare DataAggregator.Preparations.Sort
   end
 
   graphql do
@@ -43,48 +86,5 @@ defmodule DataAggregator.Imports.ImportRecord do
       patch(:update)
       delete(:destroy)
     end
-  end
-
-  attributes do
-    uuid_attribute :id, prefix: "irec"
-
-    attribute :unique_qualifier, :string do
-      allow_nil? false
-    end
-
-    attribute :import_data, :map
-    attribute :meta_data, :map
-
-    timestamps(private?: false)
-  end
-
-  relationships do
-    belongs_to :collection, Collection
-
-    has_one :record, Record do
-      api DataAggregator.TaxonomyData
-    end
-
-    has_many :static_assets, StaticAsset do
-    end
-  end
-
-  postgres do
-    table "import_records"
-    repo DataAggregator.Repo
-  end
-
-  code_interface do
-    define_for DataAggregator.Imports
-    define :read
-    define :create
-    define :update
-    define :destroy
-    define :get_by_id, action: :read, get_by: [:id]
-  end
-
-  preparations do
-    prepare build(sort: [id: :asc])
-    prepare DataAggregator.Preparations.Sort
   end
 end

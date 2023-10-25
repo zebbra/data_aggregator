@@ -10,10 +10,7 @@
         <.icon name="hero-funnel-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
         <span class="sm:inline-block hidden"><%= ~t"Filter"m %></span>
       </.button>
-      <.link
-        patch={~p"/import_records/new?#{@serialized_params}"}
-        class="focus-visible:outline-none"
-      >
+      <.link patch={~p"/import_records/new"} class="focus-visible:outline-none">
         <.button class="inline-flex" id="import-record-modal__button">
           <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
           <span class="sm:inline-block hidden"><%= ~t"New Import Record"m %></span>
@@ -25,12 +22,9 @@
   <.table
     id="import-records"
     rows={@streams.import_records}
-    row_click={
-      fn {_id, import_record} ->
-        JS.patch(~p"/import_records/#{import_record}?#{@serialized_params}")
-      end
-    }
-    order_by={@serialized_params |> Map.get(:order_by, "")}
+    row_click={fn {_id, import_record} -> JS.patch(~p"/import_records/#{import_record}") end}
+    order_by={@current_order_by}
+    order_dir={@current_order_dir}
   >
     <:col :let={{_id, import_record}} label={~t"ID"m} field="id" sort={@sort_options[:id]}>
       <%= import_record.id %>
@@ -48,7 +42,6 @@
       label={~t"Inserted At"m}
       field="inserted_at"
       sort={@sort_options[:inserted_at]}
-      align="right"
     >
       <%= format_datetime(import_record.inserted_at) %>
     </:col>
@@ -57,7 +50,6 @@
       label={~t"Updated At"m}
       field="updated_at"
       sort={@sort_options[:updated_at]}
-      align="right"
     >
       <%= format_datetime(import_record.updated_at) %>
     </:col>
@@ -66,9 +58,7 @@
       <div class="sr-only">
         <.link patch={~p"/import_records/#{import_record}"}><%= ~t"Show"m %></.link>
       </div>
-      <.link patch={~p"/import_records/#{import_record}/edit?#{@serialized_params}"}>
-        <%= ~t"Edit"m %>
-      </.link>
+      <.link patch={~p"/import_records/#{import_record}/edit"}><%= ~t"Edit"m %></.link>
     </:action>
 
     <:action :let={{id, import_record}}>
@@ -116,20 +106,19 @@
 <.slideover
   :if={@live_action in [:show]}
   id="import-record-slideover"
-  on_cancel={JS.patch(~p"/import_records?#{@serialized_params}")}
+  on_cancel={JS.patch(~p"/import_records")}
 >
   <.live_component
     module={DataAggregatorWeb.ImportRecordLive.ShowComponent}
     id={@import_record.id}
     import_record={@import_record}
-    serialized_params={@serialized_params}
   />
 </.slideover>
 
 <.modal
   :if={@live_action in [:new, :edit]}
   id="import-record-modal"
-  on_cancel={JS.patch(~p"/import_records?#{@serialized_params}")}
+  on_cancel={JS.patch(~p"/import_records")}
 >
   <.live_component
     module={DataAggregatorWeb.ImportRecordLive.FormComponent}
@@ -138,6 +127,6 @@
     title={@page_title}
     action={@live_action}
     import_record={@import_record}
-    patch={~p"/import_records?#{@serialized_params}"}
+    patch={~p"/import_records"}
   />
 </.modal>

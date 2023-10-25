@@ -9,6 +9,5 @@ defmodule DataAggregator.TaxonomyCatalog.Registry do
     entry DataAggregator.TaxonomyCatalog.DwcAttribute
     entry DataAggregator.TaxonomyCatalog.Catalog
     entry DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
-    entry DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run
   end
 end

@@ -5,10 +5,54 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
 
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
   alias DataAggregator.TaxonomyCatalog.DwcAttribute
-  alias DataAggregator.Transition.EncodingChangeEvent
+  alias DataAggregator.Transition.ChangeEvent
+
+  attributes do
+    uuid_attribute :id, prefix: "cat"
+
+    attribute :name, :string
+
+    attribute :description, :string
+
+    attribute :url, :string
+
+    attribute :version, :integer do
+      default 1
+      allow_nil? false
+      filterable? true
+    end
+
+    timestamps private?: false, writable?: false
+  end
+
+  relationships do
+    has_many :dwc_attributes, DwcAttribute do
+      destination_attribute :default_catalog_id
+    end
+
+    has_many :attribute_resolving_strategies, AttributeResolvingStrategy
+
+    has_many :change_events, ChangeEvent do
+      api DataAggregator.Transition
+    end
+  end
 
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  code_interface do
+    define_for DataAggregator.TaxonomyCatalog
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
+    define :get_by_id, action: :read, get_by: [:id]
+  end
+
+  postgres do
+    table "catalogs"
+    repo DataAggregator.Repo
   end
 
   graphql do
@@ -38,49 +82,5 @@ defmodule DataAggregator.TaxonomyCatalog.Catalog do
       patch(:update)
       delete(:destroy)
     end
-  end
-
-  attributes do
-    uuid_attribute :id, prefix: "cat"
-
-    attribute :name, :string
-
-    attribute :description, :string
-
-    attribute :url, :string
-
-    attribute :version, :integer do
-      default 1
-      allow_nil? false
-      filterable? true
-    end
-
-    timestamps()
-  end
-
-  relationships do
-    has_many :dwc_attributes, DwcAttribute do
-      destination_attribute :default_catalog_id
-    end
-
-    has_many :attribute_resolving_strategies, AttributeResolvingStrategy
-
-    has_many :encoding_change_events, EncodingChangeEvent do
-      api DataAggregator.Transition
-    end
-  end
-
-  postgres do
-    table "catalogs"
-    repo DataAggregator.Repo
-  end
-
-  code_interface do
-    define_for DataAggregator.TaxonomyCatalog
-    define :create, action: :create
-    define :read_all, action: :read
-    define :update, action: :update
-    define :destroy, action: :destroy
-    define :get_by_id, action: :read, get_by: [:id]
   end
 end

@@ -80,6 +80,7 @@ defmodule DataAggregator.MixProject do
       {:hackney, "~> 1.18"},
       {:jason, "~> 1.2"},
       {:timex, "~> 3.0"},
+      {:explorer, "~> 0.7.0"},
 
       # metrix and observation
       {:sentry, "~> 9.1"},

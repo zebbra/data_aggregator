@@ -37,26 +37,21 @@ defmodule DataAggregatorWeb.Helpers do
     Cldr.Number.to_string!(value, opts)
   end
 
-  def serialize_params(params, allowed_keys \\ ["filter", "order_by"]) do
-    params
-    |> Map.take(allowed_keys)
-    |> Enum.map(fn {k, v} -> {String.to_atom(k), v} end)
-    |> Map.new()
-  end
-
   # https://spapas.github.io/2019/10/17/declarative-ecto-query-sorting/
   def order_by_options(active_link, params, sort_fields \\ []) do
     sort_fields
     |> Enum.into(%{}, fn key -> {key, create_order_url(active_link, params, to_string(key))} end)
   end
 
-  def get_current_order_attr(order_by) do
-    order_by
+  def get_current_order_by(params) do
+    params
+    |> Map.get("order_by", "")
     |> String.replace("-", "")
   end
 
-  def get_current_order_dir(order_by) do
-    if order_by
+  def get_current_order_dir(params) do
+    if params
+       |> Map.get("order_by", "")
        |> String.starts_with?("-") do
       "desc"
     else

@@ -35,6 +35,28 @@
           </li>
           <li>
             <.link
+              navigate={~p"/collections"}
+              class={[
+                "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold",
+                if(@active_link == :collections,
+                  do: "bg-gray-50 dark:bg-gray-800 text-indigo-600 dark:text-white",
+                  else:
+                    "text-gray-700 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+                )
+              ]}
+              aria-current={if(@active_link == :collections, do: "page", else: nil)}
+            >
+              <.icon
+                name="hero-table-cells"
+                class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
+              />
+              <span class="truncate">
+                <%= ~t"Collections"m %>
+              </span>
+            </.link>
+          </li>
+          <li>
+            <.link
               navigate={~p"/import_records"}
               class={[
                 "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold",
@@ -51,7 +73,7 @@
                 class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
               />
               <span class="truncate">
-                <%= ~t"Imports"m %>
+                <%= ~t"Import Records"m %>
               </span>
             </.link>
           </li>
@@ -63,78 +85,51 @@
         <ul role="list" class="-mx-2 mt-2 space-y-1">
           <li>
             <.link
-              href="https://discord.gg/elixir"
+              href="https://github.com/zebbra/data_aggregator"
               target="_blank"
               rel="noopener noreferrer"
               class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
             >
-              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
-                D
-              </span>
+              <.icon
+                name="hero-code-bracket"
+                class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
+              />
               <span class="truncate">
-                <%= ~t"Join the Discord Server"m %>
+                <%= ~t"Github"m %>
               </span>
             </.link>
           </li>
           <li>
             <.link
-              href="https://fly.io/docs/elixir/getting-started/"
+              href="https://www.gbif.org/"
               target="_blank"
               rel="noopener noreferrer"
               class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
             >
-              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
-                D
-              </span>
+              <.icon
+                name="hero-circle-stack"
+                class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
+              />
               <span class="truncate">
-                <%= ~t"Deploy your application"m %>
+                <%= ~t"GBIF"m %>
               </span>
             </.link>
           </li>
           <li>
             <.link
-              href="https://elixirforum.com"
+              href="https://scnat.ch/"
               target="_blank"
               rel="noopener noreferrer"
               class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
             >
-              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
-                E
-              </span>
+              <.icon
+                name="hero-academic-cap"
+                class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
+              />
               <span class="truncate">
-                <%= ~t"Discuss on the Elixir Forum"m %>
+                <%= ~t"scnat"m %>
               </span>
             </.link>
-          </li>
-          <li>
-            <.link
-              href="https://web.libera.chat/#elixir"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
-            >
-              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
-                L
-              </span>
-              <span class="truncate">
-                <%= ~t"Chat on Libera IRC"m %>
-              </span>
-            </.link>
-            <li>
-              <.link
-                href="https://twitter.com/elixirphoenix"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
-              >
-                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
-                  T
-                </span>
-                <span class="truncate">
-                  <%= ~t"Follow on Twitter"m %>
-                </span>
-              </.link>
-            </li>
           </li>
         </ul>
       </li>
