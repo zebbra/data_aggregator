@@ -1,7 +1,7 @@
 defmodule DataAggregatorWeb.CollectionLive.Show do
   use DataAggregatorWeb, :live_view
 
-  alias DataAggregator.Imports.Collection
+  alias DataAggregator.Platform.Collection
 
   @impl true
   def mount(_params, _session, socket) do

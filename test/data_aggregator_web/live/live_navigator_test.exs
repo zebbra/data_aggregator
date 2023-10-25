@@ -7,11 +7,11 @@ defmodule DataAggregatorWeb.LiveNavigatorTest do
     assert conn.assigns.active_link == :dashboard
   end
 
-  test "[/import_records] renders sidebar nav with active_link set to import records", %{
+  test "[/records] renders sidebar nav with active_link set to import records", %{
     conn: conn
   } do
-    conn = get(conn, "/import_records")
+    conn = get(conn, "/records")
 
-    assert conn.assigns.active_link == :import_records
+    assert conn.assigns.active_link == :records
   end
 end
