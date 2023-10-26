@@ -7,7 +7,7 @@ defmodule DataAggregator.Data.RecordImage do
   alias DataAggregator.Storage.Attachment
 
   attributes do
-    uuid_attribute :id, prefix: "im"
+    uuid_attribute :id, prefix: "img"
     attribute :size, :integer
     timestamps private?: false, writable?: false
   end

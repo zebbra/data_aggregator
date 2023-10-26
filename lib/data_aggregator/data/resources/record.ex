@@ -9,12 +9,56 @@ defmodule DataAggregator.Data.Record do
   attributes do
     uuid_attribute :id, prefix: "rec"
 
-    attribute :unique_qualifier, :string do
+    attribute :import_data, :map
+    attribute :meta_data, :map
+
+    # mandatory from import file
+    attribute :materialEntityID, :string do
       allow_nil? false
     end
 
-    attribute :import_data, :map
-    attribute :meta_data, :map
+    attribute :scientificName, :string do
+      allow_nil? false
+    end
+
+    # all Person related attributes
+    attribute :prs_contact_point, :string
+    attribute :prs_first_name, :string
+    attribute :prs_last_name, :string
+    attribute :prs_date_of_birth, :date
+
+    # all Event related attributes
+    attribute :eve_day, :string
+    attribute :eve_event_date, :date
+    attribute :eve_month, :string
+    attribute :eve_year, :string
+
+    # all Identification related attributes
+    attribute :idf_date_identified, :date
+    attribute :idf_identified_by, :string
+    attribute :ref_bibliographic_citation, :string
+    attribute :ref_creator, :string
+    attribute :ref_date, :date
+    attribute :ref_rights, :string
+    attribute :ref_source, :string
+    attribute :ref_title, :string
+    attribute :ref_relationship_established_date, :date
+
+    # all RescourceRelationship related attributes
+    attribute :rrp_relationship_of_resource, :string
+    attribute :rrp_relationship_of_resource_id, :string
+
+    # all Taxon related attributes
+    attribute :tax_family, :string
+    attribute :tax_scientific_name_authorship, :string
+    attribute :tax_order, :string
+
+    # all Location related attributes
+    attribute :loc_continent, :string
+    attribute :loc_country, :string
+
+    # all Occurrence related attributes
+    attribute :occ_recorded_by, :string
 
     timestamps private?: false, writable?: false
   end

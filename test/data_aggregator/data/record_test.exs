@@ -6,9 +6,10 @@ defmodule DataAggregator.RecordsTest do
 
     import DataAggregator.RecordsFixtures
 
-    @invalid_attrs %{unique_qualifier: nil}
+    @invalid_attrs %{materialEntityID: nil, scientificName: nil}
     @valid_attrs %{
-      unique_qualifier: "record1"
+      materialEntityID: "record1",
+      scientificName: "06809dc5-f143-459a-be1a-6f03e63fc083"
     }
 
     test "read!/0 returns all records" do
@@ -31,7 +32,11 @@ defmodule DataAggregator.RecordsTest do
 
     test "update/2 with valid data updates the record" do
       record = record_fixture()
-      update_attrs = %{unique_qualifier: "record2"}
+
+      update_attrs = %{
+        materialEntityID: "record2",
+        scientificName: "06809dc5-f143-459a-be1a-6f03e63fc083"
+      }
 
       assert {:ok, %Record{} = _record} =
                Record.update(record, update_attrs)

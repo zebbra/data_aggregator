@@ -5,12 +5,14 @@ defmodule DataAggregatorWeb.RecordLiveTest do
   import DataAggregator.RecordsFixtures
 
   @create_attrs %{
-    unique_qualifier: "record1"
+    materialEntityID: "record1",
+    scientificName: "06809dc5-f143-459a-be1a-6f03e63fc083"
   }
   @update_attrs %{
-    unique_qualifier: "record2"
+    materialEntityID: "record2",
+    scientificName: "06809dc5-f143-459a-be1a-6f03e63fc083"
   }
-  @invalid_attrs %{unique_qualifier: nil}
+  @invalid_attrs %{materialEntityID: nil, scientificName: nil}
 
   defp create_record(_) do
     record = record_fixture()

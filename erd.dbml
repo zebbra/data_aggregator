@@ -1,8 +1,34 @@
 Table records {
   id uuid [pk]
-  unique_qualifier varchar
   import_data jsonb
   meta_data jsonb
+  materialEntityID varchar
+  scientificName varchar
+  prs_contact_point varchar
+  prs_first_name varchar
+  prs_last_name varchar
+  prs_date_of_birth date
+  eve_day varchar
+  eve_event_date date
+  eve_month varchar
+  eve_year varchar
+  idf_date_identified date
+  idf_identified_by varchar
+  ref_bibliographic_citation varchar
+  ref_creator varchar
+  ref_date date
+  ref_rights varchar
+  ref_source varchar
+  ref_title varchar
+  ref_relationship_established_date date
+  rrp_relationship_of_resource varchar
+  rrp_relationship_of_resource_id varchar
+  tax_family varchar
+  tax_scientific_name_authorship varchar
+  tax_order varchar
+  loc_continent varchar
+  loc_country varchar
+  occ_recorded_by varchar
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid
@@ -40,6 +66,7 @@ Table import_files {
 Table institutions {
   id uuid [pk]
   name varchar
+  code varchar
   address varchar
   zip_code varchar
   city varchar

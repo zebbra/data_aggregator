@@ -16,7 +16,8 @@ defmodule DataAggregatorWeb.RecordLive.ShowComponent do
         </:header>
         <.list>
           <:item title={~t"ID"m}><%= @record.id %></:item>
-          <:item title={~t"Unique Qualifier"m}><%= @record.unique_qualifier %></:item>
+          <:item title={~t"MaterialEntityID"m}><%= @record.materialEntityID %></:item>
+          <:item title={~t"Scientific Name"m}><%= @record.scientificName %></:item>
         </.list>
         <:footer>
           <.link

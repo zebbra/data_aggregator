@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   alias DataAggregator.Data.Record
 
-  @sort_options [:inserted_at, :updated_at, :unique_qualifier]
+  @sort_options [:inserted_at, :updated_at, :materialEntityID, :scientificName]
 
   @impl true
   def mount(_params, _session, socket) do

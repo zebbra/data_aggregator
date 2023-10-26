@@ -13,6 +13,7 @@ defmodule DataAggregator.Platform.Collection do
       allow_nil? false
     end
 
+    # an iternationally valid code to identify the collection
     attribute :code, :string
 
     attribute :description, :string

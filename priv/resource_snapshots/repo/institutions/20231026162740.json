@@ -24,6 +24,16 @@
       "default": "nil",
       "size": null,
       "type": "text",
+      "source": "code",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
       "source": "address",
       "references": null,
       "allow_nil?": true,
@@ -112,7 +122,7 @@
     }
   ],
   "table": "institutions",
-  "hash": "932C1FA7840E327F19FD1DF4B48A8E344CB50FBF3D7E13D467FF115426C9CB8E",
+  "hash": "53A0DD4E7EC25B2156E1CAF5D7A3D8669E7C75C5F154B2DE227443A2C3BD0022",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,
