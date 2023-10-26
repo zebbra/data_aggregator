@@ -14,7 +14,7 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "name",
+      "source": "unique_qualifier",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -23,18 +23,8 @@
     {
       "default": "nil",
       "size": null,
-      "type": "text",
-      "source": "code",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "text",
-      "source": "description",
+      "type": "map",
+      "source": "import_data",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -44,7 +34,7 @@
       "default": "nil",
       "size": null,
       "type": "map",
-      "source": "mapping",
+      "source": "meta_data",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -74,20 +64,20 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "institution_id",
+      "source": "collection_id",
       "references": {
-        "name": "collections_institution_id_fkey",
-        "table": "institutions",
+        "name": "records_collection_id_fkey",
+        "table": "collections",
         "schema": "public",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
+        "on_delete": null,
         "destination_attribute": "id",
         "deferrable": false,
-        "on_delete": null,
         "on_update": null,
         "destination_attribute_default": null,
         "destination_attribute_generated": null
@@ -97,15 +87,15 @@
       "primary_key?": false
     }
   ],
-  "table": "collections",
-  "hash": "381188D21402FE8AC339D74F1776E093A7BA479CEAD72ED115A2366856DEBD5D",
+  "table": "records",
+  "hash": "2B4D2A82CCD2AE06DD175C476EDCA20DC736844C8DB16F59911F5A016A1D2F3D",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "check_constraints": [],

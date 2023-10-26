@@ -18,6 +18,15 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       add :collection_id, :uuid
     end
 
+    create table(:record_images, primary_key: false) do
+      add :id, :uuid, null: false, primary_key: true
+      add :size, :bigint
+      add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
+      add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
+      add :attachment_id, :uuid
+      add :record_id, :uuid
+    end
+
     create table(:institutions, primary_key: false) do
       add :id, :uuid, null: false, primary_key: true
       add :name, :text, null: false
@@ -39,15 +48,6 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :collection_id, :uuid
       add :attachment_id, :uuid
-    end
-
-    create table(:images, primary_key: false) do
-      add :id, :uuid, null: false, primary_key: true
-      add :size, :bigint
-      add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
-      add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
-      add :attachment_id, :uuid
-      add :record_id, :uuid
     end
 
     create table(:dwc_attributes, primary_key: false) do
@@ -157,21 +157,11 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       add :id, :uuid, null: false, primary_key: true
     end
 
-    alter table(:import_files) do
+    alter table(:record_images) do
       modify :attachment_id,
              references(:attachments,
                column: :id,
-               name: "import_files_attachment_id_fkey",
-               type: :uuid,
-               prefix: "public"
-             )
-    end
-
-    alter table(:images) do
-      modify :attachment_id,
-             references(:attachments,
-               column: :id,
-               name: "images_attachment_id_fkey",
+               name: "record_images_attachment_id_fkey",
                type: :uuid,
                prefix: "public"
              )
@@ -179,7 +169,17 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       modify :record_id,
              references(:records,
                column: :id,
-               name: "images_record_id_fkey",
+               name: "record_images_record_id_fkey",
+               type: :uuid,
+               prefix: "public"
+             )
+    end
+
+    alter table(:import_files) do
+      modify :attachment_id,
+             references(:attachments,
+               column: :id,
+               name: "import_files_attachment_id_fkey",
                type: :uuid,
                prefix: "public"
              )
@@ -201,18 +201,18 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       remove :url
     end
 
-    drop constraint(:images, "images_attachment_id_fkey")
-
-    drop constraint(:images, "images_record_id_fkey")
-
-    alter table(:images) do
-      modify :record_id, :uuid
-      modify :attachment_id, :uuid
-    end
-
     drop constraint(:import_files, "import_files_attachment_id_fkey")
 
     alter table(:import_files) do
+      modify :attachment_id, :uuid
+    end
+
+    drop constraint(:record_images, "record_images_attachment_id_fkey")
+
+    drop constraint(:record_images, "record_images_record_id_fkey")
+
+    alter table(:record_images) do
+      modify :record_id, :uuid
       modify :attachment_id, :uuid
     end
 
@@ -280,11 +280,11 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
 
     drop table(:dwc_attributes)
 
-    drop table(:images)
-
     drop table(:import_files)
 
     drop table(:institutions)
+
+    drop table(:record_images)
 
     drop table(:records)
   end

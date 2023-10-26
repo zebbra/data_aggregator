@@ -14,29 +14,39 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "unique_qualifier",
+      "source": "name",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "description",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "url",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "1",
+      "size": null,
+      "type": "bigint",
+      "source": "version",
       "references": null,
       "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "map",
-      "source": "import_data",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "map",
-      "source": "meta_data",
-      "references": null,
-      "allow_nil?": true,
       "generated?": false,
       "primary_key?": false
     },
@@ -59,43 +69,17 @@
       "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "collection_id",
-      "references": {
-        "name": "records_collection_id_fkey",
-        "table": "collections",
-        "schema": "public",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "destination_attribute": "id",
-        "deferrable": false,
-        "on_delete": null,
-        "on_update": null,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null
-      },
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
     }
   ],
-  "table": "records",
-  "hash": "5A65D5D7BE2AB6D8234A9759A4E0EE2F7D29E97A486DC61AF9E4FD25E8B41C21",
+  "table": "catalogs",
+  "hash": "F0B9538991C4F851D981EB7DCEB399DAFC51CDDDB8A8543EE739730FC92E848D",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "check_constraints": [],

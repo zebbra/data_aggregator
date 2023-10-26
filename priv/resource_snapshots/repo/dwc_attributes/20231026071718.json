@@ -13,8 +13,8 @@
     {
       "default": "nil",
       "size": null,
-      "type": "bigint",
-      "source": "size",
+      "type": "text",
+      "source": "name",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -44,46 +44,20 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "attachment_id",
+      "source": "default_catalog_id",
       "references": {
-        "name": "images_attachment_id_fkey",
-        "table": "attachments",
+        "name": "dwc_attributes_default_catalog_id_fkey",
+        "table": "catalogs",
         "schema": "public",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
+        "on_delete": null,
         "destination_attribute": "id",
         "deferrable": false,
-        "on_delete": null,
-        "on_update": null,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null
-      },
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "record_id",
-      "references": {
-        "name": "images_record_id_fkey",
-        "table": "records",
-        "schema": "public",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "destination_attribute": "id",
-        "deferrable": false,
-        "on_delete": null,
         "on_update": null,
         "destination_attribute_default": null,
         "destination_attribute_generated": null
@@ -93,15 +67,15 @@
       "primary_key?": false
     }
   ],
-  "table": "images",
-  "hash": "B3035EC354D2CE7DBE322B663F45B7AC2ECE7D7462BE29F0A64E437538BCF57E",
+  "table": "dwc_attributes",
+  "hash": "644208E97DD392435A9BC49FD67972B8E9111A2F876310530DC95EFD4AE1EC21",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "check_constraints": [],
