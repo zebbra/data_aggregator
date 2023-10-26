@@ -48,3 +48,6 @@ npm-debug.log
 
 # ignore uploaded files
 /priv/static/uploads/*
+
+# mac os files
+.DS_Store
