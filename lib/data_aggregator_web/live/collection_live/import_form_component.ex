@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
 
   alias AshPhoenix.Form
   alias DataAggregator.Platform.Collection
-  alias DataAggregator.Storage.ImportFile
+  alias DataAggregator.Platform.ImportFile
 
   @impl true
   def update(assigns, socket) do
