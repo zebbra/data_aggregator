@@ -4,6 +4,7 @@ defmodule DataAggregator.Data.Record do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.Platform.Collection
+  alias DataAggregator.Storage.Attachment
 
   attributes do
     uuid_attribute :id, prefix: "rec"
@@ -22,6 +23,15 @@ defmodule DataAggregator.Data.Record do
     belongs_to :collection, Collection do
       api DataAggregator.Platform
     end
+
+    many_to_many :images, Attachment do
+      api DataAggregator.Storage
+      through DataAggregator.Data.RecordImage
+      source_attribute_on_join_resource :record_id
+      destination_attribute_on_join_resource :attachment_id
+    end
+
+    has_many :images_join_assoc, DataAggregator.Data.RecordImage
   end
 
   actions do

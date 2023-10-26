@@ -1,4 +1,4 @@
-defmodule DataAggregator.Storage.ImportFile do
+defmodule DataAggregator.Platform.ImportFile do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
@@ -17,7 +17,9 @@ defmodule DataAggregator.Storage.ImportFile do
       api DataAggregator.Platform
     end
 
-    belongs_to :attachment, Attachment
+    belongs_to :attachment, Attachment do
+      api DataAggregator.Storage
+    end
   end
 
   actions do

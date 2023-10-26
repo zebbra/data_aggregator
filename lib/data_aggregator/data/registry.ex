@@ -7,5 +7,6 @@ defmodule DataAggregator.Data.Registry do
 
   entries do
     entry DataAggregator.Data.Record
+    entry DataAggregator.Data.RecordImage
   end
 end

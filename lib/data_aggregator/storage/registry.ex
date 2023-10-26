@@ -7,7 +7,5 @@ defmodule DataAggregator.Storage.Registry do
 
   entries do
     entry DataAggregator.Storage.Attachment
-    entry DataAggregator.Storage.ImportFile
-    entry DataAggregator.Storage.Image
   end
 end

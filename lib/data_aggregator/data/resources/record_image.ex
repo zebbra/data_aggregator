@@ -1,4 +1,4 @@
-defmodule DataAggregator.Storage.Image do
+defmodule DataAggregator.Data.RecordImage do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
@@ -13,11 +13,11 @@ defmodule DataAggregator.Storage.Image do
   end
 
   relationships do
-    belongs_to :attachment, Attachment
-
-    belongs_to :record, Record do
-      api DataAggregator.Data
+    belongs_to :attachment, Attachment do
+      api DataAggregator.Storage
     end
+
+    belongs_to :record, Record
   end
 
   actions do
@@ -25,7 +25,7 @@ defmodule DataAggregator.Storage.Image do
   end
 
   code_interface do
-    define_for DataAggregator.Storage
+    define_for DataAggregator.Data
     define :read
     define :create
     define :update
@@ -34,30 +34,30 @@ defmodule DataAggregator.Storage.Image do
   end
 
   postgres do
-    table "images"
+    table "record_images"
     repo DataAggregator.Repo
   end
 
   graphql do
-    type :image
+    type :record_image
 
     queries do
-      get :get_image, :read
-      list :list_images, :read
+      get :get_record_image, :read
+      list :list_record_images, :read
     end
 
     mutations do
-      create :create_image, :create
-      update :update_image, :update
-      destroy :destroy_image, :destroy
+      create :create_record_image, :create
+      update :update_record_image, :update
+      destroy :destroy_record_image, :destroy
     end
   end
 
   json_api do
-    type "image"
+    type "record_image"
 
     routes do
-      base("/images")
+      base("/record_images")
 
       get(:read)
       index :read
