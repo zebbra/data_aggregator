@@ -25,32 +25,6 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
     ~H"""
     <div>
       <.form_header icon={@icon} title={@title} />
-
-      <%!-- use phx-drop-target with the upload ref to enable file drag and drop --%>
-      <section phx-drop-target={@uploads.file.ref} class="bg-slate-200 p-4 rounded">
-        <%!-- render each file entry --%>
-        <article :for={entry <- @uploads.file.entries} class="upload-entry">
-          <%= entry.client_name %>
-          <progress value={entry.progress} max="100"><%= entry.progress %>%</progress>
-          <button
-            type="button"
-            phx-click="cancel-upload"
-            phx-target={@myself}
-            phx-value-ref={entry.ref}
-            aria-label="cancel"
-          >
-            &times;
-          </button>
-
-          <div>
-            <%= for err <- upload_errors(@uploads.file, entry) do %>
-              <p class="alert alert-danger"><%= error_to_string(err) %></p>
-            <% end %>
-          </div>
-        </article>
-        Drop files here
-      </section>
-
       <.simple_form
         for={@form}
         id="collection-form"
@@ -58,7 +32,63 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.live_file_input upload={@uploads.file} />
+        <%!-- use phx-drop-target with the upload ref to enable file drag and drop --%>
+        <section
+          phx-drop-target={@uploads.file.ref}
+          class="mt-2 flex flex-col rounded-md border border-dashed border-gray-900/25 dark:border-white/25 px-6 py-10"
+        >
+          <div class="flex justify-center">
+            <div class="text-center">
+              <.icon
+                name="hero-photo-mini"
+                class="mx-auto h-12 w-12 text-gray-300 dark:text-gray-500"
+              />
+              <div class="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400">
+                <label
+                  for={@uploads.file.ref}
+                  class="relative cursor-pointer rounded-md bg-white dark:bg-gray-900 font-semibold text-indigo-600 dark:text-white focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 dark:focus-within:ring-offset-gray-900 hover:text-indigo-500"
+                >
+                  <span><%= ~t"Upload a file"m %></span>
+                  <.live_file_input upload={@uploads.file} class="sr-only" />
+                </label>
+                <p class="pl-1"><%= ~t"or drag and drop"m %></p>
+              </div>
+              <p class="text-xs leading-5 text-gray-600 dark:text-gray-400">CSV, JPEG, JPG or PNG</p>
+            </div>
+          </div>
+
+          <div class="mt-4 space-y-2 text-gray-600 dark:text-white">
+            <%!-- render each file entry --%>
+            <article :for={entry <- @uploads.file.entries}>
+              <span class="text-sm"><%= entry.client_name %></span>
+
+              <div class="flex space-x-4">
+                <div class="w-full bg-gray-200 rounded-full h-2 mt-2 dark:bg-gray-700">
+                  <div
+                    class="bg-indigo-600 h-2 rounded-full dark:bg-indigo-500"
+                    style={"width: #{entry.progress}%;"}
+                  />
+                </div>
+                <button
+                  type="button"
+                  phx-click="cancel-upload"
+                  phx-target={@myself}
+                  phx-value-ref={entry.ref}
+                  aria-label="cancel"
+                  class="text-gray-600"
+                >
+                  &times;
+                </button>
+              </div>
+
+              <div>
+                <%= for err <- upload_errors(@uploads.file, entry) do %>
+                  <p class="text-sm text-red-500"><%= error_to_string(err) %></p>
+                <% end %>
+              </div>
+            </article>
+          </div>
+        </section>
 
         <:actions>
           <.button
@@ -105,7 +135,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
           id="collection-modal__description"
           class="dark:text-gray-400 mt-2 text-sm text-gray-500"
         >
-          <%= ~t"Use this form to manage import records in your database."m %>
+          <%= ~t"Use this form to manage collections in your database."m %>
         </.dialog_description>
       </div>
     </div>
