@@ -134,11 +134,16 @@ config :spark, :formatter,
     section_order: [
       :authentication,
       :token,
-      :actions,
       :attributes,
       :relationships,
+      :calculations,
+      :aggregates,
+      :actions,
+      :code_interface,
       :policies,
-      :postgres
+      :postgres,
+      :graphql,
+      :json_api
     ]
   ]
 

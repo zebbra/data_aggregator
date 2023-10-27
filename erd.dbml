@@ -1,5 +1,3 @@
-
-
 Table collections {
   id uuid [pk]
   name varchar
@@ -12,14 +10,6 @@ Table collections {
   inserted_at timestamp
   updated_at timestamp
   institution_id uuid
-}
-
-Table import_change_events {
-  id uuid [pk]
-  inserted_at timestamp
-  updated_at timestamp
-  import_record_id uuid
-  change_event_id uuid
 }
 
 Table import_files {
@@ -39,14 +29,6 @@ Table import_records {
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid
-}
-
-Table import_records2runs {
-  id uuid [pk]
-  inserted_at timestamp
-  updated_at timestamp
-  import_record_id uuid [pk]
-  run_id uuid [pk]
 }
 
 Table institutions {
@@ -82,14 +64,6 @@ Table attribute_resolving_strategies {
   collection_id uuid
 }
 
-Table attribute_resolving_strategies2runs {
-  id uuid [pk]
-  inserted_at timestamp
-  updated_at timestamp
-  attribute_resolving_strategy_id uuid
-  run_id uuid
-}
-
 Table catalogs {
   id uuid [pk]
   name varchar
@@ -117,18 +91,9 @@ Table records {
   import_record_id uuid
 }
 
-Table records2runs {
-  id uuid [pk]
-  inserted_at timestamp
-  updated_at timestamp
-  record_id uuid [pk]
-  run_id uuid [pk]
-}
-
 Table annotations {
   id uuid [pk]
   comment varchar
-  state varchar
   value_suggestion varchar
   user varchar
   dwc_attribute_id uuid
@@ -140,30 +105,19 @@ Table annotations {
 Table change_events {
   id uuid [pk]
   category varchar
+  dwc_attribute varchar
   value varchar
   previous_value varchar
-  catalog_value_reference varchar
   inserted_at timestamp
   updated_at timestamp
-  dwc_attribute_id uuid
-}
-
-Table encoding_change_events {
-  id uuid [pk]
-  catalog_value_reference varchar
-  inserted_at timestamp
-  updated_at timestamp
-  change_event_id uuid
-  catalog_id uuid
+  run_id uuid
+  import_record_id uuid
   record_id uuid
+  catalog_id uuid
 }
 
 Table runs {
   id uuid [pk]
-  comment varchar
-  state varchar
-  value_suggestion varchar
-  user varchar
   inserted_at timestamp
   updated_at timestamp
 }
@@ -173,26 +127,18 @@ Table schema_migrations {
   inserted_at timestamp
 }
 
-Ref: attribute_resolving_strategies.id < attribute_resolving_strategies2runs.attribute_resolving_strategy_id
 Ref: catalogs.id < attribute_resolving_strategies.catalog_id
+Ref: catalogs.id < change_events.catalog_id
 Ref: catalogs.id < dwc_attributes.default_catalog_id
-Ref: catalogs.id < encoding_change_events.catalog_id
-Ref: change_events.id < encoding_change_events.change_event_id
-Ref: change_events.id < import_change_events.change_event_id
 Ref: collections.id < attribute_resolving_strategies.collection_id
 Ref: collections.id < import_files.collection_id
 Ref: collections.id < import_records.collection_id
 Ref: dwc_attributes.id < annotations.dwc_attribute_id
 Ref: dwc_attributes.id < attribute_resolving_strategies.dwc_attribute_id
-Ref: dwc_attributes.id < change_events.dwc_attribute_id
-Ref: import_records.id < import_change_events.import_record_id
-Ref: import_records.id < import_records2runs.import_record_id
+Ref: import_records.id < change_events.import_record_id
 Ref: import_records.id - records.import_record_id
 Ref: import_records.id < static_assets.import_record_id
 Ref: institutions.id < collections.institution_id
 Ref: records.id < annotations.record_id
-Ref: records.id < encoding_change_events.record_id
-Ref: records.id < records2runs.record_id
-Ref: runs.id < attribute_resolving_strategies2runs.run_id
-Ref: runs.id < import_records2runs.run_id
-Ref: runs.id < records2runs.run_id
+Ref: records.id < change_events.record_id
+Ref: runs.id < change_events.run_id

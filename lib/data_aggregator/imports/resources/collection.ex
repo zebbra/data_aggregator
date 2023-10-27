@@ -8,8 +8,75 @@ defmodule DataAggregator.Imports.Collection do
   alias DataAggregator.Imports.Institution
   alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy
 
+  attributes do
+    uuid_attribute :id, prefix: "col"
+
+    attribute :name, :string do
+      allow_nil? false
+    end
+
+    attribute :code, :string
+
+    attribute :description, :string
+
+    attribute :owner, :string
+
+    attribute :collection_type, :string do
+      default "other"
+      allow_nil? false
+    end
+
+    # planned, in progress, finished
+    attribute :digitization_status, :string do
+      default "planned"
+      allow_nil? false
+    end
+
+    attribute :collection_size, :integer
+
+    # allow sorting by inserted_at/updated_at
+    timestamps private?: false, writable?: false
+  end
+
+  relationships do
+    belongs_to :institution, Institution
+
+    has_many :import_records, ImportRecord
+
+    has_many :import_files, ImportFile
+
+    has_many :attribute_resolving_strategies, AttributeResolvingStrategy do
+      api DataAggregator.TaxonomyCatalog
+    end
+  end
+
   actions do
-    defaults [:create, :read, :update, :destroy]
+    defaults [:create, :update, :destroy]
+
+    read :read do
+      primary? true
+      argument :sort, :string, allow_nil?: true
+    end
+  end
+
+  code_interface do
+    define_for DataAggregator.Imports
+    define :read
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
+    define :get_by_id, action: :read, get_by: [:id]
+  end
+
+  postgres do
+    table "collections"
+    repo DataAggregator.Repo
+  end
+
+  preparations do
+    prepare build(sort: [id: :asc])
+    prepare DataAggregator.Preparations.Sort
   end
 
   graphql do
@@ -39,62 +106,5 @@ defmodule DataAggregator.Imports.Collection do
       patch(:update)
       delete(:destroy)
     end
-  end
-
-  attributes do
-    uuid_attribute :id, prefix: "col"
-
-    attribute :name, :string do
-      allow_nil? false
-    end
-
-    attribute :code, :string
-
-    attribute :description, :string
-
-    attribute :owner, :string
-
-    # which types are possible?
-    attribute :collection_type, :string do
-      default "other"
-      allow_nil? false
-    end
-
-    # planned, in progress, finished
-    attribute :digitization_status, :string do
-      default "planned"
-      allow_nil? false
-    end
-
-    attribute :collection_size, :integer
-
-    timestamps()
-  end
-
-  relationships do
-    belongs_to :institution, Institution
-
-    has_many :import_records, ImportRecord
-
-    has_many :import_files, ImportFile
-
-    has_many :attribute_resolving_strategies, AttributeResolvingStrategy do
-      api DataAggregator.TaxonomyCatalog
-    end
-  end
-
-  postgres do
-    table "collections"
-    repo DataAggregator.Repo
-  end
-
-  code_interface do
-    define_for DataAggregator.Imports
-    define :read
-    define :create, action: :create
-    define :read_all, action: :read
-    define :update, action: :update
-    define :destroy, action: :destroy
-    define :get_by_id, action: :read, get_by: [:id]
   end
 end

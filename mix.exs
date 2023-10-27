@@ -80,6 +80,7 @@ defmodule DataAggregator.MixProject do
       {:hackney, "~> 1.18"},
       {:jason, "~> 1.2"},
       {:timex, "~> 3.0"},
+      {:explorer, "~> 0.7.0"},
 
       # metrix and observation
       {:sentry, "~> 9.1"},
@@ -91,7 +92,7 @@ defmodule DataAggregator.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.3", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
-      {:spark, "~> 1.1.48"},
+      {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
 
       # file handling and S3:
       {:waffle, "~> 1.1"},

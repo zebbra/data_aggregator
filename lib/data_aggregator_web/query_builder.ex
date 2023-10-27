@@ -32,12 +32,16 @@ defmodule DataAggregatorWeb.QueryBuilder do
   end
 
   # Extract the sort field from current_sort
+  def current_sort_field(current_sort) when is_nil(current_sort), do: ""
+
   def current_sort_field(current_sort) do
     current_sort
     |> String.replace("-", "")
   end
 
   # Extract the sort direction from current_sort
+  def current_sort_dir(current_sort) when is_nil(current_sort), do: "asc"
+
   def current_sort_dir(current_sort) do
     if current_sort |> String.starts_with?("-") do
       "desc"

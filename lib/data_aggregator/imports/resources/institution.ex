@@ -5,8 +5,50 @@ defmodule DataAggregator.Imports.Institution do
 
   alias DataAggregator.Imports.Collection
 
+  attributes do
+    uuid_attribute :id, prefix: "inst"
+
+    attribute :name, :string do
+      allow_nil? false
+    end
+
+    attribute :address, :string
+
+    attribute :zip_code, :string
+
+    attribute :city, :string
+
+    attribute :country, :string
+
+    attribute :mail, :string
+
+    attribute :tel, :string
+
+    attribute :contact_person, :string
+
+    timestamps private?: false, writable?: false
+  end
+
+  relationships do
+    has_many :collections, Collection
+  end
+
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  code_interface do
+    define_for DataAggregator.Imports
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
+    define :get_by_id, action: :read, get_by: [:id]
+  end
+
+  postgres do
+    table "institutions"
+    repo DataAggregator.Repo
   end
 
   graphql do
@@ -36,47 +78,5 @@ defmodule DataAggregator.Imports.Institution do
       patch(:update)
       delete(:destroy)
     end
-  end
-
-  attributes do
-    uuid_attribute :id, prefix: "inst"
-
-    attribute :name, :string do
-      allow_nil? false
-    end
-
-    attribute :address, :string
-
-    attribute :zip_code, :string
-
-    attribute :city, :string
-
-    attribute :country, :string
-
-    attribute :mail, :string
-
-    attribute :tel, :string
-
-    attribute :contact_person, :string
-
-    timestamps()
-  end
-
-  relationships do
-    has_many :collections, Collection
-  end
-
-  postgres do
-    table "institutions"
-    repo DataAggregator.Repo
-  end
-
-  code_interface do
-    define_for DataAggregator.Imports
-    define :create, action: :create
-    define :read_all, action: :read
-    define :update, action: :update
-    define :destroy, action: :destroy
-    define :get_by_id, action: :read, get_by: [:id]
   end
 end

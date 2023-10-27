@@ -3,20 +3,46 @@ defmodule DataAggregator.Transition.Run do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Imports.ImportRecord
-  alias DataAggregator.Imports.ImportRecord2Run
-  alias DataAggregator.TaxonomyCatalog.AttributeResolvingStrategy2Run
-  alias DataAggregator.TaxonomyData.Record
-  alias DataAggregator.TaxonomyData.Record2Run
+  alias DataAggregator.Transition.ChangeEvent
+
+  attributes do
+    uuid_attribute :id, prefix: "run"
+
+    # attribute :start, :datetime
+
+    # attribute :end, :datetime
+
+    timestamps private?: false, writable?: false
+  end
+
+  relationships do
+    has_many :change_events, ChangeEvent do
+      api DataAggregator.Transition
+    end
+  end
 
   actions do
     defaults [:create, :read, :update, :destroy]
   end
 
+  code_interface do
+    define_for DataAggregator.Transition
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
+    define :get_by_id, action: :read, get_by: [:id]
+  end
+
+  postgres do
+    table "runs"
+    repo DataAggregator.Repo
+  end
+
   graphql do
     type :run
 
-    relationships [:record]
+    relationships [:record, :import_record]
 
     queries do
       get :get_run, :read
@@ -42,58 +68,5 @@ defmodule DataAggregator.Transition.Run do
       patch(:update)
       delete(:destroy)
     end
-  end
-
-  attributes do
-    uuid_attribute :id, prefix: "run"
-
-    attribute :comment, :string do
-      filterable? true
-    end
-
-    attribute :state, :string do
-      default "open"
-      filterable? true
-    end
-
-    attribute :value_suggestion, :string
-
-    attribute :user, :string
-
-    timestamps()
-  end
-
-  relationships do
-    has_many :attribute_resolving_strategies2runs, AttributeResolvingStrategy2Run do
-      api DataAggregator.TaxonomyCatalog
-    end
-
-    many_to_many :records, Record do
-      api DataAggregator.TaxonomyData
-      through Record2Run
-      source_attribute_on_join_resource :run_id
-      destination_attribute_on_join_resource :record_id
-    end
-
-    many_to_many :import_records, ImportRecord do
-      api DataAggregator.Imports
-      through ImportRecord2Run
-      source_attribute_on_join_resource :run_id
-      destination_attribute_on_join_resource :import_record_id
-    end
-  end
-
-  postgres do
-    table "runs"
-    repo DataAggregator.Repo
-  end
-
-  code_interface do
-    define_for DataAggregator.Transition
-    define :create, action: :create
-    define :read_all, action: :read
-    define :update, action: :update
-    define :destroy, action: :destroy
-    define :get_by_id, action: :read, get_by: [:id]
   end
 end

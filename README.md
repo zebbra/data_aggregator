@@ -10,7 +10,7 @@ checkout the documentation on [`confluence`](https://infofauna-support.atlassian
 
 contribute by submitting a [`PR`](https://github.com/zebbra/data_aggregator)
 
-checkout the [`data model`](https://dbdiagram.io/d/64a2d76802bd1c4a5e6b7071)
+checkout the [`data model`](https://dbdiagram.io/d/data-aggregator-generated-from-code-653795c6ffbf5169f0554c4f)
 
 checkout our notes on [`miro`](https://miro.com/app/board/uXjVMBLi0fk=/)
 

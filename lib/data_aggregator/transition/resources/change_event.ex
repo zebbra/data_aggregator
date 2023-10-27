@@ -3,12 +3,60 @@ defmodule DataAggregator.Transition.ChangeEvent do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Imports.ImportChangeEvent
-  alias DataAggregator.TaxonomyCatalog.DwcAttribute
-  alias DataAggregator.Transition.EncodingChangeEvent
+  alias DataAggregator.Imports.ImportRecord
+  alias DataAggregator.TaxonomyCatalog.Catalog
+  alias DataAggregator.TaxonomyData.Record
+  alias DataAggregator.Transition.Run
+
+  attributes do
+    uuid_attribute :id, prefix: "ce"
+
+    attribute :category, :string do
+      allow_nil? false
+      filterable? true
+    end
+
+    attribute :dwc_attribute, :string
+
+    attribute :value, :string
+
+    attribute :previous_value, :string
+
+    timestamps private?: false, writable?: false
+  end
+
+  relationships do
+    belongs_to :run, Run
+
+    belongs_to :import_record, ImportRecord do
+      api DataAggregator.Imports
+    end
+
+    belongs_to :record, Record do
+      api DataAggregator.TaxonomyData
+    end
+
+    belongs_to :catalog, Catalog do
+      api DataAggregator.TaxonomyCatalog
+    end
+  end
 
   actions do
     defaults [:create, :read, :update, :destroy]
+  end
+
+  code_interface do
+    define_for DataAggregator.Transition
+    define :create, action: :create
+    define :read_all, action: :read
+    define :update, action: :update
+    define :destroy, action: :destroy
+    define :get_by_id, action: :read, get_by: [:id]
+  end
+
+  postgres do
+    table "change_events"
+    repo DataAggregator.Repo
   end
 
   graphql do
@@ -38,48 +86,5 @@ defmodule DataAggregator.Transition.ChangeEvent do
       patch(:update)
       delete(:destroy)
     end
-  end
-
-  attributes do
-    uuid_attribute :id, prefix: "ce"
-
-    attribute :category, :string do
-      allow_nil? false
-      filterable? true
-    end
-
-    attribute :value, :string
-
-    attribute :previous_value, :string
-
-    attribute :catalog_value_reference, :string
-
-    timestamps()
-  end
-
-  relationships do
-    belongs_to :dwc_attribute, DwcAttribute do
-      api DataAggregator.TaxonomyCatalog
-    end
-
-    has_many :encoding_change_events, EncodingChangeEvent
-
-    has_many :import_change_events, ImportChangeEvent do
-      api DataAggregator.Imports
-    end
-  end
-
-  postgres do
-    table "change_events"
-    repo DataAggregator.Repo
-  end
-
-  code_interface do
-    define_for DataAggregator.Transition
-    define :create, action: :create
-    define :read_all, action: :read
-    define :update, action: :update
-    define :destroy, action: :destroy
-    define :get_by_id, action: :read, get_by: [:id]
   end
 end
