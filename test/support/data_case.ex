@@ -18,11 +18,6 @@ defmodule DataAggregator.DataCase do
 
   using do
     quote do
-      alias DataAggregator.Repo
-
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
       import DataAggregator.DataCase
     end
   end

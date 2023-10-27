@@ -8,6 +8,7 @@ defmodule DataAggregator.MixProject do
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
+      consolidate_protocols: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
     ]
@@ -93,7 +94,7 @@ defmodule DataAggregator.MixProject do
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
 
-      # file handling and S3:
+      # file handling and S3
       {:waffle, "~> 1.1"},
       {:ex_aws, "~> 2.5.0"},
       {:ex_aws_s3, "~> 2.0"},
