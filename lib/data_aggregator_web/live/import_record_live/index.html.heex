@@ -24,7 +24,7 @@
   >
     <:col :let={{_id, import_record}} label={~t"ID"m} field="id" sort>
       <.styled_link
-        patch={~p"/import_records/#{import_record}?#{@current_path_params}"}
+        navigate={~p"/import_records/#{import_record}?#{@current_path_params}"}
         variant="table"
       >
         <%= import_record.id %>

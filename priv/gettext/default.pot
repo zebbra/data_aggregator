@@ -251,19 +251,19 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Saving..."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.html.heex:42
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:44
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.html.heex:44
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:46
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Delete"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.html.heex:36
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:38
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Edit"
@@ -275,7 +275,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Edit Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.html.heex:24
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:26
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Inserted At"
@@ -288,7 +288,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Listing Collections"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.html.heex:20
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:22
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Name"
@@ -301,7 +301,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "New Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.html.heex:34
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:36
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Show"
@@ -313,14 +313,14 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Show Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.html.heex:28
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:30
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Updated At"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/show.ex:32
-#: lib/data_aggregator_web/live/collection_live/show.ex:56
+#: lib/data_aggregator_web/live/collection_live/show.ex:53
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Import File"
@@ -486,4 +486,10 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportRecordLive.Show"
 msgid "Show Import Record"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:66
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Back"
 msgstr ""

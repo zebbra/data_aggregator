@@ -37,7 +37,7 @@ defmodule DataAggregatorWeb.ImportRecordLive.Show do
   def render(assigns) do
     ~H"""
     <main>
-      <.header class="sticky top-16">
+      <.header class="top-16 sticky">
         <%= @import_record.unique_qualifier %>
 
         <:actions>
@@ -45,7 +45,7 @@ defmodule DataAggregatorWeb.ImportRecordLive.Show do
             patch={~p"/import_records/#{@import_record}/show/edit?#{@current_path_params}"}
             id="import-record-modal__button"
           >
-            <.icon name="hero-pencil-square-mini" class="-ml-0.5 mr-1.5 h-5 w-5" />
+            <.icon name="hero-pencil-square-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
             <span class="sm:inline-block hidden"><%= ~t"Edit Import Record"m %></span>
           </.styled_link>
         </:actions>

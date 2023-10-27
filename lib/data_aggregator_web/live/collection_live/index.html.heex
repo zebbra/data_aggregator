@@ -1,5 +1,5 @@
 <main>
-  <.header class="sticky top-16">
+  <.header class="top-16 sticky">
     <%= ~t"Listing Collections"m %>
     <:actions>
       <.styled_link patch={~p"/collections/new"} id="collection-modal__button">
@@ -13,7 +13,9 @@
     id="collections"
     rows={@streams.collections}
     row_click={
-      fn {_id, collection} -> JS.patch(~p"/collections/#{collection}?#{@current_path_params}") end
+      fn {_id, collection} ->
+        JS.navigate(~p"/collections/#{collection}?#{@current_path_params}")
+      end
     }
     sort={@current_sort}
   >

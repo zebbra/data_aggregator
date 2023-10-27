@@ -746,7 +746,7 @@ defmodule DataAggregatorWeb.CoreComponents do
       role="navigation"
     >
       <div class="sm:hidden flex justify-between flex-1">
-        <.styled_link
+        <.button
           variant="nav"
           class="rounded-md"
           aria-label={~t"Previous"m}
@@ -754,9 +754,9 @@ defmodule DataAggregatorWeb.CoreComponents do
           phx-click="page:prev"
         >
           <%= ~t"Prev"m %>
-        </.styled_link>
+        </.button>
         <.page_size_select id="page-size-select-mobile" current_limit={@page_meta.limit} />
-        <.styled_link
+        <.button
           variant="nav"
           class="rounded-md"
           aria-label={~t"Next"m}
@@ -764,7 +764,7 @@ defmodule DataAggregatorWeb.CoreComponents do
           phx-click="page:next"
         >
           <%= ~t"Next"m %>
-        </.styled_link>
+        </.button>
       </div>
       <div class="sm:flex sm:flex-1 sm:items-center sm:justify-between hidden">
         <div>
@@ -779,7 +779,7 @@ defmodule DataAggregatorWeb.CoreComponents do
         <div class="flex items-center">
           <.page_size_select id="page-size-select" current_limit={@page_meta.limit} />
           <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-            <.styled_link
+            <.button
               variant="nav"
               class="rounded-l-md"
               aria-label={~t"Previous"m}
@@ -787,8 +787,8 @@ defmodule DataAggregatorWeb.CoreComponents do
               phx-click="page:prev"
             >
               <%= ~t"Prev"m %>
-            </.styled_link>
-            <.styled_link
+            </.button>
+            <.button
               variant="nav"
               class="rounded-r-md -ml-px"
               aria-label={~t"Next"m}
@@ -796,7 +796,7 @@ defmodule DataAggregatorWeb.CoreComponents do
               phx-click="page:next"
             >
               <%= ~t"Next"m %>
-            </.styled_link>
+            </.button>
           </nav>
         </div>
       </div>
