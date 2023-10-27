@@ -101,7 +101,7 @@ msgstr "Import erfolgreich erstellt"
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportRecordLive.FormComponent"
 msgid "Import Record updated successfully"
-msgstr "Import erfolgreich erstellt"
+msgstr "Import erfolgreich geupdated"
 
 #: lib/data_aggregator_web/live/import_record_live/form_component.ex:61
 #, elixir-autogen, elixir-format, fuzzy
@@ -150,7 +150,7 @@ msgstr "Bearbeiten"
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Edit Import Record"
-msgstr "Import Bearbeiten"
+msgstr "Import bearbeiten"
 
 #: lib/data_aggregator_web/live/import_record_live/index.html.heex:11
 #, elixir-autogen, elixir-format, fuzzy
@@ -182,7 +182,7 @@ msgstr "Erstellt am"
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportRecordLive.Index"
 msgid "Listing Import Records"
-msgstr "Import Anzeigen"
+msgstr "Import anzeigen"
 
 #: lib/data_aggregator_web/live/import_record_live/index.ex:50
 #: lib/data_aggregator_web/live/import_record_live/index.html.heex:16
@@ -226,7 +226,7 @@ msgstr "Aktualisiert am"
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportRecordLive.ShowComponent"
 msgid "Edit Import Record"
-msgstr "Import Bearbeiten"
+msgstr "Import bearbeiten"
 
 #: lib/data_aggregator_web/live/import_record_live/show_component.ex:18
 #, elixir-autogen, elixir-format, fuzzy
@@ -256,13 +256,13 @@ msgstr "Abbrechen"
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Collection created successfully"
-msgstr "Import erfolgreich erstellt"
+msgstr "Kollektion erfolgreich erstellt"
 
 #: lib/data_aggregator_web/live/collection_live/form_component.ex:104
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Collection updated successfully"
-msgstr "Import erfolgreich erstellt"
+msgstr "Kollektion erfolgreich geupdated"
 
 #: lib/data_aggregator_web/live/collection_live/form_component.ex:49
 #: lib/data_aggregator_web/live/collection_live/form_component.ex:49
@@ -275,7 +275,7 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Save Collection"
-msgstr ""
+msgstr "Kollektion speichern"
 
 #: lib/data_aggregator_web/live/collection_live/form_component.ex:55
 #, elixir-autogen, elixir-format, fuzzy
@@ -283,35 +283,23 @@ msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Saving..."
 msgstr "Speichert..."
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:37
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
-msgid "Use this form to manage import records in your database."
-msgstr "Benutze dieses Formular, um Importdatensätze in der Datebank zu verwalten."
-
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:77
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:107
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:69
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:99
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Save Collection"
-msgstr ""
+msgstr "Kollektion speichern"
 
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:67
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:97
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Saving..."
 msgstr "Speichert..."
-
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:108
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
-msgid "Use this form to manage import records in your database."
-msgstr "Benutze dieses Formular, um Importdatensätze in der Datebank zu verwalten."
 
 #: lib/data_aggregator_web/live/collection_live/index.html.heex:60
 #, elixir-autogen, elixir-format, fuzzy
@@ -335,7 +323,7 @@ msgstr "Bearbeiten"
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Edit Collection"
-msgstr ""
+msgstr "Kollektion bearbeiten"
 
 #: lib/data_aggregator_web/live/collection_live/index.html.heex:11
 #, elixir-autogen, elixir-format, fuzzy
@@ -361,7 +349,7 @@ msgstr "Erstellt am"
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Listing Collections"
-msgstr ""
+msgstr "Kollectionen anzeigen"
 
 #: lib/data_aggregator_web/live/collection_live/index.html.heex:29
 #, elixir-autogen, elixir-format
@@ -374,7 +362,7 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "New Collection"
-msgstr ""
+msgstr "Neue Kollektion"
 
 #: lib/data_aggregator_web/live/collection_live/index.html.heex:73
 #: lib/data_aggregator_web/live/collection_live/index.html.heex:91
@@ -393,7 +381,7 @@ msgstr "Anzeigen"
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Show Collection"
-msgstr ""
+msgstr "Kollektion anzeigen"
 
 #: lib/data_aggregator_web/live/collection_live/index.html.heex:43
 #, elixir-autogen, elixir-format, fuzzy
@@ -406,19 +394,19 @@ msgstr "Aktualisiert am"
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Import File"
-msgstr "Importe"
+msgstr "Datei importieren"
 
 #: lib/data_aggregator_web/live/collection_live/show.ex:27
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Show Collection"
-msgstr ""
+msgstr "Kollektion anzeigen"
 
 #: lib/data_aggregator_web/live/collection_live/show_component.ex:29
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ShowComponent"
 msgid "Edit Collection"
-msgstr ""
+msgstr "Kollektion bearbeiten"
 
 #: lib/data_aggregator_web/live/collection_live/show_component.ex:18
 #, elixir-autogen, elixir-format, fuzzy
@@ -442,7 +430,7 @@ msgstr "Dies ist ein Import aus deiner Datenbank."
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "Collections"
-msgstr ""
+msgstr "Kollektionen"
 
 #: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:114
 #, elixir-autogen, elixir-format
@@ -460,10 +448,34 @@ msgstr ""
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "Import Records"
-msgstr "Import Bearbeiten"
+msgstr "Import bearbeiten"
 
 #: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:130
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "scnat"
 msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:37
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Use this form to manage collections in your database."
+msgstr "Benutze dieses Formular, um Kollektionen in der Datebank zu verwalten."
+
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:138
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
+msgid "Use this form to manage collections in your database."
+msgstr "Benutze dieses Formular, um Kollektionen in der Datebank zu verwalten."
+
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:51
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
+msgid "Upload a file"
+msgstr "Datei hochladen"
+
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:54
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
+msgid "or drag and drop"
+msgstr "oder hier ablegen"

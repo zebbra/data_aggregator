@@ -11,9 +11,18 @@ defmodule DataAggregator.Imports.Changes.AttachFile do
     dst_path =
       Path.join([:code.priv_dir(:data_aggregator), "static", "uploads", Path.basename(src_path)])
 
+    ensure_path_exists(Path.dirname(dst_path))
+
     Logger.info("Uploading file from #{src_path} to #{dst_path} ...")
     File.cp!(src_path, dst_path)
 
     changeset |> Changeset.change_attribute(:url, dst_path)
+  end
+
+  defp ensure_path_exists(path) do
+    case File.exists?(path) do
+      true -> path
+      false -> File.mkdir_p!(path)
+    end
   end
 end
