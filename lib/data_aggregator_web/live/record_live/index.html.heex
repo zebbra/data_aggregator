@@ -1,0 +1,124 @@
+<main class="2xl:pr-96">
+  <.header class="top-16 sticky">
+    <%= ~t"Listing Records"m %>
+    <:actions>
+      <.button
+        phx-click="toggle-filters"
+        id="record-filters__button"
+        class="2xl:hidden inline-flex"
+      >
+        <.icon name="hero-funnel-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
+        <span class="sm:inline-block hidden"><%= ~t"Filter"m %></span>
+      </.button>
+      <.link patch={~p"/records/new"} class="focus-visible:outline-none">
+        <.button class="inline-flex" id="record-modal__button">
+          <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
+          <span class="sm:inline-block hidden"><%= ~t"New Record"m %></span>
+        </.button>
+      </.link>
+    </:actions>
+  </.header>
+
+  <.table
+    id="records"
+    rows={@streams.records}
+    row_click={fn {_id, record} -> JS.patch(~p"/records/#{record}") end}
+    order_by={@current_order_by}
+    order_dir={@current_order_dir}
+  >
+    <:col :let={{_id, record}} label={~t"ID"m} field="id" sort={@sort_options[:id]}>
+      <%= record.id %>
+    </:col>
+    <:col
+      :let={{_id, record}}
+      label={~t"Unique Qualifier"m}
+      field="unique_qualifier"
+      sort={@sort_options[:unique_qualifier]}
+    >
+      <%= record.unique_qualifier %>
+    </:col>
+    <:col
+      :let={{_id, record}}
+      label={~t"Inserted At"m}
+      field="inserted_at"
+      sort={@sort_options[:inserted_at]}
+    >
+      <%= format_datetime(record.inserted_at) %>
+    </:col>
+    <:col
+      :let={{_id, record}}
+      label={~t"Updated At"m}
+      field="updated_at"
+      sort={@sort_options[:updated_at]}
+    >
+      <%= format_datetime(record.updated_at) %>
+    </:col>
+
+    <:action :let={{_id, record}}>
+      <div class="sr-only">
+        <.link patch={~p"/records/#{record}"}><%= ~t"Show"m %></.link>
+      </div>
+      <.link patch={~p"/records/#{record}/edit"}><%= ~t"Edit"m %></.link>
+    </:action>
+
+    <:action :let={{id, record}}>
+      <.link
+        phx-click={JS.push("delete", value: %{id: record.id}) |> hide("##{id}")}
+        data-confirm={~t"Are you sure?"m}
+      >
+        <%= ~t"Delete"m %>
+      </.link>
+    </:action>
+  </.table>
+</main>
+
+<aside class="2xl:block dark:bg-black/10 bg-gray-100/30 2xl:fixed 2xl:bottom-0 2xl:right-0 2xl:top-16 2xl:w-96 2xl:overflow-y-auto 2xl:border-l 2xl:border-gray-200 dark:2xl:border-white/5 hidden">
+  <.header class="sticky top-0">
+    <%= ~t"Filters"m %>
+    <:actions>
+      <a href="#" class="dark:text-indigo-400 text-sm font-semibold leading-6 text-indigo-600">
+        <%= ~t"Reset"m %>
+      </a>
+    </:actions>
+  </.header>
+</aside>
+
+<.slideover
+  :if={@show_filters}
+  id="record-filters"
+  resize_listener
+  on_cancel={JS.push("toggle-filters")}
+>
+  <.sidebar>
+    <:header>
+      <.header id="record-filters" class="sticky top-0">
+        <%= ~t"Filters"m %>
+        <:actions>
+          <a href="#" class="dark:text-indigo-400 text-sm font-semibold leading-6 text-indigo-600">
+            <%= ~t"Reset"m %>
+          </a>
+        </:actions>
+      </.header>
+    </:header>
+  </.sidebar>
+</.slideover>
+
+<.slideover :if={@live_action in [:show]} id="record-slideover" on_cancel={JS.patch(~p"/records")}>
+  <.live_component
+    module={DataAggregatorWeb.RecordLive.ShowComponent}
+    id={@record.id}
+    record={@record}
+  />
+</.slideover>
+
+<.modal :if={@live_action in [:new, :edit]} id="record-modal" on_cancel={JS.patch(~p"/records")}>
+  <.live_component
+    module={DataAggregatorWeb.RecordLive.FormComponent}
+    id={@record.id || :new}
+    icon="hero-plus-circle-mini"
+    title={@page_title}
+    action={@live_action}
+    record={@record}
+    patch={~p"/records"}
+  />
+</.modal>

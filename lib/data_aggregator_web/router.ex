@@ -47,11 +47,11 @@ defmodule DataAggregatorWeb.Router do
       live_session :default, on_mount: user_hooks do
         live "/", DashboardLive.Index, :index
 
-        live "/import_records", ImportRecordLive.Index, :index
-        live "/import_records/new", ImportRecordLive.Index, :new
-        live "/import_records/:id/edit", ImportRecordLive.Index, :edit
-        live "/import_records/:id", ImportRecordLive.Index, :show
-        live "/import_records/:id/show/edit", ImportRecordLive.Index, :edit
+        live "/records", RecordLive.Index, :index
+        live "/records/new", RecordLive.Index, :new
+        live "/records/:id/edit", RecordLive.Index, :edit
+        live "/records/:id", RecordLive.Index, :show
+        live "/records/:id/show/edit", RecordLive.Index, :edit
 
         live "/collections", CollectionLive.Index, :index
         live "/collections/new", CollectionLive.Index, :new

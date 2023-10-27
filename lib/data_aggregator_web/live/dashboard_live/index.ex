@@ -23,6 +23,6 @@ defmodule DataAggregatorWeb.DashboardLive.Index do
   defp apply_action(socket, :index, _params) do
     socket
     |> assign(:page_title, ~t"Dashboard"m)
-    |> assign(:import_record, nil)
+    |> assign(:record, nil)
   end
 end
