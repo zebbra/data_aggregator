@@ -12,6 +12,18 @@ defmodule DataAggregatorWeb.Headless.Dialog do
   import DataAggregatorWeb.Headless.Description
   import DataAggregatorWeb.Headless.Helpers
 
+  @doc """
+  Renders a dialog component. Per default you set show to true and render the dialog
+  conditionaly with the :if directive. However, if a dialog must be visible / hidden
+  base on client window width, this approach does not work. In this case you can use
+  the breakpoint attribute to set the breakpoint at which the dialog should be visible
+  or hidden. Make sure to set the show attribute to false in this case.
+
+  Further we do currently not support multiple dialogs on the same page. The on_<action>
+  callbacks get executed on all dialogs on the page which is not correct. Maybe we can
+  fix this later.
+  """
+
   attr :id, :string, required: true
   attr :as, :string, default: "div"
   attr :show, :boolean, default: false
@@ -25,7 +37,7 @@ defmodule DataAggregatorWeb.Headless.Dialog do
   attr :hide_panel_transition, :map, default: nil
   attr :show_backdrop_transition, :map, default: nil
   attr :hide_backdrop_transition, :map, default: nil
-  attr :resize_listener, :boolean, default: false
+  attr :breakpoint, :string, default: nil
   attr :rest, :global
 
   slot :inner_block, required: true
@@ -39,9 +51,12 @@ defmodule DataAggregatorWeb.Headless.Dialog do
           show_dialog(@id, @show_panel_transition, @show_backdrop_transition, @display)
       }
       phx-remove={hide_dialog(@id, @hide_panel_transition, @hide_backdrop_transition)}
+      data-show={
+        !@show && show_dialog(@id, @show_panel_transition, @show_backdrop_transition, @display)
+      }
       data-apply={JS.exec(@on_confirm, "phx-remove")}
       data-cancel={JS.exec(@on_cancel, "phx-remove")}
-      data-dialog_resize_listener={@resize_listener && "active"}
+      data-breakpoint={@breakpoint}
       id={@id}
       name={@as}
       role={@role}
@@ -123,7 +138,6 @@ defmodule DataAggregatorWeb.Headless.Dialog do
     |> JS.hide(to: "##{id}", transition: {"block", "block", "hidden"})
     |> JS.remove_attribute("aria-modal", to: "##{id}")
     |> JS.remove_class("overflow-hidden", to: "body")
-    |> JS.pop_focus()
   end
 
   defp show_backdrop(js, selector, transition) do

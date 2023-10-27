@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
   alias DataAggregator.Platform.Collection
 
-  @sort_options [:name, :inserted_at, :updated_at]
+  import DataAggregatorWeb.QueryBuilder
 
   @impl true
   def mount(_params, _session, socket) do
@@ -17,17 +17,8 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
     socket =
       socket
-      |> assign(:current_order_by, get_current_order_by(params))
-      |> assign(:current_order_dir, get_current_order_dir(params))
-      |> assign(
-        :sort_options,
-        order_by_options(
-          socket.assigns.active_link,
-          params,
-          @sort_options
-        )
-      )
-      |> assign(:show_filters, false)
+      |> assign_current_sort(params)
+      |> assign_current_path_params(params)
       |> stream(:collections, collections)
 
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}

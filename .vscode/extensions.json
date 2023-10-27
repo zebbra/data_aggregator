@@ -1,3 +1,9 @@
 {
-  "recommendations": ["jakebecker.elixir-ls", "pantajoe.vscode-elixir-credo", "heybourn.headwind", "phoenixframework.phoenix", "bradlc.vscode-tailwindcss"]
+  "recommendations": [
+    "jakebecker.elixir-ls",
+    "pantajoe.vscode-elixir-credo",
+    "heybourn.headwind",
+    "phoenixframework.phoenix",
+    "bradlc.vscode-tailwindcss"
+  ]
 }

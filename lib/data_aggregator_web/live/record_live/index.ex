@@ -3,7 +3,8 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   alias DataAggregator.Data.Record
 
-  @sort_options [:inserted_at, :updated_at, :materialEntityID, :scientificName]
+  import DataAggregatorWeb.RecordLive.PreviewComponent
+  import DataAggregatorWeb.QueryBuilder
 
   @impl true
   def mount(_params, _session, socket) do
@@ -12,42 +13,45 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    records =
-      Record.read!(%{sort: Map.get(params, "order_by", "")})
-
     socket =
       socket
-      |> assign(:current_order_by, get_current_order_by(params))
-      |> assign(:current_order_dir, get_current_order_dir(params))
-      |> assign(
-        :sort_options,
-        order_by_options(
-          socket.assigns.active_link,
-          params,
-          @sort_options
-        )
-      )
-      |> assign(:show_filters, false)
-      |> stream(:records, records)
+      |> assign_current_sort(params)
+      |> assign_current_page(params)
+      |> assign_current_limit(params, Record.default_limit())
+      |> assign_current_selected()
+      |> assign_current_path_params(params)
+      |> assign_records()
 
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :show, %{"id" => id}) do
-    socket
-    |> assign(:page_title, ~t"Show Record"m)
-    |> assign(:record, Record.get_by_id!(id))
+  defp assign_records(socket) do
+    list_records(socket)
+  end
+
+  defp list_records(socket) do
+    %{current_sort: current_sort, current_page: current_page, current_limit: current_limit} =
+      socket.assigns
+
+    page =
+      Record.read!(%{sort: current_sort},
+        page: pagination_options(current_page, current_limit)
+      )
+
+    stream_page(socket, page)
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, ~t"Edit Record"m)
-    |> assign(:record, Record.get_by_id!(id))
+    |> assign(:current_selected, nil)
+    |> assign(:record, Record.get_by_id!(id) |> Map.put(:selected, false))
   end
 
   defp apply_action(socket, :new, _params) do
     socket
     |> assign(:page_title, ~t"New Record"m)
+    |> assign(:current_selected, nil)
     |> assign(:record, %Record{})
   end
 
@@ -62,7 +66,11 @@ defmodule DataAggregatorWeb.RecordLive.Index do
         {DataAggregatorWeb.RecordLive.FormComponent, {:saved, record}},
         socket
       ) do
-    {:noreply, stream_insert(socket, :records, record)}
+    socket =
+      socket
+      |> stream_insert(:records, record |> Map.put(:selected, false))
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -70,11 +78,106 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     record = Record.get_by_id!(id)
     :ok = Record.destroy(record)
 
+    %{current_selected: current_selected} = socket.assigns
+
+    new_selected =
+      if current_selected && current_selected.id == id, do: nil, else: current_selected
+
+    socket =
+      socket
+      |> assign(:current_selected, new_selected)
+      |> stream_delete(:records, record)
+
     {:noreply, stream_delete(socket, :records, record)}
   end
 
   @impl true
-  def handle_event("toggle-filters", _params, socket) do
-    {:noreply, assign(socket, :show_filters, !socket.assigns.show_filters)}
+  def handle_event("sort:select", %{"sort" => sort}, socket) do
+    socket = handle_sort(socket, sort)
+
+    {:noreply,
+     patch_params(socket, %{
+       sort: socket.assigns.current_sort,
+       limit: socket.assigns.current_limit
+     })}
+  end
+
+  @impl true
+  def handle_event("page:prev", _params, socket) do
+    socket = handle_prev_page(socket)
+
+    {:noreply,
+     patch_params(socket, %{
+       sort: socket.assigns.current_sort,
+       page: socket.assigns.current_page,
+       limit: socket.assigns.current_limit
+     })}
+  end
+
+  @impl true
+  def handle_event("page:next", _params, socket) do
+    socket = handle_next_page(socket)
+
+    {:noreply,
+     patch_params(socket, %{
+       sort: socket.assigns.current_sort,
+       page: socket.assigns.current_page,
+       limit: socket.assigns.current_limit
+     })}
+  end
+
+  @impl true
+  def handle_event("page:change", %{"limit" => limit}, socket) do
+    {:noreply,
+     patch_params(socket, %{
+       sort: socket.assigns.current_sort,
+       page: 1,
+       limit: String.to_integer(limit)
+     })}
+  end
+
+  @impl true
+  def handle_event("select", %{"id" => id}, socket) do
+    old_selected = socket.assigns.current_selected
+    new_selected = Record.get_by_id!(id)
+
+    if old_selected == new_selected do
+      {:noreply, unselect_current_selected(socket)}
+    else
+      socket = assign(socket, :current_selected, new_selected)
+      new_selected = Map.put(new_selected, :selected, true)
+
+      if old_selected do
+        old_selected = Map.put(old_selected, :selected, false)
+
+        socket =
+          socket
+          |> stream_insert(:records, old_selected)
+          |> stream_insert(:records, new_selected)
+
+        {:noreply, socket}
+      else
+        {:noreply, stream_insert(socket, :records, new_selected)}
+      end
+    end
+  end
+
+  defp patch_params(socket, params) do
+    params = Map.reject(params, &(elem(&1, 1) in ["", nil]))
+    push_patch(socket, to: ~p"/records?#{params}", replace: true)
+  end
+
+  defp unselect_current_selected(socket) do
+    selected = socket.assigns.current_selected
+
+    if selected do
+      selected = Map.put(selected, :selected, false)
+
+      socket
+      |> assign(:current_selected, nil)
+      |> stream_insert(:records, selected)
+    else
+      socket
+    end
   end
 end

@@ -14,7 +14,8 @@ defmodule DataAggregator.RecordsTest do
 
     test "read!/0 returns all records" do
       record = record_fixture()
-      assert Record.read!() == [record]
+      page = Record.read!()
+      assert page.results == [record]
     end
 
     test "get_by_id!/1 returns the record with given id" do

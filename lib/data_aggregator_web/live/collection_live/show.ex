@@ -44,16 +44,14 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
   def render(assigns) do
     ~H"""
     <main>
-      <.header class="sticky top-16">
+      <.header class="top-16 sticky">
         <%= @collection.name %>
 
         <:actions>
-          <.link navigate={~p"/collections/#{@collection}/import"} class="focus-visible:outline-none">
-            <.button class="inline-flex">
-              <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-              <span class="sm:inline-block hidden"><%= ~t"Import File"m %></span>
-            </.button>
-          </.link>
+          <.styled_link patch={~p"/collections/#{@collection}/import"} id="collection-modal__button">
+            <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
+            <span class="sm:inline-block hidden"><%= ~t"Import File"m %></span>
+          </.styled_link>
         </:actions>
       </.header>
 
@@ -63,6 +61,10 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
           <:col :let={{_, type}} label="Type"><%= type %></:col>
         </.table>
       </div>
+
+      <.back navigate={~p"/collections"}>
+        <%= ~t"Back"m %>
+      </.back>
 
       <.modal
         :if={@live_action == :import}

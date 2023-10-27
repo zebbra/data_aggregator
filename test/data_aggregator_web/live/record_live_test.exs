@@ -86,6 +86,46 @@ defmodule DataAggregatorWeb.RecordLiveTest do
     end
   end
 
+  describe "Preview" do
+    setup [:create_record]
+
+    test "displays preview within sidebar", %{conn: conn, record: record} do
+      {:ok, show_live, _html} = live(conn, ~p"/records")
+
+      assert show_live
+             |> element("tbody > tr > td", record.scientificName)
+             |> render_click() =~
+               record.scientificName
+    end
+
+    test "updates record within modal", %{conn: conn, record: record} do
+      {:ok, show_live, _html} = live(conn, ~p"/records")
+
+      assert show_live
+             |> element("tbody > tr > td", record.scientificName)
+             |> render_click() =~
+               "Edit Record"
+
+      assert show_live |> element("#record-modal-edit__button") |> render_click() =~
+               "Edit Record"
+
+      assert_patch(show_live, ~p"/records/#{record}/edit")
+
+      assert show_live
+             |> form("#record-form", record: @invalid_attrs)
+             |> render_change() =~ "is required"
+
+      assert show_live
+             |> form("#record-form", record: @update_attrs)
+             |> render_submit()
+
+      assert_patch(show_live, ~p"/records")
+
+      html = render(show_live)
+      assert html =~ "Record updated successfully"
+    end
+  end
+
   describe "Show" do
     setup [:create_record]
 
@@ -111,7 +151,7 @@ defmodule DataAggregatorWeb.RecordLiveTest do
              |> form("#record-form", record: @update_attrs)
              |> render_submit()
 
-      assert_patch(show_live, ~p"/records")
+      assert_patch(show_live, ~p"/records/#{record}")
 
       html = render(show_live)
       assert html =~ "Record updated successfully"
