@@ -10,7 +10,7 @@ checkout the documentation on [`confluence`](https://infofauna-support.atlassian
 
 contribute by submitting a [`PR`](https://github.com/zebbra/data_aggregator)
 
-checkout the [`data model`](https://dbdiagram.io/d/data-aggregator-generated-from-code-653795c6ffbf5169f0554c4f)
+checkout the current [`data model`](https://dbdiagram.io/d/data-aggregator-basic-65393c35ffbf5169f071ed3f)
 
 checkout our notes on [`miro`](https://miro.com/app/board/uXjVMBLi0fk=/)
 
@@ -44,6 +44,7 @@ for windows or linux use your favourite package manager
 
 ### Start coding
 
+- Run `mix deps.get && mix compile --force && mix git_hooks.install` to work with the project specific git hooks
 - Run `docker compose up` in one of your terminals, to start services around our application
 - Run `mix setup` to install and setup dependencies
 - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`

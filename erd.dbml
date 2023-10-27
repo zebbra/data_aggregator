@@ -1,12 +1,54 @@
+Table records {
+  id uuid [pk]
+  import_data jsonb
+  meta_data jsonb
+  materialEntityID varchar
+  scientificName varchar
+  prs_contact_point varchar
+  prs_first_name varchar
+  prs_last_name varchar
+  prs_date_of_birth date
+  eve_day varchar
+  eve_event_date date
+  eve_month varchar
+  eve_year varchar
+  idf_date_identified date
+  idf_identified_by varchar
+  ref_bibliographic_citation varchar
+  ref_creator varchar
+  ref_date date
+  ref_rights varchar
+  ref_source varchar
+  ref_title varchar
+  ref_relationship_established_date date
+  rrp_relationship_of_resource varchar
+  rrp_relationship_of_resource_id varchar
+  tax_family varchar
+  tax_scientific_name_authorship varchar
+  tax_order varchar
+  loc_continent varchar
+  loc_country varchar
+  occ_recorded_by varchar
+  inserted_at timestamp
+  updated_at timestamp
+  collection_id uuid
+}
+
+Table record_images {
+  id uuid [pk]
+  size integer
+  inserted_at timestamp
+  updated_at timestamp
+  attachment_id uuid
+  record_id uuid
+}
+
 Table collections {
   id uuid [pk]
   name varchar
   code varchar
   description varchar
-  owner varchar
-  collection_type varchar
-  digitization_status varchar
-  collection_size integer
+  mapping jsonb
   inserted_at timestamp
   updated_at timestamp
   institution_id uuid
@@ -14,26 +56,17 @@ Table collections {
 
 Table import_files {
   id uuid [pk]
-  url varchar
-  meta_data jsonb
+  amount_of_rows integer
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid
-}
-
-Table import_records {
-  id uuid [pk]
-  unique_qualifier varchar
-  import_data jsonb
-  meta_data jsonb
-  inserted_at timestamp
-  updated_at timestamp
-  collection_id uuid
+  attachment_id uuid
 }
 
 Table institutions {
   id uuid [pk]
   name varchar
+  code varchar
   address varchar
   zip_code varchar
   city varchar
@@ -45,13 +78,12 @@ Table institutions {
   updated_at timestamp
 }
 
-Table static_assets {
+Table attachments {
   id uuid [pk]
   url varchar
   meta_data jsonb
   inserted_at timestamp
   updated_at timestamp
-  import_record_id uuid
 }
 
 Table attribute_resolving_strategies {
@@ -59,9 +91,9 @@ Table attribute_resolving_strategies {
   do_not_encode boolean
   inserted_at timestamp
   updated_at timestamp
-  catalog_id uuid
-  dwc_attribute_id uuid
   collection_id uuid
+  dwc_attribute_id uuid
+  catalog_id uuid
 }
 
 Table catalogs {
@@ -82,63 +114,18 @@ Table dwc_attributes {
   default_catalog_id uuid
 }
 
-Table records {
-  id uuid [pk]
-  unique_qualifier varchar
-  meta_data jsonb
-  inserted_at timestamp
-  updated_at timestamp
-  import_record_id uuid
-}
-
-Table annotations {
-  id uuid [pk]
-  comment varchar
-  value_suggestion varchar
-  user varchar
-  dwc_attribute_id uuid
-  inserted_at timestamp
-  updated_at timestamp
-  record_id uuid
-}
-
-Table change_events {
-  id uuid [pk]
-  category varchar
-  dwc_attribute varchar
-  value varchar
-  previous_value varchar
-  inserted_at timestamp
-  updated_at timestamp
-  run_id uuid
-  import_record_id uuid
-  record_id uuid
-  catalog_id uuid
-}
-
-Table runs {
-  id uuid [pk]
-  inserted_at timestamp
-  updated_at timestamp
-}
-
 Table schema_migrations {
   version integer
   inserted_at timestamp
 }
 
+Ref: attachments.id < import_files.attachment_id
+Ref: attachments.id < record_images.attachment_id
 Ref: catalogs.id < attribute_resolving_strategies.catalog_id
-Ref: catalogs.id < change_events.catalog_id
 Ref: catalogs.id < dwc_attributes.default_catalog_id
 Ref: collections.id < attribute_resolving_strategies.collection_id
 Ref: collections.id < import_files.collection_id
-Ref: collections.id < import_records.collection_id
-Ref: dwc_attributes.id < annotations.dwc_attribute_id
+Ref: collections.id < records.collection_id
 Ref: dwc_attributes.id < attribute_resolving_strategies.dwc_attribute_id
-Ref: import_records.id < change_events.import_record_id
-Ref: import_records.id - records.import_record_id
-Ref: import_records.id < static_assets.import_record_id
 Ref: institutions.id < collections.institution_id
-Ref: records.id < annotations.record_id
-Ref: records.id < change_events.record_id
-Ref: runs.id < change_events.run_id
+Ref: records.id < record_images.record_id

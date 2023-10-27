@@ -160,7 +160,7 @@ defmodule DataAggregatorWeb.QueryBuilder do
 
     socket
     |> assign(:page_meta, page)
-    |> stream(:import_records, results, reset: true, at: 0, limit: 0)
+    |> stream(:records, results, reset: true, at: 0, limit: 0)
   end
 
   # Helper function to check if a stream exists

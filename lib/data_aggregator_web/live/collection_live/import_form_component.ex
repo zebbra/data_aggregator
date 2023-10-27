@@ -2,8 +2,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form
-  alias DataAggregator.Imports.Collection
-  alias DataAggregator.Imports.ImportFile
+  alias DataAggregator.Platform.Collection
+  alias DataAggregator.Platform.ImportFile
 
   @impl true
   def update(assigns, socket) do
@@ -35,37 +35,37 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
         <%!-- use phx-drop-target with the upload ref to enable file drag and drop --%>
         <section
           phx-drop-target={@uploads.file.ref}
-          class="mt-2 flex flex-col rounded-md border border-dashed border-gray-900/25 dark:border-white/25 px-6 py-10"
+          class="border-gray-900/25 dark:border-white/25 flex flex-col px-6 py-10 mt-2 border border-dashed rounded-md"
         >
           <div class="flex justify-center">
             <div class="text-center">
               <.icon
                 name="hero-photo-mini"
-                class="mx-auto h-12 w-12 text-gray-300 dark:text-gray-500"
+                class="dark:text-gray-500 w-12 h-12 mx-auto text-gray-300"
               />
-              <div class="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400">
+              <div class="dark:text-gray-400 flex mt-4 text-sm leading-6 text-gray-600">
                 <label
                   for={@uploads.file.ref}
-                  class="relative cursor-pointer rounded-md bg-white dark:bg-gray-900 font-semibold text-indigo-600 dark:text-white focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 dark:focus-within:ring-offset-gray-900 hover:text-indigo-500"
+                  class="dark:bg-gray-900 dark:text-white focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 dark:focus-within:ring-offset-gray-900 hover:text-indigo-500 relative font-semibold text-indigo-600 bg-white rounded-md cursor-pointer"
                 >
                   <span><%= ~t"Upload a file"m %></span>
                   <.live_file_input upload={@uploads.file} class="sr-only" />
                 </label>
                 <p class="pl-1"><%= ~t"or drag and drop"m %></p>
               </div>
-              <p class="text-xs leading-5 text-gray-600 dark:text-gray-400">CSV, JPEG, JPG or PNG</p>
+              <p class="dark:text-gray-400 text-xs leading-5 text-gray-600">CSV, JPEG, JPG or PNG</p>
             </div>
           </div>
 
-          <div class="mt-4 space-y-2 text-gray-600 dark:text-white">
+          <div class="dark:text-white mt-4 space-y-2 text-gray-600">
             <%!-- render each file entry --%>
             <article :for={entry <- @uploads.file.entries}>
               <span class="text-sm"><%= entry.client_name %></span>
 
               <div class="flex space-x-4">
-                <div class="w-full bg-gray-200 rounded-full h-2 mt-2 dark:bg-gray-700">
+                <div class="dark:bg-gray-700 w-full h-2 mt-2 bg-gray-200 rounded-full">
                   <div
-                    class="bg-indigo-600 h-2 rounded-full dark:bg-indigo-500"
+                    class="dark:bg-indigo-500 h-2 bg-indigo-600 rounded-full"
                     style={"width: #{entry.progress}%;"}
                   />
                 </div>
@@ -100,7 +100,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
           </.button>
           <.button
             variant="secondary"
-            class="sm:mt-0 sm:w-auto inline-flex justify-center mt-3 w-full"
+            class="sm:mt-0 sm:w-auto inline-flex justify-center w-full mt-3"
             phx-click={JS.exec("data-cancel", to: "#collection-modal")}
             phx-disable-with
           >
@@ -120,7 +120,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
     <div class="sm:flex sm:items-start">
       <div
         :if={@icon}
-        class="sm:mx-0 sm:h-10 sm:w-10 flex flex-shrink-0 justify-center items-center mx-auto w-12 h-12 bg-indigo-100 rounded-full"
+        class="sm:mx-0 sm:h-10 sm:w-10 flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-indigo-100 rounded-full"
       >
         <.icon name={@icon} class="w-6 h-6 text-indigo-600" />
       </div>
@@ -148,7 +148,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
 
   defp build_form(%{action: :new}) do
     Collection
-    |> Form.for_create(:create, api: DataAggregator.Imports, as: "collection")
+    |> Form.for_create(:create, api: DataAggregator.Platform, as: "collection")
     |> to_form()
   end
 

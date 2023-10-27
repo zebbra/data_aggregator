@@ -27,10 +27,10 @@ config :mime, :extensions, %{
 
 config :data_aggregator,
   ash_apis: [
-    DataAggregator.Imports,
-    DataAggregator.TaxonomyData,
-    DataAggregator.TaxonomyCatalog,
-    DataAggregator.Transition
+    DataAggregator.Platform,
+    DataAggregator.Data,
+    DataAggregator.Taxonomy,
+    DataAggregator.Storage
   ]
 
 config :data_aggregator, :ash_uuid,

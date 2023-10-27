@@ -57,23 +57,23 @@
           </li>
           <li>
             <.link
-              navigate={~p"/import_records"}
+              navigate={~p"/records"}
               class={[
                 "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold",
-                if(@active_link == :import_records,
+                if(@active_link == :records,
                   do: "bg-gray-50 dark:bg-gray-800 text-indigo-600 dark:text-white",
                   else:
                     "text-gray-700 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                 )
               ]}
-              aria-current={if(@active_link == :import_records, do: "page", else: nil)}
+              aria-current={if(@active_link == :records, do: "page", else: nil)}
             >
               <.icon
                 name="hero-arrow-down-tray"
                 class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
               />
               <span class="truncate">
-                <%= ~t"Import Records"m %>
+                <%= ~t"Records"m %>
               </span>
             </.link>
           </li>

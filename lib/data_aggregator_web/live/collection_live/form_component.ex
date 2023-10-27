@@ -2,7 +2,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form
-  alias DataAggregator.Imports.Collection
+  alias DataAggregator.Platform.Collection
 
   @impl true
   def update(assigns, socket) do
@@ -19,20 +19,20 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
       <div class="sm:flex sm:items-start">
         <div
           :if={assigns[:icon]}
-          class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-indigo-100 rounded-full sm:mx-0 sm:h-10 sm:w-10"
+          class="sm:mx-0 sm:h-10 sm:w-10 flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-indigo-100 rounded-full"
         >
           <.icon name={@icon} class="w-6 h-6 text-indigo-600" />
         </div>
         <div class={["mt-3 text-center sm:mt-0 sm:text-left", assigns[:icon] && "sm:ml-4"]}>
           <.dialog_title
             id="collection-modal__title"
-            class="text-base font-semibold leading-6 text-gray-900 dark:text-white"
+            class="dark:text-white text-base font-semibold leading-6 text-gray-900"
           >
             <%= @title %>
           </.dialog_title>
           <.dialog_description
             id="collection-modal__description"
-            class="mt-2 text-sm text-gray-500 dark:text-gray-400"
+            class="dark:text-gray-400 mt-2 text-sm text-gray-500"
           >
             <%= ~t"Use this form to manage collections in your database."m %>
           </.dialog_description>
@@ -51,14 +51,14 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         <:actions>
           <.button
             type="submit"
-            class="inline-flex justify-center w-full sm:ml-3 sm:w-auto"
+            class="sm:ml-3 sm:w-auto inline-flex justify-center w-full"
             phx-disable-with={~t"Saving..."m}
           >
             <%= ~t"Save Collection"m %>
           </.button>
           <.button
             variant="secondary"
-            class="inline-flex justify-center w-full mt-3 sm:mt-0 sm:w-auto"
+            class="sm:mt-0 sm:w-auto inline-flex justify-center w-full mt-3"
             phx-click={JS.exec("data-cancel", to: "#collection-modal")}
             phx-disable-with
           >
@@ -76,13 +76,13 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
 
   defp build_form(%{action: :new}) do
     Collection
-    |> Form.for_create(:create, api: DataAggregator.Imports, as: "collection")
+    |> Form.for_create(:create, api: DataAggregator.Platform, as: "collection")
     |> to_form()
   end
 
   defp build_form(%{action: :edit, collection: collection}) do
     collection
-    |> Form.for_update(:update, api: DataAggregator.Imports, as: "collection")
+    |> Form.for_update(:update, api: DataAggregator.Platform, as: "collection")
     |> to_form()
   end
 
