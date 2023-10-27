@@ -10,9 +10,35 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
   def up do
     create table(:records, primary_key: false) do
       add :id, :uuid, null: false, primary_key: true
-      add :unique_qualifier, :text, null: false
       add :import_data, :map
       add :meta_data, :map
+      add :materialEntityID, :text, null: false
+      add :scientificName, :text, null: false
+      add :prs_contact_point, :text
+      add :prs_first_name, :text
+      add :prs_last_name, :text
+      add :prs_date_of_birth, :date
+      add :eve_day, :text
+      add :eve_event_date, :date
+      add :eve_month, :text
+      add :eve_year, :text
+      add :idf_date_identified, :date
+      add :idf_identified_by, :text
+      add :ref_bibliographic_citation, :text
+      add :ref_creator, :text
+      add :ref_date, :date
+      add :ref_rights, :text
+      add :ref_source, :text
+      add :ref_title, :text
+      add :ref_relationship_established_date, :date
+      add :rrp_relationship_of_resource, :text
+      add :rrp_relationship_of_resource_id, :text
+      add :tax_family, :text
+      add :tax_scientific_name_authorship, :text
+      add :tax_order, :text
+      add :loc_continent, :text
+      add :loc_country, :text
+      add :occ_recorded_by, :text
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :collection_id, :uuid
@@ -30,6 +56,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
     create table(:institutions, primary_key: false) do
       add :id, :uuid, null: false, primary_key: true
       add :name, :text, null: false
+      add :code, :text
       add :address, :text
       add :zip_code, :text
       add :city, :text

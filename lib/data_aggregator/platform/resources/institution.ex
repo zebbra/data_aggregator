@@ -4,11 +4,14 @@ defmodule DataAggregator.Platform.Institution do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   attributes do
-    uuid_attribute :id, prefix: "inst"
+    uuid_attribute :id, prefix: "ins"
 
     attribute :name, :string do
       allow_nil? false
     end
+
+    # an iternationally valid code to identify the collection
+    attribute :code, :string
 
     attribute :address, :string
 

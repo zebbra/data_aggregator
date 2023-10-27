@@ -85,31 +85,31 @@ msgctxt "DataAggregatorWeb.Layouts"
 msgid "Search..."
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/form_component.ex:69
+#: lib/data_aggregator_web/live/record_live/form_component.ex:75
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.FormComponent"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/form_component.ex:107
+#: lib/data_aggregator_web/live/record_live/form_component.ex:113
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.FormComponent"
 msgid "Record created successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/form_component.ex:108
+#: lib/data_aggregator_web/live/record_live/form_component.ex:114
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.FormComponent"
 msgid "Record updated successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/form_component.ex:61
+#: lib/data_aggregator_web/live/record_live/form_component.ex:67
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.FormComponent"
 msgid "Save Record"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/form_component.ex:59
+#: lib/data_aggregator_web/live/record_live/form_component.ex:65
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.FormComponent"
 msgid "Saving..."
@@ -119,7 +119,7 @@ msgstr ""
 #: lib/data_aggregator_web/live/record_live/form_component.ex:52
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.FormComponent"
-msgid "Unique Qualifier"
+msgid "MaterialEntityID"
 msgstr ""
 
 #: lib/data_aggregator_web/live/record_live/form_component.ex:37
@@ -128,19 +128,19 @@ msgctxt "DataAggregatorWeb.RecordLive.FormComponent"
 msgid "Use this form to manage import records in your database."
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.html.heex:67
+#: lib/data_aggregator_web/live/record_live/index.html.heex:75
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.html.heex:69
+#: lib/data_aggregator_web/live/record_live/index.html.heex:77
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Delete"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.html.heex:61
+#: lib/data_aggregator_web/live/record_live/index.html.heex:69
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Edit"
@@ -158,8 +158,8 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Filter"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.html.heex:77
-#: lib/data_aggregator_web/live/record_live/index.html.heex:95
+#: lib/data_aggregator_web/live/record_live/index.html.heex:85
+#: lib/data_aggregator_web/live/record_live/index.html.heex:103
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Filters"
@@ -171,7 +171,7 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "ID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.html.heex:42
+#: lib/data_aggregator_web/live/record_live/index.html.heex:50
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Inserted At"
@@ -191,14 +191,14 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "New Record"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.html.heex:80
-#: lib/data_aggregator_web/live/record_live/index.html.heex:98
+#: lib/data_aggregator_web/live/record_live/index.html.heex:88
+#: lib/data_aggregator_web/live/record_live/index.html.heex:106
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Reset"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.html.heex:59
+#: lib/data_aggregator_web/live/record_live/index.html.heex:67
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Show"
@@ -213,16 +213,16 @@ msgstr ""
 #: lib/data_aggregator_web/live/record_live/index.html.heex:34
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
-msgid "Unique Qualifier"
+msgid "MaterialEntityID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.html.heex:50
+#: lib/data_aggregator_web/live/record_live/index.html.heex:58
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Updated At"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/show_component.ex:29
+#: lib/data_aggregator_web/live/record_live/show_component.ex:30
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.ShowComponent"
 msgid "Edit Record"
@@ -243,7 +243,7 @@ msgstr ""
 #: lib/data_aggregator_web/live/record_live/show_component.ex:19
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.ShowComponent"
-msgid "Unique Qualifier"
+msgid "MaterialEntityID"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/form_component.ex:65
@@ -478,4 +478,23 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "or drag and drop"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/form_component.ex:57
+#: lib/data_aggregator_web/live/record_live/form_component.ex:58
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.FormComponent"
+msgid "Scientific Name"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/index.html.heex:42
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Scientific Name"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/show_component.ex:20
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.ShowComponent"
+msgid "Scientific Name"
 msgstr ""

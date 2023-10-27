@@ -31,11 +31,19 @@
     </:col>
     <:col
       :let={{_id, record}}
-      label={~t"Unique Qualifier"m}
-      field="unique_qualifier"
-      sort={@sort_options[:unique_qualifier]}
+      label={~t"MaterialEntityID"m}
+      field="materialEntityID"
+      sort={@sort_options[:materialEntityID]}
     >
-      <%= record.unique_qualifier %>
+      <%= record.materialEntityID %>
+    </:col>
+    <:col
+      :let={{_id, record}}
+      label={~t"Scientific Name"m}
+      field="scientificName"
+      sort={@sort_options[:scientificName]}
+    >
+      <%= record.scientificName %>
     </:col>
     <:col
       :let={{_id, record}}

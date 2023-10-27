@@ -47,9 +47,15 @@ defmodule DataAggregatorWeb.RecordLive.FormComponent do
         phx-submit="save"
       >
         <.input
-          field={@form[:unique_qualifier]}
-          label={~t"Unique Qualifier"m}
-          placeholder={~t"Unique Qualifier"m}
+          field={@form[:materialEntityID]}
+          label={~t"MaterialEntityID"m}
+          placeholder={~t"MaterialEntityID"m}
+        />
+
+        <.input
+          field={@form[:scientificName]}
+          label={~t"Scientific Name"m}
+          placeholder={~t"Scientific Name"m}
         />
 
         <:actions>
