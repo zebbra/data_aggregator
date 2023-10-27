@@ -50,7 +50,7 @@ type StateDefinition = {
   activationTrigger: Ref<ActivationTrigger>;
 
   // State mutators
-  closeMenu(withDocumentClick?: boolean): void;
+  closeMenu(client?: boolean): void;
   openMenu(buttonRef?: Ref<HTMLButtonElement | null>): void;
   goToItem(focus: Focus, id?: string, trigger?: ActivationTrigger): void;
   search(value: string): void;
@@ -158,15 +158,21 @@ const Menu = {
       searchQuery,
       activeItemIndex,
       activationTrigger,
-      closeMenu: (withDocumentClick = true) => {
-        if (menuState.value === MenuStates.Closed) return;
-        if (withDocumentClick) {
+      closeMenu: (client = true) => {
+        if (menuState.value === MenuStates.Closed) {
+          return;
+        } else if (client) {
           this.liveSocket.execJS(this.el, this.el.getAttribute("phx-remove"));
         } else {
           handleActiveStateChange(items.value, activeItemIndex, null);
           menuState.value = MenuStates.Closed;
           activeItemIndex.value = null;
           searchQuery.value = "";
+
+          nextFrame(() => {
+            dom(buttonRef)?.setAttribute("aria-expanded", "false");
+            dom(buttonRef)?.removeAttribute("aria-controls");
+          });
         }
       },
       openMenu: (buttonRef?: Ref<HTMLButtonElement | null>) => {

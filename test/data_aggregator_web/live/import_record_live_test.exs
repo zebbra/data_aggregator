@@ -84,6 +84,46 @@ defmodule DataAggregatorWeb.ImportRecordLiveTest do
     end
   end
 
+  describe "Preview" do
+    setup [:create_import_record]
+
+    test "displays preview within sidebar", %{conn: conn, import_record: import_record} do
+      {:ok, show_live, _html} = live(conn, ~p"/import_records")
+
+      assert show_live
+             |> element("tbody > tr > td", import_record.unique_qualifier)
+             |> render_click() =~
+               import_record.unique_qualifier
+    end
+
+    test "updates import_record within modal", %{conn: conn, import_record: import_record} do
+      {:ok, show_live, _html} = live(conn, ~p"/import_records")
+
+      assert show_live
+             |> element("tbody > tr > td", import_record.unique_qualifier)
+             |> render_click() =~
+               "Edit Import Record"
+
+      assert show_live |> element("#import-record-modal-edit__button") |> render_click() =~
+               "Edit Import Record"
+
+      assert_patch(show_live, ~p"/import_records/#{import_record}/edit")
+
+      assert show_live
+             |> form("#import-record-form", import_record: @invalid_attrs)
+             |> render_change() =~ "is required"
+
+      assert show_live
+             |> form("#import-record-form", import_record: @update_attrs)
+             |> render_submit()
+
+      assert_patch(show_live, ~p"/import_records")
+
+      html = render(show_live)
+      assert html =~ "Import Record updated successfully"
+    end
+  end
+
   describe "Show" do
     setup [:create_import_record]
 
@@ -109,7 +149,7 @@ defmodule DataAggregatorWeb.ImportRecordLiveTest do
              |> form("#import-record-form", import_record: @update_attrs)
              |> render_submit()
 
-      assert_patch(show_live, ~p"/import_records")
+      assert_patch(show_live, ~p"/import_records/#{import_record}")
 
       html = render(show_live)
       assert html =~ "Import Record updated successfully"

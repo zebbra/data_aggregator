@@ -19,20 +19,20 @@ defmodule DataAggregatorWeb.ImportRecordLive.FormComponent do
       <div class="sm:flex sm:items-start">
         <div
           :if={assigns[:icon]}
-          class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10"
+          class="sm:mx-0 sm:h-10 sm:w-10 flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-indigo-100 rounded-full"
         >
-          <.icon name={@icon} class="h-6 w-6 text-indigo-600" />
+          <.icon name={@icon} class="w-6 h-6 text-indigo-600" />
         </div>
         <div class={["mt-3 text-center sm:mt-0 sm:text-left", assigns[:icon] && "sm:ml-4"]}>
           <.dialog_title
             id="import-record-modal__title"
-            class="text-gray-900 dark:text-white text-base font-semibold leading-6"
+            class="dark:text-white text-base font-semibold leading-6 text-gray-900"
           >
             <%= @title %>
           </.dialog_title>
           <.dialog_description
             id="import-record-modal__description"
-            class="text-gray-500 dark:text-gray-400 mt-2 text-sm"
+            class="dark:text-gray-400 mt-2 text-sm text-gray-500"
           >
             <%= ~t"Use this form to manage import records in your database."m %>
           </.dialog_description>
@@ -62,7 +62,7 @@ defmodule DataAggregatorWeb.ImportRecordLive.FormComponent do
           </.button>
           <.button
             variant="secondary"
-            class="mt-3 sm:mt-0 sm:w-auto inline-flex justify-center w-full"
+            class="sm:mt-0 sm:w-auto inline-flex justify-center w-full mt-3"
             phx-click={JS.exec("data-cancel", to: "#import-record-modal")}
             phx-disable-with
           >

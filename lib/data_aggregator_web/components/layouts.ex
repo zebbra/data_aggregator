@@ -9,7 +9,7 @@ defmodule DataAggregatorWeb.Layouts do
       <.menu id="locale-select">
         <.menu_button
           id="locale-select__button"
-          class="flex items-center relative rounded-full bg-white dark:bg-gray-900 p-1 text-gray-400 hover:text-gray-500 dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 dark:focus-visible:ring-white focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
+          class="dark:bg-gray-900 hover:text-gray-500 dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 dark:focus-visible:ring-white focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 relative flex items-center p-1 text-gray-400 bg-white rounded-full"
         >
           <span class="absolute -inset-1.5" />
           <.icon name="hero-globe-alt" class="w-6 h-6" />

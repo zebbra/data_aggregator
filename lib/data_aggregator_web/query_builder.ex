@@ -54,14 +54,19 @@ defmodule DataAggregatorWeb.QueryBuilder do
   def handle_sort(socket, sort) do
     %{current_sort: current_sort} = socket.assigns
 
-    case current_sort do
-      # toggle desc -> asc
-      "-" <> ^sort -> sort
-      # toggle asc -> desc
-      ^sort -> "-" <> sort
-      # default to desc for new sort
-      _ -> "-" <> sort
-    end
+    sort =
+      case current_sort do
+        # toggle desc -> asc
+        "-" <> ^sort -> sort
+        # toggle asc -> desc
+        ^sort -> "-" <> sort
+        # default to desc for new sort
+        _ -> "-" <> sort
+      end
+
+    socket
+    |> assign(:current_sort, sort)
+    |> assign(:current_selected, nil)
   end
 
   # Assign the current page from URL params to the socket
@@ -86,13 +91,21 @@ defmodule DataAggregatorWeb.QueryBuilder do
     assign(socket, :current_limit, limit)
   end
 
+  # Ensure the current selected record exists in the socket assigns
+  def assign_current_selected(socket) do
+    socket
+    |> assign(:current_selected, Map.get(socket.assigns, :current_selected, nil))
+  end
+
   # Extract pagination option from params on initial load
   def pagination_options(page, limit) when page > 0 and is_integer(page) do
     offset = (page - 1) * limit
     [count: true, offset: offset, limit: limit]
   end
 
-  def pagination_options(_, _default_limit), do: [count: true]
+  def pagination_options(_, limit) do
+    [count: true, limit: limit]
+  end
 
   # Extract from and to values from page_meta
   def paginate_page_meta(page_meta) do
@@ -110,24 +123,24 @@ defmodule DataAggregatorWeb.QueryBuilder do
 
   # Handle a previous page event from the client
   def handle_prev_page(socket) do
-    %{current_sort: current_sort, current_page: current_page} = socket.assigns
+    %{current_page: current_page} = socket.assigns
 
     prev_page = if is_nil(current_page) || current_page <= 1, do: 1, else: current_page - 1
 
     socket
-    |> assign(:current_sort, current_sort)
     |> assign(:current_page, prev_page)
+    |> assign(:current_selected, nil)
   end
 
   # Handle a next page event from the client
   def handle_next_page(socket) do
-    %{current_sort: current_sort, current_page: current_page} = socket.assigns
+    %{current_page: current_page} = socket.assigns
 
     next_page = if is_nil(current_page) || current_page <= 1, do: 2, else: current_page + 1
 
     socket
-    |> assign(:current_sort, current_sort)
     |> assign(:current_page, next_page)
+    |> assign(:current_selected, nil)
   end
 
   def stream_page(socket, page) do
@@ -135,6 +148,15 @@ defmodule DataAggregatorWeb.QueryBuilder do
     # if the stream does alredy exist. So we reverse the results in this case.
     results = if stream_exists?(socket), do: Enum.reverse(page.results), else: page.results
     page = Map.put(page, :results, [])
+
+    results =
+      Enum.map(results, fn result ->
+        Map.put(
+          result,
+          :selected,
+          socket.assigns.current_selected && result.id == socket.assigns.current_selected.id
+        )
+      end)
 
     socket
     |> assign(:page_meta, page)

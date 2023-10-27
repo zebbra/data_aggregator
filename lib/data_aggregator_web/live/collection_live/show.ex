@@ -48,12 +48,13 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
         <%= @collection.name %>
 
         <:actions>
-          <.link navigate={~p"/collections/#{@collection}/import"} class="focus-visible:outline-none">
-            <.button class="inline-flex">
-              <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-              <span class="sm:inline-block hidden"><%= ~t"Import File"m %></span>
-            </.button>
-          </.link>
+          <.styled_link
+            navigate={~p"/collections/#{@collection}/import"}
+            id="collection-modal__button"
+          >
+            <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
+            <span class="sm:inline-block hidden"><%= ~t"Import File"m %></span>
+          </.styled_link>
         </:actions>
       </.header>
 

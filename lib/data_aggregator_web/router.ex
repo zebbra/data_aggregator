@@ -50,8 +50,8 @@ defmodule DataAggregatorWeb.Router do
         live "/import_records", ImportRecordLive.Index, :index
         live "/import_records/new", ImportRecordLive.Index, :new
         live "/import_records/:id/edit", ImportRecordLive.Index, :edit
-        live "/import_records/:id", ImportRecordLive.Index, :show
-        live "/import_records/:id/show/edit", ImportRecordLive.Index, :edit
+        live "/import_records/:id", ImportRecordLive.Show, :show
+        live "/import_records/:id/show/edit", ImportRecordLive.Show, :edit
 
         live "/collections", CollectionLive.Index, :index
         live "/collections/new", CollectionLive.Index, :new

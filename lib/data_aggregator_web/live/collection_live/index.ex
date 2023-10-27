@@ -19,7 +19,6 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
       socket
       |> assign_current_sort(params)
       |> assign_current_path_params(params)
-      |> assign(:show_filters, false)
       |> stream(:collections, collections)
 
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}

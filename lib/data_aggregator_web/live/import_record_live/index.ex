@@ -4,6 +4,7 @@ defmodule DataAggregatorWeb.ImportRecordLive.Index do
   alias DataAggregator.Imports.ImportRecord
 
   import DataAggregatorWeb.QueryBuilder
+  import DataAggregatorWeb.ImportRecordLive.PreviewComponent
 
   @impl true
   def mount(_params, _session, socket) do
@@ -17,8 +18,8 @@ defmodule DataAggregatorWeb.ImportRecordLive.Index do
       |> assign_current_sort(params)
       |> assign_current_page(params)
       |> assign_current_limit(params, ImportRecord.default_limit())
+      |> assign_current_selected()
       |> assign_current_path_params(params)
-      |> assign(:show_filters, false)
       |> assign_import_records()
 
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
@@ -40,21 +41,17 @@ defmodule DataAggregatorWeb.ImportRecordLive.Index do
     stream_page(socket, page)
   end
 
-  defp apply_action(socket, :show, %{"id" => id}) do
-    socket
-    |> assign(:page_title, ~t"Show Import Record"m)
-    |> assign(:import_record, ImportRecord.get_by_id!(id))
-  end
-
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, ~t"Edit Import Record"m)
-    |> assign(:import_record, ImportRecord.get_by_id!(id))
+    |> assign(:current_selected, nil)
+    |> assign(:import_record, ImportRecord.get_by_id!(id) |> Map.put(:selected, false))
   end
 
   defp apply_action(socket, :new, _params) do
     socket
     |> assign(:page_title, ~t"New Import Record"m)
+    |> assign(:current_selected, nil)
     |> assign(:import_record, %ImportRecord{})
   end
 
@@ -69,7 +66,11 @@ defmodule DataAggregatorWeb.ImportRecordLive.Index do
         {DataAggregatorWeb.ImportRecordLive.FormComponent, {:saved, import_record}},
         socket
       ) do
-    {:noreply, stream_insert(socket, :import_records, import_record)}
+    socket =
+      socket
+      |> stream_insert(:import_records, import_record |> Map.put(:selected, false))
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -77,14 +78,26 @@ defmodule DataAggregatorWeb.ImportRecordLive.Index do
     import_record = ImportRecord.get_by_id!(id)
     :ok = ImportRecord.destroy(import_record)
 
+    %{current_selected: current_selected} = socket.assigns
+
+    new_selected =
+      if current_selected && current_selected.id == id, do: nil, else: current_selected
+
+    socket =
+      socket
+      |> assign(:current_selected, new_selected)
+      |> stream_delete(:import_records, import_record)
+
     {:noreply, stream_delete(socket, :import_records, import_record)}
   end
 
   @impl true
   def handle_event("sort:select", %{"sort" => sort}, socket) do
+    socket = handle_sort(socket, sort)
+
     {:noreply,
      patch_params(socket, %{
-       "sort" => handle_sort(socket, sort),
+       sort: socket.assigns.current_sort,
        limit: socket.assigns.current_limit
      })}
   end
@@ -124,12 +137,47 @@ defmodule DataAggregatorWeb.ImportRecordLive.Index do
   end
 
   @impl true
-  def handle_event("toggle-filters", _params, socket) do
-    {:noreply, assign(socket, :show_filters, !socket.assigns.show_filters)}
+  def handle_event("select", %{"id" => id}, socket) do
+    old_selected = socket.assigns.current_selected
+    new_selected = ImportRecord.get_by_id!(id)
+
+    if old_selected == new_selected do
+      {:noreply, unselect_current_selected(socket)}
+    else
+      socket = assign(socket, :current_selected, new_selected)
+      new_selected = Map.put(new_selected, :selected, true)
+
+      if old_selected do
+        old_selected = Map.put(old_selected, :selected, false)
+
+        socket =
+          socket
+          |> stream_insert(:import_records, old_selected)
+          |> stream_insert(:import_records, new_selected)
+
+        {:noreply, socket}
+      else
+        {:noreply, stream_insert(socket, :import_records, new_selected)}
+      end
+    end
   end
 
   defp patch_params(socket, params) do
     params = Map.reject(params, &(elem(&1, 1) in ["", nil]))
     push_patch(socket, to: ~p"/import_records?#{params}", replace: true)
+  end
+
+  defp unselect_current_selected(socket) do
+    selected = socket.assigns.current_selected
+
+    if selected do
+      selected = Map.put(selected, :selected, false)
+
+      socket
+      |> assign(:current_selected, nil)
+      |> stream_insert(:import_records, selected)
+    else
+      socket
+    end
   end
 end

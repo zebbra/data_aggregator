@@ -1,21 +1,11 @@
-<main class="2xl:pr-96">
+<main>
   <.header class="sticky top-16">
     <%= ~t"Listing Collections"m %>
     <:actions>
-      <.button
-        phx-click="toggle-filters"
-        id="collection-filters__button"
-        class="2xl:hidden inline-flex"
-      >
-        <.icon name="hero-funnel-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-        <span class="sm:inline-block hidden"><%= ~t"Filter"m %></span>
-      </.button>
-      <.link patch={~p"/collections/new"} class="focus-visible:outline-none">
-        <.button class="inline-flex" id="collection-modal__button">
-          <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-          <span class="sm:inline-block hidden"><%= ~t"New Collection"m %></span>
-        </.button>
-      </.link>
+      <.styled_link patch={~p"/collections/new"} id="collection-modal__button">
+        <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
+        <span class="sm:inline-block hidden"><%= ~t"New Collection"m %></span>
+      </.styled_link>
     </:actions>
   </.header>
 
@@ -56,49 +46,6 @@
     </:action>
   </.table>
 </main>
-
-<aside class="2xl:block dark:bg-black/10 bg-gray-100/30 2xl:fixed 2xl:bottom-0 2xl:right-0 2xl:top-16 2xl:w-96 2xl:overflow-y-auto 2xl:border-l 2xl:border-gray-200 dark:2xl:border-white/5 hidden">
-  <.header class="sticky top-0">
-    <%= ~t"Filters"m %>
-    <:actions>
-      <a href="#" class="dark:text-indigo-400 text-sm font-semibold leading-6 text-indigo-600">
-        <%= ~t"Reset"m %>
-      </a>
-    </:actions>
-  </.header>
-</aside>
-
-<.slideover
-  :if={@show_filters}
-  id="collection-filters"
-  resize_listener
-  on_cancel={JS.push("toggle-filters")}
->
-  <.sidebar>
-    <:header>
-      <.header id="collection-filters" class="sticky top-0">
-        <%= ~t"Filters"m %>
-        <:actions>
-          <a href="#" class="dark:text-indigo-400 text-sm font-semibold leading-6 text-indigo-600">
-            <%= ~t"Reset"m %>
-          </a>
-        </:actions>
-      </.header>
-    </:header>
-  </.sidebar>
-</.slideover>
-
-<.slideover
-  :if={@live_action in [:show]}
-  id="collection-slideover"
-  on_cancel={JS.patch(~p"/collections")}
->
-  <.live_component
-    module={DataAggregatorWeb.CollectionLive.ShowComponent}
-    id={@collection.id}
-    collection={@collection}
-  />
-</.slideover>
 
 <.modal
   :if={@live_action in [:new, :edit]}

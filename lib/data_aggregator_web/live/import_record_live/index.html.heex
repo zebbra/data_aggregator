@@ -1,18 +1,9 @@
-<main class="2xl:pr-96">
+<main class={@current_selected && "xl:pr-96"}>
   <.header class="top-16 sticky">
     <%= ~t"Listing Import Records"m %>
     <:actions>
-      <.button
-        phx-click="toggle-filters"
-        id="import-record-filters__button"
-        class="2xl:hidden inline-flex"
-      >
-        <.icon name="hero-funnel-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
-        <span class="sm:inline-block hidden"><%= ~t"Filter"m %></span>
-      </.button>
       <.styled_link
         patch={~p"/import_records/new?#{@current_path_params}"}
-        class="inline-flex"
         id="import-record-modal__button"
       >
         <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
@@ -26,13 +17,18 @@
     rows={@streams.import_records}
     row_click={
       fn {_id, import_record} ->
-        JS.patch(~p"/import_records/#{import_record}?#{@current_path_params}")
+        JS.push("select", value: %{id: import_record.id})
       end
     }
     sort={@current_sort}
   >
     <:col :let={{_id, import_record}} label={~t"ID"m} field="id" sort>
-      <%= import_record.id %>
+      <.styled_link
+        patch={~p"/import_records/#{import_record}?#{@current_path_params}"}
+        variant="table"
+      >
+        <%= import_record.id %>
+      </.styled_link>
     </:col>
     <:col :let={{_id, import_record}} label={~t"Unique Qualifier"m} field="unique_qualifier" sort>
       <%= import_record.unique_qualifier %>
@@ -78,49 +74,12 @@
   <.pagination page_meta={@page_meta} />
 </main>
 
-<aside class="2xl:block dark:bg-black/10 bg-gray-100/30 2xl:fixed 2xl:bottom-0 2xl:right-0 2xl:top-16 2xl:w-96 2xl:overflow-y-auto 2xl:border-l 2xl:border-gray-200 dark:2xl:border-white/5 hidden">
-  <.header class="sticky top-0">
-    <%= ~t"Filters"m %>
-    <:actions>
-      <a href="#" class="dark:text-indigo-400 text-sm font-semibold leading-6 text-indigo-600">
-        <%= ~t"Reset"m %>
-      </a>
-    </:actions>
-  </.header>
-</aside>
-
-<.slideover
-  :if={@show_filters}
-  id="import-record-filters"
-  resize_listener
-  on_cancel={JS.push("toggle-filters")}
->
-  <.sidebar>
-    <:header>
-      <.header id="import-record-filters" class="sticky top-0">
-        <%= ~t"Filters"m %>
-        <:actions>
-          <a href="#" class="dark:text-indigo-400 text-sm font-semibold leading-6 text-indigo-600">
-            <%= ~t"Reset"m %>
-          </a>
-        </:actions>
-      </.header>
-    </:header>
-  </.sidebar>
-</.slideover>
-
-<.slideover
-  :if={@live_action in [:show]}
-  id="import-record-slideover"
-  on_cancel={JS.patch(~p"/import_records?#{@current_path_params}")}
->
-  <.live_component
-    module={DataAggregatorWeb.ImportRecordLive.ShowComponent}
-    id={@import_record.id}
-    import_record={@import_record}
-    current_path_params={@current_path_params}
-  />
-</.slideover>
+<.preview
+  :if={@current_selected}
+  import_record={@current_selected}
+  current_path_params={@current_path_params}
+  live_action={@live_action}
+/>
 
 <.modal
   :if={@live_action in [:new, :edit]}

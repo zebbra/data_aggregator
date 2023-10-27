@@ -188,7 +188,7 @@ defmodule DataAggregatorWeb.HeadlessComponents do
 
   attr :class, :string,
     default:
-      "group bg-white aria-selected:bg-gray-100 focus:outline-none aria-selected:text-gray-900 flex justify-between cursor-pointer items-center px-4 py-2 text-sm text-gray-700"
+      "group bg-white aria-selected:bg-gray-100 focus:outline-none aria-selected:text-gray-900 flex justify-between cursor-pointer items-center px-4 py-2 text-sm text-gray-700 w-full"
 
   attr :rest, :global, include: ~w(navigate patch href replace method csrf_token disabled)
   attr :as, :string, default: nil
@@ -268,7 +268,7 @@ defmodule DataAggregatorWeb.HeadlessComponents do
         <div class="sm:items-center sm:p-0 flex items-end justify-center min-h-full p-4 text-center">
           <.dialog_panel
             id={@id <> "__panel"}
-            class="sm:my-8 sm:w-full sm:max-w-lg sm:p-6 relative px-4 pt-5 pb-4 overflow-hidden text-left bg-white dark:bg-gray-900 rounded-lg shadow-xl dark:border dark:border-white/10"
+            class="sm:my-8 sm:w-full sm:max-w-lg sm:p-6 dark:bg-gray-900 dark:border dark:border-white/10 relative px-4 pt-5 pb-4 overflow-hidden text-left bg-white rounded-lg shadow-xl"
           >
             <%= render_slot(@inner_block) %>
 
@@ -317,7 +317,7 @@ defmodule DataAggregatorWeb.HeadlessComponents do
               <button
                 phx-click={JS.exec("data-cancel", to: "##{@id}")}
                 type="button"
-                class="hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-gray-400 bg-white dark:bg-gray-900 rounded-md"
+                class="hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-gray-900 text-gray-400 bg-white rounded-md"
                 aria-label={gettext("close")}
               >
                 <.icon name="hero-x-mark" class="w-6 h-6" />
@@ -334,13 +334,17 @@ defmodule DataAggregatorWeb.HeadlessComponents do
 
   attr :id, :string, required: true
   attr :as, :string, default: "div"
-  attr :show, :boolean, default: true
+  attr :show, :boolean, default: true, doc: "set to false if you want to use breakpoints"
   attr :class, :string, default: "hidden relative z-50"
   attr :width, :string, default: "max-w-md"
   attr :role, :string, default: "dialog"
   attr :backdrop, :boolean, default: true
   attr :close_button, :boolean, default: true
-  attr :resize_listener, :boolean, default: false
+
+  attr :breakpoint, :string,
+    default: nil,
+    doc: "the breakpoint at which the slideover becomes visible / hidden"
+
   attr :on_cancel, JS, default: %JS{}
   attr :on_confirm, JS, default: %JS{}
 
@@ -371,7 +375,7 @@ defmodule DataAggregatorWeb.HeadlessComponents do
       on_cancel={@on_cancel}
       on_confirm={@on_confirm}
       display="block"
-      resize_listener={@resize_listener}
+      breakpoint={@breakpoint}
       show_panel_transition={@show_panel_transition}
       hide_panel_transition={@hide_panel_transition}
       show_backdrop_transition={@show_backdrop_transition}
@@ -397,7 +401,7 @@ defmodule DataAggregatorWeb.HeadlessComponents do
                   phx-click={JS.exec("data-cancel", to: "##{@id}")}
                   id={"#{@id}__close"}
                   type="button"
-                  class="hidden hover:text-white focus:outline-none focus:ring-2 focus:ring-white relative text-gray-300 rounded-md"
+                  class="hover:text-white focus:outline-none focus:ring-2 focus:ring-white relative hidden text-gray-300 rounded-md"
                   aria-label={gettext("close")}
                 >
                   <span class="absolute -inset-2.5" />
@@ -452,7 +456,7 @@ defmodule DataAggregatorWeb.HeadlessComponents do
       on_cancel={@on_cancel}
       on_confirm={@on_confirm}
       display="flex"
-      resize_listener
+      breakpoint="lg:hidden"
       show_panel_transition={@show_panel_transition}
       hide_panel_transition={@hide_panel_transition}
       show_backdrop_transition={@show_backdrop_transition}
