@@ -34,7 +34,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
             id="collection-modal__description"
             class="mt-2 text-sm text-gray-500 dark:text-gray-400"
           >
-            <%= ~t"Use this form to manage import records in your database."m %>
+            <%= ~t"Use this form to manage collections in your database."m %>
           </.dialog_description>
         </div>
       </div>

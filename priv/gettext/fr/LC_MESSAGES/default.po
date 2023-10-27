@@ -283,34 +283,22 @@ msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Saving..."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:37
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
-msgid "Use this form to manage import records in your database."
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:77
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:107
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:69
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:99
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Save Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:67
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:97
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Saving..."
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:108
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
-msgid "Use this form to manage import records in your database."
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/index.html.heex:60
@@ -466,6 +454,30 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "scnat"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:37
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Use this form to manage collections in your database."
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:138
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
+msgid "Use this form to manage collections in your database."
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:51
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
+msgid "Upload a file"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:54
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
+msgid "or drag and drop"
 msgstr ""
 
 #: lib/data_aggregator_web/live/record_live/form_component.ex:57
