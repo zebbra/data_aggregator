@@ -14,7 +14,7 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "name",
+      "source": "url",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -23,28 +23,8 @@
     {
       "default": "nil",
       "size": null,
-      "type": "text",
-      "source": "code",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "text",
-      "source": "description",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
       "type": "map",
-      "source": "mapping",
+      "source": "meta_data",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -69,43 +49,17 @@
       "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "institution_id",
-      "references": {
-        "name": "collections_institution_id_fkey",
-        "table": "institutions",
-        "schema": "public",
-        "multitenancy": {
-          "global": null,
-          "strategy": null,
-          "attribute": null
-        },
-        "primary_key?": true,
-        "on_delete": null,
-        "destination_attribute": "id",
-        "deferrable": false,
-        "on_update": null,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null
-      },
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
     }
   ],
-  "table": "collections",
-  "hash": "43DF06CB2CE1B4FDCCD930742A01C4DA983FFE094ED7A057E7EB71F3D9D88A4D",
+  "table": "attachments",
+  "hash": "C625438871CC6CECE6E34D5DA45BACAA91AE0CEFB81A3BA798728756A7380AE2",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,
   "multitenancy": {
     "global": null,
-    "strategy": null,
-    "attribute": null
+    "attribute": null,
+    "strategy": null
   },
   "base_filter": null,
   "check_constraints": [],

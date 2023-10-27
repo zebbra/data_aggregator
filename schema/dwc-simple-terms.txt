@@ -145,14 +145,14 @@ identificationReferences string
 identificationVerificationStatus string
 identificationRemarks string
 taxonID string
-scientificNameID string
+tax_scientific_nameID string
 acceptedNameUsageID string
 parentNameUsageID string
 originalNameUsageID string
 nameAccordingToID string
 namePublishedInID string
 taxonConceptID string
-scientificName string
+tax_scientific_name string
 acceptedNameUsage string
 parentNameUsage string
 originalNameUsage string
@@ -178,7 +178,7 @@ infraspecificEpithet string
 cultivarEpithet string
 taxonRank string
 verbatimTaxonRank string
-scientificNameAuthorship string
+tax_scientific_nameAuthorship string
 vernacularName string
 nomenclaturalCode string
 taxonomicStatus string

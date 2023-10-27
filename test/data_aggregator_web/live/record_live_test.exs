@@ -5,14 +5,14 @@ defmodule DataAggregatorWeb.RecordLiveTest do
   import DataAggregator.RecordsFixtures
 
   @create_attrs %{
-    materialEntityID: "record1",
-    scientificName: "06809dc5-f143-459a-be1a-6f03e63fc083"
+    mte_material_entity_id: "record1",
+    tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
   }
   @update_attrs %{
-    materialEntityID: "record2",
-    scientificName: "06809dc5-f143-459a-be1a-6f03e63fc083"
+    mte_material_entity_id: "record2",
+    tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
   }
-  @invalid_attrs %{materialEntityID: nil, scientificName: nil}
+  @invalid_attrs %{mte_material_entity_id: nil, tax_scientific_name: nil}
 
   defp create_record(_) do
     record = record_fixture()
@@ -93,16 +93,16 @@ defmodule DataAggregatorWeb.RecordLiveTest do
       {:ok, show_live, _html} = live(conn, ~p"/records")
 
       assert show_live
-             |> element("tbody > tr > td", record.scientificName)
+             |> element("tbody > tr > td", record.tax_scientific_name)
              |> render_click() =~
-               record.scientificName
+               record.tax_scientific_name
     end
 
     test "updates record within modal", %{conn: conn, record: record} do
       {:ok, show_live, _html} = live(conn, ~p"/records")
 
       assert show_live
-             |> element("tbody > tr > td", record.scientificName)
+             |> element("tbody > tr > td", record.tax_scientific_name)
              |> render_click() =~
                "Edit Record"
 

@@ -1175,23 +1175,23 @@
 <http://rs.tdwg.org/dwc/terms/>
      dcterms:hasPart <http://rs.tdwg.org/dwc/terms/samplingProtocol>.
 
-<http://rs.tdwg.org/dwc/terms/scientificName>
+<http://rs.tdwg.org/dwc/terms/tax_scientific_name>
      dcterms:isPartOf <http://rs.tdwg.org/dwc/terms/>.
 
 <http://rs.tdwg.org/dwc/terms/>
-     dcterms:hasPart <http://rs.tdwg.org/dwc/terms/scientificName>.
+     dcterms:hasPart <http://rs.tdwg.org/dwc/terms/tax_scientific_name>.
 
-<http://rs.tdwg.org/dwc/terms/scientificNameAuthorship>
+<http://rs.tdwg.org/dwc/terms/tax_scientific_nameAuthorship>
      dcterms:isPartOf <http://rs.tdwg.org/dwc/terms/>.
 
 <http://rs.tdwg.org/dwc/terms/>
-     dcterms:hasPart <http://rs.tdwg.org/dwc/terms/scientificNameAuthorship>.
+     dcterms:hasPart <http://rs.tdwg.org/dwc/terms/tax_scientific_nameAuthorship>.
 
-<http://rs.tdwg.org/dwc/terms/scientificNameID>
+<http://rs.tdwg.org/dwc/terms/tax_scientific_nameID>
      dcterms:isPartOf <http://rs.tdwg.org/dwc/terms/>.
 
 <http://rs.tdwg.org/dwc/terms/>
-     dcterms:hasPart <http://rs.tdwg.org/dwc/terms/scientificNameID>.
+     dcterms:hasPart <http://rs.tdwg.org/dwc/terms/tax_scientific_nameID>.
 
 <http://rs.tdwg.org/dwc/terms/sex>
      dcterms:isPartOf <http://rs.tdwg.org/dwc/terms/>.
