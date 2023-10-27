@@ -425,7 +425,7 @@ msgstr "Vorige"
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "Showing"
-msgstr "Anzeigen"
+msgstr "Zeige"
 
 #: lib/data_aggregator_web/components/core_components.ex:775
 #, elixir-autogen, elixir-format
@@ -437,7 +437,7 @@ msgstr "von"
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "results"
-msgstr "Resultate"
+msgstr "Resultaten"
 
 #: lib/data_aggregator_web/components/core_components.ex:773
 #, elixir-autogen, elixir-format
@@ -455,7 +455,7 @@ msgstr "Benutze dieses Formular, um Einträge in der Datebank zu verwalten."
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "Close"
-msgstr "schliessen"
+msgstr "Zurück"
 
 #: lib/data_aggregator_web/live/record_live/preview_component.ex:65
 #, elixir-autogen, elixir-format, fuzzy
