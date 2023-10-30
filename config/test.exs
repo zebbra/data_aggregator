@@ -20,7 +20,7 @@ config :data_aggregator, DataAggregator.Repo,
 config :data_aggregator, DataAggregatorWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "gCUX1IH7IJDICQGJo4YMx912l9PTQXSCTSyoNFpidW1saLPXnEgA8+Zn+TGIA4fz",
-  server: false
+  server: true
 
 # In test we don't send emails.
 config :data_aggregator, DataAggregator.Mailer, adapter: Swoosh.Adapters.Test

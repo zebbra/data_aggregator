@@ -10,9 +10,13 @@ defmodule DataAggregator.Files.Attachment do
   end
 
   calculations do
-    calculate :url, :string, DataAggregator.Files.Calculations.CalculateUrl do
+    calculate :url, :string, DataAggregator.Files.Calculations.Url do
       argument :signed, :boolean, default: true
       argument :expires_in, :integer, default: 100
+    end
+
+    calculate :stream, :function, DataAggregator.Files.Calculations.Stream do
+      load [:url]
     end
   end
 

@@ -56,7 +56,6 @@ defmodule DataAggregator.MixProject do
       {:ecto_sql, "~> 3.10"},
       {:ecto_erd, "~> 0.5", only: :dev},
       {:postgrex, ">= 0.0.0"},
-      {:finch, "~> 0.13"},
       {:open_api_spex, "~> 3.18"},
       {:ash_json_api, "~> 0.33.1"},
       {:redoc_ui_plug, "~> 0.2.1"},
@@ -99,7 +98,13 @@ defmodule DataAggregator.MixProject do
       {:waffle, "~> 1.1"},
       {:ex_aws, "~> 2.5.0"},
       {:ex_aws_s3, "~> 2.0"},
-      {:sweet_xml, "~> 0.6"}
+      {:sweet_xml, "~> 0.6"},
+
+      # http
+      {:http_stream, "~> 1.0.0", github: "qdentity/http_stream", branch: "master"},
+      {:finch, "~> 0.16"},
+      {:castore, "~> 1.0"},
+      {:mint, "~> 1.3"}
     ]
   end
 

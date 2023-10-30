@@ -1,4 +1,4 @@
-defmodule DataAggregator.Files.Calculations.CalculateUrl do
+defmodule DataAggregator.Files.Calculations.Url do
   use Ash.Calculation
 
   alias DataAggregator.Files.Attachment
