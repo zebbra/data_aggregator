@@ -2,8 +2,6 @@ Table records {
   id uuid [pk]
   import_data jsonb
   meta_data jsonb
-  materialEntityID varchar
-  scientificName varchar
   prs_contact_point varchar
   prs_first_name varchar
   prs_last_name varchar
@@ -14,6 +12,7 @@ Table records {
   eve_year varchar
   idf_date_identified date
   idf_identified_by varchar
+  idf_type_status varchar
   ref_bibliographic_citation varchar
   ref_creator varchar
   ref_date date
@@ -26,9 +25,12 @@ Table records {
   tax_family varchar
   tax_scientific_name_authorship varchar
   tax_order varchar
+  tax_scientific_name varchar
   loc_continent varchar
   loc_country varchar
+  loc_locality varchar
   occ_recorded_by varchar
+  mte_material_entity_id varchar
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid

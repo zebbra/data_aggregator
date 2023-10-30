@@ -12,8 +12,6 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       add :id, :uuid, null: false, primary_key: true
       add :import_data, :map
       add :meta_data, :map
-      add :materialEntityID, :text, null: false
-      add :scientificName, :text, null: false
       add :prs_contact_point, :text
       add :prs_first_name, :text
       add :prs_last_name, :text
@@ -24,6 +22,7 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       add :eve_year, :text
       add :idf_date_identified, :date
       add :idf_identified_by, :text
+      add :idf_type_status, :text
       add :ref_bibliographic_citation, :text
       add :ref_creator, :text
       add :ref_date, :date
@@ -36,9 +35,12 @@ defmodule DataAggregator.Repo.Migrations.InitialMigration do
       add :tax_family, :text
       add :tax_scientific_name_authorship, :text
       add :tax_order, :text
+      add :tax_scientific_name, :text, null: false
       add :loc_continent, :text
       add :loc_country, :text
+      add :loc_locality, :text
       add :occ_recorded_by, :text
+      add :mte_material_entity_id, :text, null: false
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :collection_id, :uuid

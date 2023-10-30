@@ -6,10 +6,10 @@ defmodule DataAggregator.RecordsTest do
 
     import DataAggregator.RecordsFixtures
 
-    @invalid_attrs %{materialEntityID: nil, scientificName: nil}
+    @invalid_attrs %{mte_material_entity_id: nil, tax_scientific_name: nil}
     @valid_attrs %{
-      materialEntityID: "record1",
-      scientificName: "06809dc5-f143-459a-be1a-6f03e63fc083"
+      mte_material_entity_id: "record1",
+      tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
     }
 
     test "read!/0 returns all records" do
@@ -35,8 +35,8 @@ defmodule DataAggregator.RecordsTest do
       record = record_fixture()
 
       update_attrs = %{
-        materialEntityID: "record2",
-        scientificName: "06809dc5-f143-459a-be1a-6f03e63fc083"
+        mte_material_entity_id: "record2",
+        tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
       }
 
       assert {:ok, %Record{} = _record} =

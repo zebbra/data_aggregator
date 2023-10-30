@@ -13,8 +13,8 @@ defmodule DataAggregator.RecordsFixtures do
     {:ok, record} =
       attrs
       |> Enum.into(%{
-        materialEntityID: "record1",
-        scientificName: "06809dc5-f143-459a-be1a-6f03e63fc083"
+        mte_material_entity_id: "record1",
+        tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
       })
       |> Record.create()
 

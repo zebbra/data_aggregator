@@ -14,7 +14,7 @@
       "default": "nil",
       "size": null,
       "type": "bigint",
-      "source": "amount_of_rows",
+      "source": "size",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -44,15 +44,15 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "collection_id",
+      "source": "attachment_id",
       "references": {
-        "name": "import_files_collection_id_fkey",
-        "table": "collections",
+        "name": "record_images_attachment_id_fkey",
+        "table": "attachments",
         "schema": "public",
         "multitenancy": {
           "global": null,
-          "strategy": null,
-          "attribute": null
+          "attribute": null,
+          "strategy": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -70,15 +70,15 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "attachment_id",
+      "source": "record_id",
       "references": {
-        "name": "import_files_attachment_id_fkey",
-        "table": "attachments",
+        "name": "record_images_record_id_fkey",
+        "table": "records",
         "schema": "public",
         "multitenancy": {
           "global": null,
-          "strategy": null,
-          "attribute": null
+          "attribute": null,
+          "strategy": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -93,15 +93,15 @@
       "primary_key?": false
     }
   ],
-  "table": "import_files",
-  "hash": "E1CAA6FB0E6D41E0A880907D55BFCA54A77F7C9743C05545B06D656416435168",
+  "table": "record_images",
+  "hash": "C4780563B04EB3CF52D16116C5F7588AC8A4B34F5767E80331534B0CAB2BF844",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,
   "multitenancy": {
     "global": null,
-    "strategy": null,
-    "attribute": null
+    "attribute": null,
+    "strategy": null
   },
   "base_filter": null,
   "check_constraints": [],
