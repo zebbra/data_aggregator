@@ -12,16 +12,25 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    sort = Map.get(params, "order_by", nil)
-    collections = Collection.read!(%{sort: sort})
-
     socket =
       socket
       |> assign_current_sort(params)
       |> assign_current_path_params(params)
-      |> stream(:collections, collections)
+      |> assign_collections()
 
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  defp assign_collections(socket) do
+    list_collections(socket)
+  end
+
+  defp list_collections(socket) do
+    %{current_sort: current_sort} = socket.assigns
+
+    results = Collection.read!(%{sort: current_sort})
+
+    stream_results(socket, results)
   end
 
   defp apply_action(socket, :show, %{"id" => id}) do
@@ -53,7 +62,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         {DataAggregatorWeb.CollectionLive.FormComponent, {:saved, collection}},
         socket
       ) do
-    {:noreply, stream_insert(socket, :collections, collection)}
+    {:noreply, stream_insert(socket, :results, collection)}
   end
 
   @impl true
@@ -61,11 +70,21 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
     collection = Collection.get_by_id!(id)
     :ok = Collection.destroy(collection)
 
-    {:noreply, stream_delete(socket, :collections, collection)}
+    {:noreply, stream_delete(socket, :results, collection)}
   end
 
   @impl true
-  def handle_event("toggle-filters", _params, socket) do
-    {:noreply, assign(socket, :show_filters, !socket.assigns.show_filters)}
+  def handle_event("sort:select", %{"sort" => sort}, socket) do
+    socket = handle_sort(socket, sort)
+
+    {:noreply,
+     patch_params(socket, %{
+       sort: socket.assigns.current_sort
+     })}
+  end
+
+  defp patch_params(socket, params) do
+    params = Map.reject(params, &(elem(&1, 1) in ["", nil]))
+    push_patch(socket, to: ~p"/collections?#{params}", replace: true)
   end
 end

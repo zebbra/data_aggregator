@@ -11,7 +11,7 @@
 
   <.table
     id="records"
-    rows={@streams.records}
+    rows={@streams.results}
     row_click={
       fn {_id, record} ->
         JS.push("select", value: %{id: record.id})

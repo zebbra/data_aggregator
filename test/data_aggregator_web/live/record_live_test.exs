@@ -55,7 +55,7 @@ defmodule DataAggregatorWeb.RecordLiveTest do
       {:ok, index_live, _html} = live(conn, ~p"/records")
 
       assert index_live
-             |> element("#records-#{record.id} a", "Edit")
+             |> element("#results-#{record.id} a", "Edit")
              |> render_click() =~
                "Edit Record"
 
@@ -79,10 +79,10 @@ defmodule DataAggregatorWeb.RecordLiveTest do
       {:ok, index_live, _html} = live(conn, ~p"/records")
 
       assert index_live
-             |> element("#records-#{record.id} a", "Delete")
+             |> element("#results-#{record.id} a", "Delete")
              |> render_click()
 
-      refute has_element?(index_live, "#records-#{record.id}")
+      refute has_element?(index_live, "#results-#{record.id}")
     end
   end
 

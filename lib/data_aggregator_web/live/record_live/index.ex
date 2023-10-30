@@ -68,7 +68,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
       ) do
     socket =
       socket
-      |> stream_insert(:records, record |> Map.put(:selected, false))
+      |> stream_insert(:results, record |> Map.put(:selected, false))
 
     {:noreply, socket}
   end
@@ -86,9 +86,9 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     socket =
       socket
       |> assign(:current_selected, new_selected)
-      |> stream_delete(:records, record)
+      |> stream_delete(:results, record)
 
-    {:noreply, stream_delete(socket, :records, record)}
+    {:noreply, stream_delete(socket, :results, record)}
   end
 
   @impl true
@@ -152,12 +152,12 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
         socket =
           socket
-          |> stream_insert(:records, old_selected)
-          |> stream_insert(:records, new_selected)
+          |> stream_insert(:results, old_selected)
+          |> stream_insert(:results, new_selected)
 
         {:noreply, socket}
       else
-        {:noreply, stream_insert(socket, :records, new_selected)}
+        {:noreply, stream_insert(socket, :results, new_selected)}
       end
     end
   end
@@ -175,7 +175,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
       socket
       |> assign(:current_selected, nil)
-      |> stream_insert(:records, selected)
+      |> stream_insert(:results, selected)
     else
       socket
     end
