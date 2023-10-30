@@ -28,10 +28,10 @@ config :mime, :extensions, %{
 
 config :data_aggregator,
   ash_apis: [
-    DataAggregator.Imports,
-    DataAggregator.TaxonomyData,
-    DataAggregator.TaxonomyCatalog,
-    DataAggregator.Transition,
+    DataAggregator.Platform,
+    DataAggregator.Data,
+    DataAggregator.Taxonomy,
+    DataAggregator.Storage,
     DataAggregator.Files
   ]
 
@@ -92,7 +92,7 @@ config :esbuild,
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "3.3.2",
+  version: "3.3.5",
   default: [
     args: ~w(
       --config=tailwind.config.js
@@ -121,11 +121,16 @@ config :spark, :formatter,
     section_order: [
       :authentication,
       :token,
-      :actions,
       :attributes,
       :relationships,
+      :calculations,
+      :aggregates,
+      :actions,
+      :code_interface,
       :policies,
-      :postgres
+      :postgres,
+      :graphql,
+      :json_api
     ]
   ]
 

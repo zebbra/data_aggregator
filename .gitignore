@@ -47,5 +47,11 @@ npm-debug.log
 # other generated code
 .elixir-tools
 
-# Ignore local .env
+# ignore local .env
 .env
+
+# Ignore logfiles
+*.log
+
+# Ignore Mac OS files
+.DS_Store

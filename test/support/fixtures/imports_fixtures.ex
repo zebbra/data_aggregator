@@ -1,22 +1,23 @@
-defmodule DataAggregator.ImportRecordsFixtures do
+defmodule DataAggregator.RecordsFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `DataAggregator.Imports` context.
+  entities via the `DataAggregator.Data` context.
   """
 
-  alias DataAggregator.Imports.ImportRecord
+  alias DataAggregator.Data.Record
 
   @doc """
-  Generate a import_record.
+  Generate a record.
   """
-  def import_record_fixture(attrs \\ %{}) do
-    {:ok, import_record} =
+  def record_fixture(attrs \\ %{}) do
+    {:ok, record} =
       attrs
       |> Enum.into(%{
-        unique_qualifier: "import_record1"
+        materialEntityID: "record1",
+        scientificName: "06809dc5-f143-459a-be1a-6f03e63fc083"
       })
-      |> ImportRecord.create()
+      |> Record.create()
 
-    ImportRecord.get_by_id!(import_record.id)
+    Record.get_by_id!(record.id)
   end
 end

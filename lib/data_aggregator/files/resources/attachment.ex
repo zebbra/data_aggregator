@@ -3,6 +3,19 @@ defmodule DataAggregator.Files.Attachment do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID]
 
+  attributes do
+    uuid_attribute :id, prefix: "fat"
+    attribute :filename, :string, allow_nil?: false
+    timestamps()
+  end
+
+  calculations do
+    calculate :url, :string, DataAggregator.Files.Calculations.CalculateUrl do
+      argument :signed, :boolean, default: true
+      argument :expires_in, :integer, default: 100
+    end
+  end
+
   actions do
     read :read do
       primary? true
@@ -21,17 +34,6 @@ defmodule DataAggregator.Files.Attachment do
     end
   end
 
-  attributes do
-    uuid_attribute :id, prefix: "fat"
-    attribute :filename, :string, allow_nil?: false
-    timestamps()
-  end
-
-  postgres do
-    table "file_attachments"
-    repo DataAggregator.Repo
-  end
-
   code_interface do
     define_for DataAggregator.Files
     define :read
@@ -40,10 +42,8 @@ defmodule DataAggregator.Files.Attachment do
     define :destroy
   end
 
-  calculations do
-    calculate :url, :string, DataAggregator.Files.Calculations.CalculateUrl do
-      argument :signed, :boolean, default: true
-      argument :expires_in, :integer, default: 100
-    end
+  postgres do
+    table "file_attachments"
+    repo DataAggregator.Repo
   end
 end

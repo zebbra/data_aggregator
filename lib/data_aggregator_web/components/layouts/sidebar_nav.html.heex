@@ -1,4 +1,4 @@
-<div class="grow lg:border-r lg:border-gray-200 dark:border-none dark:bg-gray-900 dark:lg:bg-black/10 dark:ring-1 dark:ring-white/10 dark:lg:ring-white/5 flex overflow-y-auto flex-col gap-y-5 px-6 bg-white">
+<div class="grow lg:border-r lg:border-gray-200 dark:border-none dark:bg-gray-900 dark:lg:bg-black/10 dark:ring-1 dark:ring-white/10 dark:lg:ring-white/5 gap-y-5 flex flex-col px-6 overflow-y-auto bg-white">
   <div class="shrink-0 flex items-center h-16">
     <img
       class="w-auto h-8"
@@ -7,7 +7,7 @@
     />
   </div>
   <nav class="flex flex-col flex-1">
-    <ul role="list" class="flex flex-col flex-1 gap-y-7">
+    <ul role="list" class="gap-y-7 flex flex-col flex-1">
       <%!-- Navigation links --%>
       <li>
         <ul role="list" class="-mx-2 space-y-1">
@@ -35,23 +35,45 @@
           </li>
           <li>
             <.link
-              navigate={~p"/import_records"}
+              navigate={~p"/collections"}
               class={[
                 "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold",
-                if(@active_link == :import_records,
+                if(@active_link == :collections,
                   do: "bg-gray-50 dark:bg-gray-800 text-indigo-600 dark:text-white",
                   else:
                     "text-gray-700 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                 )
               ]}
-              aria-current={if(@active_link == :import_records, do: "page", else: nil)}
+              aria-current={if(@active_link == :collections, do: "page", else: nil)}
+            >
+              <.icon
+                name="hero-table-cells"
+                class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
+              />
+              <span class="truncate">
+                <%= ~t"Collections"m %>
+              </span>
+            </.link>
+          </li>
+          <li>
+            <.link
+              navigate={~p"/records"}
+              class={[
+                "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold",
+                if(@active_link == :records,
+                  do: "bg-gray-50 dark:bg-gray-800 text-indigo-600 dark:text-white",
+                  else:
+                    "text-gray-700 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+                )
+              ]}
+              aria-current={if(@active_link == :records, do: "page", else: nil)}
             >
               <.icon
                 name="hero-arrow-down-tray"
                 class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
               />
               <span class="truncate">
-                <%= ~t"Imports"m %>
+                <%= ~t"Records"m %>
               </span>
             </.link>
           </li>
@@ -60,94 +82,67 @@
       <%!-- External links --%>
       <li>
         <div class="text-xs font-semibold leading-6 text-gray-400">External Resources</div>
-        <ul role="list" class="-mx-2 mt-2 space-y-1">
+        <ul role="list" class="mt-2 -mx-2 space-y-1">
           <li>
             <.link
-              href="https://discord.gg/elixir"
+              href="https://github.com/zebbra/data_aggregator"
               target="_blank"
               rel="noopener noreferrer"
-              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
+              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 gap-x-3 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
             >
-              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
-                D
-              </span>
+              <.icon
+                name="hero-code-bracket"
+                class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
+              />
               <span class="truncate">
-                <%= ~t"Join the Discord Server"m %>
+                <%= ~t"Github"m %>
               </span>
             </.link>
           </li>
           <li>
             <.link
-              href="https://fly.io/docs/elixir/getting-started/"
+              href="https://www.gbif.org/"
               target="_blank"
               rel="noopener noreferrer"
-              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
+              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 gap-x-3 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
             >
-              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
-                D
-              </span>
+              <.icon
+                name="hero-circle-stack"
+                class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
+              />
               <span class="truncate">
-                <%= ~t"Deploy your application"m %>
+                <%= ~t"GBIF"m %>
               </span>
             </.link>
           </li>
           <li>
             <.link
-              href="https://elixirforum.com"
+              href="https://scnat.ch/"
               target="_blank"
               rel="noopener noreferrer"
-              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
+              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 gap-x-3 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
             >
-              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
-                E
-              </span>
+              <.icon
+                name="hero-academic-cap"
+                class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
+              />
               <span class="truncate">
-                <%= ~t"Discuss on the Elixir Forum"m %>
+                <%= ~t"scnat"m %>
               </span>
             </.link>
-          </li>
-          <li>
-            <.link
-              href="https://web.libera.chat/#elixir"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
-            >
-              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
-                L
-              </span>
-              <span class="truncate">
-                <%= ~t"Chat on Libera IRC"m %>
-              </span>
-            </.link>
-            <li>
-              <.link
-                href="https://twitter.com/elixirphoenix"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
-              >
-                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
-                  T
-                </span>
-                <span class="truncate">
-                  <%= ~t"Follow on Twitter"m %>
-                </span>
-              </.link>
-            </li>
           </li>
         </ul>
       </li>
       <%!-- Internal links --%>
       <li :if={@environment == :dev}>
         <div class="text-xs font-semibold leading-6 text-gray-400">Internal Resources</div>
-        <ul role="list" class="-mx-2 mt-2 space-y-1">
+        <ul role="list" class="mt-2 -mx-2 space-y-1">
           <li>
             <.link
               href="/dev/dashboard"
               target="_blank"
               rel="noopener noreferrer"
-              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
+              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 gap-x-3 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
             >
               <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
                 D
@@ -162,7 +157,7 @@
               href="/playground"
               target="_blank"
               rel="noopener noreferrer"
-              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
+              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 gap-x-3 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
             >
               <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
                 G
@@ -177,7 +172,7 @@
               href="/dev/mailbox"
               target="_blank"
               rel="noopener noreferrer"
-              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 flex gap-x-3 p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
+              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 gap-x-3 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
             >
               <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
                 M

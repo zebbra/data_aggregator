@@ -73,7 +73,7 @@ defmodule DataAggregatorWeb.Headless.Menu do
       phx-click={@id |> root_id |> show_menu(@show_transition)}
       id={@id}
       name={@as}
-      type={(@as == "button" && "button") || @rest.type}
+      type={(@as == "button" && "button") || @rest[:type]}
       aria-haspopup="true"
       class={@class}
       {@rest}
