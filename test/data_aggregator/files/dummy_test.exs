@@ -51,7 +51,7 @@ defmodule DataAggregator.Files.DummyTest do
   test "create a dummy with an attachment" do
     params = %{
       name: "test",
-      avatar_path: "seed/museum-dataset-import-example.csv.zip"
+      avatar_path: "seed/gchdata-thesaurus.xlsx.zip"
     }
 
     user =
@@ -59,9 +59,9 @@ defmodule DataAggregator.Files.DummyTest do
       |> Ash.Changeset.for_create(:with_avatar, params)
       |> Api.create!()
 
-    assert user.avatar.filename == "museum-dataset-import-example.csv.zip"
+    assert user.avatar.filename == "gchdata-thesaurus.xlsx.zip"
 
     assert user.avatar.url ==
-             "http://localhost:4002/files/#{user.avatar.id}/museum-dataset-import-example.csv.zip"
+             "http://localhost:4002/files/#{user.avatar.id}/gchdata-thesaurus.xlsx.zip"
   end
 end

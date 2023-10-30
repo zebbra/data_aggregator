@@ -3,8 +3,8 @@ defmodule DataAggregator.Data.Record do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias DataAggregator.Files.Attachment
   alias DataAggregator.Platform.Collection
-  alias DataAggregator.Storage.Attachment
 
   @default_limit 15
   def default_limit, do: @default_limit
@@ -71,14 +71,15 @@ defmodule DataAggregator.Data.Record do
       api DataAggregator.Platform
     end
 
-    many_to_many :images, Attachment do
-      api DataAggregator.Storage
+    has_many :images, DataAggregator.Data.RecordImage
+
+    many_to_many :image_attachments, Attachment do
+      api DataAggregator.Files
       through DataAggregator.Data.RecordImage
       source_attribute_on_join_resource :record_id
       destination_attribute_on_join_resource :attachment_id
+      join_relationship :images
     end
-
-    has_many :images_join_assoc, DataAggregator.Data.RecordImage
   end
 
   actions do

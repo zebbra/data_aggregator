@@ -31,7 +31,6 @@ config :data_aggregator,
     DataAggregator.Platform,
     DataAggregator.Data,
     DataAggregator.Taxonomy,
-    DataAggregator.Storage,
     DataAggregator.Files
   ]
 

@@ -4,7 +4,6 @@ defmodule DataAggregatorWeb.JsonApiRouter do
     apis: [
       DataAggregator.Data,
       DataAggregator.Platform,
-      DataAggregator.Storage,
       DataAggregator.Taxonomy
     ],
     # optionally a json_schema route

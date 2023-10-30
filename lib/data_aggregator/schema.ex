@@ -4,8 +4,7 @@ defmodule DataAggregator.Schema do
   @apis [
     DataAggregator.Platform,
     DataAggregator.Taxonomy,
-    DataAggregator.Data,
-    DataAggregator.Storage
+    DataAggregator.Data
   ]
 
   use AshGraphql, apis: @apis

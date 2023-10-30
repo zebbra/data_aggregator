@@ -3,8 +3,8 @@ defmodule DataAggregator.Platform.Collection do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias DataAggregator.Files.Attachment
   alias DataAggregator.Platform.Institution
-  alias DataAggregator.Storage.Attachment
 
   attributes do
     uuid_attribute :id, prefix: "col"
@@ -27,14 +27,15 @@ defmodule DataAggregator.Platform.Collection do
   relationships do
     belongs_to :institution, Institution
 
-    many_to_many :import_files, Attachment do
-      api DataAggregator.Storage
+    has_many :import_files, DataAggregator.Platform.ImportFile
+
+    many_to_many :import_file_attachments, Attachment do
+      api DataAggregator.Files
       through DataAggregator.Platform.ImportFile
       source_attribute_on_join_resource :collection_id
       destination_attribute_on_join_resource :attachment_id
+      join_relationship :import_files
     end
-
-    has_many :import_files_join_assoc, DataAggregator.Platform.ImportFile
   end
 
   actions do

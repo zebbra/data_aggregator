@@ -4,7 +4,7 @@ defmodule DataAggregator.Data.RecordImage do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.Data.Record
-  alias DataAggregator.Storage.Attachment
+  alias DataAggregator.Files.Attachment
 
   attributes do
     uuid_attribute :id, prefix: "img"
@@ -14,7 +14,7 @@ defmodule DataAggregator.Data.RecordImage do
 
   relationships do
     belongs_to :attachment, Attachment do
-      api DataAggregator.Storage
+      api DataAggregator.Files
     end
 
     belongs_to :record, Record

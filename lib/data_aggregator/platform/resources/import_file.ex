@@ -3,8 +3,8 @@ defmodule DataAggregator.Platform.ImportFile do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias DataAggregator.Files.Attachment
   alias DataAggregator.Platform.Collection
-  alias DataAggregator.Storage.Attachment
 
   attributes do
     uuid_attribute :id, prefix: "if"
@@ -13,12 +13,10 @@ defmodule DataAggregator.Platform.ImportFile do
   end
 
   relationships do
-    belongs_to :collection, Collection do
-      api DataAggregator.Platform
-    end
+    belongs_to :collection, Collection
 
     belongs_to :attachment, Attachment do
-      api DataAggregator.Storage
+      api DataAggregator.Files
     end
   end
 
@@ -29,12 +27,12 @@ defmodule DataAggregator.Platform.ImportFile do
       argument :path, :string, allow_nil?: false
       argument :collection_id, :string, allow_nil?: false
       change manage_relationship(:collection_id, :collection, type: :append)
-      change DataAggregator.Storage.Changes.AttachFile, only_when_valid?: true
+      change manage_relationship(:path, :attachment, value_is_key: :path, type: :create)
     end
   end
 
   code_interface do
-    define_for DataAggregator.Storage
+    define_for DataAggregator.Platform
     define :upload_file
     define :read
     define :create
