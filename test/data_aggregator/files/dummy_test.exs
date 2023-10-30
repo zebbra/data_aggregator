@@ -48,10 +48,12 @@ defmodule DataAggregator.Files.DummyTest do
     end
   end
 
+  @example_file "test/support/fixtures/files/gbifch_swiss-species-registry-small.csv"
+
   test "create a dummy with an attachment" do
     params = %{
       name: "test",
-      avatar_path: "seed/gchdata-thesaurus.xlsx.zip"
+      avatar_path: @example_file
     }
 
     user =
@@ -59,9 +61,9 @@ defmodule DataAggregator.Files.DummyTest do
       |> Ash.Changeset.for_create(:with_avatar, params)
       |> Api.create!()
 
-    assert user.avatar.filename == "gchdata-thesaurus.xlsx.zip"
+    assert user.avatar.filename == "gbifch_swiss-species-registry-small.csv"
 
     assert user.avatar.url ==
-             "http://localhost:4002/files/#{user.avatar.id}/gchdata-thesaurus.xlsx.zip"
+             "http://localhost:4002/files/#{user.avatar.id}/gbifch_swiss-species-registry-small.csv"
   end
 end
