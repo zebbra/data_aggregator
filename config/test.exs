@@ -25,6 +25,9 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
 # In test we don't send emails.
 config :data_aggregator, DataAggregator.Mailer, adapter: Swoosh.Adapters.Test
 
+# Serve uploaded files
+config :data_aggregator, serve_files_from: "priv/storage/test/files"
+
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
