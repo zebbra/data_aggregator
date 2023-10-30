@@ -10,7 +10,10 @@ env:
   BASE_URL: https://staging.aggregator.scnat.zebbra.ch
   SENTRY_DSN: https://128c60631cb044ec8c353307d9352673@sentry.zebbra.ch/325
   LOG_LEVEL: info
-  S3_HOST: https://s3.cloud.zebbra.ch
+  WAFFLE_STORAGE: s3
+  AWS_S3_HOST: s3.cloud.zebbra.ch
+  WAFFLE_S3_BUCKET: data-aggregator-stag
+  WAFFLE_ASSET_HOST: https://${AWS_S3_HOST}/${WAFFLE_S3_BUCKET}
 
 ingress:
   enabled: true
