@@ -30,7 +30,6 @@ defmodule DataAggregator.Platform.ImportFile do
       primary? true
       argument :path, :string, allow_nil?: false
       argument :collection, Collection, allow_nil?: false
-      # argument :collection_id, :string, allow_nil?: false
 
       change manage_relationship(:collection, :collection, type: :append)
       change manage_relationship(:path, :attachment, value_is_key: :path, type: :create)
