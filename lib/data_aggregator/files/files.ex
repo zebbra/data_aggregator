@@ -4,7 +4,7 @@ defmodule DataAggregator.Files do
 
   ## Resources
 
-  #{"./files-mermaid-class-diagram.md" |> Path.expand(__DIR__) |> File.read!()}
+  #{"files-mermaid-class-diagram.md" |> Path.expand(__DIR__) |> File.read!()}
 
   """
 
