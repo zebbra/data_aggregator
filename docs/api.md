@@ -197,8 +197,6 @@ classDiagram
         UUID id
         Map import_data
         Map meta_data
-        String materialEntityID
-        String scientificName
         String prs_contact_point
         String prs_first_name
         String prs_last_name
@@ -209,6 +207,7 @@ classDiagram
         String eve_year
         Date idf_date_identified
         String idf_identified_by
+        String idf_type_status
         String ref_bibliographic_citation
         String ref_creator
         Date ref_date
@@ -221,17 +220,20 @@ classDiagram
         String tax_family
         String tax_scientific_name_authorship
         String tax_order
+        String tax_scientific_name
         String loc_continent
         String loc_country
+        String loc_locality
         String occ_recorded_by
+        String mte_material_entity_id
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Collection collection
         RecordImage[] images
         Attachment[] image_attachments
         destroy()
-        update(UUID id, Map import_data, Map meta_data, String materialEntityID, ...)
-        create(UUID id, Map import_data, Map meta_data, String materialEntityID, ...)
+        update(UUID id, Map import_data, Map meta_data, String prs_contact_point, ...)
+        create(UUID id, Map import_data, Map meta_data, String prs_contact_point, ...)
         read(String sort)
     }
     class RecordImage {
@@ -261,8 +263,6 @@ erDiagram
         UUID id
         Map import_data
         Map meta_data
-        String materialEntityID
-        String scientificName
         String prs_contact_point
         String prs_first_name
         String prs_last_name
@@ -273,6 +273,7 @@ erDiagram
         String eve_year
         Date idf_date_identified
         String idf_identified_by
+        String idf_type_status
         String ref_bibliographic_citation
         String ref_creator
         Date ref_date
@@ -285,9 +286,12 @@ erDiagram
         String tax_family
         String tax_scientific_name_authorship
         String tax_order
+        String tax_scientific_name
         String loc_continent
         String loc_country
+        String loc_locality
         String occ_recorded_by
+        String mte_material_entity_id
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
     }
@@ -320,8 +324,6 @@ erDiagram
 | **id** | UUID |  |
 | **import_data** | Map |  |
 | **meta_data** | Map |  |
-| **materialEntityID** | String |  |
-| **scientificName** | String |  |
 | **prs_contact_point** | String |  |
 | **prs_first_name** | String |  |
 | **prs_last_name** | String |  |
@@ -332,6 +334,7 @@ erDiagram
 | **eve_year** | String |  |
 | **idf_date_identified** | Date |  |
 | **idf_identified_by** | String |  |
+| **idf_type_status** | String |  |
 | **ref_bibliographic_citation** | String |  |
 | **ref_creator** | String |  |
 | **ref_date** | Date |  |
@@ -344,9 +347,12 @@ erDiagram
 | **tax_family** | String |  |
 | **tax_scientific_name_authorship** | String |  |
 | **tax_order** | String |  |
+| **tax_scientific_name** | String |  |
 | **loc_continent** | String |  |
 | **loc_country** | String |  |
+| **loc_locality** | String |  |
 | **occ_recorded_by** | String |  |
+| **mte_material_entity_id** | String |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
 | **collection_id** | UUID |  |
@@ -356,8 +362,8 @@ erDiagram
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
 | **destroy** | _destroy_ | <ul></ul> |  |
-| **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>meta_data</b> <i>Map</i> attribute</li><li><b>materialEntityID</b> <i>String</i> attribute</li><li><b>scientificName</b> <i>String</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>eve_day</b> <i>String</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>eve_month</b> <i>String</i> attribute</li><li><b>eve_year</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
-| **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>meta_data</b> <i>Map</i> attribute</li><li><b>materialEntityID</b> <i>String</i> attribute</li><li><b>scientificName</b> <i>String</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>eve_day</b> <i>String</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>eve_month</b> <i>String</i> attribute</li><li><b>eve_year</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>meta_data</b> <i>Map</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>eve_day</b> <i>String</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>eve_month</b> <i>String</i> attribute</li><li><b>eve_year</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>meta_data</b> <i>Map</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>eve_day</b> <i>String</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>eve_month</b> <i>String</i> attribute</li><li><b>eve_year</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 | **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
 
 ### RecordImage

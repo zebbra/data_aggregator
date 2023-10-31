@@ -30,6 +30,7 @@ data_aggregator-*.tar
 
 # Ignore generated docs
 /priv/static/docs/
+/lib/**/*-mermaid-class-diagram.md
 
 # Ignore waffle storage dir
 /priv/storage/
