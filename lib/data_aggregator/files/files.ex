@@ -1,6 +1,11 @@
 defmodule DataAggregator.Files do
   @moduledoc """
-  This context provides an `DataAggregator.Files.Attachment` resource for managing files.
+  This context provides a `DataAggregator.Files.Attachment` resource for managing files.
+
+  ## Resources
+
+  #{"./files-mermaid-class-diagram.md" |> Path.expand(__DIR__) |> File.read!()}
+
   """
 
   use Ash.Api

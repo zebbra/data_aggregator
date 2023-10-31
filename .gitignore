@@ -28,6 +28,9 @@ data_aggregator-*.tar
 # Ignore assets that are produced by build tools.
 /priv/static/assets/
 
+# Ignore generated docs
+/priv/static/docs/
+
 # Ignore waffle storage dir
 /priv/storage/
 

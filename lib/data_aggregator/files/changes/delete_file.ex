@@ -1,4 +1,8 @@
 defmodule DataAggregator.Files.Changes.DeleteFile do
+  @moduledoc """
+  This change registers an `after_action` hook to delete a file from `DataAggregator.Files.Store`.
+  """
+
   use Ash.Resource.Change
 
   alias Ash.Changeset

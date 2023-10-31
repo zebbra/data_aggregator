@@ -10,7 +10,13 @@ defmodule DataAggregator.MixProject do
       start_permanent: Mix.env() == :prod,
       consolidate_protocols: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+
+      # Docs
+      name: "Data Aggregator",
+      source_url: "https://github.com/zebbra/data_aggregator",
+      homepage_url: "https://github.com/zebbra/data_aggregator",
+      docs: docs()
     ]
   end
 
@@ -27,6 +33,111 @@ defmodule DataAggregator.MixProject do
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
+
+  defp docs() do
+    [
+      main: "DataAggregator",
+      extras: extras(),
+      groups_for_modules: groups_for_modules(),
+      groups_for_extras: groups_for_extras(),
+      nest_modules_by_prefix: nest_modules_by_prefix(),
+      before_closing_body_tag: &before_closing_body_tag/1,
+      output: "priv/static/docs"
+    ]
+  end
+
+  # Render mermaid diagrams in docs
+  defp before_closing_body_tag(:html) do
+    """
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.2.3/dist/mermaid.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: document.body.className.includes("dark") ? "dark" : "default"
+        });
+        let id = 0;
+        for (const codeEl of document.querySelectorAll("pre code.mermaid")) {
+          const preEl = codeEl.parentElement;
+          const graphDefinition = codeEl.textContent;
+          const graphEl = document.createElement("div");
+          const graphId = "mermaid-graph-" + id++;
+          mermaid.render(graphId, graphDefinition).then(({svg, bindFunctions}) => {
+            graphEl.innerHTML = svg;
+            bindFunctions?.(graphEl);
+            preEl.insertAdjacentElement("afterend", graphEl);
+            preEl.remove();
+          });
+        }
+      });
+    </script>
+    """
+  end
+
+  defp before_closing_body_tag(_), do: ""
+
+  defp extras() do
+    "docs/**/*.{md,livemd,cheatmd}"
+    |> Path.wildcard()
+  end
+
+  defp groups_for_extras do
+    [
+      Guides: [
+        "docs/development.md",
+        "docs/deployment.md"
+      ],
+      Ash: "docs/api.md",
+      Livebooks: ~r'docs/livebooks'
+    ]
+  end
+
+  def nest_modules_by_prefix() do
+    [
+      DataAggregator,
+      DataAggregatorWeb
+      # # Files API
+      # DataAggregator.Files,
+      # DataAggregator.Files.Calculations,
+      # DataAggregator.Files.Changes,
+      # # Taxonomy API
+      # DataAggregator.Taxonomy,
+      # # Data API
+      # DataAggregator.Data,
+      # # Platform API
+      # DataAggregator.Platform,
+      # # Web
+      # DataAggregatorWeb
+    ]
+  end
+
+  defp groups_for_modules() do
+    [
+      "File Management": ~r/^DataAggregator\.Files/,
+      Taxonomy: ~r/^DataAggregator\.Taxonomy/,
+      Platform: ~r/^DataAggregator\.Platform/,
+      Data: ~r/^DataAggregator\.Data/,
+
+      # Misc: [
+      #   DataAggregator.Mailer,
+      #   DataAggregator.Repo,
+      #   DataAggregator.Release
+      # ],
+
+      # Web: ~r/^DataAggregatorWeb/,
+      Localisation: [
+        DataAggregatorWeb.Locale,
+        DataAggregatorWeb.Cldr,
+        DataAggregatorWeb.Gettext
+      ],
+      "Live Hooks": [
+        DataAggregatorWeb.LiveLocale,
+        DataAggregatorWeb.LiveLogger,
+        DataAggregatorWeb.LiveState,
+        DataAggregatorWeb.LiveNavigator
+      ]
+    ]
+  end
 
   # Specifies your project dependencies.
   #
@@ -54,7 +165,6 @@ defmodule DataAggregator.MixProject do
       # db / orm / api
       {:absinthe_plug, "~> 1.5.8"},
       {:ecto_sql, "~> 3.10"},
-      {:ecto_erd, "~> 0.5", only: :dev},
       {:postgrex, ">= 0.0.0"},
       {:open_api_spex, "~> 3.18"},
       {:ash_json_api, "~> 0.33.1"},
@@ -101,10 +211,14 @@ defmodule DataAggregator.MixProject do
       {:sweet_xml, "~> 0.6"},
 
       # http
+      # official http_stream has outdated deps (mint, castore)
       {:http_stream, "~> 1.0.0", github: "qdentity/http_stream", branch: "master"},
       {:finch, "~> 0.16"},
       {:castore, "~> 1.0"},
-      {:mint, "~> 1.3"}
+      {:mint, "~> 1.3"},
+
+      # docs
+      {:ex_doc, "~> 0.27", only: :dev, runtime: false}
     ]
   end
 
@@ -128,7 +242,8 @@ defmodule DataAggregator.MixProject do
       "assets.build": ["tailwind default", "esbuild default"],
       "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
       lint: ["format --check-formatted", "credo --strict", "deps.audit"],
-      "generate.erd": ["ecto.gen.erd --output-path=erd.dbml"]
+      "generate.erd": ["ecto.gen.erd --output-path=erd.dbml"],
+      docs: ["ash.generate_livebook --filename=docs/api.md", "docs"]
     ]
   end
 end
