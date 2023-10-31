@@ -2,6 +2,8 @@ defmodule DataAggregatorWeb.Endpoint do
   use Sentry.PlugCapture
   use Phoenix.Endpoint, otp_app: :data_aggregator
 
+  require Logger
+
   # add /health endpoint for liveness probes
   plug DataAggregatorWeb.Plug.Health, path: "/health"
 
@@ -26,6 +28,14 @@ defmodule DataAggregatorWeb.Endpoint do
     from: :data_aggregator,
     gzip: false,
     only: DataAggregatorWeb.static_paths()
+
+  # Serve waffle files in development
+  if serve_files_from = Application.compile_env(:data_aggregator, :serve_files_from) do
+    Logger.info("Serving files from #{serve_files_from}")
+    plug Plug.Static, at: "/files", from: serve_files_from, gzip: false
+  end
+
+  # end
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

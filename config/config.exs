@@ -8,6 +8,7 @@
 import Config
 
 config :data_aggregator,
+  environment: config_env(),
   ecto_repos: [DataAggregator.Repo],
   generators: [timestamp_type: :utc_datetime]
 
@@ -30,7 +31,7 @@ config :data_aggregator,
     DataAggregator.Platform,
     DataAggregator.Data,
     DataAggregator.Taxonomy,
-    DataAggregator.Storage
+    DataAggregator.Files
   ]
 
 config :data_aggregator, :ash_uuid,
@@ -111,21 +112,6 @@ config :phoenix, :filter_parameters, ["password", "account_token"]
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :waffle,
-  storage: Waffle.Storage.S3,
-  bucket: {:system, "S3_BUCKET"}
-
-# any configurations provided by https://github.com/ex-aws/ex_aws
-config :ex_aws,
-  json_codec: Jason,
-  access_key_id: [{:system, "S3_ACCESS_KEY"}, :instance_role],
-  secret_access_key: [{:system, "S3_SECRET_KEY"}, :instance_role],
-  s3: [
-    scheme: {:system, "S3_SCHEME"},
-    host: {:system, "S3_HOST"},
-    port: {:system, "S3_PORT"}
-  ]
-
 # Configure Spark DSL formatter
 config :spark, :formatter,
   remove_parens?: true,
@@ -146,8 +132,6 @@ config :spark, :formatter,
       :json_api
     ]
   ]
-
-config :data_aggregator, :environment, Mix.env()
 
 # Configure error reporting using Sentry. The Sentry DSN is configured
 # dynamically based on the SENTRY_DSN environment variable.

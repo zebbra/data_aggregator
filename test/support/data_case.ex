@@ -18,12 +18,15 @@ defmodule DataAggregator.DataCase do
 
   using do
     quote do
-      alias DataAggregator.Repo
-
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
       import DataAggregator.DataCase
+
+      import Ash.Test,
+        only: [
+          assert_has_error: 2,
+          assert_has_error: 3,
+          refute_has_error: 2,
+          refute_has_error: 3
+        ]
     end
   end
 

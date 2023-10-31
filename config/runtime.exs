@@ -1,5 +1,4 @@
 import Config
-
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the
 # system starts, so it is typically used to load production configuration
@@ -7,8 +6,14 @@ import Config
 # any compile-time configuration in here, as it won't be applied.
 # The block below contains prod specific runtime configuration.
 
+require Logger
+
 if config_env() in [:dev, :test] do
   Envy.load(["config/.env.#{config_env()}"])
+end
+
+get_env! = fn
+  var -> System.get_env(var) || raise("Required environment variable #{var} is missing")
 end
 
 # ## Using releases
@@ -28,6 +33,47 @@ end
 config :sentry,
   server_name: System.get_env("HOSTNAME"),
   log_level: System.get_env("SENTRY_LOG_LEVEL", "warning") |> String.to_atom()
+
+# ## Waffle
+config :waffle,
+  asset_host: System.get_env("WAFFLE_ASSET_HOST")
+
+case System.get_env("WAFFLE_STORAGE") do
+  "s3" ->
+    waffle_s3_bucket = get_env!.("WAFFLE_S3_BUCKET")
+
+    config :waffle,
+      storage: Waffle.Storage.S3,
+      bucket: waffle_s3_bucket
+
+    aws_s3_scheme = System.get_env("AWS_S3_SCHEME", "https://")
+    aws_s3_host = System.get_env("AWS_S3_HOST", "s3.amazonaws.com")
+    aws_s3_port = System.get_env("AWS_S3_PORT", "443") |> String.to_integer()
+
+    config :ex_aws,
+      debug_requests: System.get_env("AWS_DEBUG_REQUESTS") in ~w(true 1),
+      access_key_id: get_env!.("AWS_ACCESS_KEY_ID"),
+      secret_access_key: get_env!.("AWS_SECRET_ACCESS_KEY"),
+      s3: [
+        scheme: aws_s3_scheme,
+        host: aws_s3_host,
+        port: aws_s3_port
+      ]
+
+    waffle_s3_uri = URI.new!("#{aws_s3_scheme}#{aws_s3_host}:#{aws_s3_port}/#{waffle_s3_bucket}")
+    Logger.info("Waffle configured to use S3 storage: #{waffle_s3_uri}")
+
+  _ ->
+    # Use local storage for Waffle by default
+    waffle_storage_dir_prefix =
+      System.get_env("WAFFLE_STORAGE_DIR_PREFIX", "priv/storage/#{config_env()}")
+
+    config :waffle,
+      storage: Waffle.Storage.Local,
+      storage_dir_prefix: waffle_storage_dir_prefix
+
+    Logger.info("Waffle configured to use local storage: #{waffle_storage_dir_prefix}")
+end
 
 if config_env() == :prod do
   database_url =
