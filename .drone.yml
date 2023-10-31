@@ -26,7 +26,7 @@ steps:
       mount: ["_build", "deps"]
 
   - name: test
-    image: hexpm/elixir:1.15.7-erlang-26.1.2-debian-buster-20230612-slim
+    image: hexpm/elixir:1.15.7-erlang-26.1.2-debian-bullseye-20230612-slim
     environment:
       MIX_ENV: test
     commands:
