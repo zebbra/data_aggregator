@@ -52,8 +52,10 @@ RUN mix assets.setup
 COPY priv priv
 COPY lib lib
 COPY assets assets
+COPY docs docs
+COPY README.md README.md
 
-# compile assets
+# Compile assets
 RUN mix assets.deploy
 
 # Compile the release
