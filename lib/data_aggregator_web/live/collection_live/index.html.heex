@@ -11,7 +11,7 @@
 
   <.table
     id="collections"
-    rows={@streams.collections}
+    rows={@streams.results}
     row_click={
       fn {_id, collection} ->
         JS.navigate(~p"/collections/#{collection}?#{@current_path_params}")

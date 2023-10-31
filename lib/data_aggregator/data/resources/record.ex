@@ -15,15 +15,6 @@ defmodule DataAggregator.Data.Record do
     attribute :import_data, :map
     attribute :meta_data, :map
 
-    # mandatory from import file
-    attribute :materialEntityID, :string do
-      allow_nil? false
-    end
-
-    attribute :scientificName, :string do
-      allow_nil? false
-    end
-
     # all Person related attributes
     attribute :prs_contact_point, :string
     attribute :prs_first_name, :string
@@ -39,6 +30,9 @@ defmodule DataAggregator.Data.Record do
     # all Identification related attributes
     attribute :idf_date_identified, :date
     attribute :idf_identified_by, :string
+    attribute :idf_type_status, :string
+
+    # all Reference related attributes
     attribute :ref_bibliographic_citation, :string
     attribute :ref_creator, :string
     attribute :ref_date, :date
@@ -56,12 +50,22 @@ defmodule DataAggregator.Data.Record do
     attribute :tax_scientific_name_authorship, :string
     attribute :tax_order, :string
 
+    attribute :tax_scientific_name, :string do
+      allow_nil? false
+    end
+
     # all Location related attributes
     attribute :loc_continent, :string
     attribute :loc_country, :string
+    attribute :loc_locality, :string
 
     # all Occurrence related attributes
     attribute :occ_recorded_by, :string
+
+    # all MaterialEntity related attributes
+    attribute :mte_material_entity_id, :string do
+      allow_nil? false
+    end
 
     timestamps private?: false, writable?: false
   end

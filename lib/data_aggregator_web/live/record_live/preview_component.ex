@@ -49,8 +49,8 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
       </:header>
       <.list>
         <:item title={~t"ID"m}><%= @record.id %></:item>
-        <:item title={~t"Material Entity ID"m}><%= @record.materialEntityID %></:item>
-        <:item title={~t"Scientific Name"m}><%= @record.scientificName %></:item>
+        <:item title={~t"Material Entity ID"m}><%= @record.mte_material_entity_id %></:item>
+        <:item title={~t"Scientific Name"m}><%= @record.tax_scientific_name %></:item>
       </.list>
       <:footer>
         <.button

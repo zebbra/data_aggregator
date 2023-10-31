@@ -256,7 +256,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Edit"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:35
+#: lib/data_aggregator_web/live/collection_live/index.ex:44
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Edit Collection"
@@ -268,7 +268,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Inserted At"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:47
+#: lib/data_aggregator_web/live/collection_live/index.ex:56
 #: lib/data_aggregator_web/live/collection_live/index.html.heex:3
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
@@ -281,7 +281,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:41
+#: lib/data_aggregator_web/live/collection_live/index.ex:50
 #: lib/data_aggregator_web/live/collection_live/index.html.heex:7
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
@@ -294,7 +294,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Show"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:29
+#: lib/data_aggregator_web/live/collection_live/index.ex:38
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Show Collection"

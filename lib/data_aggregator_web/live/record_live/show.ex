@@ -38,7 +38,7 @@ defmodule DataAggregatorWeb.RecordLive.Show do
     ~H"""
     <main>
       <.header class="top-16 sticky">
-        <%= @record.scientificName %>
+        <%= @record.tax_scientific_name %>
 
         <:actions>
           <.styled_link

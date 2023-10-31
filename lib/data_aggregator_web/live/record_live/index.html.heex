@@ -11,7 +11,7 @@
 
   <.table
     id="records"
-    rows={@streams.records}
+    rows={@streams.results}
     row_click={
       fn {_id, record} ->
         JS.push("select", value: %{id: record.id})
@@ -24,11 +24,11 @@
         <%= record.id %>
       </.styled_link>
     </:col>
-    <:col :let={{_id, record}} label={~t"MaterialEntityID"m} field="materialEntityID" sort>
-      <%= record.materialEntityID %>
+    <:col :let={{_id, record}} label={~t"MaterialEntityID"m} field="mte_material_entity_id" sort>
+      <%= record.mte_material_entity_id %>
     </:col>
-    <:col :let={{_id, record}} label={~t"Scientific Name"m} field="scientificName" sort>
-      <%= record.scientificName %>
+    <:col :let={{_id, record}} label={~t"Scientific Name"m} field="tax_scientific_name" sort>
+      <%= record.tax_scientific_name %>
     </:col>
     <:col :let={{_id, record}} label={~t"Inserted At"m} field="inserted_at" sort align="right">
       <%= format_datetime(record.inserted_at) %>

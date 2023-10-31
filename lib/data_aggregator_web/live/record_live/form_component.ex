@@ -47,13 +47,13 @@ defmodule DataAggregatorWeb.RecordLive.FormComponent do
         phx-submit="save"
       >
         <.input
-          field={@form[:materialEntityID]}
+          field={@form[:mte_material_entity_id]}
           label={~t"Material Entity ID"m}
           placeholder={~t"Material Entity ID"m}
         />
 
         <.input
-          field={@form[:scientificName]}
+          field={@form[:tax_scientific_name]}
           label={~t"Scientific Name"m}
           placeholder={~t"Scientific Name"m}
         />
