@@ -8,7 +8,10 @@ defmodule DataAggregator.Platform.ImportFile do
 
   attributes do
     uuid_attribute :id, prefix: "if"
+
     attribute :amount_of_rows, :integer
+    attribute :columns, {:array, :string}
+
     timestamps private?: false, writable?: false
   end
 
@@ -21,23 +24,25 @@ defmodule DataAggregator.Platform.ImportFile do
   end
 
   actions do
-    defaults [:create, :read, :update, :destroy]
+    defaults [:read]
 
-    create :upload_file do
+    create :create_from_path do
+      primary? true
       argument :path, :string, allow_nil?: false
-      argument :collection_id, :string, allow_nil?: false
-      change manage_relationship(:collection_id, :collection, type: :append)
+      argument :collection, Collection, allow_nil?: false
+      # argument :collection_id, :string, allow_nil?: false
+
+      change manage_relationship(:collection, :collection, type: :append)
       change manage_relationship(:path, :attachment, value_is_key: :path, type: :create)
+
+      change DataAggregator.Platform.Changes.DetectColumns
     end
   end
 
   code_interface do
     define_for DataAggregator.Platform
-    define :upload_file
+    define :create_from_path, args: [:collection, :path]
     define :read
-    define :create
-    define :update
-    define :destroy
     define :get_by_id, action: :read, get_by: [:id]
   end
 
@@ -55,9 +60,7 @@ defmodule DataAggregator.Platform.ImportFile do
     end
 
     mutations do
-      create :create_import_file, :create
-      update :update_import_file, :update
-      destroy :destroy_import_file, :destroy
+      create :create_import_file, :create_from_path
     end
   end
 
@@ -69,9 +72,7 @@ defmodule DataAggregator.Platform.ImportFile do
 
       get(:read)
       index :read
-      post(:create)
-      patch(:update)
-      delete(:destroy)
+      post(:create_from_path)
     end
   end
 end

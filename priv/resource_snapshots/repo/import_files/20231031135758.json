@@ -1,0 +1,124 @@
+{
+  "attributes": [
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "id",
+      "references": null,
+      "allow_nil?": false,
+      "primary_key?": true,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "bigint",
+      "source": "amount_of_rows",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": [
+        "array",
+        "text"
+      ],
+      "source": "columns",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "fragment(\"now()\")",
+      "size": null,
+      "type": "utc_datetime_usec",
+      "source": "inserted_at",
+      "references": null,
+      "allow_nil?": false,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "fragment(\"now()\")",
+      "size": null,
+      "type": "utc_datetime_usec",
+      "source": "updated_at",
+      "references": null,
+      "allow_nil?": false,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "collection_id",
+      "references": {
+        "name": "import_files_collection_id_fkey",
+        "table": "collections",
+        "primary_key?": true,
+        "schema": "public",
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "destination_attribute": "id",
+        "on_delete": null,
+        "on_update": null,
+        "deferrable": false,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null
+      },
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "attachment_id",
+      "references": {
+        "name": "import_files_attachment_id_fkey",
+        "table": "file_attachments",
+        "primary_key?": true,
+        "schema": "public",
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "destination_attribute": "id",
+        "on_delete": null,
+        "on_update": null,
+        "deferrable": false,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null
+      },
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    }
+  ],
+  "table": "import_files",
+  "hash": "6B0A49F2696C29F4D3267C9A2908C5A069FC9825826FA8430A016C5B18E8B3A1",
+  "repo": "Elixir.DataAggregator.Repo",
+  "schema": null,
+  "identities": [],
+  "check_constraints": [],
+  "custom_indexes": [],
+  "multitenancy": {
+    "global": null,
+    "attribute": null,
+    "strategy": null
+  },
+  "base_filter": null,
+  "custom_statements": [],
+  "has_create_action": true
+}

@@ -180,7 +180,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   end
 
   defp handle_upload(collection, path) do
-    ImportFile.upload_file(%{collection_id: collection.id, path: path})
+    ImportFile.create_from_path(collection, path)
   end
 
   defp error_to_string(:too_large), do: "Too large"

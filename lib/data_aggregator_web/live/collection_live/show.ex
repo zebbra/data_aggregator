@@ -10,13 +10,11 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    collection = Collection.get_by_id!(id, load: [import_files: [:data]])
-    import_file = collection.import_files |> List.last()
+    collection = Collection.get_by_id!(id)
 
     socket =
       socket
       |> assign(:collection, collection)
-      |> assign(:import_file, import_file)
       |> apply_action(socket.assigns.live_action, params)
 
     {:noreply, socket}
@@ -54,13 +52,6 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
           </.styled_link>
         </:actions>
       </.header>
-
-      <div :if={@import_file}>
-        <.table id="columns" rows={@import_file.data |> Explorer.DataFrame.dtypes()}>
-          <:col :let={{name, _}} label="Name"><%= name %></:col>
-          <:col :let={{_, type}} label="Type"><%= type %></:col>
-        </.table>
-      </div>
 
       <.back navigate={~p"/collections"}>
         <%= ~t"Back"m %>
