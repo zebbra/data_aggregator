@@ -242,7 +242,6 @@ defmodule DataAggregator.MixProject do
       "assets.build": ["tailwind default", "esbuild default"],
       "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
       lint: ["format --check-formatted", "credo --strict", "deps.audit"],
-      "generate.erd": ["ecto.gen.erd --output-path=erd.dbml"],
       docs: [
         "ash.generate_livebook --filename=docs/api.md",
         "ash.generate_resource_diagrams --format md",
