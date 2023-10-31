@@ -218,7 +218,7 @@ defmodule DataAggregator.MixProject do
       {:mint, "~> 1.3"},
 
       # docs
-      {:ex_doc, "~> 0.27", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.27", runtime: false}
     ]
   end
 
