@@ -56,8 +56,8 @@ defmodule DataAggregator.Platform.ImportFileTest do
           "test/support/fixtures/files/no-recent-events.jpeg"
         )
 
-      Enum.at(error.errors, 0).message
-      |> String.contains?("path is invalid, duet to error")
+      assert Enum.at(error.errors, 0).message
+             |> String.contains?("path is invalid, duet to error")
     end
 
     test "import invalid path" do
@@ -69,8 +69,8 @@ defmodule DataAggregator.Platform.ImportFileTest do
           "test/bla"
         )
 
-      Enum.at(error.errors, 0).message
-      |> String.contains?("error open file: test/bla, No such file or directory")
+      assert Enum.at(error.errors, 0).message
+             |> String.contains?("error open file: test/bla, No such file or directory")
     end
   end
 end
