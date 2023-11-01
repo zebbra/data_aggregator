@@ -5,13 +5,12 @@ defmodule DataAggregator.Platform.ImportFile do
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Platform.Collection
+  alias DataAggregator.Platform.ImportFile.Column
 
   attributes do
     uuid_attribute :id, prefix: "if"
-
     attribute :amount_of_rows, :integer
-    attribute :columns, {:array, :string}
-
+    attribute :columns, {:array, Column}
     timestamps private?: false, writable?: false
   end
 
@@ -28,6 +27,8 @@ defmodule DataAggregator.Platform.ImportFile do
 
     create :create_from_path do
       primary? true
+      accept []
+
       argument :path, :string, allow_nil?: false
       argument :collection, Collection, allow_nil?: false
 
@@ -36,11 +37,17 @@ defmodule DataAggregator.Platform.ImportFile do
 
       change DataAggregator.Platform.Changes.DetectColumns
     end
+
+    update :update_mapping do
+      accept [:columns]
+      change DataAggregator.Platform.Changes.UpdateMapping
+    end
   end
 
   code_interface do
     define_for DataAggregator.Platform
     define :create_from_path, args: [:collection, :path]
+    define :update_mapping
     define :read
     define :get_by_id, action: :read, get_by: [:id]
   end

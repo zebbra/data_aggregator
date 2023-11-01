@@ -13,27 +13,24 @@ defmodule DataAggregator.Platform.Changes.DetectColumns do
         Changeset.change_attribute(changeset, :columns, columns)
 
       {:error, error} ->
+        message = Exception.message(error)
+
         Changeset.add_error(changeset,
           field: :path,
-          message: "path is invalid, duet to error: #{inspect(error)}",
+          message: "path is invalid (#{message})",
           value: path
         )
     end
   end
 
   defp detect_columns(path) do
-    case Explorer.DataFrame.from_csv(path) do
-      {:ok, df} ->
-        columns =
-          df
-          |> Explorer.DataFrame.dtypes()
-          |> Map.keys()
+    with {:ok, df} <- Explorer.DataFrame.from_csv(path) do
+      columns =
+        df
+        |> Explorer.DataFrame.dtypes()
+        |> Enum.map(fn {name, type} -> %{name: name, type: type} end)
 
-        {:ok, columns}
-
-      {:error, error} ->
-        Logger.error("Unable to detect columns: #{inspect(error)}")
-        {:error, error}
+      {:ok, columns}
     end
   end
 end

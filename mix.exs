@@ -158,7 +158,6 @@ defmodule DataAggregator.MixProject do
       {:ash, "~> 2.13"},
       {:ash_postgres, "~> 1.3"},
       {:ash_phoenix, "~> 1.2"},
-      # {:ash_admin, "~> 0.9.0"},
       {:ash_uuid, "~> 0.4"},
       {:ash_graphql, "~> 0.26.6"},
 
@@ -169,8 +168,7 @@ defmodule DataAggregator.MixProject do
       {:open_api_spex, "~> 3.18"},
       {:ash_json_api, "~> 0.33.1"},
       {:redoc_ui_plug, "~> 0.2.1"},
-      # {:typed_struct, "~> 0.3.0"},
-      # {:typed_ecto_schema, "~> 0.4.1", runtime: false},
+      {:ecto_dev_logger, "~> 0.9"},
 
       # assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},

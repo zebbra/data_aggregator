@@ -28,6 +28,7 @@ defmodule DataAggregator.Files.Attachment do
 
     create :import_from_path do
       primary? true
+      accept []
       argument :path, :string, allow_nil?: false
       change DataAggregator.Files.Changes.StoreFile
     end

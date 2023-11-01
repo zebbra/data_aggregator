@@ -10,6 +10,9 @@ defmodule DataAggregator.Application do
     # Add logger handlers (eg. Sentry)
     :ok = Logger.add_handlers(:data_aggregator)
 
+    # Enable ecto dev logger (only in dev)
+    Ecto.DevLogger.install(DataAggregator.Repo)
+
     children = [
       # Start the Telemetry supervisor
       DataAggregatorWeb.Telemetry,

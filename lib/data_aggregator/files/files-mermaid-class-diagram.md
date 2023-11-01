@@ -6,7 +6,7 @@ classDiagram
         String url
         Function stream
         read()
-        import_from_path(String path, UUID id, String filename)
+        import_from_path(String path)
         destroy()
     }
 

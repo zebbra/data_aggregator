@@ -37,15 +37,14 @@ classDiagram
     class ImportFile {
         UUID id
         Integer amount_of_rows
+        Column[] columns
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Collection collection
         Attachment attachment
-        destroy()
-        update(UUID id, Integer amount_of_rows, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
         read()
-        create(UUID id, Integer amount_of_rows, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
-        upload_file(String path, String collection_id, UUID id, Integer amount_of_rows, ...)
+        create_from_path(String path, Collection collection)
+        update_mapping(Column[] columns)
     }
 
     Attachment -- Collection
