@@ -17,7 +17,6 @@ defmodule DataAggregator.Platform.ImportFileTest do
 
       assert columns == [
                {"Age", :string},
-               {"Auteur et date sp.", :string},
                {"Auteur et date ssp", :string},
                {"Autres numéros", :string},
                {"Collecteur", :string},
@@ -41,7 +40,6 @@ defmodule DataAggregator.Platform.ImportFileTest do
                {"PrecisionGEO", :string},
                {"Province", :string},
                {"Remarques", :string},
-               {"SAISON", :string},
                {"Sexe", :string},
                {"Sous espèce", :string},
                {"Station", :string},
@@ -88,7 +86,6 @@ defmodule DataAggregator.Platform.ImportFileTest do
 
       assert columns == [
                {"Age", :string, "age"},
-               {"Auteur et date sp.", :string, nil},
                {"Auteur et date ssp", :string, nil},
                {"Autres numéros", :string, nil},
                {"Collecteur", :string, nil},
@@ -112,7 +109,6 @@ defmodule DataAggregator.Platform.ImportFileTest do
                {"PrecisionGEO", :string, nil},
                {"Province", :string, nil},
                {"Remarques", :string, nil},
-               {"SAISON", :string, nil},
                {"Sexe", :string, nil},
                {"Sous espèce", :string, nil},
                {"Station", :string, nil},
@@ -126,12 +122,11 @@ defmodule DataAggregator.Platform.ImportFileTest do
         ]
       }
 
-      {:ok, import_file} = ImportFile.update_mapping(import_file, params) |> dbg
+      {:ok, import_file} = ImportFile.update_mapping(import_file, params)
       columns = import_file.columns |> Enum.map(&{&1.name, &1.type, &1.mapped_to})
 
       assert columns == [
                {"Age", :string, nil},
-               {"Auteur et date sp.", :string, nil},
                {"Auteur et date ssp", :string, nil},
                {"Autres numéros", :string, nil},
                {"Collecteur", :string, "coll"},
@@ -155,7 +150,6 @@ defmodule DataAggregator.Platform.ImportFileTest do
                {"PrecisionGEO", :string, nil},
                {"Province", :string, nil},
                {"Remarques", :string, nil},
-               {"SAISON", :string, nil},
                {"Sexe", :string, nil},
                {"Sous espèce", :string, nil},
                {"Station", :string, nil},

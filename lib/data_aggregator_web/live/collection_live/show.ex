@@ -27,15 +27,56 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
 
   defp apply_action(socket, :import, _params) do
     socket
-    |> assign(:page_title, ~t"Import File"m)
+    |> assign(:page_title, ~t"Import Records"m)
+  end
+
+  defp apply_action(socket, :do_mapping, _params) do
+    socket
+    |> assign(:page_title, ~t"Map Your Columns"m)
+    |> assign(:live_action, :do_mapping)
+  end
+
+  defp apply_action(socket, :confirm_mapping, _params) do
+    socket
+    |> assign(:page_title, ~t"Confirm Your Mapping"m)
+    |> assign(:live_action, :confirm_mapping)
   end
 
   @impl true
   def handle_info(
-        {DataAggregatorWeb.CollectionLive.FormComponent, {:saved, collection}},
+        {DataAggregatorWeb.CollectionLive.ImportFormComponent, {:imported, import_file}},
         socket
       ) do
-    {:noreply, assign(socket, :collection, collection)}
+    {:noreply,
+     socket
+     |> assign(:import_file, import_file)
+     |> apply_action(:do_mapping, import_file)}
+  end
+
+  @impl true
+  def handle_info(
+        {DataAggregatorWeb.CollectionLive.DoMappingComponent, {:mapped, import_file}},
+        socket
+      ) do
+    {:noreply,
+     socket
+     |> assign(:import_file, import_file)
+     |> apply_action(:confirm_mapping, import_file)}
+  end
+
+  @impl true
+  def handle_info(
+        {DataAggregatorWeb.CollectionLive.ConfirmMappingComponent,
+         {:confirm_mapping, import_file}},
+        socket
+      ) do
+    {
+      :noreply,
+      socket
+      |> assign(:import_file, import_file)
+      # ... and then import the records
+      #  |> apply_action(:imprt_records, import_file)
+    }
   end
 
   @impl true
@@ -48,7 +89,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
         <:actions>
           <.styled_link patch={~p"/collections/#{@collection}/import"} id="collection-modal__button">
             <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-            <span class="sm:inline-block hidden"><%= ~t"Import File"m %></span>
+            <span class="sm:inline-block hidden"><%= ~t"Import Records"m %></span>
           </.styled_link>
         </:actions>
       </.header>
@@ -64,11 +105,43 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
       >
         <.live_component
           module={DataAggregatorWeb.CollectionLive.ImportFormComponent}
-          id={@collection.id}
+          id={"import_form-#{@collection.id}"}
           icon="hero-plus-circle-mini"
           title={@page_title}
           action={:new}
           collection={@collection}
+          patch={~p"/collections/#{@collection}"}
+        />
+      </.modal>
+
+      <.modal
+        :if={@live_action == :do_mapping}
+        id="do-mapping-modal"
+        on_cancel={JS.patch(~p"/collections/#{@collection}")}
+      >
+        <.live_component
+          module={DataAggregatorWeb.CollectionLive.DoMappingComponent}
+          id={"do_mapping-#{@import_file.id}"}
+          icon="hero-table-cells-mini"
+          title={@page_title}
+          action={:new}
+          import_file={@import_file}
+          patch={~p"/collections/#{@collection}"}
+        />
+      </.modal>
+
+      <.modal
+        :if={@live_action == :confirm_mapping}
+        id="confirm-mapping-modal"
+        on_cancel={JS.patch(~p"/collections/#{@collection}")}
+      >
+        <.live_component
+          module={DataAggregatorWeb.CollectionLive.ConfirmMappingComponent}
+          id={"confirm_mapping-#{@import_file.id}"}
+          icon="hero-table-cells-mini"
+          title={@page_title}
+          action={:new}
+          import_file={@import_file}
           patch={~p"/collections/#{@collection}"}
         />
       </.modal>

@@ -26,6 +26,9 @@ defmodule DataAggregator.Data.Record do
     attribute :eve_event_date, :date
     attribute :eve_month, :string
     attribute :eve_year, :string
+    attribute :eve_end_of_period_day, :string
+    attribute :eve_end_of_period_month, :string
+    attribute :eve_end_of_period_year, :string
 
     # all Identification related attributes
     attribute :idf_date_identified, :date
@@ -49,23 +52,39 @@ defmodule DataAggregator.Data.Record do
     attribute :tax_family, :string
     attribute :tax_scientific_name_authorship, :string
     attribute :tax_order, :string
+    attribute :tax_genus, :string
+    attribute :tax_infraspecific_epithet, :string
 
     attribute :tax_scientific_name, :string do
       allow_nil? false
     end
 
+    # all SpeciesProfile related attributes
+    attribute :spp_life_stage, :string
+
     # all Location related attributes
     attribute :loc_continent, :string
     attribute :loc_country, :string
     attribute :loc_locality, :string
+    attribute :loc_state_province, :string
+    attribute :loc_verbatim_locality, :string
+    attribute :loc_decimal_longitude, :float
+    attribute :loc_decimal_latitude, :float
+    attribute :loc_georeference_remarks, :string
 
     # all Occurrence related attributes
     attribute :occ_recorded_by, :string
+    attribute :occ_sex, :string
+    attribute :occ_associated_occurrences, :string
+    attribute :occ_occurrence_remarks, :string
 
     # all MaterialEntity related attributes
     attribute :mte_material_entity_id, :string do
       allow_nil? false
     end
+
+    # all MaterialSample related attributes
+    attribute :mts_material_sample_type, :string
 
     timestamps private?: false, writable?: false
   end

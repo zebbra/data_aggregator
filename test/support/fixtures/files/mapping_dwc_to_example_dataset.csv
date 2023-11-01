@@ -1,0 +1,28 @@
+label,name,mapping_to
+material_entity_id,mte_material_entity_id,Numéro scientifique GBIF
+order,tax_order,Ordre
+family,tax_family,Famille
+genus,tax_genus,Genre
+specific_epithet,tax_specific_epithet,Espèce
+scientific_name_authorship,tax_scientific_name_authorship,Auteur et date sp.
+infraspecific_epithet,tax_infraspecific_epithet,Sous espèce
+scientific_name_authorship,tax_scientific_name_authorship,Auteur et date ssp
+sex,occ_sex,Sexe
+life_stage,spp_life_stage,Age
+material_sample_type,mts_material_sample_type,Parties
+associated_occurrences,occ_associated_occurrences,Autres numéros
+country,loc_country,Pays
+state_province,loc_state_province,Province
+verbatim_locality,loc_verbatim_locality,Localité
+locality,loc_locality,Station
+decimal_longitude,loc_decimal_longitude,LongitudeDecimale
+decimal_latitude,loc_decimal_latitude,LatitudeDecimale
+georeference_remarks,loc_georeference_remarks,PrecisionGEO
+occurrence_remarks,occ_occurrence_remarks,Remarques
+day,eve_day,DAYCOLLECTED
+month,eve_month,MONTHCOLLECTED
+year,eve_year,YEARCOLLECTED
+end_of_period_day,eve_end_of_period_day,ENDOFPERIODDAY
+end_of_period_month,eve_end_of_period_month,ENDOFPERIODMONTH
+end_of_period_year,eve_end_of_period_year,ENDOFPERIODYEAR
+recorded_by,occ_recorded_by,Collecteur
