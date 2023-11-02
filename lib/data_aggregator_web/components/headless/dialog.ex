@@ -12,7 +12,7 @@ defmodule DataAggregatorWeb.Headless.Dialog do
   import DataAggregatorWeb.Headless.Description
   import DataAggregatorWeb.Headless.Helpers
 
-  @doc """
+  @doc ~S"""
   Renders a dialog component. Per default you set show to true and render the dialog
   conditionaly with the :if directive. However, if a dialog must be visible / hidden
   base on client window width, this approach does not work. In this case you can use

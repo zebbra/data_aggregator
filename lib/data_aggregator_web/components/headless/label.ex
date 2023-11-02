@@ -5,6 +5,10 @@ defmodule DataAggregatorWeb.Headless.Label do
 
   use Phoenix.Component
 
+  @doc ~S"""
+  Renders a label component. Mounts the LabelHook.
+  """
+
   attr :id, :string, required: true
   attr :as, :string, default: "label"
   attr :passive, :boolean, default: false

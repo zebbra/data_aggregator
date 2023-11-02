@@ -1,6 +1,6 @@
 defmodule DataAggregatorWeb.LiveNavigator do
   @moduledoc """
-  LiveView hook to keep track of the current path in the session.
+  LiveView hook to keep track of the current active link in the session.
   """
 
   import Phoenix.LiveView, only: [attach_hook: 4]
@@ -14,20 +14,14 @@ defmodule DataAggregatorWeb.LiveNavigator do
 
   defp set_active_link(_params, _url, socket) do
     active_link =
-      case {socket.view, socket.assigns.live_action} do
-        {DataAggregatorWeb.DashboardLive.Index, _} ->
+      case {to_string(socket.view), socket.assigns.live_action} do
+        {"Elixir.DataAggregatorWeb.DashboardLive" <> _, _} ->
           :dashboard
 
-        {DataAggregatorWeb.RecordLive.Index, _} ->
+        {"Elixir.DataAggregatorWeb.RecordLive" <> _, _} ->
           :records
 
-        {DataAggregatorWeb.RecordLive.Show, _} ->
-          :records
-
-        {DataAggregatorWeb.CollectionLive.Index, _} ->
-          :collections
-
-        {DataAggregatorWeb.CollectionLive.Show, _} ->
+        {"Elixir.DataAggregatorWeb.CollectionLive" <> _, _} ->
           :collections
 
         {_, _} ->

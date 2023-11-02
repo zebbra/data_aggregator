@@ -24,7 +24,7 @@ defmodule DataAggregatorWeb.CoreComponents do
   import DataAggregatorWeb.Headless.Dialog, only: [dialog_title: 1]
   import DataAggregatorWeb.QueryBuilder
 
-  @doc """
+  @doc ~S"""
   Renders flash notices.
 
   ## Examples
@@ -110,7 +110,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     """
   end
 
-  @doc """
+  @doc ~S"""
   Shows the flash group with standard titles and content.
 
   ## Examples
@@ -159,7 +159,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     """
   end
 
-  @doc """
+  @doc ~S"""
   Renders a simple form.
 
   ## Examples
@@ -195,7 +195,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     """
   end
 
-  @doc """
+  @doc ~S"""
   Renders a button.
 
   ## Examples
@@ -232,7 +232,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     """
   end
 
-  @doc """
+  @doc ~S"""
   Renders a link with the same styling variants as the buttons.
 
   ## Examples
@@ -289,7 +289,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     end
   end
 
-  @doc """
+  @doc ~S"""
   Renders an input with label and error messages.
 
   A `Phoenix.HTML.FormField` may be passed as argument,
@@ -446,7 +446,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     """
   end
 
-  @doc """
+  @doc ~S"""
   Renders a label.
   """
   attr :for, :string, default: nil
@@ -460,7 +460,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     """
   end
 
-  @doc """
+  @doc ~S"""
   Generates a generic error message.
   """
   attr :id, :string
@@ -474,7 +474,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     """
   end
 
-  @doc """
+  @doc ~S"""
   Renders a header with title.
   """
   attr :class, :string, default: nil, doc: "the header class"
@@ -517,7 +517,7 @@ defmodule DataAggregatorWeb.CoreComponents do
   end
 
   @doc ~S"""
-  Renders a sidebar with header, inner_block, and footer slots.
+  Renders a sidebar with header, inner_block, and footer slots with default tailwindui style.
   """
   attr :class, :string, default: nil, doc: "the sidebar class"
   attr :as, :string, default: "div"
@@ -552,17 +552,17 @@ defmodule DataAggregatorWeb.CoreComponents do
   end
 
   @doc ~S"""
-  Renders a table with generic styling.
+  Renders a table for streams with generic tailwindui styling.
 
   ## Examples
 
-      <.table id="users" rows={@users}>
+      <.table id="users" rows={@streams.results}>
         <:col :let={user} label="id"><%= user.id %></:col>
         <:col :let={user} label="username"><%= user.username %></:col>
       </.table>
   """
   attr :id, :string, required: true
-  attr :rows, :list, required: true
+  attr :rows, :list, required: true, doc: "the list of rows (a stream) to render"
   attr :row_id, :any, default: nil, doc: "the function for generating the row id"
   attr :row_click, :any, default: nil, doc: "the function for handling phx-click on each row"
   attr :sort, :string, default: nil, doc: "the current sort order"
@@ -572,8 +572,8 @@ defmodule DataAggregatorWeb.CoreComponents do
     doc: "the function for mapping each row before calling the :col and :action slots"
 
   slot :col, required: true do
-    attr :label, :string
-    attr :field, :string
+    attr :label, :string, doc: "the label for the column"
+    attr :field, :string, doc: "the field for the column"
     attr :sort, :boolean, doc: "the sort flag for the column"
     attr :align, :string, doc: "the alignment of the column (left, center, right)"
   end
@@ -844,7 +844,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     """
   end
 
-  @doc """
+  @doc ~S"""
   Renders a data list.
 
   ## Examples
@@ -873,7 +873,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     """
   end
 
-  @doc """
+  @doc ~S"""
   Renders a back navigation link.
 
   ## Examples
@@ -897,7 +897,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     """
   end
 
-  @doc """
+  @doc ~S"""
   Renders a [Heroicon](https://heroicons.com).
 
   Heroicons come in three styles – outline, solid, and mini.
@@ -946,7 +946,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     )
   end
 
-  @doc """
+  @doc ~S"""
   Translates an error message using gettext.
   """
   def translate_error({msg, opts}) do
@@ -967,7 +967,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     end
   end
 
-  @doc """
+  @doc ~S"""
   Translates the errors for a field from a keyword list of errors.
   """
   def translate_errors(errors, field) when is_list(errors) do

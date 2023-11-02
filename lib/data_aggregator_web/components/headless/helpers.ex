@@ -1,10 +1,20 @@
 defmodule DataAggregatorWeb.Headless.Helpers do
+  @moduledoc """
+  Helper functions for the Headless components.
+  """
+
+  @doc ~S"""
+  Returns the root id of a component id without the suffix.
+  """
   def root_id(id) do
     id
     |> String.split("__")
     |> List.first()
   end
 
+  @doc ~S"""
+  Extracts the duration in milliseconds from a tailwindcss transition class.
+  """
   def extract_duration(transition_map)
 
   def extract_duration({transition_class, _starting, _ending}) do

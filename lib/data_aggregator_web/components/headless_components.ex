@@ -14,9 +14,34 @@ defmodule DataAggregatorWeb.HeadlessComponents do
   import DataAggregatorWeb.Headless.Dialog
   import DataAggregatorWeb.CoreComponents, only: [icon: 1, button: 1]
 
-  # Switch
+  @doc ~S"""
+  Renders a switch group component. Used to build switches with labes and descriptions.
 
-  attr :id, :string, required: true
+  Uses `headless_switch_group` internally.
+
+  ## Examples
+
+      <.switch_group id="switch__group" class="flex items-center justify-between">
+        <span class="flex flex-col flex-grow">
+          <.switch_label
+            id="switch__label"
+            as="span"
+            class="text-sm font-medium leading-6 text-gray-900"
+          >
+            Available to hire
+          </.switch_label>
+          <.switch_description id="switch__description" as="span" class="text-sm text-gray-500">
+            Nulla amet tempus sit accumsan. Aliquet turpis sed sit lacinia.
+          </.switch_description>
+        </span>
+        <.switch id="switch" checked />
+      </.switch_group>
+  """
+
+  attr :id, :string,
+    required: true,
+    doc: "the id of the switch group (must conform <switch.id>__group)"
+
   attr :as, :string, default: "div"
   attr :rest, :global
 
@@ -30,20 +55,28 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     """
   end
 
+  @doc ~S"""
+  Renders a switch component. Used to build switches with labes and descriptions.
+
+  Uses `headless_switch` internally.
+  """
+
   attr :id, :string, required: true
   attr :as, :string, default: "button"
-  attr :checked, :boolean, default: false
-  attr :value, :string, default: "on"
-  attr :form, :string, default: nil
-  attr :name, :string, default: nil
+  attr :checked, :boolean, default: false, doc: "the checked state of the switch"
+  attr :value, :string, default: "on", doc: "the checked value of the switch"
+  attr :form, :string, default: nil, doc: "the form name of the switch if used inside a form"
+  attr :name, :string, default: nil, doc: "the field name of the switch if used inside a form"
 
   attr :class, :string,
     default:
-      "bg-gray-200 aria-checked:bg-indigo-600 w-11 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer"
+      "bg-gray-200 aria-checked:bg-indigo-600 w-11 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer",
+    doc: "the class of the switch"
 
   attr :slot_class, :string,
     default:
-      "ring-0 group-[.is-checked]/checked:translate-x-5 inline-block w-5 h-5 transition duration-200 ease-in-out transform translate-x-0 bg-white rounded-full shadow pointer-events-none"
+      "ring-0 group-[.is-checked]/checked:translate-x-5 inline-block w-5 h-5 transition duration-200 ease-in-out transform translate-x-0 bg-white rounded-full shadow pointer-events-none",
+    doc: "the class of the switch slot, per default renders the tailwindui styled default_switch"
 
   attr :rest, :global
 
@@ -73,8 +106,21 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     """
   end
 
-  attr :id, :string, required: true
-  attr :passive, :boolean, default: false
+  @doc ~S"""
+  Renders a switch label component. Used to build switches with labes and descriptions.
+
+  Uses `headless_switch_label` internally.
+  """
+
+  attr :id, :string,
+    required: true,
+    doc: "the id of the switch label (must conform <switch.id>__label)"
+
+  attr :passive, :boolean,
+    default: false,
+    doc:
+      "set to true if you want to use the switch label as a passive label which does not toggle the switch"
+
   attr :as, :string, default: "label"
   attr :rest, :global
 
@@ -88,7 +134,16 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     """
   end
 
-  attr :id, :string, required: true
+  @doc ~S"""
+  Renders a switch description component. Used to build switches with labes and descriptions.
+
+  Uses `headless_switch_description` internally.
+  """
+
+  attr :id, :string,
+    required: true,
+    doc: "the id of the switch description (must conform <switch.id>__description)"
+
   attr :as, :string, default: "p"
   attr :rest, :global
 
@@ -102,16 +157,44 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     """
   end
 
-  # Menu
+  @doc ~S"""
+  Menu component for dropdowns with tailwindui style.
+
+  Uses the `headless_menu` component internally.
+
+  ## Examples
+
+      <.menu id="menu">
+        <.menu_button id="menu__button">
+          Menu 1
+        </.menu_button>
+        <.menu_items id="menu__items">
+          <%= for {_key, items} <- @items do %>
+            <div class="py-1" role="none">
+              <%= for item <- items do %>
+                <.menu_item id={"menu__item-#{item.id}"} patch="#" disabled={item.disabled}>
+                  <.icon
+                    name={item.icon}
+                    class="group-hover:text-gray-500 w-5 h-5 mr-3 text-gray-400"
+                  />
+                  <span><%= item.name %></span>
+                </.menu_item>
+              <% end %>
+            </div>
+          <% end %>
+        </.menu_items>
+      </.menu>
+  """
 
   attr :id, :string, required: true
   attr :as, :string, default: "div"
-  attr :class, :string, default: "relative inline-block text-left"
+  attr :class, :string, default: "relative inline-block text-left", doc: "the class of the menu"
 
   attr :hide_transition, :map,
     default:
       {"transition ease-in duration-75", "transform opacity-100 scale-100",
-       "transform opacity-0 scale-95"}
+       "transform opacity-0 scale-95"},
+    doc: "the transition for hiding the menu"
 
   attr :rest, :global
 
@@ -125,17 +208,28 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     """
   end
 
-  attr :id, :string, required: true
+  @doc ~S"""
+  Menu button component for dropdowns with tailwindui style.
+
+  Uses the `headless_menu_button` component internally.
+  """
+
+  attr :id, :string,
+    required: true,
+    doc: "the id of the menu button (must conform <menu.id>__button)"
+
   attr :as, :string, default: "button"
 
   attr :class, :string,
     default:
-      "inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+      "inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50",
+    doc: "the class of the menu button"
 
   attr :show_transition, :map,
     default:
       {"transition ease-out duration-100", "transform opacity-0 scale-95",
-       "transform opacity-100 scale-100"}
+       "transform opacity-100 scale-100"},
+    doc: "the transition for showing the menu"
 
   attr :rest, :global
 
@@ -149,14 +243,26 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     """
   end
 
-  attr :id, :string, required: true
+  @doc ~S"""
+  Menu items component for dropdowns with tailwindui style.
+
+  Uses the `headless_menu_items` component internally.
+  """
+
+  attr :id, :string,
+    required: true,
+    doc: "the id of the menu items (must conform <menu.id>__items)"
+
   attr :as, :string, default: "div"
 
   attr :class, :string,
     default:
-      "ring-1 ring-black ring-opacity-5 focus:outline-none absolute right-0 z-50 bg-white divide-y divide-gray-100 rounded-md shadow-lg"
+      "ring-1 ring-black ring-opacity-5 focus:outline-none absolute right-0 z-50 bg-white divide-y divide-gray-100 rounded-md shadow-lg",
+    doc: "the class of the menu items"
 
-  attr :position, :string, default: "top-right"
+  attr :position, :string,
+    default: "top-right",
+    doc: "the position of the menu items (see position_class/1)"
 
   attr :width, :string, default: "w-56"
   attr :rest, :global
@@ -184,7 +290,15 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     end
   end
 
-  attr :id, :string, required: true
+  @doc ~S"""
+  Menu item component for dropdowns with tailwindui style.
+
+  Uses the `headless_menu_item` component internally.
+  """
+
+  attr :id, :string,
+    required: true,
+    doc: "the id of the menu item (must conform <menu.id>__<item-suffix>)"
 
   attr :class, :string,
     default:
@@ -203,32 +317,56 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     """
   end
 
-  # Modal
+  @doc ~S"""
+  Dialog component for modals with tailwindui style.
+
+  ## Examples
+
+      <.modal
+        :if={@live_action in [:new, :edit]}
+        id="record-modal"
+        on_cancel={JS.patch(~p"/records?#{@current_path_params}")}
+      >
+        <.live_component
+          module={DataAggregatorWeb.RecordLive.FormComponent}
+          id={@record.id || :new}
+          icon="hero-plus-circle-mini"
+          title={@page_title}
+          action={@live_action}
+          record={@record}
+          patch={~p"/records?#{@current_path_params}"}
+        />
+      </.modal>
+  """
 
   attr :id, :string, required: true
   attr :as, :string, default: "div"
-  attr :show, :boolean, default: true
-  attr :class, :string, default: "hidden relative z-50"
-  attr :role, :string, default: "dialog"
-  attr :backdrop, :boolean, default: true
-  attr :on_cancel, JS, default: %JS{}
-  attr :on_confirm, JS, default: %JS{}
+  attr :show, :boolean, default: true, doc: "set to false if you want to use breakpoints"
+  attr :class, :string, default: "hidden relative z-50", doc: "the class of the dialog"
+  attr :role, :string, default: "dialog", doc: "the role attribute of the dialog"
+  attr :backdrop, :boolean, default: true, doc: "set to false if you do not want a backdrop"
+  attr :on_cancel, JS, default: %JS{}, doc: "JS callback for the cancel button"
+  attr :on_confirm, JS, default: %JS{}, doc: "JS callback for the confirm button"
 
   attr :show_panel_transition, :map,
     default:
       {"ease-out duration-300", "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
-       "opacity-100 translate-y-0 sm:scale-100"}
+       "opacity-100 translate-y-0 sm:scale-100"},
+    doc: "the transition for showing the panel"
 
   attr :hide_panel_transition, :map,
     default:
       {"ease-in duration-200", "opacity-100 translate-y-0 sm:scale-100",
-       "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"}
+       "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"},
+    doc: "the transition for hiding the panel"
 
   attr :show_backdrop_transition, :map,
-    default: {"ease-out duration-300", "opacity-0", "opacity-100"}
+    default: {"ease-out duration-300", "opacity-0", "opacity-100"},
+    doc: "the transition for showing the backdrop"
 
   attr :hide_backdrop_transition, :map,
-    default: {"ease-in duration-200", "opacity-100", "opacity-0"}
+    default: {"ease-in duration-200", "opacity-100", "opacity-0"},
+    doc: "the transition for hiding the backdrop"
 
   attr :rest, :global
 
@@ -330,35 +468,48 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     """
   end
 
-  # Slideover
+  @doc ~S"""
+  Slideover component for slideovers with tailwindui style.
+  """
 
   attr :id, :string, required: true
   attr :as, :string, default: "div"
   attr :show, :boolean, default: true, doc: "set to false if you want to use breakpoints"
-  attr :class, :string, default: "hidden relative z-50"
-  attr :width, :string, default: "max-w-md"
-  attr :role, :string, default: "dialog"
-  attr :backdrop, :boolean, default: true
-  attr :close_button, :boolean, default: true
+  attr :class, :string, default: "hidden relative z-50", doc: "the class of the dialog"
+
+  attr :width, :string,
+    default: "max-w-md",
+    doc: "the width of the slideover in tailwindcss format"
+
+  attr :role, :string, default: "dialog", doc: "the role attribute of the dialog"
+  attr :backdrop, :boolean, default: true, doc: "set to false if you do not want a backdrop"
+
+  attr :close_button, :boolean,
+    default: true,
+    doc: "set to false if you do not want a close button"
 
   attr :breakpoint, :string,
     default: nil,
     doc: "the breakpoint at which the slideover becomes visible / hidden"
 
-  attr :on_cancel, JS, default: %JS{}
-  attr :on_confirm, JS, default: %JS{}
+  attr :on_cancel, JS, default: %JS{}, doc: "JS callback for the cancel button"
+  attr :on_confirm, JS, default: %JS{}, doc: "JS callback for the confirm button"
 
   attr :show_panel_transition, :map,
-    default: {"ease-in-out duration-300", "translate-x-full", "translate-x-0"}
+    default: {"ease-in-out duration-300", "translate-x-full", "translate-x-0"},
+    doc: "the transition for showing the panel"
 
   attr :hide_panel_transition, :map,
-    default: {"ease-in-out duration-300", "translate-x-0", "translate-x-full"}
+    default: {"ease-in-out duration-300", "translate-x-0", "translate-x-full"},
+    doc: "the transition for hiding the panel"
 
   attr :show_backdrop_transition, :map,
-    default: {"ease-linear duration-300", "opacity-0", "opacity-100"}
+    default: {"ease-linear duration-300", "opacity-0", "opacity-100"},
+    doc: "the transition for showing the backdrop"
 
   attr :hide_backdrop_transition, :map,
-    default: {"ease-linear duration-300", "opacity-100", "opacity-0"}
+    default: {"ease-linear duration-300", "opacity-100", "opacity-0"},
+    doc: "the transition for hiding the backdrop"
 
   attr :rest, :global
 
@@ -416,30 +567,59 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     """
   end
 
-  # Mobile Slideover Navigation
+  @doc ~S"""
+  Slideover component for mobile navigation with tailwindui style.
+
+  ## Examples
+
+      <.mobile_slideover_nav
+        :if={@sidebar_nav}
+        id="sidebar-nav"
+        on_cancel={JS.push("toggle-sidebar-nav")}
+      >
+        <!-- Sidebar component, swap this element with another sidebar if you like -->
+        <.sidebar_nav active_link={@active_link} environment={@environment} />
+      </.mobile_slideover_nav>
+  """
 
   attr :id, :string, required: true
   attr :as, :string, default: "div"
-  attr :show, :boolean, default: true
-  attr :class, :string, default: "hidden relative z-50"
-  attr :width, :string, default: "max-w-xs"
-  attr :role, :string, default: "dialog"
-  attr :backdrop, :boolean, default: true
-  attr :close_button, :boolean, default: true
-  attr :on_cancel, JS, default: %JS{}
-  attr :on_confirm, JS, default: %JS{}
+
+  attr :show, :boolean,
+    default: true,
+    doc: "set to false if you do not want to render the slideover on mount"
+
+  attr :class, :string, default: "hidden relative z-50", doc: "the class of the dialog"
+
+  attr :width, :string,
+    default: "max-w-xs",
+    doc: "the width of the slideover in tailwindcss format"
+
+  attr :role, :string, default: "dialog", doc: "the role attribute of the dialog"
+  attr :backdrop, :boolean, default: true, doc: "set to false if you do not want a backdrop"
+
+  attr :close_button, :boolean,
+    default: true,
+    doc: "set to false if you do not want a close button"
+
+  attr :on_cancel, JS, default: %JS{}, doc: "JS callback for the cancel button"
+  attr :on_confirm, JS, default: %JS{}, doc: "JS callback for the confirm button"
 
   attr :show_panel_transition, :map,
-    default: {"ease-in-out duration-300", "-translate-x-full", "translate-x-0"}
+    default: {"ease-in-out duration-300", "-translate-x-full", "translate-x-0"},
+    doc: "the transition for showing the panel"
 
   attr :hide_panel_transition, :map,
-    default: {"ease-in-out duration-300", "translate-x-0", "-translate-x-full"}
+    default: {"ease-in-out duration-300", "translate-x-0", "-translate-x-full"},
+    doc: "the transition for hiding the panel"
 
   attr :show_backdrop_transition, :map,
-    default: {"ease-linear duration-300", "opacity-0", "opacity-100"}
+    default: {"ease-linear duration-300", "opacity-0", "opacity-100"},
+    doc: "the transition for showing the backdrop"
 
   attr :hide_backdrop_transition, :map,
-    default: {"ease-linear duration-300", "opacity-100", "opacity-0"}
+    default: {"ease-linear duration-300", "opacity-100", "opacity-0"},
+    doc: "the transition for hiding the backdrop"
 
   attr :rest, :global
 
@@ -489,6 +669,11 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     </.dialog>
     """
   end
+
+  @doc ~S"""
+  Backdrop component for modals and slideover components.
+  Mostly used internally.
+  """
 
   attr :id, :string, required: true
   attr :variant, :string, default: "modal"
