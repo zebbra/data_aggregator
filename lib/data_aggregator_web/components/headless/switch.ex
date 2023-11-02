@@ -10,8 +10,8 @@ defmodule DataAggregatorWeb.Headless.Switch do
   import DataAggregatorWeb.Headless.Label
   import DataAggregatorWeb.Headless.Description
 
-  @doc """
-  Renders a switch group component with label and description.
+  @doc ~S"""
+  Renders a switch group component with label and description. Mounts the SwitchGroupHook.
 
   ## Examples
 
@@ -42,12 +42,20 @@ defmodule DataAggregatorWeb.Headless.Switch do
     """
   end
 
+  @doc ~S"""
+  Renders a switch component. Mounts the SwitchHook.
+
+  ## Examples
+
+  <.headless_switch id="switch-1" checked />
+  """
+
   attr :id, :string, required: true
   attr :as, :string, default: "button"
   attr :checked, :boolean, default: false
   attr :value, :string, default: "on"
-  attr :form, :string, default: nil
-  attr :name, :string, default: nil
+  attr :form, :string, default: nil, doc: "The form the switch belongs to."
+  attr :name, :string, default: nil, doc: "The name of the switch."
   attr :class, :string, default: nil
   attr :slot_class, :string, default: nil
   attr :rest, :global
@@ -90,8 +98,22 @@ defmodule DataAggregatorWeb.Headless.Switch do
     """
   end
 
+  @doc ~S"""
+  Renders a switch label component. Mounts the SwitchLabelHook.
+
+  ## Examples
+
+  <.headless_switch_label id="switch-1__label">
+    Switch 1
+  </.headless_switch_label>
+
+  ## Usage
+
+  The componen id must follow the pattern `<id>__label` to work properly.
+  """
+
   attr :id, :string, required: true
-  attr :passive, :boolean, default: false
+  attr :passive, :boolean, default: false, doc: "Passive labels are not clickable."
   attr :as, :string, default: "label"
   attr :rest, :global
   slot :inner_block, required: true
@@ -103,6 +125,20 @@ defmodule DataAggregatorWeb.Headless.Switch do
     </.label>
     """
   end
+
+  @doc ~S"""
+  Renders a switch description component. Mounts the SwitchDescriptionHook.
+
+  ## Examples
+
+  <.headless_switch_description id="switch-1__description">
+    Switch 1 description
+  </.headless_switch_description>
+
+  ## Usage
+
+  The componen id must follow the pattern `<id>__description` to work properly.
+  """
 
   attr :id, :string, required: true
   attr :as, :string, default: "p"

@@ -1,0 +1,15 @@
+# File Management
+
+```elixir
+Mix.install([
+  {:kino, "~> 0.11.0"}
+])
+```
+
+## Setup
+
+Make sure to start the application using the following command then use `dagg@<hostname>` as *Node* below:
+
+```shell
+> iex --sname dagg --cookie secret -S mix phx.server
+```

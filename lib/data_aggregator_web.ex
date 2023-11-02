@@ -17,7 +17,7 @@ defmodule DataAggregatorWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+  def static_paths, do: ~w(assets fonts images docs favicon.ico robots.txt)
 
   def router do
     quote do
@@ -108,7 +108,7 @@ defmodule DataAggregatorWeb do
     end
   end
 
-  @doc """
+  @doc ~S"""
   When used, dispatch to the appropriate controller/view/etc.
   """
   defmacro __using__(which) when is_atom(which) do

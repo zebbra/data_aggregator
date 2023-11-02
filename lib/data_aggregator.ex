@@ -1,19 +1,6 @@
 defmodule DataAggregator do
-  @moduledoc """
-  Documentation for `DataAggregator`.
-  """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> DataAggregator.hello()
-      :world
-
-  """
-  def hello do
-    :test
-    :world
-  end
+  @moduledoc "README.md"
+             |> File.read!()
+             |> String.split("<!-- MDOC -->")
+             |> Enum.fetch!(1)
 end

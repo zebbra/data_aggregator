@@ -1,0 +1,66 @@
+<main>
+  <.header class="top-16 sticky">
+    <%= ~t"Listing Collections"m %>
+    <:actions>
+      <.styled_link patch={~p"/collections/new"} id="collection-modal__button">
+        <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
+        <span class="sm:inline-block hidden"><%= ~t"New Collection"m %></span>
+      </.styled_link>
+    </:actions>
+  </.header>
+
+  <.table
+    id="collections"
+    rows={@streams.results}
+    row_click={
+      fn {_id, collection} ->
+        JS.navigate(~p"/collections/#{collection}?#{@current_path_params}")
+      end
+    }
+    sort={@current_sort}
+  >
+    <:col :let={{_id, collection}} label={~t"Name"m} field="name" sort>
+      <%= collection.name %>
+    </:col>
+
+    <:col :let={{_id, collection}} label={~t"Inserted At"m} field="inserted_at" sort>
+      <%= format_datetime(collection.inserted_at) %>
+    </:col>
+
+    <:col :let={{_id, collection}} label={~t"Updated At"m} field="updated_at" sort>
+      <%= format_datetime(collection.updated_at) %>
+    </:col>
+
+    <:action :let={{_id, collection}}>
+      <div class="sr-only">
+        <.link patch={~p"/collections/#{collection}"}><%= ~t"Show"m %></.link>
+      </div>
+      <.link patch={~p"/collections/#{collection}/edit"}><%= ~t"Edit"m %></.link>
+    </:action>
+
+    <:action :let={{id, collection}}>
+      <.link
+        phx-click={JS.push("delete", value: %{id: collection.id}) |> hide("##{id}")}
+        data-confirm={~t"Are you sure?"m}
+      >
+        <%= ~t"Delete"m %>
+      </.link>
+    </:action>
+  </.table>
+</main>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="collection-modal"
+  on_cancel={JS.patch(~p"/collections")}
+>
+  <.live_component
+    module={DataAggregatorWeb.CollectionLive.FormComponent}
+    id={@collection.id || :new}
+    icon="hero-plus-circle-mini"
+    title={@page_title}
+    action={@live_action}
+    collection={@collection}
+    patch={~p"/collections"}
+  />
+</.modal>

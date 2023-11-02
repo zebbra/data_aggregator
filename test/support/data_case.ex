@@ -18,12 +18,15 @@ defmodule DataAggregator.DataCase do
 
   using do
     quote do
-      alias DataAggregator.Repo
-
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
       import DataAggregator.DataCase
+
+      import Ash.Test,
+        only: [
+          assert_has_error: 2,
+          assert_has_error: 3,
+          refute_has_error: 2,
+          refute_has_error: 3
+        ]
     end
   end
 
@@ -32,7 +35,7 @@ defmodule DataAggregator.DataCase do
     :ok
   end
 
-  @doc """
+  @doc ~S"""
   Sets up the sandbox based on the test tags.
   """
   def setup_sandbox(tags) do
@@ -40,7 +43,7 @@ defmodule DataAggregator.DataCase do
     on_exit(fn -> Sandbox.stop_owner(pid) end)
   end
 
-  @doc """
+  @doc ~S"""
   A helper that transforms changeset errors into a map of messages.
 
       assert {:error, changeset} = Accounts.create_user(%{password: "short"})

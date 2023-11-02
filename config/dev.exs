@@ -68,6 +68,9 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :data_aggregator, dev_routes: true
 
+# Serve uploaded files from the priv/storage directory
+config :data_aggregator, serve_files_from: "priv/storage/dev/files"
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 
@@ -83,3 +86,20 @@ config :swoosh, :api_client, false
 
 # Add heex debug annotations via
 config :phoenix_live_view, debug_heex_annotations: true
+
+# Configure git hooks. They can be installed manuallu by running `mix git_hooks.install`
+config :git_hooks,
+  auto_install: true,
+  verbose: false,
+  hooks: [
+    pre_commit: [
+      tasks: [
+        {:cmd, "mix lint"}
+      ]
+    ],
+    pre_push: [
+      tasks: [
+        {:cmd, "mix test --color"}
+      ]
+    ]
+  ]

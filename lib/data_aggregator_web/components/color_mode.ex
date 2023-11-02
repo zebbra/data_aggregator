@@ -12,7 +12,7 @@ defmodule DataAggregatorWeb.ColorMode do
       <label class="sr-only">Toggle color mode</label>
       <button
         phx-click={JS.dispatch("toggle-color-mode")}
-        class="relative rounded-full bg-white dark:bg-gray-900 p-1 text-gray-400 hover:text-gray-500 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-white focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+        class="dark:bg-gray-900 hover:text-gray-500 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-white focus:ring-offset-2 dark:focus:ring-offset-gray-900 relative p-1 text-gray-400 bg-white rounded-full"
       >
         <span class="absolute -inset-1.5" />
         <svg
@@ -21,7 +21,7 @@ defmodule DataAggregatorWeb.ColorMode do
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="w-6 h-6 dark:hidden"
+          class="dark:hidden w-6 h-6"
           aria-hidden="true"
         >
           <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" class="fill-sky-400/20 stroke-sky-500"></path>
@@ -31,7 +31,7 @@ defmodule DataAggregatorWeb.ColorMode do
           >
           </path>
         </svg>
-        <svg viewBox="0 0 24 24" fill="none" class="w-6 h-6 hidden dark:inline" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" class="dark:inline hidden w-6 h-6" aria-hidden="true">
           <path
             fill-rule="evenodd"
             clip-rule="evenodd"

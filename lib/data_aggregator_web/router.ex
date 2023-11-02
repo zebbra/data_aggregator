@@ -1,9 +1,10 @@
 defmodule DataAggregatorWeb.Router do
   use DataAggregatorWeb, :router
 
-  import AshAdmin.Router
   import PhoenixStorybook.Router
   import DataAggregatorWeb.Locale, only: [assign_current_locale: 2]
+
+  # Browser
 
   pipeline :locale do
     plug :fetch_session
@@ -31,14 +32,6 @@ defmodule DataAggregatorWeb.Router do
     plug :put_root_layout, html: {DataAggregatorWeb.Layouts, :root}
   end
 
-  pipeline :api do
-    plug :accepts, ["json"]
-  end
-
-  pipeline :graphql do
-    plug AshGraphql.Plug
-  end
-
   scope "/" do
     pipe_through [:locale, :browser]
 
@@ -55,16 +48,29 @@ defmodule DataAggregatorWeb.Router do
       live_session :default, on_mount: user_hooks do
         live "/", DashboardLive.Index, :index
 
-        live "/import_records", ImportRecordLive.Index, :index
-        live "/import_records/new", ImportRecordLive.Index, :new
-        live "/import_records/:id/edit", ImportRecordLive.Index, :edit
-        live "/import_records/:id", ImportRecordLive.Index, :show
-        live "/import_records/:id/show/edit", ImportRecordLive.Index, :edit
+        live "/records", RecordLive.Index, :index
+        live "/records/new", RecordLive.Index, :new
+        live "/records/:id/edit", RecordLive.Index, :edit
+        live "/records/:id", RecordLive.Show, :show
+        live "/records/:id/show/edit", RecordLive.Show, :edit
+
+        live "/collections", CollectionLive.Index, :index
+        live "/collections/new", CollectionLive.Index, :new
+        live "/collections/:id/edit", CollectionLive.Index, :edit
+        live "/collections/:id", CollectionLive.Show, :show
+        live "/collections/:id/show/edit", CollectionLive.Show, :edit
+        live "/collections/:id/import", CollectionLive.Show, :import
+
+        # live "/collections/:id/mappings", MappingLive.Index, :index
+        # live "/collections/:id/mappings/import", MappingLive.Index, :import
       end
     end
+  end
 
-    # Used by JS hook to update locale from component
-    get "/locale", DataAggregatorWeb.LocaleController, :set
+  # GraphQL API
+
+  pipeline :graphql do
+    plug AshGraphql.Plug
   end
 
   # Phoenix Storybook
@@ -73,19 +79,13 @@ defmodule DataAggregatorWeb.Router do
 
     scope "/", DataAggregatorWeb do
       pipe_through [:locale, :browser]
-      live_storybook "/storybook", backend_module: DataAggregatorWeb.Storybook
+      live_storybook("/storybook", backend_module: DataAggregatorWeb.Storybook)
     end
-  end
-
-  # Ash Admin
-  scope "/" do
-    pipe_through [:locale, :browser]
-    ash_admin "/admin"
   end
 
   # GraphSQL
   scope "/" do
-    pipe_through [:graphql]
+    pipe_through :graphql
 
     forward "/gql", Absinthe.Plug, schema: DataAggregator.Schema
 
@@ -95,8 +95,14 @@ defmodule DataAggregatorWeb.Router do
             interface: :playground
   end
 
+  # JSON API
+
+  pipeline :api do
+    plug :accepts, ["json"]
+  end
+
   scope "/api/json" do
-    pipe_through(:api)
+    pipe_through :api
 
     forward "/swagger",
             OpenApiSpex.Plug.SwaggerUI,
@@ -110,11 +116,6 @@ defmodule DataAggregatorWeb.Router do
 
     forward "/", DataAggregatorWeb.JsonApiRouter
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", DataAggregatorWeb do
-  #   pipe_through :api
-  # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:data_aggregator, :dev_routes) do

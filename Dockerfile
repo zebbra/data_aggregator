@@ -13,7 +13,7 @@
 #
 ARG ELIXIR_VERSION=1.15.7
 ARG OTP_VERSION=26.1.2
-ARG DEBIAN_VERSION=bullseye-20230612-slim
+ARG DEBIAN_VERSION=bookworm-20231009-slim
 
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
@@ -53,12 +53,17 @@ COPY priv priv
 COPY lib lib
 COPY assets assets
 COPY storybook storybook
+COPY docs docs
+COPY README.md README.md
 
-# compile assets
+# Compile assets
 RUN mix assets.deploy
 
 # Compile the release
 RUN mix compile
+
+# Generate documentation
+RUN mix docs
 
 # Changes to config/runtime.exs don't require recompiling the code
 COPY config/runtime.exs config/

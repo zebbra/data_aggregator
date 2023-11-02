@@ -26,12 +26,12 @@ steps:
       mount: ["_build", "deps"]
 
   - name: test
-    image: hexpm/elixir:1.15.7-erlang-26.1.2-debian-buster-20230612-slim
+    image: hexpm/elixir:1.15.7-erlang-26.1.2-debian-bookworm-20231009-slim
     environment:
       MIX_ENV: test
     commands:
       - apt-get update
-      - apt-get install build-essential -y
+      - apt-get install build-essential git -y
       - mix local.rebar --force
       - mix local.hex --force
       - mix deps.get

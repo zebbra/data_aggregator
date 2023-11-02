@@ -1,4 +1,8 @@
 defmodule DataAggregatorWeb.Headless.Hidden do
+  @moduledoc """
+  Hidden inputs are used to attach data to a form without displaying it.
+  """
+
   use Phoenix.Component
   import Bitwise, only: [&&&: 2, <<<: 2]
 
@@ -8,6 +12,10 @@ defmodule DataAggregatorWeb.Headless.Hidden do
   def hidden_features_focusable, do: @focusable
   @hidden 1 <<< 2
   def hidden_features_hidden, do: @hidden
+
+  @doc ~S"""
+  Renders a hidden input component.
+  """
 
   attr :features, :integer, default: @none
   attr :rest, :global, include: ~w(readonly checked form name value)

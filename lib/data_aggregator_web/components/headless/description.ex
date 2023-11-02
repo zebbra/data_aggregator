@@ -5,6 +5,10 @@ defmodule DataAggregatorWeb.Headless.Description do
 
   use Phoenix.Component
 
+  @doc ~S"""
+  Renders a description component. Mounts the DescriptionHook.
+  """
+
   attr :id, :string, required: true
   attr :as, :string, default: "p"
   attr :rest, :global

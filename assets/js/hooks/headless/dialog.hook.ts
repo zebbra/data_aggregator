@@ -5,6 +5,8 @@ import { inject, provide, type InjectionKey } from "./utils/inject-provide";
 import { useDescriptions } from "./description.hook";
 import { nextFrame, rootId } from "./utils/helpers";
 import { focusElement, getFocusableElements } from "./utils/focus-management";
+import { useResizeListener } from "./utils/use-resize-listener";
+import { visible } from "./utils/use-breakpoint";
 
 enum DialogStates {
   Open,
@@ -20,24 +22,9 @@ type StateDefinition = {
 
   setTitleId(id: string | null): void;
 
-  close(): void;
+  openDialog(): void;
+  closeDialog(client?: boolean): void;
 };
-
-// window.resize callback function
-function resizeFunction() {
-  if (window.innerWidth > 1024) {
-    document.body.click();
-  }
-}
-
-const delay = 250; // delay after event is "complete" to run callback
-let timeout: number; // holder for timeout id
-function onResizeHandler() {
-  // clear the timeout
-  clearTimeout(timeout);
-  // start timing for event "completion"
-  timeout = setTimeout(() => resizeFunction(), delay);
-}
 
 const DialogContext = Symbol("DialogContext") as InjectionKey<StateDefinition>;
 function useDialogContext(instance: string, component: string) {
@@ -56,7 +43,11 @@ function useDialogContext(instance: string, component: string) {
 const Dialog = {
   reset() {
     consola.debug("Dialog hook reset", this.el.id);
-    window.removeEventListener("resize", onResizeHandler);
+
+    if (this.onResizeHandler) {
+      window.removeEventListener("resize", this.onResizeHandler);
+    }
+
     provide(this.el.id, DialogContext, undefined as any);
   },
   destroyed() {
@@ -78,7 +69,10 @@ const Dialog = {
       this.el.setAttribute("role", "dialog");
     }
 
-    const dialogState = ref<DialogStates>(this.el.hasAttribute("aria-modal"));
+    const dialogState = ref<DialogStates>(
+      !!this.el.dataset["show"] ? DialogStates.Closed : DialogStates.Open
+    );
+
     const panelRef = ref<HTMLDivElement | null>(null);
     const describedby = useDescriptions(rootId(this.el.id));
     const titleId = ref<StateDefinition["titleId"]["value"]>(null);
@@ -93,22 +87,38 @@ const Dialog = {
         if (titleId.value === id) return;
         titleId.value = id;
       },
-      close() {
-        if (dialogState.value === DialogStates.Closed) return;
-
-        dialogState.value = DialogStates.Closed;
-        const triggerButton = getFocusableElements().find(
-          (el) => el.id === `${dialogId}__button`
-        );
-        if (triggerButton) nextFrame(() => focusElement(triggerButton));
+      openDialog: () => {
+        this.liveSocket.execJS(this.el, this.el.dataset["show"]);
+        dialogState.value = DialogStates.Open;
+      },
+      closeDialog: (client = true) => {
+        if (dialogState.value === DialogStates.Closed) {
+          // console.log("closed");
+          return;
+        } else if (client) {
+          // console.log("client");
+          this.liveSocket.execJS(this.el, this.el.dataset["cancel"]);
+        } else {
+          // console.log("server");
+          dialogState.value = DialogStates.Closed;
+          const triggerButton = getFocusableElements().find(
+            (el) => el.id === `${dialogId}__button`
+          );
+          if (triggerButton) nextFrame(() => focusElement(triggerButton));
+        }
       },
     };
 
     provide(this.el.id, DialogContext, api);
 
-    if (this.el.dataset["dialog_resize_listener"]) {
-      window.addEventListener("resize", onResizeHandler);
-      resizeFunction();
+    if (this.el.dataset["breakpoint"]) {
+      const breakpoint = this.el.dataset["breakpoint"];
+      this.onResizeHandler = useResizeListener.bind(this)(
+        api.closeDialog,
+        api.openDialog,
+        breakpoint
+      );
+      window.addEventListener("resize", this.onResizeHandler);
     }
 
     nextFrame(() => {
@@ -124,6 +134,21 @@ const Dialog = {
     }
     if (api.describedby.value) {
       this.el.setAttribute("aria-describedby", api.describedby.value!);
+    }
+
+    const closed = api.dialogState.value === DialogStates.Closed;
+    const hidden = this.el.getAttribute("style")?.includes("display: none");
+    const showAction = !!this.el.dataset["show"];
+
+    // console.log("closed", closed);
+    // console.log("hidden", hidden);
+    // console.log("show", show);
+
+    if (closed && !hidden && showAction) {
+      const breakpoint = this.el.dataset["breakpoint"];
+      if (breakpoint && !visible(breakpoint)) return;
+
+      api.openDialog();
     }
   },
 };
@@ -146,7 +171,7 @@ const DialogPanel = {
     api.panelRef.value = this.el;
 
     this.el.addEventListener("phx:hide-start", () => {
-      api.close(false);
+      api.closeDialog(false);
     });
 
     consola.debug("DialogPanel hook mounted", this.el.id);

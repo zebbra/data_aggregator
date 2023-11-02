@@ -10,8 +10,8 @@ defmodule DataAggregatorWeb.Headless.Menu do
 
   import DataAggregatorWeb.Headless.Helpers
 
-  @doc """
-  Renders a menu component.
+  @doc ~S"""
+  Renders a menu component. Mounts the MenuHook.
 
   ## Examples
 
@@ -59,6 +59,24 @@ defmodule DataAggregatorWeb.Headless.Menu do
     """
   end
 
+  @doc ~S"""
+  Renders a menu button component. Mounts the MenuButtonHook.
+
+  ## Examples
+
+  <.headless_menu_button id="menu__button">
+    Button
+  </.headless_menu_button>
+
+
+  ## Usage
+
+  The `HeadlessMenuButton` component is responsible for rendering the button
+  that toggles the menu. It uses the `show_menu` and `hide_menu` functions
+  to show and hide the menu with transitions.
+  The component id must follow the pattern `<id>__button` to work properly.
+  """
+
   attr :id, :string, required: true
   attr :as, :string, default: "button"
   attr :class, :string, default: nil
@@ -73,7 +91,7 @@ defmodule DataAggregatorWeb.Headless.Menu do
       phx-click={@id |> root_id |> show_menu(@show_transition)}
       id={@id}
       name={@as}
-      type={(@as == "button" && "button") || @rest.type}
+      type={(@as == "button" && "button") || @rest[:type]}
       aria-haspopup="true"
       class={@class}
       {@rest}
@@ -82,6 +100,15 @@ defmodule DataAggregatorWeb.Headless.Menu do
     </.dynamic_tag>
     """
   end
+
+  @doc ~S"""
+  Renders a menu items component. Mounts the MenuItemsHook.
+
+  ## Usage
+
+  The `HeadlessMenuItems` component is responsible for rendering the menu items.
+  The component id must follow the pattern `<id>__items` to work properly.
+  """
 
   attr :id, :string, required: true
   attr :as, :string, default: "div"
@@ -108,6 +135,19 @@ defmodule DataAggregatorWeb.Headless.Menu do
     </.dynamic_tag>
     """
   end
+
+  @doc ~S"""
+  Renders a menu item component. Mounts the MenuItemHook.
+
+  ## Examples
+
+  <.headless_menu_item id="menu__item-1" href="#">Item 1</.headless_menu_item>
+
+  ## Usage
+
+  The `HeadlessMenuItem` component is responsible for rendering the menu item.
+  The component id must follow the pattern `<id>__<item-suffix>` to work properly.
+  """
 
   attr :id, :string, required: true
   attr :class, :string, default: nil

@@ -8,6 +8,7 @@
 import Config
 
 config :data_aggregator,
+  environment: config_env(),
   ecto_repos: [DataAggregator.Repo],
   generators: [timestamp_type: :utc_datetime]
 
@@ -27,10 +28,10 @@ config :mime, :extensions, %{
 
 config :data_aggregator,
   ash_apis: [
-    DataAggregator.Imports,
-    DataAggregator.TaxonomyData,
-    DataAggregator.TaxonomyCatalog,
-    DataAggregator.Transition
+    DataAggregator.Platform,
+    DataAggregator.Data,
+    DataAggregator.Taxonomy,
+    DataAggregator.Files
   ]
 
 config :data_aggregator, :ash_uuid,
@@ -90,7 +91,7 @@ config :esbuild,
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "3.3.2",
+  version: "3.3.5",
   default: [
     args: ~w(
       --config=tailwind.config.js
@@ -119,21 +120,7 @@ config :phoenix, :filter_parameters, ["password", "account_token"]
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :waffle,
-  storage: Waffle.Storage.S3,
-  bucket: {:system, "S3_BUCKET"}
-
-# any configurations provided by https://github.com/ex-aws/ex_aws
-config :ex_aws,
-  json_codec: Jason,
-  access_key_id: [{:system, "S3_ACCESS_KEY"}, :instance_role],
-  secret_access_key: [{:system, "S3_SECRET_KEY"}, :instance_role],
-  s3: [
-    scheme: {:system, "S3_SCHEME"},
-    host: {:system, "S3_HOST"},
-    port: {:system, "S3_PORT"}
-  ]
-
+# Configure Spark DSL formatter
 config :spark, :formatter,
   remove_parens?: true,
   "Ash.Resource": [
@@ -141,15 +128,39 @@ config :spark, :formatter,
     section_order: [
       :authentication,
       :token,
-      :actions,
       :attributes,
       :relationships,
+      :calculations,
+      :aggregates,
+      :actions,
+      :code_interface,
       :policies,
-      :postgres
+      :postgres,
+      :graphql,
+      :json_api
     ]
   ]
 
-config :data_aggregator, :environment, Mix.env()
+# Configure error reporting using Sentry. The Sentry DSN is configured
+# dynamically based on the SENTRY_DSN environment variable.
+config :sentry,
+  environment_name: Mix.env(),
+  included_environments: [:prod],
+  enable_source_code_context: true,
+  root_source_code_paths: [File.cwd!()]
+
+# Configure Sentry logger handler, which will send logs to Sentry
+# See https://hexdocs.pm/sentry/Sentry.LoggerHandler.html
+config :data_aggregator, :logger, [
+  {:handler, :sentry, Sentry.LoggerHandler,
+   %{
+     config: %{
+       level: :error,
+       metadata: :all,
+       capture_log_messages: true
+     }
+   }}
+]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

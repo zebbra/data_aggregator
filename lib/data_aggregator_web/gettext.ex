@@ -22,21 +22,21 @@ defmodule DataAggregatorWeb.Gettext do
   """
   use Gettext, otp_app: :data_aggregator
 
-  @doc """
+  @doc ~S"""
   Returns all the locales for which PO files exist for the given `backend`.
   """
   def known_locales do
     Gettext.known_locales(__MODULE__)
   end
 
-  @doc """
+  @doc ~S"""
   Gets the current Gettext locale for the current process.
   """
   def get_locale do
     Gettext.get_locale(__MODULE__)
   end
 
-  @doc """
+  @doc ~S"""
    Sets the current Gettext locale for the current process.
   """
   def put_locale(locale) do
