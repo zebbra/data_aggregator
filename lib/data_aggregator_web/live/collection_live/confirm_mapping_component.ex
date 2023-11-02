@@ -21,10 +21,20 @@ defmodule DataAggregatorWeb.CollectionLive.ConfirmMappingComponent do
         phx-change="validate"
         phx-submit="confirm_mapping"
       >
-        <div class="dark:sm:p-6 px-4 py-5 overflow-hidden bg-white rounded-lg shadow">
-          <dt class="text-sm font-medium text-gray-500 truncate">All Attributes Are Mapped</dt>
-          <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">100%</dd>
-        </div>
+        <dl class="sm:grid-cols-2 grid grid-cols-1 gap-3 mt-5">
+          <div class="sm:p-3 px-4 py-5 overflow-hidden bg-white rounded-lg shadow">
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">100%</dd>
+            <dt class="text-sm font-medium text-gray-500 truncate">
+              <%= ~t"of your attributes are mapped" %>
+            </dt>
+          </div>
+          <div class="sm:p-3 px-4 py-5 overflow-hidden bg-white rounded-lg shadow">
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">42'359</dd>
+            <dt class="text-sm font-medium text-gray-500 truncate">
+              <%= ~t"records will be imported"m %>
+            </dt>
+          </div>
+        </dl>
 
         <:actions>
           <.button

@@ -501,25 +501,25 @@ msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "Material Entity ID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:43
+#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:53
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ConfirmMappingComponent"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:35
+#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:45
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ConfirmMappingComponent"
 msgid "Confirm Mapping and Import Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:74
+#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:84
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ConfirmMappingComponent"
 msgid "Confirm the mapping of your file to our catalog and start importing the records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:33
+#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:43
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ConfirmMappingComponent"
 msgid "Confirming your Mapping..."
@@ -571,4 +571,15 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Map Your Columns"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:28
+#, elixir-autogen, elixir-format
+msgid "of your attributes are mapped"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:34
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ConfirmMappingComponent"
+msgid "records will be imported"
 msgstr ""
