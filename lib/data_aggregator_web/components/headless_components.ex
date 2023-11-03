@@ -65,7 +65,6 @@ defmodule DataAggregatorWeb.HeadlessComponents do
   attr :as, :string, default: "button"
   attr :checked, :boolean, default: false, doc: "the checked state of the switch"
   attr :value, :string, default: "on", doc: "the checked value of the switch"
-  attr :form, :string, default: nil, doc: "the form name of the switch if used inside a form"
   attr :name, :string, default: nil, doc: "the field name of the switch if used inside a form"
 
   attr :class, :string,
@@ -84,7 +83,6 @@ defmodule DataAggregatorWeb.HeadlessComponents do
       as={@as}
       checked={@checked}
       value={@value}
-      form={@form}
       name={@name}
       class={@class}
       {@rest}
