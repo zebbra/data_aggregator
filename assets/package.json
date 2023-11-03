@@ -5,6 +5,7 @@
     "@types/phoenix_live_view": "^0.18.0"
   },
   "dependencies": {
+    "@tailwindcss/forms": "^0.5.6",
     "@vue-reactivity/watch": "^0.2.0",
     "@vue/reactivity": "^3.3.4",
     "consola": "^3.2.3"

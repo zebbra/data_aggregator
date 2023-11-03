@@ -1,0 +1,44 @@
+/* This is your custom storybook stylesheet. */
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/*
+ * Put your component styling within the Tailwind utilities layer.
+ * See the https://hexdocs.pm/phoenix_storybook/sandboxing.html guide for more info.
+ */
+@layer utilities {
+  * {
+    font-family: ui-sans-serif, system-ui;
+  }
+}
+
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="date|datetime-local"]::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+  input[type="month"]::-webkit-calendar-picker-indicator,
+  input[type="week"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    color-scheme: dark;
+  }
+
+  option:checked,
+  option:checked:hover {
+    @apply bg-indigo-600 rounded text-white;
+  }
+}
+
+.theme-default,
+.theme-dark {
+  @apply p-4 rounded;
+}
+
+.theme-dark {
+  @apply text-white bg-gray-900;
+}

@@ -1,13 +1,13 @@
-defmodule Storybook.CoreComponents.Button do
+defmodule Storybook.CoreComponents.StyledLink do
   use PhoenixStorybook.Story, :component
 
-  def function, do: &Elixir.DataAggregatorWeb.CoreComponents.button/1
+  def function, do: &Elixir.DataAggregatorWeb.CoreComponents.styled_link/1
 
   def variations do
     [
       %Variation{
         id: :default,
-        slots: ["Button"]
+        slots: ["Link"]
       },
       %Variation{
         id: :secondary,

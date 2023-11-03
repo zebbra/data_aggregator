@@ -53,7 +53,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
                 </label>
                 <p class="pl-1"><%= ~t"or drag and drop"m %></p>
               </div>
-              <p class="dark:text-gray-400 text-xs leading-5 text-gray-600">CSV, JPEG, JPG or PNG</p>
+              <p class="dark:text-gray-400 text-xs leading-5 text-gray-600">
+                <%= pretty_accept_list(@uploads.file.accept) %>
+                <%= pretty_max_file_size(@uploads.file.max_file_size) %>
+              </p>
             </div>
           </div>
 

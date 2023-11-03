@@ -19,8 +19,7 @@ defmodule Storybook.CoreComponents.Flash do
       %Variation{
         id: :info_no_title,
         attributes: %{
-          kind: :info,
-          autoshow: false
+          kind: :info
         },
         slots: ["Info message"]
       },
@@ -28,19 +27,9 @@ defmodule Storybook.CoreComponents.Flash do
         id: :error_with_title,
         attributes: %{
           kind: :error,
-          autoshow: false,
           title: "Flash title"
         },
         slots: ["Error message"]
-      },
-      %Variation{
-        id: :no_close_button,
-        attributes: %{
-          kind: :info,
-          autoshow: false,
-          close: false
-        },
-        slots: ["Info message"]
       }
     ]
   end

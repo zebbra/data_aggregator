@@ -351,13 +351,39 @@ defmodule DataAggregatorWeb.CoreComponents do
     |> input()
   end
 
+  def input(%{type: "radio"} = assigns) do
+    assigns =
+      assign_new(assigns, :checked, fn -> Form.normalize_value("radio", assigns[:value]) end)
+
+    ~H"""
+    <div phx-feedback-for={@name}>
+      <label class="dark:text-white flex items-center gap-3 text-sm font-medium leading-6 text-gray-900">
+        <input type="hidden" name={@name} value="false" />
+        <input
+          type="radio"
+          id={@id}
+          name={@name}
+          value="true"
+          checked={@checked}
+          class="dark:border-white/10 dark:bg-white/5 checked:bg-current checked:border-transparent dark:checked:bg-current dark:checked:border-transparent focus:ring-indigo-600 dark:focus:ring-offset-gray-900 w-4 h-4 text-indigo-600 border-gray-300"
+          aria-invalid={@errors != []}
+          aria-describedby={@errors != [] && "#{@id}-error"}
+          {@rest}
+        />
+        <%= @label %>
+      </label>
+      <.error :for={msg <- @errors} id={"#{@id}-error"}><%= msg %></.error>
+    </div>
+    """
+  end
+
   def input(%{type: "checkbox"} = assigns) do
     assigns =
       assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", assigns[:value]) end)
 
     ~H"""
     <div phx-feedback-for={@name}>
-      <label class="flex items-center gap-4 text-sm leading-6 text-gray-600">
+      <label class="dark:text-white flex items-center gap-3 text-sm font-medium leading-6 text-gray-900">
         <input type="hidden" name={@name} value="false" />
         <input
           type="checkbox"
@@ -365,12 +391,14 @@ defmodule DataAggregatorWeb.CoreComponents do
           name={@name}
           value="true"
           checked={@checked}
-          class="focus:ring-0 text-gray-900 border-gray-300 rounded"
+          class="dark:border-white/10 dark:bg-white/5 checked:bg-current checked:border-transparent dark:checked:bg-current dark:checked:border-transparent focus:ring-indigo-600 dark:focus:ring-offset-gray-900 w-4 h-4 text-indigo-600 border-gray-300 rounded"
+          aria-invalid={@errors != []}
+          aria-describedby={@errors != [] && "#{@id}-error"}
           {@rest}
         />
         <%= @label %>
       </label>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors} id={"#{@id}-error"}><%= msg %></.error>
     </div>
     """
   end
@@ -379,17 +407,34 @@ defmodule DataAggregatorWeb.CoreComponents do
     ~H"""
     <div phx-feedback-for={@name}>
       <.label for={@id}><%= @label %></.label>
-      <select
-        id={@id}
-        name={@name}
-        class="focus:border-gray-400 focus:ring-0 sm:text-sm block w-full mt-2 bg-white border border-gray-300 rounded-md shadow-sm"
-        multiple={@multiple}
-        {@rest}
-      >
-        <option :if={@prompt} value=""><%= @prompt %></option>
-        <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
-      </select>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <div class={["mt-2", @errors != [] && "relative rounded-md shadow-md"]}>
+        <select
+          id={@id}
+          name={@name}
+          class={[
+            "block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6",
+            "text-gray-900 dark:text-white dark:bg-white/5",
+            "phx-no-feedback:ring-gray-300 dark:phx-no-feedback:ring-white/10 phx-no-feedback:focus:ring-indigo-600 dark:phx-no-feedback:focus:ring-indigo-500",
+            @errors == [] && "ring-gray-300 focus:ring-indigo-600",
+            @errors != [] &&
+              "ring-red-300 dark:ring-red-400 focus:ring-red-500 dark:focus:ring-red-500"
+          ]}
+          multiple={@multiple}
+          aria-invalid={@errors != []}
+          aria-describedby={@errors != [] && "#{@id}-error"}
+          {@rest}
+        >
+          <option :if={@prompt} value=""><%= @prompt %></option>
+          <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+        </select>
+        <div
+          :if={@errors != []}
+          class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+        >
+          <.icon name="hero-exclamation-circle-mini" class="w-5 h-5 text-red-500" />
+        </div>
+      </div>
+      <.error :for={msg <- @errors} id={"#{@id}-error"}><%= msg %></.error>
     </div>
     """
   end
@@ -398,18 +443,30 @@ defmodule DataAggregatorWeb.CoreComponents do
     ~H"""
     <div phx-feedback-for={@name}>
       <.label for={@id}><%= @label %></.label>
-      <textarea
-        id={@id}
-        name={@name}
-        class={[
-          "mt-2 block w-full rounded-lg text-gray-900 focus:ring-0 sm:text-sm sm:leading-6",
-          "min-h-[6rem] phx-no-feedback:border-gray-300 phx-no-feedback:focus:border-gray-400",
-          @errors == [] && "border-gray-300 focus:border-gray-400",
-          @errors != [] && "border-rose-400 focus:border-rose-400"
-        ]}
-        {@rest}
-      ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <div class={["mt-2", @errors != [] && "relative rounded-md shadow-md"]}>
+        <textarea
+          id={@id}
+          name={@name}
+          class={[
+            "block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6",
+            "text-gray-900 dark:text-white dark:bg-white/5",
+            "phx-no-feedback:ring-gray-300 dark:phx-no-feedback:ring-white/10 phx-no-feedback:focus:ring-indigo-600 dark:phx-no-feedback:focus:ring-indigo-500",
+            @errors == [] && "ring-gray-300 focus:ring-indigo-600",
+            @errors != [] &&
+              "ring-red-300 dark:ring-red-400 focus:ring-red-500 dark:focus:ring-red-500"
+          ]}
+          aria-invalid={@errors != []}
+          aria-describedby={@errors != [] && "#{@id}-error"}
+          {@rest}
+        ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
+        <div
+          :if={@errors != []}
+          class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+        >
+          <.icon name="hero-exclamation-circle-mini" class="w-5 h-5 text-red-500" />
+        </div>
+      </div>
+      <.error :for={msg <- @errors} id={"#{@id}-error"}><%= msg %></.error>
     </div>
     """
   end
@@ -483,9 +540,11 @@ defmodule DataAggregatorWeb.CoreComponents do
   attr :class, :string, default: nil, doc: "the header class"
   attr :action_class, :string, default: "flex gap-x-3"
 
-  attr :id, :string,
+  attr :id, :string, default: nil
+
+  attr :dialog_header_id, :string,
     default: nil,
-    doc: "the header id. If set we assume a dialog header and use the dialog_header component"
+    doc: "if set we assume a dialog header and use the dialog_header component"
 
   slot :inner_block, required: true
   slot :subtitle, doc: "the optional subtitle displayed below the title"
@@ -501,13 +560,16 @@ defmodule DataAggregatorWeb.CoreComponents do
     ]}>
       <div>
         <.dialog_title
-          :if={@id}
-          id={@id <> "__title"}
+          :if={@dialog_header_id}
+          id={@dialog_header_id <> "__title"}
           class="dark:text-white text-base font-semibold leading-9 text-gray-800"
         >
           <%= render_slot(@inner_block) %>
         </.dialog_title>
-        <h1 :if={!@id} class="dark:text-white text-base font-semibold leading-9 text-gray-800">
+        <h1
+          :if={!@dialog_header_id}
+          class="dark:text-white text-base font-semibold leading-9 text-gray-800"
+        >
           <%= render_slot(@inner_block) %>
         </h1>
         <p :if={@subtitle != []} class="dark:text-gray-400 mt-2 text-sm leading-6 text-gray-600">

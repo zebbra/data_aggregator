@@ -63,7 +63,7 @@ defmodule DataAggregatorWeb.Headless.Switch do
 
   def headless_switch(assigns) do
     ~H"""
-    <%= if @name != nil && @checked != nil do %>
+    <%= if @name != nil do %>
       <.hidden
         features={hidden_features_none()}
         type="checkbox"

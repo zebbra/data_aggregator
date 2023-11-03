@@ -70,13 +70,8 @@ defmodule DataAggregatorWeb.HeadlessComponents do
 
   attr :class, :string,
     default:
-      "bg-gray-200 aria-checked:bg-indigo-600 w-11 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer",
+      "bg-gray-200 group is-test aria-checked:bg-indigo-600 w-11 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer",
     doc: "the class of the switch"
-
-  attr :slot_class, :string,
-    default:
-      "ring-0 group-[.is-checked]/checked:translate-x-5 inline-block w-5 h-5 transition duration-200 ease-in-out transform translate-x-0 bg-white rounded-full shadow pointer-events-none",
-    doc: "the class of the switch slot, per default renders the tailwindui styled default_switch"
 
   attr :rest, :global
 
@@ -101,8 +96,31 @@ defmodule DataAggregatorWeb.HeadlessComponents do
 
   defp default_switch(assigns) do
     ~H"""
-    <span class="sr-only">Toggle</span>
-    <span aria-hidden="true" class={@slot_class} />
+    <span class="sr-only">Use setting</span>
+    <span class="group-aria-checked:translate-x-5 ring-0 relative inline-block w-5 h-5 transition duration-200 ease-in-out transform translate-x-0 bg-white rounded-full shadow pointer-events-none">
+      <span
+        class="group-aria-checked:opacity-0 group-aria-checked:duration-100 group-aria-checked:ease-out absolute inset-0 flex items-center justify-center w-full h-full transition-opacity duration-200 ease-in opacity-100"
+        aria-hidden="true"
+      >
+        <svg class="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 12 12">
+          <path
+            d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </span>
+      <span
+        class="group-aria-checked:opacity-100 group-aria-checked:duration-200 group-aria-checked:ease-in absolute inset-0 flex items-center justify-center w-full h-full transition-opacity duration-100 ease-out opacity-0"
+        aria-hidden="true"
+      >
+        <svg class="w-3 h-3 text-indigo-600" fill="currentColor" viewBox="0 0 12 12">
+          <path d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
+        </svg>
+      </span>
+    </span>
     """
   end
 
@@ -128,7 +146,7 @@ defmodule DataAggregatorWeb.HeadlessComponents do
 
   def switch_label(assigns) do
     ~H"""
-    <.headless_switch_label id={@id} as={@as} {@rest}>
+    <.headless_switch_label id={@id} as={@as} passive={@passive} {@rest}>
       <%= render_slot(@inner_block) %>
     </.headless_switch_label>
     """
