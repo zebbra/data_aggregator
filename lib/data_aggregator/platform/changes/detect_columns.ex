@@ -2,6 +2,7 @@ defmodule DataAggregator.Platform.Changes.DetectColumns do
   use Ash.Resource.Change
 
   alias Ash.Changeset
+  alias DataAggregator.Platform.ImportFile.Column
 
   require Logger
 
@@ -28,7 +29,7 @@ defmodule DataAggregator.Platform.Changes.DetectColumns do
       columns =
         df
         |> Explorer.DataFrame.dtypes()
-        |> Enum.map(fn {name, type} -> %{name: name, type: type} end)
+        |> Enum.map(fn {name, type} -> %Column{name: name, type: type} end)
 
       {:ok, columns}
     end

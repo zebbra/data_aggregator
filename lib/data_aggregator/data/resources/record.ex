@@ -5,6 +5,7 @@ defmodule DataAggregator.Data.Record do
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Platform.Collection
+  alias DataAggregator.Platform.ImportFile.Column
 
   @default_limit 15
   def default_limit, do: @default_limit
@@ -54,6 +55,7 @@ defmodule DataAggregator.Data.Record do
     attribute :tax_order, :string
     attribute :tax_genus, :string
     attribute :tax_infraspecific_epithet, :string
+    attribute :tax_specific_epithet, :string
 
     attribute :tax_scientific_name, :string do
       allow_nil? false
@@ -106,7 +108,7 @@ defmodule DataAggregator.Data.Record do
   end
 
   actions do
-    defaults [:create, :update, :destroy]
+    defaults [:update, :destroy]
 
     read :read do
       primary? true
@@ -114,12 +116,25 @@ defmodule DataAggregator.Data.Record do
 
       pagination offset?: true, default_limit: @default_limit, countable: true
     end
+
+    create :create_from_columns do
+      accept []
+
+      argument :columns, {:array, Column}, allow_nil?: false
+
+      change DataAggregator.Data.Changes.ImportRecords
+    end
+
+    create :create do
+      primary? true
+    end
   end
 
   code_interface do
     define_for DataAggregator.Data
     define :read
     define :create
+    define :create_from_columns, args: [:columns]
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
@@ -144,7 +159,6 @@ defmodule DataAggregator.Data.Record do
     end
 
     mutations do
-      create :create_record, :create
       update :update_record, :update
       destroy :destroy_record, :destroy
     end
@@ -158,7 +172,6 @@ defmodule DataAggregator.Data.Record do
 
       get(:read)
       index :read
-      post(:create)
       patch(:update)
       delete(:destroy)
     end

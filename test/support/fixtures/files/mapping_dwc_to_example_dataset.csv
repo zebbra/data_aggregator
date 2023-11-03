@@ -1,10 +1,9 @@
-label,name,mapping_to
+label,mapped_to,name
 material_entity_id,mte_material_entity_id,Numéro scientifique GBIF
 order,tax_order,Ordre
 family,tax_family,Famille
 genus,tax_genus,Genre
 specific_epithet,tax_specific_epithet,Espèce
-scientific_name_authorship,tax_scientific_name_authorship,Auteur et date sp.
 infraspecific_epithet,tax_infraspecific_epithet,Sous espèce
 scientific_name_authorship,tax_scientific_name_authorship,Auteur et date ssp
 sex,occ_sex,Sexe

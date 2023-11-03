@@ -169,6 +169,7 @@ defmodule DataAggregator.MixProject do
       {:ash_json_api, "~> 0.33.1"},
       {:redoc_ui_plug, "~> 0.2.1"},
       {:ecto_dev_logger, "~> 0.9"},
+      {:ecto_erd, "~> 0.5", only: :dev},
 
       # assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
@@ -207,6 +208,7 @@ defmodule DataAggregator.MixProject do
       {:ex_aws, "~> 2.5.0"},
       {:ex_aws_s3, "~> 2.0"},
       {:sweet_xml, "~> 0.6"},
+      {:csv, "~> 3.2"},
 
       # http
       # official http_stream has outdated deps (mint, castore)
@@ -244,7 +246,8 @@ defmodule DataAggregator.MixProject do
         "ash.generate_livebook --filename=docs/api.md",
         "ash.generate_resource_diagrams --format md",
         "docs"
-      ]
+      ],
+      "generate.erd": ["ecto.gen.erd --output-path=erd.dbml"]
     ]
   end
 end

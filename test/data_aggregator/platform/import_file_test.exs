@@ -1,5 +1,8 @@
 defmodule DataAggregator.Platform.ImportFileTest do
   use DataAggregator.DataCase
+
+  alias DataAggregator.Data.Record
+  alias DataAggregator.Data.Resources.RecordImporter
   alias DataAggregator.Platform.Collection
   alias DataAggregator.Platform.ImportFile
 
@@ -26,13 +29,11 @@ defmodule DataAggregator.Platform.ImportFileTest do
                {"ENDOFPERIODYEAR", :integer},
                {"Espèce", :string},
                {"Famille", :string},
-               {"GenBank", :string},
                {"Genre", :string},
                {"LatitudeDecimale", :string},
                {"Localité", :string},
                {"LongitudeDecimale", :string},
                {"MONTHCOLLECTED", :integer},
-               {"Nb.", :integer},
                {"Numéro scientifique GBIF", :string},
                {"Ordre", :string},
                {"Parties", :string},
@@ -69,7 +70,6 @@ defmodule DataAggregator.Platform.ImportFileTest do
   end
 
   describe "update_mapping" do
-    @tag run: true
     test "with valid file", %{collection: collection} do
       path = "test/support/fixtures/files/museum-dataset-import-example.csv"
       {:ok, import_file} = ImportFile.create_from_path(collection, path)
@@ -95,13 +95,11 @@ defmodule DataAggregator.Platform.ImportFileTest do
                {"ENDOFPERIODYEAR", :integer, nil},
                {"Espèce", :string, nil},
                {"Famille", :string, nil},
-               {"GenBank", :string, nil},
                {"Genre", :string, nil},
                {"LatitudeDecimale", :string, nil},
                {"Localité", :string, nil},
                {"LongitudeDecimale", :string, nil},
                {"MONTHCOLLECTED", :integer, nil},
-               {"Nb.", :integer, nil},
                {"Numéro scientifique GBIF", :string, nil},
                {"Ordre", :string, nil},
                {"Parties", :string, nil},
@@ -136,13 +134,11 @@ defmodule DataAggregator.Platform.ImportFileTest do
                {"ENDOFPERIODYEAR", :integer, nil},
                {"Espèce", :string, nil},
                {"Famille", :string, nil},
-               {"GenBank", :string, nil},
                {"Genre", :string, nil},
                {"LatitudeDecimale", :string, nil},
                {"Localité", :string, nil},
                {"LongitudeDecimale", :string, nil},
                {"MONTHCOLLECTED", :integer, nil},
-               {"Nb.", :integer, nil},
                {"Numéro scientifique GBIF", :string, nil},
                {"Ordre", :string, nil},
                {"Parties", :string, nil},
@@ -155,6 +151,74 @@ defmodule DataAggregator.Platform.ImportFileTest do
                {"Station", :string, nil},
                {"YEARCOLLECTED", :integer, nil}
              ]
+    end
+  end
+
+  describe "import_records" do
+    @tag run: true
+    test "from mapped import file", %{collection: collection} do
+      path = "test/support/fixtures/files/museum-dataset-import-example.csv"
+
+      # upload a file to a collection
+      {:ok, import_file} = ImportFile.create_from_path(collection, path)
+
+      # map the columns to our intern dwc attributes on the record resource
+      params = %{
+        columns: [
+          %{name: "Scientific Name", type: "string", mapped_to: "tax_scientific_name"},
+          %{name: "Age", type: "string", mapped_to: "spp_life_stage"},
+          %{
+            name: "Auteur et date ssp",
+            type: "string",
+            mapped_to: "tax_scientific_name_authorship"
+          },
+          %{name: "Autres numéros", type: "string", mapped_to: "occ_associated_occurrences"},
+          %{name: "Collecteur", type: "string", mapped_to: "occ_recorded_by"},
+          %{name: "DAYCOLLECTED", type: "integer", mapped_to: "eve_day"},
+          %{name: "ENDOFPERIODDAY", type: "integer", mapped_to: "eve_end_of_period_day"},
+          %{name: "ENDOFPERIODMONTH", type: "integer", mapped_to: "eve_end_of_period_month"},
+          %{name: "ENDOFPERIODYEAR", type: "integer", mapped_to: "eve_end_of_period_year"},
+          %{name: "Espèce", type: "string", mapped_to: "tax_specific_epithet"},
+          %{name: "Famille", type: "string", mapped_to: "tax_family"},
+          %{name: "Genre", type: "string", mapped_to: "tax_genus"},
+          %{name: "LatitudeDecimale", type: "string", mapped_to: "loc_decimal_latitude"},
+          %{name: "Localité", type: "string", mapped_to: "loc_verbatim_locality"},
+          %{name: "LongitudeDecimale", type: "string", mapped_to: "loc_decimal_longitude"},
+          %{name: "MONTHCOLLECTED", type: "integer", mapped_to: "eve_month"},
+          %{
+            name: "Numéro scientifique GBIF",
+            type: "string",
+            mapped_to: "mte_material_entity_id"
+          },
+          %{name: "Ordre", type: "string", mapped_to: "tax_order"},
+          %{name: "Parties", type: "string", mapped_to: "mts_material_sample_type"},
+          %{name: "Pays", type: "string", mapped_to: "loc_country"},
+          %{name: "PrecisionGEO", type: "string", mapped_to: "loc_georeference_remarks"},
+          %{name: "Province", type: "string", mapped_to: "loc_state_province"},
+          %{name: "Remarques", type: "string", mapped_to: "occ_occurrence_remarks"},
+          %{name: "Sexe", type: "string", mapped_to: "occ_sex"},
+          %{name: "Sous espèce", type: "string", mapped_to: "tax_infraspecific_epithet"},
+          %{name: "Station", type: "string", mapped_to: "loc_locality"},
+          %{name: "YEARCOLLECTED", type: "integer", mapped_to: "eve_year"}
+        ]
+      }
+
+      # update the import_file with the mapping
+      {:ok, import_file} = ImportFile.update_mapping(import_file, params)
+
+      # import the records
+      records = RecordImporter.import_records(import_file, params.columns)
+
+      # assert that the records are created returned as proper structs
+      for rec <- records do
+        case rec do
+          {:ok, record} ->
+            assert is_struct(record, Record)
+
+          {:error, error} ->
+            assert "Unknown error happend #{inspect(error)}"
+        end
+      end
     end
   end
 
