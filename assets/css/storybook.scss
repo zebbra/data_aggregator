@@ -3,6 +3,8 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@import "./components/forms.scss";
+
 /*
  * Put your component styling within the Tailwind utilities layer.
  * See the https://hexdocs.pm/phoenix_storybook/sandboxing.html guide for more info.
@@ -11,27 +13,6 @@
   * {
     font-family: ui-sans-serif, system-ui;
   }
-}
-
-@layer base {
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  option:checked,
-  option:checked:hover {
-    @apply bg-indigo-600 rounded text-white;
-  }
-}
-
-.theme-dark input[type="date"]::-webkit-calendar-picker-indicator,
-.theme-dark input[type="datetime-local"]::-webkit-calendar-picker-indicator,
-.theme-dark input[type="month"]::-webkit-calendar-picker-indicator,
-.theme-dark input[type="week"]::-webkit-calendar-picker-indicator,
-.theme-dark input[type="time"]::-webkit-calendar-picker-indicator {
-  color-scheme: dark;
 }
 
 .theme-default,
