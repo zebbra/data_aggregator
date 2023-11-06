@@ -226,6 +226,18 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Cancel"
 msgstr ""
 
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:102
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
+msgid "Save Collection"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:100
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
+msgid "Saving..."
+msgstr ""
+
 #: lib/data_aggregator_web/live/collection_live/index.html.heex:44
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
@@ -597,6 +609,7 @@ msgid "Storybook"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/import_form_component.ex:216
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:198
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "up to %{max_file_size}"
