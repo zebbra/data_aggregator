@@ -49,6 +49,10 @@ steps:
   - <<: *elixir
     name: test
     commands:
+      - apt-get update
+      - apt-get install git -y
+      - mix local.rebar --force
+      - mix local.hex --force
       - mix lint
       - mix test
 
