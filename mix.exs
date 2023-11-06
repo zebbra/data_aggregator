@@ -162,6 +162,9 @@ defmodule DataAggregator.MixProject do
       {:ash_uuid, "~> 0.4"},
       {:ash_graphql, "~> 0.26.6"},
 
+      # frontent and components
+      {:phoenix_storybook, "~> 0.5.0"},
+
       # db / orm / api
       {:absinthe_plug, "~> 1.5.8"},
       {:ecto_sql, "~> 3.10"},
@@ -240,8 +243,14 @@ defmodule DataAggregator.MixProject do
         "cmd cd assets && npm install"
       ],
       "assets.build": ["tailwind default", "esbuild default"],
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
-      lint: ["format --check-formatted", "credo --strict", "deps.audit"],
+      "assets.deploy": [
+        "tailwind default --minify",
+        "tailwind storybook --minify",
+        "esbuild default --minify",
+        "phx.digest"
+      ],
+      lint: ["format --check-formatted", "credo --strict"],
+      "generate.erd": ["ecto.gen.erd --output-path=erd.dbml"],
       docs: [
         "ash.generate_livebook --filename=docs/api.md",
         "ash.generate_resource_diagrams --format md",
