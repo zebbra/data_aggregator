@@ -27,12 +27,11 @@ steps:
 
   - &elixir
     name: build
-    image: hexpm/elixir:1.15.7-erlang-26.1.2-debian-bookworm-20231009-slim
+    image: hexpm/elixir:1.15.7-erlang-26.1.2-alpine-3.18.4
     environment:
       MIX_ENV: test
     commands:
-      - apt-get update
-      - apt-get install build-essential git -y
+      - apk add git make gcc libc-dev
       - mix local.rebar --force
       - mix local.hex --force
       - mix deps.get
@@ -49,8 +48,7 @@ steps:
   - <<: *elixir
     name: test
     commands:
-      - apt-get update
-      - apt-get install git -y
+      - apk add git
       - mix local.rebar --force
       - mix local.hex --force
       - mix lint
