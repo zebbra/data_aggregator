@@ -6,6 +6,14 @@ import Hooks from "./hooks";
 // import * as Params from "./params";
 // import * as Uploaders from "./uploaders";
 
+declare global {
+  interface Window {
+    storybook: {
+      Hooks: typeof Hooks;
+    };
+  }
+}
+
 (function () {
   window.storybook = { Hooks };
 })();

@@ -52,7 +52,6 @@ RUN mix assets.setup
 COPY priv priv
 COPY lib lib
 COPY assets assets
-COPY storybook storybook
 COPY docs docs
 COPY README.md README.md
 
