@@ -1,4 +1,8 @@
 defmodule DataAggregator.Files.Attachment do
+  @moduledoc """
+  Resource representing a file stored in the file storage (local or S3).
+  """
+
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID]

@@ -12,6 +12,12 @@ defmodule DataAggregator.MixProject do
       aliases: aliases(),
       deps: deps(),
 
+      # Dialyzer
+      dialyzer: [
+        plt_local_path: "priv/plts/project.plt",
+        plt_core_path: "priv/plts/core.plt"
+      ],
+
       # Docs
       name: "Data Aggregator",
       source_url: "https://github.com/zebbra/data_aggregator",
@@ -95,46 +101,66 @@ defmodule DataAggregator.MixProject do
   def nest_modules_by_prefix() do
     [
       DataAggregator,
-      DataAggregatorWeb
-      # # Files API
-      # DataAggregator.Files,
-      # DataAggregator.Files.Calculations,
-      # DataAggregator.Files.Changes,
-      # # Taxonomy API
-      # DataAggregator.Taxonomy,
-      # # Data API
-      # DataAggregator.Data,
-      # # Platform API
-      # DataAggregator.Platform,
-      # # Web
-      # DataAggregatorWeb
+      DataAggregatorWeb,
+
+      # Live Views
+      DataAggregatorWeb.CollectionLive,
+      DataAggregatorWeb.RecordLive,
+      DataAggregatorWeb.DashboardLive
     ]
   end
 
   defp groups_for_modules() do
     [
-      "File Management": ~r/^DataAggregator\.Files/,
-      Taxonomy: ~r/^DataAggregator\.Taxonomy/,
-      Platform: ~r/^DataAggregator\.Platform/,
-      Data: ~r/^DataAggregator\.Data/,
-
-      # Misc: [
-      #   DataAggregator.Mailer,
-      #   DataAggregator.Repo,
-      #   DataAggregator.Release
-      # ],
-
-      # Web: ~r/^DataAggregatorWeb/,
-      Localisation: [
-        DataAggregatorWeb.Locale,
-        DataAggregatorWeb.Cldr,
-        DataAggregatorWeb.Gettext
+      "File Management API": [
+        ~r/^DataAggregator\.Files/
+      ],
+      "Taxonomy API": [
+        ~r/^DataAggregator\.Taxonomy/
+      ],
+      "Platform API": [
+        ~r/^DataAggregator\.Platform/
+      ],
+      "Data API": [
+        ~r/^DataAggregator\.Data/
+      ],
+      Preparations: [
+        ~r/^DataAggregator\.Preparations/
+      ],
+      Web: [
+        DataAggregatorWeb,
+        DataAggregatorWeb.Router,
+        DataAggregatorWeb.Endpoint,
+        DataAggregatorWeb.Helpers,
+        DataAggregatorWeb.Schema,
+        DataAggregatorWeb.ErrorHTML,
+        DataAggregatorWeb.ErrorJSON
+      ],
+      "Live Views": [
+        ~r/^DataAggregatorWeb\.DashboardLive/,
+        ~r/^DataAggregatorWeb\.CollectionLive/,
+        ~r/^DataAggregatorWeb\.RecordLive/
+      ],
+      Components: [
+        DataAggregatorWeb.CoreComponents,
+        DataAggregatorWeb.ColorMode,
+        DataAggregatorWeb.HeadlessComponents,
+        ~r/^DataAggregatorWeb\.Headless/
       ],
       "Live Hooks": [
         DataAggregatorWeb.LiveLocale,
         DataAggregatorWeb.LiveLogger,
         DataAggregatorWeb.LiveState,
         DataAggregatorWeb.LiveNavigator
+      ],
+      Localisation: [
+        DataAggregatorWeb.Locale,
+        DataAggregatorWeb.Gettext,
+        DataAggregatorWeb.Cldr,
+        ~r/^DataAggregatorWeb\.Cldr/
+      ],
+      Plugs: [
+        ~r/^DataAggregatorWeb\.Plug/
       ]
     ]
   end
@@ -203,7 +229,7 @@ defmodule DataAggregator.MixProject do
 
       # linting
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.3", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
 
@@ -242,15 +268,21 @@ defmodule DataAggregator.MixProject do
         "esbuild.install --if-missing",
         "cmd cd assets && npm install"
       ],
-      "assets.build": ["tailwind default", "esbuild default"],
+      "assets.build": [
+        "tailwind default",
+        "esbuild default"
+      ],
       "assets.deploy": [
         "tailwind default --minify",
-        "tailwind storybook --minify",
         "esbuild default --minify",
         "phx.digest"
       ],
-      lint: ["format --check-formatted", "credo --strict"],
-      "generate.erd": ["ecto.gen.erd --output-path=erd.dbml"],
+      lint: [
+        "format --check-formatted",
+        "credo --strict",
+        "deps.audit",
+        "dialyzer"
+      ],
       docs: [
         "ash.generate_livebook --filename=docs/api.md",
         "ash.generate_resource_diagrams --format md",

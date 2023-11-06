@@ -1,4 +1,6 @@
 defmodule DataAggregatorWeb.Storybook do
+  @moduledoc false
+
   use PhoenixStorybook,
     otp_app: :data_aggregator,
     content_path: Path.expand("../../storybook", __DIR__),

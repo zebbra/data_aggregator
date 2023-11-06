@@ -1,36 +1,28 @@
 defmodule DataAggregator.Platform.Institution do
+  @moduledoc """
+  An institution is a collection of data sources.
+  """
+
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   attributes do
     uuid_attribute :id, prefix: "ins"
+    attribute :name, :string, allow_nil?: false
 
-    attribute :name, :string do
-      allow_nil? false
+    attribute :code, :string do
+      description "an iternationally valid code to identify the collection"
     end
 
-    # an iternationally valid code to identify the collection
-    attribute :code, :string
-
     attribute :address, :string
-
     attribute :zip_code, :string
-
     attribute :city, :string
-
     attribute :country, :string
-
     attribute :mail, :string
-
     attribute :tel, :string
-
     attribute :contact_person, :string
-
     timestamps private?: false, writable?: false
-  end
-
-  relationships do
   end
 
   actions do

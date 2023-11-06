@@ -1,4 +1,6 @@
 defmodule DataAggregatorWeb.JsonApiRouter do
+  @moduledoc false
+
   use AshJsonApi.Api.Router,
     # The api modules you want to serve
     apis: [

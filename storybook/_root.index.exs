@@ -1,4 +1,6 @@
 defmodule Storybook.Root do
+  @moduledoc false
+
   # See https://hexdocs.pm/phoenix_storybook/PhoenixStorybook.Index.html for full index
   # documentation.
 

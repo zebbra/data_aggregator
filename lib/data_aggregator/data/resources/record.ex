@@ -1,4 +1,8 @@
 defmodule DataAggregator.Data.Record do
+  @moduledoc """
+  Ash resource representing a record.
+  """
+
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]

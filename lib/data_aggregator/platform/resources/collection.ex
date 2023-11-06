@@ -1,4 +1,8 @@
 defmodule DataAggregator.Platform.Collection do
+  @moduledoc """
+  Resource representing a collection of records.
+  """
+
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
@@ -13,8 +17,9 @@ defmodule DataAggregator.Platform.Collection do
       allow_nil? false
     end
 
-    # an iternationally valid code to identify the collection
-    attribute :code, :string
+    attribute :code, :string do
+      description "an iternationally valid code to identify the collection"
+    end
 
     attribute :description, :string
 

@@ -1,4 +1,8 @@
 defmodule DataAggregator.Files.Calculations.Url do
+  @moduledoc """
+  Ash calculation to generate a signed URL for a file using Waffle.
+  """
+
   use Ash.Calculation
 
   alias DataAggregator.Files.Attachment

@@ -1,4 +1,8 @@
 defmodule DataAggregator.Preparations.Sort do
+  @moduledoc """
+  Ash preparation to sort resources using a `sort` action argument.
+  """
+
   use Ash.Resource.Preparation
 
   require Logger

@@ -1,4 +1,6 @@
 defmodule DataAggregator.Files.Calculations.Stream do
+  @moduledoc false
+
   use Ash.Calculation
 
   alias DataAggregator.Files.Attachment

@@ -3,6 +3,7 @@ defmodule DataAggregator.Release do
   Used for executing DB release tasks when run in production without Mix
   installed.
   """
+
   @app :data_aggregator
 
   def migrate do
