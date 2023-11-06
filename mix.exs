@@ -270,12 +270,10 @@ defmodule DataAggregator.MixProject do
       ],
       "assets.build": [
         "tailwind default",
-        "tailwind storybook",
         "esbuild default"
       ],
       "assets.deploy": [
         "tailwind default --minify",
-        "tailwind storybook --minify",
         "esbuild default --minify",
         "phx.digest"
       ],
