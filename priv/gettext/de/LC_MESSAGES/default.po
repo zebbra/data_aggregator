@@ -17,9 +17,9 @@ msgid "Actions"
 msgstr "Aktionen"
 
 #: lib/data_aggregator_web/components/core_components.ex:102
-#: lib/data_aggregator_web/components/headless_components.ex:321
-#: lib/data_aggregator_web/components/headless_components.ex:405
-#: lib/data_aggregator_web/components/headless_components.ex:482
+#: lib/data_aggregator_web/components/headless_components.ex:459
+#: lib/data_aggregator_web/components/headless_components.ex:556
+#: lib/data_aggregator_web/components/headless_components.ex:662
 #, elixir-autogen, elixir-format
 msgid "close"
 msgstr "schliessen"
