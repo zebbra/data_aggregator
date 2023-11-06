@@ -137,15 +137,15 @@ defmodule DataAggregator.MixProject do
         DataAggregatorWeb.ErrorJSON
       ],
       "Live Views": [
-        ~r/DataAggregatorWeb\.DashboardLive/,
-        ~r/DataAggregatorWeb\.CollectionLive/,
-        ~r/DataAggregatorWeb\.RecordLive/
+        ~r/^DataAggregatorWeb\.DashboardLive/,
+        ~r/^DataAggregatorWeb\.CollectionLive/,
+        ~r/^DataAggregatorWeb\.RecordLive/
       ],
       Components: [
         DataAggregatorWeb.CoreComponents,
         DataAggregatorWeb.ColorMode,
         DataAggregatorWeb.HeadlessComponents,
-        ~r/DataAggregatorWeb\.Headless/
+        ~r/^DataAggregatorWeb\.Headless/
       ],
       "Live Hooks": [
         DataAggregatorWeb.LiveLocale,
@@ -157,10 +157,10 @@ defmodule DataAggregator.MixProject do
         DataAggregatorWeb.Locale,
         DataAggregatorWeb.Gettext,
         DataAggregatorWeb.Cldr,
-        ~r/DataAggregatorWeb\.Cldr/
+        ~r/^DataAggregatorWeb\.Cldr/
       ],
       Plugs: [
-        ~r/DataAggregatorWeb\.Plug/
+        ~r/^DataAggregatorWeb\.Plug/
       ]
     ]
   end
