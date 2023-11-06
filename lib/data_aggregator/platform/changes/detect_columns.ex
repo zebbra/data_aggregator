@@ -1,4 +1,8 @@
 defmodule DataAggregator.Platform.Changes.DetectColumns do
+  @moduledoc """
+  Ash change to detect columns from a CSV file using `Explorer.DataFrame`.
+  """
+
   use Ash.Resource.Change
 
   alias Ash.Changeset

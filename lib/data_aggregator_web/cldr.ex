@@ -1,4 +1,8 @@
 defmodule DataAggregatorWeb.Cldr do
+  @moduledoc """
+  Localization using Unicode Common Locale Data Repository (CLDR)
+  """
+
   use Cldr,
     locales: DataAggregatorWeb.Locale.locales(),
     gettext: DataAggregatorWeb.Gettext,

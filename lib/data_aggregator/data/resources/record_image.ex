@@ -1,4 +1,8 @@
 defmodule DataAggregator.Data.RecordImage do
+  @moduledoc """
+  Resource representing an image attached to a `DataAggregator.Data.Record`.
+  """
+
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]

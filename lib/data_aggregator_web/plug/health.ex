@@ -1,4 +1,8 @@
 defmodule DataAggregatorWeb.Plug.Health do
+  @moduledoc """
+  Simple plug to respond to health checks.
+  """
+
   import Plug.Conn
 
   @default_path "/health"

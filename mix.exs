@@ -12,6 +12,12 @@ defmodule DataAggregator.MixProject do
       aliases: aliases(),
       deps: deps(),
 
+      # Dialyzer
+      dialyzer: [
+        plt_local_path: "priv/plts/project.plt",
+        plt_core_path: "priv/plts/core.plt"
+      ],
+
       # Docs
       name: "Data Aggregator",
       source_url: "https://github.com/zebbra/data_aggregator",
@@ -200,7 +206,7 @@ defmodule DataAggregator.MixProject do
 
       # linting
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.3", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
 
@@ -241,7 +247,12 @@ defmodule DataAggregator.MixProject do
       ],
       "assets.build": ["tailwind default", "esbuild default"],
       "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
-      lint: ["format --check-formatted", "credo --strict", "deps.audit"],
+      lint: [
+        "format --check-formatted",
+        "credo --strict",
+        "deps.audit",
+        "dialyzer"
+      ],
       docs: [
         "ash.generate_livebook --filename=docs/api.md",
         "ash.generate_resource_diagrams --format md",

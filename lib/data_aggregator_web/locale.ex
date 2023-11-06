@@ -1,4 +1,6 @@
 defmodule DataAggregatorWeb.Locale do
+  @moduledoc false
+
   require Logger
 
   import Plug.Conn, only: [assign: 3]

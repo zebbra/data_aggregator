@@ -1,4 +1,8 @@
 defmodule DataAggregator.Platform.ImportFile do
+  @moduledoc """
+  Resource for importing records into a collection from a file.
+  """
+
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]

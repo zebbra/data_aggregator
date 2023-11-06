@@ -31,6 +31,10 @@ data_aggregator-*.tar
 # Ignore generated docs
 /priv/static/docs/
 
+# Ignore dializer PLTs
+/priv/plts/*.plt
+/priv/plts/*.plt.hash
+
 # Ignore waffle storage dir
 /priv/storage/
 

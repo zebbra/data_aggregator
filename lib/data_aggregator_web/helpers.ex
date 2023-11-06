@@ -1,4 +1,8 @@
 defmodule DataAggregatorWeb.Helpers do
+  @moduledoc """
+  Formatting helpers for date, datetime, etc.
+  """
+
   alias DataAggregatorWeb.Cldr
 
   @timezone "Europe/Zurich"

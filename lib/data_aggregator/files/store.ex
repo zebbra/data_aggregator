@@ -1,4 +1,8 @@
 defmodule DataAggregator.Files.Store do
+  @moduledoc """
+  Module for storing files using Waffle.
+  """
+
   use Waffle.Definition
 
   @acl :private

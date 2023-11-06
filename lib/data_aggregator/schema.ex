@@ -1,4 +1,8 @@
 defmodule DataAggregator.Schema do
+  @moduledoc """
+  GraphQL schema for DataAggregator using `AshGraphql`.
+  """
+
   use Absinthe.Schema
 
   @apis [

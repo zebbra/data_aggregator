@@ -1,4 +1,8 @@
 defmodule DataAggregator.Platform.Registry do
+  @moduledoc """
+  Registry for `DataAggregator.Platform` Ash API.
+  """
+
   use Ash.Registry,
     extensions: [
       # This extension adds helpful compile time validations
