@@ -182,6 +182,24 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
      |> push_patch(to: socket.assigns.patch)}
   end
 
+  def pretty_accept_list(term) when is_binary(term) do
+    term
+    |> String.split(",")
+    |> Enum.map_join(", ", &(String.replace(&1, ~r/^\./, "") |> String.upcase()))
+  end
+
+  def pretty_accept_list(_), do: nil
+
+  def pretty_max_file_size(max_file_size) when is_number(max_file_size) do
+    max_file_size =
+      max_file_size
+      |> DataAggregatorWeb.Helpers.format_bytes()
+
+    mgettext("up to %{max_file_size}", max_file_size: max_file_size)
+  end
+
+  def pretty_max_file_size(_), do: nil
+
   defp handle_upload(collection, path) do
     ImportFile.create_from_path(collection, path)
   end

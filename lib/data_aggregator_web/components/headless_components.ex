@@ -69,7 +69,7 @@ defmodule DataAggregatorWeb.HeadlessComponents do
 
   attr :class, :string,
     default:
-      "bg-gray-200 group is-test aria-checked:bg-indigo-600 w-11 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer",
+      "bg-gray-200 group aria-checked:bg-indigo-600 w-11 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer",
     doc: "the class of the switch"
 
   attr :rest, :global

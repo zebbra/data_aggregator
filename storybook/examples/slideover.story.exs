@@ -1,8 +1,8 @@
 defmodule Storybook.Examples.Slideover do
   use PhoenixStorybook.Story, :example
 
-  import Elixir.DataAggregatorWeb.HeadlessComponents, only: [slideover: 1]
-  import Elixir.DataAggregatorWeb.CoreComponents
+  import DataAggregatorWeb.HeadlessComponents, only: [slideover: 1]
+  import DataAggregatorWeb.CoreComponents
 
   def doc,
     do:

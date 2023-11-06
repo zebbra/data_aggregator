@@ -513,12 +513,6 @@ msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "Material Entity ID"
 msgstr ""
 
-#: lib/data_aggregator_web/helpers.ex:55
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Helpers"
-msgid " up to "
-msgstr ""
-
 #: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:181
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
@@ -529,4 +523,10 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "Storybook"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:198
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
+msgid "up to %{max_file_size}"
 msgstr ""

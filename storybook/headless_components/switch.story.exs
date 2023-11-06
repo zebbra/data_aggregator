@@ -1,7 +1,7 @@
 defmodule Storybook.HeadlessComponents.Switch do
   use PhoenixStorybook.Story, :component
 
-  def function, do: &Elixir.DataAggregatorWeb.HeadlessComponents.switch/1
+  def function, do: &DataAggregatorWeb.HeadlessComponents.switch/1
 
   def variations do
     [

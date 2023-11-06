@@ -3,8 +3,8 @@ defmodule Storybook.Examples.Modal do
 
   alias Phoenix.LiveView.JS
 
-  import Elixir.DataAggregatorWeb.HeadlessComponents, only: [modal: 1]
-  import Elixir.DataAggregatorWeb.CoreComponents, only: [button: 1, header: 1]
+  import DataAggregatorWeb.HeadlessComponents, only: [modal: 1]
+  import DataAggregatorWeb.CoreComponents, only: [button: 1, header: 1]
 
   def doc, do: "This is a basic modal example."
 
