@@ -1,6 +1,7 @@
 defmodule DataAggregatorWeb.Router do
   use DataAggregatorWeb, :router
 
+  import PhoenixStorybook.Router
   import DataAggregatorWeb.Locale, only: [assign_current_locale: 2]
 
   # Browser
@@ -72,6 +73,17 @@ defmodule DataAggregatorWeb.Router do
     plug AshGraphql.Plug
   end
 
+  # Phoenix Storybook
+  scope "/" do
+    storybook_assets()
+
+    scope "/", DataAggregatorWeb do
+      pipe_through [:locale, :browser]
+      live_storybook("/storybook", backend_module: DataAggregatorWeb.Storybook)
+    end
+  end
+
+  # GraphSQL
   scope "/" do
     pipe_through :graphql
 

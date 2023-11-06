@@ -150,10 +150,6 @@ const Switch = {
   render() {
     if (this.dataRef.value.modelValue.value) {
       this.dataRef.value.switchRef.value.setAttribute("aria-checked", "true");
-      this.dataRef.value.switchRef.value.classList.add(
-        "group/checked",
-        "is-checked"
-      );
       this.dataRef.value.hiddenInputRef.value?.setAttribute("checked", "");
       this.dataRef.value.hiddenInputRef.value?.setAttribute(
         "value",
@@ -161,10 +157,6 @@ const Switch = {
       );
     } else {
       this.dataRef.value.switchRef.value.setAttribute("aria-checked", "false");
-      this.dataRef.value.switchRef.value.classList.remove(
-        "group/checked",
-        "is-checked"
-      );
       this.dataRef.value.hiddenInputRef.value?.removeAttribute("checked");
       this.dataRef.value.hiddenInputRef.value?.removeAttribute("value");
     }

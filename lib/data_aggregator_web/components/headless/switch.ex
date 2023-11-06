@@ -54,7 +54,6 @@ defmodule DataAggregatorWeb.Headless.Switch do
   attr :as, :string, default: "button"
   attr :checked, :boolean, default: false
   attr :value, :string, default: "on"
-  attr :form, :string, default: nil, doc: "The form the switch belongs to."
   attr :name, :string, default: nil, doc: "The name of the switch."
   attr :class, :string, default: nil
   attr :slot_class, :string, default: nil
@@ -63,14 +62,13 @@ defmodule DataAggregatorWeb.Headless.Switch do
 
   def headless_switch(assigns) do
     ~H"""
-    <%= if @name != nil && @checked != nil do %>
+    <%= if @name != nil do %>
       <.hidden
         features={hidden_features_none()}
         type="checkbox"
         hidden={true}
         readonly={true}
         checked={@checked}
-        form={@form}
         name={@name}
         value={@value}
       />

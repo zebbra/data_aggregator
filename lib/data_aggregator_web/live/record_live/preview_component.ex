@@ -40,7 +40,7 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
     ~H"""
     <.sidebar>
       <:header>
-        <.header id={@slideover_id} class="sticky top-0">
+        <.header dialog_header_id={@slideover_id} class="sticky top-0">
           <%= @record.id %>
           <:subtitle>
             <%= ~t"This is a record from your database."m %>
