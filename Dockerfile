@@ -21,7 +21,10 @@ ARG RUNNER_IMAGE="alpine:${ALPINE_VERSION}"
 FROM ${BUILDER_IMAGE} as builder
 
 # install build dependencies
-RUN apk add --no-cache libstdc++ openssl ncurses-libs nodejs npm git make gcc libc-dev
+RUN apk add --no-cache build-base openssl ncurses-libs nodejs npm git
+
+# https://stackoverflow.com/questions/52894632/cannot-install-pycosat-on-alpine-during-dockerizing
+RUN echo "#include <unistd.h>" > /usr/include/sys/unistd.h
 
 # prepare build dir
 WORKDIR /app
