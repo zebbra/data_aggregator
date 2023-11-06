@@ -1,5 +1,7 @@
 defmodule DataAggregatorWeb.Locale do
-  @moduledoc false
+  @moduledoc """
+  Helper functions to work with locales.
+  """
 
   require Logger
 

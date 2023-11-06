@@ -101,46 +101,66 @@ defmodule DataAggregator.MixProject do
   def nest_modules_by_prefix() do
     [
       DataAggregator,
-      DataAggregatorWeb
-      # # Files API
-      # DataAggregator.Files,
-      # DataAggregator.Files.Calculations,
-      # DataAggregator.Files.Changes,
-      # # Taxonomy API
-      # DataAggregator.Taxonomy,
-      # # Data API
-      # DataAggregator.Data,
-      # # Platform API
-      # DataAggregator.Platform,
-      # # Web
-      # DataAggregatorWeb
+      DataAggregatorWeb,
+
+      # Live Views
+      DataAggregatorWeb.CollectionLive,
+      DataAggregatorWeb.RecordLive,
+      DataAggregatorWeb.DashboardLive
     ]
   end
 
   defp groups_for_modules() do
     [
-      "File Management": ~r/^DataAggregator\.Files/,
-      Taxonomy: ~r/^DataAggregator\.Taxonomy/,
-      Platform: ~r/^DataAggregator\.Platform/,
-      Data: ~r/^DataAggregator\.Data/,
-
-      # Misc: [
-      #   DataAggregator.Mailer,
-      #   DataAggregator.Repo,
-      #   DataAggregator.Release
-      # ],
-
-      # Web: ~r/^DataAggregatorWeb/,
-      Localisation: [
-        DataAggregatorWeb.Locale,
-        DataAggregatorWeb.Cldr,
-        DataAggregatorWeb.Gettext
+      "File Management API": [
+        ~r/^DataAggregator\.Files/
+      ],
+      "Taxonomy API": [
+        ~r/^DataAggregator\.Taxonomy/
+      ],
+      "Platform API": [
+        ~r/^DataAggregator\.Platform/
+      ],
+      "Data API": [
+        ~r/^DataAggregator\.Data/
+      ],
+      Preparations: [
+        ~r/^DataAggregator\.Preparations/
+      ],
+      Web: [
+        DataAggregatorWeb,
+        DataAggregatorWeb.Router,
+        DataAggregatorWeb.Endpoint,
+        DataAggregatorWeb.Helpers,
+        DataAggregatorWeb.Schema,
+        DataAggregatorWeb.ErrorHTML,
+        DataAggregatorWeb.ErrorJSON
+      ],
+      "Live Views": [
+        ~r/DataAggregatorWeb\.DashboardLive/,
+        ~r/DataAggregatorWeb\.CollectionLive/,
+        ~r/DataAggregatorWeb\.RecordLive/
+      ],
+      Components: [
+        DataAggregatorWeb.CoreComponents,
+        DataAggregatorWeb.ColorMode,
+        DataAggregatorWeb.HeadlessComponents,
+        ~r/DataAggregatorWeb\.Headless/
       ],
       "Live Hooks": [
         DataAggregatorWeb.LiveLocale,
         DataAggregatorWeb.LiveLogger,
         DataAggregatorWeb.LiveState,
         DataAggregatorWeb.LiveNavigator
+      ],
+      Localisation: [
+        DataAggregatorWeb.Locale,
+        DataAggregatorWeb.Gettext,
+        DataAggregatorWeb.Cldr,
+        ~r/DataAggregatorWeb\.Cldr/
+      ],
+      Plugs: [
+        ~r/DataAggregatorWeb\.Plug/
       ]
     ]
   end
