@@ -108,7 +108,7 @@ defmodule DataAggregatorWeb do
     end
   end
 
-  @doc """
+  @doc ~S"""
   When used, dispatch to the appropriate controller/view/etc.
   """
   defmacro __using__(which) when is_atom(which) do

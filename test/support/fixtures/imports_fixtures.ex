@@ -6,7 +6,7 @@ defmodule DataAggregator.RecordsFixtures do
 
   alias DataAggregator.Data.Record
 
-  @doc """
+  @doc ~S"""
   Generate a record.
   """
   def record_fixture(attrs \\ %{}) do
