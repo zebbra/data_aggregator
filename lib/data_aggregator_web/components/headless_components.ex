@@ -700,8 +700,8 @@ defmodule DataAggregatorWeb.HeadlessComponents do
       id={@id <> "__backdrop"}
       class={[
         "hidden fixed inset-0",
-        @variant == "slideover" && "bg-black/50 dark:bg-gray-400/10",
-        @variant == "modal" && "bg-black/50 dark:bg-gray-400/10"
+        @variant == "slideover" && "bg-black/50 dark:bg-black/40",
+        @variant == "modal" && "bg-black/50 dark:bg-black/40"
       ]}
       aria-hidden="true"
     />

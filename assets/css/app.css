@@ -6,8 +6,8 @@
  * Put your component styling within the Tailwind utilities layer.
  * See the https://hexdocs.pm/phoenix_storybook/sandboxing.html guide for more info.
  */
-@import "./components/forms.scss";
+@import "./components/forms.css";
 
 /* This file is for your main application CSS */
 
-@import "./components/table.scss";
+@import "./components/table.css";

@@ -3,7 +3,7 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-@import "./components/forms.scss";
+@import "./components/forms.css";
 
 /*
  * Put your component styling within the Tailwind utilities layer.

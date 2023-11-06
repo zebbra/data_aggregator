@@ -95,7 +95,7 @@ config :tailwind,
   default: [
     args: ~w(
       --config=tailwind.config.js
-      --input=css/app.scss
+      --input=css/app.css
       --output=../priv/static/assets/app.css
     ),
     cd: Path.expand("../assets", __DIR__)
@@ -103,7 +103,7 @@ config :tailwind,
   storybook: [
     args: ~w(
       --config=tailwind.config.js
-      --input=css/storybook.scss
+      --input=css/storybook.css
       --output=../priv/static/assets/storybook.css
     ),
     cd: Path.expand("../assets", __DIR__)
