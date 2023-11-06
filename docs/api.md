@@ -115,7 +115,7 @@ erDiagram
 | ---- | ---- | ----------- |
 | **id** | UUID |  |
 | **name** | String |  |
-| **code** | String |  |
+| **code** | String | an iternationally valid code to identify the collection |
 | **address** | String |  |
 | **zip_code** | String |  |
 | **city** | String |  |
@@ -145,7 +145,7 @@ erDiagram
 | ---- | ---- | ----------- |
 | **id** | UUID |  |
 | **name** | String |  |
-| **code** | String |  |
+| **code** | String | an iternationally valid code to identify the collection |
 | **description** | String |  |
 | **mapping** | Map |  |
 | **inserted_at** | UtcDatetimeUsec |  |

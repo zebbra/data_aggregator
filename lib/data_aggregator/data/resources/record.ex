@@ -1,5 +1,7 @@
 defmodule DataAggregator.Data.Record do
-  @moduledoc false
+  @moduledoc """
+  Ash resource representing a record.
+  """
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
