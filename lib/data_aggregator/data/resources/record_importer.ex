@@ -1,4 +1,8 @@
 defmodule DataAggregator.Data.Resources.RecordImporter do
+  @moduledoc """
+  Imports records from a file stored in an ImportFile on an existing collection.
+  """
+
   require Explorer.DataFrame
 
   alias DataAggregator.Data.Record

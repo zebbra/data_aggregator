@@ -220,6 +220,9 @@ defmodule DataAggregator.Platform.ImportFileTest do
 
           {:error, error} ->
             assert "Unknown error happend #{inspect(error)}"
+
+          _ ->
+            assert "Unknown or error state"
         end
       end
     end

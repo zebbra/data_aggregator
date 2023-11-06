@@ -18,7 +18,7 @@
     preference: "system", // default, light, dark, system
     fallback: "light",
     globalName: "ColorMode",
-    classPrefix: "",
+    classPrefix: "theme-",
     classSuffix: "",
     storageKey: "color-mode",
     dataValue: "",

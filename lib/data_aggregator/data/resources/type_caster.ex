@@ -1,4 +1,8 @@
 defmodule DataAggregator.Data.Resources.TypeCaster do
+  @moduledoc """
+  casts strings to given types
+  """
+
   def cast(value, :atom) when is_nil(value) do
     value
   end

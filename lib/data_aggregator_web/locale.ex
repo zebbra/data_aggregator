@@ -1,4 +1,8 @@
 defmodule DataAggregatorWeb.Locale do
+  @moduledoc """
+  Helper functions to work with locales.
+  """
+
   require Logger
 
   import Plug.Conn, only: [assign: 3]

@@ -1,4 +1,8 @@
 defmodule DataAggregator.Taxonomy.Registry do
+  @moduledoc """
+  Ash registry for `DataAggregator.Taxonomy` context.
+  """
+
   use Ash.Registry,
     extensions: [
       # This extension adds helpful compile time validations

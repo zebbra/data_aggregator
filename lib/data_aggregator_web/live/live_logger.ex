@@ -1,5 +1,5 @@
 defmodule DataAggregatorWeb.LiveLogger do
-  @doc ~S"""
+  @moduledoc """
   LiveView hook to log events and params.
   """
 

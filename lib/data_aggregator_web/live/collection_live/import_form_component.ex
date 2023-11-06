@@ -53,7 +53,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
                 </label>
                 <p class="pl-1"><%= ~t"or drag and drop"m %></p>
               </div>
-              <p class="dark:text-gray-400 text-xs leading-5 text-gray-600">CSV, JPEG, JPG or PNG</p>
+              <p class="dark:text-gray-400 text-xs leading-5 text-gray-600">
+                <%= pretty_accept_list(@uploads.file.accept) %>
+                <%= pretty_max_file_size(@uploads.file.max_file_size) %>
+              </p>
             </div>
           </div>
 
@@ -196,6 +199,24 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   defp handle_flash(socket, import_file) when is_nil(import_file) do
     socket |> put_flash(:error, "File upload failed")
   end
+
+  def pretty_accept_list(term) when is_binary(term) do
+    term
+    |> String.split(",")
+    |> Enum.map_join(", ", &(String.replace(&1, ~r/^\./, "") |> String.upcase()))
+  end
+
+  def pretty_accept_list(_), do: nil
+
+  def pretty_max_file_size(max_file_size) when is_number(max_file_size) do
+    max_file_size =
+      max_file_size
+      |> DataAggregatorWeb.Helpers.format_bytes()
+
+    mgettext("up to %{max_file_size}", max_file_size: max_file_size)
+  end
+
+  def pretty_max_file_size(_), do: nil
 
   defp handle_upload(collection, path) do
     ImportFile.create_from_path(collection, path)

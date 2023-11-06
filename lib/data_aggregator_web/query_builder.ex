@@ -1,4 +1,6 @@
 defmodule DataAggregatorWeb.QueryBuilder do
+  @moduledoc false
+
   import Phoenix.Component, only: [assign: 3]
   import Phoenix.LiveView, only: [stream: 4]
 

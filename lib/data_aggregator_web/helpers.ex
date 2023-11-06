@@ -1,4 +1,8 @@
 defmodule DataAggregatorWeb.Helpers do
+  @moduledoc """
+  Formatting helpers for date, datetime, etc.
+  """
+
   alias DataAggregatorWeb.Cldr
 
   @timezone "Europe/Zurich"
@@ -31,7 +35,7 @@ defmodule DataAggregatorWeb.Helpers do
     opts =
       opts
       |> Keyword.put_new(:format, "#,##0.#")
-      |> Keyword.update!(:format, &"#{&1} #{unit}")
+      |> Keyword.update!(:format, &"#{&1}#{unit}")
 
     Cldr.Number.to_string!(value, opts)
   end

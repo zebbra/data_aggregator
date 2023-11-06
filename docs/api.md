@@ -110,20 +110,20 @@ erDiagram
 
 #### Attributes
 
-| Name               | Type            | Description |
-| ------------------ | --------------- | ----------- |
-| **id**             | UUID            |             |
-| **name**           | String          |             |
-| **code**           | String          |             |
-| **address**        | String          |             |
-| **zip_code**       | String          |             |
-| **city**           | String          |             |
-| **country**        | String          |             |
-| **mail**           | String          |             |
-| **tel**            | String          |             |
-| **contact_person** | String          |             |
-| **inserted_at**    | UtcDatetimeUsec |             |
-| **updated_at**     | UtcDatetimeUsec |             |
+| Name               | Type            | Description                                             |
+| ------------------ | --------------- | ------------------------------------------------------- |
+| **id**             | UUID            |                                                         |
+| **name**           | String          |                                                         |
+| **code**           | String          | an iternationally valid code to identify the collection |
+| **address**        | String          |                                                         |
+| **zip_code**       | String          |                                                         |
+| **city**           | String          |                                                         |
+| **country**        | String          |                                                         |
+| **mail**           | String          |                                                         |
+| **tel**            | String          |                                                         |
+| **contact_person** | String          |                                                         |
+| **inserted_at**    | UtcDatetimeUsec |                                                         |
+| **updated_at**     | UtcDatetimeUsec |                                                         |
 
 #### Actions
 
@@ -138,16 +138,16 @@ erDiagram
 
 #### Attributes
 
-| Name               | Type            | Description |
-| ------------------ | --------------- | ----------- |
-| **id**             | UUID            |             |
-| **name**           | String          |             |
-| **code**           | String          |             |
-| **description**    | String          |             |
-| **mapping**        | Map             |             |
-| **inserted_at**    | UtcDatetimeUsec |             |
-| **updated_at**     | UtcDatetimeUsec |             |
-| **institution_id** | UUID            |             |
+| Name               | Type            | Description                                             |
+| ------------------ | --------------- | ------------------------------------------------------- |
+| **id**             | UUID            |                                                         |
+| **name**           | String          |                                                         |
+| **code**           | String          | an iternationally valid code to identify the collection |
+| **description**    | String          |                                                         |
+| **mapping**        | Map             |                                                         |
+| **inserted_at**    | UtcDatetimeUsec |                                                         |
+| **updated_at**     | UtcDatetimeUsec |                                                         |
+| **institution_id** | UUID            |                                                         |
 
 #### Actions
 
