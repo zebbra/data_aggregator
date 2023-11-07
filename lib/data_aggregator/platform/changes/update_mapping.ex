@@ -6,7 +6,7 @@ defmodule DataAggregator.Platform.Changes.UpdateMapping do
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Platform.ImportFile.Column
+  alias DataAggregator.Platform.Import.Column
 
   require Logger
 

@@ -12,6 +12,7 @@ defmodule DataAggregator.Platform.Registry do
   entries do
     entry DataAggregator.Platform.Institution
     entry DataAggregator.Platform.Collection
-    entry DataAggregator.Platform.ImportFile
+    entry DataAggregator.Platform.Import
+    entry DataAggregator.Platform.Import.Record
   end
 end

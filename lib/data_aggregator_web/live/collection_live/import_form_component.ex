@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
 
   alias AshPhoenix.Form
   alias DataAggregator.Platform.Collection
-  alias DataAggregator.Platform.ImportFile
+  alias DataAggregator.Platform.Import
 
   @impl true
   def update(assigns, socket) do
@@ -169,34 +169,34 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   def handle_event("save", _params, socket) do
     collection = socket.assigns.collection
 
-    import_files =
+    imports =
       consume_uploaded_entries(socket, :file, fn %{path: path}, _entry ->
         case handle_upload(collection, path) do
-          {:ok, import_file} ->
-            {:ok, import_file}
+          {:ok, import} ->
+            {:ok, import}
 
           {:error, _} ->
             {:error, "Could not create import file"}
         end
       end)
 
-    import_file = Enum.at(import_files, 0)
+    import = Enum.at(imports, 0)
 
-    notify_parent({:imported, import_file})
+    notify_parent({:imported, import})
 
     {
       :noreply,
       socket
-      |> handle_flash(import_file)
+      |> handle_flash(import)
       |> push_patch(to: socket.assigns.patch)
     }
   end
 
-  defp handle_flash(socket, import_file) when is_nil(import_file) == false do
+  defp handle_flash(socket, import) when is_nil(import) == false do
     socket |> put_flash(:info, "File successfully uploaded")
   end
 
-  defp handle_flash(socket, import_file) when is_nil(import_file) do
+  defp handle_flash(socket, import) when is_nil(import) do
     socket |> put_flash(:error, "File upload failed")
   end
 
@@ -219,7 +219,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   def pretty_max_file_size(_), do: nil
 
   defp handle_upload(collection, path) do
-    ImportFile.create_from_path(collection, path)
+    Import.create_from_path(collection, path)
   end
 
   defp error_to_string(:too_large), do: "Too large"

@@ -9,7 +9,7 @@ defmodule DataAggregator.Data.Record do
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Platform.Collection
-  alias DataAggregator.Platform.ImportFile.Column
+  alias DataAggregator.Platform.Import.Column
 
   @default_limit 15
   def default_limit, do: @default_limit

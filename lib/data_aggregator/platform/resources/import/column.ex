@@ -1,4 +1,4 @@
-defmodule DataAggregator.Platform.ImportFile.Column do
+defmodule DataAggregator.Platform.Import.Column do
   @moduledoc """
   Columns stored during the import of a file. Represent the schema of the csv file and the mapping to the collection's schema.
   """

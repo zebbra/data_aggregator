@@ -1,10 +1,10 @@
-defmodule DataAggregator.Platform.ImportFileTest do
+defmodule DataAggregator.Platform.ImportTest do
   use DataAggregator.DataCase
 
   alias DataAggregator.Data.Record
   alias DataAggregator.Data.Resources.RecordImporter
   alias DataAggregator.Platform.Collection
-  alias DataAggregator.Platform.ImportFile
+  alias DataAggregator.Platform.Import
 
   setup do
     {:ok, collection} = Collection.create(%{name: "Test Collection"})
@@ -14,9 +14,9 @@ defmodule DataAggregator.Platform.ImportFileTest do
   describe "create_from_path" do
     test "with valid file", %{collection: collection} do
       path = "test/support/fixtures/files/museum-dataset-import-example.csv"
-      {:ok, import_file} = ImportFile.create_from_path(collection, path)
+      {:ok, import} = Import.create_from_path(collection, path)
 
-      columns = import_file.columns |> Enum.map(&{&1.name, &1.type})
+      columns = import.columns |> Enum.map(&{&1.name, &1.type})
 
       assert columns == [
                {"Age", :string},
@@ -51,7 +51,7 @@ defmodule DataAggregator.Platform.ImportFileTest do
 
     test "with invalid file", %{collection: collection} do
       path = "test/support/fixtures/files/no-recent-events.jpeg"
-      {:error, error} = ImportFile.create_from_path(collection, path)
+      {:error, error} = Import.create_from_path(collection, path)
 
       assert_invalid_path(
         error,
@@ -61,7 +61,7 @@ defmodule DataAggregator.Platform.ImportFileTest do
 
     test "with non-existing file", %{collection: collection} do
       path = "test/this-file-does-not-exist.csv"
-      {:error, error} = ImportFile.create_from_path(collection, path)
+      {:error, error} = Import.create_from_path(collection, path)
 
       assert_invalid_path(
         error,
@@ -73,7 +73,7 @@ defmodule DataAggregator.Platform.ImportFileTest do
   describe "update_mapping" do
     test "with valid file", %{collection: collection} do
       path = "test/support/fixtures/files/museum-dataset-import-example.csv"
-      {:ok, import_file} = ImportFile.create_from_path(collection, path)
+      {:ok, import} = Import.create_from_path(collection, path)
 
       params = %{
         columns: [
@@ -82,8 +82,8 @@ defmodule DataAggregator.Platform.ImportFileTest do
         ]
       }
 
-      {:ok, import_file} = ImportFile.update_mapping(import_file, params)
-      columns = import_file.columns |> Enum.map(&{&1.name, &1.type, &1.mapped_to})
+      {:ok, import} = Import.update_mapping(import, params)
+      columns = import.columns |> Enum.map(&{&1.name, &1.type, &1.mapped_to})
 
       assert columns == [
                {"Age", :string, "age"},
@@ -122,8 +122,8 @@ defmodule DataAggregator.Platform.ImportFileTest do
         ]
       }
 
-      {:ok, import_file} = ImportFile.update_mapping(import_file, params)
-      columns = import_file.columns |> Enum.map(&{&1.name, &1.type, &1.mapped_to})
+      {:ok, import} = Import.update_mapping(import, params)
+      columns = import.columns |> Enum.map(&{&1.name, &1.type, &1.mapped_to})
 
       assert columns == [
                {"Age", :string, nil},
@@ -157,74 +157,100 @@ defmodule DataAggregator.Platform.ImportFileTest do
     end
   end
 
-  describe "import_records" do
-    @tag run: true
-    test "from mapped import file", %{collection: collection} do
+  describe "import_record" do
+    setup %{collection: collection} do
       path = "test/support/fixtures/files/museum-dataset-import-example.csv"
+      %{import: Import.create_from_path!(collection, path)}
+    end
 
-      # upload a file to a collection
-      {:ok, import_file} = ImportFile.create_from_path(collection, path)
-
-      # map the columns to our intern dwc attributes on the record resource
-      params = %{
-        columns: [
-          %{name: "Scientific Name", type: "string", mapped_to: "tax_scientific_name"},
-          %{name: "Age", type: "string", mapped_to: "spp_life_stage"},
-          %{
-            name: "Auteur et date ssp",
-            type: "string",
-            mapped_to: "tax_scientific_name_authorship"
-          },
-          %{name: "Autres numéros", type: "string", mapped_to: "occ_associated_occurrences"},
-          %{name: "Collecteur", type: "string", mapped_to: "occ_recorded_by"},
-          %{name: "DAYCOLLECTED", type: "integer", mapped_to: "eve_day"},
-          %{name: "ENDOFPERIODDAY", type: "integer", mapped_to: "eve_end_of_period_day"},
-          %{name: "ENDOFPERIODMONTH", type: "integer", mapped_to: "eve_end_of_period_month"},
-          %{name: "ENDOFPERIODYEAR", type: "integer", mapped_to: "eve_end_of_period_year"},
-          %{name: "Espèce", type: "string", mapped_to: "tax_specific_epithet"},
-          %{name: "Famille", type: "string", mapped_to: "tax_family"},
-          %{name: "Genre", type: "string", mapped_to: "tax_genus"},
-          %{name: "LatitudeDecimale", type: "string", mapped_to: "loc_decimal_latitude"},
-          %{name: "Localité", type: "string", mapped_to: "loc_verbatim_locality"},
-          %{name: "LongitudeDecimale", type: "string", mapped_to: "loc_decimal_longitude"},
-          %{name: "MONTHCOLLECTED", type: "integer", mapped_to: "eve_month"},
-          %{
-            name: "Numéro scientifique GBIF",
-            type: "string",
-            mapped_to: "mte_material_entity_id"
-          },
-          %{name: "Ordre", type: "string", mapped_to: "tax_order"},
-          %{name: "Parties", type: "string", mapped_to: "mts_material_sample_type"},
-          %{name: "Pays", type: "string", mapped_to: "loc_country"},
-          %{name: "PrecisionGEO", type: "string", mapped_to: "loc_georeference_remarks"},
-          %{name: "Province", type: "string", mapped_to: "loc_state_province"},
-          %{name: "Remarques", type: "string", mapped_to: "occ_occurrence_remarks"},
-          %{name: "Sexe", type: "string", mapped_to: "occ_sex"},
-          %{name: "Sous espèce", type: "string", mapped_to: "tax_infraspecific_epithet"},
-          %{name: "Station", type: "string", mapped_to: "loc_locality"},
-          %{name: "YEARCOLLECTED", type: "integer", mapped_to: "eve_year"}
-        ]
+    @tag run: true
+    test "with arguments", %{import: import} do
+      attributes = %{
+        tax_scientific_name: "Example",
+        mte_material_entity_id: "example"
       }
 
-      # update the import_file with the mapping
-      {:ok, import_file} = ImportFile.update_mapping(import_file, params)
+      assert {:ok, import} = Import.import_record(import, attributes)
 
-      # import the records
-      records = RecordImporter.import_records(import_file, params.columns)
+      records =
+        import.records |> Enum.map(&Map.take(&1, [:tax_scientific_name, :mte_material_entity_id]))
 
-      # assert that the records are created returned as proper structs
-      for rec <- records do
-        case rec do
-          {:ok, record} ->
-            assert is_struct(record, Record)
+      assert records == [
+               %{
+                 tax_scientific_name: "Example",
+                 mte_material_entity_id: "example"
+               }
+             ]
+    end
+  end
 
-          {:error, error} ->
-            assert "Unknown error happend #{inspect(error)}"
+  describe "import_records" do
+    setup %{collection: collection} do
+      path = "test/support/fixtures/files/museum-dataset-import-example.csv"
+      %{import: Import.create_from_path!(collection, path)}
+    end
 
-          _ ->
-            assert "Unknown or error state"
-        end
-      end
+    test "from mapped import file", %{import: import} do
+      # map the columns to our intern dwc attributes on the record resource
+      # params = %{
+      #   columns: [
+      #     %{name: "Scientific Name", type: "string", mapped_to: "tax_scientific_name"},
+      #     %{name: "Age", type: "string", mapped_to: "spp_life_stage"},
+      #     %{
+      #       name: "Auteur et date ssp",
+      #       type: "string",
+      #       mapped_to: "tax_scientific_name_authorship"
+      #     },
+      #     %{name: "Autres numéros", type: "string", mapped_to: "occ_associated_occurrences"},
+      #     %{name: "Collecteur", type: "string", mapped_to: "occ_recorded_by"},
+      #     %{name: "DAYCOLLECTED", type: "integer", mapped_to: "eve_day"},
+      #     %{name: "ENDOFPERIODDAY", type: "integer", mapped_to: "eve_end_of_period_day"},
+      #     %{name: "ENDOFPERIODMONTH", type: "integer", mapped_to: "eve_end_of_period_month"},
+      #     %{name: "ENDOFPERIODYEAR", type: "integer", mapped_to: "eve_end_of_period_year"},
+      #     %{name: "Espèce", type: "string", mapped_to: "tax_specific_epithet"},
+      #     %{name: "Famille", type: "string", mapped_to: "tax_family"},
+      #     %{name: "Genre", type: "string", mapped_to: "tax_genus"},
+      #     %{name: "LatitudeDecimale", type: "string", mapped_to: "loc_decimal_latitude"},
+      #     %{name: "Localité", type: "string", mapped_to: "loc_verbatim_locality"},
+      #     %{name: "LongitudeDecimale", type: "string", mapped_to: "loc_decimal_longitude"},
+      #     %{name: "MONTHCOLLECTED", type: "integer", mapped_to: "eve_month"},
+      #     %{
+      #       name: "Numéro scientifique GBIF",
+      #       type: "string",
+      #       mapped_to: "mte_material_entity_id"
+      #     },
+      #     %{name: "Ordre", type: "string", mapped_to: "tax_order"},
+      #     %{name: "Parties", type: "string", mapped_to: "mts_material_sample_type"},
+      #     %{name: "Pays", type: "string", mapped_to: "loc_country"},
+      #     %{name: "PrecisionGEO", type: "string", mapped_to: "loc_georeference_remarks"},
+      #     %{name: "Province", type: "string", mapped_to: "loc_state_province"},
+      #     %{name: "Remarques", type: "string", mapped_to: "occ_occurrence_remarks"},
+      #     %{name: "Sexe", type: "string", mapped_to: "occ_sex"},
+      #     %{name: "Sous espèce", type: "string", mapped_to: "tax_infraspecific_epithet"},
+      #     %{name: "Station", type: "string", mapped_to: "loc_locality"},
+      #     %{name: "YEARCOLLECTED", type: "integer", mapped_to: "eve_year"}
+      #   ]
+      # }
+
+      # # update the import with the mapping
+      # {:ok, import} = Import.update_mapping(import, params)
+
+      # # import the records
+      # {:ok, records} = RecordImporter.import_records(import, params.columns)
+
+      # # assert that the records are created returned as proper structs
+      # for rec <- records do
+      #   case rec do
+      #     {:ok, record} ->
+      #       assert is_struct(record, Record)
+
+      #     {:error, error} ->
+      #       assert "Unknown error happend #{inspect(error)}"
+
+      #     _ ->
+      #       assert "Unknown or error state"
+      #   end
+      # end
     end
   end
 

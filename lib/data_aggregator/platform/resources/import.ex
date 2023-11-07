@@ -1,4 +1,4 @@
-defmodule DataAggregator.Platform.ImportFile do
+defmodule DataAggregator.Platform.Import do
   @moduledoc """
   Resource for importing records into a collection from a file.
   """
@@ -9,7 +9,8 @@ defmodule DataAggregator.Platform.ImportFile do
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Platform.Collection
-  alias DataAggregator.Platform.ImportFile.Column
+  alias DataAggregator.Platform.Import.Column
+  alias DataAggregator.Platform.Import.Record, as: ImportRecord
 
   attributes do
     uuid_attribute :id, prefix: "if"
@@ -23,6 +24,15 @@ defmodule DataAggregator.Platform.ImportFile do
 
     belongs_to :attachment, Attachment do
       api DataAggregator.Files
+    end
+
+    has_many :import_records, ImportRecord do
+    end
+
+    many_to_many :records, DataAggregator.Data.Record do
+      api DataAggregator.Data
+      through ImportRecord
+      join_relationship :import_records
     end
   end
 
@@ -46,39 +56,51 @@ defmodule DataAggregator.Platform.ImportFile do
       accept [:columns]
       change DataAggregator.Platform.Changes.UpdateMapping
     end
+
+    update :import_record do
+      argument :attributes, :map, allow_nil?: false
+      # change set_attribute(attribute, value)
+      change manage_relationship(:attributes, :records, type: :create)
+    end
+
+    update :import_records do
+      accept []
+      change DataAggregator.Platform.Changes.ImportRecords
+    end
   end
 
   code_interface do
     define_for DataAggregator.Platform
     define :create_from_path, args: [:collection, :path]
     define :update_mapping
+    define :import_record, args: [:attributes]
     define :read
     define :get_by_id, action: :read, get_by: [:id]
   end
 
   postgres do
-    table "import_files"
+    table "imports"
     repo DataAggregator.Repo
   end
 
   graphql do
-    type :import_file
+    type :import
 
     queries do
-      get :get_import_file, :read
-      list :list_import_files, :read
+      get :get_import, :read
+      list :list_imports, :read
     end
 
     mutations do
-      create :create_import_file, :create_from_path
+      create :create_import, :create_from_path
     end
   end
 
   json_api do
-    type "import_file"
+    type "import"
 
     routes do
-      base("/import_files")
+      base("/imports")
 
       get(:read)
       index :read

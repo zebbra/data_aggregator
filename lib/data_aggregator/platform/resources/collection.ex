@@ -32,14 +32,14 @@ defmodule DataAggregator.Platform.Collection do
   relationships do
     belongs_to :institution, Institution
 
-    has_many :import_files, DataAggregator.Platform.ImportFile
+    has_many :imports, DataAggregator.Platform.Import
 
-    many_to_many :import_file_attachments, Attachment do
+    many_to_many :import_attachments, Attachment do
       api DataAggregator.Files
-      through DataAggregator.Platform.ImportFile
+      through DataAggregator.Platform.Import
       source_attribute_on_join_resource :collection_id
       destination_attribute_on_join_resource :attachment_id
-      join_relationship :import_files
+      join_relationship :imports
     end
   end
 

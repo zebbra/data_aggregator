@@ -1,21 +1,21 @@
 defmodule DataAggregator.Data.Resources.RecordImporter do
   @moduledoc """
-  Imports records from a file stored in an ImportFile on an existing collection.
+  Imports records from a file stored in an Import on an existing collection.
   """
 
   require Explorer.DataFrame
 
   alias DataAggregator.Data.Record
-  alias DataAggregator.Platform.ImportFile
-  alias DataAggregator.Platform.ImportFile.Column
+  alias DataAggregator.Platform.Import
+  alias DataAggregator.Platform.Import.Column
   alias Explorer.DataFrame
 
-  def import_records(%ImportFile{} = import_file, columns) do
-    import_file |> read_file |> process_records(columns)
+  def import_records(%Import{} = import, columns) do
+    import |> read_file |> process_records(columns)
   end
 
-  defp read_file(import_file) do
-    import_file.attachment.url
+  defp read_file(import) do
+    import.attachment.url
     |> DataFrame.from_csv()
   end
 
