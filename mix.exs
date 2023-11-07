@@ -259,10 +259,54 @@ defmodule DataAggregator.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      # Setup Project
+      setup: [
+        "deps.get",
+        "repo.setup",
+        "assets.setup",
+        "assets.build",
+        "docs"
+      ],
+
+      # Database management
+      "repo.create": [
+        "ash_postgres.create"
+      ],
+      "repo.migrate": [
+        "ash_postgres.migrate"
+      ],
+      "repo.drop": [
+        "ash_postgres.drop"
+      ],
+      "repo.setup": [
+        "repo.create",
+        "repo.migrate",
+        "run priv/repo/seeds.exs"
+      ],
+      "repo.reset": [
+        "repo.drop",
+        "repo.setup"
+      ],
+      "repo.lint": [
+        "ash_postgres.generate_migrations --check"
+      ],
+
+      # Run tests
+      test: [
+        "repo.create --quiet",
+        "repo.migrate --quiet",
+        "test"
+      ],
+
+      # Translation management
+      "gettext.update": [
+        "gettext.extract --merge"
+      ],
+      "gettext.lint": [
+        "gettext.extract --check-up-to-date"
+      ],
+
+      # Asset management
       "assets.setup": [
         "tailwind.install --if-missing",
         "esbuild.install --if-missing",
@@ -277,12 +321,18 @@ defmodule DataAggregator.MixProject do
         "esbuild default --minify",
         "phx.digest"
       ],
+
+      # Run linters
       lint: [
         "format --check-formatted",
         "credo --strict",
         "deps.audit",
-        "dialyzer"
+        "dialyzer",
+        "gettext.lint",
+        "repo.lint"
       ],
+
+      # Generate documentation
       docs: [
         "ash.generate_livebook --filename=docs/api.md",
         "ash.generate_resource_diagrams --format md",
