@@ -22,7 +22,6 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
 
   defp apply_action(socket, :mappings, _params) do
     socket
-    |> dbg
     |> assign(:page_title, ~t"Configure Mapping for Import"m)
   end
 
