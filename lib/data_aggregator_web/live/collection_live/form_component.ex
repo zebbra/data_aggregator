@@ -95,8 +95,8 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   def handle_event("save", %{"collection" => params}, socket) do
     socket =
       case Form.submit(socket.assigns.form, params: params) do
-        {:ok, course} ->
-          notify_parent({:saved, course})
+        {:ok, collection} ->
+          notify_parent({:saved, collection})
 
           message =
             case socket.assigns.action do

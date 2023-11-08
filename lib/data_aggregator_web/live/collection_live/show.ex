@@ -30,53 +30,15 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
     |> assign(:page_title, ~t"Import Records"m)
   end
 
-  defp apply_action(socket, :do_mapping, _params) do
-    socket
-    |> assign(:page_title, ~t"Map Your Columns"m)
-    |> assign(:live_action, :do_mapping)
-  end
-
-  defp apply_action(socket, :confirm_mapping, _params) do
-    socket
-    |> assign(:page_title, ~t"Confirm Your Mapping"m)
-    |> assign(:live_action, :confirm_mapping)
-  end
-
   @impl true
   def handle_info(
-        {DataAggregatorWeb.CollectionLive.ImportFormComponent, {:imported, import_file}},
+        {DataAggregatorWeb.CollectionLive.ImportFormComponent, {:imported, import}},
         socket
       ) do
     {:noreply,
      socket
-     |> assign(:import_file, import_file)
-     |> apply_action(:do_mapping, import_file)}
-  end
-
-  @impl true
-  def handle_info(
-        {DataAggregatorWeb.CollectionLive.DoMappingComponent, {:mapped, import_file}},
-        socket
-      ) do
-    {:noreply,
-     socket
-     |> assign(:import_file, import_file)
-     |> apply_action(:confirm_mapping, import_file)}
-  end
-
-  @impl true
-  def handle_info(
-        {DataAggregatorWeb.CollectionLive.ConfirmMappingComponent,
-         {:confirm_mapping, import_file}},
-        socket
-      ) do
-    {
-      :noreply,
-      socket
-      |> assign(:import_file, import_file)
-      # ... and then import the records
-      #  |> apply_action(:imprt_records, import_file)
-    }
+     |> assign(:import, import)
+     |> push_navigate(to: ~p"/imports/#{import}")}
   end
 
   @impl true
@@ -110,38 +72,6 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
           title={@page_title}
           action={:new}
           collection={@collection}
-          patch={~p"/collections/#{@collection}"}
-        />
-      </.modal>
-
-      <.modal
-        :if={@live_action == :do_mapping}
-        id="do-mapping-modal"
-        on_cancel={JS.patch(~p"/collections/#{@collection}")}
-      >
-        <.live_component
-          module={DataAggregatorWeb.CollectionLive.DoMappingComponent}
-          id={"do_mapping-#{@import_file.id}"}
-          icon="hero-table-cells-mini"
-          title={@page_title}
-          action={:new}
-          import_file={@import_file}
-          patch={~p"/collections/#{@collection}"}
-        />
-      </.modal>
-
-      <.modal
-        :if={@live_action == :confirm_mapping}
-        id="confirm-mapping-modal"
-        on_cancel={JS.patch(~p"/collections/#{@collection}")}
-      >
-        <.live_component
-          module={DataAggregatorWeb.CollectionLive.ConfirmMappingComponent}
-          id={"confirm_mapping-#{@import_file.id}"}
-          icon="hero-table-cells-mini"
-          title={@page_title}
-          action={:new}
-          import_file={@import_file}
           patch={~p"/collections/#{@collection}"}
         />
       </.modal>

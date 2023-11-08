@@ -14,7 +14,6 @@ defmodule DataAggregator.Platform.Import do
 
   attributes do
     uuid_attribute :id, prefix: "if"
-    attribute :amount_of_rows, :integer
     attribute :columns, {:array, Column}
     timestamps private?: false, writable?: false
   end
@@ -41,7 +40,7 @@ defmodule DataAggregator.Platform.Import do
   end
 
   actions do
-    defaults [:read]
+    defaults [:read, :destroy]
 
     create :create_from_path do
       primary? true
@@ -80,6 +79,7 @@ defmodule DataAggregator.Platform.Import do
     define :import_records
     define :read
     define :get_by_id, action: :read, get_by: [:id]
+    define :destroy
   end
 
   postgres do
