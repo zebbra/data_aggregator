@@ -36,6 +36,10 @@ defmodule DataAggregator.Platform.Import do
     end
   end
 
+  aggregates do
+    count :records_count, :records
+  end
+
   actions do
     defaults [:read]
 
@@ -48,7 +52,6 @@ defmodule DataAggregator.Platform.Import do
 
       change manage_relationship(:collection, :collection, type: :append)
       change manage_relationship(:path, :attachment, value_is_key: :path, type: :create)
-
       change DataAggregator.Platform.Changes.DetectColumns
     end
 
@@ -58,22 +61,23 @@ defmodule DataAggregator.Platform.Import do
     end
 
     update :import_record do
-      argument :attributes, :map, allow_nil?: false
-      # change set_attribute(attribute, value)
-      change manage_relationship(:attributes, :records, type: :create)
+      argument :params, :map, allow_nil?: false
+      change DataAggregator.Platform.Changes.ImportRecord
     end
 
     update :import_records do
       accept []
       change DataAggregator.Platform.Changes.ImportRecords
+      change load([:records_count])
     end
   end
 
   code_interface do
     define_for DataAggregator.Platform
     define :create_from_path, args: [:collection, :path]
-    define :update_mapping
-    define :import_record, args: [:attributes]
+    define :update_mapping, args: [:columns]
+    define :import_record, args: [:params]
+    define :import_records
     define :read
     define :get_by_id, action: :read, get_by: [:id]
   end

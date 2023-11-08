@@ -9,7 +9,6 @@ defmodule DataAggregator.Data.Record do
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Platform.Collection
-  alias DataAggregator.Platform.Import.Column
 
   @default_limit 15
   def default_limit, do: @default_limit
@@ -18,7 +17,7 @@ defmodule DataAggregator.Data.Record do
     uuid_attribute :id, prefix: "rec"
 
     attribute :import_data, :map
-    attribute :meta_data, :map
+    attribute :extra_data, :map
 
     # all Person related attributes
     attribute :prs_contact_point, :string
@@ -27,13 +26,13 @@ defmodule DataAggregator.Data.Record do
     attribute :prs_date_of_birth, :date
 
     # all Event related attributes
-    attribute :eve_day, :string
     attribute :eve_event_date, :date
-    attribute :eve_month, :string
-    attribute :eve_year, :string
-    attribute :eve_end_of_period_day, :string
-    attribute :eve_end_of_period_month, :string
-    attribute :eve_end_of_period_year, :string
+    attribute :eve_day, :integer
+    attribute :eve_month, :integer
+    attribute :eve_year, :integer
+    attribute :eve_end_of_period_day, :integer
+    attribute :eve_end_of_period_month, :integer
+    attribute :eve_end_of_period_year, :integer
 
     # all Identification related attributes
     attribute :idf_date_identified, :date
@@ -98,6 +97,7 @@ defmodule DataAggregator.Data.Record do
   relationships do
     belongs_to :collection, Collection do
       api DataAggregator.Platform
+      allow_nil? false
     end
 
     has_many :images, DataAggregator.Data.RecordImage
@@ -117,20 +117,25 @@ defmodule DataAggregator.Data.Record do
     read :read do
       primary? true
       argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true, default_limit: @default_limit, countable: true
-    end
-
-    create :create_from_columns do
-      accept []
-
-      argument :columns, {:array, Column}, allow_nil?: false
-
-      change DataAggregator.Data.Changes.ImportRecords
+      pagination offset?: true, default_limit: @default_limit, countable: true, required?: false
     end
 
     create :create do
       primary? true
+      argument :collection, Collection, allow_nil?: false
+      change manage_relationship(:collection, :collection, type: :append)
+    end
+
+    create :create_from_params do
+      argument :collection, Collection, allow_nil?: false
+      argument :params, :map, allow_nil?: false
+      change manage_relationship(:collection, :collection, type: :append)
+      change DataAggregator.Data.Changes.ExtractAttributes
+    end
+
+    update :update_from_params do
+      argument :params, :map, allow_nil?: false
+      change DataAggregator.Data.Changes.ExtractAttributes
     end
   end
 
@@ -138,7 +143,7 @@ defmodule DataAggregator.Data.Record do
     define_for DataAggregator.Data
     define :read
     define :create
-    define :create_from_columns, args: [:columns]
+    define :create_from_params, args: [:collection, :params]
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
@@ -147,6 +152,10 @@ defmodule DataAggregator.Data.Record do
   postgres do
     table "records"
     repo DataAggregator.Repo
+  end
+
+  identities do
+    identity :mte_material_entity_id, [:collection_id, :mte_material_entity_id]
   end
 
   preparations do

@@ -5,19 +5,30 @@ defmodule DataAggregator.RecordsFixtures do
   """
 
   alias DataAggregator.Data.Record
+  alias DataAggregator.Platform.Collection
 
-  @doc ~S"""
+  @record_defaults %{
+    mte_material_entity_id: "record1",
+    tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
+  }
+
+  @collection_defaults %{
+    name: "Collection"
+  }
+
+  @doc """
   Generate a record.
   """
   def record_fixture(attrs \\ %{}) do
-    {:ok, record} =
-      attrs
-      |> Enum.into(%{
-        mte_material_entity_id: "record1",
-        tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
-      })
-      |> Record.create()
+    @record_defaults
+    |> Map.merge(attrs)
+    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Record.create!()
+  end
 
-    Record.get_by_id!(record.id)
+  def collection_fixture(attrs \\ %{}) do
+    @collection_defaults
+    |> Map.merge(attrs)
+    |> Collection.create!()
   end
 end

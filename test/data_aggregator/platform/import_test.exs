@@ -1,8 +1,8 @@
 defmodule DataAggregator.Platform.ImportTest do
-  use DataAggregator.DataCase
+  @moduledoc false
 
-  alias DataAggregator.Data.Record
-  alias DataAggregator.Data.Resources.RecordImporter
+  use DataAggregator.DataCase, async: true
+
   alias DataAggregator.Platform.Collection
   alias DataAggregator.Platform.Import
 
@@ -30,9 +30,9 @@ defmodule DataAggregator.Platform.ImportTest do
                {"Espèce", :string},
                {"Famille", :string},
                {"Genre", :string},
-               {"LatitudeDecimale", :string},
+               {"LatitudeDecimale", :float},
                {"Localité", :string},
-               {"LongitudeDecimale", :string},
+               {"LongitudeDecimale", :float},
                {"MONTHCOLLECTED", :integer},
                {"Numéro scientifique GBIF", :string},
                {"Ordre", :string},
@@ -75,14 +75,12 @@ defmodule DataAggregator.Platform.ImportTest do
       path = "test/support/fixtures/files/museum-dataset-import-example.csv"
       {:ok, import} = Import.create_from_path(collection, path)
 
-      params = %{
-        columns: [
-          %{"name" => "Age", "mapped_to" => "age"},
-          %{"name" => "Collecteur", "mapped_to" => ""}
-        ]
-      }
+      mappings = [
+        %{"name" => "Age", "mapped_to" => "age"},
+        %{"name" => "Collecteur", "mapped_to" => ""}
+      ]
 
-      {:ok, import} = Import.update_mapping(import, params)
+      {:ok, import} = Import.update_mapping(import, mappings)
       columns = import.columns |> Enum.map(&{&1.name, &1.type, &1.mapped_to})
 
       assert columns == [
@@ -97,9 +95,9 @@ defmodule DataAggregator.Platform.ImportTest do
                {"Espèce", :string, nil},
                {"Famille", :string, nil},
                {"Genre", :string, nil},
-               {"LatitudeDecimale", :string, nil},
+               {"LatitudeDecimale", :float, nil},
                {"Localité", :string, nil},
-               {"LongitudeDecimale", :string, nil},
+               {"LongitudeDecimale", :float, nil},
                {"MONTHCOLLECTED", :integer, nil},
                {"Numéro scientifique GBIF", :string, nil},
                {"Ordre", :string, nil},
@@ -115,14 +113,12 @@ defmodule DataAggregator.Platform.ImportTest do
                {"YEARCOLLECTED", :integer, nil}
              ]
 
-      params = %{
-        columns: [
-          %{name: "Age", mapped_to: ""},
-          %{name: "Collecteur", mapped_to: "coll"}
-        ]
-      }
+      mappings = [
+        %{name: "Age", mapped_to: ""},
+        %{name: "Collecteur", mapped_to: "coll"}
+      ]
 
-      {:ok, import} = Import.update_mapping(import, params)
+      {:ok, import} = Import.update_mapping(import, mappings)
       columns = import.columns |> Enum.map(&{&1.name, &1.type, &1.mapped_to})
 
       assert columns == [
@@ -137,9 +133,9 @@ defmodule DataAggregator.Platform.ImportTest do
                {"Espèce", :string, nil},
                {"Famille", :string, nil},
                {"Genre", :string, nil},
-               {"LatitudeDecimale", :string, nil},
+               {"LatitudeDecimale", :float, nil},
                {"Localité", :string, nil},
-               {"LongitudeDecimale", :string, nil},
+               {"LongitudeDecimale", :float, nil},
                {"MONTHCOLLECTED", :integer, nil},
                {"Numéro scientifique GBIF", :string, nil},
                {"Ordre", :string, nil},
@@ -163,24 +159,32 @@ defmodule DataAggregator.Platform.ImportTest do
       %{import: Import.create_from_path!(collection, path)}
     end
 
-    @tag run: true
     test "with arguments", %{import: import} do
-      attributes = %{
-        tax_scientific_name: "Example",
-        mte_material_entity_id: "example"
+      mappings = [
+        %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
+        %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"},
+        %{name: "Auteur et date ssp", mapped_to: "elevation_date_ssp"}
+      ]
+
+      assert {:ok, import} = Import.update_mapping(import, mappings)
+
+      record = %{
+        "Scientific Name" => "Example",
+        "Numéro scientifique GBIF" => "ex-123",
+        "Auteur et date ssp" => "this is an extra attribute"
       }
 
-      assert {:ok, import} = Import.import_record(import, attributes)
+      assert {:ok, import} = Import.import_record(import, record)
 
-      records =
-        import.records |> Enum.map(&Map.take(&1, [:tax_scientific_name, :mte_material_entity_id]))
-
-      assert records == [
-               %{
-                 tax_scientific_name: "Example",
-                 mte_material_entity_id: "example"
-               }
-             ]
+      assert_maps(import.records, [
+        %{
+          mte_material_entity_id: "ex-123",
+          tax_scientific_name: "Example",
+          extra_data: %{
+            "elevation_date_ssp" => "this is an extra attribute"
+          }
+        }
+      ])
     end
   end
 
@@ -191,66 +195,42 @@ defmodule DataAggregator.Platform.ImportTest do
     end
 
     test "from mapped import file", %{import: import} do
-      # map the columns to our intern dwc attributes on the record resource
-      # params = %{
-      #   columns: [
-      #     %{name: "Scientific Name", type: "string", mapped_to: "tax_scientific_name"},
-      #     %{name: "Age", type: "string", mapped_to: "spp_life_stage"},
-      #     %{
-      #       name: "Auteur et date ssp",
-      #       type: "string",
-      #       mapped_to: "tax_scientific_name_authorship"
-      #     },
-      #     %{name: "Autres numéros", type: "string", mapped_to: "occ_associated_occurrences"},
-      #     %{name: "Collecteur", type: "string", mapped_to: "occ_recorded_by"},
-      #     %{name: "DAYCOLLECTED", type: "integer", mapped_to: "eve_day"},
-      #     %{name: "ENDOFPERIODDAY", type: "integer", mapped_to: "eve_end_of_period_day"},
-      #     %{name: "ENDOFPERIODMONTH", type: "integer", mapped_to: "eve_end_of_period_month"},
-      #     %{name: "ENDOFPERIODYEAR", type: "integer", mapped_to: "eve_end_of_period_year"},
-      #     %{name: "Espèce", type: "string", mapped_to: "tax_specific_epithet"},
-      #     %{name: "Famille", type: "string", mapped_to: "tax_family"},
-      #     %{name: "Genre", type: "string", mapped_to: "tax_genus"},
-      #     %{name: "LatitudeDecimale", type: "string", mapped_to: "loc_decimal_latitude"},
-      #     %{name: "Localité", type: "string", mapped_to: "loc_verbatim_locality"},
-      #     %{name: "LongitudeDecimale", type: "string", mapped_to: "loc_decimal_longitude"},
-      #     %{name: "MONTHCOLLECTED", type: "integer", mapped_to: "eve_month"},
-      #     %{
-      #       name: "Numéro scientifique GBIF",
-      #       type: "string",
-      #       mapped_to: "mte_material_entity_id"
-      #     },
-      #     %{name: "Ordre", type: "string", mapped_to: "tax_order"},
-      #     %{name: "Parties", type: "string", mapped_to: "mts_material_sample_type"},
-      #     %{name: "Pays", type: "string", mapped_to: "loc_country"},
-      #     %{name: "PrecisionGEO", type: "string", mapped_to: "loc_georeference_remarks"},
-      #     %{name: "Province", type: "string", mapped_to: "loc_state_province"},
-      #     %{name: "Remarques", type: "string", mapped_to: "occ_occurrence_remarks"},
-      #     %{name: "Sexe", type: "string", mapped_to: "occ_sex"},
-      #     %{name: "Sous espèce", type: "string", mapped_to: "tax_infraspecific_epithet"},
-      #     %{name: "Station", type: "string", mapped_to: "loc_locality"},
-      #     %{name: "YEARCOLLECTED", type: "integer", mapped_to: "eve_year"}
-      #   ]
-      # }
+      mappings = [
+        %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
+        %{name: "Age", mapped_to: "spp_life_stage"},
+        %{name: "Auteur et date ssp", mapped_to: "tax_scientific_name_authorship"},
+        %{name: "Autres numéros", mapped_to: "occ_associated_occurrences"},
+        %{name: "Collecteur", mapped_to: "occ_recorded_by"},
+        %{name: "DAYCOLLECTED", mapped_to: "eve_day"},
+        %{name: "ENDOFPERIODDAY", mapped_to: "eve_end_of_period_day"},
+        %{name: "ENDOFPERIODMONTH", mapped_to: "eve_end_of_period_month"},
+        %{name: "ENDOFPERIODYEAR", mapped_to: "eve_end_of_period_year"},
+        %{name: "Espèce", mapped_to: "tax_specific_epithet"},
+        %{name: "Famille", mapped_to: "tax_family"},
+        %{name: "Genre", mapped_to: "tax_genus"},
+        %{name: "LatitudeDecimale", mapped_to: "loc_decimal_latitude"},
+        %{name: "Localité", mapped_to: "loc_verbatim_locality"},
+        %{name: "LongitudeDecimale", mapped_to: "loc_decimal_longitude"},
+        %{name: "MONTHCOLLECTED", mapped_to: "eve_month"},
+        %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"},
+        %{name: "Ordre", mapped_to: "tax_order"},
+        %{name: "Parties", mapped_to: "mts_material_sample_type"},
+        %{name: "Pays", mapped_to: "loc_country"},
+        %{name: "PrecisionGEO", mapped_to: "loc_georeference_remarks"},
+        %{name: "Province", mapped_to: "loc_state_province"},
+        %{name: "Remarques", mapped_to: "occ_occurrence_remarks"},
+        %{name: "Sexe", mapped_to: "occ_sex"},
+        %{name: "Sous espèce", mapped_to: "tax_infraspecific_epithet"},
+        %{name: "Station", mapped_to: "loc_locality"},
+        %{name: "YEARCOLLECTED", mapped_to: "eve_year"}
+      ]
 
-      # # update the import with the mapping
-      # {:ok, import} = Import.update_mapping(import, params)
+      # update the import with the mapping
+      {:ok, import} = Import.update_mapping(import, mappings)
 
-      # # import the records
-      # {:ok, records} = RecordImporter.import_records(import, params.columns)
-
-      # # assert that the records are created returned as proper structs
-      # for rec <- records do
-      #   case rec do
-      #     {:ok, record} ->
-      #       assert is_struct(record, Record)
-
-      #     {:error, error} ->
-      #       assert "Unknown error happend #{inspect(error)}"
-
-      #     _ ->
-      #       assert "Unknown or error state"
-      #   end
-      # end
+      # import the records
+      assert {:ok, import} = Import.import_records(import)
+      assert import.records_count == 891
     end
   end
 

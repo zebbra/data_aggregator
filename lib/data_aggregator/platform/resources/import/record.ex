@@ -24,7 +24,7 @@ defmodule DataAggregator.Platform.Import.Record do
   end
 
   actions do
-    defaults [:create, :read, :destroy]
+    defaults [:create, :read, :destroy, :update]
   end
 
   postgres do
