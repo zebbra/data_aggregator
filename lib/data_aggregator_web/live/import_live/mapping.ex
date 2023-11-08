@@ -26,17 +26,14 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
   end
 
   @impl true
-  def handle_info(
-        {:confirm_mapping, import},
-        socket
-      ) do
-    {
-      :noreply,
-      socket
-      |> assign(:import, import)
-      # ... and then import the records
-      #  |> apply_action(:imprt_records, import)
-    }
+  def handle_event("apply:mapping", _params, socket) do
+    case Import.update_mapping(socket.assigns.import, get_static_mappings()) do
+      {:ok, import} ->
+        {:noreply, socket |> push_redirect(to: ~p"/imports/#{import}/confirmation")}
+
+      {:error, _error} ->
+        {:noreply, socket |> put_flash(:error, "Failed to apply mapping, check the logs.")}
+    end
   end
 
   @impl true
@@ -45,7 +42,17 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
     <main>
       <.header class="top-16 sticky">
         Define the mapping for your import for your collection '<%= @import.collection.name %>'
-        <:actions></:actions>
+        <:actions>
+          <.button
+            variant="primary"
+            class="rounded-md"
+            aria-label={~t"Apply Mapping"m}
+            phx-click="apply:mapping"
+          >
+            <.icon name="hero-check-circle" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
+            <%= ~t"Apply Mapping"m %>
+          </.button>
+        </:actions>
       </.header>
 
       <div class="justify-items-center grid">
@@ -86,5 +93,37 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
       </.back>
     </main>
     """
+  end
+
+  defp get_static_mappings do
+    [
+      %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
+      %{name: "Age", mapped_to: "spp_life_stage"},
+      %{name: "Auteur et date ssp", mapped_to: "tax_scientific_name_authorship"},
+      %{name: "Autres numéros", mapped_to: "occ_associated_occurrences"},
+      %{name: "Collecteur", mapped_to: "occ_recorded_by"},
+      %{name: "DAYCOLLECTED", mapped_to: "eve_day"},
+      %{name: "ENDOFPERIODDAY", mapped_to: "eve_end_of_period_day"},
+      %{name: "ENDOFPERIODMONTH", mapped_to: "eve_end_of_period_month"},
+      %{name: "ENDOFPERIODYEAR", mapped_to: "eve_end_of_period_year"},
+      %{name: "Espèce", mapped_to: "tax_specific_epithet"},
+      %{name: "Famille", mapped_to: "tax_family"},
+      %{name: "Genre", mapped_to: "tax_genus"},
+      %{name: "LatitudeDecimale", mapped_to: "loc_decimal_latitude"},
+      %{name: "Localité", mapped_to: "loc_verbatim_locality"},
+      %{name: "LongitudeDecimale", mapped_to: "loc_decimal_longitude"},
+      %{name: "MONTHCOLLECTED", mapped_to: "eve_month"},
+      %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"},
+      %{name: "Ordre", mapped_to: "tax_order"},
+      %{name: "Parties", mapped_to: "mts_material_sample_type"},
+      %{name: "Pays", mapped_to: "loc_country"},
+      %{name: "PrecisionGEO", mapped_to: "loc_georeference_remarks"},
+      %{name: "Province", mapped_to: "loc_state_province"},
+      %{name: "Remarques", mapped_to: "occ_occurrence_remarks"},
+      %{name: "Sexe", mapped_to: "occ_sex"},
+      %{name: "Sous espèce", mapped_to: "tax_infraspecific_epithet"},
+      %{name: "Station", mapped_to: "loc_locality"},
+      %{name: "YEARCOLLECTED", mapped_to: "eve_year"}
+    ]
   end
 end

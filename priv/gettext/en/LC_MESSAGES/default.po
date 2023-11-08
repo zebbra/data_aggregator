@@ -639,13 +639,13 @@ msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Updated At"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/mapping.ex:86
+#: lib/data_aggregator_web/live/import_live/mapping.ex:92
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Mapping"
 msgid "Back"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/mapping.ex:26
+#: lib/data_aggregator_web/live/import_live/mapping.ex:25
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Mapping"
 msgid "Configure Mapping for Import"
@@ -667,4 +667,42 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Show Import"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:63
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
+msgid "Back"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:45
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:49
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
+msgid "Confirm Mapping and import Records"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:25
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
+msgid "Confirm the applied mapping"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/mapping.ex:49
+#: lib/data_aggregator_web/live/import_live/mapping.ex:53
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Mapping"
+msgid "Apply Mapping"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/records.ex:46
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Records"
+msgid "Back"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/records.ex:25
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Records"
+msgid "Imported Records"
 msgstr ""

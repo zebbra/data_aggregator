@@ -64,7 +64,8 @@ defmodule DataAggregatorWeb.Router do
         live "/imports", ImportLive.Index, :index
         live "/imports/:id", ImportLive.Show, :show
         live "/imports/:id/mappings", ImportLive.Mapping, :mappings
-        live "/imports/:id/records", ImportLive.Records, :records
+        live "/imports/:id/confirmation", ImportLive.Confirmation, :confirmation
+        live "/imports/:id/records", ImportLive.Records, :show_records
       end
     end
   end
