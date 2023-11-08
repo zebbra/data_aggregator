@@ -41,7 +41,7 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
     ~H"""
     <main>
       <.header class="top-16 sticky">
-        Define the mapping for your import of your collection '<%= @import.collection.name %>'
+        Define the mapping for the import of your collection '<%= @import.collection.name %>'
         <:actions>
           <.button
             variant="primary"
