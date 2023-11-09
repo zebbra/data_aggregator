@@ -32,7 +32,6 @@ export function useDocumentOverflowLockedEffect(
         overflows.dispatch("POP", oldDoc ?? doc, meta);
 
         // This shouldn't be necessary, but it is.
-        // Seems like a Vue bug.
         didRunCleanup = true;
       });
     },
