@@ -1,5 +1,5 @@
 defmodule DataAggregatorWeb.DashboardLiveTest do
-  use DataAggregatorWeb.ConnCase
+  use DataAggregatorWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
 

@@ -1,5 +1,5 @@
 defmodule DataAggregator.Files.AttachmentTest do
-  use DataAggregatorWeb.ConnCase
+  use DataAggregatorWeb.ConnCase, async: true
 
   alias DataAggregator.Files.Attachment
 

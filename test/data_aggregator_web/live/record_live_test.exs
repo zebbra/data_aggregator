@@ -1,5 +1,5 @@
 defmodule DataAggregatorWeb.RecordLiveTest do
-  use DataAggregatorWeb.ConnCase
+  use DataAggregatorWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
   import DataAggregator.RecordsFixtures

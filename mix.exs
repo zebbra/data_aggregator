@@ -7,6 +7,7 @@ defmodule DataAggregator.MixProject do
       version: "0.1.0",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
+      elixirc_options: [ignore_module_conflict: true],
       start_permanent: Mix.env() == :prod,
       consolidate_protocols: Mix.env() == :prod,
       aliases: aliases(),
@@ -101,17 +102,15 @@ defmodule DataAggregator.MixProject do
   def nest_modules_by_prefix() do
     [
       DataAggregator,
-      DataAggregatorWeb,
-
-      # Live Views
-      DataAggregatorWeb.CollectionLive,
-      DataAggregatorWeb.RecordLive,
-      DataAggregatorWeb.DashboardLive
+      DataAggregatorWeb
     ]
   end
 
   defp groups_for_modules() do
     [
+      "Darwin Core": [
+        ~r/^DataAggregator\.DarwinCore/
+      ],
       "File Management API": [
         ~r/^DataAggregator\.Files/
       ],
@@ -127,19 +126,19 @@ defmodule DataAggregator.MixProject do
       Preparations: [
         ~r/^DataAggregator\.Preparations/
       ],
+      GraphQL: [
+        ~r/^DataAggregator\.GraphQL/
+      ],
       Web: [
         DataAggregatorWeb,
         DataAggregatorWeb.Router,
         DataAggregatorWeb.Endpoint,
         DataAggregatorWeb.Helpers,
-        DataAggregatorWeb.Schema,
         DataAggregatorWeb.ErrorHTML,
         DataAggregatorWeb.ErrorJSON
       ],
       "Live Views": [
-        ~r/^DataAggregatorWeb\.DashboardLive/,
-        ~r/^DataAggregatorWeb\.CollectionLive/,
-        ~r/^DataAggregatorWeb\.RecordLive/
+        ~r/^DataAggregatorWeb\.\w+Live/
       ],
       Components: [
         DataAggregatorWeb.CoreComponents,
@@ -290,6 +289,10 @@ defmodule DataAggregator.MixProject do
       "repo.lint": [
         "ash_postgres.generate_migrations --check"
       ],
+      "repo.erd": [
+        "ecto.gen.erd --output-path=docs/erd.dbml"
+        # "ecto.gen.erd --output-path=docs/erd.mmd"
+      ],
 
       # Run tests
       test: [
@@ -336,9 +339,9 @@ defmodule DataAggregator.MixProject do
       docs: [
         "ash.generate_livebook --filename=docs/api.md",
         "ash.generate_resource_diagrams --format md",
+        "repo.erd",
         "docs"
-      ],
-      "generate.erd": ["ecto.gen.erd --output-path=erd.dbml"]
+      ]
     ]
   end
 end

@@ -33,30 +33,46 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Institution institution
-        ImportFile[] import_files
-        Attachment[] import_file_attachments
+        Import[] imports
+        Attachment[] import_attachments
         destroy()
         update(UUID id, String name, String code, String description, ...)
         create(UUID id, String name, String code, String description, ...)
         read(String sort)
     }
-    class ImportFile {
+    class Import {
         UUID id
-        Integer amount_of_rows
         Column[] columns
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Integer records_count
         Collection collection
         Attachment attachment
+        Record[] import_records
+        Record[] records
+        destroy()
         read()
+        create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
         create_from_path(String path, Collection collection)
         update_mapping(Column[] columns)
+        import_records()
+    }
+    class Record {
+        Import import
+        Record record
+        update()
+        destroy()
+        read()
+        create()
     }
 
+    Record -- Import
+    Record -- Record
     Attachment -- Collection
-    Attachment -- ImportFile
-    Collection -- ImportFile
+    Attachment -- Import
+    Collection -- Import
     Collection -- Institution
+    Import -- Record
 ```
 
 ### ER Diagram
@@ -86,101 +102,134 @@ erDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
     }
-    ImportFile {
+    Import {
         UUID id
-        Integer amount_of_rows
         ArrayOfColumn columns
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Integer records_count
+    }
+    Record {
+
     }
 
+    Record ||--|| Import : ""
+    Record ||--|| Record : ""
     Attachment ||--|| Collection : ""
-    Attachment ||--|| ImportFile : ""
-    Collection ||--|| ImportFile : ""
+    Attachment ||--|| Import : ""
+    Collection ||--|| Import : ""
     Collection ||--|| Institution : ""
+    Import ||--|| Record : ""
 ```
 
 ### Resources
 
 - [Institution](#institution)
 - [Collection](#collection)
-- [ImportFile](#importfile)
+- [Import](#import)
+- [Record](#record)
 
 ### Institution
 
+
+
 #### Attributes
 
-| Name               | Type            | Description                                             |
-| ------------------ | --------------- | ------------------------------------------------------- |
-| **id**             | UUID            |                                                         |
-| **name**           | String          |                                                         |
-| **code**           | String          | an iternationally valid code to identify the collection |
-| **address**        | String          |                                                         |
-| **zip_code**       | String          |                                                         |
-| **city**           | String          |                                                         |
-| **country**        | String          |                                                         |
-| **mail**           | String          |                                                         |
-| **tel**            | String          |                                                         |
-| **contact_person** | String          |                                                         |
-| **inserted_at**    | UtcDatetimeUsec |                                                         |
-| **updated_at**     | UtcDatetimeUsec |                                                         |
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **id** | UUID |  |
+| **name** | String |  |
+| **code** | String | an iternationally valid code to identify the collection |
+| **address** | String |  |
+| **zip_code** | String |  |
+| **city** | String |  |
+| **country** | String |  |
+| **mail** | String |  |
+| **tel** | String |  |
+| **contact_person** | String |  |
+| **inserted_at** | UtcDatetimeUsec |  |
+| **updated_at** | UtcDatetimeUsec |  |
 
 #### Actions
 
-| Name        | Type      | Input                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Description |
-| ----------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| **destroy** | _destroy_ | <ul></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |             |
-| **update**  | _update_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>address</b> <i>String</i> attribute</li><li><b>zip_code</b> <i>String</i> attribute</li><li><b>city</b> <i>String</i> attribute</li><li><b>country</b> <i>String</i> attribute</li><li><b>mail</b> <i>String</i> attribute</li><li><b>tel</b> <i>String</i> attribute</li><li><b>contact_person</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
-| **read**    | _read_    | <ul></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |             |
-| **create**  | _create_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>address</b> <i>String</i> attribute</li><li><b>zip_code</b> <i>String</i> attribute</li><li><b>city</b> <i>String</i> attribute</li><li><b>country</b> <i>String</i> attribute</li><li><b>mail</b> <i>String</i> attribute</li><li><b>tel</b> <i>String</i> attribute</li><li><b>contact_person</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **destroy** | _destroy_ | <ul></ul> |  |
+| **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>address</b> <i>String</i> attribute</li><li><b>zip_code</b> <i>String</i> attribute</li><li><b>city</b> <i>String</i> attribute</li><li><b>country</b> <i>String</i> attribute</li><li><b>mail</b> <i>String</i> attribute</li><li><b>tel</b> <i>String</i> attribute</li><li><b>contact_person</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **read** | _read_ | <ul></ul> |  |
+| **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>address</b> <i>String</i> attribute</li><li><b>zip_code</b> <i>String</i> attribute</li><li><b>city</b> <i>String</i> attribute</li><li><b>country</b> <i>String</i> attribute</li><li><b>mail</b> <i>String</i> attribute</li><li><b>tel</b> <i>String</i> attribute</li><li><b>contact_person</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 
 ### Collection
 
-#### Attributes
 
-| Name               | Type            | Description                                             |
-| ------------------ | --------------- | ------------------------------------------------------- |
-| **id**             | UUID            |                                                         |
-| **name**           | String          |                                                         |
-| **code**           | String          | an iternationally valid code to identify the collection |
-| **description**    | String          |                                                         |
-| **mapping**        | Map             |                                                         |
-| **inserted_at**    | UtcDatetimeUsec |                                                         |
-| **updated_at**     | UtcDatetimeUsec |                                                         |
-| **institution_id** | UUID            |                                                         |
-
-#### Actions
-
-| Name        | Type      | Input                                                                                                                                                                                                                                                                                                                                                           | Description |
-| ----------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| **destroy** | _destroy_ | <ul></ul>                                                                                                                                                                                                                                                                                                                                                       |             |
-| **update**  | _update_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
-| **create**  | _create_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
-| **read**    | _read_    | <ul><li><b>sort</b> <i>String</i> </li></ul>                                                                                                                                                                                                                                                                                                                    |             |
-
-### ImportFile
 
 #### Attributes
 
-| Name               | Type            | Description |
-| ------------------ | --------------- | ----------- |
-| **id**             | UUID            |             |
-| **amount_of_rows** | Integer         |             |
-| **columns**        | Column[]        |             |
-| **inserted_at**    | UtcDatetimeUsec |             |
-| **updated_at**     | UtcDatetimeUsec |             |
-| **collection_id**  | UUID            |             |
-| **attachment_id**  | UUID            |             |
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **id** | UUID |  |
+| **name** | String |  |
+| **code** | String | an iternationally valid code to identify the collection |
+| **description** | String |  |
+| **mapping** | Map |  |
+| **inserted_at** | UtcDatetimeUsec |  |
+| **updated_at** | UtcDatetimeUsec |  |
+| **institution_id** | UUID |  |
 
 #### Actions
 
-| Name                 | Type      | Input                                                                                                                                                                                                                           | Description |
-| -------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| **destroy**          | _destroy_ | <ul></ul>                                                                                                                                                                                                                       |             |
-| **update**           | _update_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>amount_of_rows</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
-| **read**             | _read_    | <ul></ul>                                                                                                                                                                                                                       |             |
-| **create_from_path** | _create_  | <ul><li><b>path</b> <i>String</i> </li><li><b>collection</b> <i>Collection</i> </li></ul>                                                                                                                                       |             |
-| **update_mapping**   | _update_  | <ul><li><b>columns</b> <i>Column[]</i> attribute</li></ul>                                                                                                                                                                      |             |
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **destroy** | _destroy_ | <ul></ul> |  |
+| **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
+
+### Import
+
+
+
+#### Attributes
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **id** | UUID |  |
+| **columns** | Column[] |  |
+| **inserted_at** | UtcDatetimeUsec |  |
+| **updated_at** | UtcDatetimeUsec |  |
+| **collection_id** | UUID |  |
+| **attachment_id** | UUID |  |
+
+#### Actions
+
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **destroy** | _destroy_ | <ul></ul> |  |
+| **read** | _read_ | <ul></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>columns</b> <i>Column[]</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **create_from_path** | _create_ | <ul><li><b>path</b> <i>String</i> </li><li><b>collection</b> <i>Collection</i> </li></ul> |  |
+| **update_mapping** | _update_ | <ul><li><b>columns</b> <i>Column[]</i> attribute</li></ul> |  |
+| **import_records** | _update_ | <ul></ul> |  |
+
+### Record
+
+
+
+#### Attributes
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **import_id** | UUID |  |
+| **record_id** | UUID |  |
+
+#### Actions
+
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **update** | _update_ | <ul></ul> |  |
+| **destroy** | _destroy_ | <ul></ul> |  |
+| **read** | _read_ | <ul></ul> |  |
+| **create** | _create_ | <ul></ul> |  |
 
 ## API DataAggregator.Data
 
@@ -189,63 +238,68 @@ erDiagram
 ```mermaid
 classDiagram
     class Record {
-        UUID id
-        Map import_data
-        Map meta_data
-        String prs_contact_point
-        String prs_first_name
-        String prs_last_name
-        Date prs_date_of_birth
-        String eve_day
-        Date eve_event_date
-        String eve_month
-        String eve_year
-        String eve_end_of_period_day
-        String eve_end_of_period_month
-        String eve_end_of_period_year
-        Date idf_date_identified
-        String idf_identified_by
-        String idf_type_status
-        String ref_bibliographic_citation
-        String ref_creator
-        Date ref_date
-        String ref_rights
-        String ref_source
-        String ref_title
-        Date ref_relationship_established_date
-        String rrp_relationship_of_resource
-        String rrp_relationship_of_resource_id
-        String tax_family
-        String tax_scientific_name_authorship
-        String tax_order
-        String tax_genus
-        String tax_infraspecific_epithet
-        String tax_scientific_name
-        String spp_life_stage
-        String loc_continent
-        String loc_country
-        String loc_locality
+        String mts_material_sample_type
+        String mte_material_entity_id
+        String occ_occurrence_remarks
+        String occ_associated_occurrences
+        String occ_sex
+        String occ_recorded_by
+        String loc_georeference_remarks
+        Float loc_decimal_latitude
+        Float loc_decimal_longitude
         String loc_state_province
         String loc_verbatim_locality
-        Float loc_decimal_longitude
-        Float loc_decimal_latitude
-        String loc_georeference_remarks
-        String occ_recorded_by
-        String occ_sex
-        String occ_associated_occurrences
-        String occ_occurrence_remarks
-        String mte_material_entity_id
-        String mts_material_sample_type
+        String loc_locality
+        String loc_country
+        String loc_continent
+        String spp_life_stage
+        String tax_specific_epithet
+        String tax_infraspecific_epithet
+        String tax_scientific_name_authorship
+        String tax_scientific_name
+        String tax_genus
+        String tax_family
+        String tax_order
+        String rrp_relationship_of_resource_id
+        String rrp_relationship_of_resource
+        Date ref_relationship_established_date
+        String ref_title
+        String ref_source
+        String ref_rights
+        Date ref_date
+        String ref_creator
+        String ref_bibliographic_citation
+        String idf_type_status
+        String idf_identified_by
+        Date idf_date_identified
+        Integer eve_end_of_period_year
+        Integer eve_end_of_period_month
+        Integer eve_end_of_period_day
+        Integer eve_year
+        Integer eve_month
+        Integer eve_day
+        Date eve_event_date
+        Date prs_date_of_birth
+        String prs_last_name
+        String prs_first_name
+        String prs_contact_point
+        UUID id
+        Map import_data
+        Map extra_data
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Collection collection
+        Import[] imports
         RecordImage[] images
         Attachment[] image_attachments
         destroy()
-        update(UUID id, Map import_data, Map meta_data, String prs_contact_point, ...)
-        create(UUID id, Map import_data, Map meta_data, String prs_contact_point, ...)
+        update(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
         read(String sort)
-        create_from_columns(Column[] mapping, Map raw_record)
+        create(Collection collection, String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, ...)
+        import(Import import, Map params, String mts_material_sample_type, String mte_material_entity_id, ...)
+        bulk_import(Import import, Term rows)
+        create_from_params(Collection collection, Map params, String mts_material_sample_type, String mte_material_entity_id, ...)
+        update_from_params(Map params, String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, ...)
     }
     class RecordImage {
         UUID id
@@ -263,6 +317,8 @@ classDiagram
     Record -- RecordImage
     Record -- Attachment
     Record -- Collection
+    Record -- Import
+    Record -- Record
     RecordImage -- Attachment
 ```
 
@@ -271,53 +327,54 @@ classDiagram
 ```mermaid
 erDiagram
     Record {
-        UUID id
-        Map import_data
-        Map meta_data
-        String prs_contact_point
-        String prs_first_name
-        String prs_last_name
-        Date prs_date_of_birth
-        String eve_day
-        Date eve_event_date
-        String eve_month
-        String eve_year
-        String eve_end_of_period_day
-        String eve_end_of_period_month
-        String eve_end_of_period_year
-        Date idf_date_identified
-        String idf_identified_by
-        String idf_type_status
-        String ref_bibliographic_citation
-        String ref_creator
-        Date ref_date
-        String ref_rights
-        String ref_source
-        String ref_title
-        Date ref_relationship_established_date
-        String rrp_relationship_of_resource
-        String rrp_relationship_of_resource_id
-        String tax_family
-        String tax_scientific_name_authorship
-        String tax_order
-        String tax_genus
-        String tax_infraspecific_epithet
-        String tax_scientific_name
-        String spp_life_stage
-        String loc_continent
-        String loc_country
-        String loc_locality
+        String mts_material_sample_type
+        String mte_material_entity_id
+        String occ_occurrence_remarks
+        String occ_associated_occurrences
+        String occ_sex
+        String occ_recorded_by
+        String loc_georeference_remarks
+        Float loc_decimal_latitude
+        Float loc_decimal_longitude
         String loc_state_province
         String loc_verbatim_locality
-        Float loc_decimal_longitude
-        Float loc_decimal_latitude
-        String loc_georeference_remarks
-        String occ_recorded_by
-        String occ_sex
-        String occ_associated_occurrences
-        String occ_occurrence_remarks
-        String mte_material_entity_id
-        String mts_material_sample_type
+        String loc_locality
+        String loc_country
+        String loc_continent
+        String spp_life_stage
+        String tax_specific_epithet
+        String tax_infraspecific_epithet
+        String tax_scientific_name_authorship
+        String tax_scientific_name
+        String tax_genus
+        String tax_family
+        String tax_order
+        String rrp_relationship_of_resource_id
+        String rrp_relationship_of_resource
+        Date ref_relationship_established_date
+        String ref_title
+        String ref_source
+        String ref_rights
+        Date ref_date
+        String ref_creator
+        String ref_bibliographic_citation
+        String idf_type_status
+        String idf_identified_by
+        Date idf_date_identified
+        Integer eve_end_of_period_year
+        Integer eve_end_of_period_month
+        Integer eve_end_of_period_day
+        Integer eve_year
+        Integer eve_month
+        Integer eve_day
+        Date eve_event_date
+        Date prs_date_of_birth
+        String prs_last_name
+        String prs_first_name
+        String prs_contact_point
+        UUID id
+        Map import_data
+        Map extra_data
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
     }
@@ -331,6 +388,8 @@ erDiagram
     Record ||--|| RecordImage : ""
     Record ||--|| Attachment : ""
     Record ||--|| Collection : ""
+    Record ||--|| Import : ""
+    Record ||--|| Record : ""
     RecordImage ||--|| Attachment : ""
 ```
 
@@ -341,92 +400,108 @@ erDiagram
 
 ### Record
 
+
+
 #### Attributes
 
-| Name                                  | Type            | Description |
-| ------------------------------------- | --------------- | ----------- |
-| **id**                                | UUID            |             |
-| **import_data**                       | Map             |             |
-| **meta_data**                         | Map             |             |
-| **prs_contact_point**                 | String          |             |
-| **prs_first_name**                    | String          |             |
-| **prs_last_name**                     | String          |             |
-| **prs_date_of_birth**                 | Date            |             |
-| **eve_day**                           | String          |             |
-| **eve_event_date**                    | Date            |             |
-| **eve_month**                         | String          |             |
-| **eve_year**                          | String          |             |
-| **eve_end_of_period_day**             | String          |             |
-| **eve_end_of_period_month**           | String          |             |
-| **eve_end_of_period_year**            | String          |             |
-| **idf_date_identified**               | Date            |             |
-| **idf_identified_by**                 | String          |             |
-| **idf_type_status**                   | String          |             |
-| **ref_bibliographic_citation**        | String          |             |
-| **ref_creator**                       | String          |             |
-| **ref_date**                          | Date            |             |
-| **ref_rights**                        | String          |             |
-| **ref_source**                        | String          |             |
-| **ref_title**                         | String          |             |
-| **ref_relationship_established_date** | Date            |             |
-| **rrp_relationship_of_resource**      | String          |             |
-| **rrp_relationship_of_resource_id**   | String          |             |
-| **tax_family**                        | String          |             |
-| **tax_scientific_name_authorship**    | String          |             |
-| **tax_order**                         | String          |             |
-| **tax_genus**                         | String          |             |
-| **tax_infraspecific_epithet**         | String          |             |
-| **tax_scientific_name**               | String          |             |
-| **spp_life_stage**                    | String          |             |
-| **loc_continent**                     | String          |             |
-| **loc_country**                       | String          |             |
-| **loc_locality**                      | String          |             |
-| **loc_state_province**                | String          |             |
-| **loc_verbatim_locality**             | String          |             |
-| **loc_decimal_longitude**             | Float           |             |
-| **loc_decimal_latitude**              | Float           |             |
-| **loc_georeference_remarks**          | String          |             |
-| **occ_recorded_by**                   | String          |             |
-| **occ_sex**                           | String          |             |
-| **occ_associated_occurrences**        | String          |             |
-| **occ_occurrence_remarks**            | String          |             |
-| **mte_material_entity_id**            | String          |             |
-| **mts_material_sample_type**          | String          |             |
-| **inserted_at**                       | UtcDatetimeUsec |             |
-| **updated_at**                        | UtcDatetimeUsec |             |
-| **collection_id**                     | UUID            |             |
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **mts_material_sample_type** | String |  |
+| **mte_material_entity_id** | String |  |
+| **occ_occurrence_remarks** | String |  |
+| **occ_associated_occurrences** | String |  |
+| **occ_sex** | String |  |
+| **occ_recorded_by** | String |  |
+| **loc_georeference_remarks** | String |  |
+| **loc_decimal_latitude** | Float |  |
+| **loc_decimal_longitude** | Float |  |
+| **loc_state_province** | String |  |
+| **loc_verbatim_locality** | String |  |
+| **loc_locality** | String |  |
+| **loc_country** | String |  |
+| **loc_continent** | String |  |
+| **spp_life_stage** | String |  |
+| **tax_specific_epithet** | String |  |
+| **tax_infraspecific_epithet** | String |  |
+| **tax_scientific_name_authorship** | String |  |
+| **tax_scientific_name** | String |  |
+| **tax_genus** | String |  |
+| **tax_family** | String |  |
+| **tax_order** | String |  |
+| **rrp_relationship_of_resource_id** | String |  |
+| **rrp_relationship_of_resource** | String |  |
+| **ref_relationship_established_date** | Date |  |
+| **ref_title** | String |  |
+| **ref_source** | String |  |
+| **ref_rights** | String |  |
+| **ref_date** | Date |  |
+| **ref_creator** | String |  |
+| **ref_bibliographic_citation** | String |  |
+| **idf_type_status** | String |  |
+| **idf_identified_by** | String |  |
+| **idf_date_identified** | Date |  |
+| **eve_end_of_period_year** | Integer |  |
+| **eve_end_of_period_month** | Integer |  |
+| **eve_end_of_period_day** | Integer |  |
+| **eve_year** | Integer |  |
+| **eve_month** | Integer |  |
+| **eve_day** | Integer |  |
+| **eve_event_date** | Date |  |
+| **prs_date_of_birth** | Date |  |
+| **prs_last_name** | String |  |
+| **prs_first_name** | String |  |
+| **prs_contact_point** | String | TODO: Add attribute descriptions |
+| **id** | UUID |  |
+| **import_data** | Map |  |
+| **extra_data** | Map |  |
+| **inserted_at** | UtcDatetimeUsec |  |
+| **updated_at** | UtcDatetimeUsec |  |
+| **collection_id** | UUID |  |
 
 #### Actions
 
-| Name                    | Type      | Input                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Description |
-| ----------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| **destroy**             | _destroy_ | <ul></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |             |
-| **update**              | _update_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>meta_data</b> <i>Map</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>eve_day</b> <i>String</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>eve_month</b> <i>String</i> attribute</li><li><b>eve_year</b> <i>String</i> attribute</li><li><b>eve_end_of_period_day</b> <i>String</i> attribute</li><li><b>eve_end_of_period_month</b> <i>String</i> attribute</li><li><b>eve_end_of_period_year</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>tax_genus</b> <i>String</i> attribute</li><li><b>tax_infraspecific_epithet</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>spp_life_stage</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>loc_state_province</b> <i>String</i> attribute</li><li><b>loc_verbatim_locality</b> <i>String</i> attribute</li><li><b>loc_decimal_longitude</b> <i>Float</i> attribute</li><li><b>loc_decimal_latitude</b> <i>Float</i> attribute</li><li><b>loc_georeference_remarks</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>occ_sex</b> <i>String</i> attribute</li><li><b>occ_associated_occurrences</b> <i>String</i> attribute</li><li><b>occ_occurrence_remarks</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>mts_material_sample_type</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
-| **create**              | _create_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>meta_data</b> <i>Map</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>eve_day</b> <i>String</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>eve_month</b> <i>String</i> attribute</li><li><b>eve_year</b> <i>String</i> attribute</li><li><b>eve_end_of_period_day</b> <i>String</i> attribute</li><li><b>eve_end_of_period_month</b> <i>String</i> attribute</li><li><b>eve_end_of_period_year</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>tax_genus</b> <i>String</i> attribute</li><li><b>tax_infraspecific_epithet</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>spp_life_stage</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>loc_state_province</b> <i>String</i> attribute</li><li><b>loc_verbatim_locality</b> <i>String</i> attribute</li><li><b>loc_decimal_longitude</b> <i>Float</i> attribute</li><li><b>loc_decimal_latitude</b> <i>Float</i> attribute</li><li><b>loc_georeference_remarks</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>occ_sex</b> <i>String</i> attribute</li><li><b>occ_associated_occurrences</b> <i>String</i> attribute</li><li><b>occ_occurrence_remarks</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>mts_material_sample_type</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
-| **read**                | _read_    | <ul><li><b>sort</b> <i>String</i> </li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |             |
-| **create_from_columns** | _create_  | <ul><li><b>mapping</b> <i>Column[]</i> </li><li><b>raw_record</b> <i>Map</i> </li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |             |
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **destroy** | _destroy_ | <ul></ul> |  |
+| **update** | _update_ | <ul><li><b>mts_material_sample_type</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>occ_occurrence_remarks</b> <i>String</i> attribute</li><li><b>occ_associated_occurrences</b> <i>String</i> attribute</li><li><b>occ_sex</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>loc_georeference_remarks</b> <i>String</i> attribute</li><li><b>loc_decimal_latitude</b> <i>Float</i> attribute</li><li><b>loc_decimal_longitude</b> <i>Float</i> attribute</li><li><b>loc_state_province</b> <i>String</i> attribute</li><li><b>loc_verbatim_locality</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>spp_life_stage</b> <i>String</i> attribute</li><li><b>tax_specific_epithet</b> <i>String</i> attribute</li><li><b>tax_infraspecific_epithet</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>tax_genus</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>eve_end_of_period_year</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_month</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_day</b> <i>Integer</i> attribute</li><li><b>eve_year</b> <i>Integer</i> attribute</li><li><b>eve_month</b> <i>Integer</i> attribute</li><li><b>eve_day</b> <i>Integer</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>mts_material_sample_type</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>occ_occurrence_remarks</b> <i>String</i> attribute</li><li><b>occ_associated_occurrences</b> <i>String</i> attribute</li><li><b>occ_sex</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>loc_georeference_remarks</b> <i>String</i> attribute</li><li><b>loc_decimal_latitude</b> <i>Float</i> attribute</li><li><b>loc_decimal_longitude</b> <i>Float</i> attribute</li><li><b>loc_state_province</b> <i>String</i> attribute</li><li><b>loc_verbatim_locality</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>spp_life_stage</b> <i>String</i> attribute</li><li><b>tax_specific_epithet</b> <i>String</i> attribute</li><li><b>tax_infraspecific_epithet</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>tax_genus</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>eve_end_of_period_year</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_month</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_day</b> <i>Integer</i> attribute</li><li><b>eve_year</b> <i>Integer</i> attribute</li><li><b>eve_month</b> <i>Integer</i> attribute</li><li><b>eve_day</b> <i>Integer</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **import** | _create_ | <ul><li><b>import</b> <i>Import</i> </li><li><b>params</b> <i>Map</i> </li><li><b>mts_material_sample_type</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>occ_occurrence_remarks</b> <i>String</i> attribute</li><li><b>occ_associated_occurrences</b> <i>String</i> attribute</li><li><b>occ_sex</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>loc_georeference_remarks</b> <i>String</i> attribute</li><li><b>loc_decimal_latitude</b> <i>Float</i> attribute</li><li><b>loc_decimal_longitude</b> <i>Float</i> attribute</li><li><b>loc_state_province</b> <i>String</i> attribute</li><li><b>loc_verbatim_locality</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>spp_life_stage</b> <i>String</i> attribute</li><li><b>tax_specific_epithet</b> <i>String</i> attribute</li><li><b>tax_infraspecific_epithet</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>tax_genus</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>eve_end_of_period_year</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_month</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_day</b> <i>Integer</i> attribute</li><li><b>eve_year</b> <i>Integer</i> attribute</li><li><b>eve_month</b> <i>Integer</i> attribute</li><li><b>eve_day</b> <i>Integer</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> | Creates or updates a `Record` from the given `params`.
+
+The record is associated with the give `DataAggregator.Platform.Import` and
+its `DataAggregator.Platform.Collection`.
+ |
+| **bulk_import** | _action_ | <ul><li><b>import</b> <i>Import</i> </li><li><b>rows</b> <i>Term</i> </li></ul> | Imports multiple records using `DataAggregator.Data.bulk_create/3`.
+
+The `rows` can be any enumberable, where each item which will be used as `params` for
+the `DataAggregator.Data.Record.import/2` action.
+ |
+| **create_from_params** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>params</b> <i>Map</i> </li><li><b>mts_material_sample_type</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>occ_occurrence_remarks</b> <i>String</i> attribute</li><li><b>occ_associated_occurrences</b> <i>String</i> attribute</li><li><b>occ_sex</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>loc_georeference_remarks</b> <i>String</i> attribute</li><li><b>loc_decimal_latitude</b> <i>Float</i> attribute</li><li><b>loc_decimal_longitude</b> <i>Float</i> attribute</li><li><b>loc_state_province</b> <i>String</i> attribute</li><li><b>loc_verbatim_locality</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>spp_life_stage</b> <i>String</i> attribute</li><li><b>tax_specific_epithet</b> <i>String</i> attribute</li><li><b>tax_infraspecific_epithet</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>tax_genus</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>eve_end_of_period_year</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_month</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_day</b> <i>Integer</i> attribute</li><li><b>eve_year</b> <i>Integer</i> attribute</li><li><b>eve_month</b> <i>Integer</i> attribute</li><li><b>eve_day</b> <i>Integer</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **update_from_params** | _update_ | <ul><li><b>params</b> <i>Map</i> </li><li><b>mts_material_sample_type</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>occ_occurrence_remarks</b> <i>String</i> attribute</li><li><b>occ_associated_occurrences</b> <i>String</i> attribute</li><li><b>occ_sex</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>loc_georeference_remarks</b> <i>String</i> attribute</li><li><b>loc_decimal_latitude</b> <i>Float</i> attribute</li><li><b>loc_decimal_longitude</b> <i>Float</i> attribute</li><li><b>loc_state_province</b> <i>String</i> attribute</li><li><b>loc_verbatim_locality</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>spp_life_stage</b> <i>String</i> attribute</li><li><b>tax_specific_epithet</b> <i>String</i> attribute</li><li><b>tax_infraspecific_epithet</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>tax_genus</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>eve_end_of_period_year</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_month</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_day</b> <i>Integer</i> attribute</li><li><b>eve_year</b> <i>Integer</i> attribute</li><li><b>eve_month</b> <i>Integer</i> attribute</li><li><b>eve_day</b> <i>Integer</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 
 ### RecordImage
 
+
+
 #### Attributes
 
-| Name              | Type            | Description |
-| ----------------- | --------------- | ----------- |
-| **id**            | UUID            |             |
-| **size**          | Integer         |             |
-| **inserted_at**   | UtcDatetimeUsec |             |
-| **updated_at**    | UtcDatetimeUsec |             |
-| **attachment_id** | UUID            |             |
-| **record_id**     | UUID            |             |
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **id** | UUID |  |
+| **size** | Integer |  |
+| **inserted_at** | UtcDatetimeUsec |  |
+| **updated_at** | UtcDatetimeUsec |  |
+| **attachment_id** | UUID |  |
+| **record_id** | UUID |  |
 
 #### Actions
 
-| Name        | Type      | Input                                                                                                                                                                                                                 | Description |
-| ----------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| **destroy** | _destroy_ | <ul></ul>                                                                                                                                                                                                             |             |
-| **update**  | _update_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>size</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
-| **read**    | _read_    | <ul></ul>                                                                                                                                                                                                             |             |
-| **create**  | _create_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>size</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **destroy** | _destroy_ | <ul></ul> |  |
+| **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>size</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **read** | _read_ | <ul></ul> |  |
+| **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>size</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 
 ## API DataAggregator.Taxonomy
 
@@ -518,70 +593,76 @@ erDiagram
 
 ### DwcAttribute
 
+
+
 #### Attributes
 
-| Name                   | Type            | Description |
-| ---------------------- | --------------- | ----------- |
-| **id**                 | UUID            |             |
-| **name**               | String          |             |
-| **inserted_at**        | UtcDatetimeUsec |             |
-| **updated_at**         | UtcDatetimeUsec |             |
-| **default_catalog_id** | UUID            |             |
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **id** | UUID |  |
+| **name** | String |  |
+| **inserted_at** | UtcDatetimeUsec |  |
+| **updated_at** | UtcDatetimeUsec |  |
+| **default_catalog_id** | UUID |  |
 
 #### Actions
 
-| Name        | Type      | Input                                                                                                                                                                                                                | Description |
-| ----------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| **destroy** | _destroy_ | <ul></ul>                                                                                                                                                                                                            |             |
-| **update**  | _update_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
-| **read**    | _read_    | <ul></ul>                                                                                                                                                                                                            |             |
-| **create**  | _create_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **destroy** | _destroy_ | <ul></ul> |  |
+| **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **read** | _read_ | <ul></ul> |  |
+| **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 
 ### Catalog
 
+
+
 #### Attributes
 
-| Name            | Type            | Description |
-| --------------- | --------------- | ----------- |
-| **id**          | UUID            |             |
-| **name**        | String          |             |
-| **description** | String          |             |
-| **url**         | String          |             |
-| **version**     | Integer         |             |
-| **inserted_at** | UtcDatetimeUsec |             |
-| **updated_at**  | UtcDatetimeUsec |             |
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **id** | UUID |  |
+| **name** | String |  |
+| **description** | String |  |
+| **url** | String |  |
+| **version** | Integer |  |
+| **inserted_at** | UtcDatetimeUsec |  |
+| **updated_at** | UtcDatetimeUsec |  |
 
 #### Actions
 
-| Name        | Type      | Input                                                                                                                                                                                                                                                                                                                                                              | Description |
-| ----------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-| **destroy** | _destroy_ | <ul></ul>                                                                                                                                                                                                                                                                                                                                                          |             |
-| **update**  | _update_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>url</b> <i>String</i> attribute</li><li><b>version</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
-| **read**    | _read_    | <ul></ul>                                                                                                                                                                                                                                                                                                                                                          |             |
-| **create**  | _create_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>url</b> <i>String</i> attribute</li><li><b>version</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **destroy** | _destroy_ | <ul></ul> |  |
+| **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>url</b> <i>String</i> attribute</li><li><b>version</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **read** | _read_ | <ul></ul> |  |
+| **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>url</b> <i>String</i> attribute</li><li><b>version</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 
 ### AttributeResolvingStrategy
 
+
+
 #### Attributes
 
-| Name                 | Type            | Description |
-| -------------------- | --------------- | ----------- |
-| **id**               | UUID            |             |
-| **do_not_encode**    | Boolean         |             |
-| **inserted_at**      | UtcDatetimeUsec |             |
-| **updated_at**       | UtcDatetimeUsec |             |
-| **collection_id**    | UUID            |             |
-| **dwc_attribute_id** | UUID            |             |
-| **catalog_id**       | UUID            |             |
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **id** | UUID |  |
+| **do_not_encode** | Boolean |  |
+| **inserted_at** | UtcDatetimeUsec |  |
+| **updated_at** | UtcDatetimeUsec |  |
+| **collection_id** | UUID |  |
+| **dwc_attribute_id** | UUID |  |
+| **catalog_id** | UUID |  |
 
 #### Actions
 
-| Name        | Type      | Input                                                                                                                                                                                                                          | Description |
-| ----------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-| **destroy** | _destroy_ | <ul></ul>                                                                                                                                                                                                                      |             |
-| **update**  | _update_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>do_not_encode</b> <i>Boolean</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
-| **read**    | _read_    | <ul></ul>                                                                                                                                                                                                                      |             |
-| **create**  | _create_  | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>do_not_encode</b> <i>Boolean</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |             |
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **destroy** | _destroy_ | <ul></ul> |  |
+| **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>do_not_encode</b> <i>Boolean</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **read** | _read_ | <ul></ul> |  |
+| **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>do_not_encode</b> <i>Boolean</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 
 ## API DataAggregator.Files
 
@@ -618,19 +699,23 @@ erDiagram
 
 ### Attachment
 
+
+
 #### Attributes
 
-| Name            | Type            | Description |
-| --------------- | --------------- | ----------- |
-| **id**          | UUID            |             |
-| **filename**    | String          |             |
-| **inserted_at** | UtcDatetimeUsec |             |
-| **updated_at**  | UtcDatetimeUsec |             |
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **id** | UUID |  |
+| **filename** | String |  |
+| **inserted_at** | UtcDatetimeUsec |  |
+| **updated_at** | UtcDatetimeUsec |  |
 
 #### Actions
 
-| Name                 | Type      | Input                                        | Description |
-| -------------------- | --------- | -------------------------------------------- | ----------- |
-| **read**             | _read_    | <ul></ul>                                    |             |
-| **import_from_path** | _create_  | <ul><li><b>path</b> <i>String</i> </li></ul> |             |
-| **destroy**          | _destroy_ | <ul></ul>                                    |             |
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **read** | _read_ | <ul></ul> |  |
+| **import_from_path** | _create_ | <ul><li><b>path</b> <i>String</i> </li></ul> |  |
+| **destroy** | _destroy_ | <ul></ul> |  |
+
+

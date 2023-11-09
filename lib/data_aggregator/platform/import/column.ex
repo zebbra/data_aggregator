@@ -10,7 +10,6 @@ defmodule DataAggregator.Platform.Import.Column do
     attribute :name, :string, primary_key?: true, allow_nil?: false
     attribute :type, :atom, allow_nil?: false
     attribute :mapped_to, :string, allow_nil?: true
-    attribute :value, :string, allow_nil?: true
   end
 
   actions do
