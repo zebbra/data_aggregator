@@ -38,6 +38,8 @@ steps:
       - mix local.hex --force
       - mix deps.get
       - mix deps.compile
+      - mix assets.setup
+      - mix assets.build
       - mix compile --warnings-as-errors --force
       - mix dialyzer --plt
 
