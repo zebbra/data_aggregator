@@ -13,6 +13,7 @@ module.exports = {
     "./js/**/*.ts",
     "../lib/*_web.ex",
     "../lib/*_web/**/*.*ex",
+    "../storybook/**/*.*exs",
   ],
   darkMode: ["class", ".theme-dark"],
   theme: {

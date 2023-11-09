@@ -5,6 +5,51 @@ defmodule DataAggregatorWeb.Layouts do
 
   embed_templates "layouts/*"
 
+  attr :environment, :atom, required: true
+  attr :active_link, :atom, required: true
+  attr :sidebar_nav, :boolean, default: false
+
+  attr :class, :string, default: nil
+  attr :rest, :global
+
+  slot :inner_block, required: true
+  slot :portal
+
+  def page(assigns) do
+    ~H"""
+    <div class="dark:bg-gray-900 no-scrollbar isolate h-screen overflow-y-auto">
+      <!-- Static sidebar for desktop -->
+      <div class="lg:fixed lg:inset-y-0 lg:z-30 lg:flex lg:w-72 lg:flex-col hidden">
+        <.sidebar_nav active_link={@active_link} environment={@environment} />
+      </div>
+      <%!-- Main content --%>
+      <div class="lg:pl-72">
+        <.sticky_topbar search={@active_link != :dashboard} sidebar_nav={@sidebar_nav} />
+        <main class={@class} {@rest}>
+          <%= render_slot(@inner_block) %>
+        </main>
+      </div>
+    </div>
+
+    <div class="isolate" id="headless-portal-root">
+      <%!-- Dynamic slideover sidebar nav for mobile --%>
+      <.mobile_slideover_nav
+        :if={@sidebar_nav}
+        id="sidebar-nav"
+        on_cancel={JS.push("toggle-sidebar-nav")}
+      >
+        <!-- Sidebar component, swap this element with another sidebar if you like -->
+        <.sidebar_nav active_link={@active_link} environment={@environment} />
+      </.mobile_slideover_nav>
+
+      <%!-- All other registered portals --%>
+      <%= for portal <- @portal do %>
+        <%= render_slot(portal) %>
+      <% end %>
+    </div>
+    """
+  end
+
   def locale_select(assigns) do
     ~H"""
     <div id="locale-select-wrapper" phx-hook="LocaleSelect">

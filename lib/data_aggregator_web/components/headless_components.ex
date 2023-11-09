@@ -273,7 +273,7 @@ defmodule DataAggregatorWeb.HeadlessComponents do
 
   attr :class, :string,
     default:
-      "ring-1 ring-black ring-opacity-5 focus:outline-none absolute right-0 z-50 bg-white divide-y divide-gray-100 rounded-md shadow-lg",
+      "ring-1 ring-black ring-opacity-5 focus:outline-none absolute right-0 bg-white divide-y divide-gray-100 rounded-md shadow-lg",
     doc: "the class of the menu items"
 
   attr :position, :string,
@@ -356,9 +356,26 @@ defmodule DataAggregatorWeb.HeadlessComponents do
   """
 
   attr :id, :string, required: true
+
+  attr :parent_id, :string,
+    default: nil,
+    doc: "the id of the parent component if it's a nested dialog"
+
   attr :as, :string, default: "div"
-  attr :show, :boolean, default: true, doc: "set to false if you want to use breakpoints"
-  attr :class, :string, default: "hidden relative z-50", doc: "the class of the dialog"
+
+  attr :show, :boolean,
+    default: true,
+    doc: "set to false if you want to use the responsive feature (or use static)"
+
+  attr :static, :boolean,
+    default: false,
+    doc: "set to true if you want to use the responsive feature with dynamic show attribute"
+
+  attr :responsive, :string,
+    default: nil,
+    doc: "the tailwindcss breakpoint at which the slideover becomes visible / hidden"
+
+  attr :class, :string, default: "hidden relative z-10", doc: "the class of the dialog"
   attr :role, :string, default: "dialog", doc: "the role attribute of the dialog"
   attr :backdrop, :boolean, default: true, doc: "set to false if you do not want a backdrop"
   attr :on_cancel, JS, default: %JS{}, doc: "JS callback for the cancel button"
@@ -404,8 +421,11 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     ~H"""
     <.dialog
       id={@id}
+      parent_id={@parent_id}
       as={@as}
       show={@show}
+      static={@static}
+      responsive={@responsive}
       role={@role}
       class={@class}
       on_cancel={@on_cancel}
@@ -489,12 +509,29 @@ defmodule DataAggregatorWeb.HeadlessComponents do
   """
 
   attr :id, :string, required: true
+
+  attr :parent_id, :string,
+    default: nil,
+    doc: "the id of the parent component if it's a nested dialog"
+
   attr :as, :string, default: "div"
-  attr :show, :boolean, default: true, doc: "set to false if you want to use breakpoints"
-  attr :class, :string, default: "hidden relative z-50", doc: "the class of the dialog"
+
+  attr :show, :boolean,
+    default: true,
+    doc: "set to false if you want to use the responsive feature"
+
+  attr :static, :boolean,
+    default: false,
+    doc: "set to true if you want to use the responsive feature with dynamic show attribute"
+
+  attr :responsive, :string,
+    default: nil,
+    doc: "the tailwindcss breakpoint at which the slideover becomes visible / hidden"
+
+  attr :class, :string, default: "hidden relative z-10", doc: "the class of the dialog"
 
   attr :width, :string,
-    default: "max-w-md",
+    default: "sm:max-w-md",
     doc: "the width of the slideover in tailwindcss format"
 
   attr :role, :string, default: "dialog", doc: "the role attribute of the dialog"
@@ -503,10 +540,6 @@ defmodule DataAggregatorWeb.HeadlessComponents do
   attr :close_button, :boolean,
     default: true,
     doc: "set to false if you do not want a close button"
-
-  attr :breakpoint, :string,
-    default: nil,
-    doc: "the breakpoint at which the slideover becomes visible / hidden"
 
   attr :on_cancel, JS, default: %JS{}, doc: "JS callback for the cancel button"
   attr :on_confirm, JS, default: %JS{}, doc: "JS callback for the confirm button"
@@ -535,14 +568,16 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     ~H"""
     <.dialog
       id={@id}
+      parent_id={@parent_id}
       as={@as}
       show={@show}
+      static={@static}
+      responsive={@responsive}
       role={@role}
       class={@class}
       on_cancel={@on_cancel}
       on_confirm={@on_confirm}
       display="block"
-      breakpoint={@breakpoint}
       show_panel_transition={@show_panel_transition}
       hide_panel_transition={@hide_panel_transition}
       show_backdrop_transition={@show_backdrop_transition}
@@ -553,7 +588,7 @@ defmodule DataAggregatorWeb.HeadlessComponents do
 
       <div class="fixed inset-0 overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
-          <div class="fixed inset-y-0 right-0 flex max-w-full pl-10 pointer-events-none">
+          <div class="sm:pl-10 fixed inset-y-0 right-0 flex max-w-full pointer-events-none">
             <.dialog_panel
               id={@id <> "__panel"}
               slideover
@@ -562,7 +597,7 @@ defmodule DataAggregatorWeb.HeadlessComponents do
               <%= render_slot(@inner_block) %>
               <div
                 :if={@close_button}
-                class="sm:-ml-10 sm:pr-4 absolute top-0 left-0 flex pt-4 pr-2 -ml-8"
+                class="sm:-ml-10 sm:pr-4 sm:flex absolute top-0 left-0 hidden pt-4"
               >
                 <button
                   phx-click={JS.exec("data-cancel", to: "##{@id}")}
@@ -599,13 +634,18 @@ defmodule DataAggregatorWeb.HeadlessComponents do
   """
 
   attr :id, :string, required: true
+
+  attr :parent_id, :string,
+    default: nil,
+    doc: "the id of the parent component if it's a nested dialog"
+
   attr :as, :string, default: "div"
 
   attr :show, :boolean,
     default: true,
     doc: "set to false if you do not want to render the slideover on mount"
 
-  attr :class, :string, default: "hidden relative z-50", doc: "the class of the dialog"
+  attr :class, :string, default: "hidden relative z-10", doc: "the class of the dialog"
 
   attr :width, :string,
     default: "max-w-xs",
@@ -645,14 +685,15 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     ~H"""
     <.dialog
       id={@id}
+      parent_id={@parent_id}
       as={@as}
       show={@show}
+      responsive="lg:hidden"
       role={@role}
       class={@class}
       on_cancel={@on_cancel}
       on_confirm={@on_confirm}
       display="flex"
-      breakpoint="lg:hidden"
       show_panel_transition={@show_panel_transition}
       hide_panel_transition={@hide_panel_transition}
       show_backdrop_transition={@show_backdrop_transition}

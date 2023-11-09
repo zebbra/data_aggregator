@@ -41,10 +41,13 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
   @impl true
   def render(assigns) do
     ~H"""
-    <main>
+    <DataAggregatorWeb.Layouts.page
+      active_link={:collections}
+      environment={@environment}
+      sidebar_nav={@sidebar_nav}
+    >
       <.header class="top-16 sticky">
         <%= @collection.name %>
-
         <:actions>
           <.styled_link patch={~p"/collections/#{@collection}/import"} id="collection-modal__button">
             <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
@@ -57,22 +60,24 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
         <%= ~t"Back"m %>
       </.back>
 
-      <.modal
-        :if={@live_action == :import}
-        id="collection-modal"
-        on_cancel={JS.patch(~p"/collections/#{@collection}")}
-      >
-        <.live_component
-          module={DataAggregatorWeb.CollectionLive.ImportFormComponent}
-          id={@collection.id}
-          icon="hero-plus-circle-mini"
-          title={@page_title}
-          action={:new}
-          collection={@collection}
-          patch={~p"/collections/#{@collection}"}
-        />
-      </.modal>
-    </main>
+      <:portal>
+        <.modal
+          :if={@live_action == :import}
+          id="collection-modal"
+          on_cancel={JS.patch(~p"/collections/#{@collection}")}
+        >
+          <.live_component
+            module={DataAggregatorWeb.CollectionLive.ImportFormComponent}
+            id={@collection.id}
+            icon="hero-plus-circle-mini"
+            title={@page_title}
+            action={:new}
+            collection={@collection}
+            patch={~p"/collections/#{@collection}"}
+          />
+        </.modal>
+      </:portal>
+    </DataAggregatorWeb.Layouts.page>
     """
   end
 end

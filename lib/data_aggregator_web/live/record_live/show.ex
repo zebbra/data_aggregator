@@ -36,7 +36,11 @@ defmodule DataAggregatorWeb.RecordLive.Show do
   @impl true
   def render(assigns) do
     ~H"""
-    <main>
+    <DataAggregatorWeb.Layouts.page
+      active_link={:records}
+      environment={@environment}
+      sidebar_nav={@sidebar_nav}
+    >
       <.header class="top-16 sticky">
         <%= @record.tax_scientific_name %>
 
@@ -55,22 +59,24 @@ defmodule DataAggregatorWeb.RecordLive.Show do
         <%= ~t"Back"m %>
       </.back>
 
-      <.modal
-        :if={@live_action in [:new, :edit]}
-        id="record-modal"
-        on_cancel={JS.patch(~p"/records/#{@record}?#{@current_path_params}")}
-      >
-        <.live_component
-          module={DataAggregatorWeb.RecordLive.FormComponent}
-          id={@record.id}
-          icon="hero-plus-circle-mini"
-          title={@page_title}
-          action={@live_action}
-          record={@record}
-          patch={~p"/records/#{@record}?#{@current_path_params}"}
-        />
-      </.modal>
-    </main>
+      <:portal>
+        <.modal
+          :if={@live_action in [:new, :edit]}
+          id="record-modal"
+          on_cancel={JS.patch(~p"/records/#{@record}?#{@current_path_params}")}
+        >
+          <.live_component
+            module={DataAggregatorWeb.RecordLive.FormComponent}
+            id={@record.id}
+            icon="hero-plus-circle-mini"
+            title={@page_title}
+            action={@live_action}
+            record={@record}
+            patch={~p"/records/#{@record}?#{@current_path_params}"}
+          />
+        </.modal>
+      </:portal>
+    </DataAggregatorWeb.Layouts.page>
     """
   end
 end

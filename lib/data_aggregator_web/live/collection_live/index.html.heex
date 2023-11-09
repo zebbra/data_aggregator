@@ -1,4 +1,8 @@
-<main>
+<DataAggregatorWeb.Layouts.page
+  active_link={:collections}
+  environment={@environment}
+  sidebar_nav={@sidebar_nav}
+>
   <.header class="top-16 sticky">
     <%= ~t"Listing Collections"m %>
     <:actions>
@@ -47,20 +51,22 @@
       </.link>
     </:action>
   </.table>
-</main>
 
-<.modal
-  :if={@live_action in [:new, :edit]}
-  id="collection-modal"
-  on_cancel={JS.patch(~p"/collections")}
->
-  <.live_component
-    module={DataAggregatorWeb.CollectionLive.FormComponent}
-    id={@collection.id || :new}
-    icon="hero-plus-circle-mini"
-    title={@page_title}
-    action={@live_action}
-    collection={@collection}
-    patch={~p"/collections"}
-  />
-</.modal>
+  <:portal>
+    <.modal
+      :if={@live_action in [:new, :edit]}
+      id="collection-modal"
+      on_cancel={JS.patch(~p"/collections")}
+    >
+      <.live_component
+        module={DataAggregatorWeb.CollectionLive.FormComponent}
+        id={@collection.id || :new}
+        icon="hero-plus-circle-mini"
+        title={@page_title}
+        action={@live_action}
+        collection={@collection}
+        patch={~p"/collections"}
+      />
+    </.modal>
+  </:portal>
+</DataAggregatorWeb.Layouts.page>

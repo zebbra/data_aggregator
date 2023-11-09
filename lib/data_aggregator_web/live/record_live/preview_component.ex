@@ -15,7 +15,7 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
 
     <.slideover
       id="record-slideover"
-      breakpoint="xl:hidden"
+      responsive="xl:hidden"
       show={false}
       on_cancel={JS.push("select", value: %{id: @record.id})}
     >

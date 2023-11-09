@@ -120,15 +120,16 @@ defmodule DataAggregatorWeb.CoreComponents do
 
       <.flash_group flash={@flash} />
   """
+  attr :class, :string, default: nil, doc: "the flash group class"
   attr :flash, :map, required: true, doc: "the map of flash messages"
   attr :id, :string, default: "flash-group", doc: "the optional id of flash container"
 
   def flash_group(assigns) do
     ~H"""
-    <div id={@id}>
+    <div class={@class} id={@id}>
       <div
         aria-live="assertive"
-        class="sm:items-start sm:p-6 fixed inset-0 z-50 flex items-end px-4 py-6 pointer-events-none"
+        class="sm:items-start sm:p-6 fixed inset-0 flex items-end px-4 py-6 pointer-events-none"
       >
         <div class="sm:items-end flex flex-col items-center w-full space-y-4">
           <.flash kind={:info} title={~t"Success!"m} flash={@flash} hidden />
@@ -407,7 +408,10 @@ defmodule DataAggregatorWeb.CoreComponents do
     ~H"""
     <div phx-feedback-for={@name}>
       <.label for={@id}><%= @label %></.label>
-      <div class={["mt-2", @errors != [] && "relative rounded-md shadow-md"]}>
+      <div class={[
+        "mt-2",
+        @errors != [] && "relative rounded-md shadow-md phx-no-feedback:shadow-none"
+      ]}>
         <select
           id={@id}
           name={@name}
@@ -415,7 +419,8 @@ defmodule DataAggregatorWeb.CoreComponents do
             "block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6",
             "text-gray-900 dark:text-white dark:bg-white/5",
             "phx-no-feedback:ring-gray-300 dark:phx-no-feedback:ring-white/10 phx-no-feedback:focus:ring-indigo-600 dark:phx-no-feedback:focus:ring-indigo-500",
-            @errors == [] && "ring-gray-300 focus:ring-indigo-600",
+            @errors == [] &&
+              "ring-gray-300 focus:ring-indigo-600 dark:ring-white/10 dark:focus:ring-indigo-500",
             @errors != [] &&
               "ring-red-300 dark:ring-red-400 focus:ring-red-500 dark:focus:ring-red-500"
           ]}
@@ -429,7 +434,7 @@ defmodule DataAggregatorWeb.CoreComponents do
         </select>
         <div
           :if={@errors != []}
-          class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+          class="phx-no-feedback:hidden absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
         >
           <.icon name="hero-exclamation-circle-mini" class="w-5 h-5 text-red-500" />
         </div>
@@ -443,7 +448,10 @@ defmodule DataAggregatorWeb.CoreComponents do
     ~H"""
     <div phx-feedback-for={@name}>
       <.label for={@id}><%= @label %></.label>
-      <div class={["mt-2", @errors != [] && "relative rounded-md shadow-md"]}>
+      <div class={[
+        "mt-2",
+        @errors != [] && "relative rounded-md shadow-md phx-no-feedback:shadow-none"
+      ]}>
         <textarea
           id={@id}
           name={@name}
@@ -451,7 +459,8 @@ defmodule DataAggregatorWeb.CoreComponents do
             "block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6",
             "text-gray-900 dark:text-white dark:bg-white/5",
             "phx-no-feedback:ring-gray-300 dark:phx-no-feedback:ring-white/10 phx-no-feedback:focus:ring-indigo-600 dark:phx-no-feedback:focus:ring-indigo-500",
-            @errors == [] && "ring-gray-300 focus:ring-indigo-600",
+            @errors == [] &&
+              "ring-gray-300 focus:ring-indigo-600 dark:ring-white/10 dark:focus:ring-indigo-500",
             @errors != [] &&
               "ring-red-300 dark:ring-red-400 focus:ring-red-500 dark:focus:ring-red-500"
           ]}
@@ -461,7 +470,7 @@ defmodule DataAggregatorWeb.CoreComponents do
         ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
         <div
           :if={@errors != []}
-          class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+          class="phx-no-feedback:hidden absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
         >
           <.icon name="hero-exclamation-circle-mini" class="w-5 h-5 text-red-500" />
         </div>
@@ -476,7 +485,10 @@ defmodule DataAggregatorWeb.CoreComponents do
     ~H"""
     <div phx-feedback-for={@name}>
       <.label for={@id}><%= @label %></.label>
-      <div class={["mt-2", @errors != [] && "relative rounded-md shadow-md"]}>
+      <div class={[
+        "mt-2",
+        @errors != [] && "relative rounded-md shadow-md phx-no-feedback:shadow-none"
+      ]}>
         <input
           type={@type}
           name={@name}
@@ -486,7 +498,8 @@ defmodule DataAggregatorWeb.CoreComponents do
             "block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6",
             "text-gray-900 dark:text-white dark:bg-white/5",
             "phx-no-feedback:ring-gray-300 dark:phx-no-feedback:ring-white/10 phx-no-feedback:focus:ring-indigo-600 dark:phx-no-feedback:focus:ring-indigo-500",
-            @errors == [] && "ring-gray-300 focus:ring-indigo-600",
+            @errors == [] &&
+              "ring-gray-300 focus:ring-indigo-600 dark:ring-white/10 dark:focus:ring-indigo-500",
             @errors != [] &&
               "ring-red-300 dark:ring-red-400 focus:ring-red-500 dark:focus:ring-red-500"
           ]}
@@ -496,7 +509,7 @@ defmodule DataAggregatorWeb.CoreComponents do
         />
         <div
           :if={@errors != []}
-          class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+          class="phx-no-feedback:hidden absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
         >
           <.icon name="hero-exclamation-circle-mini" class="w-5 h-5 text-red-500" />
         </div>
@@ -600,7 +613,7 @@ defmodule DataAggregatorWeb.CoreComponents do
         @class
       ]}
     >
-      <div class="flex flex-col flex-1 min-h-0 pb-6 overflow-y-scroll">
+      <div class="overscroll-contain no-scrollbar flex flex-col flex-1 min-h-0 pb-6 overflow-y-scroll">
         <%= render_slot(@header) %>
         <div class="relative flex-1">
           <%= render_slot(@inner_block) %>
@@ -657,7 +670,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     ~H"""
     <div class="sm:px-6 lg:px-8 px-4">
       <div class="sm:mt-6 lg:mt-8 flow-root mt-4">
-        <div class="table-container sm:-mx-6 lg:-mx-8 -mx-4 -my-2 overflow-x-auto">
+        <div class="table-container sm:-mx-6 lg:-mx-8 no-scrollbar overscroll-x-contain -mx-4 -my-2 overflow-x-auto">
           <div class="inline-block min-w-full py-2 align-middle">
             <table
               role="table"

@@ -4,7 +4,7 @@ defmodule DataAggregatorWeb.LiveState do
   """
 
   import Phoenix.LiveView, only: [attach_hook: 4]
-  import Phoenix.Component, only: [assign: 2]
+  import Phoenix.Component, only: [assign: 2, update: 3]
 
   def on_mount(:default, _params, _session, socket) do
     {:cont,
@@ -15,7 +15,7 @@ defmodule DataAggregatorWeb.LiveState do
   end
 
   defp handle_event("toggle-sidebar-nav", _params, socket) do
-    {:halt, socket |> assign(sidebar_nav: !socket.assigns.sidebar_nav)}
+    {:halt, socket |> update(:sidebar_nav, &(!&1))}
   end
 
   defp handle_event(_event, _params, socket), do: {:cont, socket}

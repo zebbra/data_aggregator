@@ -16,8 +16,10 @@ defmodule DataAggregatorWeb.Headless.Dialog do
   Renders a dialog component. Per default you set show to true and render the dialog
   conditionaly with the :if directive. However, if a dialog must be visible / hidden
   base on client window width, this approach does not work. In this case you can use
-  the breakpoint attribute to set the breakpoint at which the dialog should be visible
-  or hidden. Make sure to set the show attribute to false in this case.
+  the responsive attribute to set the breakpoint at which the dialog should be visible
+  or hidden. Make sure to set the show attribute to false in this case. If you want to
+  a dynamic show attribute (instead of the :if directive) to render the dialog together
+  with the responsive attribute, you need to mark the dialog as static.
 
   Further we do currently not support multiple dialogs on the same page. The on_<action>
   callbacks get executed on all dialogs on the page which is not correct. Maybe we can
@@ -25,8 +27,15 @@ defmodule DataAggregatorWeb.Headless.Dialog do
   """
 
   attr :id, :string, required: true
+
+  attr :parent_id, :string,
+    default: nil,
+    doc: "the id of the parent component if it's a nested dialog"
+
   attr :as, :string, default: "div"
   attr :show, :boolean, default: false
+  attr :static, :boolean, default: false
+  attr :responsive, :string, default: nil
   attr :class, :string, default: nil
   attr :role, :string, default: "dialog"
   attr :backdrop, :boolean, default: true
@@ -37,7 +46,6 @@ defmodule DataAggregatorWeb.Headless.Dialog do
   attr :hide_panel_transition, :map, default: nil
   attr :show_backdrop_transition, :map, default: nil
   attr :hide_backdrop_transition, :map, default: nil
-  attr :breakpoint, :string, default: nil
   attr :rest, :global
 
   slot :inner_block, required: true
@@ -51,12 +59,15 @@ defmodule DataAggregatorWeb.Headless.Dialog do
           show_dialog(@id, @show_panel_transition, @show_backdrop_transition, @display)
       }
       phx-remove={hide_dialog(@id, @hide_panel_transition, @hide_backdrop_transition)}
+      data-apply={JS.exec(@on_confirm, "phx-remove")}
+      data-cancel={JS.exec(@on_cancel, "phx-remove")}
       data-show={
         !@show && show_dialog(@id, @show_panel_transition, @show_backdrop_transition, @display)
       }
-      data-apply={JS.exec(@on_confirm, "phx-remove")}
-      data-cancel={JS.exec(@on_cancel, "phx-remove")}
-      data-breakpoint={@breakpoint}
+      data-hide={hide_dialog(@id, @hide_panel_transition, @hide_backdrop_transition)}
+      data-responsive={@responsive}
+      data-static={@static}
+      data-parentid={@parent_id}
       id={@id}
       name={@as}
       role={@role}
@@ -81,8 +92,6 @@ defmodule DataAggregatorWeb.Headless.Dialog do
       <.dynamic_tag
         phx-hook="DialogPanel"
         phx-click-away={JS.exec("data-cancel", to: "##{@id |> root_id}")}
-        phx-window-keydown={JS.exec("data-cancel", to: "##{@id |> root_id}")}
-        phx-key="escape"
         id={@id}
         name={@as}
         class={["hidden", @class]}
@@ -127,7 +136,6 @@ defmodule DataAggregatorWeb.Headless.Dialog do
     |> show_backdrop(id, backdrop_transition)
     |> show_panel(id, panel_transition, display)
     |> JS.set_attribute({"aria-modal", "true"}, to: "##{id}")
-    |> JS.add_class("overflow-hidden", to: "body")
     |> JS.focus_first(to: "##{id}__panel")
   end
 
@@ -137,7 +145,6 @@ defmodule DataAggregatorWeb.Headless.Dialog do
     |> hide_panel(id, panel_transition)
     |> JS.hide(to: "##{id}", transition: {"block", "block", "hidden"})
     |> JS.remove_attribute("aria-modal", to: "##{id}")
-    |> JS.remove_class("overflow-hidden", to: "body")
   end
 
   defp show_backdrop(js, selector, transition) do

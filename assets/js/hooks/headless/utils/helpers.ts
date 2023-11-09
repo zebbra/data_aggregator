@@ -12,3 +12,7 @@ export function unwrap<T>(value: Ref<T> | T): T {
 export function rootId(id: string) {
   return id.split("__").shift()!;
 }
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
