@@ -1,4 +1,4 @@
-defmodule DataAggregator.Platform.Changes.UpdateMapping do
+defmodule DataAggregator.Platform.Import.Changes.UpdateMapping do
   @moduledoc """
   Changeset hook to update the mapping of columns to the collection's schema.
   """

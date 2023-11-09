@@ -1,4 +1,4 @@
-defmodule DataAggregator.Platform.Changes.ImportRecords do
+defmodule DataAggregator.Platform.Import.Changes.ImportRecords do
   @moduledoc """
   Changeset hook to update the mapping of columns to the collection's schema.
   """
@@ -6,7 +6,8 @@ defmodule DataAggregator.Platform.Changes.ImportRecords do
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Platform.Import
+  alias DataAggregator.Data.Record
+  alias DataAggregator.Platform.Import.Mapping
 
   require Logger
 
@@ -19,15 +20,24 @@ defmodule DataAggregator.Platform.Changes.ImportRecords do
     case stream_records(import) do
       {:ok, stream} ->
         stream
-        |> Stream.map(&Import.import_record(import, &1))
-        |> Enum.reduce(changeset, &handle_import/2)
+        |> apply_mapping(import)
+        |> bulk_import(import)
+        |> handle_import(changeset)
 
       {:error, reason} ->
         Changeset.add_error(changeset, reason)
     end
   end
 
-  defp handle_import({:ok, _import}, changeset) do
+  defp apply_mapping(stream, import) do
+    stream |> Stream.map(&Mapping.map_params(&1, import.columns))
+  end
+
+  defp bulk_import(stream, import) do
+    Record.bulk_import(import, stream)
+  end
+
+  defp handle_import({:ok, %Ash.BulkResult{}}, changeset) do
     changeset
   end
 

@@ -153,41 +153,7 @@ defmodule DataAggregator.Platform.ImportTest do
     end
   end
 
-  describe "import_record" do
-    setup %{collection: collection} do
-      path = "test/support/fixtures/files/museum-dataset-import-example.csv"
-      %{import: Import.create_from_path!(collection, path)}
-    end
-
-    test "with arguments", %{import: import} do
-      mappings = [
-        %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
-        %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"},
-        %{name: "Auteur et date ssp", mapped_to: "elevation_date_ssp"}
-      ]
-
-      assert {:ok, import} = Import.update_mapping(import, mappings)
-
-      record = %{
-        "Scientific Name" => "Example",
-        "Numéro scientifique GBIF" => "ex-123",
-        "Auteur et date ssp" => "this is an extra attribute"
-      }
-
-      assert {:ok, import} = Import.import_record(import, record)
-
-      assert_maps(import.records, [
-        %{
-          mte_material_entity_id: "ex-123",
-          tax_scientific_name: "Example",
-          extra_data: %{
-            "elevation_date_ssp" => "this is an extra attribute"
-          }
-        }
-      ])
-    end
-  end
-
+  @tag :focus
   describe "import_records" do
     setup %{collection: collection} do
       path = "test/support/fixtures/files/museum-dataset-import-example.csv"

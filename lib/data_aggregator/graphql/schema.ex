@@ -1,4 +1,4 @@
-defmodule DataAggregator.Schema do
+defmodule DataAggregator.GraphQL.Schema do
   @moduledoc """
   GraphQL schema for DataAggregator using `AshGraphql`.
   """

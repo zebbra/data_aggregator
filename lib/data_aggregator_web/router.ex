@@ -90,11 +90,11 @@ defmodule DataAggregatorWeb.Router do
   scope "/" do
     pipe_through :graphql
 
-    forward "/gql", Absinthe.Plug, schema: DataAggregator.Schema
+    forward "/gql", Absinthe.Plug, schema: DataAggregator.GraphQL.Schema
 
     forward "/playground",
             Absinthe.Plug.GraphiQL,
-            schema: DataAggregator.Schema,
+            schema: DataAggregator.GraphQL.Schema,
             interface: :playground
   end
 

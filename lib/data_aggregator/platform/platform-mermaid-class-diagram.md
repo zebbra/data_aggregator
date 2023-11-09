@@ -27,29 +27,45 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Institution institution
-        ImportFile[] import_files
-        Attachment[] import_file_attachments
+        Import[] imports
+        Attachment[] import_attachments
         destroy()
         update(UUID id, String name, String code, String description, ...)
         create(UUID id, String name, String code, String description, ...)
         read(String sort)
     }
-    class ImportFile {
+    class Import {
         UUID id
-        Integer amount_of_rows
         Column[] columns
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Integer records_count
         Collection collection
         Attachment attachment
+        Record[] import_records
+        Record[] records
+        destroy()
         read()
+        create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
         create_from_path(String path, Collection collection)
         update_mapping(Column[] columns)
+        import_records()
+    }
+    class Record {
+        Import import
+        Record record
+        update()
+        destroy()
+        read()
+        create()
     }
 
+    Record -- Import
+    Record -- Record
     Attachment -- Collection
-    Attachment -- ImportFile
-    Collection -- ImportFile
+    Attachment -- Import
+    Collection -- Import
     Collection -- Institution
+    Import -- Record
 
 ```

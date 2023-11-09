@@ -7,6 +7,7 @@ defmodule DataAggregator.Platform.Import do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias __MODULE__
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Platform.Collection
   alias DataAggregator.Platform.Import.Column
@@ -42,13 +43,16 @@ defmodule DataAggregator.Platform.Import do
   actions do
     defaults [:read, :destroy]
 
-    create :create_from_path do
+    create :create do
       primary? true
-      accept []
+      argument :collection, Collection, allow_nil?: false
+      change manage_relationship(:collection, :collection, type: :append)
+    end
 
+    create :create_from_path do
+      accept []
       argument :path, :string, allow_nil?: false
       argument :collection, Collection, allow_nil?: false
-
       change manage_relationship(:collection, :collection, type: :append)
       change manage_relationship(:path, :attachment, value_is_key: :path, type: :create)
       change DataAggregator.Platform.Changes.DetectColumns
@@ -56,29 +60,24 @@ defmodule DataAggregator.Platform.Import do
 
     update :update_mapping do
       accept [:columns]
-      change DataAggregator.Platform.Changes.UpdateMapping
-    end
-
-    update :import_record do
-      argument :params, :map, allow_nil?: false
-      change DataAggregator.Platform.Changes.ImportRecord
+      change Import.Changes.UpdateMapping
     end
 
     update :import_records do
       accept []
-      change DataAggregator.Platform.Changes.ImportRecords
+      change Import.Changes.ImportRecords
       change load([:records_count])
     end
   end
 
   code_interface do
     define_for DataAggregator.Platform
-    define :create_from_path, args: [:collection, :path]
-    define :update_mapping, args: [:columns]
-    define :import_record, args: [:params]
-    define :import_records
     define :read
     define :get_by_id, action: :read, get_by: [:id]
+    define :create, args: [:collection]
+    define :create_from_path, args: [:collection, :path]
+    define :update_mapping, args: [:columns]
+    define :import_records
     define :destroy
   end
 

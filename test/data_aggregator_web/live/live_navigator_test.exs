@@ -1,5 +1,5 @@
 defmodule DataAggregatorWeb.LiveNavigatorTest do
-  use DataAggregatorWeb.ConnCase
+  use DataAggregatorWeb.ConnCase, async: true
 
   test "[/] renders sidebar nav with active_link set to dashboard", %{conn: conn} do
     conn = get(conn, "/")
