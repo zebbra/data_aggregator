@@ -19,13 +19,13 @@
     }
     sort={@current_sort}
   >
-    <:col :let={{_id, record}} label={~t"ID"m} field="id" sort>
+    <:col :let={{_id, record}} label={~t"MaterialEntityID"m} field="mte_material_entity_id" sort>
       <.styled_link navigate={~p"/records/#{record}?#{@current_path_params}"} variant="table">
-        <%= record.id %>
+        <%= record.mte_material_entity_id %>
       </.styled_link>
     </:col>
-    <:col :let={{_id, record}} label={~t"MaterialEntityID"m} field="mte_material_entity_id" sort>
-      <%= record.mte_material_entity_id %>
+    <:col :let={{_id, record}} label={~t"Collection"m} field="collection.name" sort>
+      <%= record.collection.name %>
     </:col>
     <:col :let={{_id, record}} label={~t"Scientific Name"m} field="tax_scientific_name" sort>
       <%= record.tax_scientific_name %>

@@ -28,7 +28,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   defp list_collections(socket) do
     %{current_sort: current_sort} = socket.assigns
 
-    results = Collection.read!(%{sort: current_sort})
+    results = Collection.read!(%{sort: current_sort}, load: [:records_count])
 
     stream_results(socket, results)
   end

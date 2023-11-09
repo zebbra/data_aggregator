@@ -10,7 +10,7 @@ defmodule DataAggregatorWeb.ImportLive.Records do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    import = DataAggregator.Platform.load!(Import.get_by_id!(id), collection: [:id, :name])
+    import = DataAggregator.Platform.load!(Import.get_by_id!(id), [:records_count, :collection])
 
     socket =
       socket
@@ -22,6 +22,7 @@ defmodule DataAggregatorWeb.ImportLive.Records do
 
   defp apply_action(socket, :show_records, _params) do
     socket
+    |> put_flash(:info, "#{socket.assigns.import.records_count} Records imported successfully.")
     |> assign(:page_title, ~t"Imported Records"m)
   end
 

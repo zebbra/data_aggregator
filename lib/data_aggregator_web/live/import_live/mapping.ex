@@ -72,38 +72,34 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
       <div class="justify-items-center grid">
         <ul
           role="list"
-          class="dark:text-gray-400 px-7 2xl:w-6/12 xl:w-/12 lg:w-9/12 md:w-8/12 sm:9/12 divide-slate-600 divide-dashed w-full mt-2 text-sm text-gray-700 divide-y"
+          class="dark:text-gray-400 px-7 2xl:w-6/12 xl:w-8/12 md:w-9/12 sm:10/12 divide-slate-600 divide-dashed sm:mt-2 w-full text-sm text-gray-700 divide-y"
         >
-          <li class="gap-x-6 dark:text-gray-200 flex justify-between py-1">
-            <div class="gap-x-4 flex justify-start w-1/3">
-              <p class="text-sm font-bold leading-10">Column</p>
+          <li class="gap-x-6 dark:text-gray-200 flex py-1">
+            <div class="gap-x-4 flex justify-start w-5 text-sm font-bold leading-10">
+              req.
             </div>
-            <div class="gap-x-4 flex w-1/3 text-center">
-              <div class="flex-auto min-w-0">
-                <p class="text-sm font-bold leading-10">required</p>
-              </div>
+            <div class="gap-x-4 flex justify-start w-1/2 text-sm font-bold leading-10">
+              Column
             </div>
-            <div class="gap-x-4 flex justify-end w-1/3">
-              <p class="text-sm font-bold leading-10">Mapped To</p>
+            <div class="gap-x-4 flex justify-end w-1/2 text-sm font-bold leading-10">
+              Mapped To
             </div>
           </li>
           <%= for column <- @import.columns do %>
-            <li class="gap-x-6 flex justify-between py-1">
-              <div class="gap-x-4 flex justify-start w-1/3">
-                <p class="text-sm leading-10"><%= column.name %></p>
-              </div>
-              <div class="gap-x-4 flex items-center justify-center w-1/3 text-center">
+            <li class="gap-x-6 flex py-1">
+              <div class="gap-x-4 flex items-center justify-start w-5">
                 <input
                   disabled
                   checked={get_required_from_static_mappings(column.name)}
                   type="checkbox"
-                  class=" w-4 h-4 text-indigo-600 rounded"
+                  class="w-4 h-4 text-indigo-600 rounded"
                 />
               </div>
-              <div class="gap-x-4 flex justify-end w-1/3">
-                <p class="text-sm leading-10">
-                  <%= get_mapping_from_static_mappings(column.name) %>
-                </p>
+              <div class="gap-x-4 flex justify-start w-1/2 text-sm leading-10">
+                <%= column.name %>
+              </div>
+              <div class="gap-x-4 flex justify-end w-1/2 text-sm leading-10">
+                <%= get_mapping_from_static_mappings(column.name) %>
               </div>
             </li>
           <% end %>

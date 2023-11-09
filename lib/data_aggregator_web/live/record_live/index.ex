@@ -35,7 +35,8 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
     page =
       Record.read!(%{sort: current_sort},
-        page: pagination_options(current_page, current_limit)
+        page: pagination_options(current_page, current_limit),
+        load: :collection
       )
 
     stream_page(socket, page)
@@ -139,7 +140,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   @impl true
   def handle_event("select", %{"id" => id}, socket) do
     old_selected = socket.assigns.current_selected
-    new_selected = Record.get_by_id!(id)
+    new_selected = DataAggregator.Data.load!(Record.get_by_id!(id), [:collection])
 
     if old_selected == new_selected do
       {:noreply, unselect_current_selected(socket)}

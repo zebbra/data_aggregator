@@ -35,9 +35,19 @@ defmodule DataAggregatorWeb.ImportLive.Confirmation do
 
   @impl true
   def handle_event("import:records", _params, socket) do
-    # import the records here!
+    case Import.import_records(socket.assigns.import) do
+      {:ok, import} ->
+        import |> dbg
 
-    {:noreply, socket}
+        {:noreply,
+         socket
+         |> assign(:import, import)
+         |> push_navigate(to: ~p"/imports/#{import}/records")}
+
+      {:error, _error} ->
+        {:noreply,
+         socket |> put_flash(:error, "Failed to import Records. Check the logs for details.")}
+    end
   end
 
   @impl true
@@ -61,6 +71,7 @@ defmodule DataAggregatorWeb.ImportLive.Confirmation do
             class="rounded-md"
             aria-label={~t"Confirm and import Records"m}
             phx-click="import:records"
+            phx-disable-with={~t"Importing..."m}
           >
             <.icon name="hero-check" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
             <%= ~t"Confirm and import Records"m %>

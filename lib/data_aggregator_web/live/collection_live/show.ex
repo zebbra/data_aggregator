@@ -77,15 +77,19 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
           <.stat_card label={~t"Name"m} stat={@collection.name} />
           <.stat_card label={~t"Owner"m} stat={@collection.owner} />
           <.stat_card label={~t"Type"m} stat="OTHERS" />
-          <.stat_card label={~t"Uploaded Records in Collection"m} stat={@collection.records_count} />
-          <.stat_card label={~t"Records Published"m} stat="1203" />
+          <.stat_card label={~t"Records in Collection"m} stat={@collection.records_count} />
+          <.stat_card label={~t"Records Published"m} stat="0" />
           <.stat_card
             label={~t"Digitization Progress"m}
-            stat={@collection.items_to_digitize / 100 * @collection.records_count}
+            stat={
+              (100 / @collection.items_to_digitize * @collection.records_count)
+              |> Decimal.from_float()
+              |> Decimal.round(1)
+            }
             stat_suffix="%"
           />
-          <.stat_card label={~t"Expert Reviews"m} stat="23" />
-          <.stat_card label={~t"Last Contribution"m} stat="22.10.2023" />
+          <.stat_card label={~t"Expert Reviews"m} stat="0" />
+          <.stat_card label={~t"Last Contribution"m} stat="13.11.2023" />
         </dl>
       </div>
 

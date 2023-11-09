@@ -102,18 +102,6 @@ defmodule DataAggregator.Data.Record do
       argument :rows, :term, allow_nil?: false
       run Record.Actions.BulkImport
     end
-
-    create :create_from_params do
-      argument :collection, Collection, allow_nil?: false
-      argument :params, :map, allow_nil?: false
-      change manage_relationship(:collection, :collection, type: :append)
-      change Record.Changes.ExtractAttributes
-    end
-
-    update :update_from_params do
-      argument :params, :map, allow_nil?: false
-      change Record.Changes.ExtractAttributes
-    end
   end
 
   code_interface do
@@ -122,7 +110,6 @@ defmodule DataAggregator.Data.Record do
     define :create
     define :import, args: [:import, :params]
     define :bulk_import, args: [:import, :rows]
-    define :create_from_params, args: [:collection, :params]
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]

@@ -14,10 +14,6 @@
     }
     sort={@current_sort}
   >
-    <:col :let={{_id, import}} label={~t"ID"m} field="id" sort>
-      <%= import.id %>
-    </:col>
-
     <:col :let={{_id, import}} label={~t"Collection"m} field="collection.name" sort>
       <%= import.collection.name %>
     </:col>

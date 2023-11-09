@@ -10,8 +10,10 @@ defmodule DataAggregator.Data.Record.Actions.BulkImport do
   def run(input, _opts, _context) do
     %{import: import, rows: rows} = input.arguments
 
-    inputs = rows |> Stream.map(&%{import: import, params: &1})
-    result = DataAggregator.Data.bulk_create(inputs, Record, :import, return_errors?: true)
+    result =
+      rows
+      |> Stream.map(&%{import: import, params: &1})
+      |> DataAggregator.Data.bulk_create(Record, :import, return_errors?: true)
 
     {:ok, result}
   end
