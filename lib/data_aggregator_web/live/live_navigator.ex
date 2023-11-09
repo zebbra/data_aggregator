@@ -24,6 +24,9 @@ defmodule DataAggregatorWeb.LiveNavigator do
         {"Elixir.DataAggregatorWeb.CollectionLive" <> _, _} ->
           :collections
 
+        {"Elixir.DataAggregatorWeb.ImportLive" <> _, _} ->
+          :imports
+
         {_, _} ->
           nil
       end

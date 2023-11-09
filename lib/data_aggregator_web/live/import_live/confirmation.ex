@@ -1,6 +1,8 @@
 defmodule DataAggregatorWeb.ImportLive.Confirmation do
   use DataAggregatorWeb, :live_view
 
+  import DataAggregatorWeb.Headless.StatCard
+
   alias DataAggregator.Platform.Import
 
   @impl true
@@ -15,6 +17,7 @@ defmodule DataAggregatorWeb.ImportLive.Confirmation do
     socket =
       socket
       |> assign(:import, import)
+      |> assign(:collection, import.collection)
       |> apply_action(socket.assigns.live_action, params)
 
     {:noreply, socket}
@@ -26,7 +29,12 @@ defmodule DataAggregatorWeb.ImportLive.Confirmation do
   end
 
   @impl true
-  def handle_event("confirm:mapping", _params, socket) do
+  def handle_event("backto:mapping", _params, socket) do
+    {:noreply, socket |> push_navigate(to: ~p"/imports/#{socket.assigns.import}/mappings")}
+  end
+
+  @impl true
+  def handle_event("import:records", _params, socket) do
     # import the records here!
 
     {:noreply, socket}
@@ -37,29 +45,42 @@ defmodule DataAggregatorWeb.ImportLive.Confirmation do
     ~H"""
     <main>
       <.header class="top-16 sticky">
-        Confirm the results of your imported file for your collection '<%= @import.collection.name %>'
+        Confirm your Import for the Collection '<%= @import.collection.name %>'
         <:actions>
+          <.button
+            variant="nav"
+            class="rounded-md"
+            aria-label={~t"Back to Mapping"m}
+            phx-click="backto:mapping"
+          >
+            <.icon name="hero-arrow-left" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
+            <%= ~t"Back to Mapping"m %>
+          </.button>
           <.button
             variant="primary"
             class="rounded-md"
-            aria-label={~t"Confirm Mapping and import Records"m}
-            phx-click="confirm:mapping"
+            aria-label={~t"Confirm and import Records"m}
+            phx-click="import:records"
           >
-            <.icon name="hero-check-circle" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-            <%= ~t"Confirm Mapping and import Records"m %>
+            <.icon name="hero-check" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
+            <%= ~t"Confirm and import Records"m %>
           </.button>
         </:actions>
       </.header>
 
       <div class="justify-items-center grid">
-        <ul
-          role="list"
-          class="dark:text-gray-400 px-7 2xl:w-4/12 xl:w-8/12 lg:w-8/12 md:w-8/12 sm:9/12 divide-slate-600 divide-dashed w-full mt-2 text-sm text-gray-500 divide-y"
-        >
-          --- show here the result of the mapping ---
-        </ul>
+        <dl class="xl:grid-cols-4 sm:grid-cols-2 grid grid-cols-1 gap-5 mt-5">
+          <.stat_card label={~t"Mapped Columns"m} stat="20 / 30" />
+          <.stat_card label={~t"Total Records to Import"m} stat="5444" />
+          <.stat_card label={~t"New Records"m} stat="5322" />
+          <.stat_card label={~t"Recurring Records"m} stat="122" />
+          <.stat_card label={~t"Affected Collection"m} stat={@collection.name} />
+          <.stat_card label={~t"Collection Owner"m} stat={@collection.owner} />
+          <.stat_card label={~t"Estimated Import Time"m} stat="10" stat_suffix="s" />
+          <.stat_card label={~t"Suggested Expert"m} stat="Christophe Praz" />
+        </dl>
       </div>
-      <.back navigate={~p"/imports"}>
+      <.back navigate={~p"/imports/#{@import}/mappings"}>
         <%= ~t"Back"m %>
       </.back>
     </main>

@@ -13,7 +13,8 @@ defmodule DataAggregator.RecordsFixtures do
   }
 
   @collection_defaults %{
-    name: "Collection"
+    name: "Collection",
+    owner: "Max Powers"
   }
 
   @doc """

@@ -7,7 +7,7 @@ defmodule DataAggregator.Platform.ImportTest do
   alias DataAggregator.Platform.Import
 
   setup do
-    {:ok, collection} = Collection.create(%{name: "Test Collection"})
+    {:ok, collection} = Collection.create(%{name: "Test Collection", owner: "Max Powers"})
     %{collection: collection}
   end
 

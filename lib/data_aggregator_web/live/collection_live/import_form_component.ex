@@ -27,7 +27,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
       <.form_header icon={@icon} title={@title} />
       <.simple_form
         for={@form}
-        id="collection-form"
+        id="import-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
@@ -104,7 +104,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
           <.button
             variant="secondary"
             class="sm:mt-0 sm:w-auto inline-flex justify-center w-full mt-3"
-            phx-click={JS.exec("data-cancel", to: "#collection-modal")}
+            phx-click={JS.exec("data-cancel", to: "#import-modal")}
             phx-disable-with
           >
             <%= ~t"Cancel"m %>
@@ -129,16 +129,16 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
       </div>
       <div class={["mt-3 text-center sm:mt-0 sm:text-left", @icon && "sm:ml-4"]}>
         <.dialog_title
-          id="collection-modal__title"
+          id="import-modal__title"
           class="dark:text-white text-base font-semibold leading-6 text-gray-900"
         >
           <%= @title %>
         </.dialog_title>
         <.dialog_description
-          id="collection-modal__description"
+          id="import-modal__description"
           class="dark:text-gray-400 mt-2 text-sm text-gray-500"
         >
-          <%= ~t"Use this form to manage collections in your database."m %>
+          <%= ~t"Select a file containing your Records"m %>
         </.dialog_description>
       </div>
     </div>
@@ -193,7 +193,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   end
 
   defp handle_flash(socket, import) when is_nil(import) == false do
-    socket |> put_flash(:info, "File successfully uploaded")
+    # |> put_flash(:info, "File successfully uploaded")
+    socket
   end
 
   defp handle_flash(socket, import) when is_nil(import) do

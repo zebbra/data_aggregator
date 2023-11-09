@@ -61,19 +61,19 @@ msgid "We can't find the internet"
 msgstr ""
 
 #: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:32
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:151
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:173
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "Dashboard"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:166
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:188
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "GQL Playground"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:196
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:218
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "Mailbox"
@@ -183,38 +183,37 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Updated At"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:65
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:71
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:103
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:109
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Collection created successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:104
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:110
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Collection updated successfully"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/form_component.ex:49
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:49
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:57
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:63
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Save Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:55
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:61
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Saving..."
@@ -226,19 +225,19 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.html.heex:44
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:48
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.html.heex:46
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:50
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Delete"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.html.heex:38
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:42
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Edit"
@@ -250,7 +249,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Edit Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.html.heex:26
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:30
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Inserted At"
@@ -276,7 +275,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "New Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.html.heex:36
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:40
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Show"
@@ -288,20 +287,20 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Show Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.html.heex:30
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:34
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Updated At"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:30
-#: lib/data_aggregator_web/live/collection_live/show.ex:54
+#: lib/data_aggregator_web/live/collection_live/show.ex:32
+#: lib/data_aggregator_web/live/collection_live/show.ex:70
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Import Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:25
+#: lib/data_aggregator_web/live/collection_live/show.ex:27
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Show Collection"
@@ -313,13 +312,13 @@ msgctxt "DataAggregatorWeb.Layouts"
 msgid "Collections"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:114
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:136
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "GBIF"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:98
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:120
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "Github"
@@ -331,7 +330,7 @@ msgctxt "DataAggregatorWeb.Layouts"
 msgid "Records"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:130
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:152
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "scnat"
@@ -340,12 +339,6 @@ msgstr ""
 #: lib/data_aggregator_web/live/collection_live/form_component.ex:37
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
-msgid "Use this form to manage collections in your database."
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:141
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Use this form to manage collections in your database."
 msgstr ""
 
@@ -374,7 +367,7 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Scientific Name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:60
+#: lib/data_aggregator_web/live/collection_live/show.ex:93
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Back"
@@ -501,54 +494,6 @@ msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "Material Entity ID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:53
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.ConfirmMappingComponent"
-msgid "Cancel"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:45
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.ConfirmMappingComponent"
-msgid "Confirm Mapping and Import Records"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:84
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.ConfirmMappingComponent"
-msgid "Confirm the mapping of your file to our catalog and start importing the records"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:43
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.ConfirmMappingComponent"
-msgid "Confirming your Mapping..."
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/do_mapping_component.ex:60
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.DoMappingComponent"
-msgid "Apply Mapping"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/do_mapping_component.ex:58
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.DoMappingComponent"
-msgid "Applying your Mapping..."
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/do_mapping_component.ex:68
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.DoMappingComponent"
-msgid "Cancel"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/do_mapping_component.ex:99
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.DoMappingComponent"
-msgid "Map the columns of your file to our data fields"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/import_form_component.ex:102
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
@@ -561,42 +506,31 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Uploading..."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:28
-#, elixir-autogen, elixir-format
-msgid "of your attributes are mapped"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/confirm_mapping_component.ex:34
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.ConfirmMappingComponent"
-msgid "records will be imported"
-msgstr ""
-
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:181
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:203
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "HexDocs"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:211
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:233
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts"
 msgid "Storybook"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:216
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:217
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "up to %{max_file_size}"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:38
+#: lib/data_aggregator_web/live/import_live/index.html.heex:42
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:40
+#: lib/data_aggregator_web/live/import_live/index.html.heex:44
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Delete"
@@ -608,7 +542,7 @@ msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "ID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:21
+#: lib/data_aggregator_web/live/import_live/index.html.heex:25
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Inserted At"
@@ -621,7 +555,7 @@ msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Listing Imports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:31
+#: lib/data_aggregator_web/live/import_live/index.html.heex:35
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Show"
@@ -633,13 +567,13 @@ msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Show Import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:25
+#: lib/data_aggregator_web/live/import_live/index.html.heex:29
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Updated At"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/mapping.ex:92
+#: lib/data_aggregator_web/live/import_live/mapping.ex:113
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Mapping"
 msgid "Back"
@@ -651,45 +585,38 @@ msgctxt "DataAggregatorWeb.ImportLive.Mapping"
 msgid "Configure Mapping for Import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/show.ex:76
+#: lib/data_aggregator_web/live/import_live/show.ex:84
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Back"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/show.ex:37
+#: lib/data_aggregator_web/live/import_live/show.ex:52
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Map Columns"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/show.ex:25
+#: lib/data_aggregator_web/live/import_live/show.ex:26
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Show Import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:63
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:84
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "Back"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:45
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:49
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
-msgid "Confirm Mapping and import Records"
-msgstr ""
-
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:25
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:28
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "Confirm the applied mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/mapping.ex:49
-#: lib/data_aggregator_web/live/import_live/mapping.ex:53
+#: lib/data_aggregator_web/live/import_live/mapping.ex:63
+#: lib/data_aggregator_web/live/import_live/mapping.ex:67
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Mapping"
 msgid "Apply Mapping"
@@ -705,4 +632,177 @@ msgstr ""
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Records"
 msgid "Imported Records"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:49
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "My Collection"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:50
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Owner"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:53
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Total items to digitize"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:141
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
+msgid "Select a file containing your Records"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:26
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Records Count"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:62
+#: lib/data_aggregator_web/live/collection_live/show.ex:66
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Back to Collections"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:83
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Digitization Progress"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:87
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Expert Reviews"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:88
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Last Contribution"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:77
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Name"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:78
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Owner"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:81
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Records Published"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:79
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Type"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:80
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Uploaded Records in Collection"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:77
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
+msgid "Affected Collection"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:53
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:57
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
+msgid "Back to Mapping"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:78
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
+msgid "Collection Owner"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:62
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:66
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
+msgid "Confirm and import Records"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:79
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
+msgid "Estimated Import Time"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:73
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
+msgid "Mapped Columns"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:75
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
+msgid "New Records"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:76
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
+msgid "Recurring Records"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:80
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
+msgid "Suggested Expert"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:74
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
+msgid "Total Records to Import"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/index.html.heex:21
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Index"
+msgid "Collection"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/mapping.ex:54
+#: lib/data_aggregator_web/live/import_live/mapping.ex:58
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Mapping"
+msgid "Back to Import"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/show.ex:44
+#: lib/data_aggregator_web/live/import_live/show.ex:48
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Show"
+msgid "Back to Collection"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/sidebar_nav.html.heex:98
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts"
+msgid "Imports"
 msgstr ""

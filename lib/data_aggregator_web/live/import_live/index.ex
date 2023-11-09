@@ -28,7 +28,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
   defp list_imports(socket) do
     %{current_sort: current_sort} = socket.assigns
 
-    results = Import.read!(%{sort: current_sort})
+    results = Import.read!(%{sort: current_sort}, load: :collection)
 
     stream_results(socket, results)
   end

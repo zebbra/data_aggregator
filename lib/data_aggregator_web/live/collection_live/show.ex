@@ -1,6 +1,8 @@
 defmodule DataAggregatorWeb.CollectionLive.Show do
   use DataAggregatorWeb, :live_view
 
+  import DataAggregatorWeb.Headless.StatCard
+
   alias DataAggregator.Platform.Collection
 
   @impl true
@@ -10,7 +12,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    collection = Collection.get_by_id!(id)
+    collection = DataAggregator.Platform.load!(Collection.get_by_id!(id), [:records_count])
 
     socket =
       socket
@@ -42,6 +44,11 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
   end
 
   @impl true
+  def handle_event("backto:collections", _, socket) do
+    {:noreply, socket |> push_navigate(to: ~p"/collections")}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
     <main>
@@ -49,6 +56,15 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
         <%= @collection.name %>
 
         <:actions>
+          <.button
+            variant="nav"
+            class="rounded-md"
+            aria-label={~t"Back to Collections"m}
+            phx-click="backto:collections"
+          >
+            <.icon name="hero-arrow-left" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
+            <%= ~t"Back to Collections"m %>
+          </.button>
           <.styled_link patch={~p"/collections/#{@collection}/import"} id="collection-modal__button">
             <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
             <span class="sm:inline-block hidden"><%= ~t"Import Records"m %></span>
@@ -56,13 +72,30 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
         </:actions>
       </.header>
 
+      <div class="justify-items-center grid">
+        <dl class="xl:grid-cols-4 sm:grid-cols-2 grid grid-cols-1 gap-5 mt-5">
+          <.stat_card label={~t"Name"m} stat={@collection.name} />
+          <.stat_card label={~t"Owner"m} stat={@collection.owner} />
+          <.stat_card label={~t"Type"m} stat="OTHERS" />
+          <.stat_card label={~t"Uploaded Records in Collection"m} stat={@collection.records_count} />
+          <.stat_card label={~t"Records Published"m} stat="1203" />
+          <.stat_card
+            label={~t"Digitization Progress"m}
+            stat={@collection.items_to_digitize / 100 * @collection.records_count}
+            stat_suffix="%"
+          />
+          <.stat_card label={~t"Expert Reviews"m} stat="23" />
+          <.stat_card label={~t"Last Contribution"m} stat="22.10.2023" />
+        </dl>
+      </div>
+
       <.back navigate={~p"/collections"}>
         <%= ~t"Back"m %>
       </.back>
 
       <.modal
         :if={@live_action == :import}
-        id="collection-modal"
+        id="import-modal"
         on_cancel={JS.patch(~p"/collections/#{@collection}")}
       >
         <.live_component

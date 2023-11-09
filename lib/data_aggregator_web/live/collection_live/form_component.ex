@@ -46,7 +46,13 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:name]} label={~t"Name"m} placeholder={~t"Name"m} />
+        <.input field={@form[:name]} label={~t"Name"m} placeholder={~t"My Collection"m} />
+        <.input field={@form[:owner]} label={~t"Owner"m} placeholder="Brigit Hansson" />
+        <.input
+          field={@form[:items_to_digitize]}
+          label={~t"Total items to digitize"m}
+          placeholder="42042"
+        />
 
         <:actions>
           <.button

@@ -13,6 +13,9 @@ defmodule DataAggregator.Platform.Collection do
   attributes do
     uuid_attribute :id, prefix: "col"
 
+    attribute :items_to_digitize, :integer, allow_nil?: false, default: 0
+    attribute :owner, :string, allow_nil?: false
+
     attribute :name, :string do
       allow_nil? false
     end
@@ -34,6 +37,10 @@ defmodule DataAggregator.Platform.Collection do
 
     has_many :imports, DataAggregator.Platform.Import
 
+    has_many :records, DataAggregator.Data.Record do
+      api DataAggregator.Data
+    end
+
     many_to_many :import_attachments, Attachment do
       api DataAggregator.Files
       through DataAggregator.Platform.Import
@@ -41,6 +48,10 @@ defmodule DataAggregator.Platform.Collection do
       destination_attribute_on_join_resource :attachment_id
       join_relationship :imports
     end
+  end
+
+  aggregates do
+    count :records_count, :records
   end
 
   actions do

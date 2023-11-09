@@ -18,6 +18,10 @@
       <%= import.id %>
     </:col>
 
+    <:col :let={{_id, import}} label={~t"Collection"m} field="collection.name" sort>
+      <%= import.collection.name %>
+    </:col>
+
     <:col :let={{_id, import}} label={~t"Inserted At"m} field="inserted_at" sort>
       <%= format_datetime(import.inserted_at) %>
     </:col>
