@@ -581,7 +581,7 @@ defmodule DataAggregatorWeb.CoreComponents do
         </.dialog_title>
         <h1
           :if={!@dialog_header_id}
-          class="dark:text-white text-base font-semibold leading-9 text-gray-800"
+          class="dark:text-white text-base font-semibold leading-9 text-gray-800 outline-none"
         >
           <%= render_slot(@inner_block) %>
         </h1>
