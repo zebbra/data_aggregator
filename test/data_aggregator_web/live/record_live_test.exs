@@ -1,4 +1,6 @@
 defmodule DataAggregatorWeb.RecordLiveTest do
+  @moduledoc false
+
   use DataAggregatorWeb.ConnCase
 
   import Phoenix.LiveViewTest

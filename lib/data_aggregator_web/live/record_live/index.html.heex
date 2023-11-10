@@ -1,4 +1,9 @@
-<main class={@current_selected && "xl:pr-96"}>
+<.page
+  active_link={:records}
+  environment={@environment}
+  sidebar_nav={@sidebar_nav}
+  class={@current_selected && "xl:pr-96"}
+>
   <.header class="top-16 sticky">
     <%= ~t"Listing Records"m %>
     <:actions>
@@ -20,7 +25,11 @@
     sort={@current_sort}
   >
     <:col :let={{_id, record}} label={~t"ID"m} field="id" sort>
-      <.styled_link navigate={~p"/records/#{record}?#{@current_path_params}"} variant="table">
+      <.styled_link
+        navigate={~p"/records/#{record}?#{@current_path_params}"}
+        variant="table"
+        class="py-1.5"
+      >
         <%= record.id %>
       </.styled_link>
     </:col>
@@ -57,27 +66,30 @@
   </.table>
 
   <.pagination page_meta={@page_meta} />
-</main>
-
-<.preview
-  :if={@current_selected}
-  record={@current_selected}
-  current_path_params={@current_path_params}
-  live_action={@live_action}
-/>
-
-<.modal
-  :if={@live_action in [:new, :edit]}
-  id="record-modal"
-  on_cancel={JS.patch(~p"/records?#{@current_path_params}")}
->
-  <.live_component
-    module={DataAggregatorWeb.RecordLive.FormComponent}
-    id={@record.id || :new}
-    icon="hero-plus-circle-mini"
-    title={@page_title}
-    action={@live_action}
-    record={@record}
-    patch={~p"/records?#{@current_path_params}"}
-  />
-</.modal>
+  <:portal>
+    <.preview
+      :if={@current_selected}
+      record={@current_selected}
+      current_path_params={@current_path_params}
+      live_action={@live_action}
+      viewport_width={@viewport_width}
+    />
+  </:portal>
+  <:portal>
+    <.modal
+      :if={@live_action in [:new, :edit]}
+      id="record-modal"
+      on_cancel={JS.patch(~p"/records?#{@current_path_params}")}
+    >
+      <.live_component
+        module={DataAggregatorWeb.RecordLive.FormComponent}
+        id={@record.id || :new}
+        icon="hero-plus-circle-mini"
+        title={@page_title}
+        action={@live_action}
+        record={@record}
+        patch={~p"/records?#{@current_path_params}"}
+      />
+    </.modal>
+  </:portal>
+</.page>

@@ -68,7 +68,7 @@ defmodule DataAggregatorWeb do
 
   def html do
     quote do
-      use Phoenix.Component, global_prefixes: ~w(x-)
+      use Phoenix.Component
 
       # Import convenience functions from controllers
       import Phoenix.Controller,
@@ -79,8 +79,23 @@ defmodule DataAggregatorWeb do
     end
   end
 
+  def page do
+    quote do
+      use Phoenix.Component
+
+      # Import convenience functions from controllers
+      import Phoenix.Controller,
+        only: [get_csrf_token: 0, view_module: 1, view_template: 1]
+
+      # Include general helpers for rendering HTML
+      unquote(page_helpers())
+    end
+  end
+
   defp html_helpers do
     quote do
+      use DataAggregatorWeb.ViewportHelpers
+
       # HTML escaping functionality
       import Phoenix.HTML
       # Core UI components and translation
@@ -88,11 +103,27 @@ defmodule DataAggregatorWeb do
       import DataAggregatorWeb.HeadlessComponents
       import DataAggregatorWeb.Headless.Dialog, only: [dialog_title: 1, dialog_description: 1]
       import DataAggregatorWeb.Gettext
+      import DataAggregatorWeb.Page
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
 
       import DataAggregatorWeb.Helpers
+
+      # Routes generation with the ~p sigil
+      unquote(verified_routes())
+    end
+  end
+
+  defp page_helpers do
+    quote do
+      # Core UI components and translation
+      import DataAggregatorWeb.CoreComponents, only: [icon: 1]
+      import DataAggregatorWeb.HeadlessComponents
+      import DataAggregatorWeb.Gettext
+
+      # Shortcut for generating JS commands
+      alias Phoenix.LiveView.JS
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())

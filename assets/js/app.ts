@@ -38,7 +38,13 @@ const csrfToken = document
   .querySelector("meta[name='csrf-token']")
   ?.getAttribute("content");
 const liveSocket = new LiveSocket("/live", Socket, {
-  params: { _csrf_token: csrfToken },
+  params: {
+    _csrf_token: csrfToken,
+    viewport: {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    },
+  },
   hooks,
 });
 
@@ -46,6 +52,21 @@ const liveSocket = new LiveSocket("/live", Socket, {
 topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
 window.addEventListener("phx:page-loading-start", (_info) => topbar.show(300));
 window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide());
+
+// Accessible focus handling
+function routeUpdated() {
+  const target =
+    document.querySelector("main h1") || document.querySelector("main");
+  if (target) {
+    const originTabIndex = target.getAttribute("tabindex");
+    target.setAttribute("tabindex", "-1");
+    if (originTabIndex) {
+      (target as any).focus();
+      target.setAttribute("tabindex", originTabIndex);
+    }
+  }
+}
+window.addEventListener("phx:page-loading-stop", routeUpdated);
 
 // connect if there are any LiveViews on the page
 liveSocket.connect();

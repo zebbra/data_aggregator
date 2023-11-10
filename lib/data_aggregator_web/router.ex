@@ -42,7 +42,7 @@ defmodule DataAggregatorWeb.Router do
         DataAggregatorWeb.LiveLogger,
         DataAggregatorWeb.LiveState,
         DataAggregatorWeb.LiveLocale,
-        DataAggregatorWeb.LiveNavigator
+        DataAggregatorWeb.LiveViewport
       ]
 
       live_session :default, on_mount: user_hooks do

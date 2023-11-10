@@ -1,4 +1,6 @@
 defmodule DataAggregator.Files.AttachmentTest do
+  @moduledoc false
+
   use DataAggregatorWeb.ConnCase
 
   alias DataAggregator.Files.Attachment

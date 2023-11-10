@@ -24,11 +24,15 @@ export function provide<T, K = InjectionKey<T> | string>(
   providers.set(key as string, value);
 }
 
-export function inject(instance: string, key: InjectionKey<any> | string) {
+export function inject(
+  instance: string,
+  key: InjectionKey<any> | string,
+  defaultValue?: any
+) {
   // TS doesn't allow symbol as index type
   if (globalProvides.has(instance) && globalProvides.get(instance)!.has(key)) {
     return globalProvides.get(instance)!.get(key);
   }
 
-  return null;
+  return defaultValue === undefined ? null : defaultValue;
 }
