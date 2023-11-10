@@ -1,4 +1,6 @@
 defmodule DataAggregator.Platform.ImportFileTest do
+  @moduledoc false
+
   use DataAggregator.DataCase
   alias DataAggregator.Platform.Collection
   alias DataAggregator.Platform.ImportFile

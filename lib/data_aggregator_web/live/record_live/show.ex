@@ -36,11 +36,7 @@ defmodule DataAggregatorWeb.RecordLive.Show do
   @impl true
   def render(assigns) do
     ~H"""
-    <DataAggregatorWeb.Layouts.page
-      active_link={:records}
-      environment={@environment}
-      sidebar_nav={@sidebar_nav}
-    >
+    <.page active_link={:records} environment={@environment} sidebar_nav={@sidebar_nav}>
       <.header class="top-16 sticky">
         <%= @record.tax_scientific_name %>
 
@@ -76,7 +72,7 @@ defmodule DataAggregatorWeb.RecordLive.Show do
           />
         </.modal>
       </:portal>
-    </DataAggregatorWeb.Layouts.page>
+    </.page>
     """
   end
 end

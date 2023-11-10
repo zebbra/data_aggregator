@@ -41,11 +41,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
   @impl true
   def render(assigns) do
     ~H"""
-    <DataAggregatorWeb.Layouts.page
-      active_link={:collections}
-      environment={@environment}
-      sidebar_nav={@sidebar_nav}
-    >
+    <.page active_link={:collections} environment={@environment} sidebar_nav={@sidebar_nav}>
       <.header class="top-16 sticky">
         <%= @collection.name %>
         <:actions>
@@ -77,7 +73,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
           />
         </.modal>
       </:portal>
-    </DataAggregatorWeb.Layouts.page>
+    </.page>
     """
   end
 end

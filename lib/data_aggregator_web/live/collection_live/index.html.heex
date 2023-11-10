@@ -1,8 +1,4 @@
-<DataAggregatorWeb.Layouts.page
-  active_link={:collections}
-  environment={@environment}
-  sidebar_nav={@sidebar_nav}
->
+<.page active_link={:collections} environment={@environment} sidebar_nav={@sidebar_nav}>
   <.header class="top-16 sticky">
     <%= ~t"Listing Collections"m %>
     <:actions>
@@ -69,4 +65,4 @@
       />
     </.modal>
   </:portal>
-</DataAggregatorWeb.Layouts.page>
+</.page>

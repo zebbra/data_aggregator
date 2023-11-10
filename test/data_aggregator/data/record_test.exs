@@ -1,4 +1,6 @@
 defmodule DataAggregator.RecordsTest do
+  @moduledoc false
+
   use DataAggregator.DataCase
 
   describe "records" do

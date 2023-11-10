@@ -225,7 +225,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 py-2 px-3 text-sm font-semibold disabled:opacity-75 disabled:pointer-events-none select-none",
+        "phx-submit-loading:opacity-75 text-sm font-semibold disabled:opacity-75 disabled:pointer-events-none select-none",
         button_class(@variant),
         @class
       ]}
@@ -259,7 +259,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     ~H"""
     <.link
       class={[
-        "phx-submit-loading:opacity-75 py-2 px-3 text-sm font-semibold select-none inline-flex",
+        "phx-submit-loading:opacity-75 text-sm font-semibold select-none inline-flex",
         button_class(@variant),
         @rest[:disabled] && "opacity-75 pointer-events-none",
         @class
@@ -275,18 +275,18 @@ defmodule DataAggregatorWeb.CoreComponents do
     case variant do
       "primary" ->
         [
-          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-500 rounded-md shadow-sm",
+          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-500 rounded-md shadow-sm py-2 px-3",
           "dark:bg-indigo-500 dark:hover:bg-indigo-400 bg-indigo-600 hover:bg-indigo-500 text-white active:text-white/80 rounded-md shadow-sm"
         ]
 
       "secondary" ->
-        "hover:bg-gray-50 ring-1 ring-inset ring-gray-300 text-gray-900 bg-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:ring-0 dark:text-white dark:bg-gray-900 rounded-md shadow-sm"
+        "hover:bg-gray-50 ring-1 ring-inset ring-gray-300 text-gray-900 bg-white dark:hover:bg-gray-900 dark:hover:text-gray-300 dark:ring-0 dark:text-white dark:bg-gray-900 rounded-md shadow-sm py-2 px-3"
 
       "accent" ->
-        "bg-red-600 dark:bg-red-500 hover:bg-red-500 dark:hover:bg-red-400 text-white active:text-white/80 rounded-md shadow-sm"
+        "bg-red-600 dark:bg-red-500 hover:bg-red-500 dark:hover:bg-red-400 text-white active:text-white/80 rounded-md shadow-sm py-2 px-3"
 
       "nav" ->
-        "relative inline-flex items-center bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-400/10 focus:z-10 dark:text-white dark:bg-white/10 dark:ring-0 dark:hover:bg-white/20"
+        "relative inline-flex items-center bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-400/10 focus:z-10 dark:text-white dark:bg-white/10 dark:ring-0 dark:hover:bg-white/20 py-2 px-3"
 
       "table" ->
         "hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 font-semibold leading-6 text-indigo-600"
@@ -609,7 +609,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     <.dynamic_tag
       name={@as}
       class={[
-        "flex flex-col h-full bg-gray-100/30 dark:bg-black/10 shadow-xl border-l border-gray-200 dark:border-white/10 divide-y divide-gray-200 dark:divide-white/5",
+        "flex flex-col h-full bg-gray-100/30 dark:bg-black/10 shadow-xl border-l border-b border-gray-200 dark:border-white/10 divide-y divide-gray-200 dark:divide-white/5",
         @class
       ]}
     >
@@ -820,7 +820,7 @@ defmodule DataAggregatorWeb.CoreComponents do
 
     ~H"""
     <div
-      class="border-y dark:border-white/10 bg-gray-100/30 dark:bg-black/10 sm:px-6 lg:px-8 flex items-center justify-between px-4 py-3 border-gray-200"
+      class="border-y dark:border-white/10 bg-gray-100/30 dark:bg-black/10 sm:px-6 lg:px-8 flex items-center justify-between px-4 py-4 border-gray-200"
       role="navigation"
     >
       <div class="sm:hidden flex justify-between flex-1">

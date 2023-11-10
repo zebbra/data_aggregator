@@ -4,13 +4,9 @@ defmodule DataAggregatorWeb.DashboardLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <DataAggregatorWeb.Layouts.page
-      active_link={:dashboard}
-      environment={@environment}
-      sidebar_nav={@sidebar_nav}
-    >
+    <.page active_link={:dashboard} environment={@environment} sidebar_nav={@sidebar_nav}>
       <.header>Dashboard</.header>
-    </DataAggregatorWeb.Layouts.page>
+    </.page>
     """
   end
 

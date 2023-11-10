@@ -1,5 +1,6 @@
 defmodule Storybook.Examples.NestedDialog do
   use PhoenixStorybook.Story, :example
+  use DataAggregatorWeb.ViewportHelpers
 
   alias Phoenix.LiveView.JS
 
@@ -73,11 +74,9 @@ defmodule Storybook.Examples.NestedDialog do
       </div>
       <:portal>
         <.slideover
+          show={@drawer and display_size_lg(@viewport_width)}
           id="drawer"
           class="relative z-50 hidden"
-          responsive="lg:flex"
-          show={@drawer}
-          static
           close_button={false}
           on_cancel={JS.push("toggle_drawer")}
         >
@@ -107,12 +106,10 @@ defmodule Storybook.Examples.NestedDialog do
           </div>
 
           <.slideover
-            :if={@level_1}
+            show={@level_1 and display_size_lg(@viewport_width)}
             id="level_1"
             parent_id="drawer"
             backdrop={false}
-            responsive="lg:flex"
-            show={false}
             close_button={false}
             on_cancel={JS.push("toggle_level_1")}
           >
@@ -138,11 +135,9 @@ defmodule Storybook.Examples.NestedDialog do
               </.sidebar>
             </div>
             <.modal
+              show={@modal and display_size_lg(@viewport_width)}
               id="modal"
               parent_id="level_1"
-              show={@modal}
-              responsive="lg:flex"
-              static
               backdrop={false}
               on_cancel={JS.push("toggle_modal")}
             >
@@ -160,13 +155,7 @@ defmodule Storybook.Examples.NestedDialog do
         </.slideover>
       </:portal>
       <:portal>
-        <.modal
-          id="other-modal"
-          show={@other_modal}
-          responsive="lg:flex"
-          static
-          on_cancel={JS.push("toggle_other_modal")}
-        >
+        <.modal id="other-modal" show={@other_modal} on_cancel={JS.push("toggle_other_modal")}>
           <.header dialog_header_id="other-modal">
             Modal
             <:subtitle>
@@ -187,7 +176,11 @@ defmodule Storybook.Examples.NestedDialog do
 
   def portal_wrapper(assigns) do
     ~H"""
-    <div class="dark:bg-gray-900 no-scrollbar isolate h-screen overflow-y-auto">
+    <div
+      id="portal-wrapper"
+      phx-hook="ViewportResize"
+      class="dark:bg-gray-900 no-scrollbar isolate h-screen overflow-y-auto"
+    >
       <main>
         <%= render_slot(@inner_block) %>
       </main>
