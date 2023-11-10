@@ -61,8 +61,6 @@ classDiagram
         create(Collection collection, String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, ...)
         import(Import import, Map params, String mts_material_sample_type, String mte_material_entity_id, ...)
         bulk_import(Import import, Term rows)
-        create_from_params(Collection collection, Map params, String mts_material_sample_type, String mte_material_entity_id, ...)
-        update_from_params(Map params, String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, ...)
     }
     class RecordImage {
         UUID id

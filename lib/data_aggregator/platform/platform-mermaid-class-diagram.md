@@ -20,18 +20,22 @@ classDiagram
     }
     class Collection {
         UUID id
+        Integer items_to_digitize
+        String owner
         String name
         String code
         String description
         Map mapping
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Integer records_count
         Institution institution
         Import[] imports
+        Record[] records
         Attachment[] import_attachments
         destroy()
-        update(UUID id, String name, String code, String description, ...)
-        create(UUID id, String name, String code, String description, ...)
+        update(UUID id, Integer items_to_digitize, String owner, String name, ...)
+        create(UUID id, Integer items_to_digitize, String owner, String name, ...)
         read(String sort)
     }
     class Import {
@@ -57,9 +61,10 @@ classDiagram
         update()
         destroy()
         read()
-        create()
+        create(Import import, Record record)
     }
 
+    Record -- Collection
     Record -- Import
     Record -- Record
     Attachment -- Collection

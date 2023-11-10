@@ -13,7 +13,12 @@ defmodule DataAggregator.Data.Record.Actions.BulkImport do
     result =
       rows
       |> Stream.map(&%{import: import, params: &1})
-      |> DataAggregator.Data.bulk_create(Record, :import, return_errors?: true)
+      |> DataAggregator.Data.bulk_create(Record, :import,
+        return_records?: true,
+        return_stream?: true,
+        # max_concurrency: 4, does not work in tests
+        batch_size: 1000
+      )
 
     {:ok, result}
   end

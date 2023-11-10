@@ -24,7 +24,22 @@ defmodule DataAggregator.Platform.Import.Record do
   end
 
   actions do
-    defaults [:create, :read, :destroy, :update]
+    defaults [:read, :destroy, :update]
+
+    create :create do
+      primary? true
+      argument :import, Import, allow_nil?: true
+      argument :record, Record, allow_nil?: true
+      change manage_relationship(:import, :import, type: :append)
+      change manage_relationship(:record, :record, type: :append)
+      upsert? true
+      upsert_fields [:import_id, :record_id]
+    end
+  end
+
+  code_interface do
+    define_for DataAggregator.Platform
+    define :create, args: [:import, :record]
   end
 
   postgres do

@@ -22,7 +22,7 @@ defmodule DataAggregator.Platform.Import.Changes.ImportRecords do
         stream
         |> apply_mapping(import)
         |> bulk_import(import)
-        |> handle_import(changeset)
+        |> handle_bulk_import(changeset)
 
       {:error, reason} ->
         Changeset.add_error(changeset, reason)
@@ -37,13 +37,21 @@ defmodule DataAggregator.Platform.Import.Changes.ImportRecords do
     Record.bulk_import(import, stream)
   end
 
-  defp handle_import({:ok, %Ash.BulkResult{}}, changeset) do
-    changeset
+  defp handle_bulk_import({:ok, stream}, changeset) do
+    stream
+    |> Enum.reduce(changeset, fn
+      {:ok, _record}, changeset ->
+        changeset
+
+      {:error, error}, changeset ->
+        Logger.error("Error importing record: #{inspect(error)}")
+        changeset |> Changeset.add_error(error)
+    end)
   end
 
-  defp handle_import({:error, error}, changeset) do
-    Logger.error("Error importing record: #{inspect(error)}")
-    changeset
+  defp handle_bulk_import({:error, error}, changeset) do
+    Logger.error("Unable to bulk import: #{inspect(error)}")
+    changeset |> Changeset.add_error(error)
   end
 
   defp stream_records(import) do

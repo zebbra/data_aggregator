@@ -51,7 +51,7 @@ Table records {
   extra_data jsonb
   inserted_at timestamp
   updated_at timestamp
-  collection_id uuid
+  collection_id uuid [pk]
 }
 
 Table record_images {
@@ -72,6 +72,8 @@ Table file_attachments {
 
 Table collections {
   id uuid [pk]
+  items_to_digitize integer
+  owner varchar
   name varchar
   code varchar
   description varchar

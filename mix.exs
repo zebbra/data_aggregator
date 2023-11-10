@@ -330,9 +330,9 @@ defmodule DataAggregator.MixProject do
         "format --check-formatted",
         "credo --strict",
         "deps.audit",
-        "dialyzer",
         "gettext.lint",
-        "repo.lint"
+        "repo.lint",
+        "dialyzer"
       ],
 
       # Generate documentation
