@@ -14,7 +14,7 @@ import { useInert } from "./utils/use-inert";
 import { useDocumentOverflowLockedEffect } from "./utils/document-overflow/use-document-overflow";
 import { StackMessage, useStackProvider } from "./utils/stack-context";
 import { match } from "./utils/match";
-import { dom } from "./utils/dom";
+import { useRootContainers } from "./utils/use-root-containers";
 
 enum DialogStates {
   Open,
@@ -172,9 +172,13 @@ const Dialog = {
     });
     useInert(resolveRootOfMainTreeNode, inertOthersEnabled);
 
-    const resolveRootContainers = computed(() => [
-      panelRef.value ?? internalDialogRef.value,
-    ]);
+    const portals = ref<HTMLElement[]>([]);
+    const { resolveContainers: resolveRootContainers } = useRootContainers({
+      portals,
+      defaultContainers: [
+        computed(() => api.panelRef.value ?? internalDialogRef.value),
+      ],
+    });
 
     // Handle `Scroll lock` effect
     const scrollLockEnabled = computed(() => {

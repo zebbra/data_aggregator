@@ -7,13 +7,11 @@ const path = require("path");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  important: ".data-aggregator",
   content: [
     "./js/**/*.js",
     "./js/**/*.ts",
     "../lib/*_web.ex",
     "../lib/*_web/**/*.*ex",
-    "../storybook/**/*.*exs",
   ],
   darkMode: ["class", ".theme-dark"],
   theme: {
