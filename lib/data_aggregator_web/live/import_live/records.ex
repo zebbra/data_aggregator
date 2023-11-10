@@ -29,7 +29,7 @@ defmodule DataAggregatorWeb.ImportLive.Records do
   @impl true
   def render(assigns) do
     ~H"""
-    <main>
+    <.page active_link={:imports} environment={@environment} sidebar_nav={@sidebar_nav}>
       <.header class="top-16 sticky">
         The following records were imported to your collection '<%= @import.collection.name %>'
         <:actions></:actions>
@@ -46,7 +46,7 @@ defmodule DataAggregatorWeb.ImportLive.Records do
       <.back navigate={~p"/imports"}>
         <%= ~t"Back"m %>
       </.back>
-    </main>
+    </.page>
     """
   end
 end

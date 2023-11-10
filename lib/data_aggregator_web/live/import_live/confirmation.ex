@@ -53,7 +53,7 @@ defmodule DataAggregatorWeb.ImportLive.Confirmation do
   @impl true
   def render(assigns) do
     ~H"""
-    <main>
+    <.page active_link={:imports} environment={@environment} sidebar_nav={@sidebar_nav}>
       <.header class="top-16 sticky">
         Confirm your Import for the Collection '<%= @import.collection.name %>'
         <:actions>
@@ -94,7 +94,7 @@ defmodule DataAggregatorWeb.ImportLive.Confirmation do
       <.back navigate={~p"/imports/#{@import}/mappings"}>
         <%= ~t"Back"m %>
       </.back>
-    </main>
+    </.page>
     """
   end
 end

@@ -1,4 +1,6 @@
 defmodule DataAggregatorWeb.ErrorJSONTest do
+  @moduledoc false
+
   use DataAggregatorWeb.ConnCase, async: true
 
   test "renders 404" do

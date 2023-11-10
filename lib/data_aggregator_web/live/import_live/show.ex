@@ -34,7 +34,7 @@ defmodule DataAggregatorWeb.ImportLive.Show do
   @impl true
   def render(assigns) do
     ~H"""
-    <main>
+    <.page active_link={:imports} environment={@environment} sidebar_nav={@sidebar_nav}>
       <.header class="top-16 sticky">
         Schema of your file for the collection '<%= @import.collection.name %>'
         <:actions>
@@ -83,7 +83,7 @@ defmodule DataAggregatorWeb.ImportLive.Show do
       <.back navigate={~p"/collections/#{@collection}"}>
         <%= ~t"Back"m %>
       </.back>
-    </main>
+    </.page>
     """
   end
 end

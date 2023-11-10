@@ -51,7 +51,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
   @impl true
   def render(assigns) do
     ~H"""
-    <main>
+    <.page active_link={:collections} environment={@environment} sidebar_nav={@sidebar_nav}>
       <.header class="top-16 sticky">
         <%= @collection.name %>
 
@@ -65,7 +65,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
             <.icon name="hero-arrow-left" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
             <%= ~t"Back to Collections"m %>
           </.button>
-          <.styled_link patch={~p"/collections/#{@collection}/import"} id="collection-modal__button">
+          <.styled_link patch={~p"/collections/#{@collection}/import"} id="import-modal__button">
             <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
             <span class="sm:inline-block hidden"><%= ~t"Import Records"m %></span>
           </.styled_link>
@@ -97,22 +97,24 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
         <%= ~t"Back"m %>
       </.back>
 
-      <.modal
-        :if={@live_action == :import}
-        id="import-modal"
-        on_cancel={JS.patch(~p"/collections/#{@collection}")}
-      >
-        <.live_component
-          module={DataAggregatorWeb.CollectionLive.ImportFormComponent}
-          id={"import_form-#{@collection.id}"}
-          icon="hero-plus-circle-mini"
-          title={@page_title}
-          action={:new}
-          collection={@collection}
-          patch={~p"/collections/#{@collection}"}
-        />
-      </.modal>
-    </main>
+      <:portal>
+        <.modal
+          :if={@live_action == :import}
+          id="import-modal"
+          on_cancel={JS.patch(~p"/collections/#{@collection}")}
+        >
+          <.live_component
+            module={DataAggregatorWeb.CollectionLive.ImportFormComponent}
+            id={"import_form-#{@collection.id}"}
+            icon="hero-plus-circle-mini"
+            title={@page_title}
+            action={:new}
+            collection={@collection}
+            patch={~p"/collections/#{@collection}"}
+          />
+        </.modal>
+      </:portal>
+    </.page>
     """
   end
 end

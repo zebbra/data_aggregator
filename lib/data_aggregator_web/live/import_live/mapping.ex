@@ -44,7 +44,7 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
   @impl true
   def render(assigns) do
     ~H"""
-    <main>
+    <.page active_link={:imports} environment={@environment} sidebar_nav={@sidebar_nav}>
       <.header class="top-16 sticky">
         Define the mapping for the import of your collection '<%= @import.collection.name %>'
         <:actions>
@@ -108,7 +108,7 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
       <.back navigate={~p"/imports/#{@import}"}>
         <%= ~t"Back"m %>
       </.back>
-    </main>
+    </.page>
     """
   end
 

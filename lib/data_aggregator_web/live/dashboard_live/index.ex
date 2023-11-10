@@ -6,7 +6,7 @@ defmodule DataAggregatorWeb.DashboardLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <main>
+    <.page active_link={:dashboard} environment={@environment} sidebar_nav={@sidebar_nav}>
       <.header>Dashboard</.header>
       <div class="justify-items-center grid">
         <dl class="xl:grid-cols-4 sm:grid-cols-2 grid grid-cols-1 gap-5 mt-5">
@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.DashboardLive.Index do
           <.stat_card label={~t"Contributors"m} stat="87" />
         </dl>
       </div>
-    </main>
+    </.page>
     """
   end
 

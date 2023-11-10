@@ -1,9 +1,13 @@
 defmodule DataAggregator.Files.DummyTest do
+  @moduledoc false
+
   use DataAggregator.DataCase, async: true
 
   alias DataAggregator.Files.Attachment
 
   defmodule User do
+    @moduledoc false
+
     use Ash.Resource,
       data_layer: Ash.DataLayer.Ets,
       extensions: [AshUUID]
@@ -33,6 +37,8 @@ defmodule DataAggregator.Files.DummyTest do
   end
 
   defmodule Registry do
+    @moduledoc false
+
     use Ash.Registry
 
     entries do
@@ -41,6 +47,8 @@ defmodule DataAggregator.Files.DummyTest do
   end
 
   defmodule Api do
+    @moduledoc false
+
     use Ash.Api
 
     resources do

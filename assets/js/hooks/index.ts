@@ -13,6 +13,7 @@ import {
   Switch,
   SwitchGroup,
 } from "./headless";
+import ViewportResize from "./viewport_resize.hook";
 
 export default {
   ColorMode,
@@ -28,4 +29,5 @@ export default {
   MenuItem,
   Switch,
   SwitchGroup,
+  ViewportResize,
 };

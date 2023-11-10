@@ -7,7 +7,7 @@ export function getOwnerDocument<T extends Element | Ref<Element | null>>(
 ) {
   if (env.isServer) return null;
   if (element instanceof Node) return element.ownerDocument;
-  if (element?.hasOwnProperty("value")) {
+  if (element?.value instanceof Node) {
     const domElement = dom(element);
     if (domElement) return domElement.ownerDocument;
   }

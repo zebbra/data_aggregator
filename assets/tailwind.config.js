@@ -7,7 +7,6 @@ const path = require("path");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  important: ".data-aggregator",
   content: [
     "./js/**/*.js",
     "./js/**/*.ts",
