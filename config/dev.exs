@@ -90,7 +90,7 @@ config :phoenix_live_view, debug_heex_annotations: true
 
 # Configure git hooks. They can be installed manuallu by running `mix git_hooks.install`
 config :git_hooks,
-  auto_install: true,
+  auto_install: false,
   verbose: true,
   hooks: [
     pre_commit: [
