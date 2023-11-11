@@ -80,7 +80,7 @@ defmodule DataAggregatorWeb.ImportLive.Confirmation do
       </.header>
 
       <div class="justify-items-center grid">
-        <dl class="xl:grid-cols-4 sm:grid-cols-2 grid grid-cols-1 gap-5 mt-5">
+        <dl class="xl:grid-cols-4 grid grid-cols-2 gap-5 mt-5">
           <.stat_card label={~t"Mapped Columns"m} stat="20 / 30" />
           <.stat_card label={~t"Total Records to Import"m} stat="5444" />
           <.stat_card label={~t"New Records"m} stat="5322" />

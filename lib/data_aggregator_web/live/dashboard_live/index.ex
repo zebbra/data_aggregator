@@ -9,7 +9,7 @@ defmodule DataAggregatorWeb.DashboardLive.Index do
     <.page active_link={:dashboard} environment={@environment} sidebar_nav={@sidebar_nav}>
       <.header>Dashboard</.header>
       <div class="justify-items-center grid">
-        <dl class="xl:grid-cols-4 sm:grid-cols-2 grid grid-cols-1 gap-5 mt-5">
+        <dl class="xl:grid-cols-4 sm:grid-cols-2 grid grid-cols-2 gap-5 mt-5">
           <.stat_card label={~t"Amount of Collections"m} stat="7" />
           <.stat_card label={~t"Total Records"m} stat="10433" />
           <.stat_card label={~t"Digitization Progress"m} stat="74%" />

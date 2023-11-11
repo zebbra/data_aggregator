@@ -73,7 +73,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
       </.header>
 
       <div class="justify-items-center grid">
-        <dl class="xl:grid-cols-4 sm:grid-cols-2 grid grid-cols-1 gap-5 mt-5">
+        <dl class="xl:grid-cols-4 grid grid-cols-2 gap-5 mt-5">
           <.stat_card label={~t"Name"m} stat={@collection.name} />
           <.stat_card label={~t"Owner"m} stat={@collection.owner} />
           <.stat_card label={~t"Type"m} stat="OTHERS" />

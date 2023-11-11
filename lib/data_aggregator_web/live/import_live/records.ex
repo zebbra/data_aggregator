@@ -1,6 +1,8 @@
 defmodule DataAggregatorWeb.ImportLive.Records do
   use DataAggregatorWeb, :live_view
 
+  import DataAggregatorWeb.Headless.StatCard
+
   alias DataAggregator.Records.Import
 
   @impl true
@@ -36,12 +38,10 @@ defmodule DataAggregatorWeb.ImportLive.Records do
       </.header>
 
       <div class="justify-items-center grid">
-        <ul
-          role="list"
-          class="dark:text-gray-400 px-7 2xl:w-4/12 xl:w-8/12 lg:w-8/12 md:w-8/12 sm:9/12 divide-slate-600 divide-dashed w-full mt-2 text-sm text-gray-500 divide-y"
-        >
-          --- list here the imported records ---
-        </ul>
+        <dl class="grid grid-cols-2 gap-5 mt-5">
+          <.stat_card label={~t"New Imported"m} stat="764" />
+          <.stat_card label={~t"Updated"m} stat="196" />
+        </dl>
       </div>
       <.back navigate={~p"/imports"}>
         <%= ~t"Back"m %>
