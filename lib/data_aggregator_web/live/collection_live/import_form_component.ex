@@ -2,8 +2,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form
-  alias DataAggregator.Platform.Collection
-  alias DataAggregator.Platform.ImportFile
+  alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Import
 
   @impl true
   def update(assigns, socket) do
@@ -12,7 +12,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
      |> assign(assigns)
      |> assign(:uploaded_files, [])
      |> allow_upload(:file,
-       max_entries: 5,
+       max_entries: 1,
        accept: ~w(.csv .jpg),
        max_file_size: 80_000_000,
        auto_upload: true
@@ -27,7 +27,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
       <.form_header icon={@icon} title={@title} />
       <.simple_form
         for={@form}
-        id="collection-form"
+        id="import-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
@@ -48,7 +48,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
                   for={@uploads.file.ref}
                   class="dark:bg-gray-900 dark:text-white focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 dark:focus-within:ring-offset-gray-900 hover:text-indigo-500 relative font-semibold text-indigo-600 bg-white rounded-md cursor-pointer"
                 >
-                  <span><%= ~t"Upload a file"m %></span>
+                  <span><%= ~t"Choose a file"m %></span>
                   <.live_file_input upload={@uploads.file} class="sr-only" />
                 </label>
                 <p class="pl-1"><%= ~t"or drag and drop"m %></p>
@@ -97,14 +97,14 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
           <.button
             type="submit"
             class="sm:ml-3 sm:w-auto inline-flex justify-center w-full"
-            phx-disable-with={~t"Saving..."m}
+            phx-disable-with={~t"Uploading..."m}
           >
-            <%= ~t"Save Collection"m %>
+            <%= ~t"Upload file"m %>
           </.button>
           <.button
             variant="secondary"
             class="sm:mt-0 sm:w-auto inline-flex justify-center w-full mt-3"
-            phx-click={JS.exec("data-cancel", to: "#collection-modal")}
+            phx-click={JS.exec("data-cancel", to: "#import-modal")}
             phx-disable-with
           >
             <%= ~t"Cancel"m %>
@@ -129,16 +129,16 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
       </div>
       <div class={["mt-3 text-center sm:mt-0 sm:text-left", @icon && "sm:ml-4"]}>
         <.dialog_title
-          id="collection-modal__title"
+          id="import-modal__title"
           class="dark:text-white text-base font-semibold leading-6 text-gray-900"
         >
           <%= @title %>
         </.dialog_title>
         <.dialog_description
-          id="collection-modal__description"
+          id="import-modal__description"
           class="dark:text-gray-400 mt-2 text-sm text-gray-500"
         >
-          <%= ~t"Use this form to manage collections in your database."m %>
+          <%= ~t"Select a file containing your Records"m %>
         </.dialog_description>
       </div>
     </div>
@@ -151,7 +151,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
 
   defp build_form(%{action: :new}) do
     Collection
-    |> Form.for_create(:create, api: DataAggregator.Platform, as: "collection")
+    |> Form.for_create(:create, api: DataAggregator.Records, as: "collection")
     |> to_form()
   end
 
@@ -169,17 +169,36 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   def handle_event("save", _params, socket) do
     collection = socket.assigns.collection
 
-    import_files =
+    imports =
       consume_uploaded_entries(socket, :file, fn %{path: path}, _entry ->
-        handle_upload(collection, path)
+        case handle_upload(collection, path) do
+          {:ok, import} ->
+            {:ok, import}
+
+          {:error, _} ->
+            {:error, "Could not create import file"}
+        end
       end)
 
-    # notify_parent({:saved, socket.assigns.collection})
+    import = Enum.at(imports, 0)
 
-    {:noreply,
-     socket
-     |> put_flash(:info, "Imported #{length(import_files)} files")
-     |> push_patch(to: socket.assigns.patch)}
+    notify_parent({:imported, import})
+
+    {
+      :noreply,
+      socket
+      |> handle_flash(import)
+      |> push_patch(to: socket.assigns.patch)
+    }
+  end
+
+  defp handle_flash(socket, import) when is_nil(import) == false do
+    # |> put_flash(:info, "File successfully uploaded")
+    socket
+  end
+
+  defp handle_flash(socket, import) when is_nil(import) do
+    socket |> put_flash(:error, "File upload failed")
   end
 
   def pretty_accept_list(term) when is_binary(term) do
@@ -201,12 +220,12 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   def pretty_max_file_size(_), do: nil
 
   defp handle_upload(collection, path) do
-    ImportFile.create_from_path(collection, path)
+    Import.create_from_path(collection, path)
   end
 
   defp error_to_string(:too_large), do: "Too large"
   defp error_to_string(:too_many_files), do: "You have selected too many files"
   defp error_to_string(:not_accepted), do: "You have selected an unacceptable file type"
 
-  # defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
+  defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 end

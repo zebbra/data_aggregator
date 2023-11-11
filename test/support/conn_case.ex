@@ -23,19 +23,12 @@ defmodule DataAggregatorWeb.ConnCase do
       @endpoint DataAggregatorWeb.Endpoint
 
       use DataAggregatorWeb, :verified_routes
+      use DataAggregator.TestHelpers
 
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
       import DataAggregatorWeb.ConnCase
-
-      import Ash.Test,
-        only: [
-          assert_has_error: 2,
-          assert_has_error: 3,
-          refute_has_error: 2,
-          refute_has_error: 3
-        ]
     end
   end
 

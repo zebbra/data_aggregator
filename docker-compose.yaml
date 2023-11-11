@@ -37,6 +37,18 @@ services:
   #   networks:
   #     - aggregator
 
+  # metabase:
+  #   image: metabase/metabase:latest
+  #   container_name: metabase-sta-attendance
+  #   environment:
+  #     - MB_DB_FILE=/metabase-data/metabase.db
+  #   ports:
+  #     - 3030:3000
+  #   networks:
+  #     - aggregator
+  #   volumes:
+  #     - ./data/metabase:/metabase-data
+
   minio:
     image: docker.io/bitnami/minio:2023
     restart: always

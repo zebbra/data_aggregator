@@ -1,7 +1,7 @@
 defmodule DataAggregatorWeb.RecordLive.Show do
   use DataAggregatorWeb, :live_view
 
-  alias DataAggregator.Data.Record
+  alias DataAggregator.Records.Record
 
   import DataAggregatorWeb.QueryBuilder
 

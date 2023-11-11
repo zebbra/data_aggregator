@@ -7,6 +7,7 @@ defmodule DataAggregator.MixProject do
       version: "0.1.0",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
+      elixirc_options: [ignore_module_conflict: true],
       start_permanent: Mix.env() == :prod,
       consolidate_protocols: Mix.env() == :prod,
       aliases: aliases(),
@@ -15,7 +16,8 @@ defmodule DataAggregator.MixProject do
       # Dialyzer
       dialyzer: [
         plt_local_path: "priv/plts/project.plt",
-        plt_core_path: "priv/plts/core.plt"
+        plt_core_path: "priv/plts/core.plt",
+        plt_add_apps: [:mix]
       ],
 
       # Docs
@@ -102,16 +104,15 @@ defmodule DataAggregator.MixProject do
     [
       DataAggregator,
       DataAggregatorWeb,
-
-      # Live Views
-      DataAggregatorWeb.CollectionLive,
-      DataAggregatorWeb.RecordLive,
-      DataAggregatorWeb.DashboardLive
+      DataAggregatorApi
     ]
   end
 
   defp groups_for_modules() do
     [
+      "Darwin Core": [
+        ~r/^DataAggregator\.DarwinCore/
+      ],
       "File Management API": [
         ~r/^DataAggregator\.Files/
       ],
@@ -121,25 +122,25 @@ defmodule DataAggregator.MixProject do
       "Platform API": [
         ~r/^DataAggregator\.Platform/
       ],
-      "Data API": [
-        ~r/^DataAggregator\.Data/
+      "Records API": [
+        ~r/^DataAggregator\.Records/
       ],
       Preparations: [
         ~r/^DataAggregator\.Preparations/
+      ],
+      API: [
+        ~r/^DataAggregatorApi\./
       ],
       Web: [
         DataAggregatorWeb,
         DataAggregatorWeb.Router,
         DataAggregatorWeb.Endpoint,
         DataAggregatorWeb.Helpers,
-        DataAggregatorWeb.Schema,
         DataAggregatorWeb.ErrorHTML,
         DataAggregatorWeb.ErrorJSON
       ],
       "Live Views": [
-        ~r/^DataAggregatorWeb\.DashboardLive/,
-        ~r/^DataAggregatorWeb\.CollectionLive/,
-        ~r/^DataAggregatorWeb\.RecordLive/
+        ~r/^DataAggregatorWeb\.\w+Live/
       ],
       Components: [
         DataAggregatorWeb.CoreComponents,
@@ -184,7 +185,6 @@ defmodule DataAggregator.MixProject do
       {:ash, "~> 2.13"},
       {:ash_postgres, "~> 1.3"},
       {:ash_phoenix, "~> 1.2"},
-      # {:ash_admin, "~> 0.9.0"},
       {:ash_uuid, "~> 0.4"},
       {:ash_graphql, "~> 0.26.6"},
 
@@ -198,8 +198,8 @@ defmodule DataAggregator.MixProject do
       {:open_api_spex, "~> 3.18"},
       {:ash_json_api, "~> 0.33.1"},
       {:redoc_ui_plug, "~> 0.2.1"},
-      # {:typed_struct, "~> 0.3.0"},
-      # {:typed_ecto_schema, "~> 0.4.1", runtime: false},
+      {:ecto_dev_logger, "~> 0.9"},
+      {:ecto_erd, "~> 0.5", only: :dev},
 
       # assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
@@ -227,21 +227,21 @@ defmodule DataAggregator.MixProject do
       {:telemetry_metrics, "~> 0.6"},
       {:phoenix_live_dashboard, "~> 0.8.1"},
 
-      # linting
+      # linting & testing
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
+      {:assertions, "~> 0.19", only: :test},
 
       # file handling and S3
       {:waffle, "~> 1.1"},
       {:ex_aws, "~> 2.5.0"},
       {:ex_aws_s3, "~> 2.0"},
       {:sweet_xml, "~> 0.6"},
+      {:csv, "~> 3.2"},
 
       # http
-      # official http_stream has outdated deps (mint, castore)
-      {:http_stream, "~> 1.0.0", github: "qdentity/http_stream", branch: "master"},
       {:finch, "~> 0.16"},
       {:castore, "~> 1.0"},
       {:mint, "~> 1.3"},
@@ -290,6 +290,10 @@ defmodule DataAggregator.MixProject do
       "repo.lint": [
         "ash_postgres.generate_migrations --check"
       ],
+      "repo.erd": [
+        "ecto.gen.erd --output-path=docs/erd.dbml"
+        # "ecto.gen.erd --output-path=docs/erd.mmd"
+      ],
 
       # Run tests
       test: [
@@ -327,15 +331,16 @@ defmodule DataAggregator.MixProject do
         "format --check-formatted",
         "credo --strict",
         "deps.audit",
-        "dialyzer",
         "gettext.lint",
-        "repo.lint"
+        "repo.lint",
+        "dialyzer"
       ],
 
       # Generate documentation
       docs: [
         "ash.generate_livebook --filename=docs/api.md",
         "ash.generate_resource_diagrams --format md",
+        "repo.erd",
         "docs"
       ]
     ]

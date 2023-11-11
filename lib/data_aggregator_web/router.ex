@@ -61,16 +61,17 @@ defmodule DataAggregatorWeb.Router do
         live "/collections/:id/show/edit", CollectionLive.Show, :edit
         live "/collections/:id/import", CollectionLive.Show, :import
 
-        # live "/collections/:id/mappings", MappingLive.Index, :index
-        # live "/collections/:id/mappings/import", MappingLive.Index, :import
+        live "/imports", ImportLive.Index, :index
+        live "/imports/:id", ImportLive.Show, :show
+        live "/imports/:id/mappings", ImportLive.Mapping, :mappings
+        live "/imports/:id/confirmation", ImportLive.Confirmation, :confirmation
+        live "/imports/:id/records", ImportLive.Records, :show_records
       end
     end
   end
 
-  # GraphQL API
-
-  pipeline :graphql do
-    plug AshGraphql.Plug
+  scope "/api" do
+    forward "/", DataAggregatorApi.Router
   end
 
   # Phoenix Storybook
@@ -81,40 +82,6 @@ defmodule DataAggregatorWeb.Router do
       pipe_through [:locale, :browser]
       live_storybook("/storybook", backend_module: DataAggregatorWeb.Storybook)
     end
-  end
-
-  # GraphSQL
-  scope "/" do
-    pipe_through :graphql
-
-    forward "/gql", Absinthe.Plug, schema: DataAggregator.Schema
-
-    forward "/playground",
-            Absinthe.Plug.GraphiQL,
-            schema: DataAggregator.Schema,
-            interface: :playground
-  end
-
-  # JSON API
-
-  pipeline :api do
-    plug :accepts, ["json"]
-  end
-
-  scope "/api/json" do
-    pipe_through :api
-
-    forward "/swagger",
-            OpenApiSpex.Plug.SwaggerUI,
-            path: "/api/json/open_api",
-            title: "Data Aggregator JSON-API - Swagger UI",
-            default_model_expand_depth: 4
-
-    forward "/redoc",
-            Redoc.Plug.RedocUI,
-            spec_url: "/api/json/open_api"
-
-    forward "/", DataAggregatorWeb.JsonApiRouter
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

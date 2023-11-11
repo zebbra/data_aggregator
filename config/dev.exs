@@ -9,7 +9,8 @@ config :data_aggregator, DataAggregator.Repo,
   database: "data_aggregator_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+  pool_size: 10,
+  log: false
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -74,6 +75,9 @@ config :data_aggregator, serve_files_from: "priv/storage/dev/files"
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 
+# Disable debug logs
+# config :logger, level: :info
+
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
@@ -90,7 +94,7 @@ config :phoenix_live_view, debug_heex_annotations: true
 # Configure git hooks. They can be installed manuallu by running `mix git_hooks.install`
 config :git_hooks,
   auto_install: true,
-  verbose: false,
+  verbose: true,
   hooks: [
     pre_commit: [
       tasks: [

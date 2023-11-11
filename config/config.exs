@@ -29,7 +29,7 @@ config :mime, :extensions, %{
 config :data_aggregator,
   ash_apis: [
     DataAggregator.Platform,
-    DataAggregator.Data,
+    DataAggregator.Records,
     DataAggregator.Taxonomy,
     DataAggregator.Files
   ]

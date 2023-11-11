@@ -18,37 +18,7 @@ classDiagram
         read()
         create(UUID id, String name, String code, String address, ...)
     }
-    class Collection {
-        UUID id
-        String name
-        String code
-        String description
-        Map mapping
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-        Institution institution
-        ImportFile[] import_files
-        Attachment[] import_file_attachments
-        destroy()
-        update(UUID id, String name, String code, String description, ...)
-        create(UUID id, String name, String code, String description, ...)
-        read(String sort)
-    }
-    class ImportFile {
-        UUID id
-        Integer amount_of_rows
-        String[] columns
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-        Collection collection
-        Attachment attachment
-        read()
-        create_from_path(String path, Collection collection, UUID id, Integer amount_of_rows, ...)
-    }
 
-    Attachment -- Collection
-    Attachment -- ImportFile
-    Collection -- ImportFile
-    Collection -- Institution
+
 
 ```

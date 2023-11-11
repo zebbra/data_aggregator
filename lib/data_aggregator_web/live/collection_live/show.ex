@@ -1,7 +1,9 @@
 defmodule DataAggregatorWeb.CollectionLive.Show do
   use DataAggregatorWeb, :live_view
 
-  alias DataAggregator.Platform.Collection
+  import DataAggregatorWeb.Headless.StatCard
+
+  alias DataAggregator.Records.Collection
 
   @impl true
   def mount(_params, _session, socket) do
@@ -10,7 +12,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    collection = Collection.get_by_id!(id)
+    collection = Collection.get_by_id!(id, load: [:records_count, :digitizing_progress])
 
     socket =
       socket
@@ -27,30 +29,69 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
 
   defp apply_action(socket, :import, _params) do
     socket
-    |> assign(:page_title, ~t"Import File"m)
+    |> assign(:page_title, ~t"Import Records"m)
   end
 
   @impl true
   def handle_info(
-        {DataAggregatorWeb.CollectionLive.FormComponent, {:saved, collection}},
+        {DataAggregatorWeb.CollectionLive.ImportFormComponent, {:imported, import}},
         socket
       ) do
-    {:noreply, assign(socket, :collection, collection)}
+    {:noreply,
+     socket
+     |> assign(:import, import)
+     |> push_navigate(to: ~p"/imports/#{import}")}
+  end
+
+  @impl true
+  def handle_event("backto:collections", _, socket) do
+    {:noreply, socket |> push_navigate(to: ~p"/collections")}
   end
 
   @impl true
   def render(assigns) do
     ~H"""
     <.page active_link={:collections} environment={@environment} sidebar_nav={@sidebar_nav}>
-      <.header class="top-16 sticky">
+      <.header class="sticky top-16">
         <%= @collection.name %>
+
         <:actions>
-          <.styled_link patch={~p"/collections/#{@collection}/import"} id="collection-modal__button">
+          <.button
+            variant="nav"
+            class="rounded-md"
+            aria-label={~t"Back to Collections"m}
+            phx-click="backto:collections"
+          >
+            <.icon name="hero-arrow-left" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
+            <%= ~t"Back to Collections"m %>
+          </.button>
+          <.styled_link patch={~p"/collections/#{@collection}/import"} id="import-modal__button">
             <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-            <span class="sm:inline-block hidden"><%= ~t"Import File"m %></span>
+            <span class="sm:inline-block hidden"><%= ~t"Import Records"m %></span>
           </.styled_link>
         </:actions>
       </.header>
+
+      <div class="grid justify-items-center">
+        <dl class="xl:grid-cols-4 grid grid-cols-2 gap-5 mt-5">
+          <.stat_card label={~t"Name"m} stat={@collection.name} />
+          <.stat_card label={~t"Owner"m} stat={@collection.owner} />
+          <.stat_card label={~t"Type"m} stat="OTHERS" />
+          <.stat_card label={~t"Records in Collection"m} stat={@collection.records_count} />
+          <.stat_card label={~t"Records Published"m} stat="0" />
+          <.stat_card
+            label={~t"Digitization Progress"m}
+            stat={
+              @collection.digitizing_progress
+              |> Decimal.from_float()
+              |> Decimal.round(1)
+            }
+            stat_suffix="%"
+          />
+          <.stat_card label={~t"Expert Reviews"m} stat="0" />
+          <.stat_card label={~t"Last Contribution"m} stat="13.11.2023" />
+        </dl>
+      </div>
 
       <.back navigate={~p"/collections"}>
         <%= ~t"Back"m %>
@@ -59,12 +100,12 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
       <:portal>
         <.modal
           :if={@live_action == :import}
-          id="collection-modal"
+          id="import-modal"
           on_cancel={JS.patch(~p"/collections/#{@collection}")}
         >
           <.live_component
             module={DataAggregatorWeb.CollectionLive.ImportFormComponent}
-            id={@collection.id}
+            id={"import_form-#{@collection.id}"}
             icon="hero-plus-circle-mini"
             title={@page_title}
             action={:new}

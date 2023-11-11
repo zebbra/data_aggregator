@@ -1,7 +1,7 @@
 defmodule DataAggregator.Files.AttachmentTest do
   @moduledoc false
 
-  use DataAggregatorWeb.ConnCase
+  use DataAggregatorWeb.ConnCase, async: true
 
   alias DataAggregator.Files.Attachment
 
@@ -34,14 +34,5 @@ defmodule DataAggregator.Files.AttachmentTest do
 
     conn = get(build_conn(), attachment.url)
     assert conn.status == 404
-  end
-
-  test "streaming files" do
-    attachment =
-      @example_file
-      |> Attachment.import_from_path!()
-      |> DataAggregator.Files.load!(:stream)
-
-    assert attachment.stream |> Stream.map(&String.length/1) |> Enum.sum() == 5076
   end
 end

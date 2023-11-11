@@ -50,8 +50,10 @@ npm-debug.log
 
 # minio
 /minio/data/*
+/data
 
-# other generated code
+# Ignore language server artefacts
+.elixir_ls
 .elixir-tools
 
 # ignore local .env

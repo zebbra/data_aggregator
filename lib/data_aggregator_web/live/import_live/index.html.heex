@@ -1,0 +1,48 @@
+<.page active_link={:imports} environment={@environment} sidebar_nav={@sidebar_nav}>
+  <.header class="sticky top-16">
+    <%= ~t"Listing Imports"m %>
+    <:actions></:actions>
+  </.header>
+
+  <.table
+    id="imports"
+    rows={@streams.results}
+    row_click={
+      fn {_id, import} ->
+        JS.navigate(~p"/imports/#{import}?#{@current_path_params}")
+      end
+    }
+    sort={@current_sort}
+  >
+    <:col :let={{_id, import}} label={~t"Collection"m} field="collection.name" sort>
+      <%= import.collection.name %>
+    </:col>
+
+    <:col :let={{_id, import}} label={~t"Records"m} field="records_count" sort>
+      <%= import.records_count %>
+    </:col>
+
+    <:col :let={{_id, import}} label={~t"Inserted At"m} field="inserted_at" sort>
+      <%= format_datetime(import.inserted_at) %>
+    </:col>
+
+    <:col :let={{_id, import}} label={~t"Updated At"m} field="updated_at" sort>
+      <%= format_datetime(import.updated_at) %>
+    </:col>
+
+    <:action :let={{_id, import}}>
+      <div class="sr-only">
+        <.link patch={~p"/imports/#{import}"}><%= ~t"Show"m %></.link>
+      </div>
+    </:action>
+
+    <:action :let={{id, import}}>
+      <.link
+        phx-click={JS.push("delete", value: %{id: import.id}) |> hide("##{id}")}
+        data-confirm={~t"Are you sure?"m}
+      >
+        <%= ~t"Delete"m %>
+      </.link>
+    </:action>
+  </.table>
+</.page>

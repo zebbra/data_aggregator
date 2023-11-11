@@ -1,7 +1,7 @@
 defmodule DataAggregator.Files.DummyTest do
   @moduledoc false
 
-  use DataAggregator.DataCase
+  use DataAggregator.DataCase, async: true
 
   alias DataAggregator.Files.Attachment
 

@@ -69,11 +69,33 @@
               aria-current={if(@active_link == :records, do: "page", else: nil)}
             >
               <.icon
-                name="hero-arrow-down-tray"
+                name="hero-bug-ant"
                 class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
               />
               <span class="truncate">
                 <%= ~t"Records"m %>
+              </span>
+            </.link>
+          </li>
+          <li>
+            <.link
+              navigate={~p"/imports"}
+              class={[
+                "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold",
+                if(@active_link == :imports,
+                  do: "bg-gray-50 dark:bg-gray-800 text-indigo-600 dark:text-white",
+                  else:
+                    "text-gray-700 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+                )
+              ]}
+              aria-current={if(@active_link == :imports, do: "page", else: nil)}
+            >
+              <.icon
+                name="hero-arrow-down-tray"
+                class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white group-aria-[current=page]:text-indigo-600 group-aria-[current=page]:dark:text-white"
+              />
+              <span class="truncate">
+                <%= ~t"Imports"m %>
               </span>
             </.link>
           </li>
@@ -184,21 +206,6 @@
           </li>
           <li>
             <.link
-              href="/dev/mailbox"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 gap-x-3 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
-            >
-              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
-                M
-              </span>
-              <span class="truncate">
-                <%= ~t"Mailbox"m %>
-              </span>
-            </.link>
-          </li>
-          <li>
-            <.link
               href="/storybook"
               target="_blank"
               rel="noopener noreferrer"
@@ -212,6 +219,36 @@
               </span>
             </.link>
           </li>
+          <li>
+            <.link
+              href="/api/json/redoc"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 gap-x-3 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
+            >
+              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
+                R
+              </span>
+              <span class="truncate">
+                <%= ~t"Rdoc JSON API"m %>
+              </span>
+            </.link>
+          </li>
+          <%!-- <li>
+            <.link
+              href="/dev/mailbox"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 gap-x-3 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
+            >
+              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
+                M
+              </span>
+              <span class="truncate">
+                <%= ~t"Mailbox"m %>
+              </span>
+            </.link>
+          </li> --%>
         </ul>
       </li>
     </ul>

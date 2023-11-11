@@ -2,7 +2,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form
-  alias DataAggregator.Platform.Collection
+  alias DataAggregator.Records.Collection
 
   @impl true
   def update(assigns, socket) do
@@ -46,7 +46,13 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:name]} label={~t"Name"m} placeholder={~t"Name"m} />
+        <.input field={@form[:name]} label={~t"Name"m} placeholder={~t"My Collection"m} />
+        <.input field={@form[:owner]} label={~t"Owner"m} placeholder="Brigit Hansson" />
+        <.input
+          field={@form[:items_to_digitize]}
+          label={~t"Total items to digitize"m}
+          placeholder="42042"
+        />
 
         <:actions>
           <.button
@@ -76,13 +82,13 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
 
   defp build_form(%{action: :new}) do
     Collection
-    |> Form.for_create(:create, api: DataAggregator.Platform, as: "collection")
+    |> Form.for_create(:create, api: DataAggregator.Records, as: "collection")
     |> to_form()
   end
 
   defp build_form(%{action: :edit, collection: collection}) do
     collection
-    |> Form.for_update(:update, api: DataAggregator.Platform, as: "collection")
+    |> Form.for_update(:update, api: DataAggregator.Records, as: "collection")
     |> to_form()
   end
 
@@ -95,8 +101,8 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   def handle_event("save", %{"collection" => params}, socket) do
     socket =
       case Form.submit(socket.assigns.form, params: params) do
-        {:ok, course} ->
-          notify_parent({:saved, course})
+        {:ok, collection} ->
+          notify_parent({:saved, collection})
 
           message =
             case socket.assigns.action do

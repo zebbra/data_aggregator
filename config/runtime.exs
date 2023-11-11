@@ -12,6 +12,10 @@ if config_env() in [:dev, :test] do
   Envy.load(["config/.env.#{config_env()}"])
 end
 
+if config_env() in [:dev] do
+  Envy.load([".env"])
+end
+
 get_env! = fn
   var -> System.get_env(var) || raise("Required environment variable #{var} is missing")
 end

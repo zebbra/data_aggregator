@@ -1,7 +1,7 @@
 defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
   use DataAggregatorWeb, :html
 
-  alias DataAggregator.Data.Record
+  alias DataAggregator.Records.Record
 
   attr :record, Record, required: true
   attr :current_path_params, :string, required: true
