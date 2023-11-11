@@ -11,8 +11,10 @@ defmodule Mix.Tasks.DataAggregator.Records.Import do
   ```shell
   mix data_aggregator.records.import --file test/support/fixtures/files/dataset-1k.csv
   ```
-
   """
+
+  @shortdoc "Import records from a CSV file"
+
   use Mix.Task
 
   @switches [file: :string]

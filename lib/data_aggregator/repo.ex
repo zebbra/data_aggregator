@@ -12,6 +12,12 @@ defmodule DataAggregator.Repo do
   ```
 
   to generate a migration.
+
+  ### ERD
+
+  ```mermaid
+  #{"docs/erd.mmd" |> File.read!()}
+  ```
   """
 
   use AshPostgres.Repo, otp_app: :data_aggregator

@@ -199,7 +199,6 @@ defmodule DataAggregator.MixProject do
       {:ash_json_api, "~> 0.33.1"},
       {:redoc_ui_plug, "~> 0.2.1"},
       {:ecto_dev_logger, "~> 0.9"},
-      {:ecto_erd, "~> 0.5", only: :dev},
 
       # assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
@@ -247,7 +246,8 @@ defmodule DataAggregator.MixProject do
       {:mint, "~> 1.3"},
 
       # docs
-      {:ex_doc, "~> 0.27", runtime: false}
+      {:ex_doc, "~> 0.27", runtime: false},
+      {:ecto_erd, "~> 0.5", only: :dev}
     ]
   end
 
@@ -289,10 +289,6 @@ defmodule DataAggregator.MixProject do
       ],
       "repo.lint": [
         "ash_postgres.generate_migrations --check"
-      ],
-      "repo.erd": [
-        "ecto.gen.erd --output-path=docs/erd.dbml"
-        # "ecto.gen.erd --output-path=docs/erd.mmd"
       ],
 
       # Run tests

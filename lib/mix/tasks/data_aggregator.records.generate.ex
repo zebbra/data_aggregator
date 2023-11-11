@@ -18,8 +18,10 @@ defmodule Mix.Tasks.DataAggregator.Records.Generate do
   mix data_aggregator.records.generate --count 100000 > test/support/fixtures/files/dataset-100k.csv
   mix data_aggregator.records.generate --count 1000000 > test/support/fixtures/files/dataset-1m.csv
   ```
-
   """
+
+  @shortdoc "Generates records and dumps them to stdout as CSV"
+
   use Mix.Task
 
   @switches [count: :integer]

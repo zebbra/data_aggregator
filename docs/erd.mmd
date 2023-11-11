@@ -1,0 +1,147 @@
+erDiagram
+  file_attachments {
+    uuid id PK
+    varchar filename
+    timestamp inserted_at
+    timestamp updated_at
+  }
+  institutions {
+    uuid id PK
+    varchar name
+    varchar code
+    varchar address
+    varchar zip_code
+    varchar city
+    varchar country
+    varchar mail
+    varchar tel
+    varchar contact_person
+    timestamp inserted_at
+    timestamp updated_at
+  }
+  collections {
+    uuid id PK
+    integer items_to_digitize
+    varchar owner
+    varchar name
+    varchar code
+    varchar description
+    jsonb mapping
+    timestamp inserted_at
+    timestamp updated_at
+    uuid institution_id
+  }
+  imports {
+    uuid id PK
+    array columns
+    timestamp inserted_at
+    timestamp updated_at
+    uuid collection_id
+    uuid attachment_id
+  }
+  import_records {
+    uuid import_id PK
+    uuid record_id PK
+  }
+  records {
+    varchar mts_material_sample_type
+    varchar mte_material_entity_id
+    varchar occ_occurrence_remarks
+    varchar occ_associated_occurrences
+    varchar occ_sex
+    varchar occ_recorded_by
+    varchar loc_georeference_remarks
+    float loc_decimal_latitude
+    float loc_decimal_longitude
+    varchar loc_state_province
+    varchar loc_verbatim_locality
+    varchar loc_locality
+    varchar loc_country
+    varchar loc_continent
+    varchar spp_life_stage
+    varchar tax_specific_epithet
+    varchar tax_infraspecific_epithet
+    varchar tax_scientific_name_authorship
+    varchar tax_scientific_name
+    varchar tax_genus
+    varchar tax_family
+    varchar tax_order
+    varchar rrp_relationship_of_resource_id
+    varchar rrp_relationship_of_resource
+    date ref_relationship_established_date
+    varchar ref_title
+    varchar ref_source
+    varchar ref_rights
+    date ref_date
+    varchar ref_creator
+    varchar ref_bibliographic_citation
+    varchar idf_type_status
+    varchar idf_identified_by
+    date idf_date_identified
+    integer eve_end_of_period_year
+    integer eve_end_of_period_month
+    integer eve_end_of_period_day
+    integer eve_year
+    integer eve_month
+    integer eve_day
+    date eve_event_date
+    date prs_date_of_birth
+    varchar prs_last_name
+    varchar prs_first_name
+    varchar prs_contact_point
+    uuid id PK
+    jsonb import_data
+    jsonb extra_data
+    timestamp inserted_at
+    timestamp updated_at
+    uuid collection_id
+  }
+  record_images {
+    uuid id PK
+    integer size
+    timestamp inserted_at
+    timestamp updated_at
+    uuid attachment_id
+    uuid record_id
+  }
+  attribute_resolving_strategies {
+    uuid id PK
+    boolean do_not_encode
+    timestamp inserted_at
+    timestamp updated_at
+    uuid collection_id
+    uuid dwc_attribute_id
+    uuid catalog_id
+  }
+  catalogs {
+    uuid id PK
+    varchar name
+    varchar description
+    varchar url
+    integer version
+    timestamp inserted_at
+    timestamp updated_at
+  }
+  dwc_attributes {
+    uuid id PK
+    varchar name
+    timestamp inserted_at
+    timestamp updated_at
+    uuid default_catalog_id
+  }
+  schema_migrations {
+    integer version
+    timestamp inserted_at
+  }
+  catalogs ||--|{ attribute_resolving_strategies : ""
+  catalogs ||--|{ dwc_attributes : ""
+  collections ||--|{ attribute_resolving_strategies : ""
+  collections ||--|{ imports : ""
+  collections ||--|{ records : ""
+  dwc_attributes ||--|{ attribute_resolving_strategies : ""
+  file_attachments ||--|{ imports : ""
+  file_attachments ||--|{ record_images : ""
+  imports ||--|{ import_records : ""
+  institutions ||--|{ collections : ""
+  records ||--|{ import_records : ""
+  records ||--|{ record_images : ""
