@@ -2,7 +2,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form
-  alias DataAggregator.Platform.Collection
+  alias DataAggregator.Records.Collection
 
   @impl true
   def update(assigns, socket) do
@@ -82,13 +82,13 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
 
   defp build_form(%{action: :new}) do
     Collection
-    |> Form.for_create(:create, api: DataAggregator.Platform, as: "collection")
+    |> Form.for_create(:create, api: DataAggregator.Records, as: "collection")
     |> to_form()
   end
 
   defp build_form(%{action: :edit, collection: collection}) do
     collection
-    |> Form.for_update(:update, api: DataAggregator.Platform, as: "collection")
+    |> Form.for_update(:update, api: DataAggregator.Records, as: "collection")
     |> to_form()
   end
 

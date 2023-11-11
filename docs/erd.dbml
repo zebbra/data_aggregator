@@ -1,5 +1,54 @@
 
 
+Table file_attachments {
+  id uuid [pk]
+  filename varchar
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table institutions {
+  id uuid [pk]
+  name varchar
+  code varchar
+  address varchar
+  zip_code varchar
+  city varchar
+  country varchar
+  mail varchar
+  tel varchar
+  contact_person varchar
+  inserted_at timestamp
+  updated_at timestamp
+}
+
+Table collections {
+  id uuid [pk]
+  items_to_digitize integer
+  owner varchar
+  name varchar
+  code varchar
+  description varchar
+  mapping jsonb
+  inserted_at timestamp
+  updated_at timestamp
+  institution_id uuid
+}
+
+Table imports {
+  id uuid [pk]
+  columns array
+  inserted_at timestamp
+  updated_at timestamp
+  collection_id uuid
+  attachment_id uuid
+}
+
+Table import_records {
+  import_id uuid [pk]
+  record_id uuid [pk]
+}
+
 Table records {
   mts_material_sample_type varchar
   mte_material_entity_id varchar
@@ -61,53 +110,6 @@ Table record_images {
   updated_at timestamp
   attachment_id uuid
   record_id uuid
-}
-
-Table file_attachments {
-  id uuid [pk]
-  filename varchar
-  inserted_at timestamp
-  updated_at timestamp
-}
-
-Table collections {
-  id uuid [pk]
-  name varchar
-  code varchar
-  description varchar
-  mapping jsonb
-  inserted_at timestamp
-  updated_at timestamp
-  institution_id uuid
-}
-
-Table imports {
-  id uuid [pk]
-  columns array
-  inserted_at timestamp
-  updated_at timestamp
-  collection_id uuid
-  attachment_id uuid
-}
-
-Table import_records {
-  import_id uuid [pk]
-  record_id uuid [pk]
-}
-
-Table institutions {
-  id uuid [pk]
-  name varchar
-  code varchar
-  address varchar
-  zip_code varchar
-  city varchar
-  country varchar
-  mail varchar
-  tel varchar
-  contact_person varchar
-  inserted_at timestamp
-  updated_at timestamp
 }
 
 Table attribute_resolving_strategies {

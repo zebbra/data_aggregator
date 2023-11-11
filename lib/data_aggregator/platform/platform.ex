@@ -16,4 +16,8 @@ defmodule DataAggregator.Platform do
   graphql do
     authorize? false
   end
+
+  json_api do
+    prefix "/api/json/platform"
+  end
 end

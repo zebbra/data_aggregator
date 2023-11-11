@@ -70,10 +70,8 @@ defmodule DataAggregatorWeb.Router do
     end
   end
 
-  # GraphQL API
-
-  pipeline :graphql do
-    plug AshGraphql.Plug
+  scope "/api" do
+    forward "/", DataAggregatorApi.Router
   end
 
   # Phoenix Storybook
@@ -84,40 +82,6 @@ defmodule DataAggregatorWeb.Router do
       pipe_through [:locale, :browser]
       live_storybook("/storybook", backend_module: DataAggregatorWeb.Storybook)
     end
-  end
-
-  # GraphSQL
-  scope "/" do
-    pipe_through :graphql
-
-    forward "/gql", Absinthe.Plug, schema: DataAggregator.GraphQL.Schema
-
-    forward "/playground",
-            Absinthe.Plug.GraphiQL,
-            schema: DataAggregator.GraphQL.Schema,
-            interface: :playground
-  end
-
-  # JSON API
-
-  pipeline :api do
-    plug :accepts, ["json"]
-  end
-
-  scope "/api/json" do
-    pipe_through :api
-
-    forward "/swagger",
-            OpenApiSpex.Plug.SwaggerUI,
-            path: "/api/json/open_api",
-            title: "Data Aggregator JSON-API - Swagger UI",
-            default_model_expand_depth: 4
-
-    forward "/redoc",
-            Redoc.Plug.RedocUI,
-            spec_url: "/api/json/open_api"
-
-    forward "/", DataAggregatorWeb.JsonApiRouter
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

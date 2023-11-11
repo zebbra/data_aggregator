@@ -24,55 +24,6 @@ classDiagram
         read()
         create(UUID id, String name, String code, String address, ...)
     }
-    class Collection {
-        UUID id
-        String name
-        String code
-        String description
-        Map mapping
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-        Institution institution
-        Import[] imports
-        Attachment[] import_attachments
-        destroy()
-        update(UUID id, String name, String code, String description, ...)
-        create(UUID id, String name, String code, String description, ...)
-        read(String sort)
-    }
-    class Import {
-        UUID id
-        Column[] columns
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-        Integer records_count
-        Collection collection
-        Attachment attachment
-        Record[] import_records
-        Record[] records
-        destroy()
-        read()
-        create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
-        create_from_path(String path, Collection collection)
-        update_mapping(Column[] columns)
-        import_records()
-    }
-    class Record {
-        Import import
-        Record record
-        update()
-        destroy()
-        read()
-        create()
-    }
-
-    Record -- Import
-    Record -- Record
-    Attachment -- Collection
-    Attachment -- Import
-    Collection -- Import
-    Collection -- Institution
-    Import -- Record
 ```
 
 ### ER Diagram
@@ -93,41 +44,11 @@ erDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
     }
-    Collection {
-        UUID id
-        String name
-        String code
-        String description
-        Map mapping
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-    }
-    Import {
-        UUID id
-        ArrayOfColumn columns
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-        Integer records_count
-    }
-    Record {
-
-    }
-
-    Record ||--|| Import : ""
-    Record ||--|| Record : ""
-    Attachment ||--|| Collection : ""
-    Attachment ||--|| Import : ""
-    Collection ||--|| Import : ""
-    Collection ||--|| Institution : ""
-    Import ||--|| Record : ""
 ```
 
 ### Resources
 
 - [Institution](#institution)
-- [Collection](#collection)
-- [Import](#import)
-- [Record](#record)
 
 ### Institution
 
@@ -159,6 +80,247 @@ erDiagram
 | **read** | _read_ | <ul></ul> |  |
 | **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>address</b> <i>String</i> attribute</li><li><b>zip_code</b> <i>String</i> attribute</li><li><b>city</b> <i>String</i> attribute</li><li><b>country</b> <i>String</i> attribute</li><li><b>mail</b> <i>String</i> attribute</li><li><b>tel</b> <i>String</i> attribute</li><li><b>contact_person</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 
+## API DataAggregator.Records
+
+### Class Diagram
+
+```mermaid
+classDiagram
+    class Collection {
+        UUID id
+        Integer items_to_digitize
+        String owner
+        String name
+        String code
+        String description
+        Map mapping
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        Integer records_count
+        Institution institution
+        Import[] imports
+        Record[] records
+        destroy()
+        update(UUID id, Integer items_to_digitize, String owner, String name, ...)
+        create(UUID id, Integer items_to_digitize, String owner, String name, ...)
+        read(String sort)
+    }
+    class Import {
+        UUID id
+        Column[] columns
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        Integer records_count
+        Collection collection
+        Attachment attachment
+        Record[] records
+        destroy()
+        read()
+        create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
+        create_from_path(String path, Collection collection)
+        update_mapping(Column[] columns)
+        import_records()
+    }
+    class Record {
+        Import import
+        Record record
+        update()
+        destroy()
+        read()
+        create(Import import, Record record)
+    }
+    class Record {
+        String mts_material_sample_type
+        String mte_material_entity_id
+        String occ_occurrence_remarks
+        String occ_associated_occurrences
+        String occ_sex
+        String occ_recorded_by
+        String loc_georeference_remarks
+        Float loc_decimal_latitude
+        Float loc_decimal_longitude
+        String loc_state_province
+        String loc_verbatim_locality
+        String loc_locality
+        String loc_country
+        String loc_continent
+        String spp_life_stage
+        String tax_specific_epithet
+        String tax_infraspecific_epithet
+        String tax_scientific_name_authorship
+        String tax_scientific_name
+        String tax_genus
+        String tax_family
+        String tax_order
+        String rrp_relationship_of_resource_id
+        String rrp_relationship_of_resource
+        Date ref_relationship_established_date
+        String ref_title
+        String ref_source
+        String ref_rights
+        Date ref_date
+        String ref_creator
+        String ref_bibliographic_citation
+        String idf_type_status
+        String idf_identified_by
+        Date idf_date_identified
+        Integer eve_end_of_period_year
+        Integer eve_end_of_period_month
+        Integer eve_end_of_period_day
+        Integer eve_year
+        Integer eve_month
+        Integer eve_day
+        Date eve_event_date
+        Date prs_date_of_birth
+        String prs_last_name
+        String prs_first_name
+        String prs_contact_point
+        UUID id
+        Map import_data
+        Map extra_data
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        Collection collection
+        Import[] imports
+        Image[] images
+        Attachment[] image_attachments
+        destroy()
+        update(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
+        read(String sort)
+        create(Collection collection, String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, ...)
+        import(Import import, Map params, String mts_material_sample_type, String mte_material_entity_id, ...)
+        bulk_import(Import import, Term rows)
+    }
+    class Image {
+        UUID id
+        Integer size
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        Attachment attachment
+        Record record
+        destroy()
+        update(UUID id, Integer size, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
+        read()
+        create(UUID id, Integer size, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
+    }
+
+    Attachment -- Import
+    Attachment -- Record
+    Attachment -- Image
+    Institution -- Collection
+    Collection -- Import
+    Collection -- Record
+    Import -- Record
+    Import -- Record
+    Record -- Record
+    Record -- Image
+```
+
+### ER Diagram
+
+```mermaid
+erDiagram
+    Collection {
+        UUID id
+        Integer items_to_digitize
+        String owner
+        String name
+        String code
+        String description
+        Map mapping
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        Integer records_count
+    }
+    Import {
+        UUID id
+        ArrayOfColumn columns
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        Integer records_count
+    }
+    Record {
+
+    }
+    Record {
+        String mts_material_sample_type
+        String mte_material_entity_id
+        String occ_occurrence_remarks
+        String occ_associated_occurrences
+        String occ_sex
+        String occ_recorded_by
+        String loc_georeference_remarks
+        Float loc_decimal_latitude
+        Float loc_decimal_longitude
+        String loc_state_province
+        String loc_verbatim_locality
+        String loc_locality
+        String loc_country
+        String loc_continent
+        String spp_life_stage
+        String tax_specific_epithet
+        String tax_infraspecific_epithet
+        String tax_scientific_name_authorship
+        String tax_scientific_name
+        String tax_genus
+        String tax_family
+        String tax_order
+        String rrp_relationship_of_resource_id
+        String rrp_relationship_of_resource
+        Date ref_relationship_established_date
+        String ref_title
+        String ref_source
+        String ref_rights
+        Date ref_date
+        String ref_creator
+        String ref_bibliographic_citation
+        String idf_type_status
+        String idf_identified_by
+        Date idf_date_identified
+        Integer eve_end_of_period_year
+        Integer eve_end_of_period_month
+        Integer eve_end_of_period_day
+        Integer eve_year
+        Integer eve_month
+        Integer eve_day
+        Date eve_event_date
+        Date prs_date_of_birth
+        String prs_last_name
+        String prs_first_name
+        String prs_contact_point
+        UUID id
+        Map import_data
+        Map extra_data
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+    }
+    Image {
+        UUID id
+        Integer size
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+    }
+
+    Attachment ||--|| Import : ""
+    Attachment ||--|| Record : ""
+    Attachment ||--|| Image : ""
+    Institution ||--|| Collection : ""
+    Collection ||--|| Import : ""
+    Collection ||--|| Record : ""
+    Import ||--|| Record : ""
+    Import ||--|| Record : ""
+    Record ||--|| Record : ""
+    Record ||--|| Image : ""
+```
+
+### Resources
+
+- [Collection](#collection)
+- [Import](#import)
+- [Record](#record)
+- [Record](#record)
+- [Image](#image)
+
 ### Collection
 
 
@@ -168,6 +330,8 @@ erDiagram
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | **id** | UUID |  |
+| **items_to_digitize** | Integer |  |
+| **owner** | String |  |
 | **name** | String |  |
 | **code** | String | an iternationally valid code to identify the collection |
 | **description** | String |  |
@@ -181,8 +345,8 @@ erDiagram
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
 | **destroy** | _destroy_ | <ul></ul> |  |
-| **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
-| **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 | **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
 
 ### Import
@@ -229,174 +393,7 @@ erDiagram
 | **update** | _update_ | <ul></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul></ul> |  |
-
-## API DataAggregator.Data
-
-### Class Diagram
-
-```mermaid
-classDiagram
-    class Record {
-        String mts_material_sample_type
-        String mte_material_entity_id
-        String occ_occurrence_remarks
-        String occ_associated_occurrences
-        String occ_sex
-        String occ_recorded_by
-        String loc_georeference_remarks
-        Float loc_decimal_latitude
-        Float loc_decimal_longitude
-        String loc_state_province
-        String loc_verbatim_locality
-        String loc_locality
-        String loc_country
-        String loc_continent
-        String spp_life_stage
-        String tax_specific_epithet
-        String tax_infraspecific_epithet
-        String tax_scientific_name_authorship
-        String tax_scientific_name
-        String tax_genus
-        String tax_family
-        String tax_order
-        String rrp_relationship_of_resource_id
-        String rrp_relationship_of_resource
-        Date ref_relationship_established_date
-        String ref_title
-        String ref_source
-        String ref_rights
-        Date ref_date
-        String ref_creator
-        String ref_bibliographic_citation
-        String idf_type_status
-        String idf_identified_by
-        Date idf_date_identified
-        Integer eve_end_of_period_year
-        Integer eve_end_of_period_month
-        Integer eve_end_of_period_day
-        Integer eve_year
-        Integer eve_month
-        Integer eve_day
-        Date eve_event_date
-        Date prs_date_of_birth
-        String prs_last_name
-        String prs_first_name
-        String prs_contact_point
-        UUID id
-        Map import_data
-        Map extra_data
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-        Collection collection
-        Import[] imports
-        RecordImage[] images
-        Attachment[] image_attachments
-        destroy()
-        update(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
-        read(String sort)
-        create(Collection collection, String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, ...)
-        import(Import import, Map params, String mts_material_sample_type, String mte_material_entity_id, ...)
-        bulk_import(Import import, Term rows)
-        create_from_params(Collection collection, Map params, String mts_material_sample_type, String mte_material_entity_id, ...)
-        update_from_params(Map params, String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, ...)
-    }
-    class RecordImage {
-        UUID id
-        Integer size
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-        Attachment attachment
-        Record record
-        destroy()
-        update(UUID id, Integer size, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
-        read()
-        create(UUID id, Integer size, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
-    }
-
-    Record -- RecordImage
-    Record -- Attachment
-    Record -- Collection
-    Record -- Import
-    Record -- Record
-    RecordImage -- Attachment
-```
-
-### ER Diagram
-
-```mermaid
-erDiagram
-    Record {
-        String mts_material_sample_type
-        String mte_material_entity_id
-        String occ_occurrence_remarks
-        String occ_associated_occurrences
-        String occ_sex
-        String occ_recorded_by
-        String loc_georeference_remarks
-        Float loc_decimal_latitude
-        Float loc_decimal_longitude
-        String loc_state_province
-        String loc_verbatim_locality
-        String loc_locality
-        String loc_country
-        String loc_continent
-        String spp_life_stage
-        String tax_specific_epithet
-        String tax_infraspecific_epithet
-        String tax_scientific_name_authorship
-        String tax_scientific_name
-        String tax_genus
-        String tax_family
-        String tax_order
-        String rrp_relationship_of_resource_id
-        String rrp_relationship_of_resource
-        Date ref_relationship_established_date
-        String ref_title
-        String ref_source
-        String ref_rights
-        Date ref_date
-        String ref_creator
-        String ref_bibliographic_citation
-        String idf_type_status
-        String idf_identified_by
-        Date idf_date_identified
-        Integer eve_end_of_period_year
-        Integer eve_end_of_period_month
-        Integer eve_end_of_period_day
-        Integer eve_year
-        Integer eve_month
-        Integer eve_day
-        Date eve_event_date
-        Date prs_date_of_birth
-        String prs_last_name
-        String prs_first_name
-        String prs_contact_point
-        UUID id
-        Map import_data
-        Map extra_data
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-    }
-    RecordImage {
-        UUID id
-        Integer size
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-    }
-
-    Record ||--|| RecordImage : ""
-    Record ||--|| Attachment : ""
-    Record ||--|| Collection : ""
-    Record ||--|| Import : ""
-    Record ||--|| Record : ""
-    RecordImage ||--|| Attachment : ""
-```
-
-### Resources
-
-- [Record](#record)
-- [RecordImage](#recordimage)
+| **create** | _create_ | <ul><li><b>import</b> <i>Import</i> </li><li><b>record</b> <i>Record</i> </li></ul> |  |
 
 ### Record
 
@@ -468,18 +465,16 @@ erDiagram
 | **create** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>mts_material_sample_type</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>occ_occurrence_remarks</b> <i>String</i> attribute</li><li><b>occ_associated_occurrences</b> <i>String</i> attribute</li><li><b>occ_sex</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>loc_georeference_remarks</b> <i>String</i> attribute</li><li><b>loc_decimal_latitude</b> <i>Float</i> attribute</li><li><b>loc_decimal_longitude</b> <i>Float</i> attribute</li><li><b>loc_state_province</b> <i>String</i> attribute</li><li><b>loc_verbatim_locality</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>spp_life_stage</b> <i>String</i> attribute</li><li><b>tax_specific_epithet</b> <i>String</i> attribute</li><li><b>tax_infraspecific_epithet</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>tax_genus</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>eve_end_of_period_year</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_month</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_day</b> <i>Integer</i> attribute</li><li><b>eve_year</b> <i>Integer</i> attribute</li><li><b>eve_month</b> <i>Integer</i> attribute</li><li><b>eve_day</b> <i>Integer</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 | **import** | _create_ | <ul><li><b>import</b> <i>Import</i> </li><li><b>params</b> <i>Map</i> </li><li><b>mts_material_sample_type</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>occ_occurrence_remarks</b> <i>String</i> attribute</li><li><b>occ_associated_occurrences</b> <i>String</i> attribute</li><li><b>occ_sex</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>loc_georeference_remarks</b> <i>String</i> attribute</li><li><b>loc_decimal_latitude</b> <i>Float</i> attribute</li><li><b>loc_decimal_longitude</b> <i>Float</i> attribute</li><li><b>loc_state_province</b> <i>String</i> attribute</li><li><b>loc_verbatim_locality</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>spp_life_stage</b> <i>String</i> attribute</li><li><b>tax_specific_epithet</b> <i>String</i> attribute</li><li><b>tax_infraspecific_epithet</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>tax_genus</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>eve_end_of_period_year</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_month</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_day</b> <i>Integer</i> attribute</li><li><b>eve_year</b> <i>Integer</i> attribute</li><li><b>eve_month</b> <i>Integer</i> attribute</li><li><b>eve_day</b> <i>Integer</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> | Creates or updates a `Record` from the given `params`.
 
-The record is associated with the give `DataAggregator.Platform.Import` and
-its `DataAggregator.Platform.Collection`.
+The record is associated with the give `DataAggregator.Records.Import` and
+its `DataAggregator.Records.Collection`.
  |
-| **bulk_import** | _action_ | <ul><li><b>import</b> <i>Import</i> </li><li><b>rows</b> <i>Term</i> </li></ul> | Imports multiple records using `DataAggregator.Data.bulk_create/3`.
+| **bulk_import** | _action_ | <ul><li><b>import</b> <i>Import</i> </li><li><b>rows</b> <i>Term</i> </li></ul> | Imports multiple records using `DataAggregator.Records.bulk_create/3`.
 
 The `rows` can be any enumberable, where each item which will be used as `params` for
-the `DataAggregator.Data.Record.import/2` action.
+the `DataAggregator.Records.Record.import/2` action.
  |
-| **create_from_params** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>params</b> <i>Map</i> </li><li><b>mts_material_sample_type</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>occ_occurrence_remarks</b> <i>String</i> attribute</li><li><b>occ_associated_occurrences</b> <i>String</i> attribute</li><li><b>occ_sex</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>loc_georeference_remarks</b> <i>String</i> attribute</li><li><b>loc_decimal_latitude</b> <i>Float</i> attribute</li><li><b>loc_decimal_longitude</b> <i>Float</i> attribute</li><li><b>loc_state_province</b> <i>String</i> attribute</li><li><b>loc_verbatim_locality</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>spp_life_stage</b> <i>String</i> attribute</li><li><b>tax_specific_epithet</b> <i>String</i> attribute</li><li><b>tax_infraspecific_epithet</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>tax_genus</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>eve_end_of_period_year</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_month</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_day</b> <i>Integer</i> attribute</li><li><b>eve_year</b> <i>Integer</i> attribute</li><li><b>eve_month</b> <i>Integer</i> attribute</li><li><b>eve_day</b> <i>Integer</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
-| **update_from_params** | _update_ | <ul><li><b>params</b> <i>Map</i> </li><li><b>mts_material_sample_type</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>occ_occurrence_remarks</b> <i>String</i> attribute</li><li><b>occ_associated_occurrences</b> <i>String</i> attribute</li><li><b>occ_sex</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>loc_georeference_remarks</b> <i>String</i> attribute</li><li><b>loc_decimal_latitude</b> <i>Float</i> attribute</li><li><b>loc_decimal_longitude</b> <i>Float</i> attribute</li><li><b>loc_state_province</b> <i>String</i> attribute</li><li><b>loc_verbatim_locality</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>spp_life_stage</b> <i>String</i> attribute</li><li><b>tax_specific_epithet</b> <i>String</i> attribute</li><li><b>tax_infraspecific_epithet</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>tax_genus</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>eve_end_of_period_year</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_month</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_day</b> <i>Integer</i> attribute</li><li><b>eve_year</b> <i>Integer</i> attribute</li><li><b>eve_month</b> <i>Integer</i> attribute</li><li><b>eve_day</b> <i>Integer</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>id</b> <i>UUID</i> attribute</li><li><b>import_data</b> <i>Map</i> attribute</li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 
-### RecordImage
+### Image
 
 
 
@@ -674,7 +669,6 @@ classDiagram
         UUID id
         String filename
         String url
-        Function stream
         read()
         import_from_path(String path)
         destroy()
@@ -689,7 +683,6 @@ erDiagram
         UUID id
         String filename
         String url
-        Function stream
     }
 ```
 

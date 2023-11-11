@@ -1,7 +1,7 @@
 defmodule DataAggregatorWeb.ImportLive.Mapping do
   use DataAggregatorWeb, :live_view
 
-  alias DataAggregator.Platform.Import
+  alias DataAggregator.Records.Import
 
   @impl true
   def mount(_params, _session, socket) do
@@ -10,7 +10,7 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    import = DataAggregator.Platform.load!(Import.get_by_id!(id), collection: [:id, :name])
+    import = Import.get_by_id!(id, load: [collection: [:id, :name]])
 
     socket =
       socket
@@ -45,7 +45,7 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
   def render(assigns) do
     ~H"""
     <.page active_link={:imports} environment={@environment} sidebar_nav={@sidebar_nav}>
-      <.header class="top-16 sticky">
+      <.header class="sticky top-16">
         Define the mapping for the import of your collection '<%= @import.collection.name %>'
         <:actions>
           <.button
@@ -69,25 +69,25 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
         </:actions>
       </.header>
 
-      <div class="justify-items-center grid">
+      <div class="grid justify-items-center">
         <ul
           role="list"
-          class="dark:text-gray-400 px-7 2xl:w-6/12 xl:w-8/12 md:w-9/12 sm:10/12 divide-slate-600 divide-dashed sm:mt-2 w-full text-sm text-gray-700 divide-y"
+          class="dark:text-gray-400 2xl:w-6/12 xl:w-8/12 md:w-9/12 sm:10/12 divide-slate-600 sm:mt-2 px-7 w-full text-sm text-gray-700 divide-y divide-dashed"
         >
-          <li class="gap-x-6 dark:text-gray-200 flex py-1">
-            <div class="gap-x-4 flex justify-start w-5 text-sm font-bold leading-10">
+          <li class="dark:text-gray-200 flex gap-x-6 py-1">
+            <div class="flex gap-x-4 justify-start w-5 text-sm font-bold leading-10">
               req.
             </div>
-            <div class="gap-x-4 flex justify-start w-1/2 text-sm font-bold leading-10">
+            <div class="flex gap-x-4 justify-start w-1/2 text-sm font-bold leading-10">
               Column
             </div>
-            <div class="gap-x-4 flex justify-end w-1/2 text-sm font-bold leading-10">
+            <div class="flex gap-x-4 justify-end w-1/2 text-sm font-bold leading-10">
               Mapped To
             </div>
           </li>
           <%= for column <- @import.columns do %>
-            <li class="gap-x-6 flex py-1">
-              <div class="gap-x-4 flex items-center justify-start w-5">
+            <li class="flex gap-x-6 py-1">
+              <div class="flex gap-x-4 justify-start items-center w-5">
                 <input
                   disabled
                   checked={get_required_from_static_mappings(column.name)}
@@ -95,10 +95,10 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
                   class="w-4 h-4 text-indigo-600 rounded"
                 />
               </div>
-              <div class="gap-x-4 flex justify-start w-1/2 text-sm leading-10">
+              <div class="flex gap-x-4 justify-start w-1/2 text-sm leading-10">
                 <%= column.name %>
               </div>
-              <div class="gap-x-4 flex justify-end w-1/2 text-sm leading-10">
+              <div class="flex gap-x-4 justify-end w-1/2 text-sm leading-10">
                 <%= get_mapping_from_static_mappings(column.name) %>
               </div>
             </li>

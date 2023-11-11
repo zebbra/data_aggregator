@@ -2,8 +2,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form
-  alias DataAggregator.Platform.Collection
-  alias DataAggregator.Platform.Import
+  alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Import
 
   @impl true
   def update(assigns, socket) do
@@ -151,7 +151,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
 
   defp build_form(%{action: :new}) do
     Collection
-    |> Form.for_create(:create, api: DataAggregator.Platform, as: "collection")
+    |> Form.for_create(:create, api: DataAggregator.Records, as: "collection")
     |> to_form()
   end
 

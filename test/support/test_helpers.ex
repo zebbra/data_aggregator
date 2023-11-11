@@ -7,6 +7,10 @@ defmodule DataAggregator.TestHelpers do
     quote do
       import DataAggregator.TestHelpers
 
+      # Common assertions provided by
+      # https://github.com/devonestes/assertions
+      import Assertions
+
       import Ash.Test,
         only: [
           assert_has_error: 2,
@@ -17,22 +21,13 @@ defmodule DataAggregator.TestHelpers do
     end
   end
 
-  def assert_maps(maps, attributes) do
-    assert length(maps) == length(attributes)
-
-    for {map, attributes} <- Enum.zip(maps, attributes) do
-      assert_map(map, attributes)
-    end
-  end
-
-  def assert_map(map, attributes) do
-    keys = Map.keys(attributes)
-    assert fetch_map_keys(map, keys) == attributes
-  end
-
-  defp fetch_map_keys(map, keys) do
-    for key <- keys, into: %{} do
-      {key, Map.fetch!(map, key)}
+  @doc """
+  Helper for `Assertions.assert_maps_equal/3` that expects all keys of the
+  expected map to be equal to the actual map.
+  """
+  defmacro assert_maps_equal(actual, expected) do
+    quote do
+      assert_maps_equal(unquote(actual), unquote(expected), Map.keys(unquote(expected)))
     end
   end
 end

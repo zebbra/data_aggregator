@@ -102,7 +102,8 @@ defmodule DataAggregator.MixProject do
   def nest_modules_by_prefix() do
     [
       DataAggregator,
-      DataAggregatorWeb
+      DataAggregatorWeb,
+      DataAggregatorApi
     ]
   end
 
@@ -120,14 +121,14 @@ defmodule DataAggregator.MixProject do
       "Platform API": [
         ~r/^DataAggregator\.Platform/
       ],
-      "Data API": [
-        ~r/^DataAggregator\.Data/
+      "Records API": [
+        ~r/^DataAggregator\.Records/
       ],
       Preparations: [
         ~r/^DataAggregator\.Preparations/
       ],
-      GraphQL: [
-        ~r/^DataAggregator\.GraphQL/
+      API: [
+        ~r/^DataAggregatorApi\./
       ],
       Web: [
         DataAggregatorWeb,
@@ -225,11 +226,12 @@ defmodule DataAggregator.MixProject do
       {:telemetry_metrics, "~> 0.6"},
       {:phoenix_live_dashboard, "~> 0.8.1"},
 
-      # linting
+      # linting & testing
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
+      {:assertions, "~> 0.19", only: :test},
 
       # file handling and S3
       {:waffle, "~> 1.1"},

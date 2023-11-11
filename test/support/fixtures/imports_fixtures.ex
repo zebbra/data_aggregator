@@ -1,11 +1,11 @@
 defmodule DataAggregator.RecordsFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `DataAggregator.Data` context.
+  entities via the `DataAggregator.Records` context.
   """
 
-  alias DataAggregator.Data.Record
-  alias DataAggregator.Platform.Collection
+  alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Record
 
   @record_defaults %{
     mte_material_entity_id: "record1",

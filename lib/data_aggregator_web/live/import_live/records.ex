@@ -1,7 +1,7 @@
 defmodule DataAggregatorWeb.ImportLive.Records do
   use DataAggregatorWeb, :live_view
 
-  alias DataAggregator.Platform.Import
+  alias DataAggregator.Records.Import
 
   @impl true
   def mount(_params, _session, socket) do
@@ -10,7 +10,7 @@ defmodule DataAggregatorWeb.ImportLive.Records do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    import = DataAggregator.Platform.load!(Import.get_by_id!(id), [:records_count, :collection])
+    import = DataAggregator.Records.load!(Import.get_by_id!(id), [:records_count, :collection])
 
     socket =
       socket

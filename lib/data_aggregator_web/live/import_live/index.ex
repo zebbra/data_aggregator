@@ -1,7 +1,7 @@
 defmodule DataAggregatorWeb.ImportLive.Index do
   use DataAggregatorWeb, :live_view
 
-  alias DataAggregator.Platform.Import
+  alias DataAggregator.Records.Import
 
   import DataAggregatorWeb.QueryBuilder
 

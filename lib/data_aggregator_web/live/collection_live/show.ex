@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
 
   import DataAggregatorWeb.Headless.StatCard
 
-  alias DataAggregator.Platform.Collection
+  alias DataAggregator.Records.Collection
 
   @impl true
   def mount(_params, _session, socket) do
@@ -12,7 +12,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    collection = DataAggregator.Platform.load!(Collection.get_by_id!(id), [:records_count])
+    collection = DataAggregator.Records.load!(Collection.get_by_id!(id), [:records_count])
 
     socket =
       socket

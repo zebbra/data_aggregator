@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.ImportLive.Confirmation do
 
   import DataAggregatorWeb.Headless.StatCard
 
-  alias DataAggregator.Platform.Import
+  alias DataAggregator.Records.Import
 
   @impl true
   def mount(_params, _session, socket) do
@@ -12,7 +12,7 @@ defmodule DataAggregatorWeb.ImportLive.Confirmation do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    import = DataAggregator.Platform.load!(Import.get_by_id!(id), collection: [:id, :name])
+    import = DataAggregator.Records.load!(Import.get_by_id!(id), collection: [:id, :name])
 
     socket =
       socket
