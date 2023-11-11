@@ -8,6 +8,9 @@ defmodule DataAggregator.Repo.Migrations.AddCollectionToRecordId do
   use Ecto.Migration
 
   def up do
+    # Delete records without a collection_id in staging environment
+    execute "DELETE FROM records WHERE collection_id IS NULL"
+
     alter table(:records) do
       modify :collection_id, :uuid, null: false
     end

@@ -10,7 +10,14 @@ defmodule DataAggregator.Repo.Migrations.AddRecAmountAndOwnerToCollection do
   def up do
     alter table(:collections) do
       add :items_to_digitize, :bigint, null: false, default: 0
-      add :owner, :text, null: false
+      add :owner, :text
+    end
+
+    # Set dummy owner for existing collections
+    execute "UPDATE collections SET owner = 'No Owner'"
+
+    alter table(:collections) do
+      modify :owner, :text, null: false
     end
   end
 

@@ -64,3 +64,6 @@ npm-debug.log
 
 # Ignore Mac OS files
 .DS_Store
+
+# Ignore database dumps
+priv/repo/dump/*.dump
