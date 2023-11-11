@@ -20,9 +20,14 @@ config :swoosh, local: false
 # Do not print debug messages in production
 config :logger, level: :info
 
+# Enable Postgres SSL in production
 config :data_aggregator, DataAggregator.Repo,
   ssl: true,
   ssl_opts: [verify: :verify_none]
+
+# Enable dev routes for dashboard and mailbox
+# TODO: remove the line below before going live
+config :data_aggregator, dev_routes: true
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
