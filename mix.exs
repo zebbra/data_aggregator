@@ -241,8 +241,6 @@ defmodule DataAggregator.MixProject do
       {:csv, "~> 3.2"},
 
       # http
-      # official http_stream has outdated deps (mint, castore)
-      {:http_stream, "~> 1.0.0", github: "qdentity/http_stream", branch: "master"},
       {:finch, "~> 0.16"},
       {:castore, "~> 1.0"},
       {:mint, "~> 1.3"},

@@ -26,9 +26,6 @@ defmodule DataAggregator.Records.Import do
       api DataAggregator.Files
     end
 
-    has_many :import_records, ImportRecord do
-    end
-
     many_to_many :records, DataAggregator.Records.Record do
       api DataAggregator.Records
       through ImportRecord

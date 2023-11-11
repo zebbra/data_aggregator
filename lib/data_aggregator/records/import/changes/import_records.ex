@@ -37,8 +37,15 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
     Record.bulk_import(import, stream)
   end
 
-  defp handle_import({:ok, %Ash.BulkResult{}}, changeset) do
-    changeset
+  defp handle_import({:ok, stream}, changeset) do
+    Enum.reduce(stream, changeset, fn
+      {:ok, _record}, changeset ->
+        changeset
+
+      {:error, error}, changeset ->
+        Logger.warning("Error importing record: #{inspect(error)}")
+        changeset |> Changeset.add_error(error)
+    end)
   end
 
   defp handle_import({:error, error}, changeset) do
