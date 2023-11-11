@@ -43,6 +43,14 @@ defmodule DataAggregator.Records.Collection do
     end
   end
 
+  calculations do
+    calculate :digitizing_progress,
+              :float,
+              expr(
+                if items_to_digitize > 0, do: 100 / (items_to_digitize * records_count), else: 0
+              )
+  end
+
   aggregates do
     count :records_count, :records
   end

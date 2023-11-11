@@ -12,7 +12,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    collection = DataAggregator.Records.load!(Collection.get_by_id!(id), [:records_count])
+    collection = Collection.get_by_id!(id, load: [:records_count, :digitizing_progress])
 
     socket =
       socket
@@ -52,7 +52,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
   def render(assigns) do
     ~H"""
     <.page active_link={:collections} environment={@environment} sidebar_nav={@sidebar_nav}>
-      <.header class="top-16 sticky">
+      <.header class="sticky top-16">
         <%= @collection.name %>
 
         <:actions>
@@ -72,7 +72,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
         </:actions>
       </.header>
 
-      <div class="justify-items-center grid">
+      <div class="grid justify-items-center">
         <dl class="xl:grid-cols-4 grid grid-cols-2 gap-5 mt-5">
           <.stat_card label={~t"Name"m} stat={@collection.name} />
           <.stat_card label={~t"Owner"m} stat={@collection.owner} />
@@ -82,7 +82,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
           <.stat_card
             label={~t"Digitization Progress"m}
             stat={
-              (100 / @collection.items_to_digitize * @collection.records_count)
+              @collection.digitizing_progress
               |> Decimal.from_float()
               |> Decimal.round(1)
             }

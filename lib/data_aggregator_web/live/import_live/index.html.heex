@@ -1,5 +1,5 @@
 <.page active_link={:imports} environment={@environment} sidebar_nav={@sidebar_nav}>
-  <.header class="top-16 sticky">
+  <.header class="sticky top-16">
     <%= ~t"Listing Imports"m %>
     <:actions></:actions>
   </.header>
@@ -16,6 +16,10 @@
   >
     <:col :let={{_id, import}} label={~t"Collection"m} field="collection.name" sort>
       <%= import.collection.name %>
+    </:col>
+
+    <:col :let={{_id, import}} label={~t"Records"m} field="records_count" sort>
+      <%= import.records_count %>
     </:col>
 
     <:col :let={{_id, import}} label={~t"Inserted At"m} field="inserted_at" sort>

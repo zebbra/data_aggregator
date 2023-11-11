@@ -16,7 +16,8 @@ defmodule DataAggregator.MixProject do
       # Dialyzer
       dialyzer: [
         plt_local_path: "priv/plts/project.plt",
-        plt_core_path: "priv/plts/core.plt"
+        plt_core_path: "priv/plts/core.plt",
+        plt_add_apps: [:mix]
       ],
 
       # Docs
@@ -330,9 +331,9 @@ defmodule DataAggregator.MixProject do
         "format --check-formatted",
         "credo --strict",
         "deps.audit",
-        "dialyzer",
         "gettext.lint",
-        "repo.lint"
+        "repo.lint",
+        "dialyzer"
       ],
 
       # Generate documentation
