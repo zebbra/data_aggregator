@@ -25,7 +25,7 @@ defmodule DataAggregator.TestHelpers do
   Helper for `Assertions.assert_maps_equal/3` that expects all keys of the
   expected map to be equal to the actual map.
   """
-  defmacro assert_maps_equal(actual, expected) do
+  defmacro assert_map_includes(actual, expected) do
     quote do
       assert_maps_equal(unquote(actual), unquote(expected), Map.keys(unquote(expected)))
     end

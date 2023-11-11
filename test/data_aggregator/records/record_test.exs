@@ -1,4 +1,4 @@
-defmodule DataAggregator.RecordsTest do
+defmodule DataAggregator.RecordTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
@@ -106,7 +106,7 @@ defmodule DataAggregator.RecordsTest do
         &assert_structs_equal(&1, &2, [:id])
       )
 
-      assert_maps_equal(record, %{
+      assert_map_includes(record, %{
         collection_id: import.collection_id,
         tax_scientific_name: "Example",
         mte_material_entity_id: "ex-123",
@@ -145,7 +145,7 @@ defmodule DataAggregator.RecordsTest do
         &assert_structs_equal(&1, &2, [:id])
       )
 
-      assert_maps_equal(updated_record, %{
+      assert_map_includes(updated_record, %{
         id: record.id,
         collection_id: import.collection_id,
         tax_scientific_name: "Updated Example",
@@ -182,7 +182,7 @@ defmodule DataAggregator.RecordsTest do
         &assert_structs_equal(&1, &2, [:id])
       )
 
-      assert_maps_equal(updated_record.import_data, %{
+      assert_map_includes(updated_record.import_data, %{
         "mte_material_entity_id" => "ex-123",
         "tax_scientific_name" => "Updated Example",
         "some_other_extra_data" => "Other Extra"
@@ -204,7 +204,7 @@ defmodule DataAggregator.RecordsTest do
 
       refute record.id == other_record.id
 
-      assert_maps_equal(other_record, %{
+      assert_map_includes(other_record, %{
         collection_id: other_collection.id,
         mte_material_entity_id: "ex-123",
         tax_scientific_name: "Example"
