@@ -6,7 +6,6 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Records.Import.Mapping
   alias DataAggregator.Records.Record
 
   require Logger
@@ -20,17 +19,12 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
     case stream_records(import) do
       {:ok, stream} ->
         stream
-        |> apply_mapping(import)
         |> bulk_import(import)
         |> handle_import(changeset)
 
       {:error, reason} ->
         Changeset.add_error(changeset, reason)
     end
-  end
-
-  defp apply_mapping(stream, import) do
-    stream |> Stream.map(&Mapping.map_params(&1, import.columns))
   end
 
   defp bulk_import(stream, import) do
@@ -54,9 +48,8 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
   end
 
   defp stream_records(import) do
-    with {:ok, import} <- DataAggregator.Records.load(import, attachment: [:url]),
-         {:ok, data} <- Explorer.DataFrame.from_csv(import.attachment.url) do
-      {:ok, Explorer.DataFrame.to_rows_stream(data)}
+    with {:ok, import} <- DataAggregator.Records.load(import, attachment_data: [mapped: true]) do
+      {:ok, import.attachment_data |> Explorer.DataFrame.to_rows_stream()}
     end
   end
 end

@@ -110,6 +110,7 @@ classDiagram
         Column[] columns
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Term attachment_data
         Integer records_count
         Collection collection
         Attachment attachment
@@ -237,6 +238,7 @@ erDiagram
         ArrayOfColumn columns
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Term attachment_data
         Integer records_count
     }
     Record {

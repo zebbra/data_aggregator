@@ -33,6 +33,13 @@ defmodule DataAggregator.Records.Import do
     end
   end
 
+  calculations do
+    calculate :attachment_data, :term, Import.Calculations.AttachmentData do
+      argument :mapped, :boolean, default: false
+      load attachment: :url
+    end
+  end
+
   aggregates do
     count :records_count, :records
   end
