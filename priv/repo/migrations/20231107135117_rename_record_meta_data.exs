@@ -10,9 +10,11 @@ defmodule DataAggregator.Repo.Migrations.RenameRecordMetaData do
   def up do
     rename table(:records), :meta_data, to: :extra_data
 
-    create unique_index(:records, [:mte_material_entity_id],
-             name: "records_mte_material_entity_id_index"
-           )
+    # This fails in staging environment and will be dropped anyways in a later migration.
+    #
+    # create unique_index(:records, [:mte_material_entity_id],
+    #          name: "records_mte_material_entity_id_index"
+    #        )
   end
 
   def down do
