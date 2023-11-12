@@ -12,6 +12,7 @@ defmodule DataAggregator.Files.Attachment do
   attributes do
     uuid_attribute :id, prefix: "fat"
     attribute :filename, :string, allow_nil?: false
+    attribute :byte_size, :integer, allow_nil?: false
     timestamps()
   end
 
@@ -30,7 +31,7 @@ defmodule DataAggregator.Files.Attachment do
 
     create :import_from_path do
       primary? true
-      accept []
+      accept [:filename]
       argument :path, :string, allow_nil?: false
       change Attachment.Changes.StoreFile
     end

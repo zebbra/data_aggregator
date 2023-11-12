@@ -20,7 +20,9 @@ defmodule DataAggregator.Records.Import do
   end
 
   relationships do
-    belongs_to :collection, Collection
+    belongs_to :collection, Collection do
+      allow_nil? false
+    end
 
     belongs_to :attachment, Attachment do
       api DataAggregator.Files
@@ -34,6 +36,11 @@ defmodule DataAggregator.Records.Import do
   end
 
   calculations do
+    calculate :collection_name, :string, expr(collection.name)
+    calculate :attachment_url, :string, expr(attachment.url)
+    calculate :attachment_byte_size, :integer, expr(attachment.byte_size)
+    calculate :attachment_filename, :string, expr(attachment.filename)
+
     calculate :attachment_data, :term, Import.Calculations.AttachmentData do
       argument :mapped, :boolean, default: false
       load attachment: :url
@@ -45,7 +52,12 @@ defmodule DataAggregator.Records.Import do
   end
 
   actions do
-    defaults [:read, :destroy]
+    defaults [:destroy]
+
+    read :read do
+      primary? true
+      argument :sort, :string, allow_nil?: true
+    end
 
     create :create do
       primary? true
@@ -55,11 +67,13 @@ defmodule DataAggregator.Records.Import do
 
     create :create_from_path do
       accept []
-      argument :path, :string, allow_nil?: false
       argument :collection, Collection, allow_nil?: false
+      argument :path, :string, allow_nil?: false
+      argument :filename, :string, allow_nil?: true
       change manage_relationship(:collection, :collection, type: :append)
-      change manage_relationship(:path, :attachment, value_is_key: :path, type: :create)
-      change DataAggregator.Records.Changes.DetectColumns
+      change DataAggregator.Records.Import.Changes.CreateAttachment
+      change DataAggregator.Records.Import.Changes.DetectColumns
+      change load([:attachment_filename, :attachment_byte_size])
     end
 
     update :update_mapping do
@@ -88,6 +102,11 @@ defmodule DataAggregator.Records.Import do
   postgres do
     table "imports"
     repo DataAggregator.Repo
+  end
+
+  preparations do
+    prepare build(sort: [id: :asc])
+    prepare DataAggregator.Preparations.Sort
   end
 
   graphql do

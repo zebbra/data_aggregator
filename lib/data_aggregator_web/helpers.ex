@@ -8,6 +8,9 @@ defmodule DataAggregatorWeb.Helpers do
   @timezone "Europe/Zurich"
   @placeholder Phoenix.HTML.raw("&mdash;")
 
+  def format_number(number, opts \\ []),
+    do: Cldr.Number.to_string!(number, opts)
+
   def format_date(date, opts \\ []), do: Cldr.Date.to_string!(date, opts)
 
   def format_datetime(datetime, opts \\ [])
@@ -28,15 +31,25 @@ defmodule DataAggregatorWeb.Helpers do
 
   def format_bytes(bytes, opts \\ []) do
     kb = 1024
-    mb = kb * 1024
+    mb = 1024 * kb
+    gb = 1024 * mb
 
-    {value, unit} = if bytes < 100 * kb, do: {bytes / kb, "KB"}, else: {bytes / mb, "MB"}
+    {value, unit} =
+      cond do
+        bytes < kb -> {bytes / 1.0, :byte}
+        bytes < mb -> {bytes / kb, :kilobyte}
+        bytes < gb -> {bytes / mb, :megabyte}
+        true -> {bytes / gb, :gigabyte}
+      end
+
+    precision = Keyword.get(opts, :precision, 1)
+    value = value |> Float.round(precision)
 
     opts =
       opts
-      |> Keyword.put_new(:format, "#,##0.#")
-      |> Keyword.update!(:format, &"#{&1}#{unit}")
+      |> Keyword.put(:unit, unit)
+      |> Keyword.put_new(:style, :short)
 
-    Cldr.Number.to_string!(value, opts)
+    Cldr.Unit.to_string!(value, opts)
   end
 end

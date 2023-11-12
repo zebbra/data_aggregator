@@ -5,9 +5,11 @@ defmodule DataAggregator.Files.Store do
 
   use Waffle.Definition
 
+  alias DataAggregator.Files.Attachment
+
   @acl :private
 
-  def storage_dir(_version, {_file, attachment_id}) do
-    "files/#{attachment_id}"
+  def storage_dir(_version, {_file, %Attachment{id: id}}) do
+    "files/#{id}"
   end
 end

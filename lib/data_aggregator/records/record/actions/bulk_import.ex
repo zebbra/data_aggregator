@@ -16,7 +16,7 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
       |> DataAggregator.Records.bulk_create(Record, :import,
         return_records?: true,
         return_stream?: true,
-        # max_concurrency: 4, does not work in tests
+        # max_concurrency: 2, # does not work in tests
         batch_size: 1000
       )
 

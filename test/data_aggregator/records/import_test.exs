@@ -49,6 +49,13 @@ defmodule DataAggregator.Records.ImportTest do
              ]
     end
 
+    test "with custom filename", %{collection: collection} do
+      path = "test/support/fixtures/files/museum-dataset-import-example.csv"
+      {:ok, import} = Import.create_from_path(collection, path, %{filename: "custom.csv"})
+
+      assert import.attachment_filename == "custom.csv"
+    end
+
     test "with invalid file", %{collection: collection} do
       path = "test/support/fixtures/files/no-recent-events.jpeg"
       {:error, error} = Import.create_from_path(collection, path)

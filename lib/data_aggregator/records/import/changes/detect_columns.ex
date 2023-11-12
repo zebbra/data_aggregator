@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Changes.DetectColumns do
+defmodule DataAggregator.Records.Import.Changes.DetectColumns do
   @moduledoc """
   Ash change to detect columns from a CSV file using `Explorer.DataFrame`.
   """
