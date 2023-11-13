@@ -41,3 +41,5 @@ config :phoenix, :plug_init_mode, :runtime
 # Disable warnings for dummy resources
 config :ash, :validate_api_config_inclusion?, false
 config :ash, :validate_api_resource_inclusion?, false
+
+config :mix_test_watch, clear: true
