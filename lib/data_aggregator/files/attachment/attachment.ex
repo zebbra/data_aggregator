@@ -1,6 +1,8 @@
 defmodule DataAggregator.Files.Attachment do
   @moduledoc """
   Resource representing a file stored in the file storage (local or S3).
+
+  See `DataAggregator.Files` for usage examples.
   """
 
   use Ash.Resource,
@@ -21,6 +23,8 @@ defmodule DataAggregator.Files.Attachment do
       argument :signed, :boolean, default: true
       argument :expires_in, :integer, default: 100
     end
+
+    calculate :cached_file, :string, Attachment.Calculations.CachedFile
   end
 
   actions do
