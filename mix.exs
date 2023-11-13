@@ -241,9 +241,7 @@ defmodule DataAggregator.MixProject do
       {:csv, "~> 3.2"},
 
       # http
-      {:finch, "~> 0.16"},
-      {:castore, "~> 1.0"},
-      {:mint, "~> 1.3"},
+      {:req, "~> 0.4.5"},
 
       # docs
       {:ex_doc, "~> 0.27", runtime: false},

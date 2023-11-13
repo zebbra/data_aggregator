@@ -41,7 +41,7 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
   @impl Ash.Calculation
   def calculate(imports, opts, ctx) do
     imports
-    |> DataAggregator.Records.load!([attachment: :url], lazy?: true)
+    |> DataAggregator.Records.load!([attachment: :cached_file], lazy?: true)
     |> Enum.map(&attachment_data(&1, opts, ctx))
   end
 
@@ -52,14 +52,14 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
   end
 
   defp create_dataframe(import, _opts, _context) do
-    %Import{attachment: %Attachment{url: url}} = import
+    %Import{attachment: %Attachment{cached_file: cached_file}} = import
 
-    case Explorer.DataFrame.from_csv(url) do
+    case Explorer.DataFrame.from_csv(cached_file) do
       {:ok, data} ->
         data
 
       {:error, error} ->
-        "Could not load attachment data for import #{import.id} (#{url}): #{inspect(error)}"
+        "Could not load attachment data for import #{import.id} (#{cached_file}): #{inspect(error)}"
         |> Logger.warning()
 
         nil

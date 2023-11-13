@@ -29,6 +29,9 @@ config :data_aggregator, DataAggregator.Mailer, adapter: Swoosh.Adapters.Test
 # Serve uploaded files
 config :data_aggregator, serve_files_from: "priv/storage/test/files"
 
+# Cache files in the test environment
+config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/test/cache"
+
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
