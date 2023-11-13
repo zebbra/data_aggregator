@@ -1,6 +1,5 @@
 defmodule Storybook.Examples.NestedDialog do
   use PhoenixStorybook.Story, :example
-  use DataAggregatorWeb.ViewportHelpers
 
   alias Phoenix.LiveView.JS
 
@@ -74,8 +73,10 @@ defmodule Storybook.Examples.NestedDialog do
       </div>
       <:portal>
         <.slideover
-          show={@drawer and display_size_lg(@viewport_width)}
+          :if={@drawer}
           id="drawer"
+          responsive="lg:flex"
+          show={false}
           class="relative z-50 hidden"
           close_button={false}
           on_cancel={JS.push("toggle_drawer")}
@@ -106,8 +107,10 @@ defmodule Storybook.Examples.NestedDialog do
           </div>
 
           <.slideover
-            show={@level_1 and display_size_lg(@viewport_width)}
+            :if={@level_1}
             id="level_1"
+            responsive="lg:flex"
+            show={false}
             parent_id="drawer"
             backdrop={false}
             close_button={false}
@@ -135,8 +138,10 @@ defmodule Storybook.Examples.NestedDialog do
               </.sidebar>
             </div>
             <.modal
-              show={@modal and display_size_lg(@viewport_width)}
+              :if={@modal}
               id="modal"
+              responsive="lg:flex"
+              show={false}
               parent_id="level_1"
               backdrop={false}
               on_cancel={JS.push("toggle_modal")}
@@ -176,11 +181,7 @@ defmodule Storybook.Examples.NestedDialog do
 
   def portal_wrapper(assigns) do
     ~H"""
-    <div
-      id="portal-wrapper"
-      phx-hook="ViewportResize"
-      class="dark:bg-gray-900 no-scrollbar isolate h-screen overflow-y-auto"
-    >
+    <div class="dark:bg-gray-900 no-scrollbar isolate h-screen overflow-y-auto">
       <main>
         <%= render_slot(@inner_block) %>
       </main>

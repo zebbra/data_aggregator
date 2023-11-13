@@ -1,7 +1,17 @@
 defmodule DataAggregatorWeb.Page do
   @moduledoc false
 
-  use DataAggregatorWeb, :page
+  use Phoenix.Component
+
+  # Core UI components and translation
+  import DataAggregatorWeb.CoreComponents, only: [icon: 1]
+  import DataAggregatorWeb.HeadlessComponents
+  import DataAggregatorWeb.Gettext
+
+  # Shortcut for generating JS commands
+  alias Phoenix.LiveView.JS
+
+  use DataAggregatorWeb, :verified_routes
 
   embed_templates "shared/*"
 
@@ -17,11 +27,7 @@ defmodule DataAggregatorWeb.Page do
 
   def page(assigns) do
     ~H"""
-    <div
-      id="page"
-      phx-hook="ViewportResize"
-      class="dark:bg-gray-900 no-scrollbar isolate h-screen overflow-y-auto"
-    >
+    <div class="dark:bg-gray-900 no-scrollbar isolate h-screen overflow-y-auto">
       <!-- Static sidebar for desktop -->
       <div class="lg:fixed lg:inset-y-0 lg:z-30 lg:flex lg:w-72 lg:flex-col hidden">
         <.sidebar_nav active_link={@active_link} environment={@environment} />

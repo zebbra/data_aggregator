@@ -41,8 +41,7 @@ defmodule DataAggregatorWeb.Router do
       user_hooks = [
         DataAggregatorWeb.LiveLogger,
         DataAggregatorWeb.LiveState,
-        DataAggregatorWeb.LiveLocale,
-        DataAggregatorWeb.LiveViewport
+        DataAggregatorWeb.LiveLocale
       ]
 
       live_session :default, on_mount: user_hooks do

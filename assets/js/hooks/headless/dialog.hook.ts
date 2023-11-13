@@ -102,8 +102,7 @@ const Dialog = {
       // in case the dialog is responsive we need to check if the dialog
       // is still visible
       const breakpoint = this.el.dataset["responsive"];
-      const staticMode = this.el.hasAttribute("data-static");
-      if (breakpoint && visible(breakpoint) && !staticMode) {
+      if (breakpoint && visible(breakpoint)) {
         return;
       }
 
@@ -280,11 +279,8 @@ const Dialog = {
     // In case of a responsive dialog we need to check if the dialog should be shown
     // on mount for the current client window breakpoint
     const closed = api.dialogState.value === DialogStates.Closed;
-    // Static mode is used when when the dialog is responsive and
-    // show attribute is dynamic (not used with :if directive)
-    const staticMode = this.el.hasAttribute("data-static");
 
-    if (breakpoint && visible(breakpoint) && closed && !staticMode) {
+    if (breakpoint && visible(breakpoint) && closed) {
       api.openDialog();
     }
 

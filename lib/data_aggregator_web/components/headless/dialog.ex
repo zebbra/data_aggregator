@@ -17,9 +17,7 @@ defmodule DataAggregatorWeb.Headless.Dialog do
   conditionaly with the :if directive. However, if a dialog must be visible / hidden
   base on client window width, this approach does not work. In this case you can use
   the responsive attribute to set the breakpoint at which the dialog should be visible
-  or hidden. Make sure to set the show attribute to false in this case. If you want to
-  a dynamic show attribute (instead of the :if directive) to render the dialog together
-  with the responsive attribute, you need to mark the dialog as static.
+  or hidden. Make sure to set the show attribute to false in this case.
 
   Further we do currently not support multiple dialogs on the same page. The on_<action>
   callbacks get executed on all dialogs on the page which is not correct. Maybe we can
@@ -34,7 +32,6 @@ defmodule DataAggregatorWeb.Headless.Dialog do
 
   attr :as, :string, default: "div"
   attr :show, :boolean, default: false
-  attr :static, :boolean, default: false
   attr :responsive, :string, default: nil
   attr :class, :string, default: nil
   attr :role, :string, default: "dialog"
@@ -66,7 +63,6 @@ defmodule DataAggregatorWeb.Headless.Dialog do
       }
       data-hide={hide_dialog(@id, @hide_panel_transition, @hide_backdrop_transition)}
       data-responsive={@responsive}
-      data-static={@static}
       data-parentid={@parent_id}
       id={@id}
       name={@as}
