@@ -6,6 +6,7 @@ defmodule DataAggregator.Files.Attachment.Changes.StoreFile do
   use Ash.Resource.Change
 
   alias Ash.Changeset
+  alias DataAggregator.Files.Attachment
   alias DataAggregator.Files.Store
 
   require Logger
@@ -14,7 +15,8 @@ defmodule DataAggregator.Files.Attachment.Changes.StoreFile do
     changeset
     |> validate_path()
     |> change_filename()
-    |> Changeset.before_action(&store_file/1, append: true)
+    |> change_byte_size()
+    |> Changeset.after_action(&store_file/2, append: true)
     |> Changeset.load([:url])
   end
 
@@ -32,28 +34,45 @@ defmodule DataAggregator.Files.Attachment.Changes.StoreFile do
   defp valid_path?(_path), do: false
 
   defp change_filename(changeset) do
-    case Changeset.get_argument(changeset, :path) do
-      path when is_binary(path) ->
-        Changeset.change_attribute(changeset, :filename, Path.basename(path))
+    filename = get_attribute_filename(changeset) || get_path_filename(changeset)
+    Changeset.change_attribute(changeset, :filename, filename)
+  end
 
-      _ ->
-        changeset
+  defp get_attribute_filename(changeset) do
+    Changeset.get_attribute(changeset, :filename)
+  end
+
+  defp get_path_filename(changeset) do
+    case Changeset.get_argument(changeset, :path) do
+      path when is_binary(path) -> Path.basename(path)
+      _ -> nil
     end
   end
 
-  defp store_file(%Changeset{} = changeset) do
-    id = Changeset.get_attribute(changeset, :id)
+  defp change_byte_size(changeset) do
     path = Changeset.get_argument(changeset, :path)
 
-    case Store.store({path, id}) do
+    if is_binary(path) && File.exists?(path) do
+      byte_size = File.stat!(path).size
+      Changeset.change_attribute(changeset, :byte_size, byte_size)
+    else
+      changeset
+    end
+  end
+
+  defp store_file(%Changeset{} = changeset, %Attachment{} = attachment) do
+    path = Changeset.get_argument(changeset, :path)
+    file = %{path: path, filename: attachment.filename}
+
+    case Store.store({file, attachment}) do
       {:ok, filename} ->
-        Logger.info("[#{id}] Successfully uploaded file as #{inspect(filename)}")
-        changeset |> Changeset.change_attribute(:filename, filename)
+        Logger.info("[#{attachment.id}] Successfully uploaded file as #{inspect(filename)}")
+        {:ok, attachment}
 
       {:error, error} ->
-        message = "[#{id}] Unable to upload file: #{inspect(error)}}"
+        message = "[#{attachment.id}] Unable to upload file: #{inspect(error)}}"
         Logger.error(message)
-        changeset |> Changeset.add_error(field: :file, message: message)
+        {:ok, error}
     end
   end
 end

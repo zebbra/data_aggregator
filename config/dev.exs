@@ -9,8 +9,11 @@ config :data_aggregator, DataAggregator.Repo,
   database: "data_aggregator_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10,
-  log: false
+  pool_size: 20,
+  log: false,
+  timeout: 60_000,
+  backoff_max: 120_000,
+  ownership_timeout: 60_000
 
 # For development, we disable any cache and enable
 # debugging and code reloading.

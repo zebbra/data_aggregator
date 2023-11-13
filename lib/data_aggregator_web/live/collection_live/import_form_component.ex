@@ -4,6 +4,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   alias AshPhoenix.Form
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
+  alias Phoenix.LiveView.UploadEntry
 
   @impl true
   def update(assigns, socket) do
@@ -35,13 +36,13 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
         <%!-- use phx-drop-target with the upload ref to enable file drag and drop --%>
         <section
           phx-drop-target={@uploads.file.ref}
-          class="border-gray-900/25 dark:border-white/25 flex flex-col px-6 py-10 mt-2 border border-dashed rounded-md"
+          class="border-gray-900/25 dark:border-white/25 flex flex-col py-10 px-6 mt-2 rounded-md border border-dashed"
         >
           <div class="flex justify-center">
             <div class="text-center">
               <.icon
                 name="hero-photo-mini"
-                class="dark:text-gray-500 w-12 h-12 mx-auto text-gray-300"
+                class="dark:text-gray-500 mx-auto w-12 h-12 text-gray-300"
               />
               <div class="dark:text-gray-400 flex mt-4 text-sm leading-6 text-gray-600">
                 <label
@@ -66,7 +67,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
               <span class="text-sm"><%= entry.client_name %></span>
 
               <div class="flex space-x-4">
-                <div class="dark:bg-gray-700 w-full h-2 mt-2 bg-gray-200 rounded-full">
+                <div class="dark:bg-gray-700 mt-2 w-full h-2 bg-gray-200 rounded-full">
                   <div
                     class="dark:bg-indigo-500 h-2 bg-indigo-600 rounded-full"
                     style={"width: #{entry.progress}%;"}
@@ -103,7 +104,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
           </.button>
           <.button
             variant="secondary"
-            class="sm:mt-0 sm:w-auto inline-flex justify-center w-full mt-3"
+            class="sm:mt-0 sm:w-auto inline-flex justify-center mt-3 w-full"
             phx-click={JS.exec("data-cancel", to: "#import-modal")}
             phx-disable-with
           >
@@ -123,7 +124,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
     <div class="sm:flex sm:items-start">
       <div
         :if={@icon}
-        class="sm:mx-0 sm:h-10 sm:w-10 flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-indigo-100 rounded-full"
+        class="sm:mx-0 sm:h-10 sm:w-10 flex flex-shrink-0 justify-center items-center mx-auto w-12 h-12 bg-indigo-100 rounded-full"
       >
         <.icon name={@icon} class="w-6 h-6 text-indigo-600" />
       </div>
@@ -170,8 +171,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
     collection = socket.assigns.collection
 
     imports =
-      consume_uploaded_entries(socket, :file, fn %{path: path}, _entry ->
-        case handle_upload(collection, path) do
+      consume_uploaded_entries(socket, :file, fn %{path: path}, entry ->
+        case handle_upload(collection, path, entry) do
           {:ok, import} ->
             {:ok, import}
 
@@ -219,8 +220,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
 
   def pretty_max_file_size(_), do: nil
 
-  defp handle_upload(collection, path) do
-    Import.create_from_path(collection, path)
+  defp handle_upload(collection, path, %UploadEntry{} = entry) do
+    Import.create_from_path(collection, path, %{filename: entry.client_name})
   end
 
   defp error_to_string(:too_large), do: "Too large"

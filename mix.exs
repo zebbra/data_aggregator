@@ -12,6 +12,9 @@ defmodule DataAggregator.MixProject do
       consolidate_protocols: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
+      preferred_cli_env: [
+        "test.watch": :test
+      ],
 
       # Dialyzer
       dialyzer: [
@@ -232,6 +235,7 @@ defmodule DataAggregator.MixProject do
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:assertions, "~> 0.19", only: :test},
+      {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
 
       # file handling and S3
       {:waffle, "~> 1.1"},
