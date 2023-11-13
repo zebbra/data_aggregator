@@ -17,9 +17,9 @@ msgid "Actions"
 msgstr "Aktionen"
 
 #: lib/data_aggregator_web/components/core_components.ex:105
-#: lib/data_aggregator_web/components/headless_components.ex:495
-#: lib/data_aggregator_web/components/headless_components.ex:607
-#: lib/data_aggregator_web/components/headless_components.ex:719
+#: lib/data_aggregator_web/components/headless_components.ex:490
+#: lib/data_aggregator_web/components/headless_components.ex:597
+#: lib/data_aggregator_web/components/headless_components.ex:709
 #, elixir-autogen, elixir-format
 msgid "close"
 msgstr "schliessen"
@@ -371,31 +371,31 @@ msgctxt "DataAggregatorWeb.RecordLive.FormComponent"
 msgid "Use this form to manage records in your database."
 msgstr "Benutze dieses Formular, um Einträge in der Datebank zu verwalten."
 
-#: lib/data_aggregator_web/live/record_live/preview_component.ex:67
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:61
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "Close"
 msgstr "Zurück"
 
-#: lib/data_aggregator_web/live/record_live/preview_component.ex:71
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:65
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "Edit Record"
 msgstr "Eintrag bearbeiten"
 
-#: lib/data_aggregator_web/live/record_live/preview_component.ex:57
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:51
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "ID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/preview_component.ex:59
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:53
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "Scientific Name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/preview_component.ex:52
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:46
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "This is a record from your database."
@@ -427,7 +427,7 @@ msgctxt "DataAggregatorWeb.RecordLive.FormComponent"
 msgid "Material Entity ID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/preview_component.ex:58
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:52
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "Material Entity ID"

@@ -9,19 +9,12 @@ export function useResizeListener(
   // window.resize callback function
   const resizeFunction = () => {
     const styleAttr = this.el.getAttribute("style");
-    const mounted = this.el.getAttribute("phx-mounted");
-
-    // show attribute is dynamic (not used with :if directive)
-    const staticMode = this.el.hasAttribute("data-static");
 
     if (!visible(breakpoint)) {
       if (styleAttr && styleAttr.includes("display: none") === false) {
         close();
       }
-    } else if (
-      (mounted || !staticMode) &&
-      (styleAttr === null || styleAttr.includes("display: none"))
-    ) {
+    } else if (styleAttr === null || styleAttr.includes("display: none")) {
       open();
     }
   };

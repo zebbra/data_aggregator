@@ -6,23 +6,17 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
   attr :record, Record, required: true
   attr :current_path_params, :string, required: true
   attr :live_action, :atom, required: true
-  attr :viewport_width, :integer, default: nil
 
   def preview(assigns) do
     ~H"""
-    <aside
-      phx-window-keydown={
-        display_size_xl(@viewport_width) and JS.push("select", value: %{id: @record.id})
-      }
-      phx-key="escape"
-      class="xl:block xl:fixed xl:bottom-0 xl:right-0 xl:top-16 xl:w-96 xl:overflow-y-auto hidden"
-    >
+    <aside class="xl:block xl:fixed xl:bottom-0 xl:right-0 xl:top-16 xl:w-96 xl:overflow-y-auto hidden">
       <.preview_content record={@record} current_path_params={@current_path_params} />
     </aside>
 
     <.slideover
-      :if={display_size_lt(@viewport_width, :display_xl)}
       id="record-slideover"
+      responsive="xl:hidden"
+      show={false}
       on_cancel={JS.push("select", value: %{id: @record.id})}
     >
       <div class="flex flex-col h-full">

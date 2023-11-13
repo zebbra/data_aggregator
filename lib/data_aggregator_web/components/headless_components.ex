@@ -365,11 +365,7 @@ defmodule DataAggregatorWeb.HeadlessComponents do
 
   attr :show, :boolean,
     default: true,
-    doc: "set to false if you want to use the responsive feature (or use static)"
-
-  attr :static, :boolean,
-    default: false,
-    doc: "set to true if you want to use the responsive feature with dynamic show attribute"
+    doc: "set to false if you want to use the responsive feature"
 
   attr :responsive, :string,
     default: nil,
@@ -424,7 +420,6 @@ defmodule DataAggregatorWeb.HeadlessComponents do
       parent_id={@parent_id}
       as={@as}
       show={@show}
-      static={@static}
       responsive={@responsive}
       role={@role}
       class={@class}
@@ -520,10 +515,6 @@ defmodule DataAggregatorWeb.HeadlessComponents do
     default: true,
     doc: "set to false if you want to use the responsive feature"
 
-  attr :static, :boolean,
-    default: false,
-    doc: "set to true if you want to use the responsive feature with dynamic show attribute"
-
   attr :responsive, :string,
     default: nil,
     doc: "the tailwindcss breakpoint at which the slideover becomes visible / hidden"
@@ -571,7 +562,6 @@ defmodule DataAggregatorWeb.HeadlessComponents do
       parent_id={@parent_id}
       as={@as}
       show={@show}
-      static={@static}
       responsive={@responsive}
       role={@role}
       class={@class}
@@ -741,8 +731,8 @@ defmodule DataAggregatorWeb.HeadlessComponents do
       id={@id <> "__backdrop"}
       class={[
         "hidden fixed inset-0",
-        @variant == "slideover" && "bg-black/50 dark:bg-black/40",
-        @variant == "modal" && "bg-black/50 dark:bg-black/40"
+        @variant == "slideover" && "bg-gray-500/75 dark:bg-[#0f172ae6]",
+        @variant == "modal" && "bg-gray-500/75 dark:bg-[#0f172ae6]"
       ]}
       aria-hidden="true"
     />
