@@ -10,6 +10,7 @@ classDiagram
         Map mapping
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Float digitizing_progress
         Integer records_count
         Institution institution
         Import[] imports

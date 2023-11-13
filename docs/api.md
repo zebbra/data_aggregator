@@ -96,6 +96,7 @@ classDiagram
         Map mapping
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Float digitizing_progress
         Integer records_count
         Institution institution
         Import[] imports
@@ -231,6 +232,7 @@ erDiagram
         Map mapping
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Float digitizing_progress
         Integer records_count
     }
     Import {
@@ -671,6 +673,7 @@ classDiagram
         UUID id
         String filename
         String url
+        String cached_file
         read()
         import_from_path(String path)
         destroy()
@@ -685,6 +688,7 @@ erDiagram
         UUID id
         String filename
         String url
+        String cached_file
     }
 ```
 

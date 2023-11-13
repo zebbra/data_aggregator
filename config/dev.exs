@@ -72,6 +72,9 @@ config :data_aggregator, dev_routes: true
 # Serve uploaded files from the priv/storage directory
 config :data_aggregator, serve_files_from: "priv/storage/dev/files"
 
+# Cache files in the priv/storage directory
+config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/dev/cache"
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 
