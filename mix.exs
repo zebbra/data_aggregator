@@ -326,6 +326,8 @@ defmodule DataAggregator.MixProject do
 
       # Run linters
       lint: [
+        # temporarily disabled because of deprecation warning in Waffle
+        # "compile --all-warnings --warnings-as-errors",
         "format --check-formatted",
         "credo --strict",
         "deps.audit",

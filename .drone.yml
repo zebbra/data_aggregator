@@ -27,7 +27,7 @@ steps:
 
   - &elixir
     name: build
-    image: hexpm/elixir:1.15.7-erlang-26.1.2-alpine-3.18.4
+    image: hexpm/elixir:1.16.0-rc.0-erlang-26.1.2-alpine-3.18.4
     environment:
       MIX_ENV: test
     commands:
@@ -40,7 +40,7 @@ steps:
       - mix deps.compile
       - mix assets.setup
       - mix assets.build
-      - mix compile --warnings-as-errors --force
+      - mix compile
       - mix dialyzer --plt
 
   - <<: *drone_cache
