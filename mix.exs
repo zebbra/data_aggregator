@@ -199,7 +199,7 @@ defmodule DataAggregator.MixProject do
       {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
       {:open_api_spex, "~> 3.18"},
-      {:ash_json_api, "~> 0.33.1"},
+      {:ash_json_api, "~> 0.34.0"},
       {:redoc_ui_plug, "~> 0.2.1"},
       {:ecto_dev_logger, "~> 0.9"},
 
