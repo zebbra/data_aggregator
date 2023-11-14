@@ -32,6 +32,9 @@ config :data_aggregator, serve_files_from: "priv/storage/test/files"
 # Cache files in the test environment
 config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/test/cache"
 
+# Prevent Oban from running jobs and plugins during test runs
+config :data_aggregator, Oban, testing: :inline
+
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 

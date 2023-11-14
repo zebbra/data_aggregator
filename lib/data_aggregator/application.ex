@@ -11,7 +11,10 @@ defmodule DataAggregator.Application do
     :ok = Logger.add_handlers(:data_aggregator)
 
     # Enable ecto dev logger (only in dev)
-    Ecto.DevLogger.install(DataAggregator.Repo)
+    :ok = Ecto.DevLogger.install(DataAggregator.Repo)
+
+    # Attach default Oban logger
+    :ok = Oban.Telemetry.attach_default_logger(encode: false)
 
     children = [
       # Start the Telemetry supervisor
@@ -24,6 +27,8 @@ defmodule DataAggregator.Application do
       {Phoenix.PubSub, name: DataAggregator.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: DataAggregator.Finch},
+      # Start the Oban queue
+      {Oban, Application.fetch_env!(:data_aggregator, Oban)},
       # Start a worker by calling: DataAggregator.Worker.start_link(arg)
       # {DataAggregator.Worker, arg},
       # Start the Endpoint (http/https)

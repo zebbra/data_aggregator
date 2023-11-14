@@ -37,7 +37,7 @@ defmodule DataAggregator.MixProject do
   def application do
     [
       mod: {DataAggregator.Application, []},
-      extra_applications: [:logger, :runtime_tools, :ssl]
+      extra_applications: [:logger, :runtime_tools, :ssl, :os_mon]
     ]
   end
 
@@ -94,12 +94,12 @@ defmodule DataAggregator.MixProject do
 
   defp groups_for_extras do
     [
-      Guides: [
+      Docs: [
         "docs/development.md",
         "docs/deployment.md"
       ],
       Ash: "docs/api.md",
-      Livebooks: ~r'docs/livebooks'
+      Guides: ~r'docs/guides'
     ]
   end
 
@@ -174,82 +174,94 @@ defmodule DataAggregator.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      # phoenix framework
-      {:bandit, "~> 1.0-pre"},
+      # Phoenix Framework
+      {:bandit, "~> 1.1.0"},
       {:phoenix, "~> 1.7.7"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.20.1"},
-      {:swoosh, "~> 1.3"},
-      {:dns_cluster, "~> 0.1.1"},
-
-      # ash framework
-      {:ash, "~> 2.13"},
-      {:ash_postgres, "~> 1.3"},
-      {:ash_phoenix, "~> 1.2"},
-      {:ash_uuid, "~> 0.4"},
-      {:ash_graphql, "~> 0.26.6"},
-
-      # frontent and components
       {:phoenix_storybook, "~> 0.5.0"},
 
-      # db / orm / api
-      {:absinthe_plug, "~> 1.5.8"},
-      {:ecto_sql, "~> 3.10"},
+      # Ash Framework
+      {:ash, "~> 2.13"},
+      {:ash_graphql, "~> 0.26.6"},
+      {:ash_json_api, "~> 0.34.0"},
+      {:ash_phoenix, "~> 1.2"},
+      {:ash_postgres, "~> 1.3"},
+      {:ash_state_machine, "~> 0.2.2"},
+      {:ash_uuid, "~> 0.4"},
+
+      # Database and Ecto
+      {:ecto, "~> 3.10.0"},
+      {:ecto_sql, "~> 3.10.0"},
       {:postgrex, ">= 0.0.0"},
-      {:open_api_spex, "~> 3.18"},
-      {:ash_json_api, "~> 0.33.1"},
-      {:redoc_ui_plug, "~> 0.2.1"},
       {:ecto_dev_logger, "~> 0.9"},
 
-      # assets
-      {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
-
-      # i18n
-      {:gettext, "~> 0.20"},
-      {:ex_cldr, "~> 2.37"},
-      {:ex_cldr_numbers, "~> 2.31"},
-      {:ex_cldr_dates_times, "~> 2.14"},
-      {:ex_cldr_units, "~> 3.16"},
-      {:ex_cldr_plugs, "~> 1.3"},
-
-      # misc
-      {:envy, "~> 1.1.1"},
-      {:floki, ">= 0.30.0", only: :test},
-      {:hackney, "~> 1.18"},
-      {:jason, "~> 1.2"},
-      {:timex, "~> 3.0"},
-      {:explorer, "~> 0.7.1"},
-
-      # metrix and observation
-      {:sentry, "~> 9.1"},
-      {:telemetry_poller, "~> 1.0"},
-      {:telemetry_metrics, "~> 0.6"},
-      {:phoenix_live_dashboard, "~> 0.8.1"},
-
-      # linting & testing
+      # Testing and Linting
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
-      {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
-      {:assertions, "~> 0.19", only: :test},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:assertions, "~> 0.19", only: :test},
 
-      # file handling and S3
+      # Dev Tools
+      {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
+      {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
+
+      # Internationalization and Localization
+      {:gettext, "~> 0.20"},
+      {:ex_cldr, "~> 2.37"},
+      {:ex_cldr_dates_times, "~> 2.14"},
+      {:ex_cldr_numbers, "~> 2.31"},
+      {:ex_cldr_units, "~> 3.16"},
+      {:ex_cldr_plugs, "~> 1.3"},
+      {:timex, "~> 3.0"},
+
+      # HTTP and API Utilities
+      {:absinthe_plug, "~> 1.5.8"},
+      {:hackney, "~> 1.18"},
+      {:jason, "~> 1.2"},
+      {:open_api_spex, "~> 3.18"},
+      {:redoc_ui_plug, "~> 0.2.1"},
+      {:req, "~> 0.4.5"},
+
+      # Mailing
+      {:swoosh, "~> 1.3"},
+
+      # Data Processing and Parsing
+      {:explorer, "~> 0.7.1"},
+      {:csv, "~> 3.2"},
       {:waffle, "~> 1.1"},
       {:ex_aws, "~> 2.5.0"},
       {:ex_aws_s3, "~> 2.0"},
+      {:floki, ">= 0.30.0", only: :test},
       {:sweet_xml, "~> 0.6"},
-      {:csv, "~> 3.2"},
 
-      # http
-      {:req, "~> 0.4.5"},
+      # Background Jobs
+      {:oban, "~> 2.16"},
+      {:oban_live_dashboard, "~> 0.1.0"},
 
-      # docs
+      # Monitoring and Tracing
+      {:phoenix_live_dashboard, "~> 0.8.1"},
+      {:sentry, "~> 9.1"},
+      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_poller, "~> 1.0"},
+
+      # Clustering
+      {:dns_cluster, "~> 0.1.1"},
+
+      # Utilities and Helpers
+      {:envy, "~> 1.1.1"},
+
+      # Documentation
+      {:ecto_erd, "~> 0.5", only: :dev},
       {:ex_doc, "~> 0.27", runtime: false},
-      {:ecto_erd, "~> 0.5", only: :dev}
+
+      # Liveview Widgets
+      {:kino, "~> 0.11.2", only: :dev},
+      {:kino_explorer, "~> 0.1.10", only: :dev}
     ]
   end
 
@@ -338,6 +350,7 @@ defmodule DataAggregator.MixProject do
       docs: [
         "ash.generate_livebook --filename=docs/api.md",
         "ash.generate_resource_diagrams --format md",
+        "ash_state_machine.generate_flow_charts --format md",
         "repo.erd",
         "docs"
       ]
