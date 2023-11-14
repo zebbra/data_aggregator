@@ -8,14 +8,11 @@ defmodule DataAggregator.Records.Record.Changes.RelateCollectionFromImport do
   alias Ash.Changeset
   alias DataAggregator.Records.Import
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     case Changeset.get_argument(changeset, :import) do
-      nil ->
-        changeset
-
-      %Import{collection: collection} ->
-        changeset
-        |> Changeset.manage_relationship(:collection, collection, type: :append)
+      %Import{collection_id: collection_id} ->
+        Changeset.manage_relationship(changeset, :collection, %{id: collection_id}, type: :append)
     end
   end
 end

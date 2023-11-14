@@ -7,19 +7,22 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
 
   alias DataAggregator.Records.Record
 
+  @impl true
   def run(input, _opts, _context) do
     %{import: import, rows: rows} = input.arguments
 
-    result =
+    records_stream =
       rows
       |> Stream.map(&%{import: import, params: &1})
       |> DataAggregator.Records.bulk_create(Record, :import,
         return_records?: true,
+        return_errors?: true,
         return_stream?: true,
-        # max_concurrency: 2, # does not work in tests
+        # does not work in tests
+        # max_concurrency: 2,
         batch_size: 1000
       )
 
-    {:ok, result}
+    {:ok, records_stream}
   end
 end

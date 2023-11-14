@@ -11,9 +11,10 @@ config :data_aggregator, DataAggregator.Repo,
   show_sensitive_data_on_connection_error: true,
   pool_size: 20,
   log: false,
-  timeout: 60_000,
-  backoff_max: 120_000,
-  ownership_timeout: 60_000
+  timeout: 10 * 60 * 1000
+
+# backoff_max: 120_000,
+# ownership_timeout: 60_000
 
 # For development, we disable any cache and enable
 # debugging and code reloading.

@@ -451,13 +451,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "up to %{max_file_size}"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:42
+#: lib/data_aggregator_web/live/import_live/index.html.heex:50
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:44
+#: lib/data_aggregator_web/live/import_live/index.html.heex:52
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Delete"
@@ -470,7 +470,7 @@ msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Listing Imports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:35
+#: lib/data_aggregator_web/live/import_live/index.html.heex:43
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Show"
@@ -512,7 +512,7 @@ msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Show Import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:95
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:93
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "Back"
@@ -616,63 +616,63 @@ msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Type"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:88
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:86
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "Affected Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:63
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:67
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:61
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:65
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "Back to Mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:89
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:87
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "Collection Owner"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:72
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:77
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:70
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:75
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "Confirm and import Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:90
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:88
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "Estimated Import Time"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:84
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:82
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "Mapped Columns"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:86
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:84
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "New Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:87
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:85
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "Recurring Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:91
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:89
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "Suggested Expert"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:85
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:83
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "Total Records to Import"
@@ -752,7 +752,7 @@ msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Total Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/confirmation.ex:74
+#: lib/data_aggregator_web/live/import_live/confirmation.ex:72
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "Importing..."
@@ -849,7 +849,7 @@ msgctxt "DataAggregatorWeb.ImportLive.Records"
 msgid "Updated"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:29
+#: lib/data_aggregator_web/live/import_live/index.html.heex:37
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Records"
@@ -877,4 +877,16 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Size"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/index.html.heex:33
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Index"
+msgid "Imported at"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/index.html.heex:29
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Index"
+msgid "State"
 msgstr ""

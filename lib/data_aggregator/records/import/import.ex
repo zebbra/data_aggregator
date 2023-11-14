@@ -1,11 +1,15 @@
 defmodule DataAggregator.Records.Import do
   @moduledoc """
   Resource for importing records into a collection from a file.
+
+  ## Flow Chart
+
+  #{"import-mermaid-flowchart.md" |> Path.expand(__DIR__) |> File.read!()}
   """
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine]
 
   alias __MODULE__
   alias DataAggregator.Files.Attachment
@@ -17,6 +21,7 @@ defmodule DataAggregator.Records.Import do
     uuid_attribute :id, prefix: "if"
     attribute :columns, {:array, Column}
     timestamps private?: false, writable?: false
+    attribute :imported_at, :utc_datetime, allow_nil?: true
   end
 
   relationships do
@@ -37,7 +42,12 @@ defmodule DataAggregator.Records.Import do
 
   calculations do
     calculate :collection_name, :string, expr(collection.name)
-    calculate :attachment_url, :string, expr(attachment.url)
+
+    calculate :attachment_url, :string do
+      calculation fn import, _opts -> import.attachment.url end
+      load attachment: :url
+    end
+
     calculate :attachment_byte_size, :integer, expr(attachment.byte_size)
     calculate :attachment_filename, :string, expr(attachment.filename)
 
@@ -49,6 +59,23 @@ defmodule DataAggregator.Records.Import do
 
   aggregates do
     count :records_count, :records
+  end
+
+  state_machine do
+    initial_states [:pending]
+    default_initial_state :pending
+
+    transitions do
+      transition :enqueue, from: [:pending, :imported, :failed], to: :queued
+      transition :run, from: [:pending, :imported, :failed, :queued], to: :running
+      transition :set_imported, from: :running, to: :imported
+      transition :set_failed, from: :running, to: :failed
+    end
+  end
+
+  preparations do
+    prepare build(sort: [id: :asc])
+    prepare DataAggregator.Preparations.Sort
   end
 
   actions do
@@ -81,10 +108,35 @@ defmodule DataAggregator.Records.Import do
       change Import.Changes.UpdateMapping
     end
 
-    update :import_records do
+    update :run do
       accept []
+      change Import.Changes.SetRunningBeforeTransaction
+      change transition_state(:running)
       change Import.Changes.ImportRecords
-      change load([:records_count])
+      change Import.Changes.SetImportedAfterAction
+      change Import.Changes.SetFailedOnError
+      change load(:records_count)
+    end
+
+    update :enqueue do
+      change transition_state(:queued)
+      change Import.Changes.EnqueueRunner
+    end
+
+    update :set_running do
+      accept []
+      change set_attribute(:state, :running)
+    end
+
+    update :set_failed do
+      accept []
+      change transition_state(:failed)
+    end
+
+    update :set_imported do
+      accept []
+      change set_attribute(:imported_at, &DateTime.utc_now/0)
+      change transition_state(:imported)
     end
   end
 
@@ -95,18 +147,18 @@ defmodule DataAggregator.Records.Import do
     define :create, args: [:collection]
     define :create_from_path, args: [:collection, :path]
     define :update_mapping, args: [:columns]
-    define :import_records
+    define :run
+    define :enqueue
+    define :set_running
+    define :set_imported
+    define :set_failed
+
     define :destroy
   end
 
   postgres do
     table "imports"
     repo DataAggregator.Repo
-  end
-
-  preparations do
-    prepare build(sort: [id: :asc])
-    prepare DataAggregator.Preparations.Sort
   end
 
   graphql do

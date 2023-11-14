@@ -55,6 +55,11 @@ defmodule DataAggregator.Records.Record do
     end
   end
 
+  preparations do
+    prepare build(sort: [id: :asc])
+    prepare DataAggregator.Preparations.Sort
+  end
+
   actions do
     defaults [:update, :destroy]
 
@@ -105,6 +110,10 @@ defmodule DataAggregator.Records.Record do
     end
   end
 
+  identities do
+    identity :collection_mte_material_entity_id, [:collection_id, :mte_material_entity_id]
+  end
+
   code_interface do
     define_for DataAggregator.Records
     define :read
@@ -119,15 +128,6 @@ defmodule DataAggregator.Records.Record do
   postgres do
     table "records"
     repo DataAggregator.Repo
-  end
-
-  identities do
-    identity :collection_mte_material_entity_id, [:collection_id, :mte_material_entity_id]
-  end
-
-  preparations do
-    prepare build(sort: [id: :asc])
-    prepare DataAggregator.Preparations.Sort
   end
 
   graphql do

@@ -35,10 +35,8 @@ defmodule DataAggregatorWeb.ImportLive.Confirmation do
 
   @impl true
   def handle_event("import:records", _params, socket) do
-    case Import.import_records(socket.assigns.import) do
+    case Import.enqueue(socket.assigns.import) do
       {:ok, import} ->
-        import |> dbg
-
         {:noreply,
          socket
          |> assign(:import, import)
