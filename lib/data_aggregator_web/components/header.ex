@@ -25,7 +25,7 @@ defmodule DataAggregatorWeb.Components.Header do
       @class
     ]}>
       <div>
-        <h1 class="dark:text-white text-2xl font-semibold leading-9 text-gray-800 outline-none">
+        <h1 class="dark:text-white text-base font-semibold leading-9 text-gray-800 outline-none">
           <%= render_slot(@inner_block) %>
         </h1>
         <p :if={@subtitle != []} class="dark:text-gray-400 mt-2 text-sm leading-6 text-gray-600">
