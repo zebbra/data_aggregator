@@ -15,6 +15,7 @@ defmodule DataAggregatorWeb.Components do
         Modal,
         Loading,
         Pagination,
+        Progress,
         Sidebar,
         SlideOver,
         StatCard,

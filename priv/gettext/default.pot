@@ -11,7 +11,7 @@
 msgid ""
 msgstr ""
 
-#: lib/data_aggregator_web/components/datatable.ex:122
+#: lib/data_aggregator_web/components/datatable.ex:124
 #: lib/data_aggregator_web/components/table.ex:68
 #, elixir-autogen, elixir-format
 msgid "Actions"
@@ -73,7 +73,7 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Edit"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.ex:47
+#: lib/data_aggregator_web/live/record_live/index.ex:55
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Edit Record"
@@ -85,14 +85,14 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Inserted At"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.ex:61
+#: lib/data_aggregator_web/live/record_live/index.ex:69
 #: lib/data_aggregator_web/live/record_live/index.html.heex:8
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Listing Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.ex:54
+#: lib/data_aggregator_web/live/record_live/index.ex:62
 #: lib/data_aggregator_web/live/record_live/index.html.heex:15
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
@@ -147,7 +147,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Save Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:112
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:107
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Cancel"
@@ -327,13 +327,13 @@ msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "Material Entity ID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:107
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:102
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Upload file"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:191
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:186
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "up to %{max_file_size}"

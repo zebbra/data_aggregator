@@ -6,7 +6,9 @@ defmodule DataAggregatorWeb.Components.Datatable do
   use Phoenix.Component
 
   import DataAggregatorWeb.Gettext
-  import DataAggregatorWeb.QueryBuilder
+
+  import DataAggregatorWeb.Components.Internal.Sort,
+    only: [current_sort_dir: 1, current_sort_field: 1]
 
   @doc ~S"""
   Renders a datatable for streams with generic tailwindui styling.

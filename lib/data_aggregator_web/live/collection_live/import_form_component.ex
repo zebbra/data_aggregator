@@ -72,22 +72,17 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
             <article :for={entry <- @uploads.file.entries}>
               <span class="text-sm"><%= entry.client_name %></span>
 
-              <div class="flex space-x-4">
-                <div class="dark:bg-gray-700 w-full h-2 mt-2 bg-gray-200 rounded-full">
-                  <div
-                    class="dark:bg-indigo-500 h-2 bg-indigo-600 rounded-full"
-                    style={"width: #{entry.progress}%;"}
-                  />
-                </div>
+              <div class="flex items-center space-x-4">
+                <.progress value={entry.progress} />
                 <button
                   type="button"
                   phx-click="cancel-upload"
                   phx-target={@myself}
                   phx-value-ref={entry.ref}
                   aria-label="cancel"
-                  class="text-gray-600"
+                  class="flex items-center h-full"
                 >
-                  &times;
+                  <.icon name="hero-x-mark-mini" class="text-gray-600" />
                 </button>
               </div>
 

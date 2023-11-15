@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.RecordLive.Show do
 
   alias DataAggregator.Records.Record
 
-  import DataAggregatorWeb.QueryBuilder
+  import DataAggregatorWeb.Components.Internal.Path, only: [assign_current_path_params: 2]
 
   @impl true
   def mount(_params, _session, socket) do
