@@ -24,7 +24,7 @@ defmodule DataAggregator.Application do
       # Start the DNS cluster
       {DNSCluster, query: Application.get_env(:data_aggregator, :dns_cluster_query) || :ignore},
       # Start the PubSub system
-      {Phoenix.PubSub, name: DataAggregator.PubSub},
+      DataAggregator.PubSub,
       # Start the Finch HTTP client for sending emails
       {Finch, name: DataAggregator.Finch},
       # Start the Oban queue

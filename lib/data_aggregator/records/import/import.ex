@@ -9,7 +9,8 @@ defmodule DataAggregator.Records.Import do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
+    notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
   alias DataAggregator.Files.Attachment
@@ -59,6 +60,19 @@ defmodule DataAggregator.Records.Import do
 
   aggregates do
     count :records_count, :records
+  end
+
+  pub_sub do
+    module DataAggregator.PubSub
+    prefix "import"
+
+    publish_all :create, [[:collection_id, nil], "created"]
+    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
+    publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
+
+    # not used yet, just as an example how to extend this
+    # publish :set_failed, [[:collection_id, nil], "failed", [:id, nil]]
+    # publish :set_imported, [[:collection_id, nil], "imported", [:id, nil]]
   end
 
   state_machine do

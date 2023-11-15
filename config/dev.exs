@@ -79,6 +79,9 @@ config :data_aggregator, serve_files_from: "priv/storage/dev/files"
 # Cache files in the priv/storage directory
 config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/dev/cache"
 
+# Log ash pubsub messages for debugging
+# config :ash, :pub_sub, debug?: true
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 

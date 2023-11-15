@@ -1,12 +1,20 @@
 defmodule DataAggregatorWeb.ImportLive.Index do
   use DataAggregatorWeb, :live_view
 
+  alias DataAggregator.PubSub
   alias DataAggregator.Records.Import
 
   import DataAggregatorWeb.QueryBuilder
+  # import AshPhoenix.LiveView, only: [keep_live: 4, handle_live: 4]
+
+  @topics ["import:created", "import:updated", "import:deleted"]
 
   @impl true
   def mount(_params, _session, socket) do
+    # Replace with? https://hexdocs.pm/ash_phoenix/AshPhoenix.LiveView.html#keep_live/4
+    # socket = socket |> assign_live(:imports, &list_imports/1, subscribe: @topics)
+    if connected?(socket), do: PubSub.subscribe(@topics)
+
     {:ok, socket}
   end
 
@@ -59,6 +67,11 @@ defmodule DataAggregatorWeb.ImportLive.Index do
         socket
       ) do
     {:noreply, stream_insert(socket, :results, import)}
+  end
+
+  def handle_info({topic, _event, _notification}, socket) when topic in @topics do
+    socket = socket |> assign_imports()
+    {:noreply, socket}
   end
 
   @impl true
