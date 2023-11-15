@@ -8,8 +8,9 @@ defmodule DataAggregatorWeb.Helpers do
   @timezone "Europe/Zurich"
   @placeholder Phoenix.HTML.raw("&mdash;")
 
-  def format_number(number, opts \\ []),
-    do: Cldr.Number.to_string!(number, opts)
+  def format_number(number, opts \\ []) do
+    Cldr.Number.to_string!(number, opts)
+  end
 
   def format_date(date, opts \\ []), do: Cldr.Date.to_string!(date, opts)
 

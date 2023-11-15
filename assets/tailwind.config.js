@@ -63,7 +63,7 @@ module.exports = {
     ),
 
     // Embeds Heroicons (https://heroicons.com) into your app.css bundle
-    // See your `CoreComponents.icon/1` for more information.
+    // See your `Components.Icon.icon/1` for more information.
     //
     plugin(function ({ matchComponents, theme }) {
       let iconsDir = path.join(__dirname, "./vendor/heroicons/optimized");

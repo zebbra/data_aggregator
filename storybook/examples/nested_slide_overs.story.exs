@@ -1,10 +1,8 @@
-defmodule Storybook.Examples.NestedDialog do
+defmodule Storybook.Examples.NestedSlideOvers do
   use PhoenixStorybook.Story, :example
+  use DataAggregatorWeb.Components
 
   alias Phoenix.LiveView.JS
-
-  import DataAggregatorWeb.HeadlessComponents, only: [slideover: 1, modal: 1]
-  import DataAggregatorWeb.CoreComponents
 
   def doc,
     do: """
@@ -60,9 +58,7 @@ defmodule Storybook.Examples.NestedDialog do
       <.header>
         Dashboard
         <:actions>
-          <.button id="drawer__button" phx-click="toggle_drawer">
-            Drawer
-          </.button>
+          <.button id="drawer__button" phx-click="toggle_drawer" label="Drawer" />
         </:actions>
       </.header>
       <div class="dark:text-white sm:px-6 lg:px-8 p-4">
@@ -84,24 +80,30 @@ defmodule Storybook.Examples.NestedDialog do
           <div class="flex flex-col h-full">
             <.sidebar>
               <:header>
-                <.header dialog_header_id="drawer" class="sticky top-0">
+                <.sidebar_header sidebar_id="drawer" class="sticky top-0">
                   Drawer
                   <:subtitle>
                     This is the base drawer
                   </:subtitle>
-                </.header>
+                </.sidebar_header>
               </:header>
               <.list :for={x <- 1..4}>
                 <:item title="ID">Item <%= x %></:item>
               </.list>
               <:footer>
-                <.button variant="secondary" class="inline-flex mr-2" phx-click="toggle_drawer">
-                  <span>Close</span>
-                </.button>
-                <.button id="level_1__button" phx-click="toggle_level_1">Level 1</.button>
-                <.button class="ml-2" id="other-modal__button" phx-click="toggle_other_modal">
-                  Other Modal
-                </.button>
+                <.button
+                  color="secondary"
+                  class="inline-flex mr-2"
+                  phx-click="toggle_drawer"
+                  label="Close"
+                />
+                <.button id="level_1__button" phx-click="toggle_level_1" label="Level 1" />
+                <.button
+                  class="ml-2"
+                  id="other-modal__button"
+                  phx-click="toggle_other_modal"
+                  label="Other Modal"
+                />
               </:footer>
             </.sidebar>
           </div>
@@ -119,21 +121,19 @@ defmodule Storybook.Examples.NestedDialog do
             <div class="flex flex-col h-full">
               <.sidebar>
                 <:header>
-                  <.header dialog_header_id="level_1" class="sticky top-0">
+                  <.sidebar_header sidebar_id="level_1" class="sticky top-0">
                     Level 1
                     <:subtitle>
                       This is the second level drawer.
                     </:subtitle>
-                  </.header>
+                  </.sidebar_header>
                 </:header>
                 <.list :for={x <- 1..20}>
                   <:item title="ID">Item <%= x %></:item>
                 </.list>
                 <:footer>
-                  <.button variant="secondary" class="inline-flex mr-2" phx-click="toggle_level_1">
-                    <span>Close</span>
-                  </.button>
-                  <.button id="modal__button" phx-click="toggle_modal">Modal</.button>
+                  <.button color="secondary" class="mr-2" phx-click="toggle_level_1" label="Close" />
+                  <.button id="modal__button" phx-click="toggle_modal" label="Modal" />
                 </:footer>
               </.sidebar>
             </div>
@@ -146,12 +146,11 @@ defmodule Storybook.Examples.NestedDialog do
               backdrop={false}
               on_cancel={JS.push("toggle_modal")}
             >
-              <.header dialog_header_id="modal">
-                Modal
-                <:subtitle>
-                  This is a modal inside a drawer.
-                </:subtitle>
-              </.header>
+              <.modal_header
+                modal_id="modal"
+                title="Modal"
+                description="This is a modal inside a drawer"
+              />
               <:cancel>
                 Close
               </:cancel>
@@ -161,12 +160,7 @@ defmodule Storybook.Examples.NestedDialog do
       </:portal>
       <:portal>
         <.modal id="other-modal" show={@other_modal} on_cancel={JS.push("toggle_other_modal")}>
-          <.header dialog_header_id="other-modal">
-            Modal
-            <:subtitle>
-              This is an other modal.
-            </:subtitle>
-          </.header>
+          <.modal_header modal_id="other-modal" title="Modal" description="This is an other modal" />
           <:cancel>
             Close
           </:cancel>

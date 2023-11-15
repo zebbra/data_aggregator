@@ -1,8 +1,6 @@
 defmodule DataAggregatorWeb.CollectionLive.Show do
   use DataAggregatorWeb, :live_view
 
-  import DataAggregatorWeb.Headless.StatCard
-
   alias DataAggregator.Records.Collection
 
   @impl true
@@ -44,35 +42,33 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
   end
 
   @impl true
-  def handle_event("backto:collections", _, socket) do
-    {:noreply, socket |> push_navigate(to: ~p"/collections")}
-  end
-
-  @impl true
   def render(assigns) do
     ~H"""
     <.page active_link={:collections} environment={@environment} sidebar_nav={@sidebar_nav}>
-      <.header class="sticky top-16">
+      <.header class="top-16 sticky">
         <%= @collection.name %>
 
         <:actions>
           <.button
-            variant="nav"
-            class="rounded-md"
-            aria-label={~t"Back to Collections"m}
-            phx-click="backto:collections"
-          >
-            <.icon name="hero-arrow-left" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-            <%= ~t"Back to Collections"m %>
-          </.button>
-          <.styled_link patch={~p"/collections/#{@collection}/import"} id="import-modal__button">
-            <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-            <span class="sm:inline-block hidden"><%= ~t"Import Records"m %></span>
-          </.styled_link>
+            to={~p"/collections"}
+            link_type="live_redirect"
+            color="secondary"
+            icon="hero-arrow-left-mini"
+            label={~t"Back to Collections"m}
+            responsive
+          />
+          <.button
+            id="import-modal__button"
+            to={~p"/collections/#{@collection}/import"}
+            link_type="live_patch"
+            icon="hero-plus-circle-mini"
+            label={~t"Import Records"m}
+            responsive
+          />
         </:actions>
       </.header>
 
-      <div class="grid justify-items-center">
+      <div class="justify-items-center grid">
         <dl class="xl:grid-cols-4 grid grid-cols-2 gap-5 mt-5">
           <.stat_card label={~t"Name"m} stat={@collection.name} />
           <.stat_card label={~t"Owner"m} stat={@collection.owner} />
@@ -92,10 +88,6 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
           <.stat_card label={~t"Last Contribution"m} stat="13.11.2023" />
         </dl>
       </div>
-
-      <.back navigate={~p"/collections"}>
-        <%= ~t"Back"m %>
-      </.back>
 
       <:portal>
         <.modal

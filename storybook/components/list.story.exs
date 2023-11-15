@@ -1,7 +1,9 @@
-defmodule Storybook.CoreComponents.List do
+defmodule Storybook.Components.List do
   use PhoenixStorybook.Story, :component
 
-  def function, do: &Elixir.DataAggregatorWeb.CoreComponents.list/1
+  alias DataAggregatorWeb.Components.List
+
+  def function, do: &List.list/1
 
   def variations do
     [

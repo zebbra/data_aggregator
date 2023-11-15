@@ -1,12 +1,12 @@
-defmodule Storybook.HeadlessComponents.SwitchGroup do
+defmodule Storybook.Components.SwitchGroup do
   use PhoenixStorybook.Story, :component
 
-  alias DataAggregatorWeb.HeadlessComponents
+  alias DataAggregatorWeb.Components.Switch
 
-  def function, do: &HeadlessComponents.switch/1
+  def function, do: &Switch.switch/1
 
   def imports do
-    [{HeadlessComponents, [switch_group: 1, switch_label: 1, switch_description: 1]}]
+    [{Switch, [switch_group: 1, switch_label: 1, switch_description: 1]}]
   end
 
   def template do
@@ -22,13 +22,13 @@ defmodule Storybook.HeadlessComponents.SwitchGroup do
         </.switch_label>
       </span>
       <.lsb-variation/>
-      <HeadlessComponents.switch_description
+      <Switch.switch_description
         id=":variation_id__description"
         as="span"
         class="text-sm leading-5 text-gray-500"
       >
         Description
-      </HeadlessComponents.switch_description>
+      </Switch.switch_description>
     </.switch_group>
     """
   end

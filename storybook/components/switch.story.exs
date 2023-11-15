@@ -1,7 +1,7 @@
-defmodule Storybook.HeadlessComponents.Switch do
+defmodule Storybook.Components.Switch do
   use PhoenixStorybook.Story, :component
 
-  def function, do: &DataAggregatorWeb.HeadlessComponents.switch/1
+  def function, do: &DataAggregatorWeb.Components.Switch.switch/1
 
   def variations do
     [
