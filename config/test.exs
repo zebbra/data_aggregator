@@ -12,8 +12,9 @@ config :data_aggregator, DataAggregator.Repo,
   hostname: "localhost",
   # database: "data-aggregator-test#{System.get_env("MIX_TEST_PARTITION")}",
   database: "data_aggregator_test",
-  pool_size: 10,
+  pool_size: 20,
   pool: Ecto.Adapters.SQL.Sandbox,
+  queue_target: 100,
   log: false
 
 # We don't run a server during test. If one is required,
