@@ -5,11 +5,16 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
 
   use Ash.Resource.Actions.Implementation
 
+  alias DataAggregator.Records
   alias DataAggregator.Records.Record
 
   @impl true
   def run(input, _opts, _context) do
     %{import: import, rows: rows} = input.arguments
+
+    # Eager load the imports collection to avoid N+1 queries when
+    # creating the records
+    {:ok, import} = import |> Records.load([:collection])
 
     records_stream =
       rows
