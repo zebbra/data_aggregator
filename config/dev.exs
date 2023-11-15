@@ -9,8 +9,11 @@ config :data_aggregator, DataAggregator.Repo,
   database: "data_aggregator_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10,
-  log: false
+  pool_size: 20,
+  log: false,
+  timeout: 60_000,
+  backoff_max: 120_000,
+  ownership_timeout: 60_000
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -71,6 +74,9 @@ config :data_aggregator, dev_routes: true
 
 # Serve uploaded files from the priv/storage directory
 config :data_aggregator, serve_files_from: "priv/storage/dev/files"
+
+# Cache files in the priv/storage directory
+config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/dev/cache"
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"

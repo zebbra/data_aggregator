@@ -12,20 +12,20 @@
       end
     }
   >
-    <:col :let={{_id, import}} label={~t"Collection"m} field="collection.name">
-      <%= import.collection.name %>
+    <:col :let={{_id, import}} label={~t"File"m} field="attachment_filename">
+      <%= import.attachment_filename %>
+    </:col>
+
+    <:col :let={{_id, import}} label={~t"Size"m} field="attachment_byte_size">
+      <%= format_bytes(import.attachment_byte_size) %>
+    </:col>
+
+    <:col :let={{_id, import}} label={~t"Collection"m} field="collection_name">
+      <%= import.collection_name %>
     </:col>
 
     <:col :let={{_id, import}} label={~t"Records"m} field="records_count">
-      <%= import.records_count %>
-    </:col>
-
-    <:col :let={{_id, import}} label={~t"Inserted At"m} field="inserted_at">
-      <%= format_datetime(import.inserted_at) %>
-    </:col>
-
-    <:col :let={{_id, import}} label={~t"Updated At"m} field="updated_at">
-      <%= format_datetime(import.updated_at) %>
+      <%= format_number(import.records_count) %>
     </:col>
 
     <:action :let={{_id, import}}>

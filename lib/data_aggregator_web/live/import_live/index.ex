@@ -10,10 +10,21 @@ defmodule DataAggregatorWeb.ImportLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    results = Import.read!(load: [:collection, :records_count])
+    results = list_imports()
     socket = stream(socket, :results, results)
 
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  defp list_imports do
+    Import.read!(
+      load: [
+        :collection_name,
+        :records_count,
+        :attachment_filename,
+        :attachment_byte_size
+      ]
+    )
   end
 
   defp apply_action(socket, :show, %{"id" => id}) do

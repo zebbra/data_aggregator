@@ -15,8 +15,8 @@ defmodule DataAggregator.Files.Attachment.Calculations.Url do
     Enum.map(attachments, &calculate_url(&1, opts, context))
   end
 
-  defp calculate_url(%Attachment{id: id, filename: filename}, _opts, context) do
+  defp calculate_url(%Attachment{filename: filename} = attachment, _opts, context) do
     {url_args, _context} = context |> Map.split(@url_args)
-    Store.url({filename, id}, url_args |> Map.to_list())
+    Store.url({filename, attachment}, url_args |> Map.to_list())
   end
 end

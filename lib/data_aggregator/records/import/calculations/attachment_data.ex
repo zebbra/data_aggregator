@@ -41,28 +41,40 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
   @impl Ash.Calculation
   def calculate(imports, opts, ctx) do
     imports
-    |> DataAggregator.Records.load!([attachment: :url], lazy?: true)
-    |> Enum.map(&attachment_data(&1, opts, ctx))
+    |> DataAggregator.Records.load!([attachment: :cached_file], lazy?: true)
+    |> Enum.reverse()
+    |> Enum.reduce_while([], &reduce_attachment(&1, &2, opts, ctx))
+  end
+
+  defp reduce_attachment(%Import{} = import, acc, opts, context) do
+    case attachment_data(import, opts, context) do
+      {:ok, data} ->
+        {:cont, [data | acc]}
+
+      {:error, error} ->
+        {:halt, {:error, error}}
+    end
   end
 
   defp attachment_data(%Import{} = import, opts, context) do
-    import
-    |> create_dataframe(opts, context)
-    |> maybe_apply_mapping(import, opts, context)
+    with {:ok, data} <- create_dataframe(import, opts, context) do
+      data = data |> maybe_apply_mapping(import, opts, context)
+      {:ok, data}
+    end
   end
 
   defp create_dataframe(import, _opts, _context) do
-    %Import{attachment: %Attachment{url: url}} = import
+    %Import{attachment: %Attachment{cached_file: cached_file}} = import
 
-    case Explorer.DataFrame.from_csv(url) do
+    case Explorer.DataFrame.from_csv(cached_file) do
       {:ok, data} ->
-        data
+        {:ok, data}
 
       {:error, error} ->
-        "Could not load attachment data for import #{import.id} (#{url}): #{inspect(error)}"
+        "Could not load attachment data for import #{import.id} (#{cached_file}): #{inspect(error)}"
         |> Logger.warning()
 
-        nil
+        {:error, error}
     end
   end
 

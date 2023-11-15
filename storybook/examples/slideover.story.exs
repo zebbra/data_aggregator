@@ -51,12 +51,12 @@ defmodule Storybook.Examples.Slideover do
     ~H"""
     <.sidebar>
       <:header>
-        <.header title_size="text-base" dialog_header_id={@slideover_id} class="sticky top-0">
+        <.sidebar_header sidebar_id={@slideover_id} class="sticky top-0">
           Record ID
           <:subtitle>
             This is a record from your database.
           </:subtitle>
-        </.header>
+        </.sidebar_header>
       </:header>
       <.list>
         <:item title="ID">1234</:item>

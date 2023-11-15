@@ -5,24 +5,12 @@ defmodule DataAggregatorWeb.Components.Header do
 
   use Phoenix.Component
 
-  import DataAggregatorWeb.Headless.Dialog, only: [dialog_title: 1]
-
   @doc ~S"""
-  Renders a header with title.
+  Renders a header with title, subtitle and actions.
   """
   attr :class, :string, default: nil, doc: "the header class"
   attr :action_class, :string, default: "flex gap-x-3"
-
   attr :id, :string, default: nil
-
-  attr :title_size, :string,
-    default: "text-2xl",
-    values: ["text-2xl", "text-xl", "text-lg", "text-base", "text-sm"],
-    doc: "the size of the title"
-
-  attr :dialog_header_id, :string,
-    default: nil,
-    doc: "if set we assume a dialog header and use the dialog_header component"
 
   slot :inner_block, required: true
   slot :subtitle, doc: "the optional subtitle displayed below the title"
@@ -37,23 +25,7 @@ defmodule DataAggregatorWeb.Components.Header do
       @class
     ]}>
       <div>
-        <.dialog_title
-          :if={@dialog_header_id}
-          id={@dialog_header_id <> "__title"}
-          class={[
-            "dark:text-white font-semibold leading-9 text-gray-800",
-            @title_size
-          ]}
-        >
-          <%= render_slot(@inner_block) %>
-        </.dialog_title>
-        <h1
-          :if={!@dialog_header_id}
-          class={[
-            "dark:text-white font-semibold leading-9 text-gray-800 outline-none",
-            @title_size
-          ]}
-        >
+        <h1 class="dark:text-white text-2xl font-semibold leading-9 text-gray-800 outline-none">
           <%= render_slot(@inner_block) %>
         </h1>
         <p :if={@subtitle != []} class="dark:text-gray-400 mt-2 text-sm leading-6 text-gray-600">

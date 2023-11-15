@@ -67,3 +67,7 @@ npm-debug.log
 
 # Ignore database dumps
 priv/repo/dump/*.dump
+
+# Ignore large datasets for testing
+# use `mix data_aggregator.records` to load them
+test/support/fixtures/files/dataset-*.csv

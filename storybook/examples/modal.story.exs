@@ -24,12 +24,12 @@ defmodule Storybook.Examples.Modal do
     <div>
       <.button id="modal__button" phx-click={JS.push("toggle")} label="Open Modal" />
       <.modal :if={@show} id="modal" on_cancel={JS.push("toggle")} on_confirm={JS.push("toggle")}>
-        <div class="w-80">
-          <.header>
-            Header
-            <:subtitle>With a subtitle</:subtitle>
-          </.header>
-        </div>
+        <.modal_header
+          modal_id="modal"
+          title="Header"
+          description="With a subtitle"
+          icon="hero-check-circle-mini"
+        />
         <:cancel>Close</:cancel>
         <:confirm>Confirm</:confirm>
       </.modal>

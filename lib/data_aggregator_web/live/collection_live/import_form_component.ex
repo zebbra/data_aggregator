@@ -4,6 +4,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   alias AshPhoenix.Form
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
+  alias Phoenix.LiveView.UploadEntry
 
   @impl true
   def update(assigns, socket) do
@@ -25,7 +26,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
     ~H"""
     <div>
       <.modal_header
-        id="import-modal"
+        modal_id="import-modal"
         icon={@icon}
         title={@title}
         description={~t"Select a file containing your Records"m}
@@ -143,8 +144,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
     collection = socket.assigns.collection
 
     imports =
-      consume_uploaded_entries(socket, :file, fn %{path: path}, _entry ->
-        case handle_upload(collection, path) do
+      consume_uploaded_entries(socket, :file, fn %{path: path}, entry ->
+        case handle_upload(collection, path, entry) do
           {:ok, import} ->
             {:ok, import}
 
@@ -192,8 +193,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
 
   def pretty_max_file_size(_), do: nil
 
-  defp handle_upload(collection, path) do
-    Import.create_from_path(collection, path)
+  defp handle_upload(collection, path, %UploadEntry{} = entry) do
+    Import.create_from_path(collection, path, %{filename: entry.client_name})
   end
 
   defp error_to_string(:too_large), do: "Too large"

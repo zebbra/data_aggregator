@@ -86,7 +86,9 @@
       <.live_component
         module={DataAggregatorWeb.RecordLive.FormComponent}
         id={@record.id || :new}
-        icon="hero-plus-circle-mini"
+        icon={
+          if @live_action == :new, do: "hero-plus-circle-mini", else: "hero-pencil-square-mini"
+        }
         title={@page_title}
         action={@live_action}
         record={@record}

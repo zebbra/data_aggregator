@@ -80,12 +80,12 @@ defmodule Storybook.Examples.NestedSlideOvers do
           <div class="flex flex-col h-full">
             <.sidebar>
               <:header>
-                <.header dialog_header_id="drawer" class="sticky top-0">
+                <.sidebar_header sidebar_id="drawer" class="sticky top-0">
                   Drawer
                   <:subtitle>
                     This is the base drawer
                   </:subtitle>
-                </.header>
+                </.sidebar_header>
               </:header>
               <.list :for={x <- 1..4}>
                 <:item title="ID">Item <%= x %></:item>
@@ -121,12 +121,12 @@ defmodule Storybook.Examples.NestedSlideOvers do
             <div class="flex flex-col h-full">
               <.sidebar>
                 <:header>
-                  <.header dialog_header_id="level_1" class="sticky top-0">
+                  <.sidebar_header sidebar_id="level_1" class="sticky top-0">
                     Level 1
                     <:subtitle>
                       This is the second level drawer.
                     </:subtitle>
-                  </.header>
+                  </.sidebar_header>
                 </:header>
                 <.list :for={x <- 1..20}>
                   <:item title="ID">Item <%= x %></:item>
@@ -146,12 +146,11 @@ defmodule Storybook.Examples.NestedSlideOvers do
               backdrop={false}
               on_cancel={JS.push("toggle_modal")}
             >
-              <.header dialog_header_id="modal">
-                Modal
-                <:subtitle>
-                  This is a modal inside a drawer.
-                </:subtitle>
-              </.header>
+              <.modal_header
+                modal_id="modal"
+                title="Modal"
+                description="This is a modal inside a drawer"
+              />
               <:cancel>
                 Close
               </:cancel>
@@ -161,12 +160,7 @@ defmodule Storybook.Examples.NestedSlideOvers do
       </:portal>
       <:portal>
         <.modal id="other-modal" show={@other_modal} on_cancel={JS.push("toggle_other_modal")}>
-          <.header dialog_header_id="other-modal">
-            Modal
-            <:subtitle>
-              This is an other modal.
-            </:subtitle>
-          </.header>
+          <.modal_header modal_id="other-modal" title="Modal" description="This is an other modal" />
           <:cancel>
             Close
           </:cancel>

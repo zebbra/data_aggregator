@@ -179,10 +179,13 @@ defmodule DataAggregatorWeb.Components.Modal do
     """
   end
 
-  attr :id, :string, required: true
-  attr :icon, :string, default: nil
-  attr :title, :string, required: true
-  attr :description, :string, default: nil
+  @doc ~S"""
+  Renders a header with title, subtitle and actions withing a sidebar.
+  """
+  attr :modal_id, :string, required: true, doc: "the id of the dialog"
+  attr :icon, :string, default: nil, doc: "the icon of the modal"
+  attr :title, :string, required: true, doc: "the title of the modal"
+  attr :description, :string, default: nil, doc: "the description of the modal"
 
   def modal_header(assigns) do
     ~H"""
@@ -195,14 +198,14 @@ defmodule DataAggregatorWeb.Components.Modal do
       </div>
       <div class={["mt-3 text-center sm:mt-0 sm:text-left", assigns[:icon] && "sm:ml-4"]}>
         <.dialog_title
-          id={@id <> "__title"}
+          id={@modal_id <> "__title"}
           class="dark:text-white text-base font-semibold leading-6 text-gray-900"
         >
           <%= @title %>
         </.dialog_title>
         <.dialog_description
           :if={@description != nil}
-          id={@id <> "__description"}
+          id={@modal_id <> "__description"}
           class="dark:text-gray-400 mt-2 text-sm text-gray-500"
         >
           <%= @description %>

@@ -17,7 +17,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
     ~H"""
     <div>
       <.modal_header
-        id="collection-modal"
+        modal_id="collection-modal"
         icon={assigns[:icon]}
         title={@title}
         description={~t"Use this form to manage collections in your database."m}

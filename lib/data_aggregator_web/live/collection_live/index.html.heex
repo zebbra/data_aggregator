@@ -64,7 +64,9 @@
       <.live_component
         module={DataAggregatorWeb.CollectionLive.FormComponent}
         id={@collection.id || :new}
-        icon="hero-plus-circle-mini"
+        icon={
+          if @live_action == :new, do: "hero-plus-circle-mini", else: "hero-pencil-square-mini"
+        }
         title={@page_title}
         action={@live_action}
         collection={@collection}

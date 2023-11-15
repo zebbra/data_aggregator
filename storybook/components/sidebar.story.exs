@@ -1,11 +1,10 @@
 defmodule Storybook.Components.Sidebar do
   use PhoenixStorybook.Story, :component
 
-  alias DataAggregatorWeb.Components.Header
   alias DataAggregatorWeb.Components.Sidebar
 
   def function, do: &Sidebar.sidebar/1
-  def imports, do: [{Header, [header: 1]}]
+  def imports, do: [{Sidebar, [sidebar_header: 1]}]
 
   def template do
     """
@@ -21,12 +20,12 @@ defmodule Storybook.Components.Sidebar do
         id: :sidebar,
         slots: [
           "<:header>
-            <.header title_size='text-base'>
+            <.sidebar_header>
               Header
               <:subtitle>
                 I'm a header subtitle
               </:subtitle>
-            </.header>
+            </.sidebar_header>
           </:header>",
           "<:footer>Footer</:footer>"
         ]

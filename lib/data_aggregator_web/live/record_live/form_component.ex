@@ -17,7 +17,7 @@ defmodule DataAggregatorWeb.RecordLive.FormComponent do
     ~H"""
     <div>
       <.modal_header
-        id="record-modal"
+        modal_id="record-modal"
         icon={assigns[:icon]}
         title={@title}
         description={~t"Use this form to manage records in your database."m}
