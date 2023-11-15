@@ -7,14 +7,18 @@
   <.header class="top-16 sticky">
     <%= ~t"Listing Records"m %>
     <:actions>
-      <.styled_link patch={~p"/records/new?#{@current_path_params}"} id="record-modal__button">
-        <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 h-5 w-5" />
-        <span class="sm:inline-block hidden"><%= ~t"New Record"m %></span>
-      </.styled_link>
+      <.button
+        id="record-modal__button"
+        to={~p"/records/new?#{@current_path_params}"}
+        link_type="live_patch"
+        icon="hero-plus-circle-mini"
+        label={~t"New Record"m}
+        responsive
+      />
     </:actions>
   </.header>
 
-  <.table
+  <.datatable
     id="records"
     rows={@streams.results}
     row_click={
@@ -25,13 +29,12 @@
     sort={@current_sort}
   >
     <:col :let={{_id, record}} label={~t"MaterialEntityID"m} field="mte_material_entity_id" sort>
-      <.styled_link
-        navigate={~p"/records/#{record}?#{@current_path_params}"}
-        variant="table"
-        class="py-1.5"
-      >
-        <%= record.mte_material_entity_id %>
-      </.styled_link>
+      <.button
+        to={~p"/records/#{record}?#{@current_path_params}"}
+        link_type="live_redirect"
+        color="simple"
+        label={record.mte_material_entity_id}
+      />
     </:col>
     <:col :let={{_id, record}} label={~t"Collection"m} field="collection.name" sort>
       <%= record.collection.name %>
@@ -63,7 +66,7 @@
         <%= ~t"Delete"m %>
       </.link>
     </:action>
-  </.table>
+  </.datatable>
 
   <.pagination page_meta={@page_meta} />
   <:portal>

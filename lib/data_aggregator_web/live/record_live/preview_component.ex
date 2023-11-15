@@ -40,7 +40,7 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
     ~H"""
     <.sidebar>
       <:header>
-        <.header dialog_header_id={@slideover_id} class="sticky top-0">
+        <.header title_size="text-base" dialog_header_id={@slideover_id} class="sticky top-0">
           <%= @record.id %>
           <:subtitle>
             <%= ~t"This is a record from your database."m %>
@@ -54,16 +54,18 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
       </.list>
       <:footer>
         <.button
-          variant="secondary"
+          label={~t"Close"m}
+          color="secondary"
           class="inline-flex mr-2"
           phx-click={JS.push("select", value: %{id: @record.id})}
-        >
-          <span><%= ~t"Close"m %></span>
-        </.button>
-        <.styled_link patch={~p"/records/#{@record}/edit?#{@current_path_params}"} id={@modal_id}>
-          <.icon name="hero-pencil-square-mini" class="-ml-0.5 mr-1.5 h-5 w-5" />
-          <span><%= ~t"Edit Record"m %></span>
-        </.styled_link>
+        />
+        <.button
+          id={@modal_id}
+          to={~p"/records/#{@record}/edit?#{@current_path_params}"}
+          link_type="live_patch"
+          icon="hero-pencil-square-mini"
+          label={~t"Edit Record"m}
+        />
       </:footer>
     </.sidebar>
     """

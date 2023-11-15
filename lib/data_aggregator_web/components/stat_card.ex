@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.Headless.StatCard do
+defmodule DataAggregatorWeb.Components.StatCard do
   @moduledoc """
   Card to show a stat and a label
   """

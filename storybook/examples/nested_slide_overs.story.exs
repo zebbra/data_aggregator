@@ -1,10 +1,8 @@
-defmodule Storybook.Examples.NestedDialog do
+defmodule Storybook.Examples.NestedSlideOvers do
   use PhoenixStorybook.Story, :example
+  use DataAggregatorWeb.Components
 
   alias Phoenix.LiveView.JS
-
-  import DataAggregatorWeb.HeadlessComponents, only: [slideover: 1, modal: 1]
-  import DataAggregatorWeb.CoreComponents
 
   def doc,
     do: """
@@ -60,9 +58,7 @@ defmodule Storybook.Examples.NestedDialog do
       <.header>
         Dashboard
         <:actions>
-          <.button id="drawer__button" phx-click="toggle_drawer">
-            Drawer
-          </.button>
+          <.button id="drawer__button" phx-click="toggle_drawer" label="Drawer" />
         </:actions>
       </.header>
       <div class="dark:text-white sm:px-6 lg:px-8 p-4">
@@ -95,13 +91,19 @@ defmodule Storybook.Examples.NestedDialog do
                 <:item title="ID">Item <%= x %></:item>
               </.list>
               <:footer>
-                <.button variant="secondary" class="inline-flex mr-2" phx-click="toggle_drawer">
-                  <span>Close</span>
-                </.button>
-                <.button id="level_1__button" phx-click="toggle_level_1">Level 1</.button>
-                <.button class="ml-2" id="other-modal__button" phx-click="toggle_other_modal">
-                  Other Modal
-                </.button>
+                <.button
+                  color="secondary"
+                  class="inline-flex mr-2"
+                  phx-click="toggle_drawer"
+                  label="Close"
+                />
+                <.button id="level_1__button" phx-click="toggle_level_1" label="Level 1" />
+                <.button
+                  class="ml-2"
+                  id="other-modal__button"
+                  phx-click="toggle_other_modal"
+                  label="Other Modal"
+                />
               </:footer>
             </.sidebar>
           </div>
@@ -130,10 +132,8 @@ defmodule Storybook.Examples.NestedDialog do
                   <:item title="ID">Item <%= x %></:item>
                 </.list>
                 <:footer>
-                  <.button variant="secondary" class="inline-flex mr-2" phx-click="toggle_level_1">
-                    <span>Close</span>
-                  </.button>
-                  <.button id="modal__button" phx-click="toggle_modal">Modal</.button>
+                  <.button color="secondary" class="mr-2" phx-click="toggle_level_1" label="Close" />
+                  <.button id="modal__button" phx-click="toggle_modal" label="Modal" />
                 </:footer>
               </.sidebar>
             </div>

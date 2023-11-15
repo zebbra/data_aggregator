@@ -1,8 +1,6 @@
 defmodule DataAggregatorWeb.ImportLive.Records do
   use DataAggregatorWeb, :live_view
 
-  import DataAggregatorWeb.Headless.StatCard
-
   alias DataAggregator.Records.Import
 
   @impl true
@@ -34,7 +32,16 @@ defmodule DataAggregatorWeb.ImportLive.Records do
     <.page active_link={:imports} environment={@environment} sidebar_nav={@sidebar_nav}>
       <.header class="top-16 sticky">
         The following records were imported to your collection '<%= @import.collection.name %>'
-        <:actions></:actions>
+        <:actions>
+          <.button
+            to={~p"/imports"}
+            link_type="live_redirect"
+            color="secondary"
+            icon="hero-arrow-left-mini"
+            label={~t"Back to Imports"m}
+            responsive
+          />
+        </:actions>
       </.header>
 
       <div class="justify-items-center grid">
@@ -43,9 +50,6 @@ defmodule DataAggregatorWeb.ImportLive.Records do
           <.stat_card label={~t"Updated"m} stat="196" />
         </dl>
       </div>
-      <.back navigate={~p"/imports"}>
-        <%= ~t"Back"m %>
-      </.back>
     </.page>
     """
   end

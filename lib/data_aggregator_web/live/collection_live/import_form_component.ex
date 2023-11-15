@@ -24,7 +24,13 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.form_header icon={@icon} title={@title} />
+      <.modal_header
+        id="import-modal"
+        icon={@icon}
+        title={@title}
+        description={~t"Select a file containing your Records"m}
+      />
+
       <.simple_form
         for={@form}
         id="import-form"
@@ -97,50 +103,17 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
           <.button
             type="submit"
             class="sm:ml-3 sm:w-auto inline-flex justify-center w-full"
-            phx-disable-with={~t"Uploading..."m}
-          >
-            <%= ~t"Upload file"m %>
-          </.button>
+            label={~t"Upload file"m}
+          />
           <.button
-            variant="secondary"
+            color="secondary"
             class="sm:mt-0 sm:w-auto inline-flex justify-center w-full mt-3"
+            label={~t"Cancel"m}
             phx-click={JS.exec("data-cancel", to: "#import-modal")}
             phx-disable-with
-          >
-            <%= ~t"Cancel"m %>
-          </.button>
+          />
         </:actions>
       </.simple_form>
-    </div>
-    """
-  end
-
-  attr :icon, :string, default: nil
-  attr :title, :string, required: true
-
-  defp form_header(assigns) do
-    ~H"""
-    <div class="sm:flex sm:items-start">
-      <div
-        :if={@icon}
-        class="sm:mx-0 sm:h-10 sm:w-10 flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-indigo-100 rounded-full"
-      >
-        <.icon name={@icon} class="w-6 h-6 text-indigo-600" />
-      </div>
-      <div class={["mt-3 text-center sm:mt-0 sm:text-left", @icon && "sm:ml-4"]}>
-        <.dialog_title
-          id="import-modal__title"
-          class="dark:text-white text-base font-semibold leading-6 text-gray-900"
-        >
-          <%= @title %>
-        </.dialog_title>
-        <.dialog_description
-          id="import-modal__description"
-          class="dark:text-gray-400 mt-2 text-sm text-gray-500"
-        >
-          <%= ~t"Select a file containing your Records"m %>
-        </.dialog_description>
-      </div>
     </div>
     """
   end

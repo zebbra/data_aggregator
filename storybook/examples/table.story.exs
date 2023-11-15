@@ -1,7 +1,7 @@
 defmodule Storybook.Examples.Table do
   use PhoenixStorybook.Story, :example
 
-  import DataAggregatorWeb.CoreComponents, only: [table: 1]
+  import DataAggregatorWeb.Components.Datatable, only: [datatable: 1]
 
   def doc, do: "This is a basic table example."
 
@@ -27,14 +27,14 @@ defmodule Storybook.Examples.Table do
   def render(assigns) do
     ~H"""
     <div>
-      <.table id="users" rows={@streams.results}>
+      <.datatable id="users" rows={@streams.results}>
         <:col :let={{_id, user}} label="ID" field="id">
           <%= user.id %>
         </:col>
         <:col :let={{_id, user}} label="Username" field="username">
           <%= user.username %>
         </:col>
-      </.table>
+      </.datatable>
     </div>
     """
   end

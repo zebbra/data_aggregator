@@ -1,8 +1,6 @@
 defmodule DataAggregatorWeb.DashboardLive.Index do
   use DataAggregatorWeb, :live_view
 
-  import DataAggregatorWeb.Headless.StatCard
-
   @impl true
   def render(assigns) do
     ~H"""

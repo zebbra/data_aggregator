@@ -143,9 +143,8 @@ defmodule DataAggregator.MixProject do
         ~r/^DataAggregatorWeb\.\w+Live/
       ],
       Components: [
-        DataAggregatorWeb.CoreComponents,
         DataAggregatorWeb.ColorMode,
-        DataAggregatorWeb.HeadlessComponents,
+        ~r/^DataAggregatorWeb\.Components/,
         ~r/^DataAggregatorWeb\.Headless/
       ],
       "Live Hooks": [

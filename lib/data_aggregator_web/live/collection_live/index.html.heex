@@ -2,10 +2,14 @@
   <.header class="top-16 sticky">
     <%= ~t"Listing Collections"m %>
     <:actions>
-      <.styled_link patch={~p"/collections/new"} id="collection-modal__button">
-        <.icon name="hero-plus-circle-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-        <span class="sm:inline-block hidden"><%= ~t"New Collection"m %></span>
-      </.styled_link>
+      <.button
+        id="collection-modal__button"
+        to={~p"/collections/new"}
+        link_type="live_patch"
+        icon="hero-plus-circle-mini"
+        label={~t"New Collection"m}
+        responsive
+      />
     </:actions>
   </.header>
 
@@ -14,24 +18,23 @@
     rows={@streams.results}
     row_click={
       fn {_id, collection} ->
-        JS.navigate(~p"/collections/#{collection}?#{@current_path_params}")
+        JS.navigate(~p"/collections/#{collection}")
       end
     }
-    sort={@current_sort}
   >
-    <:col :let={{_id, collection}} label={~t"Name"m} field="name" sort>
+    <:col :let={{_id, collection}} label={~t"Name"m} field="name">
       <%= collection.name %>
     </:col>
 
-    <:col :let={{_id, collection}} label={~t"Records Count"m} field="records_count" sort>
+    <:col :let={{_id, collection}} label={~t"Records Count"m} field="records_count">
       <%= collection.records_count %>
     </:col>
 
-    <:col :let={{_id, collection}} label={~t"Inserted At"m} field="inserted_at" sort>
+    <:col :let={{_id, collection}} label={~t"Inserted At"m} field="inserted_at">
       <%= format_datetime(collection.inserted_at) %>
     </:col>
 
-    <:col :let={{_id, collection}} label={~t"Updated At"m} field="updated_at" sort>
+    <:col :let={{_id, collection}} label={~t"Updated At"m} field="updated_at">
       <%= format_datetime(collection.updated_at) %>
     </:col>
 

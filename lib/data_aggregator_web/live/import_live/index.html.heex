@@ -1,7 +1,6 @@
 <.page active_link={:imports} environment={@environment} sidebar_nav={@sidebar_nav}>
-  <.header class="sticky top-16">
+  <.header class="top-16 sticky">
     <%= ~t"Listing Imports"m %>
-    <:actions></:actions>
   </.header>
 
   <.table
@@ -9,24 +8,23 @@
     rows={@streams.results}
     row_click={
       fn {_id, import} ->
-        JS.navigate(~p"/imports/#{import}?#{@current_path_params}")
+        JS.navigate(~p"/imports/#{import}")
       end
     }
-    sort={@current_sort}
   >
-    <:col :let={{_id, import}} label={~t"Collection"m} field="collection.name" sort>
+    <:col :let={{_id, import}} label={~t"Collection"m} field="collection.name">
       <%= import.collection.name %>
     </:col>
 
-    <:col :let={{_id, import}} label={~t"Records"m} field="records_count" sort>
+    <:col :let={{_id, import}} label={~t"Records"m} field="records_count">
       <%= import.records_count %>
     </:col>
 
-    <:col :let={{_id, import}} label={~t"Inserted At"m} field="inserted_at" sort>
+    <:col :let={{_id, import}} label={~t"Inserted At"m} field="inserted_at">
       <%= format_datetime(import.inserted_at) %>
     </:col>
 
-    <:col :let={{_id, import}} label={~t"Updated At"m} field="updated_at" sort>
+    <:col :let={{_id, import}} label={~t"Updated At"m} field="updated_at">
       <%= format_datetime(import.updated_at) %>
     </:col>
 

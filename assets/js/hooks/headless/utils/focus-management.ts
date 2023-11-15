@@ -122,7 +122,7 @@ enum ActivationMethod {
   Mouse = 1,
 }
 
-// We want to be able to set and remove the `data-headlessui-mouse` attribute on the `html` element.
+// We want to be able to set and remove the `data-headless-mouse` attribute on the `html` element.
 if (typeof window !== "undefined" && typeof document !== "undefined") {
   document.addEventListener(
     "keydown",
@@ -131,7 +131,7 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
         return;
       }
 
-      document.documentElement.dataset.headlessuiFocusVisible = "";
+      document.documentElement.dataset.headlessFocusVisible = "";
     },
     true
   );
@@ -141,12 +141,12 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
     (event) => {
       // Event originated from an actual mouse click
       if (event.detail === ActivationMethod.Mouse) {
-        delete document.documentElement.dataset.headlessuiFocusVisible;
+        delete document.documentElement.dataset.headlessFocusVisible;
       }
 
       // Event originated from a keyboard event that triggered the `click` event
       else if (event.detail === ActivationMethod.Keyboard) {
-        document.documentElement.dataset.headlessuiFocusVisible = "";
+        document.documentElement.dataset.headlessFocusVisible = "";
       }
     },
     true
