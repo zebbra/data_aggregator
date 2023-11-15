@@ -48,13 +48,18 @@ defmodule DataAggregatorWeb.Components.Pagination do
         />
       </div>
       <div class="sm:flex sm:flex-1 sm:items-center sm:justify-between hidden">
-        <div>
+        <div :if={@page_meta.count > 0}>
           <p class="dark:text-gray-400 text-sm text-gray-700">
             <%= ~t"Showing"m %> <span class="font-medium"><%= @from %></span>
             <%= ~t"to"m %>
             <span class="font-medium"><%= @to %></span>
             <%= ~t"of"m %> <span class="font-medium"><%= @page_meta.count %></span>
             <%= ~t"results"m %>
+          </p>
+        </div>
+        <div :if={@page_meta.count == 0}>
+          <p class="dark:text-gray-400 text-sm text-gray-700">
+            <%= ~t"No results"m %>
           </p>
         </div>
         <div class="flex items-center">

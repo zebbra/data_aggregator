@@ -751,28 +751,28 @@ msgstr ""
 
 #: lib/data_aggregator_web/components/pagination.ex:44
 #: lib/data_aggregator_web/components/pagination.ex:45
-#: lib/data_aggregator_web/components/pagination.ex:74
-#: lib/data_aggregator_web/components/pagination.ex:75
+#: lib/data_aggregator_web/components/pagination.ex:79
+#: lib/data_aggregator_web/components/pagination.ex:80
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Pagination"
 msgid "Next"
 msgstr ""
 
-#: lib/data_aggregator_web/components/pagination.ex:93
+#: lib/data_aggregator_web/components/pagination.ex:98
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Pagination"
 msgid "Page size"
 msgstr ""
 
 #: lib/data_aggregator_web/components/pagination.ex:36
-#: lib/data_aggregator_web/components/pagination.ex:67
+#: lib/data_aggregator_web/components/pagination.ex:72
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Pagination"
 msgid "Prev"
 msgstr ""
 
 #: lib/data_aggregator_web/components/pagination.ex:35
-#: lib/data_aggregator_web/components/pagination.ex:66
+#: lib/data_aggregator_web/components/pagination.ex:71
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Pagination"
 msgid "Previous"
@@ -824,4 +824,10 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Size"
+msgstr ""
+
+#: lib/data_aggregator_web/components/pagination.ex:62
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Components.Pagination"
+msgid "No results"
 msgstr ""
