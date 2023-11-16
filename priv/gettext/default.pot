@@ -25,7 +25,7 @@ msgstr ""
 msgid "close"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:20
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:43
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Dashboard"
@@ -123,13 +123,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:90
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:94
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Collection created successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:91
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:95
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Collection updated successfully"
@@ -466,49 +466,49 @@ msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Records in Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:41
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:17
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Amount of Collections"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:48
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:24
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Contributors"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:43
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:19
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Digitization Progress"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:46
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:22
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Last Contribution"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:47
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:23
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Open Reviews"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:44
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:20
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Records Published"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:45
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:21
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Records Reviewed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:42
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:18
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Total Records"
