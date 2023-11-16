@@ -99,7 +99,7 @@ config :phoenix, :plug_init_mode, :runtime
 config :swoosh, :api_client, false
 
 # Add heex debug annotations via
-config :phoenix_live_view, debug_heex_annotations: true
+config :phoenix_live_view, debug_heex_annotations: false
 
 # Configure git hooks. They can be installed manuallu by running `mix git_hooks.install`
 config :git_hooks,

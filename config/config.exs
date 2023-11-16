@@ -12,6 +12,8 @@ config :data_aggregator,
   ecto_repos: [DataAggregator.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :data_aggregator, DataAggregator.Records, import_timeout: :timer.minutes(5)
+
 # For backwards compatibility, the following configuration is required.
 # see https://ash-hq.org/docs/guides/ash/latest/get-started#temporary-config for more details
 config :ash, :use_all_identities_in_manage_relationship?, false
@@ -69,7 +71,7 @@ config :data_aggregator, DataAggregatorWeb.Gettext,
 config :data_aggregator, Oban,
   repo: DataAggregator.Repo,
   plugins: [Oban.Plugins.Pruner],
-  queues: [imports: 10]
+  queues: [imports: 1]
 
 # Configure Cldr
 config :ex_cldr,

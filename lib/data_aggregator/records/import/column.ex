@@ -15,7 +15,7 @@ defmodule DataAggregator.Records.Import.Column do
   actions do
     create :create do
       primary? true
-      accept [:name, :type]
+      accept [:name]
     end
 
     update :update do

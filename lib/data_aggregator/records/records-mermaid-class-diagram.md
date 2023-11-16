@@ -43,7 +43,7 @@ classDiagram
         create_from_path(Collection collection, String path, String filename)
         update_mapping(Column[] columns)
         run()
-        enqueue(UUID id, Column[] columns, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at, ...)
+        enqueue()
         set_running()
         set_failed()
         set_imported()

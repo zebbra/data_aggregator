@@ -312,54 +312,54 @@ msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Back"
 msgstr "Zurück"
 
-#: lib/data_aggregator_web/components/core_components.ex:840
-#: lib/data_aggregator_web/components/core_components.ex:844
-#: lib/data_aggregator_web/components/core_components.ex:872
-#: lib/data_aggregator_web/components/core_components.ex:876
+#: lib/data_aggregator_web/components/core_components.ex:838
+#: lib/data_aggregator_web/components/core_components.ex:842
+#: lib/data_aggregator_web/components/core_components.ex:870
+#: lib/data_aggregator_web/components/core_components.ex:874
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "Next"
 msgstr "Nächste"
 
-#: lib/data_aggregator_web/components/core_components.ex:892
+#: lib/data_aggregator_web/components/core_components.ex:890
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "Page size"
 msgstr "pro Seite"
 
-#: lib/data_aggregator_web/components/core_components.ex:834
-#: lib/data_aggregator_web/components/core_components.ex:867
+#: lib/data_aggregator_web/components/core_components.ex:832
+#: lib/data_aggregator_web/components/core_components.ex:865
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "Prev"
 msgstr "Vorige"
 
-#: lib/data_aggregator_web/components/core_components.ex:830
-#: lib/data_aggregator_web/components/core_components.ex:863
+#: lib/data_aggregator_web/components/core_components.ex:828
+#: lib/data_aggregator_web/components/core_components.ex:861
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "Previous"
 msgstr "Vorige"
 
-#: lib/data_aggregator_web/components/core_components.ex:850
+#: lib/data_aggregator_web/components/core_components.ex:848
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "Showing"
 msgstr "Zeige"
 
-#: lib/data_aggregator_web/components/core_components.ex:853
+#: lib/data_aggregator_web/components/core_components.ex:851
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "of"
 msgstr "von"
 
-#: lib/data_aggregator_web/components/core_components.ex:854
+#: lib/data_aggregator_web/components/core_components.ex:852
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "results"
 msgstr "Resultaten"
 
-#: lib/data_aggregator_web/components/core_components.ex:851
+#: lib/data_aggregator_web/components/core_components.ex:849
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CoreComponents"
 msgid "to"
@@ -494,19 +494,7 @@ msgctxt "DataAggregatorWeb.ImportLive.Mapping"
 msgid "Configure Mapping for Import"
 msgstr "Mapping bestätigen und Records importieren"
 
-#: lib/data_aggregator_web/live/import_live/show.ex:84
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.ImportLive.Show"
-msgid "Back"
-msgstr "Zurück"
-
-#: lib/data_aggregator_web/live/import_live/show.ex:52
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.ImportLive.Show"
-msgid "Map Columns"
-msgstr "Mappe deine Spalten"
-
-#: lib/data_aggregator_web/live/import_live/show.ex:26
+#: lib/data_aggregator_web/live/import_live/show.ex:58
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Show Import"
@@ -678,7 +666,7 @@ msgctxt "DataAggregatorWeb.ImportLive.Confirmation"
 msgid "Total Records to Import"
 msgstr "Total zu importierende Einträge"
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:25
+#: lib/data_aggregator_web/live/import_live/index.html.heex:29
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Collection"
@@ -690,13 +678,6 @@ msgstr "Kollektionen"
 msgctxt "DataAggregatorWeb.ImportLive.Mapping"
 msgid "Back to Import"
 msgstr "Zurück zum Import"
-
-#: lib/data_aggregator_web/live/import_live/show.ex:44
-#: lib/data_aggregator_web/live/import_live/show.ex:48
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.ImportLive.Show"
-msgid "Back to Collection"
-msgstr "Zurück zur Kollektion"
 
 #: lib/data_aggregator_web/live/collection_live/show.ex:80
 #, elixir-autogen, elixir-format, fuzzy
@@ -867,13 +848,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Records"
 msgstr "Einträge"
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:17
+#: lib/data_aggregator_web/live/import_live/index.html.heex:21
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "File"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:21
+#: lib/data_aggregator_web/live/import_live/index.html.heex:25
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Size"
@@ -885,8 +866,19 @@ msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Imported at"
 msgstr "Importe"
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:29
+#: lib/data_aggregator_web/live/import_live/index.html.heex:17
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "State"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/components/mapping_form.ex:89
+#, elixir-autogen, elixir-format
+msgid "Search mapping"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/show.ex:133
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Show"
+msgid "Import could not be started"
 msgstr ""

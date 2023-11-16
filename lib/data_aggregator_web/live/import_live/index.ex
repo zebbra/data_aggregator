@@ -1,11 +1,19 @@
 defmodule DataAggregatorWeb.ImportLive.Index do
   use DataAggregatorWeb, :live_view
+  use DataAggregatorWeb.ImportLive.Components
 
   alias DataAggregator.PubSub
   alias DataAggregator.Records.Import
 
   import DataAggregatorWeb.QueryBuilder
-  # import AshPhoenix.LiveView, only: [keep_live: 4, handle_live: 4]
+
+  @load [
+    :collection_name,
+    :records_count,
+    :attachment_filename,
+    :attachment_byte_size,
+    attachment: [:filename, :url, :byte_size]
+  ]
 
   @topics ["import:created", "import:updated", "import:deleted"]
 
@@ -36,15 +44,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
   defp list_imports(socket) do
     %{current_sort: current_sort} = socket.assigns
 
-    results =
-      Import.read!(%{sort: current_sort},
-        load: [
-          :collection_name,
-          :records_count,
-          :attachment_filename,
-          :attachment_byte_size
-        ]
-      )
+    results = Import.read!(%{sort: current_sort}, load: @load)
 
     stream_results(socket, results)
   end

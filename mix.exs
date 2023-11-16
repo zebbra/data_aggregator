@@ -193,10 +193,11 @@ defmodule DataAggregator.MixProject do
       {:ash_uuid, "~> 0.4"},
 
       # Database and Ecto
-      {:ecto, "~> 3.10.0"},
-      {:ecto_sql, "~> 3.10.0"},
-      {:postgrex, ">= 0.0.0"},
+      {:ecto, "~> 3.10"},
+      {:ecto_sql, "~> 3.10"},
       {:ecto_dev_logger, "~> 0.9"},
+      {:ecto_psql_extras, "~> 0.7"},
+      {:postgrex, ">= 0.0.0"},
 
       # Testing and Linting
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},

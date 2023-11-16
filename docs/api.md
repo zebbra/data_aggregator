@@ -129,7 +129,7 @@ classDiagram
         create_from_path(Collection collection, String path, String filename)
         update_mapping(Column[] columns)
         run()
-        enqueue(UUID id, Column[] columns, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at, ...)
+        enqueue()
         set_running()
         set_failed()
         set_imported()
@@ -398,7 +398,7 @@ erDiagram
 | **create_from_path** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>path</b> <i>String</i> </li><li><b>filename</b> <i>String</i> </li></ul> |  |
 | **update_mapping** | _update_ | <ul><li><b>columns</b> <i>Column[]</i> attribute</li></ul> |  |
 | **run** | _update_ | <ul></ul> |  |
-| **enqueue** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>columns</b> <i>Column[]</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>imported_at</b> <i>UtcDatetime</i> attribute</li></ul> |  |
+| **enqueue** | _update_ | <ul></ul> |  |
 | **set_running** | _update_ | <ul></ul> |  |
 | **set_failed** | _update_ | <ul></ul> |  |
 | **set_imported** | _update_ | <ul></ul> |  |

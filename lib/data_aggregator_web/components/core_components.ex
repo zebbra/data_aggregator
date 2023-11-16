@@ -800,9 +800,7 @@ defmodule DataAggregatorWeb.CoreComponents do
     |> Map.has_key?(:selected) && row.selected == true
   end
 
-  defp row_selected({_id, _row}) do
-    false
-  end
+  defp row_selected(_row), do: false
 
   @doc ~S"""
   Renders offset pagination with generic styling.
@@ -994,7 +992,7 @@ defmodule DataAggregatorWeb.CoreComponents do
       <.icon name="hero-arrow-path" class="animate-spin w-3 h-3 ml-1" />
   """
   attr :name, :string, required: true
-  attr :class, :string, default: nil
+  attr :class, :any, default: nil
 
   def icon(%{name: "hero-" <> _} = assigns) do
     ~H"""
