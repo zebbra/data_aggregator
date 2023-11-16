@@ -95,7 +95,12 @@ defmodule DataAggregatorWeb.Router do
     scope "/dev" do
       pipe_through [:locale, :browser]
 
-      live_dashboard "/dashboard", metrics: DataAggregatorWeb.Telemetry
+      live_dashboard "/dashboard",
+        metrics: DataAggregatorWeb.Telemetry,
+        additional_pages: [
+          oban: Oban.LiveDashboard
+        ]
+
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end

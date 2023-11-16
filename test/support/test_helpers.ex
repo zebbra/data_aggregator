@@ -11,6 +11,10 @@ defmodule DataAggregator.TestHelpers do
       # https://github.com/devonestes/assertions
       import Assertions
 
+      # Provides `with_log/1` and `assert_log/1`
+      # https://hexdocs.pm/ex_unit/ExUnit.CaptureLog.html
+      import ExUnit.CaptureLog
+
       import Ash.Test,
         only: [
           assert_has_error: 2,

@@ -60,6 +60,11 @@ defmodule DataAggregator.Records.Collection do
     count :imports_count, :imports
   end
 
+  preparations do
+    prepare build(sort: [id: :asc])
+    prepare DataAggregator.Preparations.Sort
+  end
+
   actions do
     defaults [:create, :update, :destroy]
 
@@ -82,11 +87,6 @@ defmodule DataAggregator.Records.Collection do
   postgres do
     table "collections"
     repo DataAggregator.Repo
-  end
-
-  preparations do
-    prepare build(sort: [id: :asc])
-    prepare DataAggregator.Preparations.Sort
   end
 
   graphql do

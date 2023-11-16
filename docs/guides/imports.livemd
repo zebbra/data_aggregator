@@ -1,0 +1,153 @@
+<!-- livebook:{"persist_outputs":true} -->
+
+# Imports
+
+```elixir
+import DataAggregator.Kino.Helpers
+```
+
+## Using this Livebook
+
+ℹ️ **NOTE:** You need to connect your livebook instance to the running application:
+
+```shell
+iex --sname dagg --cookie secret -S mix 
+# or
+iex --sname dagg --cookie secret -S mix phx.server
+```
+
+Then select `Runtime settings` on in the Livebook sidebar to change to `Attached Node` using the settings above.
+
+## Intro
+
+Imports are used to create records from a file. Currenty only CSV is supported. The main functions are:
+
+* `create_from_path(collection, file_path)` - Creates an import from a file for the given collection
+
+### States
+
+The import implements a state machine and has the following states:
+
+* `pending` - ...
+
+The following flow chart visualizes each state and transition:
+
+```elixir
+"lib/data_aggregator/records/import/import-mermaid-flowchart.md"
+|> File.read!()
+|> Kino.Markdown.new()
+```
+
+## Create Import
+
+Each `Import` is assigned to a `Collection`, so lets create one first:
+
+```elixir
+# Define some aliases
+alias DataAggregator.Records
+alias DataAggregator.Records.Collection
+alias DataAggregator.Records.Import
+alias DataAggregator.Records.Record
+
+# Disable the logger
+Logger.configure(level: :info)
+
+{:ok, collection} = Collection.create(%{name: "My Collection", owner: "John Doe"})
+
+collection
+|> Records.load!([:records_count])
+|> render_struct(keys: [:id, :name, :records_count])
+```
+
+```elixir
+# example_file = "test/support/fixtures/files/museum-dataset-import-example.csv"
+example_file = "test/support/fixtures/files/dataset-10k.csv"
+# example_file = "test/support/fixtures/files/dataset-100.csv"
+example_file |> Explorer.DataFrame.from_csv!()
+```
+
+```elixir
+# create an import using the file
+{:ok, import} = Import.create_from_path(collection, example_file)
+
+# render the struct
+import |> render_struct()
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+
+17:18:22.349 [info] [fat_02uspVGpMsNILUt6pYTD7A] Successfully uploaded file as "dataset-10k.csv"
+
+```
+
+Note that the current `:state` of the import is `:pending`:
+
+```elixir
+import.state
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+:pending
+```
+
+## Mapping
+
+When creating the import, the column names and types are extracted from the import and stored as `:columns` attribute on the import, where each column has the following fields:
+
+* `name` - Name of the column in the original file
+* `type` - Detected type of the column
+* `mapped_to` - Target record attribute when importing the file. When `nil`, the original `name` is used.
+
+This is used to store information how the columns are mapped when creating the records.
+
+```elixir
+import.columns
+|> Kino.DataTable.new(keys: [:name, :type, :mapped_to])
+```
+
+The mapping can be updated using `Import.update_mapping/2`:
+
+```elixir
+mapping = [
+  %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
+  %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"},
+  %{name: "Age", mapped_to: "age"},
+  %{name: "DAYCOLLECTED", mapped_to: "day_collected"}
+]
+
+# update the column mapping
+import = Import.update_mapping!(import, mapping)
+
+# show the updated columns as table
+import.columns
+|> Kino.DataTable.new(name: "import.columns", keys: [:name, :type, :mapped_to])
+```
+
+## Running imports
+
+```elixir
+# run the job
+# {:ok, import} = import |> Import.run()
+
+import |> render_struct(keys: [:id, :state, :imported_at, :records_count])
+```
+
+## Asynchronously importing records
+
+
+
+```elixir
+# enqueue the job
+{:ok, import} = import |> Import.enqueue()
+
+import |> render_struct(keys: [:id, :state, :imported_at, :records_count])
+```
+
+```elixir
+{:ok, import} = Records.reload(import, load: [:records_count])
+import |> render_struct(keys: [:id, :state, :imported_at, :records_count])
+```

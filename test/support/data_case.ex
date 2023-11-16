@@ -19,6 +19,7 @@ defmodule DataAggregator.DataCase do
   using do
     quote do
       import DataAggregator.DataCase
+      use Oban.Testing, repo: DataAggregator.Repo
       use DataAggregator.TestHelpers
     end
   end

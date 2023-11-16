@@ -11,8 +11,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
   require Logger
 
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    changeset
-    |> Changeset.before_action(&import_records/1, append: true)
+    changeset |> Changeset.before_action(&import_records/1)
   end
 
   defp import_records(%Changeset{data: import} = changeset) do
@@ -22,8 +21,8 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
         |> bulk_import(import)
         |> handle_import(changeset)
 
-      {:error, reason} ->
-        Changeset.add_error(changeset, reason)
+      {:error, error} ->
+        changeset |> add_error(error)
     end
   end
 
@@ -37,19 +36,22 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
         changeset
 
       {:error, error}, changeset ->
-        Logger.warning("Error importing record: #{inspect(error)}")
-        changeset |> Changeset.add_error(error)
+        changeset |> add_error(error)
     end)
   end
 
   defp handle_import({:error, error}, changeset) do
-    Logger.error("Error importing record: #{inspect(error)}")
-    changeset
+    changeset |> add_error(error)
   end
 
   defp stream_records(import) do
-    with {:ok, import} <- DataAggregator.Records.load(import, attachment_data: [mapped: true]) do
-      {:ok, import.attachment_data |> Explorer.DataFrame.to_rows_stream()}
-    end
+    with {:ok, import} <- DataAggregator.Records.load(import, attachment_data: [mapped: true]),
+         stream <- Explorer.DataFrame.to_rows_stream(import.attachment_data),
+         do: {:ok, stream}
+  end
+
+  defp add_error(changeset, error) do
+    Logger.error("Error importing record: #{inspect(error)}")
+    changeset |> Changeset.add_error(error)
   end
 end
