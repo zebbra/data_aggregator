@@ -7,6 +7,8 @@ defmodule DataAggregator.Platform.Publication.Export do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias __MODULE__
+  alias DataAggregator.Platform.Publication
   alias DataAggregator.Platform.Publication.Consumer
   alias DataAggregator.Platform.Publication.Record, as: ExportRecord
   alias DataAggregator.Records.Record
@@ -54,6 +56,12 @@ defmodule DataAggregator.Platform.Publication.Export do
       change manage_relationship(:consumer, :consumer, type: :append)
       change manage_relationship(:records, :records, type: :append)
     end
+
+    action :publish, :map do
+      argument :export, :struct, allow_nil?: false
+
+      run Publication.Actions.PublishRecords
+    end
   end
 
   code_interface do
@@ -62,6 +70,7 @@ defmodule DataAggregator.Platform.Publication.Export do
     define :create
     define :update
     define :destroy
+    define :publish, action: :publish, args: [:export]
     define :get_by_id, action: :read, get_by: [:id]
   end
 

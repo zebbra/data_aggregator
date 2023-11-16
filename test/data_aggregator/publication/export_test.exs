@@ -107,13 +107,9 @@ defmodule DataAggregator.ExportTest do
       [records: records, consumer: consumer]
     end
 
+    @tag run: true
     test "publish records for export", %{records: records, consumer: consumer} do
-      export = export_fixture()
-
-      # go on here implementing this...
-      # {:ok, result} = export |> Export.publish()
-
-      assert true
+      {:ok, result} = export_fixture() |> Export.publish()
     end
   end
 end
