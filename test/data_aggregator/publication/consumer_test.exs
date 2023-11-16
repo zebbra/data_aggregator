@@ -4,10 +4,8 @@ defmodule DataAggregator.ConsumerTest do
   use DataAggregator.DataCase, async: true
 
   alias DataAggregator.Platform.Publication.Consumer
-  alias DataAggregator.Records.Record
 
   import DataAggregator.PublicationFixtures
-  import DataAggregator.RecordsFixtures
 
   describe "consumer crud tests" do
     @invalid_attrs %{

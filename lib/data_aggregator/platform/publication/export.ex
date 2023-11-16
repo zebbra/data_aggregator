@@ -7,11 +7,9 @@ defmodule DataAggregator.Platform.Publication.Export do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias __MODULE__
   alias DataAggregator.Platform.Publication
   alias DataAggregator.Platform.Publication.Consumer
   alias DataAggregator.Platform.Publication.Record, as: ExportRecord
-  alias DataAggregator.Records.Record
 
   attributes do
     uuid_attribute :id, prefix: "exp"
@@ -52,7 +50,10 @@ defmodule DataAggregator.Platform.Publication.Export do
     update :update do
       primary? true
       argument :consumer, Consumer, allow_nil?: false
-      argument :records, {:array, Record}, allow_nil?: false
+      argument :records, {:array, :struct}, allow_nil?: false
+
+      # constraints instance_of: Record
+
       change manage_relationship(:consumer, :consumer, type: :append)
       change manage_relationship(:records, :records, type: :append)
     end

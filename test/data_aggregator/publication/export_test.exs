@@ -89,10 +89,6 @@ defmodule DataAggregator.ExportTest do
   end
 
   describe "publication" do
-    @invalid_attrs %{
-      name: nil
-    }
-
     setup do
       records = [
         record_fixture(),
@@ -108,8 +104,8 @@ defmodule DataAggregator.ExportTest do
     end
 
     @tag run: true
-    test "publish records for export", %{records: records, consumer: consumer} do
-      {:ok, result} = export_fixture() |> Export.publish()
+    test "publish records for export", %{records: _records, consumer: _consumer} do
+      {:ok, _result} = export_fixture() |> Export.publish()
     end
   end
 end
