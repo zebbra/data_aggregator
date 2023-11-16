@@ -14,7 +14,7 @@ defmodule DataAggregatorWeb.ImportLive.Components do
     ~H"""
     <.header>
       <div class="flex items-center justify-between">
-        <h1>Import Records</h1>
+        <h1><%= ~t"Import Records"m %></h1>
         <ol class="inline-flex justify-end space-x-4 text-sm">
           <li class="flex items-center space-x-2">
             <span class="dark:text-gray-400 text-gray-500">State:</span>

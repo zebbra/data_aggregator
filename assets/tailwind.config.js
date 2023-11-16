@@ -33,6 +33,29 @@ module.exports = {
       },
     },
   },
+
+  // DaisyUI config
+  daisyui: {
+    // Overrides to match the TailwindUI look
+    themes: [
+      {
+        light: {
+          ...require("daisyui/src/theming/themes").themes.light,
+          primary: "rgb(79, 70, 229)",
+          "--rounded-box": "0.5rem",
+          "--rounded-btn": "0.375rem",
+        },
+
+        dark: {
+          ...require("daisyui/src/theming/themes").themes.dark,
+          primary: "rgb(79, 70, 229)",
+          "--rounded-box": "0.5rem",
+          "--rounded-btn": "0.375rem",
+        },
+      },
+    ],
+  },
+
   plugins: [
     // Default form styles (might be conflicting with daisyui)
     require("@tailwindcss/forms"),
@@ -46,25 +69,28 @@ module.exports = {
     //     <div class="phx-click-loading:animate-ping">
     //
     plugin(({ addVariant }) =>
-      addVariant("phx-no-feedback", [".phx-no-feedback&", ".phx-no-feedback &"])
+      addVariant("phx-no-feedback", [
+        ".phx-no-feedback&",
+        ".phx-no-feedback &",
+      ]),
     ),
     plugin(({ addVariant }) =>
       addVariant("phx-click-loading", [
         ".phx-click-loading&",
         ".phx-click-loading &",
-      ])
+      ]),
     ),
     plugin(({ addVariant }) =>
       addVariant("phx-submit-loading", [
         ".phx-submit-loading&",
         ".phx-submit-loading &",
-      ])
+      ]),
     ),
     plugin(({ addVariant }) =>
       addVariant("phx-change-loading", [
         ".phx-change-loading&",
         ".phx-change-loading &",
-      ])
+      ]),
     ),
 
     // Embeds Heroicons (https://heroicons.com) into your app.css bundle
@@ -104,7 +130,7 @@ module.exports = {
             };
           },
         },
-        { values }
+        { values },
       );
     }),
   ],
