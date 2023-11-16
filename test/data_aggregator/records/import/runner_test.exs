@@ -51,6 +51,7 @@ defmodule DataAggregator.Records.Import.RunnerTest do
       assert import.records_count == 0
       assert import.imported_at == nil
 
+      assert logs =~ "Imported 0/1 records (1 failed)"
       assert logs =~ "Error importing record:"
     end
   end

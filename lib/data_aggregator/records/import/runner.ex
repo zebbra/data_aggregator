@@ -14,14 +14,28 @@ defmodule DataAggregator.Records.Import.Runner do
   ## Arguments
 
   * `id` - the ID of the import to run
+
+  ## Timeouts
+
+  This worker uses the timeout
+
   """
 
-  use Oban.Worker, queue: :imports
+  use Oban.Worker, queue: :imports, max_attempts: 1
 
+  alias DataAggregator.Records
   alias DataAggregator.Records.Import
+
+  require Logger
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"id" => id}}) do
-    with {:ok, import} <- Import.get_by_id(id), do: import |> Import.run()
+    with {:ok, import} <- Import.get_by_id(id) do
+      Logger.info("Running import #{inspect(import)} ...")
+      import |> Import.run()
+    end
   end
+
+  @impl Oban.Worker
+  def timeout(_job), do: Records.import_timeout() + :timer.minutes(1)
 end

@@ -17,7 +17,6 @@ defmodule DataAggregator.Records.Import.Changes.EnqueueRunner do
   end
 
   defp enqueue_runner(_changeset, {:ok, %Import{id: id} = import}) do
-    # defp enqueue_runner(_changeset, %Import{id: id} = import) do
     %{id: id}
     |> Import.Runner.new()
     |> Oban.insert()

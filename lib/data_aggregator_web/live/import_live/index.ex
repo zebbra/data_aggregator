@@ -1,8 +1,17 @@
 defmodule DataAggregatorWeb.ImportLive.Index do
   use DataAggregatorWeb, :live_view
+  use DataAggregatorWeb.ImportLive.Components
 
   alias DataAggregator.PubSub
   alias DataAggregator.Records.Import
+
+  @load [
+    :collection_name,
+    :records_count,
+    :attachment_filename,
+    :attachment_byte_size,
+    attachment: [:filename, :url, :byte_size]
+  ]
 
   @topics ["import:created", "import:updated", "import:deleted"]
 
@@ -25,20 +34,12 @@ defmodule DataAggregatorWeb.ImportLive.Index do
     {:noreply, socket}
   end
 
-  defp list_imports do
-    Import.read!(
-      load: [
-        :collection_name,
-        :records_count,
-        :attachment_filename,
-        :attachment_byte_size
-      ]
-    )
+  defp assign_imports(socket) do
+    socket |> stream(:results, list_imports())
   end
 
-  defp assign_imports(socket) do
-    results = list_imports()
-    socket |> stream(:results, results)
+  defp list_imports do
+    Import.read!(load: @load)
   end
 
   defp apply_action(socket, :show, %{"id" => id}) do

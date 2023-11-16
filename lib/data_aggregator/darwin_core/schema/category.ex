@@ -13,11 +13,17 @@ defmodule DataAggregator.DarwinCore.Schema.Category do
           description: String.t()
         }
 
+  alias __MODULE__
+
   @spec prefixed_attributes(t) :: [Attribute.t()]
-  def prefixed_attributes(%__MODULE__{name: name, attributes: attributes}) do
+  def prefixed_attributes(%Category{attributes: attributes} = category) do
     for attribute <- attributes do
-      prefixed_name = "#{name}_#{attribute.name}" |> String.to_atom()
+      prefixed_name = category |> prefixed_attribute_name(attribute)
       %Attribute{attribute | name: prefixed_name}
     end
+  end
+
+  def prefixed_attribute_name(%Category{name: prefix}, %Attribute{name: name}) do
+    "#{prefix}_#{name}" |> String.to_atom()
   end
 end

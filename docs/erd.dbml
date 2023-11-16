@@ -144,7 +144,7 @@ Table dwc_attributes {
 }
 
 Table schema_migrations {
-  version integer
+  version integer [pk]
   inserted_at timestamp
 }
 

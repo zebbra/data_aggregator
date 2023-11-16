@@ -15,11 +15,14 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
   end
 
   defp import_records(%Changeset{data: import} = changeset) do
+    Logger.info("Importing records for #{inspect(import)} ...")
+
     case stream_records(import) do
       {:ok, stream} ->
         stream
         |> bulk_import(import)
-        |> handle_import(changeset)
+        |> reduce_import_stream(changeset)
+        |> handle_import_result()
 
       {:error, error} ->
         changeset |> add_error(error)
@@ -30,18 +33,32 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
     Record.bulk_import(import, stream)
   end
 
-  defp handle_import({:ok, stream}, changeset) do
-    Enum.reduce(stream, changeset, fn
-      {:ok, _record}, changeset ->
-        changeset
+  defp reduce_import_stream({:ok, stream}, changeset) do
+    Enum.reduce(stream, {0, 0, changeset}, fn
+      {:ok, _record}, {imported, failed, changeset} ->
+        {imported + 1, failed, changeset}
 
-      {:error, error}, changeset ->
-        changeset |> add_error(error)
+      {:error, error}, {imported, failed, changeset} ->
+        changeset = changeset |> add_error(error)
+        {imported, failed + 1, changeset}
     end)
   end
 
-  defp handle_import({:error, error}, changeset) do
-    changeset |> add_error(error)
+  defp reduce_import_stream({:error, error}, changeset) do
+    changeset = changeset |> add_error(error)
+    {0, 0, changeset}
+  end
+
+  defp handle_import_result({imported, failed, changeset}) do
+    total = imported + failed
+    message = "Imported #{imported}/#{total} records (#{failed} failed)"
+
+    case failed do
+      0 -> Logger.info(message)
+      _ -> Logger.error(message)
+    end
+
+    changeset
   end
 
   defp stream_records(import) do

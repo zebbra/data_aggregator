@@ -124,6 +124,7 @@ defmodule DataAggregator.Records.Import do
 
     update :run do
       accept []
+      change Import.Changes.SetTimeout
       change Import.Changes.SetRunningBeforeTransaction
       change transition_state(:running)
       change Import.Changes.ImportRecords
@@ -133,6 +134,7 @@ defmodule DataAggregator.Records.Import do
     end
 
     update :enqueue do
+      accept []
       change transition_state(:queued)
       change Import.Changes.EnqueueRunner
     end
