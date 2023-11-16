@@ -34,7 +34,12 @@ module.exports = {
     },
   },
   plugins: [
+    // Default form styles (might be conflicting with daisyui)
     require("@tailwindcss/forms"),
+
+    // DaisyUI
+    require("daisyui"),
+
     // Allows prefixing tailwind classes with LiveView classes to add rules
     // only when LiveView classes are applied, for example:
     //
