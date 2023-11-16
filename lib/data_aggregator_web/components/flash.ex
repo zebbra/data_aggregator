@@ -59,11 +59,11 @@ defmodule DataAggregatorWeb.Components.Flash do
             />
           </div>
 
-          <div class="flex-1 pt-0.5 ml-3 w-0">
+          <div class="ml-3 w-0 flex-1 pt-0.5">
             <p
               :if={@title}
               class={[
-                "text-sm font-medium text-gray-900 mb-2",
+                "mb-2 text-sm font-medium text-gray-900",
                 @kind == :info && "text-green-800",
                 @kind == :error && "text-red-800"
               ]}
@@ -79,7 +79,7 @@ defmodule DataAggregatorWeb.Components.Flash do
             </p>
           </div>
 
-          <div class="flex flex-shrink-0 ml-4">
+          <div class="ml-4 flex flex-shrink-0">
             <button
               type="button"
               class={[
@@ -116,9 +116,9 @@ defmodule DataAggregatorWeb.Components.Flash do
     <div class={@class} id={@id}>
       <div
         aria-live="assertive"
-        class="sm:items-start sm:p-6 fixed inset-0 flex items-end px-4 py-6 pointer-events-none"
+        class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6"
       >
-        <div class="sm:items-end flex flex-col items-center w-full space-y-4">
+        <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
           <.flash kind={:info} title={~t"Success!"m} flash={@flash} hidden />
           <.flash kind={:error} title={~t"Error!"m} flash={@flash} hidden />
           <.flash

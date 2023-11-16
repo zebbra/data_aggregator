@@ -52,7 +52,7 @@ defmodule Storybook.MyPage do
       )
 
     ~H"""
-    <p class="md:lsb-text-lg lsb-leading-relaxed lsb-text-slate-400 lsb-w-full lsb-text-left lsb-mb-4 lsb-mt-2 lsb-italic">
+    <p class="lsb-leading-relaxed lsb-text-slate-400 lsb-w-full lsb-text-left lsb-mb-4 lsb-mt-2 lsb-italic md:lsb-text-lg">
       <a
         class="hover:text-indigo-700"
         href={"https://hexdocs.pm/phoenix_storybook/#{@guide}.html"}
@@ -70,16 +70,16 @@ defmodule Storybook.MyPage do
   defp description_list(assigns) do
     ~H"""
     <div class="lsb-w-full md:lsb-px-8">
-      <div class="md:lsb-border-t lsb-border-gray-200 lsb-px-4 lsb-py-5 sm:lsb-p-0 md:lsb-my-6 lsb-w-full">
+      <div class="lsb-border-gray-200 lsb-px-4 lsb-py-5 lsb-w-full sm:lsb-p-0 md:lsb-border-t md:lsb-my-6">
         <dl class="sm:lsb-divide-y sm:lsb-divide-gray-200">
           <%= for {dt, link} <- @items do %>
-            <div class="lsb-py-4 sm:lsb-grid sm:lsb-grid-cols-3 sm:lsb-gap-4 sm:lsb-py-5 sm:lsb-px-6 lsb-max-w-full">
+            <div class="lsb-py-4 lsb-max-w-full sm:lsb-grid sm:lsb-grid-cols-3 sm:lsb-gap-4 sm:lsb-py-5 sm:lsb-px-6">
               <dt class="lsb-text-base lsb-font-medium lsb-text-indigo-700">
                 <%= dt %>
               </dt>
-              <dd class="lsb-mt-1 lsb-text-base lsb-text-slate-400 sm:lsb-col-span-2 sm:lsb-mt-0 lsb-group lsb-cursor-pointer lsb-max-w-full">
+              <dd class="lsb-mt-1 lsb-text-base lsb-text-slate-400 lsb-group lsb-cursor-pointer lsb-max-w-full sm:lsb-col-span-2 sm:lsb-mt-0">
                 <a
-                  class="group-hover:lsb-text-indigo-700 lsb-max-w-full lsb-inline-block lsb-truncate"
+                  class="lsb-max-w-full lsb-inline-block lsb-truncate group-hover:lsb-text-indigo-700"
                   href={link}
                   target="_blank"
                 >

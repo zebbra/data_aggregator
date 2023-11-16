@@ -26,7 +26,7 @@ defmodule Storybook.Examples.Slideover do
     <.button id="record-slideover__button" phx-click="toggle" label="Show" />
     <aside
       :if={@show}
-      class="xl:block xl:fixed xl:bottom-0 xl:right-0 xl:top-16 xl:w-96 xl:overflow-y-auto dark:bg-gray-900 hidden"
+      class="hidden dark:bg-gray-900 xl:fixed xl:top-16 xl:right-0 xl:bottom-0 xl:block xl:w-96 xl:overflow-y-auto"
     >
       <.preview_content />
     </aside>
@@ -38,7 +38,7 @@ defmodule Storybook.Examples.Slideover do
       show={false}
       on_cancel={JS.push("toggle")}
     >
-      <div class="flex flex-col h-full">
+      <div class="flex h-full flex-col">
         <.preview_content slideover_id="record-slideover" />
       </div>
     </.slideover>

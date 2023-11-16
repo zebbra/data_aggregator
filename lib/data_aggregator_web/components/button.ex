@@ -123,7 +123,7 @@ defmodule DataAggregatorWeb.Components.Button do
     case assigns.responsive do
       true ->
         ~H"""
-        <span class="sm:inline-block hidden">
+        <span class="hidden sm:inline-block">
           <%= @label %>
         </span>
         """
