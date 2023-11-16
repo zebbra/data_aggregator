@@ -27,11 +27,6 @@ defmodule DataAggregatorWeb.ImportLive.Show do
   end
 
   @impl true
-  def handle_event("backto:collection", _params, socket) do
-    {:noreply, socket |> push_navigate(to: ~p"/collections/#{socket.assigns.collection}")}
-  end
-
-  @impl true
   def render(assigns) do
     ~H"""
     <.page active_link={:imports} environment={@environment} sidebar_nav={@sidebar_nav}>
@@ -39,18 +34,21 @@ defmodule DataAggregatorWeb.ImportLive.Show do
         Schema of your file for the collection '<%= @import.collection.name %>'
         <:actions>
           <.button
-            variant="nav"
-            class="rounded-md"
-            aria-label={~t"Back to Collection"m}
-            phx-click="backto:collection"
-          >
-            <.icon name="hero-arrow-left" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-            <%= ~t"Back to Collection"m %>
-          </.button>
-          <.styled_link patch={~p"/imports/#{@import}/mappings"} id="import-mapping__button">
-            <.icon name="hero-check" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-            <span class="sm:inline-block hidden"><%= ~t"Map Columns"m %></span>
-          </.styled_link>
+            to={~p"/collections/#{@collection}"}
+            link_type="live_redirect"
+            color="secondary"
+            icon="hero-arrow-left-mini"
+            label={~t"Back to Collection"m}
+            responsive
+          />
+          <.button
+            id="import-mapping__button"
+            to={~p"/imports/#{@import}/mappings"}
+            link_type="live_patch"
+            icon="hero-check-mini"
+            label={~t"Map Columns"m}
+            responsive
+          />
         </:actions>
       </.header>
 
@@ -80,9 +78,6 @@ defmodule DataAggregatorWeb.ImportLive.Show do
           <% end %>
         </ul>
       </div>
-      <.back navigate={~p"/collections/#{@collection}"}>
-        <%= ~t"Back"m %>
-      </.back>
     </.page>
     """
   end

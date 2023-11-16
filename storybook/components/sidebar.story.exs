@@ -1,10 +1,10 @@
-defmodule Storybook.CoreComponents.Sidebar do
+defmodule Storybook.Components.Sidebar do
   use PhoenixStorybook.Story, :component
 
-  alias Elixir.DataAggregatorWeb.CoreComponents
+  alias DataAggregatorWeb.Components.Sidebar
 
-  def function, do: &CoreComponents.sidebar/1
-  def imports, do: [{CoreComponents, [header: 1]}]
+  def function, do: &Sidebar.sidebar/1
+  def imports, do: [{Sidebar, [sidebar_header: 1]}]
 
   def template do
     """
@@ -20,12 +20,12 @@ defmodule Storybook.CoreComponents.Sidebar do
         id: :sidebar,
         slots: [
           "<:header>
-            <.header>
+            <.sidebar_header>
               Header
               <:subtitle>
                 I'm a header subtitle
               </:subtitle>
-            </.header>
+            </.sidebar_header>
           </:header>",
           "<:footer>Footer</:footer>"
         ]

@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.RecordLive.Show do
 
   alias DataAggregator.Records.Record
 
-  import DataAggregatorWeb.QueryBuilder
+  import DataAggregatorWeb.Components.Internal.Path, only: [assign_current_path_params: 2]
 
   @impl true
   def mount(_params, _session, socket) do
@@ -41,19 +41,24 @@ defmodule DataAggregatorWeb.RecordLive.Show do
         <%= @record.tax_scientific_name %>
 
         <:actions>
-          <.styled_link
-            patch={~p"/records/#{@record}/show/edit?#{@current_path_params}"}
+          <.button
+            to={~p"/records?#{@current_path_params}"}
+            link_type="live_redirect"
+            color="secondary"
+            icon="hero-arrow-left-mini"
+            label={~t"Back to Records"m}
+            responsive
+          />
+          <.button
             id="record-modal__button"
-          >
-            <.icon name="hero-pencil-square-mini" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-            <span class="sm:inline-block hidden"><%= ~t"Edit Record"m %></span>
-          </.styled_link>
+            to={~p"/records/#{@record}/show/edit?#{@current_path_params}"}
+            link_type="live_patch"
+            icon="hero-pencil-square-mini"
+            label={~t"Edit Record"m}
+            responsive
+          />
         </:actions>
       </.header>
-
-      <.back navigate={~p"/records?#{@current_path_params}"}>
-        <%= ~t"Back"m %>
-      </.back>
 
       <:portal>
         <.modal

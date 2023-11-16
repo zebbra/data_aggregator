@@ -1,10 +1,10 @@
-defmodule Storybook.CoreComponents.Input do
+defmodule Storybook.Components.Input do
   use PhoenixStorybook.Story, :component
 
-  alias Elixir.DataAggregatorWeb.CoreComponents
+  alias DataAggregatorWeb.Components.Form
 
-  def function, do: &CoreComponents.input/1
-  def imports, do: [{CoreComponents, [simple_form: 1]}]
+  def function, do: &Form.input/1
+  def imports, do: [{Form, [simple_form: 1]}]
 
   def template do
     """
