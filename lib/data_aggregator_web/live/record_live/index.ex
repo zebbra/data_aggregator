@@ -1,10 +1,18 @@
 defmodule DataAggregatorWeb.RecordLive.Index do
   use DataAggregatorWeb, :live_view
 
+  use DataAggregatorWeb.Components.Internal.Pagination
+  use DataAggregatorWeb.Components.Internal.Sort
+
   alias DataAggregator.Records.Record
 
   import DataAggregatorWeb.RecordLive.PreviewComponent
-  import DataAggregatorWeb.QueryBuilder
+
+  import DataAggregatorWeb.Components.Internal.{
+    Path,
+    Selection,
+    Stream
+  }
 
   @impl true
   def mount(_params, _session, socket) do
@@ -93,92 +101,13 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   end
 
   @impl true
-  def handle_event("sort:select", %{"sort" => sort}, socket) do
-    socket = handle_sort(socket, sort)
-
-    {:noreply,
-     patch_params(socket, %{
-       sort: socket.assigns.current_sort,
-       limit: socket.assigns.current_limit
-     })}
-  end
-
-  @impl true
-  def handle_event("page:prev", _params, socket) do
-    socket = handle_prev_page(socket)
-
-    {:noreply,
-     patch_params(socket, %{
-       sort: socket.assigns.current_sort,
-       page: socket.assigns.current_page,
-       limit: socket.assigns.current_limit
-     })}
-  end
-
-  @impl true
-  def handle_event("page:next", _params, socket) do
-    socket = handle_next_page(socket)
-
-    {:noreply,
-     patch_params(socket, %{
-       sort: socket.assigns.current_sort,
-       page: socket.assigns.current_page,
-       limit: socket.assigns.current_limit
-     })}
-  end
-
-  @impl true
-  def handle_event("page:change", %{"limit" => limit}, socket) do
-    {:noreply,
-     patch_params(socket, %{
-       sort: socket.assigns.current_sort,
-       page: 1,
-       limit: String.to_integer(limit)
-     })}
-  end
-
-  @impl true
   def handle_event("select", %{"id" => id}, socket) do
-    old_selected = socket.assigns.current_selected
     new_selected = DataAggregator.Records.load!(Record.get_by_id!(id), [:collection])
-
-    if old_selected == new_selected do
-      {:noreply, unselect_current_selected(socket)}
-    else
-      socket = assign(socket, :current_selected, new_selected)
-      new_selected = Map.put(new_selected, :selected, true)
-
-      if old_selected do
-        old_selected = Map.put(old_selected, :selected, false)
-
-        socket =
-          socket
-          |> stream_insert(:results, old_selected)
-          |> stream_insert(:results, new_selected)
-
-        {:noreply, socket}
-      else
-        {:noreply, stream_insert(socket, :results, new_selected)}
-      end
-    end
+    handle_select(socket, new_selected)
   end
 
   defp patch_params(socket, params) do
     params = Map.reject(params, &(elem(&1, 1) in ["", nil]))
     push_patch(socket, to: ~p"/records?#{params}", replace: true)
-  end
-
-  defp unselect_current_selected(socket) do
-    selected = socket.assigns.current_selected
-
-    if selected do
-      selected = Map.put(selected, :selected, false)
-
-      socket
-      |> assign(:current_selected, nil)
-      |> stream_insert(:results, selected)
-    else
-      socket
-    end
   end
 end

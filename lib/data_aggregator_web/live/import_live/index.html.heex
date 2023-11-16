@@ -1,7 +1,6 @@
 <.page active_link={:imports} environment={@environment} sidebar_nav={@sidebar_nav}>
-  <.header class="sticky top-16">
+  <.header class="top-16 sticky">
     <%= ~t"Listing Imports"m %>
-    <:actions></:actions>
   </.header>
 
   <.table
@@ -9,32 +8,31 @@
     rows={@streams.results}
     row_click={
       fn {_id, import} ->
-        JS.navigate(~p"/imports/#{import}?#{@current_path_params}")
+        JS.navigate(~p"/imports/#{import}")
       end
     }
-    sort={@current_sort}
   >
-    <:col :let={{_id, import}} label={~t"State"m} field="state" sort>
+    <:col :let={{_id, import}} label={~t"State"m} field="state">
       <.import_state_badge state={import.state} />
     </:col>
 
-    <:col :let={{_id, import}} label={~t"File"m} field="attachment_filename" sort>
-      <span class="font-mono divide-opacity-50"><%= import.attachment.filename %></span>
+    <:col :let={{_id, import}} label={~t"File"m} field="attachment_filename">
+      <span class="divide-opacity-50 font-mono"><%= import.attachment.filename %></span>
     </:col>
 
-    <:col :let={{_id, import}} label={~t"Size"m} field="attachment_byte_size" sort>
+    <:col :let={{_id, import}} label={~t"Size"m} field="attachment_byte_size">
       <.attachment_download_badge attachment={import.attachment} />
     </:col>
 
-    <:col :let={{_id, import}} label={~t"Collection"m} field="collection_name" sort>
+    <:col :let={{_id, import}} label={~t"Collection"m} field="collection_name">
       <%= import.collection_name %>
     </:col>
 
-    <:col :let={{_id, import}} label={~t"Imported at"m} field="imported_at" sort>
+    <:col :let={{_id, import}} label={~t"Imported at"m} field="imported_at">
       <%= format_datetime(import.imported_at) %>
     </:col>
 
-    <:col :let={{_id, import}} label={~t"Records"m} field="records_count" sort>
+    <:col :let={{_id, import}} label={~t"Records"m} field="records_count">
       <%= format_number(import.records_count) %>
     </:col>
 

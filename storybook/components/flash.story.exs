@@ -1,15 +1,16 @@
-defmodule Storybook.CoreComponents.Flash do
+defmodule Storybook.Components.Flash do
   use PhoenixStorybook.Story, :component
-  alias Elixir.DataAggregatorWeb.CoreComponents
 
-  def function, do: &CoreComponents.flash/1
-  def imports, do: [{CoreComponents, [button: 1, show: 1]}]
+  alias DataAggregatorWeb.Components.Button
+  alias DataAggregatorWeb.Components.Flash
+  alias DataAggregatorWeb.Components.Transitions
+
+  def function, do: &Flash.flash/1
+  def imports, do: [{Transitions, [show: 1]}, {Button, [button: 1]}]
 
   def template do
     """
-    <.button phx-click={show("#:variation_id")} lsb-code-hidden>
-      Open flash
-    </.button>
+    <.button phx-click={show("#:variation_id")} lsb-code-hidden label="Open flash" />
     <.lsb-variation/>
     """
   end

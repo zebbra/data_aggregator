@@ -1,8 +1,6 @@
 defmodule DataAggregatorWeb.DashboardLive.Index do
   use DataAggregatorWeb, :live_view
 
-  import DataAggregatorWeb.Headless.StatCard
-
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
@@ -38,7 +36,7 @@ defmodule DataAggregatorWeb.DashboardLive.Index do
     ~H"""
     <.page active_link={:dashboard} environment={@environment} sidebar_nav={@sidebar_nav}>
       <.header>Dashboard</.header>
-      <div class="grid justify-items-center">
+      <div class="justify-items-center grid">
         <dl class="xl:grid-cols-4 sm:grid-cols-2 grid grid-cols-2 gap-5 mt-5">
           <.stat_card label={~t"Amount of Collections"m} stat={format_number(@collections_count)} />
           <.stat_card label={~t"Total Records"m} stat={format_number(@records_count)} />

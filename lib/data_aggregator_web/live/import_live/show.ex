@@ -67,7 +67,7 @@ defmodule DataAggregatorWeb.ImportLive.Show do
   def render(assigns) do
     ~H"""
     <.page active_link={:imports} environment={@environment} sidebar_nav={@sidebar_nav}>
-      <div class="sticky top-16">
+      <div class="top-16 sticky">
         <.import_header import={@import} action={@live_action} />
         <.import_steps import={@import} active={@live_action} />
       </div>

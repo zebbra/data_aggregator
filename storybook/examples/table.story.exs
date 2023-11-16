@@ -1,7 +1,7 @@
 defmodule Storybook.Examples.Table do
   use PhoenixStorybook.Story, :example
 
-  import DataAggregatorWeb.CoreComponents, only: [table: 1]
+  import DataAggregatorWeb.Components.Table, only: [table: 1]
 
   def doc, do: "This is a basic table example."
 

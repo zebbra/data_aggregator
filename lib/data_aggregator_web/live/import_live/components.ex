@@ -13,19 +13,19 @@ defmodule DataAggregatorWeb.ImportLive.Components do
   def import_header(assigns) do
     ~H"""
     <.header>
-      <div class="flex justify-between items-center">
+      <div class="flex items-center justify-between">
         <h1>Import Records</h1>
-        <ol class="inline-flex space-x-4 text-sm justify-end">
-          <li class="flex space-x-2 items-center">
-            <span class="opacity-50">State:</span>
+        <ol class="inline-flex justify-end space-x-4 text-sm">
+          <li class="flex items-center space-x-2">
+            <span class="dark:text-gray-400 text-gray-500">State:</span>
             <.import_state_badge state={@import.state} />
           </li>
         </ol>
       </div>
 
       <:subtitle>
-        <ol class="flex space-x-4 text-sm items-center">
-          <li class="flex space-x-2 items-center">
+        <ol class="flex items-center space-x-4 text-sm">
+          <li class="flex items-center space-x-2">
             <.import_attachment import={@import} />
           </li>
         </ol>
@@ -40,7 +40,7 @@ defmodule DataAggregatorWeb.ImportLive.Components do
     ~H"""
     <div class="flex items-center space-x-1">
       <.attachment_download_badge attachment={@import.attachment} />
-      <div class="font-mono opacity-50"><%= @import.attachment.filename %></div>
+      <div class="dark:text-gray-400 font-mono text-gray-500"><%= @import.attachment.filename %></div>
     </div>
     """
   end
@@ -57,7 +57,7 @@ defmodule DataAggregatorWeb.ImportLive.Components do
         @class
       ]}
     >
-      <.icon name="hero-arrow-down-tray-mini" class="h-3 w-3 mr-1" />
+      <.icon name="hero-arrow-down-tray-mini" class="w-3 h-3 mr-1" />
       <%= format_bytes(@attachment.byte_size) %>
     </.link>
     """
@@ -68,12 +68,11 @@ defmodule DataAggregatorWeb.ImportLive.Components do
 
   def import_steps(assigns) do
     ~H"""
-    <div class="lg:border-b lg:border-gray-200 bg-white dark:bg-gray-900">
+    <div class="lg:border-b lg:border-gray-200 dark:bg-gray-900 dark:lg:border-white/5 bg-white">
       <nav class="mx-auto" aria-label="Progress">
         <ol
           role="list"
-          class="lg:flex lg:rounded-none lg:justify-items-stretch overflow-hidden rounded-md lg:border-gray-200"
-          blah="overflow-hidden rounded-md lg:flex lg:rounded-none lg:border-l lg:border-r lg:border-gray-200"
+          class="lg:flex lg:rounded-none lg:justify-items-stretch lg:border-gray-200 dark:lg:border-white/5 overflow-hidden rounded-md"
         >
           <.import_step
             number={1}
@@ -112,28 +111,28 @@ defmodule DataAggregatorWeb.ImportLive.Components do
 
   def import_step(assigns) do
     ~H"""
-    <li class="lg:flex-1 overflow-hidden relative">
-      <div class="lg:border-0 overflow-hidden rounded-b-md border border-t-0 border-gray-200">
+    <li class="lg:flex-1 relative overflow-hidden">
+      <div class="lg:border-0 rounded-b-md dark:border-white/5 overflow-hidden border border-t-0 border-gray-200">
         <.link patch={@to} class="group">
           <span
             :if={@active}
-            class="lg:bottom-0 lg:top-auto lg:h-1 lg:w-full absolute top-0 left-0 w-1 h-full bg-indigo-600"
+            class="lg:bottom-0 lg:top-auto lg:h-1 lg:w-full dark:bg-indigo-500 absolute top-0 left-0 w-1 h-full bg-indigo-600"
             aria-hidden="true"
           >
           </span>
           <span
             class={[
               "lg:bottom-0 lg:top-auto lg:h-1 lg:w-full absolute top-0 left-0 w-1 h-full bg-transparent",
-              @active or "group-hover:bg-gray-200"
+              @active or "group-hover:bg-gray-200 dark:group-hover:bg-white/5"
             ]}
             aria-hidden="true"
           >
           </span>
-          <span class="lg:pl-9 flex items-start py-5 px-6 text-sm font-medium items-center">
+          <span class="lg:pl-9 flex items-start items-center px-6 py-5 text-sm font-medium">
             <span class="flex-shrink-0">
               <span class={[
                 "flex justify-center items-center w-10 h-10 rounded-full border-2",
-                if(@active, do: "border-indigo-600", else: "border-gray-400")
+                if(@active, do: "border-indigo-600 dark:border-indigo-500", else: "border-gray-400")
               ]}>
                 <span class={[
                   "text-md",
@@ -146,7 +145,10 @@ defmodule DataAggregatorWeb.ImportLive.Components do
             <span class="ml-4 mt-0.5 flex min-w-0 flex-col">
               <span class={[
                 "text-sm font-semibold",
-                if(@active, do: "text-indigo-600", else: "text-gray-500")
+                if(@active,
+                  do: "text-indigo-600 dark:text-indigo-500",
+                  else: "text-gray-500 dark:text-gray-400"
+                )
               ]}>
                 <%= @label %>
               </span>
@@ -157,11 +159,11 @@ defmodule DataAggregatorWeb.ImportLive.Components do
         <!-- divider -->
         <div
           :if={@number > 1}
-          class="lg:block hidden absolute inset-0 top-0 left-0 w-3"
+          class="lg:block absolute inset-0 top-0 left-0 hidden w-3"
           aria-hidden="true"
         >
           <svg
-            class="w-full h-full text-gray-300"
+            class="dark:text-white/10 w-full h-full text-gray-300"
             viewBox="0 0 12 82"
             fill="none"
             preserveAspectRatio="none"
@@ -207,12 +209,23 @@ defmodule DataAggregatorWeb.ImportLive.Components do
 
   def import_state_badge_class(state) do
     case state do
-      :pending -> "bg-gray-50 text-gray-500 ring-gray-500/10"
-      :queued -> "bg-yellow-50 text-yellow-800 ring-yellow-600/20"
-      :running -> "bg-indigo-50 text-indigo-700 ring-indigo-700/10"
-      :imported -> "bg-green-50 text-green-700 ring-green-600/10"
-      :failed -> "bg-red-50 text-red-700 ring-red-600/20"
-      _ -> nil
+      :pending ->
+        "bg-gray-50 text-gray-500 ring-gray-500/10 dark:bg-gray-400/10 dark:text-gray-400 dark:ring-gray-400/20"
+
+      :queued ->
+        "bg-yellow-50 text-yellow-800 ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-500 dark:ring-yellow-400/20"
+
+      :running ->
+        "bg-indigo-50 text-indigo-700 ring-indigo-700/10 dark:bg-indigo-400/10 dark:text-indigo-400 dark:ring-indigo-400/30"
+
+      :imported ->
+        "bg-green-50 text-green-700 ring-green-600/10 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20"
+
+      :failed ->
+        "bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400 dark:ring-red-400/20"
+
+      _ ->
+        nil
     end
   end
 

@@ -25,7 +25,13 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.form_header icon={@icon} title={@title} />
+      <.modal_header
+        modal_id="import-modal"
+        icon={@icon}
+        title={@title}
+        description={~t"Select a file containing your Records"m}
+      />
+
       <.simple_form
         for={@form}
         id="import-form"
@@ -36,13 +42,13 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
         <%!-- use phx-drop-target with the upload ref to enable file drag and drop --%>
         <section
           phx-drop-target={@uploads.file.ref}
-          class="border-gray-900/25 dark:border-white/25 flex flex-col py-10 px-6 mt-2 rounded-md border border-dashed"
+          class="border-gray-900/25 dark:border-white/25 flex flex-col px-6 py-10 mt-2 border border-dashed rounded-md"
         >
           <div class="flex justify-center">
             <div class="text-center">
               <.icon
                 name="hero-photo-mini"
-                class="dark:text-gray-500 mx-auto w-12 h-12 text-gray-300"
+                class="dark:text-gray-500 w-12 h-12 mx-auto text-gray-300"
               />
               <div class="dark:text-gray-400 flex mt-4 text-sm leading-6 text-gray-600">
                 <label
@@ -66,22 +72,17 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
             <article :for={entry <- @uploads.file.entries}>
               <span class="text-sm"><%= entry.client_name %></span>
 
-              <div class="flex space-x-4">
-                <div class="dark:bg-gray-700 mt-2 w-full h-2 bg-gray-200 rounded-full">
-                  <div
-                    class="dark:bg-indigo-500 h-2 bg-indigo-600 rounded-full"
-                    style={"width: #{entry.progress}%;"}
-                  />
-                </div>
+              <div class="flex items-center space-x-4">
+                <.progress value={entry.progress} />
                 <button
                   type="button"
                   phx-click="cancel-upload"
                   phx-target={@myself}
                   phx-value-ref={entry.ref}
                   aria-label="cancel"
-                  class="text-gray-600"
+                  class="flex items-center h-full"
                 >
-                  &times;
+                  <.icon name="hero-x-mark-mini" class="text-gray-600" />
                 </button>
               </div>
 
@@ -98,50 +99,17 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
           <.button
             type="submit"
             class="sm:ml-3 sm:w-auto inline-flex justify-center w-full"
-            phx-disable-with={~t"Uploading..."m}
-          >
-            <%= ~t"Upload file"m %>
-          </.button>
+            label={~t"Upload file"m}
+          />
           <.button
-            variant="secondary"
-            class="sm:mt-0 sm:w-auto inline-flex justify-center mt-3 w-full"
+            color="secondary"
+            class="sm:mt-0 sm:w-auto inline-flex justify-center w-full mt-3"
+            label={~t"Cancel"m}
             phx-click={JS.exec("data-cancel", to: "#import-modal")}
             phx-disable-with
-          >
-            <%= ~t"Cancel"m %>
-          </.button>
+          />
         </:actions>
       </.simple_form>
-    </div>
-    """
-  end
-
-  attr :icon, :string, default: nil
-  attr :title, :string, required: true
-
-  defp form_header(assigns) do
-    ~H"""
-    <div class="sm:flex sm:items-start">
-      <div
-        :if={@icon}
-        class="sm:mx-0 sm:h-10 sm:w-10 flex flex-shrink-0 justify-center items-center mx-auto w-12 h-12 bg-indigo-100 rounded-full"
-      >
-        <.icon name={@icon} class="w-6 h-6 text-indigo-600" />
-      </div>
-      <div class={["mt-3 text-center sm:mt-0 sm:text-left", @icon && "sm:ml-4"]}>
-        <.dialog_title
-          id="import-modal__title"
-          class="dark:text-white text-base font-semibold leading-6 text-gray-900"
-        >
-          <%= @title %>
-        </.dialog_title>
-        <.dialog_description
-          id="import-modal__description"
-          class="dark:text-gray-400 mt-2 text-sm text-gray-500"
-        >
-          <%= ~t"Select a file containing your Records"m %>
-        </.dialog_description>
-      </div>
     </div>
     """
   end

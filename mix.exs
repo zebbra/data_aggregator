@@ -146,9 +146,8 @@ defmodule DataAggregator.MixProject do
         ~r/^DataAggregatorWeb\.\w+Live/
       ],
       Components: [
-        DataAggregatorWeb.CoreComponents,
         DataAggregatorWeb.ColorMode,
-        DataAggregatorWeb.HeadlessComponents,
+        ~r/^DataAggregatorWeb\.Components/,
         ~r/^DataAggregatorWeb\.Headless/
       ],
       "Live Hooks": [
@@ -193,8 +192,8 @@ defmodule DataAggregator.MixProject do
       {:ash_uuid, "~> 0.4"},
 
       # Database and Ecto
-      {:ecto, "~> 3.10"},
-      {:ecto_sql, "~> 3.10"},
+      {:ecto, "~> 3.11.0"},
+      {:ecto_sql, "~> 3.11.0"},
       {:ecto_dev_logger, "~> 0.9"},
       {:ecto_psql_extras, "~> 0.7"},
       {:postgrex, ">= 0.0.0"},

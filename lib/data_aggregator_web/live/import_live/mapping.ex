@@ -26,11 +26,6 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
   end
 
   @impl true
-  def handle_event("backto:import", _params, socket) do
-    {:noreply, socket |> push_navigate(to: ~p"/imports/#{socket.assigns.import}")}
-  end
-
-  @impl true
   def handle_event("apply:mapping", _params, socket) do
     case Import.update_mapping(socket.assigns.import, get_static_mappings()) do
       {:ok, import} ->
@@ -45,49 +40,45 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
   def render(assigns) do
     ~H"""
     <.page active_link={:imports} environment={@environment} sidebar_nav={@sidebar_nav}>
-      <.header class="sticky top-16">
+      <.header class="top-16 sticky">
         Define the mapping for the import of your collection '<%= @import.collection.name %>'
         <:actions>
           <.button
-            variant="nav"
-            class="rounded-md"
-            aria-label={~t"Back to Import"m}
-            phx-click="backto:import"
-          >
-            <.icon name="hero-arrow-left" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-            <%= ~t"Back to Import"m %>
-          </.button>
+            to={~p"/imports/#{@import}"}
+            link_type="live_redirect"
+            color="secondary"
+            icon="hero-arrow-left-mini"
+            label={~t"Back to Import"m}
+            responsive
+          />
           <.button
-            variant="primary"
-            class="rounded-md"
-            aria-label={~t"Apply Mapping"m}
             phx-click="apply:mapping"
-          >
-            <.icon name="hero-check" class="sm:-ml-0.5 sm:mr-1.5 w-5 h-5" />
-            <%= ~t"Apply Mapping"m %>
-          </.button>
+            icon="hero-check-mini"
+            label={~t"Apply Mapping"m}
+            responsive
+          />
         </:actions>
       </.header>
 
-      <div class="grid justify-items-center">
+      <div class="justify-items-center grid">
         <ul
           role="list"
-          class="dark:text-gray-400 2xl:w-6/12 xl:w-8/12 md:w-9/12 sm:10/12 divide-slate-600 sm:mt-2 px-7 w-full text-sm text-gray-700 divide-y divide-dashed"
+          class="dark:text-gray-400 2xl:w-6/12 xl:w-8/12 md:w-9/12 sm:10/12 divide-slate-600 sm:mt-2 px-7 divide-dashed w-full text-sm text-gray-700 divide-y"
         >
-          <li class="dark:text-gray-200 flex gap-x-6 py-1">
-            <div class="flex gap-x-4 justify-start w-5 text-sm font-bold leading-10">
+          <li class="dark:text-gray-200 gap-x-6 flex py-1">
+            <div class="gap-x-4 flex justify-start w-5 text-sm font-bold leading-10">
               req.
             </div>
-            <div class="flex gap-x-4 justify-start w-1/2 text-sm font-bold leading-10">
+            <div class="gap-x-4 flex justify-start w-1/2 text-sm font-bold leading-10">
               Column
             </div>
-            <div class="flex gap-x-4 justify-end w-1/2 text-sm font-bold leading-10">
+            <div class="gap-x-4 flex justify-end w-1/2 text-sm font-bold leading-10">
               Mapped To
             </div>
           </li>
           <%= for column <- @import.columns do %>
-            <li class="flex gap-x-6 py-1">
-              <div class="flex gap-x-4 justify-start items-center w-5">
+            <li class="gap-x-6 flex py-1">
+              <div class="gap-x-4 flex items-center justify-start w-5">
                 <input
                   disabled
                   checked={get_required_from_static_mappings(column.name)}
@@ -95,19 +86,16 @@ defmodule DataAggregatorWeb.ImportLive.Mapping do
                   class="w-4 h-4 text-indigo-600 rounded"
                 />
               </div>
-              <div class="flex gap-x-4 justify-start w-1/2 text-sm leading-10">
+              <div class="gap-x-4 flex justify-start w-1/2 text-sm leading-10">
                 <%= column.name %>
               </div>
-              <div class="flex gap-x-4 justify-end w-1/2 text-sm leading-10">
+              <div class="gap-x-4 flex justify-end w-1/2 text-sm leading-10">
                 <%= get_mapping_from_static_mappings(column.name) %>
               </div>
             </li>
           <% end %>
         </ul>
       </div>
-      <.back navigate={~p"/imports/#{@import}"}>
-        <%= ~t"Back"m %>
-      </.back>
     </.page>
     """
   end

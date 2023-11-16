@@ -5,8 +5,6 @@ defmodule DataAggregatorWeb.ImportLive.Index do
   alias DataAggregator.PubSub
   alias DataAggregator.Records.Import
 
-  import DataAggregatorWeb.QueryBuilder
-
   @load [
     :collection_name,
     :records_count,
@@ -30,23 +28,18 @@ defmodule DataAggregatorWeb.ImportLive.Index do
   def handle_params(params, _url, socket) do
     socket =
       socket
-      |> assign_current_sort(params)
-      |> assign_current_path_params(params)
       |> assign_imports()
+      |> apply_action(socket.assigns.live_action, params)
 
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+    {:noreply, socket}
   end
 
   defp assign_imports(socket) do
-    list_imports(socket)
+    socket |> stream(:results, list_imports())
   end
 
-  defp list_imports(socket) do
-    %{current_sort: current_sort} = socket.assigns
-
-    results = Import.read!(%{sort: current_sort}, load: @load)
-
-    stream_results(socket, results)
+  defp list_imports do
+    Import.read!(load: @load)
   end
 
   defp apply_action(socket, :show, %{"id" => id}) do
@@ -80,20 +73,5 @@ defmodule DataAggregatorWeb.ImportLive.Index do
     :ok = Import.destroy(import)
 
     {:noreply, stream_delete(socket, :results, import)}
-  end
-
-  @impl true
-  def handle_event("sort:select", %{"sort" => sort}, socket) do
-    socket = handle_sort(socket, sort)
-
-    {:noreply,
-     patch_params(socket, %{
-       sort: socket.assigns.current_sort
-     })}
-  end
-
-  defp patch_params(socket, params) do
-    params = Map.reject(params, &(elem(&1, 1) in ["", nil]))
-    push_patch(socket, to: ~p"/imports?#{params}", replace: true)
   end
 end

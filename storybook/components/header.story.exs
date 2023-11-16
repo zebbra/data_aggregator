@@ -1,9 +1,11 @@
-defmodule Storybook.CoreComponents.Header do
+defmodule Storybook.Components.Header do
   use PhoenixStorybook.Story, :component
-  alias Elixir.DataAggregatorWeb.CoreComponents
 
-  def function, do: &CoreComponents.header/1
-  def imports, do: [{CoreComponents, button: 1}]
+  alias DataAggregatorWeb.Components.Button
+  alias DataAggregatorWeb.Components.Header
+
+  def function, do: &Header.header/1
+  def imports, do: [{Button, [button: 1]}]
 
   def variations do
     [
