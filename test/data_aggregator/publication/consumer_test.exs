@@ -6,8 +6,8 @@ defmodule DataAggregator.ConsumerTest do
   alias DataAggregator.Platform.Publication.Consumer
   alias DataAggregator.Records.Record
 
-  import DataAggregator.ConsumerFixtures
-  import DataAggregator.RecordsFixture
+  import DataAggregator.PublicationFixtures
+  import DataAggregator.RecordsFixtures
 
   describe "consumer crud tests" do
     @invalid_attrs %{
