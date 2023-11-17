@@ -17,7 +17,7 @@ defmodule DataAggregatorWeb.ImportLive.Components do
         <h1><%= ~t"Import Records"m %></h1>
         <ol class="inline-flex justify-end space-x-4 text-sm">
           <li class="flex items-center space-x-2">
-            <span class="dark:text-gray-400 text-gray-500">State:</span>
+            <span class="text-gray-500 dark:text-gray-400">State:</span>
             <.import_state_badge state={@import.state} />
           </li>
         </ol>
@@ -40,7 +40,7 @@ defmodule DataAggregatorWeb.ImportLive.Components do
     ~H"""
     <div class="flex items-center space-x-1">
       <.attachment_download_badge attachment={@import.attachment} />
-      <div class="dark:text-gray-400 font-mono text-gray-500"><%= @import.attachment.filename %></div>
+      <div class="font-mono text-gray-500 dark:text-gray-400"><%= @import.attachment.filename %></div>
     </div>
     """
   end
@@ -68,11 +68,11 @@ defmodule DataAggregatorWeb.ImportLive.Components do
 
   def import_steps(assigns) do
     ~H"""
-    <div class="lg:border-b lg:border-gray-200 dark:bg-gray-900 dark:lg:border-white/5 bg-white">
+    <div class="bg-white dark:bg-gray-900 lg:border-b lg:border-gray-200 lg:dark:border-white/5">
       <nav class="mx-auto" aria-label="Progress">
         <ol
           role="list"
-          class="lg:flex lg:rounded-none lg:justify-items-stretch lg:border-gray-200 dark:lg:border-white/5 overflow-hidden rounded-md"
+          class="overflow-hidden rounded-md lg:flex lg:justify-items-stretch lg:rounded-none lg:border-gray-200 lg:dark:border-white/5"
         >
           <.import_step
             number={1}
@@ -111,38 +111,35 @@ defmodule DataAggregatorWeb.ImportLive.Components do
 
   def import_step(assigns) do
     ~H"""
-    <li class="lg:flex-1 relative overflow-hidden">
-      <div class="lg:border-0 rounded-b-md dark:border-white/5 overflow-hidden border border-t-0 border-gray-200">
+    <li class="relative overflow-hidden lg:flex-1">
+      <div class="overflow-hidden rounded-b-md border border-t-0 border-gray-200 dark:border-white/5 lg:border-0">
         <.link patch={@to} class="group">
           <span
             :if={@active}
-            class="lg:bottom-0 lg:top-auto lg:h-1 lg:w-full dark:bg-indigo-500 absolute top-0 left-0 w-1 h-full bg-indigo-600"
+            class="absolute top-0 left-0 h-full w-1 bg-indigo-600 dark:bg-indigo-500 lg:top-auto lg:bottom-0 lg:h-1 lg:w-full"
             aria-hidden="true"
           >
           </span>
           <span
             class={[
-              "lg:bottom-0 lg:top-auto lg:h-1 lg:w-full absolute top-0 left-0 w-1 h-full bg-transparent",
+              "absolute top-0 left-0 h-full w-1 bg-transparent lg:top-auto lg:bottom-0 lg:h-1 lg:w-full",
               @active or "group-hover:bg-gray-200 dark:group-hover:bg-white/5"
             ]}
             aria-hidden="true"
           >
           </span>
-          <span class="lg:pl-9 flex items-start items-center px-6 py-5 text-sm font-medium">
+          <span class="flex items-start items-center px-6 py-5 text-sm font-medium lg:pl-9">
             <span class="flex-shrink-0">
               <span class={[
-                "flex justify-center items-center w-10 h-10 rounded-full border-2",
+                "flex h-10 w-10 items-center justify-center rounded-full border-2",
                 if(@active, do: "border-indigo-600 dark:border-indigo-500", else: "border-gray-400")
               ]}>
-                <span class={[
-                  "text-md",
-                  if(@active, do: "text-indigo-500", else: "text-gray-400 ")
-                ]}>
+                <span class={["text-md", if(@active, do: "text-indigo-500", else: "text-gray-400 ")]}>
                   <%= @number %>
                 </span>
               </span>
             </span>
-            <span class="ml-4 mt-0.5 flex min-w-0 flex-col">
+            <span class="mt-0.5 ml-4 flex min-w-0 flex-col">
               <span class={[
                 "text-sm font-semibold",
                 if(@active,
@@ -159,11 +156,11 @@ defmodule DataAggregatorWeb.ImportLive.Components do
         <!-- divider -->
         <div
           :if={@number > 1}
-          class="lg:block absolute inset-0 top-0 left-0 hidden w-3"
+          class="absolute inset-0 top-0 left-0 hidden w-3 lg:block"
           aria-hidden="true"
         >
           <svg
-            class="dark:text-white/10 w-full h-full text-gray-300"
+            class="h-full w-full text-gray-300 dark:text-white/10"
             viewBox="0 0 12 82"
             fill="none"
             preserveAspectRatio="none"
@@ -198,7 +195,7 @@ defmodule DataAggregatorWeb.ImportLive.Components do
   def import_state_badge(assigns) do
     ~H"""
     <span class={[
-      "inline-flex items-center rounded-full pl-1.5 pr-3 py-1 text-md font-medium ring-1 ring-inset space-x-1.5",
+      "text-md inline-flex items-center space-x-1.5 rounded-full py-1 pr-3 pl-1.5 font-medium ring-1 ring-inset",
       import_state_badge_class(@state)
     ]}>
       <.import_state_icon state={@state} />

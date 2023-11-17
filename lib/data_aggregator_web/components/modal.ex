@@ -114,7 +114,7 @@ defmodule DataAggregatorWeb.Components.Modal do
       <.backdrop :if={@backdrop} id={@id} variant="modal" />
 
       <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div class="sm:items-center sm:p-0 flex items-end justify-center min-h-full p-4 text-center">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
           <.dialog_panel
             id={@id <> "__panel"}
             class="sm:my-8 sm:w-full sm:max-w-lg sm:p-6 dark:bg-gray-900 dark:border dark:border-white/10 min-w-[calc(100vw-20px)] sm:min-w-fit relative px-4 pt-5 pb-4 overflow-hidden text-left bg-white rounded-lg shadow-xl"
@@ -122,7 +122,7 @@ defmodule DataAggregatorWeb.Components.Modal do
             <%= render_slot(@inner_block) %>
 
             <%= if Enum.empty?(@submit) == false || Enum.empty?(@confirm) == false || Enum.empty?(@cancel) == false do %>
-              <div class="sm:mt-4 sm:flex sm:flex-row-reverse mt-5">
+              <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                 <%= for submit <- @submit do %>
                   <.button
                     id={@id <> "__submit"}
@@ -162,11 +162,11 @@ defmodule DataAggregatorWeb.Components.Modal do
               </div>
             <% end %>
 
-            <div class="sm:block absolute top-0 right-0 hidden pt-4 pr-4">
+            <div class="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
               <button
                 phx-click={JS.exec("data-cancel", to: "##{@id}")}
                 type="button"
-                class="hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-gray-900 text-gray-400 bg-white rounded-md"
+                class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-gray-900"
                 aria-label={gettext("close")}
               >
                 <.icon name="hero-x-mark" class="w-6 h-6" />
@@ -192,7 +192,7 @@ defmodule DataAggregatorWeb.Components.Modal do
     <div class="sm:flex sm:items-start">
       <div
         :if={assigns[:icon]}
-        class="sm:mx-0 sm:h-10 sm:w-10 flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-indigo-100 rounded-full"
+        class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10"
       >
         <.icon name={@icon} class="w-6 h-6 text-indigo-600" />
       </div>

@@ -1,13 +1,13 @@
-<div class="grow lg:border-r lg:border-gray-200 dark:border-none dark:bg-gray-900 dark:lg:bg-black/10 dark:ring-1 dark:ring-white/10 dark:lg:ring-white/5 gap-y-5 flex flex-col px-6 overflow-y-auto bg-white">
-  <div class="shrink-0 flex items-center h-16">
+<div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 dark:ring-white/10 dark:border-none dark:bg-gray-900 dark:ring-1 lg:border-r lg:border-gray-200 lg:dark:bg-black/10 lg:dark:ring-white/5">
+  <div class="flex h-16 shrink-0 items-center">
     <img
-      class="w-auto h-8"
+      class="h-8 w-auto"
       src={~p"/images/logo.svg?color=indigo&amp;shade=500"}
       alt="DataAggregator"
     />
   </div>
-  <nav class="flex flex-col flex-1">
-    <ul role="list" class="gap-y-7 flex flex-col flex-1">
+  <nav class="flex flex-1 flex-col">
+    <ul role="list" class="flex flex-1 flex-col gap-y-7">
       <%!-- Navigation links --%>
       <li>
         <ul role="list" class="-mx-2 space-y-1">
@@ -104,7 +104,7 @@
       <%!-- External links --%>
       <li>
         <div class="text-xs font-semibold leading-6 text-gray-400">External Resources</div>
-        <ul role="list" class="mt-2 -mx-2 space-y-1">
+        <ul role="list" class="-mx-2 mt-2 space-y-1">
           <li>
             <.link
               href="https://github.com/zebbra/data_aggregator"
@@ -158,7 +158,7 @@
       <%!-- Internal links --%>
       <li :if={@environment == :dev}>
         <div class="text-xs font-semibold leading-6 text-gray-400">Internal Resources</div>
-        <ul role="list" class="mt-2 -mx-2 space-y-1">
+        <ul role="list" class="-mx-2 mt-2 space-y-1">
           <li>
             <.link
               href="/dev/dashboard"
@@ -166,7 +166,7 @@
               rel="noopener noreferrer"
               class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 gap-x-3 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
             >
-              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
+              <span class="text-[0.625rem] flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-gray-700 dark:bg-gray-800 dark:group-hover:border-gray-700 dark:group-hover:text-white">
                 D
               </span>
               <span class="truncate">
@@ -181,7 +181,7 @@
               rel="noopener noreferrer"
               class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 gap-x-3 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
             >
-              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
+              <span class="text-[0.625rem] flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-gray-700 dark:bg-gray-800 dark:group-hover:border-gray-700 dark:group-hover:text-white">
                 G
               </span>
               <span class="truncate">
@@ -196,7 +196,7 @@
               rel="noopener noreferrer"
               class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 gap-x-3 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
             >
-              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
+              <span class="text-[0.625rem] flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-gray-700 dark:bg-gray-800 dark:group-hover:border-gray-700 dark:group-hover:text-white">
                 H
               </span>
               <span class="truncate">
@@ -211,7 +211,7 @@
               rel="noopener noreferrer"
               class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 gap-x-3 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
             >
-              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
+              <span class="text-[0.625rem] flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-gray-700 dark:bg-gray-800 dark:group-hover:border-gray-700 dark:group-hover:text-white">
                 S
               </span>
               <span class="truncate">
@@ -226,7 +226,7 @@
               rel="noopener noreferrer"
               class="group dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 gap-x-3 flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md"
             >
-              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-indigo-600 dark:group-hover:border-gray-700 group-hover:text-indigo-600 dark:group-hover:text-white">
+              <span class="text-[0.625rem] flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-gray-700 dark:bg-gray-800 dark:group-hover:border-gray-700 dark:group-hover:text-white">
                 R
               </span>
               <span class="truncate">

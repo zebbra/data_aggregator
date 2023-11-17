@@ -35,9 +35,9 @@ defmodule DataAggregatorWeb.Components.Form do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="dark:bg-gray-900 mt-8 space-y-8 bg-white">
+      <div class="mt-8 space-y-8 bg-white dark:bg-gray-900">
         <%= render_slot(@inner_block, f) %>
-        <div :for={action <- @actions} class="sm:mt-4 sm:flex sm:flex-row-reverse mt-5">
+        <div :for={action <- @actions} class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
           <%= render_slot(action, f) %>
         </div>
       </div>
@@ -110,7 +110,7 @@ defmodule DataAggregatorWeb.Components.Form do
 
     ~H"""
     <div phx-feedback-for={@name}>
-      <label class="dark:text-white flex items-center gap-3 text-sm font-medium leading-6 text-gray-900">
+      <label class="flex items-center gap-3 text-sm font-medium leading-6 text-gray-900 dark:text-white">
         <input type="hidden" name={@name} value="false" />
         <input
           type="radio"
@@ -118,7 +118,7 @@ defmodule DataAggregatorWeb.Components.Form do
           name={@name}
           value="true"
           checked={@checked}
-          class="dark:border-white/10 dark:bg-white/5 checked:bg-current checked:border-transparent dark:checked:bg-current dark:checked:border-transparent focus:ring-indigo-600 dark:focus:ring-offset-gray-900 w-4 h-4 text-indigo-600 border-gray-300"
+          class="h-4 w-4 border-gray-300 text-indigo-600 checked:border-transparent checked:bg-current focus:ring-indigo-600 dark:border-white/10 dark:bg-white/5 dark:checked:border-transparent dark:checked:bg-current dark:focus:ring-offset-gray-900"
           aria-invalid={@errors != []}
           aria-describedby={@errors != [] && "#{@id}-error"}
           {@rest}
@@ -136,7 +136,7 @@ defmodule DataAggregatorWeb.Components.Form do
 
     ~H"""
     <div phx-feedback-for={@name}>
-      <label class="dark:text-white flex items-center gap-3 text-sm font-medium leading-6 text-gray-900">
+      <label class="flex items-center gap-3 text-sm font-medium leading-6 text-gray-900 dark:text-white">
         <input type="hidden" name={@name} value="false" />
         <input
           type="checkbox"
@@ -144,7 +144,7 @@ defmodule DataAggregatorWeb.Components.Form do
           name={@name}
           value="true"
           checked={@checked}
-          class="dark:border-white/10 dark:bg-white/5 checked:bg-current checked:border-transparent dark:checked:bg-current dark:checked:border-transparent focus:ring-indigo-600 dark:focus:ring-offset-gray-900 w-4 h-4 text-indigo-600 border-gray-300 rounded"
+          class="h-4 w-4 rounded border-gray-300 text-indigo-600 checked:border-transparent checked:bg-current focus:ring-indigo-600 dark:border-white/10 dark:bg-white/5 dark:checked:border-transparent dark:checked:bg-current dark:focus:ring-offset-gray-900"
           aria-invalid={@errors != []}
           aria-describedby={@errors != [] && "#{@id}-error"}
           {@rest}
@@ -169,12 +169,12 @@ defmodule DataAggregatorWeb.Components.Form do
           name={@name}
           class={[
             "block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6",
-            "text-gray-900 dark:text-white dark:bg-white/5",
-            "phx-no-feedback:ring-gray-300 dark:phx-no-feedback:ring-white/10 phx-no-feedback:focus:ring-indigo-600 dark:phx-no-feedback:focus:ring-indigo-500",
+            "text-gray-900 dark:bg-white/5 dark:text-white",
+            "phx-no-feedback:ring-gray-300 phx-no-feedback:focus:ring-indigo-600 dark:phx-no-feedback:ring-white/10 dark:phx-no-feedback:focus:ring-indigo-500",
             @errors == [] &&
               "ring-gray-300 focus:ring-indigo-600 dark:ring-white/10 dark:focus:ring-indigo-500",
             @errors != [] &&
-              "ring-red-300 dark:ring-red-400 focus:ring-red-500 dark:focus:ring-red-500"
+              "ring-red-300 focus:ring-red-500 dark:ring-red-400 dark:focus:ring-red-500"
           ]}
           multiple={@multiple}
           aria-invalid={@errors != []}
@@ -186,7 +186,7 @@ defmodule DataAggregatorWeb.Components.Form do
         </select>
         <div
           :if={@errors != []}
-          class="phx-no-feedback:hidden absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+          class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 phx-no-feedback:hidden"
         >
           <.icon name="hero-exclamation-circle-mini" class="w-5 h-5 text-red-500" />
         </div>
@@ -209,12 +209,12 @@ defmodule DataAggregatorWeb.Components.Form do
           name={@name}
           class={[
             "block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6",
-            "text-gray-900 dark:text-white dark:bg-white/5",
-            "phx-no-feedback:ring-gray-300 dark:phx-no-feedback:ring-white/10 phx-no-feedback:focus:ring-indigo-600 dark:phx-no-feedback:focus:ring-indigo-500",
+            "text-gray-900 dark:bg-white/5 dark:text-white",
+            "phx-no-feedback:ring-gray-300 phx-no-feedback:focus:ring-indigo-600 dark:phx-no-feedback:ring-white/10 dark:phx-no-feedback:focus:ring-indigo-500",
             @errors == [] &&
               "ring-gray-300 focus:ring-indigo-600 dark:ring-white/10 dark:focus:ring-indigo-500",
             @errors != [] &&
-              "ring-red-300 dark:ring-red-400 focus:ring-red-500 dark:focus:ring-red-500"
+              "ring-red-300 focus:ring-red-500 dark:ring-red-400 dark:focus:ring-red-500"
           ]}
           aria-invalid={@errors != []}
           aria-describedby={@errors != [] && "#{@id}-error"}
@@ -222,7 +222,7 @@ defmodule DataAggregatorWeb.Components.Form do
         ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
         <div
           :if={@errors != []}
-          class="phx-no-feedback:hidden absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+          class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 phx-no-feedback:hidden"
         >
           <.icon name="hero-exclamation-circle-mini" class="w-5 h-5 text-red-500" />
         </div>
@@ -248,12 +248,12 @@ defmodule DataAggregatorWeb.Components.Form do
           value={Phoenix.HTML.Form.normalize_value(@type, @value)}
           class={[
             "block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6",
-            "text-gray-900 dark:text-white dark:bg-white/5",
-            "phx-no-feedback:ring-gray-300 dark:phx-no-feedback:ring-white/10 phx-no-feedback:focus:ring-indigo-600 dark:phx-no-feedback:focus:ring-indigo-500",
+            "text-gray-900 dark:bg-white/5 dark:text-white",
+            "phx-no-feedback:ring-gray-300 phx-no-feedback:focus:ring-indigo-600 dark:phx-no-feedback:ring-white/10 dark:phx-no-feedback:focus:ring-indigo-500",
             @errors == [] &&
               "ring-gray-300 focus:ring-indigo-600 dark:ring-white/10 dark:focus:ring-indigo-500",
             @errors != [] &&
-              "ring-red-300 dark:ring-red-400 focus:ring-red-500 dark:focus:ring-red-500"
+              "ring-red-300 focus:ring-red-500 dark:ring-red-400 dark:focus:ring-red-500"
           ]}
           aria-invalid={@errors != []}
           aria-describedby={@errors != [] && "#{@id}-error"}
@@ -261,7 +261,7 @@ defmodule DataAggregatorWeb.Components.Form do
         />
         <div
           :if={@errors != []}
-          class="phx-no-feedback:hidden absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+          class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 phx-no-feedback:hidden"
         >
           <.icon name="hero-exclamation-circle-mini" class="w-5 h-5 text-red-500" />
         </div>
@@ -279,7 +279,7 @@ defmodule DataAggregatorWeb.Components.Form do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="dark:text-white block text-sm font-medium leading-6 text-gray-900">
+    <label for={@for} class="block text-sm font-medium leading-6 text-gray-900 dark:text-white">
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -293,7 +293,7 @@ defmodule DataAggregatorWeb.Components.Form do
 
   def error(assigns) do
     ~H"""
-    <p id={@id} class="phx-no-feedback:hidden mt-2 text-sm text-red-600">
+    <p id={@id} class="mt-2 text-sm text-red-600 phx-no-feedback:hidden">
       <%= render_slot(@inner_block) %>
     </p>
     """

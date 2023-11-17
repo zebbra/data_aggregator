@@ -24,7 +24,7 @@ defmodule DataAggregatorWeb.Headless.Hidden do
     ~H"""
     <input
       class={[
-        "top-px left-px -m-px whitespace-nowrap border-px fixed w-[1px] h-0 p-0 overflow-hidden",
+        "border-px w-[1px] fixed top-px left-px -m-px h-0 overflow-hidden whitespace-nowrap p-0",
         hidden?(@features) && "hidden"
       ]}
       aria-hidden={aria_hidden?(@features, @rest[:aria_hidden])}

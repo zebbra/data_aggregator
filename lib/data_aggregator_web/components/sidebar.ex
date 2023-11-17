@@ -26,7 +26,7 @@ defmodule DataAggregatorWeb.Components.Sidebar do
         @class
       ]}
     >
-      <div class="overscroll-contain no-scrollbar flex flex-col flex-1 min-h-0 pb-6 overflow-y-scroll">
+      <div class="no-scrollbar flex min-h-0 flex-1 flex-col overflow-y-scroll overscroll-contain pb-6">
         <%= render_slot(@header) %>
         <div class="relative flex-1">
           <%= render_slot(@inner_block) %>
@@ -34,7 +34,7 @@ defmodule DataAggregatorWeb.Components.Sidebar do
       </div>
       <div
         :if={@footer != []}
-        class="dark:bg-gray-900 flex justify-end flex-shrink-0 px-4 py-4 bg-white"
+        class="flex flex-shrink-0 justify-end bg-white px-4 py-4 dark:bg-gray-900"
       >
         <%= render_slot(@footer) %>
       </div>
@@ -56,9 +56,8 @@ defmodule DataAggregatorWeb.Components.Sidebar do
   def sidebar_header(assigns) do
     ~H"""
     <header class={[
-      "dark:bg-gray-900 z-10 bg-white border-b dark:border-white/5 border-gray-200 p-4 sm:py-5 sm:px-6 lg:px-8 w-full",
-      @actions != [] &&
-        "flex items-center justify-between gap-6",
+      "z-10 w-full border-b border-gray-200 bg-white p-4 dark:border-white/5 dark:bg-gray-900 sm:px-6 sm:py-5 lg:px-8",
+      @actions != [] && "flex items-center justify-between gap-6",
       @class
     ]}>
       <div>
@@ -71,11 +70,11 @@ defmodule DataAggregatorWeb.Components.Sidebar do
         </.dialog_title>
         <h1
           :if={!@sidebar_id}
-          class="dark:text-white text-base font-semibold leading-9 text-gray-800 outline-none"
+          class="text-base font-semibold leading-9 text-gray-800 outline-none dark:text-white"
         >
           <%= render_slot(@inner_block) %>
         </h1>
-        <p :if={@subtitle != []} class="dark:text-gray-400 mt-2 text-sm leading-6 text-gray-600">
+        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-400">
           <%= render_slot(@subtitle) %>
         </p>
       </div>

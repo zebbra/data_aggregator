@@ -91,7 +91,7 @@ defmodule DataAggregatorWeb.Components.SlideOver do
 
       <div class="fixed inset-0 overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
-          <div class="sm:pl-10 fixed inset-y-0 right-0 flex max-w-full pointer-events-none">
+          <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full sm:pl-10">
             <.dialog_panel
               id={@id <> "__panel"}
               slideover
@@ -100,13 +100,13 @@ defmodule DataAggregatorWeb.Components.SlideOver do
               <%= render_slot(@inner_block) %>
               <div
                 :if={@close_button}
-                class="sm:-ml-10 sm:pr-4 sm:flex absolute top-0 left-0 hidden pt-4"
+                class="absolute top-0 left-0 hidden pt-4 sm:-ml-10 sm:flex sm:pr-4"
               >
                 <button
                   phx-click={JS.exec("data-cancel", to: "##{@id}")}
                   id={"#{@id}__close"}
                   type="button"
-                  class="hover:text-white focus:outline-none focus:ring-2 focus:ring-white relative hidden text-gray-300 rounded-md"
+                  class="relative hidden rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
                   aria-label={gettext("close")}
                 >
                   <span class="absolute -inset-2.5" />

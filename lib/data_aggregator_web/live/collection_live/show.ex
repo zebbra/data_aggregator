@@ -68,8 +68,8 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
         </:actions>
       </.header>
 
-      <div class="justify-items-center grid">
-        <dl class="xl:grid-cols-4 grid grid-cols-2 gap-5 mt-5">
+      <div class="grid justify-items-center">
+        <dl class="mt-5 grid grid-cols-2 gap-5 xl:grid-cols-4">
           <.stat_card label={~t"Name"m} stat={@collection.name} />
           <.stat_card label={~t"Owner"m} stat={@collection.owner} />
           <.stat_card label={~t"Type"m} stat="OTHERS" />
