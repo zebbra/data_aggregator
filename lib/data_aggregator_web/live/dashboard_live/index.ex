@@ -36,8 +36,8 @@ defmodule DataAggregatorWeb.DashboardLive.Index do
     ~H"""
     <.page active_link={:dashboard} environment={@environment} sidebar_nav={@sidebar_nav}>
       <.header>Dashboard</.header>
-      <div class="justify-items-center grid">
-        <dl class="xl:grid-cols-4 sm:grid-cols-2 grid grid-cols-2 gap-5 mt-5">
+      <div class="grid justify-items-center">
+        <dl class="mt-5 grid grid-cols-2 gap-5 sm:grid-cols-2 xl:grid-cols-4">
           <.stat_card label={~t"Amount of Collections"m} stat={format_number(@collections_count)} />
           <.stat_card label={~t"Total Records"m} stat={format_number(@records_count)} />
           <.stat_card label={~t"Digitization Progress"m} stat="74%" />

@@ -31,9 +31,9 @@ defmodule DataAggregatorWeb.Page do
 
   def page(assigns) do
     ~H"""
-    <div class="dark:bg-gray-900 no-scrollbar isolate h-screen overflow-y-auto">
+    <div class="no-scrollbar isolate h-screen overflow-y-auto dark:bg-gray-900">
       <!-- Static sidebar for desktop -->
-      <div class="lg:fixed lg:inset-y-0 lg:z-30 lg:flex lg:w-72 lg:flex-col hidden">
+      <div class="hidden lg:fixed lg:inset-y-0 lg:z-30 lg:flex lg:w-72 lg:flex-col">
         <.sidebar_nav active_link={@active_link} environment={@environment} />
       </div>
       <%!-- Main content --%>
@@ -89,7 +89,7 @@ defmodule DataAggregatorWeb.Page do
             }
           >
             <%= locale.label %>
-            <span :if={current_locale() == locale.label} class="text-cyan-600 font-bold">
+            <span :if={current_locale() == locale.label} class="font-bold text-cyan-600">
               &check;
             </span>
           </.menu_item>
@@ -176,12 +176,12 @@ defmodule DataAggregatorWeb.Page do
         >
           <%= render_slot(@inner_block) %>
 
-          <div class="left-full absolute top-0 flex justify-center w-16 pt-5">
+          <div class="absolute top-0 left-full flex w-16 justify-center pt-5">
             <button
               phx-click={JS.exec("data-cancel", to: "##{@id}")}
               id={"#{@id}__close"}
               type="button"
-              class="hidden -m-2.5 p-2.5"
+              class="-m-2.5 hidden p-2.5"
               aria-label={gettext("close")}
             >
               <.icon name="hero-x-mark" class="w-6 h-6 text-white" />

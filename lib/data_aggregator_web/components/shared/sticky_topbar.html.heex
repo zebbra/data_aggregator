@@ -1,5 +1,5 @@
 <!-- Sticky search header -->
-<div class="shrink-0 gap-x-6 dark:border-white/5 dark:bg-gray-900 sm:px-6 lg:px-8 sticky top-0 z-20 flex items-center h-16 px-4 bg-white border-b border-gray-200 shadow-sm">
+<div class="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-x-6 border-b border-gray-200 bg-white px-4 shadow-sm dark:border-white/5 dark:bg-gray-900 sm:px-6 lg:px-8">
   <%!-- Mobile sidebar nav toggler --%>
   <button
     phx-click="toggle-sidebar-nav"
@@ -8,7 +8,7 @@
     class="-m-2.5 p-2.5 text-gray-700 dark:text-white lg:hidden"
   >
     <span class="sr-only">Open sidebar</span>
-    <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
       <path
         fill-rule="evenodd"
         d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10zm0 5.25a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z"
@@ -17,10 +17,10 @@
     </svg>
   </button>
 
-  <div class="gap-x-4 lg:gap-x-6 flex self-stretch flex-1">
+  <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
     <%!-- Search form --%>
     <%= if @search == true do %>
-      <form class="relative flex items-center flex-1" action="#" method="GET">
+      <form class="relative flex flex-1 items-center" action="#" method="GET">
         <label for="search-field" class="sr-only">Search</label>
         <.icon
           name="hero-magnifying-glass-mini"
@@ -28,7 +28,7 @@
         />
         <input
           id="search-field"
-          class="dark:bg-transparent dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-0 sm:text-sm block w-full h-full py-0 pl-3 pr-0 text-gray-900 border-0"
+          class="block h-full w-full border-0 py-0 pr-0 pl-3 text-gray-900 placeholder:text-gray-400 focus:ring-0 dark:bg-transparent dark:text-white dark:placeholder:text-gray-500 sm:text-sm"
           placeholder={~t"Search..."m}
           type="search"
           name="search"
@@ -37,12 +37,12 @@
     <% else %>
       <div class="flex flex-1" />
     <% end %>
-    <div class="gap-x-4 lg:gap-x-6 flex items-center">
+    <div class="flex items-center gap-x-4 lg:gap-x-6">
       <%!-- Language toggler --%>
       <.locale_select />
       <!-- Separator -->
       <div
-        class="lg:block lg:h-6 lg:w-px lg:bg-gray-900/10 lg:dark:bg-white/5 hidden"
+        class="hidden lg:bg-gray-900/10 lg:block lg:h-6 lg:w-px lg:dark:bg-white/5"
         aria-hidden="true"
       />
       <div id="color-mode-hook-wrapper" phx-hook="ColorMode">
