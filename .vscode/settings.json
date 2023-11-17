@@ -25,5 +25,5 @@
   // Elixir
   "elixir.credo.strictMode": true,
   // Classes are sorted using "mix format"
-  "headwind.runOnSave": false,
+  "headwind.runOnSave": false
 }
