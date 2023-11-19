@@ -1,0 +1,71 @@
+{
+  "attributes": [
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "import_id",
+      "references": {
+        "name": "import_records_import_id_fkey",
+        "table": "imports",
+        "primary_key?": true,
+        "on_delete": "delete",
+        "on_update": "update",
+        "schema": "public",
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "destination_attribute": "id",
+        "deferrable": false,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null
+      },
+      "primary_key?": true,
+      "allow_nil?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "record_id",
+      "references": {
+        "name": "import_records_record_id_fkey",
+        "table": "records",
+        "primary_key?": true,
+        "on_delete": "delete",
+        "on_update": "update",
+        "schema": "public",
+        "multitenancy": {
+          "global": null,
+          "attribute": null,
+          "strategy": null
+        },
+        "destination_attribute": "id",
+        "deferrable": false,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null
+      },
+      "primary_key?": true,
+      "allow_nil?": false,
+      "generated?": false
+    }
+  ],
+  "table": "import_records",
+  "hash": "60F505B4F8FF7AB6953B35D607591A92855BD34FB5D7C6973DDF45C1BD9ED700",
+  "repo": "Elixir.DataAggregator.Repo",
+  "schema": null,
+  "identities": [],
+  "check_constraints": [],
+  "custom_indexes": [],
+  "multitenancy": {
+    "global": null,
+    "attribute": null,
+    "strategy": null
+  },
+  "base_filter": null,
+  "custom_statements": [],
+  "has_create_action": true
+}
