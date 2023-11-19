@@ -32,6 +32,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: DNS_CLUSTER_QUERY
+              value: "{{ include "aggregator.fullname" . }}-headless"
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
