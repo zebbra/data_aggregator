@@ -212,6 +212,7 @@ defmodule DataAggregator.MixProject do
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
+      {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
 
       # Internationalization and Localization
       {:gettext, "~> 0.20"},

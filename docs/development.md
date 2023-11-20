@@ -69,3 +69,29 @@ mix ash_postgres.generate_migrations --name your_migration_name
 # run migrations
 mix ash_postgres.migrate
 ```
+
+## Editors
+
+### zed
+
+Use `mix format` (instead of Elixir LS) to format source code:
+
+```json
+{
+  "language_overrides": {
+    "Elixir": {
+      "format_on_save": {
+        "external": {
+          "command": "mix",
+          "arguments": [
+            "format",
+            "--stdin-filename",
+            "{buffer_path}",
+            "-"
+          ]
+        }
+      }
+    }
+  }
+}
+```

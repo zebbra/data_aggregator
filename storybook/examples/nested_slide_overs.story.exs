@@ -61,7 +61,7 @@ defmodule Storybook.Examples.NestedSlideOvers do
           <.button id="drawer__button" phx-click="toggle_drawer" label="Drawer" />
         </:actions>
       </.header>
-      <div class="dark:text-white sm:px-6 lg:px-8 p-4">
+      <div class="p-4 dark:text-white sm:px-6 lg:px-8">
         <div>Drawer: <%= @drawer %></div>
         <div>Level: <%= @level_1 %></div>
         <div>Modal: <%= @modal %></div>
@@ -73,11 +73,11 @@ defmodule Storybook.Examples.NestedSlideOvers do
           id="drawer"
           responsive="lg:flex"
           show={false}
-          class="relative z-50 hidden"
+          class="hidden relative z-50"
           close_button={false}
           on_cancel={JS.push("toggle_drawer")}
         >
-          <div class="flex flex-col h-full">
+          <div class="flex h-full flex-col">
             <.sidebar>
               <:header>
                 <.sidebar_header sidebar_id="drawer" class="sticky top-0">
@@ -118,7 +118,7 @@ defmodule Storybook.Examples.NestedSlideOvers do
             close_button={false}
             on_cancel={JS.push("toggle_level_1")}
           >
-            <div class="flex flex-col h-full">
+            <div class="flex h-full flex-col">
               <.sidebar>
                 <:header>
                   <.sidebar_header sidebar_id="level_1" class="sticky top-0">
@@ -175,7 +175,7 @@ defmodule Storybook.Examples.NestedSlideOvers do
 
   def portal_wrapper(assigns) do
     ~H"""
-    <div class="dark:bg-gray-900 no-scrollbar isolate h-screen overflow-y-auto">
+    <div class="no-scrollbar isolate h-screen overflow-y-auto dark:bg-gray-900">
       <main>
         <%= render_slot(@inner_block) %>
       </main>

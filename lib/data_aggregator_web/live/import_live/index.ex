@@ -78,7 +78,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
         </:col>
 
         <:col :let={{_id, import}} label={~t"File"m} field="attachment_filename">
-          <span class="divide-opacity-50 font-mono"><%= import.attachment.filename %></span>
+          <span class="font-mono"><%= import.attachment.filename %></span>
         </:col>
 
         <:col :let={{_id, import}} label={~t"Size"m} field="attachment_byte_size">

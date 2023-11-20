@@ -14,7 +14,7 @@ defmodule DataAggregatorWeb.Components.Backdrop do
     <div
       id={@id <> "__backdrop"}
       class={[
-        "hidden fixed inset-0",
+        "fixed inset-0 hidden",
         @variant == "slideover" && "bg-gray-500/75 dark:bg-[#0f172ae6]",
         @variant == "modal" && "bg-gray-500/75 dark:bg-[#0f172ae6]"
       ]}
