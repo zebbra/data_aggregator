@@ -339,32 +339,32 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "up to %{max_file_size}"
 msgstr "bis zu %{max_file_size}"
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:48
+#: lib/data_aggregator_web/live/import_live/index.ex:133
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Are you sure?"
 msgstr "Bist du sicher"
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:50
+#: lib/data_aggregator_web/live/import_live/index.ex:135
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Delete"
 msgstr "Löschen"
 
-#: lib/data_aggregator_web/live/import_live/index.ex:53
-#: lib/data_aggregator_web/live/import_live/index.html.heex:3
+#: lib/data_aggregator_web/live/import_live/index.ex:55
+#: lib/data_aggregator_web/live/import_live/index.ex:64
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Listing Imports"
 msgstr "Einträge anzeigen"
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:41
+#: lib/data_aggregator_web/live/import_live/index.ex:120
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Show"
 msgstr "Anzeigen"
 
-#: lib/data_aggregator_web/live/import_live/index.ex:47
+#: lib/data_aggregator_web/live/import_live/index.ex:49
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Show Import"
@@ -454,7 +454,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Type"
 msgstr "Typ"
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:27
+#: lib/data_aggregator_web/live/import_live/index.ex:88
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Collection"
@@ -593,7 +593,7 @@ msgctxt "DataAggregatorWeb.Page"
 msgid "scnat"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:35
+#: lib/data_aggregator_web/live/import_live/index.ex:114
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Records"
@@ -611,13 +611,13 @@ msgctxt "DataAggregatorWeb.Components.Flash"
 msgid "Error!"
 msgstr "Fehler!"
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:19
+#: lib/data_aggregator_web/live/import_live/index.ex:80
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "File"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:23
+#: lib/data_aggregator_web/live/import_live/index.ex:84
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Size"
@@ -629,13 +629,7 @@ msgctxt "DataAggregatorWeb.Components.Pagination"
 msgid "No results"
 msgstr "Keine Resultate"
 
-#: lib/data_aggregator_web/live/import_live/index.html.heex:31
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.ImportLive.Index"
-msgid "Imported at"
-msgstr "Importe"
-
-#: lib/data_aggregator_web/live/import_live/index.html.heex:15
+#: lib/data_aggregator_web/live/import_live/index.ex:76
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "State"
@@ -728,3 +722,33 @@ msgstr "bis"
 msgctxt "DataAggregatorWeb.RecordLive.Show"
 msgid "Back to Records"
 msgstr "Zurück zu Einträgen"
+
+#: lib/data_aggregator_web/live/import_live/index.ex:100
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Index"
+msgid "Duration"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/index.ex:96
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Index"
+msgid "Finished at"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/index.ex:104
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Index"
+msgid "Imported"
+msgstr "Importe"
+
+#: lib/data_aggregator_web/live/import_live/index.ex:126
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Index"
+msgid "Run"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/index.ex:92
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Index"
+msgid "Started at"
+msgstr ""

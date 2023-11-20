@@ -8,7 +8,11 @@ defmodule DataAggregatorWeb.Helpers do
   @timezone "Europe/Zurich"
   @placeholder Phoenix.HTML.raw("&mdash;")
 
-  def format_number(number, opts \\ []) do
+  def format_number(number, opts \\ [])
+
+  def format_number(nil, _opts), do: @placeholder
+
+  def format_number(number, opts) do
     Cldr.Number.to_string!(number, opts)
   end
 
@@ -52,5 +56,16 @@ defmodule DataAggregatorWeb.Helpers do
       |> Keyword.put_new(:style, :short)
 
     Cldr.Unit.to_string!(value, opts)
+  end
+
+  def format_seconds(nil), do: @placeholder
+
+  def format_seconds(seconds) do
+    hours = div(seconds, 3600)
+    minutes = div(rem(seconds, 3600), 60)
+    seconds = rem(seconds, 60)
+
+    format = &String.pad_leading(Integer.to_string(&1), 2, "0")
+    "#{format.(hours)}:#{format.(minutes)}:#{format.(seconds)}"
   end
 end

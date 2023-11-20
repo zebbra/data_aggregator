@@ -45,5 +45,10 @@ defmodule DataAggregator.Records.Import.Record do
   postgres do
     table "import_records"
     repo DataAggregator.Repo
+
+    references do
+      reference :import, on_delete: :delete, on_update: :update
+      reference :record, on_delete: :delete, on_update: :update
+    end
   end
 end

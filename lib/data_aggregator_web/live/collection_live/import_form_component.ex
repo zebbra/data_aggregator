@@ -15,7 +15,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
      |> allow_upload(:file,
        max_entries: 1,
        accept: ~w(.csv .jpg),
-       max_file_size: 80_000_000,
+       max_file_size: 200 * 1024 * 1024,
        auto_upload: true
      )
      |> assign_form()}
