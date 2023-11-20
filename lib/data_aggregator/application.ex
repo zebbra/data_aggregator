@@ -29,8 +29,6 @@ defmodule DataAggregator.Application do
       {Finch, name: DataAggregator.Finch},
       # Start the Oban queue
       {Oban, Application.fetch_env!(:data_aggregator, Oban)},
-      # Start a worker by calling: DataAggregator.Worker.start_link(arg)
-      # {DataAggregator.Worker, arg},
       # Start the Endpoint (http/https)
       DataAggregatorWeb.Endpoint
     ]

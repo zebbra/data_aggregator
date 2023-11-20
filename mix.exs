@@ -37,9 +37,12 @@ defmodule DataAggregator.MixProject do
   def application do
     [
       mod: {DataAggregator.Application, []},
-      extra_applications: [:logger, :runtime_tools, :ssl, :os_mon]
+      extra_applications: extra_applications(Mix.env())
     ]
   end
+
+  defp extra_applications(:test), do: [:logger, :runtime_tools, :ssl]
+  defp extra_applications(_), do: [:logger, :runtime_tools, :ssl, :os_mon]
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
