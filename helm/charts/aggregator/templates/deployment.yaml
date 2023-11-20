@@ -33,7 +33,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: DNS_CLUSTER_QUERY
-              value: "{{ include "aggregator.fullname" . }}-headless"
+              value: "{{ include "aggregator.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local"
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
