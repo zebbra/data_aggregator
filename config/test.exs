@@ -33,6 +33,12 @@ config :data_aggregator, serve_files_from: "priv/storage/test/files"
 # Cache files in the test environment
 config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/test/cache"
 
+# Use small batches to allow small datasets
+config :data_aggregator, DataAggregator.Records,
+  import_batch_size: 3,
+  import_max_concurrency: 1,
+  async_import_progress?: false
+
 # Prevent Oban from running jobs and plugins during test runs
 config :data_aggregator, Oban, testing: :inline
 

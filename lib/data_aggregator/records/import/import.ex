@@ -23,6 +23,10 @@ defmodule DataAggregator.Records.Import do
     attribute :columns, {:array, Column}
     timestamps private?: false, writable?: false
     attribute :imported_at, :utc_datetime, allow_nil?: true
+    attribute :started_at, :utc_datetime, allow_nil?: true
+    attribute :finished_at, :utc_datetime, allow_nil?: true
+    attribute :imported_count, :integer, allow_nil?: true
+    attribute :invalid_count, :integer, allow_nil?: true
   end
 
   relationships do
@@ -42,6 +46,17 @@ defmodule DataAggregator.Records.Import do
   end
 
   calculations do
+    calculate :duration,
+              :integer,
+              expr(
+                fragment(
+                  "EXTRACT(EPOCH FROM COALESCE(?, ?))::bigint - EXTRACT(EPOCH FROM ?)::bigint",
+                  finished_at,
+                  now(),
+                  started_at
+                )
+              )
+
     calculate :collection_name, :string, expr(collection.name)
 
     calculate :attachment_url, :string do
@@ -122,6 +137,12 @@ defmodule DataAggregator.Records.Import do
       change Import.Changes.UpdateMapping
     end
 
+    update :enqueue do
+      accept []
+      change transition_state(:queued)
+      change Import.Changes.EnqueueRunner
+    end
+
     update :run do
       accept []
       change Import.Changes.SetTimeout
@@ -133,26 +154,38 @@ defmodule DataAggregator.Records.Import do
       change load(:records_count)
     end
 
-    update :enqueue do
+    update :add_progress do
       accept []
-      change transition_state(:queued)
-      change Import.Changes.EnqueueRunner
+      argument :imported, :integer, allow_nil?: false
+      argument :invalid, :integer, allow_nil?: false
+      change atomic_update(:imported_count, expr(imported_count + ^arg(:imported)))
+      change atomic_update(:invalid_count, expr(invalid_count + ^arg(:invalid)))
+      change ensure_selected(:imported_count)
+      change ensure_selected(:invalid_count)
     end
 
     update :set_running do
       accept []
       change set_attribute(:state, :running)
+      change set_attribute(:started_at, &DateTime.utc_now/0)
+      change set_attribute(:imported_count, 0)
+      change set_attribute(:invalid_count, 0)
+      change set_attribute(:finished_at, nil)
     end
 
     update :set_failed do
       accept []
       change transition_state(:failed)
+      change set_attribute(:imported_count, nil)
+      change set_attribute(:invalid_count, nil)
+      change set_attribute(:finished_at, &DateTime.utc_now/0)
     end
 
     update :set_imported do
       accept []
-      change set_attribute(:imported_at, &DateTime.utc_now/0)
       change transition_state(:imported)
+      change set_attribute(:finished_at, &DateTime.utc_now/0)
+      change set_attribute(:imported_at, &DateTime.utc_now/0)
     end
   end
 
@@ -163,12 +196,12 @@ defmodule DataAggregator.Records.Import do
     define :create, args: [:collection]
     define :create_from_path, args: [:collection, :path]
     define :update_mapping, args: [:columns]
-    define :run
     define :enqueue
+    define :run
+    define :add_progress, args: [:imported, :invalid]
     define :set_running
     define :set_imported
     define :set_failed
-
     define :destroy
   end
 

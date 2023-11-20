@@ -15,7 +15,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
      |> allow_upload(:file,
        max_entries: 1,
        accept: ~w(.csv .jpg),
-       max_file_size: 80_000_000,
+       max_file_size: 200 * 1024 * 1024,
        auto_upload: true
      )
      |> assign_form()}
@@ -42,7 +42,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
         <%!-- use phx-drop-target with the upload ref to enable file drag and drop --%>
         <section
           phx-drop-target={@uploads.file.ref}
-          class="border-gray-900/25 dark:border-white/25 flex flex-col px-6 py-10 mt-2 border border-dashed rounded-md"
+          class="border-gray-900/25 mt-2 flex flex-col rounded-md border border-dashed px-6 py-10 dark:border-white/25"
         >
           <div class="flex justify-center">
             <div class="text-center">
@@ -50,24 +50,24 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
                 name="hero-photo-mini"
                 class="dark:text-gray-500 w-12 h-12 mx-auto text-gray-300"
               />
-              <div class="dark:text-gray-400 flex mt-4 text-sm leading-6 text-gray-600">
+              <div class="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400">
                 <label
                   for={@uploads.file.ref}
-                  class="dark:bg-gray-900 dark:text-white focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 dark:focus-within:ring-offset-gray-900 hover:text-indigo-500 relative font-semibold text-indigo-600 bg-white rounded-md cursor-pointer"
+                  class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500 dark:bg-gray-900 dark:text-white dark:focus-within:ring-offset-gray-900"
                 >
                   <span><%= ~t"Choose a file"m %></span>
                   <.live_file_input upload={@uploads.file} class="sr-only" />
                 </label>
                 <p class="pl-1"><%= ~t"or drag and drop"m %></p>
               </div>
-              <p class="dark:text-gray-400 text-xs leading-5 text-gray-600">
+              <p class="text-xs leading-5 text-gray-600 dark:text-gray-400">
                 <%= pretty_accept_list(@uploads.file.accept) %>
                 <%= pretty_max_file_size(@uploads.file.max_file_size) %>
               </p>
             </div>
           </div>
 
-          <div class="dark:text-white mt-4 space-y-2 text-gray-600">
+          <div class="mt-4 space-y-2 text-gray-600 dark:text-white">
             <%!-- render each file entry --%>
             <article :for={entry <- @uploads.file.entries}>
               <span class="text-sm"><%= entry.client_name %></span>
@@ -80,7 +80,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
                   phx-target={@myself}
                   phx-value-ref={entry.ref}
                   aria-label="cancel"
-                  class="flex items-center h-full"
+                  class="flex h-full items-center"
                 >
                   <.icon name="hero-x-mark-mini" class="text-gray-600" />
                 </button>

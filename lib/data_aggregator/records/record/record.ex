@@ -92,9 +92,6 @@ defmodule DataAggregator.Records.Record do
 
       argument :import, Import, allow_nil?: false
       argument :params, :map, allow_nil?: false
-      # Note: This does not seem to work with bulk create!
-      # -> Create custom action and create Import.Records manually
-      # change manage_relationship(:import, :imports, type: :append)
       change Record.Changes.RelateImport
       change Record.Changes.RelateCollectionFromImport
       change Record.Changes.ExtractAttributes

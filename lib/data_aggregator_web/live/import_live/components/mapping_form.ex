@@ -100,7 +100,7 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
 
     ~H"""
     <.simple_form for={@form} {@rest}>
-      <div class="md:grid-cols-3 xg:grid-cols-4 grid gap-3">
+      <div class="grid gap-3 xg:grid-cols-4 md:grid-cols-3">
         <.inputs_for :let={column_form} field={@form[:columns]}>
           <.column_input form={column_form} options={@options} filter={@filter} />
         </.inputs_for>
@@ -120,7 +120,7 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
     assigns = assigns |> assign(:visible, visible)
 
     ~H"""
-    <div class={["p-3 bg-gray-50 dark:bg-gray-800 rounded", @visible || "hidden"]}>
+    <div class={["rounded bg-gray-50 p-3 dark:bg-gray-800", @visible || "hidden"]}>
       <.input
         type="select"
         label={@form.data.name}

@@ -26,10 +26,10 @@ defmodule DataAggregatorWeb.Components.Pagination do
 
     ~H"""
     <div
-      class="border-y dark:border-white/10 bg-gray-100/30 dark:bg-black/10 sm:px-6 lg:px-8 flex items-center justify-between px-4 py-4 border-gray-200"
+      class="bg-gray-100/30 flex items-center justify-between border-y border-gray-200 px-4 py-4 dark:border-white/10 dark:bg-black/10 sm:px-6 lg:px-8"
       role="navigation"
     >
-      <div class="sm:hidden flex justify-between flex-1">
+      <div class="flex flex-1 justify-between sm:hidden">
         <.button
           color="secondary"
           aria-label={~t"Previous"m}
@@ -47,9 +47,9 @@ defmodule DataAggregatorWeb.Components.Pagination do
           phx-click="page:next"
         />
       </div>
-      <div class="sm:flex sm:flex-1 sm:items-center sm:justify-between hidden">
+      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div :if={@page_meta.count > 0}>
-          <p class="dark:text-gray-400 text-sm text-gray-700">
+          <p class="text-sm text-gray-700 dark:text-gray-400">
             <%= ~t"Showing"m %> <span class="font-medium"><%= @from %></span>
             <%= ~t"to"m %>
             <span class="font-medium"><%= @to %></span>
@@ -58,7 +58,7 @@ defmodule DataAggregatorWeb.Components.Pagination do
           </p>
         </div>
         <div :if={@page_meta.count == 0}>
-          <p class="dark:text-gray-400 text-sm text-gray-700">
+          <p class="text-sm text-gray-700 dark:text-gray-400">
             <%= ~t"No results"m %>
           </p>
         </div>
@@ -93,7 +93,7 @@ defmodule DataAggregatorWeb.Components.Pagination do
 
   defp page_size_select(assigns) do
     ~H"""
-    <div class="flex items-center mr-2 space-x-2">
+    <div class="mr-2 flex items-center space-x-2">
       <.label for={@id}>
         <%= ~t"Page size"m %>
       </.label>
@@ -107,7 +107,7 @@ defmodule DataAggregatorWeb.Components.Pagination do
             phx-value-limit={page_size}
           >
             <%= page_size %>
-            <span :if={@current_limit == page_size} class="text-cyan-600 font-bold">
+            <span :if={@current_limit == page_size} class="font-bold text-cyan-600">
               &check;
             </span>
           </.menu_item>

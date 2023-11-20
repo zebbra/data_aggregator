@@ -21,12 +21,12 @@ defmodule DataAggregatorWeb.Components.List do
 
   def list(assigns) do
     ~H"""
-    <dl class="dark:divide-white/5 w-full divide-y divide-gray-200">
+    <dl class="w-full divide-y divide-gray-200 dark:divide-white/5">
       <div :for={item <- @item} class="px-6 py-5">
-        <dt class="dark:text-white text-sm font-medium text-gray-500">
+        <dt class="text-sm font-medium text-gray-500 dark:text-white">
           <%= item.title %>
         </dt>
-        <dd class="dark:text-gray-200 mt-1 text-sm text-gray-700">
+        <dd class="mt-1 text-sm text-gray-700 dark:text-gray-200">
           <%= render_slot(item) %>
         </dd>
       </div>

@@ -9,7 +9,7 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
 
   def preview(assigns) do
     ~H"""
-    <aside class="xl:block xl:fixed xl:bottom-0 xl:right-0 xl:top-16 xl:w-96 xl:overflow-y-auto hidden">
+    <aside class="hidden xl:fixed xl:top-16 xl:right-0 xl:bottom-0 xl:block xl:w-96 xl:overflow-y-auto">
       <.preview_content record={@record} current_path_params={@current_path_params} />
     </aside>
 
@@ -19,7 +19,7 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
       show={false}
       on_cancel={JS.push("select", value: %{id: @record.id})}
     >
-      <div class="flex flex-col h-full">
+      <div class="flex h-full flex-col">
         <.preview_content
           record={@record}
           current_path_params={@current_path_params}

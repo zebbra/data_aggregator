@@ -19,16 +19,15 @@ defmodule DataAggregatorWeb.Components.Header do
   def header(assigns) do
     ~H"""
     <header class={[
-      "dark:bg-gray-900 z-10 bg-white border-b dark:border-white/5 border-gray-200 p-4 sm:py-5 sm:px-6 lg:px-8 w-full",
-      @actions != [] &&
-        "flex items-center justify-between gap-6",
+      "z-10 w-full border-b border-gray-200 bg-white p-4 dark:border-white/5 dark:bg-gray-900 sm:px-6 sm:py-5 lg:px-8",
+      @actions != [] && "flex items-center justify-between gap-6",
       @class
     ]}>
       <div>
-        <h1 class="dark:text-white text-base font-semibold leading-9 text-gray-800 outline-none">
+        <h1 class="text-base font-semibold leading-9 text-gray-800 outline-none dark:text-white">
           <%= render_slot(@inner_block) %>
         </h1>
-        <p :if={@subtitle != []} class="dark:text-gray-400 mt-2 text-sm leading-6 text-gray-600">
+        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-400">
           <%= render_slot(@subtitle) %>
         </p>
       </div>

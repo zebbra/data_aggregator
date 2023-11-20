@@ -33,6 +33,11 @@ if System.get_env("PHX_SERVER") do
   config :data_aggregator, DataAggregatorWeb.Endpoint, server: true
 end
 
+if System.get_env("LOG_LEVEL") do
+  level = System.get_env("LOG_LEVEL") |> String.to_atom()
+  config :logger, level: level
+end
+
 # Configure Sentry runtime environment
 config :sentry,
   server_name: System.get_env("HOSTNAME"),

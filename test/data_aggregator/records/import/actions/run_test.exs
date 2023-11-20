@@ -31,7 +31,7 @@ defmodule DataAggregator.Records.Import.Actions.RunTest do
       [import: import]
     end
 
-    # @tag :focus
+    @tag :focus
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"
     test "succeeds with a valid file", %{import: import} do
       {:ok, import} = Import.run(import)
@@ -39,19 +39,24 @@ defmodule DataAggregator.Records.Import.Actions.RunTest do
       assert import.state == :imported
       assert import.records_count == 2
       assert import.imported_at != nil
+      assert import.finished_at != nil
+      assert import.imported_count == 2
+      assert import.invalid_count == 0
     end
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-invalid.csv"
-    test "fails with an invalid file", %{import: import} do
+    test "succeeds with a file with some invalid records", %{import: import} do
       {result, logs} = with_log(fn -> Import.run(import) end)
 
       assert {:ok, import} = result
-      assert import.state == :failed
-      assert import.records_count == 0
-      assert import.imported_at == nil
 
-      assert logs =~ "Imported 0/1 records (1 failed)"
-      assert logs =~ "Error importing record:"
+      assert import.state == :imported
+      assert import.records_count == 6
+      assert import.finished_at != nil
+      assert import.imported_count == 6
+      assert import.invalid_count == 1
+
+      assert logs =~ "1 invalid row(s) dropped from chunk!"
     end
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"
@@ -64,6 +69,8 @@ defmodule DataAggregator.Records.Import.Actions.RunTest do
       assert import.state == :failed
       assert import.records_count == 0
       assert import.imported_at == nil
+      assert import.imported_count == nil
+      assert import.invalid_count == nil
 
       # Run again with valid mapping
       import = Import.update_mapping!(import, @valid_mapping)
@@ -72,12 +79,16 @@ defmodule DataAggregator.Records.Import.Actions.RunTest do
       assert import.state == :imported
       assert import.records_count == 2
       assert import.imported_at != nil
+      assert import.imported_count == 2
+      assert import.invalid_count == 0
 
       # Run again, which should should not import the records again
       assert {:ok, import} = Import.run(import)
       assert import.state == :imported
       assert import.records_count == 2
       assert import.imported_at != nil
+      assert import.imported_count == 2
+      assert import.invalid_count == 0
     end
   end
 end

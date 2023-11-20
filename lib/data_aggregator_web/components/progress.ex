@@ -26,10 +26,10 @@ defmodule DataAggregatorWeb.Components.Progress do
       |> assign(:inner_classes, inner_classes(assigns))
 
     ~H"""
-    <div class={[@outer_classes, "w-full rounded-full overflow-hidden", @class]} {@rest}>
+    <div class={[@outer_classes, "w-full overflow-hidden rounded-full", @class]} {@rest}>
       <div class={[@inner_classes]} style={"width: #{round(@value/@max*100)}%"}>
         <%= if @size == "xl" do %>
-          <span class="whitespace-nowrap font-xs px-4 font-normal text-center">
+          <span class="font-xs whitespace-nowrap px-4 text-center font-normal">
             <%= @label %>
           </span>
         <% end %>
