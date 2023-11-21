@@ -25,3 +25,20 @@
     height: -webkit-fill-available;
   }
 }
+
+@layer components {
+  .btn {
+    height: 2.3rem;
+    min-height: 2.3rem;
+  }
+
+  .btn-sm {
+    height: 1.8rem;
+    min-height: 1.8rem;
+  }
+
+  .btn-xs {
+    height: 1.5rem;
+    min-height: 1.5rem;
+  }
+}
