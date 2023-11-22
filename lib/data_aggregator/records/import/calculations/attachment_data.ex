@@ -35,6 +35,7 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
   require Logger
 
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Records.DataFrame
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.Import.Column
 
@@ -66,7 +67,7 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
   defp create_dataframe(import, _opts, _context) do
     %Import{attachment: %Attachment{cached_file: cached_file}} = import
 
-    case Explorer.DataFrame.from_csv(cached_file) do
+    case DataFrame.from_file(cached_file) do
       {:ok, data} ->
         {:ok, data}
 

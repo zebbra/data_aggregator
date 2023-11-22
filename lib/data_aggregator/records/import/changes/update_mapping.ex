@@ -23,13 +23,13 @@ defmodule DataAggregator.Records.Import.Changes.UpdateMapping do
   end
 
   def merge_mapping(%Column{name: name} = column, mappings) do
-    case get_column(mappings, name) do
+    case get_column_mapping(mappings, name) do
       %Column{mapped_to: mapped_to} -> %{column | mapped_to: mapped_to}
       nil -> column
     end
   end
 
-  def get_column(columns, name) do
-    Enum.find(columns, &(&1.name == name))
+  def get_column_mapping(mappings, name) do
+    Enum.find(mappings, &(&1.name == name))
   end
 end

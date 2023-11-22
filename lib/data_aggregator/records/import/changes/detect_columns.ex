@@ -1,39 +1,49 @@
 defmodule DataAggregator.Records.Import.Changes.DetectColumns do
   @moduledoc """
-  Ash change to detect columns from a CSV file using `Explorer.DataFrame`.
+  Ash change to count rows from a CSV file using `Explorer.DataFrame`.
   """
 
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Records.Import.Column
+  alias Ash.Error.Changes.InvalidArgument
+  alias DataAggregator.Records
+  alias DataAggregator.Records.Import
 
   require Logger
 
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    path = Changeset.get_argument(changeset, :path)
+  def change(%Changeset{} = changeset, _opts, ctx) do
+    field = Map.get(ctx, :from, :path)
+    filename = Changeset.get_argument_or_attribute(changeset, field)
 
-    case detect_columns(path) do
+    case detect_columns(filename) do
       {:ok, columns} ->
         Changeset.change_attribute(changeset, :columns, columns)
 
       {:error, error} ->
-        message = Exception.message(error)
+        message = if is_exception(error), do: Exception.message(error), else: error
 
-        Changeset.add_error(changeset,
-          field: :path,
-          message: "path is invalid (#{message})",
-          value: path
-        )
+        exception =
+          InvalidArgument.exception(
+            field: field,
+            message: message,
+            value: filename
+          )
+
+        changeset |> Changeset.add_error(exception)
     end
   end
 
-  defp detect_columns(path) do
-    with {:ok, df} <- Explorer.DataFrame.from_csv(path) do
+  defp detect_columns(filename) do
+    Logger.debug("Detecting columns for file #{inspect(filename)} ...")
+
+    with {:ok, df} <- Records.DataFrame.from_file(filename) do
       columns =
         df
         |> Explorer.DataFrame.dtypes()
-        |> Enum.map(fn {name, type} -> %Column{name: name, type: type} end)
+        |> Enum.map(fn {name, type} -> %Import.Column{name: name, type: type} end)
+
+      Logger.info("Detected #{length(columns)} in import file #{inspect(filename)}")
 
       {:ok, columns}
     end

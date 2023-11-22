@@ -25,6 +25,8 @@ defmodule DataAggregator.Records.Import do
     attribute :imported_at, :utc_datetime, allow_nil?: true
     attribute :started_at, :utc_datetime, allow_nil?: true
     attribute :finished_at, :utc_datetime, allow_nil?: true
+
+    attribute :rows_count, :integer, allow_nil?: true
     attribute :imported_count, :integer, allow_nil?: true
     attribute :invalid_count, :integer, allow_nil?: true
   end
@@ -46,16 +48,24 @@ defmodule DataAggregator.Records.Import do
   end
 
   calculations do
-    calculate :duration,
-              :integer,
-              expr(
-                fragment(
-                  "EXTRACT(EPOCH FROM COALESCE(?, ?))::bigint - EXTRACT(EPOCH FROM ?)::bigint",
-                  finished_at,
-                  now(),
-                  started_at
-                )
-              )
+    calculate :progress, :float, expr((imported_count + invalid_count) / rows_count)
+
+    calculate :duration, :integer do
+      description """
+      The duration of the import in seconds from when it started to when it finished (or now if it hasn't finished yet)
+      """
+
+      calculation(
+        expr(
+          fragment(
+            "EXTRACT(EPOCH FROM COALESCE(?, ?))::bigint - EXTRACT(EPOCH FROM ?)::bigint",
+            finished_at,
+            now(),
+            started_at
+          )
+        )
+      )
+    end
 
     calculate :collection_name, :string, expr(collection.name)
 
@@ -68,26 +78,22 @@ defmodule DataAggregator.Records.Import do
     calculate :attachment_filename, :string, expr(attachment.filename)
 
     calculate :attachment_data, :term, Import.Calculations.AttachmentData do
+      description """
+      Returns an `Explorer.DataFrame` calculated by `DataAggregator.Records.Import.Calculations.AttachmentData`.
+
+      ## Arguments
+
+      * `mapped` - If If `true`, the column names are mapped to the names defined in the import mapping. If `false`, the column names are the same as the column names in the file. Defaults to `false`.
+      """
+
       argument :mapped, :boolean, default: false
+
       load attachment: :url
     end
   end
 
   aggregates do
     count :records_count, :records
-  end
-
-  pub_sub do
-    module DataAggregator.PubSub
-    prefix "import"
-
-    publish_all :create, [[:collection_id, nil], "created"]
-    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
-    publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
-
-    # not used yet, just as an example how to extend this
-    # publish :set_failed, [[:collection_id, nil], "failed", [:id, nil]]
-    # publish :set_imported, [[:collection_id, nil], "imported", [:id, nil]]
   end
 
   state_machine do
@@ -127,13 +133,15 @@ defmodule DataAggregator.Records.Import do
       argument :path, :string, allow_nil?: false
       argument :filename, :string, allow_nil?: true
       change manage_relationship(:collection, :collection, type: :append)
-      change DataAggregator.Records.Import.Changes.CreateAttachment
-      change DataAggregator.Records.Import.Changes.DetectColumns
+      change Import.Changes.CreateAttachment
+      change Import.Changes.DetectColumns
+      change Import.Changes.CountRows
       change load([:attachment_filename, :attachment_byte_size])
     end
 
     update :update_mapping do
       accept [:columns]
+      # require_attributes [:columns]
       change Import.Changes.UpdateMapping
     end
 
@@ -187,6 +195,19 @@ defmodule DataAggregator.Records.Import do
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:imported_at, &DateTime.utc_now/0)
     end
+  end
+
+  pub_sub do
+    module DataAggregator.PubSub
+    prefix "import"
+
+    publish_all :create, [[:collection_id, nil], "created"]
+    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
+    publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
+
+    # not used yet, just as an example how to extend this
+    # publish :set_failed, [[:collection_id, nil], "failed", [:id, nil]]
+    # publish :set_imported, [[:collection_id, nil], "imported", [:id, nil]]
   end
 
   code_interface do

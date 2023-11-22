@@ -7,6 +7,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
   alias DataAggregator.Records.Import
 
   @load [
+    :progress,
     :duration,
     :collection_name,
     :records_count,
@@ -74,11 +75,12 @@ defmodule DataAggregatorWeb.ImportLive.Index do
         }
       >
         <:col :let={{_id, import}} label={~t"State"m} field="state">
-          <.import_state_badge state={import.state} />
+          <.import_state_badge state={import.state} progress={import.progress} />
         </:col>
 
         <:col :let={{_id, import}} label={~t"File"m} field="attachment_filename">
-          <span class="font-mono"><%= import.attachment.filename %></span>
+          <div class="font-mono"><%= import.attachment.filename %></div>
+          <div class="text-base-content/50 text-xs"><%= format_number(import.rows_count) %> rows</div>
         </:col>
 
         <:col :let={{_id, import}} label={~t"Size"m} field="attachment_byte_size">
@@ -103,6 +105,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
 
         <:col :let={{_id, import}} label={~t"Imported"m} field="imported_count">
           <%= format_number(import.imported_count, format: :short) %>
+
           <span :if={import.invalid_count && import.invalid_count > 0}>
             /
             <span class="text-red-500">

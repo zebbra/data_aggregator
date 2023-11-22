@@ -59,7 +59,7 @@ defmodule DataAggregator.Records.Import.Actions.RunTest do
       assert logs =~ "1 invalid row(s) dropped from chunk!"
     end
 
-    @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"
+    @tag path: "test/support/fixtures/files/museum-dataset-import-example.csv"
     test "can be run multiple times", %{import: import} do
       # Run once with invalid mapping
       import = Import.update_mapping!(import, @invalid_mapping)
@@ -77,17 +77,17 @@ defmodule DataAggregator.Records.Import.Actions.RunTest do
 
       assert {:ok, import} = Import.run(import)
       assert import.state == :imported
-      assert import.records_count == 2
+      assert import.records_count == 891
       assert import.imported_at != nil
-      assert import.imported_count == 2
+      assert import.imported_count == 891
       assert import.invalid_count == 0
 
       # Run again, which should should not import the records again
       assert {:ok, import} = Import.run(import)
       assert import.state == :imported
-      assert import.records_count == 2
+      assert import.records_count == 891
       assert import.imported_at != nil
-      assert import.imported_count == 2
+      assert import.imported_count == 891
       assert import.invalid_count == 0
     end
   end

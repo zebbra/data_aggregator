@@ -23,7 +23,12 @@ config :mime, :types, %{
 }
 
 config :mime, :extensions, %{
-  "json" => "application/vnd.api+json"
+  "json" => "application/vnd.api+json",
+  "tsv" => "text/plain",
+  "pqt" => "application/octet-stream",
+  "parquet" => "application/octet-stream",
+  "ipc" => "application/octet-stream",
+  "arrow" => "application/octet-stream"
 }
 
 config :data_aggregator,
@@ -140,8 +145,9 @@ config :spark, :formatter,
       :aggregates,
       :state_machine,
       :preparations,
-      :changes,
       :actions,
+      :changes,
+      :pub_sub,
       :code_interface,
       :policies,
       :postgres,

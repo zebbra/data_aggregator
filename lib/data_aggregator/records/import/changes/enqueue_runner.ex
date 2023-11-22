@@ -27,6 +27,7 @@ defmodule DataAggregator.Records.Import.Changes.EnqueueRunner do
   end
 
   defp enqueue_runner(_changeset, {:error, error}) do
+    Logger.error(error)
     {:error, error}
   end
 end

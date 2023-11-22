@@ -34,6 +34,15 @@ defmodule DataAggregatorWeb.ImportLive.Components do
     """
   end
 
+  attr :progress, :float, default: nil
+  attr :class, :string, default: nil
+
+  def import_progress(assigns) do
+    ~H"""
+    <progress class={["progress", @class]} value={@progress} max="1" />
+    """
+  end
+
   attr :import, Import, required: true
 
   def import_attachment(assigns) do
@@ -191,6 +200,7 @@ defmodule DataAggregatorWeb.ImportLive.Components do
   end
 
   attr :state, :atom, required: true, values: @states
+  attr :progress, :float, required: false, default: nil
 
   def import_state_badge(assigns) do
     ~H"""
@@ -199,8 +209,30 @@ defmodule DataAggregatorWeb.ImportLive.Components do
       import_state_badge_class(@state)
     ]}>
       <.import_state_icon state={@state} />
-      <span><%= @state |> Atom.to_string() |> String.capitalize() %></span>
+      <.import_state_badge_label state={@state} progress={@progress} />
     </span>
+    """
+  end
+
+  attr :state, :atom, required: true, values: @states
+  attr :progress, :float, required: false, default: nil
+
+  def import_state_badge_label(%{state: :running, progress: progress} = assigns)
+      when is_number(progress) do
+    ~H"""
+    <.import_progress progress={@progress} class="progress-info w-16" />
+    """
+  end
+
+  def import_state_badge_label(%{state: :queued} = assigns) do
+    ~H"""
+    <.import_progress progress={} class="opacity-20 w-16" />
+    """
+  end
+
+  def import_state_badge_label(assigns) do
+    ~H"""
+    <span><%= @state |> Atom.to_string() |> String.capitalize() %></span>
     """
   end
 
@@ -241,7 +273,7 @@ defmodule DataAggregatorWeb.ImportLive.Components do
   defp import_state_icon_class(state) do
     case state do
       :pending -> {"hero-clock-solid", "opacity-60"}
-      :queued -> {"hero-pause-circle-solid", "animate-pulse"}
+      :queued -> {"hero-pause-circle-solid", "opacity-60"}
       :running -> {"hero-cog-6-tooth-solid", "opacity-60 animate-spin"}
       :imported -> {"hero-check-circle-solid", "opacity-60"}
       :failed -> {"hero-x-circle-solid", "opacity-60"}

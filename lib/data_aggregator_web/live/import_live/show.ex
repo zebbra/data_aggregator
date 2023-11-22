@@ -8,7 +8,7 @@ defmodule DataAggregatorWeb.ImportLive.Show do
 
   require Logger
 
-  @load [:collection, attachment: [:url, :filename, :byte_size]]
+  @load [:collection, :progress, attachment: [:url, :filename, :byte_size]]
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do

@@ -65,7 +65,7 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
 
       assert_invalid_path(
         error,
-        "Polars Error: invalid utf-8 sequence in csv"
+        ~r/Could not detect CSV delimiter/
       )
     end
 
@@ -75,7 +75,7 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
 
       assert_invalid_path(
         error,
-        ~r/Polars Error: error open file/
+        ~r/no such file or directory/
       )
     end
 

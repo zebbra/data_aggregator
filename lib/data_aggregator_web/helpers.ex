@@ -9,11 +9,15 @@ defmodule DataAggregatorWeb.Helpers do
   @placeholder Phoenix.HTML.raw("&mdash;")
 
   def format_number(number, opts \\ [])
-
   def format_number(nil, _opts), do: @placeholder
+  def format_number(number, opts), do: Cldr.Number.to_string!(number, opts)
 
-  def format_number(number, opts) do
-    Cldr.Number.to_string!(number, opts)
+  def format_percent(number, opts \\ [])
+  def format_percent(nil, _opts), do: @placeholder
+
+  def format_percent(number, opts) do
+    opts = [unit: "percent", style: :short] |> Keyword.merge(opts)
+    Cldr.Unit.to_string!(number * 100, opts)
   end
 
   def format_date(date, opts \\ []), do: Cldr.Date.to_string!(date, opts)

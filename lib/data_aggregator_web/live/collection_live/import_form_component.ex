@@ -3,8 +3,11 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
 
   alias AshPhoenix.Form
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.DataFrame
   alias DataAggregator.Records.Import
   alias Phoenix.LiveView.UploadEntry
+
+  require Logger
 
   @impl true
   def update(assigns, socket) do
@@ -14,7 +17,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
      |> assign(:uploaded_files, [])
      |> allow_upload(:file,
        max_entries: 1,
-       accept: ~w(.csv .jpg),
+       accept: DataFrame.supported_exts(),
        max_file_size: 200 * 1024 * 1024,
        auto_upload: true
      )
@@ -144,8 +147,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
           {:ok, import} ->
             {:ok, import}
 
-          {:error, _} ->
-            {:error, "Could not create import file"}
+          {:error, error} ->
+            Logger.error(error)
+            {:postpone, "Could not create import file"}
         end
       end)
 

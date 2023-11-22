@@ -7,7 +7,7 @@ defmodule DataAggregator.Records.Import.Changes.CountRows do
 
   alias Ash.Changeset
   alias Ash.Error.Changes.InvalidArgument
-  alias DataAggregator.Records.Import
+  alias DataAggregator.Records
 
   require Logger
 
@@ -20,7 +20,7 @@ defmodule DataAggregator.Records.Import.Changes.CountRows do
         Changeset.change_attribute(changeset, :rows_count, rows_count)
 
       {:error, error} ->
-        message = Exception.message(error)
+        message = if is_exception(error), do: Exception.message(error), else: error
 
         exception =
           InvalidArgument.exception(
@@ -36,7 +36,7 @@ defmodule DataAggregator.Records.Import.Changes.CountRows do
   defp count_rows(filename) do
     Logger.debug("Counting rows for file #{inspect(filename)} ...")
 
-    with {:ok, df} <- Import.DataFrame.from_file(filename) do
+    with {:ok, df} <- Records.DataFrame.from_file(filename) do
       rows_count = df |> Explorer.DataFrame.n_rows()
 
       Logger.info("Detected #{rows_count} in import file #{inspect(filename)}")

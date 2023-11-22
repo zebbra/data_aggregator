@@ -207,12 +207,13 @@ defmodule DataAggregator.MixProject do
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:assertions, "~> 0.19", only: :test},
-
-      # Dev Tools
-      {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
+      {:recode, "~> 0.6", only: :dev},
+
+      # Asserts
+      {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
 
       # Internationalization and Localization
       {:gettext, "~> 0.20"},
