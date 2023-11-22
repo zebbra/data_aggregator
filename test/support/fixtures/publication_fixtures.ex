@@ -8,7 +8,8 @@ defmodule DataAggregator.PublicationFixtures do
   alias DataAggregator.Platform.Publication.Export
 
   @consumers_defaults %{
-    name: "gbif.org"
+    name: "gbif.org",
+    publication_type: :gbif
   }
 
   @export_defaults %{
@@ -25,12 +26,13 @@ defmodule DataAggregator.PublicationFixtures do
   end
 
   @doc """
-  Generate a export.
+  Generate an export.
   """
   def export_fixture(attrs \\ %{}) do
     @export_defaults
     |> Map.merge(attrs)
     |> Map.put_new_lazy(:consumer, fn -> consumer_fixture() end)
+    |> Map.put(:records, [])
     |> Export.create!()
   end
 end

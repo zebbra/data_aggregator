@@ -38,6 +38,9 @@ data_aggregator-*.tar
 # Ignore waffle storage dir
 /priv/storage/
 
+# Ignore export files
+/priv/export/*
+
 # db data for local docker setup
 /db/data/*
 

@@ -25,7 +25,7 @@ msgstr "Aktionen"
 msgid "close"
 msgstr "schliessen"
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:43
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:20
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Dashboard"
@@ -466,49 +466,49 @@ msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Records in Collection"
 msgstr "Anzahl Einträge"
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:17
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:42
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Amount of Collections"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:24
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:51
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Contributors"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:19
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:46
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Digitization Progress"
 msgstr "Digitalisierungs Prozess"
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:22
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:49
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Last Contribution"
 msgstr "Letze Änderung"
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:23
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:50
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Open Reviews"
 msgstr "Experten Kontrolle"
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:20
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:47
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Records Published"
 msgstr "Publizierte Einträge"
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:21
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:48
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Records Reviewed"
 msgstr "Einträge"
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:18
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:45
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Total Records"
@@ -752,3 +752,9 @@ msgstr ""
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Started at"
 msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/components.ex:17
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Components"
+msgid "Import Records"
+msgstr "Records importieren"

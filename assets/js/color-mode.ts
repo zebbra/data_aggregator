@@ -21,7 +21,7 @@
     classPrefix: "theme-",
     classSuffix: "",
     storageKey: "color-mode",
-    dataValue: "",
+    dataValue: "theme",
   };
 
   const preference =

@@ -36,7 +36,8 @@ defmodule DataAggregator.ConsumerTest do
 
     test "create/1 creates a consumer with valid data" do
       attrs = %{
-        name: "gbif.org"
+        name: "gbif.org",
+        publication_type: :gbif
       }
 
       assert {:ok, %Consumer{} = _consumer} = Consumer.create(attrs)
@@ -50,7 +51,8 @@ defmodule DataAggregator.ConsumerTest do
       consumer = consumer_fixture()
 
       updated_consumer = %{
-        name: "gbif.org_2"
+        name: "gbif.org_2",
+        publication_type: :gbif
       }
 
       assert {:ok, %Consumer{} = consumer} = Consumer.update(consumer, updated_consumer)

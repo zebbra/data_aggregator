@@ -7,16 +7,25 @@ defmodule DataAggregator.Platform.Publication.Consumer do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias DataAggregator.Platform.Publication
+
   attributes do
     uuid_attribute :id, prefix: "cos"
 
     attribute :name, :string, allow_nil?: false
+    attribute :publication_type, :atom, allow_nil?: false, constraints: [one_of: [:gbif, :dissco]]
 
     timestamps private?: false, writable?: false
   end
 
   actions do
     defaults [:create, :read, :update, :destroy]
+
+    action :collect, :map do
+      argument :consumer, :struct, allow_nil?: false
+
+      run Publication.Actions.CollectRecords
+    end
   end
 
   code_interface do
@@ -27,6 +36,7 @@ defmodule DataAggregator.Platform.Publication.Consumer do
     define :update, action: :update
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
+    define :collect, action: :collect, args: [:consumer]
   end
 
   postgres do

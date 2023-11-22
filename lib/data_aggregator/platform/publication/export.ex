@@ -44,15 +44,16 @@ defmodule DataAggregator.Platform.Publication.Export do
     create :create do
       primary? true
       argument :consumer, Consumer, allow_nil?: false
+      argument :records, {:array, :struct}, allow_nil?: false
+
       change manage_relationship(:consumer, :consumer, type: :append)
+      change manage_relationship(:records, :records, type: :append)
     end
 
     update :update do
       primary? true
       argument :consumer, Consumer, allow_nil?: false
       argument :records, {:array, :struct}, allow_nil?: false
-
-      # constraints instance_of: Record
 
       change manage_relationship(:consumer, :consumer, type: :append)
       change manage_relationship(:records, :records, type: :append)
