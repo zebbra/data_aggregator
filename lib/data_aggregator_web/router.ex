@@ -98,10 +98,13 @@ defmodule DataAggregatorWeb.Router do
       live_dashboard "/dashboard",
         metrics: DataAggregatorWeb.Telemetry,
         additional_pages: [
-          oban: Oban.LiveDashboard
+          oban: Oban.LiveDashboard,
+          flame_on: FlameOn.DashboardPage
         ]
 
       forward "/mailbox", Plug.Swoosh.MailboxPreview
+
+      get "/metrics", TelemetryUI.Web, [], assigns: %{telemetry_ui_allowed: true}
     end
   end
 end

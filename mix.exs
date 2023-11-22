@@ -252,6 +252,8 @@ defmodule DataAggregator.MixProject do
       {:sentry, "~> 9.1"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
+      {:telemetry_ui, "~> 4.0"},
+      {:flame_on, "~> 0.6.0"},
 
       # Clustering
       {:dns_cluster, "~> 0.1.1"},

@@ -2,6 +2,7 @@ defmodule DataAggregatorWeb.Telemetry do
   @moduledoc false
 
   use Supervisor
+
   import Telemetry.Metrics
 
   def start_link(arg) do
@@ -11,11 +12,12 @@ defmodule DataAggregatorWeb.Telemetry do
   @impl true
   def init(_arg) do
     children = [
+      DataAggregatorWeb.Telemetry.UI,
       # Telemetry poller will execute the given period measurements
       # every 10_000ms. Learn more here: https://hexdocs.pm/telemetry_metrics
       {:telemetry_poller, measurements: periodic_measurements(), period: 10_000}
       # Add reporters as children of your supervision tree.
-      # {Telemetry.Metrics.ConsoleReporter, metrics: metrics()}
+      # {Telemetry.Metrics.ConsoleReporter, metrics: ash_metrics()}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
@@ -81,6 +83,19 @@ defmodule DataAggregatorWeb.Telemetry do
       summary("vm.total_run_queue_lengths.total"),
       summary("vm.total_run_queue_lengths.cpu"),
       summary("vm.total_run_queue_lengths.io")
+    ] ++ ash_metrics()
+  end
+
+  defp ash_metrics do
+    [
+      distribution("ash.records.read.stop.duration",
+        tags: [:action, :resource_short_name],
+        unit: {:native, :millisecond}
+      ),
+      summary("ash.records.create.stop.duration",
+        tags: [:action, :resource_short_name],
+        unit: {:native, :millisecond}
+      )
     ]
   end
 
