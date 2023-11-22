@@ -113,10 +113,13 @@ defmodule DataAggregator.ExportTest do
           records: collected_records
         }
         |> Export.create!()
+        |> Export.update_mapping!(nil)
 
       {:ok, attachment} = export |> Export.publish()
 
       # assert
+      # ensure (default) mapping was set
+      assert export.mapping == nil
       # there should be a valid df created from the csv under the url
       df = Explorer.DataFrame.from_csv!(attachment.url)
       # there should be multiple columns in the resulting dataframe / csv file

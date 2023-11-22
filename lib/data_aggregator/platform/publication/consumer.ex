@@ -1,19 +1,22 @@
 defmodule DataAggregator.Platform.Publication.Consumer do
   @moduledoc """
-  An consumer configures a destination to publish data.
+  A consumer represents a destination to publish data.
   """
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Platform.Publication
+  alias DataAggregator.Platform.Publication.Actions
 
   attributes do
     uuid_attribute :id, prefix: "cos"
 
     attribute :name, :string, allow_nil?: false
-    attribute :publication_type, :atom, allow_nil?: false, constraints: [one_of: [:gbif, :dissco]]
+
+    attribute :publication_type, :atom,
+      allow_nil?: false,
+      constraints: [one_of: [:gbif, :dissco, :custom]]
 
     timestamps private?: false, writable?: false
   end
@@ -24,7 +27,7 @@ defmodule DataAggregator.Platform.Publication.Consumer do
     action :collect, :map do
       argument :consumer, :struct, allow_nil?: false
 
-      run Publication.Actions.CollectRecords
+      run Actions.CollectRecords
     end
   end
 

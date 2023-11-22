@@ -8,6 +8,7 @@ defmodule DataAggregator.Platform.Publication.Export do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.Platform.Publication
+  alias DataAggregator.Platform.Publication.Changes
   alias DataAggregator.Platform.Publication.Consumer
   alias DataAggregator.Platform.Publication.Record, as: ExportRecord
 
@@ -15,8 +16,8 @@ defmodule DataAggregator.Platform.Publication.Export do
     uuid_attribute :id, prefix: "exp"
 
     attribute :name, :string, allow_nil?: false
-
     attribute :exported_at, :utc_datetime, allow_nil?: true
+    attribute :mapping, :map, allow_nil?: true
 
     timestamps private?: false, writable?: false
   end
@@ -50,6 +51,12 @@ defmodule DataAggregator.Platform.Publication.Export do
       change manage_relationship(:records, :records, type: :append)
     end
 
+    update :update_mapping do
+      argument :mapping, :map, allow_nil?: true
+
+      change Changes.UpdateMapping
+    end
+
     update :update do
       primary? true
       argument :consumer, Consumer, allow_nil?: false
@@ -72,8 +79,9 @@ defmodule DataAggregator.Platform.Publication.Export do
     define :create
     define :update
     define :destroy
-    define :publish, action: :publish, args: [:export]
     define :get_by_id, action: :read, get_by: [:id]
+    define :publish, action: :publish, args: [:export]
+    define :update_mapping, action: :update_mapping, args: [:mapping]
   end
 
   postgres do

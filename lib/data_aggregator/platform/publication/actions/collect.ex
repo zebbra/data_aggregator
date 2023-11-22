@@ -1,6 +1,6 @@
 defmodule DataAggregator.Platform.Publication.Actions.CollectRecords do
   @moduledoc """
-  Custom action to collect the records according to a set of rules
+  Custom action to collect the records according to a set of rules or the publication_type which indicates the destination the export is ment for.
   """
   use Ash.Resource.Actions.Implementation
 
