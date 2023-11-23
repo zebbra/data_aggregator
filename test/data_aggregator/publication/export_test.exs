@@ -112,13 +112,7 @@ defmodule DataAggregator.ExportTest do
 
       collected_records = consumer |> Consumer.collect!()
 
-      case %{
-             name: "gbif.org - Export",
-             consumer: consumer,
-             records: collected_records
-           }
-           |> Export.create!()
-           |> Export.update_mapping(mapping) do
+      case consumer |> create_export_with_mapping(collected_records, mapping) do
         {:ok, result} ->
           case result |> Export.publish() do
             {:ok, attachment} -> [export: result, attachment: attachment]
@@ -191,5 +185,15 @@ defmodule DataAggregator.ExportTest do
       tax_kingdom: "Animalia",
       tax_taxon_id: "taxon-id-1"
     }
+  end
+
+  defp create_export_with_mapping(consumer, records, mapping) do
+    %{
+      name: "gbif.org - Export",
+      consumer: consumer,
+      records: records
+    }
+    |> Export.create!()
+    |> Export.update_mapping(mapping)
   end
 end
