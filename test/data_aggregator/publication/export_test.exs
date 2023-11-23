@@ -3,6 +3,7 @@ defmodule DataAggregator.ExportTest do
 
   use DataAggregator.DataCase, async: true
 
+  alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Platform.Publication.Consumer
   alias DataAggregator.Platform.Publication.Export
   alias DataAggregator.Records.Collection
@@ -92,9 +93,16 @@ defmodule DataAggregator.ExportTest do
 
   @tag run: true
   describe "publication" do
-    test "publish records for export" do
-      # arrange
+    @invalid_custom_mapping :invalid
+    @valid_custom_mapping %{
+      :mte_material_entity_id => "Numéro scientifique GBIF",
+      :tax_family => "Famille"
+    }
+    @default_mapping Schema.prefixed_attribute_names()
+                     |> Enum.map(fn name -> {name, Atom.to_string(name)} end)
+                     |> Enum.into(%{})
 
+    setup %{mapping: mapping} do
       # those two should be published
       get_publishable_record()
       get_publishable_record()
@@ -103,7 +111,6 @@ defmodule DataAggregator.ExportTest do
 
       consumer = consumer_fixture()
 
-      # act
       collected_records = consumer |> Consumer.collect!()
 
       export =
@@ -113,19 +120,50 @@ defmodule DataAggregator.ExportTest do
           records: collected_records
         }
         |> Export.create!()
-        |> Export.update_mapping!(nil)
+        |> Export.update_mapping!(mapping)
 
-      {:ok, attachment} = export |> Export.publish()
+      case export |> Export.publish() do
+        {:ok, attachment} -> [export: export, attachment: attachment]
+        {:error, error} -> [export: export, error: error]
+      end
+    end
 
-      # assert
-      # ensure (default) mapping was set
+    @tag mapping: nil
+    test "publish records for export with no mapping, so default mapping should be used", %{
+      export: export,
+      attachment: attachment
+    } do
       assert export.mapping == nil
-      # there should be a valid df created from the csv under the url
+
       df = Explorer.DataFrame.from_csv!(attachment.url)
-      # there should be multiple columns in the resulting dataframe / csv file
-      assert df |> Explorer.DataFrame.n_columns() > 0
-      # only two records should be published
+
+      assert df |> Explorer.DataFrame.n_columns() == Enum.count(Map.keys(@default_mapping))
+
       assert df |> Explorer.DataFrame.n_rows() == 2
+    end
+
+    @tag mapping: @valid_custom_mapping
+    test "publish records for export with valid custom mapping", %{
+      export: export,
+      attachment: attachment
+    } do
+      assert export.mapping == @valid_custom_mapping
+
+      df = Explorer.DataFrame.from_csv!(attachment.url)
+
+      assert df |> Explorer.DataFrame.n_columns() == 2
+
+      assert df |> Explorer.DataFrame.n_rows() == 2
+    end
+
+    @tag mapping: @invalid_custom_mapping
+    test "publish records for export with invalidcustom mapping", %{
+      export: export,
+      error: error
+    } do
+      assert export.mapping == @invalid_custom_mapping
+
+      error |> dbg
     end
   end
 
