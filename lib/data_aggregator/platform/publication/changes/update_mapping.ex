@@ -10,8 +10,17 @@ defmodule DataAggregator.Platform.Publication.Changes.UpdateMapping do
   require Logger
 
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    mapping = Changeset.get_argument(changeset, :mapping)
+    mapping = changeset |> Changeset.get_argument(:mapping)
 
-    Changeset.change_attribute(changeset, :mapping, mapping)
+    if is_map(mapping) or mapping == nil do
+      changeset |> Changeset.change_attribute(:mapping, mapping)
+    else
+      changeset
+      |> Changeset.add_error(
+        field: :mapping,
+        message: "invalid mapping provided",
+        value: mapping
+      )
+    end
   end
 end

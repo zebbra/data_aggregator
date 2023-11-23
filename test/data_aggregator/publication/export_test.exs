@@ -91,7 +91,6 @@ defmodule DataAggregator.ExportTest do
     %{collection: collection}
   end
 
-  @tag run: true
   describe "publication" do
     @invalid_custom_mapping :invalid
     @valid_custom_mapping %{
@@ -113,18 +112,21 @@ defmodule DataAggregator.ExportTest do
 
       collected_records = consumer |> Consumer.collect!()
 
-      export =
-        %{
-          name: "gbif.org - Export",
-          consumer: consumer,
-          records: collected_records
-        }
-        |> Export.create!()
-        |> Export.update_mapping!(mapping)
+      case %{
+             name: "gbif.org - Export",
+             consumer: consumer,
+             records: collected_records
+           }
+           |> Export.create!()
+           |> Export.update_mapping(mapping) do
+        {:ok, result} ->
+          case result |> Export.publish() do
+            {:ok, attachment} -> [export: result, attachment: attachment]
+            {:error, error} -> [export: result, error: error]
+          end
 
-      case export |> Export.publish() do
-        {:ok, attachment} -> [export: export, attachment: attachment]
-        {:error, error} -> [export: export, error: error]
+        {:error, error} ->
+          [export: nil, error: error]
       end
     end
 
@@ -157,13 +159,14 @@ defmodule DataAggregator.ExportTest do
     end
 
     @tag mapping: @invalid_custom_mapping
-    test "publish records for export with invalidcustom mapping", %{
-      export: export,
+    test "publish records for export with invalid custom mapping", %{
       error: error
     } do
-      assert export.mapping == @invalid_custom_mapping
-
-      error |> dbg
+      assert_has_error(
+        error.changeset,
+        Ash.Error.Invalid,
+        &(&1.field == :mapping and String.match?(&1.message, ~r/is invalid/))
+      )
     end
   end
 
