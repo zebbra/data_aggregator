@@ -32,7 +32,7 @@ defmodule DataAggregator.Records.Import.Runner do
   def perform(%Oban.Job{args: %{"id" => id}}) do
     with {:ok, import} <- Import.get_by_id(id) do
       Logger.info("Running import #{inspect(import.id)} ...")
-      import |> Import.run()
+      Import.run(import)
     end
   end
 

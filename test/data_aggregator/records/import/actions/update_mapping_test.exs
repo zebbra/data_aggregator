@@ -25,7 +25,7 @@ defmodule DataAggregator.Records.Import.Actions.UpdateMappingTest do
       ]
 
       {:ok, import} = Import.update_mapping(import, mappings)
-      columns = import.columns |> Enum.map(&{&1.name, &1.type, &1.mapped_to})
+      columns = Enum.map(import.columns, &{&1.name, &1.type, &1.mapped_to})
 
       assert import.state == :pending
 
@@ -65,7 +65,7 @@ defmodule DataAggregator.Records.Import.Actions.UpdateMappingTest do
       ]
 
       {:ok, import} = Import.update_mapping(import, mappings)
-      columns = import.columns |> Enum.map(&{&1.name, &1.type, &1.mapped_to})
+      columns = Enum.map(import.columns, &{&1.name, &1.type, &1.mapped_to})
 
       assert columns == [
                {"Age", :string, nil},

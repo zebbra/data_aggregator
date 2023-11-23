@@ -12,7 +12,7 @@ defmodule DataAggregator.Records.Import.Changes.SetImportedAfterAction do
   require Logger
 
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    changeset |> Changeset.after_action(&set_imported/2)
+    Changeset.after_action(changeset, &set_imported/2)
   end
 
   defp set_imported(_changeset, import) do

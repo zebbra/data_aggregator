@@ -35,7 +35,7 @@ defmodule DataAggregator.Records do
     @default_env |> Keyword.merge(env)
   end
 
-  def get_env(key, default \\ nil), do: get_all_env() |> Keyword.get(key, default)
+  def get_env(key, default \\ nil), do: Keyword.get(get_all_env(), key, default)
   def import_timeout, do: get_env(:import_timeout)
   def import_batch_size, do: get_env(:import_batch_size)
   def async_import_progress?, do: get_env(:async_import_progress?)

@@ -59,7 +59,7 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
 
   defp attachment_data(%Import{} = import, opts, context) do
     with {:ok, data} <- create_dataframe(import, opts, context) do
-      data = data |> maybe_apply_mapping(import, opts, context)
+      data = maybe_apply_mapping(data, import, opts, context)
       {:ok, data}
     end
   end
@@ -83,7 +83,7 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
     %Import{columns: columns} = import
     mappings = column_mappings(columns)
 
-    data |> Explorer.DataFrame.rename(mappings)
+    Explorer.DataFrame.rename(data, mappings)
   end
 
   defp maybe_apply_mapping(data, _import, _opts, _ctx) do

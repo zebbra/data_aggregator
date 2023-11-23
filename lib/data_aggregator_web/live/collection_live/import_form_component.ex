@@ -171,7 +171,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   end
 
   defp handle_flash(socket, import) when is_nil(import) do
-    socket |> put_flash(:error, "File upload failed")
+    put_flash(socket, :error, "File upload failed")
   end
 
   def pretty_accept_list(term) when is_binary(term) do
@@ -184,8 +184,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
 
   def pretty_max_file_size(max_file_size) when is_number(max_file_size) do
     max_file_size =
-      max_file_size
-      |> DataAggregatorWeb.Helpers.format_bytes()
+      DataAggregatorWeb.Helpers.format_bytes(max_file_size)
 
     mgettext("up to %{max_file_size}", max_file_size: max_file_size)
   end

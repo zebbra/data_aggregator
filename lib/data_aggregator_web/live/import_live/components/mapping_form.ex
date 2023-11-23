@@ -13,7 +13,7 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
 
   @impl true
   def mount(socket) do
-    socket = socket |> assign_filter()
+    socket = assign_filter(socket)
     {:ok, socket}
   end
 
@@ -42,8 +42,8 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
   end
 
   defp assign_form(%{assigns: assigns} = socket) do
-    form = assigns |> build_form()
-    socket |> assign(:form, form)
+    form = build_form(assigns)
+    assign(socket, :form, form)
   end
 
   defp build_form(%{import: import}) do
@@ -58,8 +58,8 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
   end
 
   defp assign_filter(socket, params \\ %{}) do
-    filter = params |> to_form(as: :filter)
-    socket |> assign(:filter, filter)
+    filter = to_form(params, as: :filter)
+    assign(socket, :filter, filter)
   end
 
   @impl true
@@ -96,7 +96,7 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
   attr :rest, :global
 
   defp mapping_form(assigns) do
-    assigns = assigns |> assign(:options, DarwinCore.Schema.attribute_options())
+    assigns = assign(assigns, :options, DarwinCore.Schema.attribute_options())
 
     ~H"""
     <.simple_form for={@form} {@rest}>
@@ -115,9 +115,9 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
 
   defp column_input(assigns) do
     %{form: %{data: column}, filter: filter} = assigns
-    visible = column |> column_matches?(filter)
+    visible = column_matches?(column, filter)
 
-    assigns = assigns |> assign(:visible, visible)
+    assigns = assign(assigns, :visible, visible)
 
     ~H"""
     <div class={["rounded bg-gray-50 p-3 dark:bg-gray-800", @visible || "hidden"]}>
@@ -134,7 +134,7 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
 
   @impl true
   def handle_event("filter", %{"filter" => params}, socket) do
-    socket = socket |> assign_filter(params)
+    socket = assign_filter(socket, params)
     {:noreply, socket}
   end
 
@@ -148,8 +148,7 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
     mappings = for {_, col} <- columns, do: Map.take(col, ["name", "mapped_to"])
 
     %Socket{assigns: %{import: import}} = socket
-    import |> Import.update_mapping(mappings)
-
+    Import.update_mapping(import, mappings)
     {:noreply, socket}
   end
 end

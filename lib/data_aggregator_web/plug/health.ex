@@ -6,7 +6,7 @@ defmodule DataAggregatorWeb.Plug.Health do
   import Plug.Conn
 
   @default_path "/health"
-  def init(opts), do: opts |> Keyword.put_new(:path, @default_path)
+  def init(opts), do: Keyword.put_new(opts, :path, @default_path)
 
   def call(%Plug.Conn{request_path: request_path} = conn, opts) do
     case Keyword.get(opts, :path) do

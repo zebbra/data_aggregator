@@ -21,7 +21,7 @@ defmodule DataAggregator.DarwinCore.Resource.Transformers.AddAttributes do
     if Transformer.get_persisted(dsl_state, :embedded?, false) do
       {:ok, dsl_state}
     else
-      dsl_state |> add_attributes()
+      add_attributes(dsl_state)
     end
   end
 
@@ -32,8 +32,11 @@ defmodule DataAggregator.DarwinCore.Resource.Transformers.AddAttributes do
   def before?(_), do: false
 
   defp add_attributes(dsl_state) do
-    DataAggregator.DarwinCore.Schema.prefixed_attributes()
-    |> Enum.reduce_while({:ok, dsl_state}, &reduce_attribute/2)
+    Enum.reduce_while(
+      DataAggregator.DarwinCore.Schema.prefixed_attributes(),
+      {:ok, dsl_state},
+      &reduce_attribute/2
+    )
   end
 
   defp reduce_attribute(%Attribute{} = attribute, {:ok, dsl_state}) do

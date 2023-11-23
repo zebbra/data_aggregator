@@ -11,8 +11,7 @@ defmodule DataAggregator.Records.Import.Changes.SetRunningBeforeTransaction do
   require Logger
 
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    changeset
-    |> Changeset.before_transaction(&set_running/1)
+    Changeset.before_transaction(changeset, &set_running/1)
   end
 
   defp set_running(%Changeset{data: import} = changeset) do
@@ -21,7 +20,7 @@ defmodule DataAggregator.Records.Import.Changes.SetRunningBeforeTransaction do
         %Changeset{changeset | data: import}
 
       {:error, reason} ->
-        changeset |> Changeset.add_error(reason)
+        Changeset.add_error(changeset, reason)
     end
   end
 end

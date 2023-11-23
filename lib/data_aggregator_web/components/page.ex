@@ -194,8 +194,7 @@ defmodule DataAggregatorWeb.Page do
   end
 
   defp locale_options do
-    DataAggregatorWeb.Locale.locales()
-    |> Enum.map(fn x ->
+    Enum.map(DataAggregatorWeb.Locale.locales(), fn x ->
       case x do
         "de-CH" -> option("DE", x)
         "fr-CH" -> option("FR", x)

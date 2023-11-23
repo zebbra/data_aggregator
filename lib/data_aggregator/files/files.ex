@@ -62,6 +62,6 @@ defmodule DataAggregator.Files do
   """
   def cache_dir do
     default = Path.join([System.tmp_dir!(), "data_aggregator", "files", "cache"])
-    config() |> Keyword.get(:cache_dir, default)
+    Keyword.get(config(), :cache_dir, default)
   end
 end

@@ -22,7 +22,7 @@ defmodule DataAggregatorWeb.ImportLive.Show do
 
   @impl true
   def handle_params(params, _url, socket) do
-    socket = socket |> apply_action(socket.assigns.live_action, params)
+    socket = apply_action(socket, socket.assigns.live_action, params)
     {:noreply, socket}
   end
 
@@ -31,7 +31,7 @@ defmodule DataAggregatorWeb.ImportLive.Show do
          %Socket{assigns: %{import: import}} <- socket,
          %Import{id: id} <- import,
          topic <- "import:updated:#{id}" do
-      topic |> PubSub.subscribe()
+      PubSub.subscribe(topic)
       socket
     else
       false ->
@@ -44,23 +44,21 @@ defmodule DataAggregatorWeb.ImportLive.Show do
   end
 
   defp assign_import(socket, id) do
-    {:ok, import} = id |> Import.get_by_id(load: @load)
-    socket |> assign(:import, import)
+    {:ok, import} = Import.get_by_id(id, load: @load)
+    assign(socket, :import, import)
   end
 
   defp update_import(socket) do
     %Socket{assigns: %{import: %Import{id: id}}} = socket
-    socket |> assign_import(id)
+    assign_import(socket, id)
   end
 
   defp apply_action(socket, :show, _params) do
-    socket
-    |> assign(:page_title, ~t"Show Import"m)
+    assign(socket, :page_title, ~t"Show Import"m)
   end
 
   defp apply_action(socket, action, _params) do
-    socket
-    |> assign(:page_title, "Action #{action}")
+    assign(socket, :page_title, "Action #{action}")
   end
 
   @impl true
@@ -113,7 +111,7 @@ defmodule DataAggregatorWeb.ImportLive.Show do
 
   @impl true
   def handle_info({_topic, _event, _notification}, socket) do
-    socket = socket |> update_import()
+    socket = update_import(socket)
     {:noreply, socket}
   end
 
@@ -124,13 +122,12 @@ defmodule DataAggregatorWeb.ImportLive.Show do
     socket =
       case Import.enqueue(import) do
         {:ok, import} ->
-          socket
-          |> assign(:import, import)
+          assign(socket, :import, import)
 
         # |> put_flash(:info, ~t"Import started ..."m)
 
         {:error, _error} ->
-          socket |> put_flash(:error, ~t"Import could not be started"m)
+          put_flash(socket, :error, ~t"Import could not be started"m)
       end
 
     {:noreply, socket}

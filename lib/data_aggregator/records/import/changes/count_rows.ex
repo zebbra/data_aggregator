@@ -29,7 +29,7 @@ defmodule DataAggregator.Records.Import.Changes.CountRows do
             value: filename
           )
 
-        changeset |> Changeset.add_error(exception)
+        Changeset.add_error(changeset, exception)
     end
   end
 
@@ -37,7 +37,7 @@ defmodule DataAggregator.Records.Import.Changes.CountRows do
     Logger.debug("Counting rows for file #{inspect(filename)} ...")
 
     with {:ok, df} <- Records.DataFrame.from_file(filename) do
-      rows_count = df |> Explorer.DataFrame.n_rows()
+      rows_count = Explorer.DataFrame.n_rows(df)
 
       Logger.info("Detected #{rows_count} in import file #{inspect(filename)}")
 

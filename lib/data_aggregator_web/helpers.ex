@@ -16,7 +16,7 @@ defmodule DataAggregatorWeb.Helpers do
   def format_percent(nil, _opts), do: @placeholder
 
   def format_percent(number, opts) do
-    opts = [unit: "percent", style: :short] |> Keyword.merge(opts)
+    opts = Keyword.merge([unit: "percent", style: :short], opts)
     Cldr.Unit.to_string!(number * 100, opts)
   end
 
@@ -52,7 +52,7 @@ defmodule DataAggregatorWeb.Helpers do
       end
 
     precision = Keyword.get(opts, :precision, 1)
-    value = value |> Float.round(precision)
+    value = Float.round(value, precision)
 
     opts =
       opts

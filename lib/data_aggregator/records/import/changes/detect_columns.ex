@@ -30,7 +30,7 @@ defmodule DataAggregator.Records.Import.Changes.DetectColumns do
             value: filename
           )
 
-        changeset |> Changeset.add_error(exception)
+        Changeset.add_error(changeset, exception)
     end
   end
 

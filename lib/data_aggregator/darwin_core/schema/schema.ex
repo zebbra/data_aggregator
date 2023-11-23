@@ -133,7 +133,7 @@ defmodule DataAggregator.DarwinCore.Schema do
   """
   @spec prefixed_attribute_names() :: [atom()]
   def prefixed_attribute_names do
-    prefixed_attributes() |> Enum.map(& &1.name)
+    Enum.map(prefixed_attributes(), & &1.name)
   end
 
   @doc """

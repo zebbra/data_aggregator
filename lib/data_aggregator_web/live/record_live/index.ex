@@ -76,8 +76,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
         socket
       ) do
     socket =
-      socket
-      |> stream_insert(:results, record |> Map.put(:selected, false))
+      stream_insert(socket, :results, Map.put(record, :selected, false))
 
     {:noreply, socket}
   end

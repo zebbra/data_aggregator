@@ -47,7 +47,7 @@ defmodule DataAggregator.Records.DataFrame do
       opts = @csv_read_opts |> Keyword.merge(opts) |> Keyword.put(:delimiter, delimiter)
       Logger.debug("Reading CSV file #{inspect(file)} with options: #{inspect(opts)}")
 
-      file |> Explorer.DataFrame.from_csv(opts)
+      Explorer.DataFrame.from_csv(file, opts)
     end
   end
 
@@ -55,14 +55,14 @@ defmodule DataAggregator.Records.DataFrame do
     opts = @ipc_read_opts |> Keyword.merge(opts)
     Logger.debug("Reading Arrow file #{inspect(file)} with options: #{inspect(opts)}")
 
-    file |> Explorer.DataFrame.from_ipc(opts)
+    Explorer.DataFrame.from_ipc(file, opts)
   end
 
   def from_pqt(file, opts \\ []) do
     opts = @pqt_read_opts |> Keyword.merge(opts)
     Logger.debug("Reading Parquet file #{inspect(file)} with options: #{inspect(opts)}")
 
-    file |> Explorer.DataFrame.from_parquet()
+    Explorer.DataFrame.from_parquet(file)
   end
 
   def to_file(df, file, opts \\ []) when is_binary(file) do
@@ -84,19 +84,19 @@ defmodule DataAggregator.Records.DataFrame do
   def to_csv(df, file, opts \\ []) do
     opts = @csv_write_opts |> Keyword.merge(opts)
     Logger.debug("Writing CSV file #{inspect(file)} with options: #{inspect(opts)}")
-    df |> Explorer.DataFrame.to_csv(file, opts)
+    Explorer.DataFrame.to_csv(df, file, opts)
   end
 
   def to_ipc(df, file, opts \\ []) do
     opts = @ipc_write_opts |> Keyword.merge(opts)
     Logger.debug("Writing Arrow file #{inspect(file)} with options: #{inspect(opts)}")
-    df |> Explorer.DataFrame.to_ipc(file, opts)
+    Explorer.DataFrame.to_ipc(df, file, opts)
   end
 
   def to_pqt(df, file, opts \\ []) do
     opts = @pqt_write_opts |> Keyword.merge(opts)
     Logger.debug("Writing Parquet file #{inspect(file)} with options: #{inspect(opts)}")
-    df |> Explorer.DataFrame.to_parquet(file, opts)
+    Explorer.DataFrame.to_parquet(df, file, opts)
   end
 
   def detect_format(filename) do

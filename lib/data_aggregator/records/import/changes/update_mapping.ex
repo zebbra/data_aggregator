@@ -19,7 +19,7 @@ defmodule DataAggregator.Records.Import.Changes.UpdateMapping do
   end
 
   def merge_mappings(columns, mappings) do
-    columns |> Enum.map(&merge_mapping(&1, mappings))
+    Enum.map(columns, &merge_mapping(&1, mappings))
   end
 
   def merge_mapping(%Column{name: name} = column, mappings) do

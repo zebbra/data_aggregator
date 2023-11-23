@@ -18,7 +18,7 @@ defmodule DataAggregator.DarwinCore.Schema.Category do
   @spec prefixed_attributes(t) :: [Attribute.t()]
   def prefixed_attributes(%Category{attributes: attributes} = category) do
     for attribute <- attributes do
-      prefixed_name = category |> prefixed_attribute_name(attribute)
+      prefixed_name = prefixed_attribute_name(category, attribute)
       %Attribute{attribute | name: prefixed_name}
     end
   end

@@ -16,6 +16,6 @@ defmodule DataAggregator.Records.Import.Changes.SetTimeout do
   def change(%Changeset{} = changeset, _opts, _ctx) do
     timeout = Records.import_timeout()
     Logger.info("Import timeout set to #{timeout}ms")
-    changeset |> Changeset.timeout(timeout)
+    Changeset.timeout(changeset, timeout)
   end
 end

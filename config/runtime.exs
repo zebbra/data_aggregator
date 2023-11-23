@@ -1,4 +1,5 @@
 import Config
+
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the
 # system starts, so it is typically used to load production configuration
@@ -139,6 +140,7 @@ if config_env() == :prod do
     http: [
       port: port,
       ip: listen_ip
+
       # transport_options: [max_connections: :infinity] # not valid for bandit
     ],
     secret_key_base: secret_key_base

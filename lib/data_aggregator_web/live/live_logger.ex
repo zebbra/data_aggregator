@@ -9,8 +9,7 @@ defmodule DataAggregatorWeb.LiveLogger do
   require Logger
 
   def on_mount(:default, params, session, socket) do
-    socket
-    |> log("MOUNT", %{"Params" => filter_values(params), "Session" => filter_values(session)})
+    log(socket, "MOUNT", %{"Params" => filter_values(params), "Session" => filter_values(session)})
 
     {:cont,
      socket
@@ -19,17 +18,17 @@ defmodule DataAggregatorWeb.LiveLogger do
   end
 
   defp log(socket, event, info) do
-    info = info |> Enum.map_join("\n", fn {key, val} -> "  #{key}: #{inspect(val)}" end)
+    info = Enum.map_join(info, "\n", fn {key, val} -> "  #{key}: #{inspect(val)}" end)
     Logger.info("[#{inspect(socket.view)}] #{event}\n#{info}")
   end
 
   defp handle_event(event, params, socket) do
-    socket |> log("EVENT #{event}", %{"Params" => filter_values(params)})
+    log(socket, "EVENT #{event}", %{"Params" => filter_values(params)})
     {:cont, socket}
   end
 
   defp handle_params(params, uri, socket) do
-    socket |> log("PARAM #{uri}", %{"Params" => filter_values(params)})
+    log(socket, "PARAM #{uri}", %{"Params" => filter_values(params)})
     {:cont, socket}
   end
 end

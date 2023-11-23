@@ -38,7 +38,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
   end
 
   defp assign_imports(socket) do
-    socket |> stream(:results, list_imports())
+    stream(socket, :results, list_imports())
   end
 
   defp list_imports do
@@ -154,7 +154,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
   def handle_info({topic, _event, notification}, socket)
       when topic in ["import:created", "import:updated"] do
     %Ash.Notifier.Notification{data: import} = notification
-    import = import |> Records.load!(@load, lazy?: true)
+    import = Records.load!(import, @load, lazy?: true)
     {:noreply, stream_insert(socket, :results, import)}
   end
 

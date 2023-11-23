@@ -91,8 +91,7 @@ defmodule DataAggregator.MixProject do
   defp before_closing_body_tag(_), do: ""
 
   defp extras() do
-    "docs/**/*.{md,livemd,cheatmd}"
-    |> Path.wildcard()
+    Path.wildcard("docs/**/*.{md,livemd,cheatmd}")
   end
 
   defp groups_for_extras do
@@ -209,7 +208,7 @@ defmodule DataAggregator.MixProject do
       {:assertions, "~> 0.19", only: :test},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
-      {:recode, "~> 0.6", only: :dev},
+      {:recode, "~> 0.6", only: [:dev, :test]},
 
       # Asserts
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},

@@ -21,7 +21,7 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
       assert import.state == :pending
       assert import.rows_count == 891
 
-      columns = import.columns |> Enum.map(&{&1.name, &1.type})
+      columns = Enum.map(import.columns, &{&1.name, &1.type})
 
       assert columns == [
                {"Age", :string},

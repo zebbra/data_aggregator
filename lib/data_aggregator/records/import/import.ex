@@ -12,11 +12,11 @@ defmodule DataAggregator.Records.Import do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub]
 
-  alias __MODULE__
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import.Column
   alias DataAggregator.Records.Import.Record, as: ImportRecord
+  alias __MODULE__
 
   attributes do
     uuid_attribute :id, prefix: "if"

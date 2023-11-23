@@ -12,7 +12,8 @@ defmodule DataAggregator.Records.Import.Changes.EnqueueRunner do
 
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    changeset |> Changeset.after_transaction(&enqueue_runner/2)
+    Changeset.after_transaction(changeset, &enqueue_runner/2)
+
     # changeset |> Changeset.after_action(&enqueue_runner/2)
   end
 

@@ -8,6 +8,6 @@ defmodule DataAggregatorWeb.LiveLocale do
 
   def on_mount(:default, _params, session, socket) do
     {:ok, locale} = Cldr.Plug.put_locale_from_session(session)
-    {:cont, socket |> assign(locale: locale)}
+    {:cont, assign(socket, locale: locale)}
   end
 end

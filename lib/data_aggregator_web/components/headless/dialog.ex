@@ -146,8 +146,8 @@ defmodule DataAggregatorWeb.Headless.Dialog do
   defp show_backdrop(js, selector, transition) do
     time = extract_duration(transition)
 
-    js
-    |> JS.show(
+    JS.show(
+      js,
       to: "##{selector}__backdrop",
       display: "inline-block",
       time: time,
@@ -158,8 +158,8 @@ defmodule DataAggregatorWeb.Headless.Dialog do
   defp hide_backdrop(js, selector, transition) do
     time = extract_duration(transition)
 
-    js
-    |> JS.hide(
+    JS.hide(
+      js,
       to: "##{selector}__backdrop",
       time: time,
       transition: transition
@@ -192,8 +192,8 @@ defmodule DataAggregatorWeb.Headless.Dialog do
   end
 
   defp show_close_button(js, selector) do
-    js
-    |> JS.show(
+    JS.show(
+      js,
       to: "##{selector}__close",
       time: 300,
       transition: {"ease-out duration-300", "opacity-0", "opacity-100"}
@@ -201,8 +201,8 @@ defmodule DataAggregatorWeb.Headless.Dialog do
   end
 
   defp hide_close_button(js, selector) do
-    js
-    |> JS.hide(
+    JS.hide(
+      js,
       to: "##{selector}__close",
       transition: {"ease-in duration-200", "opacity-100", "opacity-0"}
     )

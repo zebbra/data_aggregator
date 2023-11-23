@@ -16,7 +16,7 @@ defmodule DataAggregator.Repo do
   ### ERD
 
   ```mermaid
-  #{"docs/erd.mmd" |> File.read!()}
+  #{File.read!("docs/erd.mmd")}
   ```
   """
 

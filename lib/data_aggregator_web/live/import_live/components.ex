@@ -192,7 +192,7 @@ defmodule DataAggregatorWeb.ImportLive.Components do
   def import_mapping_form(assigns) do
     %{import: %Import{id: id}} = assigns
 
-    assigns = assigns |> assign_new(:id, fn -> "#{id}_mapping_form" end)
+    assigns = assign_new(assigns, :id, fn -> "#{id}_mapping_form" end)
 
     ~H"""
     <.live_component module={MappingForm} id={@id} import={@import} />
@@ -261,8 +261,8 @@ defmodule DataAggregatorWeb.ImportLive.Components do
   attr :state, :atom, required: true, values: @states
 
   def import_state_icon(%{state: state} = assigns) do
-    {icon, class} = state |> import_state_icon_class()
-    assigns = assigns |> assign(icon: icon, class: class)
+    {icon, class} = import_state_icon_class(state)
+    assigns = assign(assigns, icon: icon, class: class)
 
     case icon do
       nil -> ~H()

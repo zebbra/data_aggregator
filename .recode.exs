@@ -9,7 +9,7 @@
   # Can also be set/reset with `--verbose`/`--no-verbose`.
   verbose: false,
   # Can be overwritten by calling `mix recode "lib/**/*.ex"`.
-  inputs: ["{mix,.formatter}.exs", "{apps,config,lib,test}/**/*.{ex,exs}"],
+  inputs: ["{mix,.formatter}.exs", "{apps,config,lib,test,storybook}/**/*.{ex,exs}"],
   formatter: {Recode.Formatter, []},
   tasks: [
     # Tasks could be added by a tuple of the tasks module name and an options
@@ -24,7 +24,7 @@
     {Recode.Task.Nesting, []},
     {Recode.Task.PipeFunOne, []},
     {Recode.Task.SinglePipe, []},
-    {Recode.Task.Specs, [exclude: "test/**/*.{ex,exs}", config: [only: :visible]]},
+    {Recode.Task.Specs, [exclude: "test/**/*.{ex,exs}", config: [only: :visible], active: false]},
     {Recode.Task.TagFIXME, [exit_code: 2]},
     {Recode.Task.TagTODO, [exit_code: 4]},
     {Recode.Task.TestFileExt, []},
