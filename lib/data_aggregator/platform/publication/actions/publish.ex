@@ -15,7 +15,7 @@ defmodule DataAggregator.Platform.Publication.Actions.PublishRecords do
     mapping = get_mapping(export.mapping)
     mapped_records = export.records |> map_records(mapping)
 
-    "#{:code.priv_dir(:data_aggregator)}/export/#{Ecto.UUID.generate()}.csv"
+    "#{Path.join([System.tmp_dir!(), "export"])}#{Ecto.UUID.generate()}.csv"
     |> export_to_s3(mapped_records, mapping)
   end
 
