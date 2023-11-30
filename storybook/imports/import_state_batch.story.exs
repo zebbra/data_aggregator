@@ -10,7 +10,8 @@ defmodule Storybook.Imports.ImportStateBadge do
       %Variation{
         id: state,
         attributes: %{
-          state: state
+          state: state,
+          progress: 0.75
         }
       }
     end

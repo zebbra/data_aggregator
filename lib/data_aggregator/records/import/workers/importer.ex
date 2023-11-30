@@ -1,14 +1,14 @@
-defmodule DataAggregator.Records.Import.Runner do
+defmodule DataAggregator.Records.Import.Workers.Importer do
   @moduledoc """
-  `Oban.Worker` to perform `DataAggregator.Records.Import.run/1` asynchronously.
+  `Oban.Worker` to perform `DataAggregator.Records.Import.import/1` asynchronously.
 
-  Usually this is not used directly, but rather through `DataAggregator.Records.Import.enqueue/1`:
+  Usually this is not used directly, but rather through `DataAggregator.Records.Import.enqueue_import/1`:
 
   ```elixir
   {:ok, import} =
     import_id
     |> DataAggregator.Records.Import.get_by_id!()
-    |> DataAggregator.Records.Import.enqueue()
+    |> DataAggregator.Records.Import.enqueue_import()
   ```
 
   ## Arguments
@@ -31,8 +31,8 @@ defmodule DataAggregator.Records.Import.Runner do
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"id" => id}}) do
     with {:ok, import} <- Import.get_by_id(id) do
-      Logger.info("Running import #{inspect(import.id)} ...")
-      Import.run(import)
+      Logger.info("Importing #{inspect(import.id)} ...")
+      Import.import(import)
     end
   end
 

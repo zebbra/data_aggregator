@@ -12,6 +12,7 @@ defmodule DataAggregator.Records.Import do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub]
 
+  require Ash.Resource.Change.Builtins
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import.Column
@@ -20,15 +21,20 @@ defmodule DataAggregator.Records.Import do
 
   attributes do
     uuid_attribute :id, prefix: "if"
-    attribute :columns, {:array, Column}
+
+    attribute :columns, {:array, Column} do
+      constraints load: [:mapped?]
+    end
+
     timestamps private?: false, writable?: false
-    attribute :imported_at, :utc_datetime, allow_nil?: true
+
     attribute :started_at, :utc_datetime, allow_nil?: true
     attribute :finished_at, :utc_datetime, allow_nil?: true
 
     attribute :rows_count, :integer, allow_nil?: true
-    attribute :imported_count, :integer, allow_nil?: true
-    attribute :invalid_count, :integer, allow_nil?: true
+    attribute :rows_valid_count, :integer, allow_nil?: true
+    attribute :rows_invalid_count, :integer, allow_nil?: true
+    attribute :rows_imported_count, :integer, allow_nil?: true
   end
 
   relationships do
@@ -48,24 +54,16 @@ defmodule DataAggregator.Records.Import do
   end
 
   calculations do
-    calculate :progress, :float, expr((imported_count + invalid_count) / rows_count)
+    calculate :import_progress, :float, expr(rows_imported_count / rows_count)
+    calculate :rows_validated_count, :integer, expr(rows_valid_count + rows_invalid_count)
 
-    calculate :duration, :integer do
-      description """
-      The duration of the import in seconds from when it started to when it finished (or now if it hasn't finished yet)
-      """
+    calculate :rows_valid_ratio,
+              :float,
+              expr(if rows_validated_count > 0, do: rows_valid_count / rows_validated_count)
 
-      calculation(
-        expr(
-          fragment(
-            "EXTRACT(EPOCH FROM COALESCE(?, ?))::bigint - EXTRACT(EPOCH FROM ?)::bigint",
-            finished_at,
-            now(),
-            started_at
-          )
-        )
-      )
-    end
+    calculate :validation_progress, :float, expr(rows_validated_count / rows_count)
+
+    calculate :duration, :time, expr((finished_at || now()) - started_at)
 
     calculate :collection_name, :string, expr(collection.name)
 
@@ -83,13 +81,18 @@ defmodule DataAggregator.Records.Import do
 
       ## Arguments
 
-      * `mapped` - If If `true`, the column names are mapped to the names defined in the import mapping. If `false`, the column names are the same as the column names in the file. Defaults to `false`.
+      * `mapped` - If If `true`, the column names are mapped to the names defined in the import mapping.
+                   If `false`, the column names are the same as the column names in the file.
+                   Defaults to `false`.
       """
 
       argument :mapped, :boolean, default: false
 
       load attachment: :url
     end
+
+    calculate :mappings, {:array, Column}, Import.Calculations.Mappings
+    calculate :missing_mappings, :map, Import.Calculations.MissingMappings
   end
 
   aggregates do
@@ -101,16 +104,20 @@ defmodule DataAggregator.Records.Import do
     default_initial_state :pending
 
     transitions do
-      transition :enqueue, from: [:pending, :imported, :failed], to: :queued
-      transition :run, from: [:pending, :imported, :failed, :queued], to: :running
-      transition :set_imported, from: :running, to: :imported
-      transition :set_failed, from: :running, to: :failed
+      transition :update_mapping, from: [:pending, :failed, :imported], to: :pending
+      transition :enqueue_import, from: [:pending, :failed, :imported], to: :import_queued
+      transition :import, from: [:pending, :import_queued], to: :importing
+      transition :import, from: [:importing], to: :imported
+      transition :set_imported, from: :importing, to: :imported
+      transition :set_failed, from: :importing, to: :failed
     end
   end
 
   preparations do
     prepare build(sort: [id: :asc])
     prepare DataAggregator.Preparations.Sort
+    prepare build(load: [columns: [:mapped?]])
+    prepare build(load: [:mappings])
   end
 
   actions do
@@ -141,59 +148,66 @@ defmodule DataAggregator.Records.Import do
 
     update :update_mapping do
       accept [:columns]
-      # require_attributes [:columns]
       change Import.Changes.UpdateMapping
+      change transition_state(:pending)
+      change load([:missing_mappings])
     end
 
-    update :enqueue do
+    update :add_validation_progress do
       accept []
-      change transition_state(:queued)
-      change Import.Changes.EnqueueRunner
+      argument :valid, :integer, allow_nil?: false
+      argument :invalid, :integer, allow_nil?: false
+      change atomic_update(:rows_valid_count, expr(rows_valid_count + ^arg(:valid)))
+      change atomic_update(:rows_invalid_count, expr(rows_invalid_count + ^arg(:invalid)))
+      change ensure_selected(:rows_valid_count)
+      change ensure_selected(:rows_invalid_count)
     end
 
-    update :run do
+    update :enqueue_import do
+      accept []
+      change transition_state(:import_queued)
+      change Import.Changes.EnqueueImporter
+    end
+
+    update :import do
       accept []
       change Import.Changes.SetTimeout
-      change Import.Changes.SetRunningBeforeTransaction
-      change transition_state(:running)
+      change Import.Changes.SetImportingBeforeTransaction
+      change Import.Changes.ValidateRows
       change Import.Changes.ImportRecords
       change Import.Changes.SetImportedAfterAction
       change Import.Changes.SetFailedOnError
       change load(:records_count)
     end
 
-    update :add_progress do
+    update :set_importing do
       accept []
-      argument :imported, :integer, allow_nil?: false
-      argument :invalid, :integer, allow_nil?: false
-      change atomic_update(:imported_count, expr(imported_count + ^arg(:imported)))
-      change atomic_update(:invalid_count, expr(invalid_count + ^arg(:invalid)))
-      change ensure_selected(:imported_count)
-      change ensure_selected(:invalid_count)
+      change set_attribute(:state, :importing)
+      change set_attribute(:started_at, &DateTime.utc_now/0)
+      change set_attribute(:finished_at, nil)
+      change set_attribute(:rows_imported_count, 0)
+      change set_attribute(:rows_valid_count, 0)
+      change set_attribute(:rows_invalid_count, 0)
     end
 
-    update :set_running do
+    update :add_import_progress do
       accept []
-      change set_attribute(:state, :running)
-      change set_attribute(:started_at, &DateTime.utc_now/0)
-      change set_attribute(:imported_count, 0)
-      change set_attribute(:invalid_count, 0)
-      change set_attribute(:finished_at, nil)
+      argument :imported, :integer, allow_nil?: false
+      change atomic_update(:rows_imported_count, expr(rows_imported_count + ^arg(:imported)))
+      change ensure_selected(:rows_imported_count)
     end
 
     update :set_failed do
       accept []
       change transition_state(:failed)
-      change set_attribute(:imported_count, nil)
-      change set_attribute(:invalid_count, nil)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
+      change set_attribute(:rows_imported_count, 0)
     end
 
     update :set_imported do
       accept []
       change transition_state(:imported)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
-      change set_attribute(:imported_at, &DateTime.utc_now/0)
     end
   end
 
@@ -217,10 +231,11 @@ defmodule DataAggregator.Records.Import do
     define :create, args: [:collection]
     define :create_from_path, args: [:collection, :path]
     define :update_mapping, args: [:columns]
-    define :enqueue
-    define :run
-    define :add_progress, args: [:imported, :invalid]
-    define :set_running
+    define :enqueue_import
+    define :import
+    define :set_importing
+    define :add_import_progress, args: [:imported]
+    define :add_validation_progress, args: [:valid, :invalid]
     define :set_imported
     define :set_failed
     define :destroy

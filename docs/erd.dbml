@@ -42,7 +42,14 @@ Table imports {
   columns array
   inserted_at timestamp
   updated_at timestamp
+  validation_started_at timestamp
+  validated_at timestamp
+  import_started_at timestamp
   imported_at timestamp
+  rows_count integer
+  rows_valid_count integer
+  rows_invalid_count integer
+  rows_imported_count integer
   collection_id uuid
   attachment_id uuid
 }

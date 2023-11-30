@@ -1,12 +1,19 @@
 ```mermaid
 stateDiagram-v2
-pending --> queued: enqueue
-queued --> running: run
-running --> imported: set_imported
-imported --> queued: enqueue
-imported --> running: run
-running --> failed: set_failed
-failed --> queued: enqueue
-failed --> running: run
-pending --> running: run
+pending --> validate_queued: enqueue_validate
+validate_queued --> validating: validate
+validating --> valid: validate
+valid --> import_queued: enqueue_import
+import_queued --> importing: import
+importing --> imported: set_imported
+imported --> import_queued: enqueue_import
+imported --> importing: import
+importing --> failed: set_failed
+failed --> validating: validate
+valid --> importing: import
+validating --> invalid: validate
+invalid --> validate_queued: enqueue_validate
+invalid --> validating: validate
+validating --> failed: set_failed
+pending --> validating: validate
 ```

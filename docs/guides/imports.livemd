@@ -11,7 +11,7 @@ import DataAggregator.Kino.Helpers
 ℹ️ **NOTE:** You need to connect your livebook instance to the running application:
 
 ```shell
-iex --sname dagg --cookie secret -S mix 
+iex --sname dagg --cookie secret -S mix
 # or
 iex --sname dagg --cookie secret -S mix phx.server
 ```
@@ -131,7 +131,7 @@ import.columns
 
 ```elixir
 # run the job
-# {:ok, import} = import |> Import.run()
+# {:ok, import} = import |> Import.import()
 
 import |> render_struct(keys: [:id, :state, :imported_at, :records_count])
 ```

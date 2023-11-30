@@ -7,12 +7,14 @@ defmodule DataAggregatorWeb.ImportLive.Index do
   alias DataAggregator.Records.Import
 
   @load [
-    :progress,
+    # :import_progress,
+    # :validation_progress,
     :duration,
     :collection_name,
     :records_count,
     :attachment_filename,
     :attachment_byte_size,
+    # :rows_valid_ratio,
     attachment: [:filename, :url, :byte_size]
   ]
 
@@ -75,7 +77,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
         }
       >
         <:col :let={{_id, import}} label={~t"State"m} field="state">
-          <.import_state_badge state={import.state} progress={import.progress} />
+          <.import_state_badge import={import} />
         </:col>
 
         <:col :let={{_id, import}} label={~t"File"m} field="attachment_filename">
@@ -93,25 +95,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
 
         <:col :let={{_id, import}} label={~t"Started at"m} field="started_at">
           <%= format_datetime(import.started_at, format: :short) %>
-        </:col>
-
-        <:col :let={{_id, import}} label={~t"Finished at"m} field="finished_at">
-          <%= format_datetime(import.finished_at, format: :short) %>
-        </:col>
-
-        <:col :let={{_id, import}} label={~t"Duration"m} field="duration">
-          <%= format_seconds(import.duration) %>
-        </:col>
-
-        <:col :let={{_id, import}} label={~t"Imported"m} field="imported_count">
-          <%= format_number(import.imported_count, format: :short) %>
-
-          <span :if={import.invalid_count && import.invalid_count > 0}>
-            /
-            <span class="text-red-500">
-              <%= format_number(import.invalid_count, format: :short) %>
-            </span>
-          </span>
+          <%= import.duration %>
         </:col>
 
         <:col :let={{_id, import}} label={~t"Records"m} field="records_count">
@@ -170,7 +154,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
   end
 
   def handle_event("import:run", %{"id" => id}, socket) do
-    id |> Import.get_by_id!() |> Import.enqueue!()
+    id |> Import.get_by_id!() |> Import.enqueue_import!()
     {:noreply, socket}
   end
 end

@@ -25,10 +25,11 @@ defmodule DataAggregatorWeb.Components.Icon do
   """
   attr :name, :string, required: true
   attr :class, :any, default: nil
+  attr :rest, :global
 
   def icon(%{name: "hero-" <> _} = assigns) do
     ~H"""
-    <span class={[@name, @class]} aria-hidden="true" />
+    <span class={[@name, @class]} aria-hidden="true" {@rest} />
     """
   end
 end

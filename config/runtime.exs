@@ -39,6 +39,11 @@ if System.get_env("LOG_LEVEL") do
   config :logger, level: level
 end
 
+if System.get_env("IMPORT_MAX_CONCURRENCY") do
+  max_concurrency = System.get_env("IMPORT_MAX_CONCURRENCY") |> String.to_integer()
+  config :data_aggregator, DataAggregator.Records, import_max_concurrency: max_concurrency
+end
+
 # Configure Sentry runtime environment
 config :sentry,
   server_name: System.get_env("HOSTNAME"),

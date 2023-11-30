@@ -1,5 +1,7 @@
-import ColorMode from "./color_mode.hook";
+import ThemeSelect from "./theme_select.hook";
+
 import LocaleSelect from "./locale_select.hook";
+
 import {
   Dialog,
   DialogPanel,
@@ -15,7 +17,7 @@ import {
 } from "./headless";
 
 export default {
-  ColorMode,
+  ThemeSelect,
   LocaleSelect,
   Dialog,
   DialogPanel,

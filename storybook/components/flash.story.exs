@@ -8,10 +8,12 @@ defmodule Storybook.Components.Flash do
   def function, do: &Flash.flash/1
   def imports, do: [{Transitions, [show: 1]}, {Button, [button: 1]}]
 
-  def template do
+  def template(assigns) do
     """
-    <.button phx-click={show("#:variation_id")} lsb-code-hidden label="Open flash" />
-    <.lsb-variation/>
+    <div class="p-6 rounded bg-base-100" data-theme={@theme}>
+      <.button phx-click={show("#:variation_id")} lsb-code-hidden label="Open flash" />
+      <.lsb-variation/>
+    </div>
     """
   end
 

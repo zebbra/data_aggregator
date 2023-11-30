@@ -10,6 +10,7 @@ defmodule DataAggregatorWeb.Storybook do
     sandbox_class: "data-aggregator",
     themes: [
       default: [name: "Default"],
+      light: [name: "Light"],
       dark: [name: "Dark"]
     ]
 end

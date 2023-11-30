@@ -4,9 +4,9 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
   """
 
   use DataAggregatorWeb, :live_component
+  use DataAggregatorWeb.ImportLive.Components
 
   alias AshPhoenix.Form
-  alias Phoenix.LiveView.Socket
 
   alias DataAggregator.DarwinCore
   alias DataAggregator.Records.Import
@@ -27,14 +27,6 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
     {:ok, socket}
   end
 
-  defp column_matches?(column, filter) do
-    query = normalize_string(filter[:query].value)
-
-    [column.name, column.mapped_to]
-    |> Enum.map(&normalize_string/1)
-    |> Enum.any?(&String.contains?(&1, query))
-  end
-
   defp normalize_string(value) do
     value
     |> to_string()
@@ -52,9 +44,26 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
       :update_mapping,
       api: DataAggregator.Records,
       as: "import",
-      forms: [auto?: true]
+      forms: [
+        columns: [
+          data: import.mappings,
+          type: :list,
+          resource: Import.Column,
+          create_action: :create_mapping,
+          update_action: :update_mapping
+        ]
+      ]
     )
+    |> add_missing_mappings()
     |> to_form()
+  end
+
+  defp add_missing_mappings(%Form{data: import} = form) do
+    add_missing_mapping = &Form.add_form(&2, [:columns], params: %{"mapped_to" => &1.name})
+
+    import.missing_mappings
+    |> Enum.flat_map(&DarwinCore.Schema.Category.prefixed_attributes/1)
+    |> Enum.reduce(form, add_missing_mapping)
   end
 
   defp assign_filter(socket, params \\ %{}) do
@@ -65,15 +74,24 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="p-6">
-      <.filter_form form={@filter} phx-target={@myself} phx-change="filter" phx-submit="filter" />
+    <div class="space-y-4 lg:min-w-[50rem]">
+      <.header>
+        Mappings
+        <:subtitle>Map columns to record attributes</:subtitle>
+
+        <:actions>
+          <.filter_form form={@filter} phx-target={@myself} phx-change="filter" phx-submit="filter" />
+        </:actions>
+      </.header>
+
+      <.import_mapping_validation import={@import} />
 
       <.mapping_form
         id={@id}
         form={@form}
         filter={@filter}
-        phx-target={@myself}
-        phx-change="save"
+        target={@myself}
+        phx-change="validate"
         phx-submit="save"
       />
     </div>
@@ -86,50 +104,139 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
   defp filter_form(assigns) do
     ~H"""
     <.simple_form for={@form} {@rest}>
-      <.input type="search" field={@form[:query]} placeholder={~t"Search mapping"} />
+      <.input type="search" field={@form[:query]} placeholder={~t"Search mapping"} class="input-sm" />
     </.simple_form>
     """
   end
 
   attr :form, Phoenix.HTML.Form, required: true
   attr :filter, Phoenix.HTML.Form, required: true
+  attr :target, :string, required: true
   attr :rest, :global
 
   defp mapping_form(assigns) do
-    assigns = assign(assigns, :options, DarwinCore.Schema.attribute_options())
+    # |> Enum.reject(& &1.mapped?)
+    name_opts =
+      Enum.map(assigns.form.data.columns, & &1.name)
+
+    assigns = assign(assigns, :name_opts, name_opts)
+    assigns = assign(assigns, :mapped_to_opts, DarwinCore.Schema.attribute_options())
 
     ~H"""
-    <.simple_form for={@form} {@rest}>
-      <div class="grid gap-3 xg:grid-cols-4 md:grid-cols-3">
-        <.inputs_for :let={column_form} field={@form[:columns]}>
-          <.column_input form={column_form} options={@options} filter={@filter} />
-        </.inputs_for>
-      </div>
+    <.simple_form for={@form} phx-target={@target} {@rest}>
+      <table class="table">
+        <thead>
+          <tr>
+            <th />
+            <th>Column</th>
+            <th />
+            <th>Mapped to</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <.inputs_for :let={column_form} field={@form[:columns]}>
+            <.column_input
+              form={column_form}
+              target={@target}
+              mapped_to_opts={@mapped_to_opts}
+              name_opts={@name_opts}
+              filter={@filter}
+            />
+          </.inputs_for>
+
+          <tr>
+            <td class="pr-0">
+              <button
+                class="btn btn-sm btn-circle"
+                type="button"
+                phx-click="mapping:add"
+                phx-value-path={@form[:columns].name}
+                phx-target={@target}
+              >
+                <.icon name="hero-plus" />
+              </button>
+            </td>
+            <td class="text-base-content/75">Add mapping</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <:actions>
+        <.link class="btn" patch={~p"/imports/#{@form.data}"}>
+          Cancel
+        </.link>
+        <button class="btn btn-primary" type="submit">
+          Save
+        </button>
+      </:actions>
     </.simple_form>
     """
   end
 
   attr :form, Phoenix.HTML.Form, required: true
   attr :filter, Phoenix.HTML.Form, required: true
-  attr :options, :list, required: true
+  attr :target, :string, required: true
+  attr :mapped_to_opts, :list, required: true
+  attr :name_opts, :list, required: true
 
   defp column_input(assigns) do
-    %{form: %{data: column}, filter: filter} = assigns
-    visible = column_matches?(column, filter)
+    %{form: form, filter: filter} = assigns
 
+    visible = mapping_form_visible?(form, filter)
     assigns = assign(assigns, :visible, visible)
 
+    mapped_to_opts =
+      case form[:name].value do
+        nil -> assigns.mapped_to_opts
+        name -> [{"Extra Attribute", name} | assigns.mapped_to_opts]
+      end
+
+    assigns = assign(assigns, :mapped_to_opts, mapped_to_opts)
+
     ~H"""
-    <div class={["rounded bg-gray-50 p-3 dark:bg-gray-800", @visible || "hidden"]}>
-      <.input
-        type="select"
-        label={@form.data.name}
-        field={@form[:mapped_to]}
-        options={@options}
-        prompt=""
-      />
-    </div>
+    <tr class={[
+      !@visible && "hidden",
+      @form.source.changed? && "bg-info/10",
+      @form.source.added? && "bg-success/10"
+    ]}>
+      <td class="w-8 pr-0 align-top">
+        <button
+          type="button"
+          phx-click="mapping:remove"
+          phx-value-path={@form.name}
+          phx-target={@target}
+          class="btn btn-ghost btn-circle btn-sm text-error mt-2 grow-0 hover:bg-error hover:text-error-content"
+        >
+          <.icon name="hero-trash" />
+        </button>
+      </td>
+      <td class="align-top">
+        <.input type="select" field={@form[:name]} options={@name_opts} prompt="Select column" />
+      </td>
+      <td class="w-8 px-0 text-center align-top">
+        <.icon name="hero-chevron-right" class="mt-3" />
+      </td>
+      <td class="align-top">
+        <.input
+          type="select"
+          field={@form[:mapped_to]}
+          options={@mapped_to_opts}
+          prompt="Select attribute"
+          disabled={@form[:name].value == nil}
+        />
+      </td>
+    </tr>
     """
+  end
+
+  defp mapping_form_visible?(form, filter) do
+    query = normalize_string(filter[:query].value)
+
+    [:name, :mapped_to]
+    |> Enum.map(&form[&1].value)
+    |> Enum.map(&normalize_string/1)
+    |> Enum.any?(&String.contains?(&1, query))
   end
 
   @impl true
@@ -143,12 +250,34 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
     {:noreply, assign(socket, form: form)}
   end
 
-  def handle_event("save", params, socket) do
-    %{"import" => %{"columns" => columns}} = params
-    mappings = for {_, col} <- columns, do: Map.take(col, ["name", "mapped_to"])
+  def handle_event("mapping:add", %{"path" => path}, socket) do
+    form = Form.add_form(socket.assigns.form, path)
+    {:noreply, assign(socket, form: form)}
+  end
 
-    %Socket{assigns: %{import: import}} = socket
-    Import.update_mapping(import, mappings)
+  def handle_event("mapping:remove", %{"path" => path}, socket) do
+    form = Form.remove_form(socket.assigns.form, path)
+    {:noreply, assign(socket, form: form)}
+  end
+
+  def handle_event("save", %{"import" => params}, socket) do
+    socket =
+      case Form.submit(socket.assigns.form, params: params) do
+        {:ok, import} ->
+          notify_parent({:saved, import})
+
+          socket
+          |> put_flash(:info, ~t"Mapping updated"m)
+          |> push_patch(to: socket.assigns.patch)
+
+        {:error, form} ->
+          socket
+          |> put_flash(:error, ~t"Unable to update mapping"m)
+          |> assign(:form, form)
+      end
+
     {:noreply, socket}
   end
+
+  defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 end

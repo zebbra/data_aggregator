@@ -50,6 +50,6 @@ defmodule DataAggregator.PubSub do
   defp log(topic, message) do
     [:blue, "[PubSub] ", :reset, message, " -> ", :faint, topic]
     |> IO.ANSI.format()
-    |> Logger.info()
+    |> Logger.debug()
   end
 end

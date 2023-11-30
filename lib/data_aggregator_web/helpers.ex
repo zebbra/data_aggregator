@@ -16,8 +16,11 @@ defmodule DataAggregatorWeb.Helpers do
   def format_percent(nil, _opts), do: @placeholder
 
   def format_percent(number, opts) do
+    {precision, opts} = Keyword.pop(opts, :precision, 0)
+
+    number = Float.round(number * 100.0, precision)
     opts = Keyword.merge([unit: "percent", style: :short], opts)
-    Cldr.Unit.to_string!(number * 100, opts)
+    Cldr.Unit.to_string!(number, opts)
   end
 
   def format_date(date, opts \\ []), do: Cldr.Date.to_string!(date, opts)
