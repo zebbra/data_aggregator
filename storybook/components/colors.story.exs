@@ -115,7 +115,6 @@ defmodule Storybook.Colors do
   end
 
   def render(assigns) do
-    assigns = assign(assigns, :buttons, @buttons)
     assigns = assign(assigns, :text, @text)
     assigns = assign(assigns, :text_bg, @text_bg)
     assigns = assign(assigns, :text_bg_trans, @text_bg_trans)
