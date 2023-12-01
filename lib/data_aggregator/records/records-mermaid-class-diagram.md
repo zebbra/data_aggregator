@@ -28,6 +28,11 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UtcDatetime imported_at
+        UtcDatetime started_at
+        UtcDatetime finished_at
+        Integer imported_count
+        Integer invalid_count
+        Integer duration
         String collection_name
         String attachment_url
         Integer attachment_byte_size
@@ -42,8 +47,9 @@ classDiagram
         create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
         create_from_path(Collection collection, String path, String filename)
         update_mapping(Column[] columns)
-        run()
         enqueue()
+        run()
+        add_progress(Integer imported, Integer invalid)
         set_running()
         set_failed()
         set_imported()
@@ -72,10 +78,17 @@ classDiagram
         String loc_country
         String loc_continent
         String spp_life_stage
+        String tax_accepted_name_usage_id
+        String tax_parent_name_usage_id
+        String tax_taxon_id
+        String tax_taxon_rank
         String tax_specific_epithet
         String tax_infraspecific_epithet
         String tax_scientific_name_authorship
         String tax_scientific_name
+        String tax_kingdom
+        String tax_class
+        String tax_phylum
         String tax_genus
         String tax_family
         String tax_order
@@ -109,6 +122,7 @@ classDiagram
         UtcDatetimeUsec updated_at
         Collection collection
         Import[] imports
+        Export[] exports
         Image[] images
         Attachment[] image_attachments
         destroy()
@@ -135,6 +149,8 @@ classDiagram
     Attachment -- Record
     Attachment -- Image
     Institution -- Collection
+    Export -- Record
+    Record -- Record
     Collection -- Import
     Collection -- Record
     Import -- Record

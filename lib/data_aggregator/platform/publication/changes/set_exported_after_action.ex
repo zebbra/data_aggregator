@@ -1,6 +1,6 @@
 defmodule DataAggregator.Platform.Publication.Changes.SetExportedAfterAction do
   @moduledoc """
-  Action call to `DataAggregator.Platform.Publication.Export.exported/1` after the publish action
+  Action call to `DataAggregator.Platform.Publication.Export.set_exported/1` after the publish action
   """
 
   use Ash.Resource.Change

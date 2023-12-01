@@ -20,6 +20,30 @@ erDiagram
     timestamp inserted_at
     timestamp updated_at
   }
+  consumers {
+    uuid id PK
+    varchar name
+    varchar publication_type
+    timestamp inserted_at
+    timestamp updated_at
+  }
+  exports {
+    varchar state
+    uuid id PK
+    varchar name
+    timestamp exported_at
+    timestamp started_at
+    timestamp finished_at
+    jsonb mapping
+    timestamp inserted_at
+    timestamp updated_at
+    uuid consumer_id
+    uuid attachment_id
+  }
+  export_records {
+    uuid export_id PK
+    uuid record_id PK
+  }
   collections {
     uuid id PK
     integer items_to_digitize
@@ -39,6 +63,10 @@ erDiagram
     timestamp inserted_at
     timestamp updated_at
     timestamp imported_at
+    timestamp started_at
+    timestamp finished_at
+    integer imported_count
+    integer invalid_count
     uuid collection_id
     uuid attachment_id
   }
@@ -62,10 +90,17 @@ erDiagram
     varchar loc_country
     varchar loc_continent
     varchar spp_life_stage
+    varchar tax_accepted_name_usage_id
+    varchar tax_parent_name_usage_id
+    varchar tax_taxon_id
+    varchar tax_taxon_rank
     varchar tax_specific_epithet
     varchar tax_infraspecific_epithet
     varchar tax_scientific_name_authorship
     varchar tax_scientific_name
+    varchar tax_kingdom
+    varchar tax_class
+    varchar tax_phylum
     varchar tax_genus
     varchar tax_family
     varchar tax_order
@@ -161,10 +196,14 @@ erDiagram
   collections ||--|{ attribute_resolving_strategies : ""
   collections ||--|{ imports : ""
   collections ||--|{ records : ""
+  consumers ||--|{ exports : ""
   dwc_attributes ||--|{ attribute_resolving_strategies : ""
+  exports ||--|{ export_records : ""
+  file_attachments ||--|{ exports : ""
   file_attachments ||--|{ imports : ""
   file_attachments ||--|{ record_images : ""
   imports ||--|{ import_records : ""
   institutions ||--|{ collections : ""
+  records ||--|{ export_records : ""
   records ||--|{ import_records : ""
   records ||--|{ record_images : ""
