@@ -38,11 +38,6 @@ if System.get_env("LOG_LEVEL") do
   config :logger, level: level
 end
 
-# Configure Sentry runtime environment
-config :sentry,
-  server_name: System.get_env("HOSTNAME"),
-  log_level: System.get_env("SENTRY_LOG_LEVEL", "warning") |> String.to_atom()
-
 # ## Waffle
 config :waffle,
   asset_host: System.get_env("WAFFLE_ASSET_HOST")
