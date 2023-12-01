@@ -3,7 +3,6 @@ defmodule DataAggregator.Platform.Publication.Export.RunnerTest do
 
   use DataAggregator.DataCase, async: true
 
-  alias DataAggregator.Platform
   alias DataAggregator.Platform.Publication.Consumer
   alias DataAggregator.Platform.Publication.Export
   alias DataAggregator.Platform.Publication.Export.Runner
