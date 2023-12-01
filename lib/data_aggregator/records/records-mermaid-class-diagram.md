@@ -12,6 +12,7 @@ classDiagram
         UtcDatetimeUsec updated_at
         Float digitizing_progress
         Integer records_count
+        Integer imports_count
         Institution institution
         Import[] imports
         Record[] records
@@ -21,21 +22,31 @@ classDiagram
         read(String sort)
     }
     class Import {
+        Atom state
         UUID id
         Column[] columns
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        UtcDatetime imported_at
+        String collection_name
+        String attachment_url
+        Integer attachment_byte_size
+        String attachment_filename
         Term attachment_data
         Integer records_count
         Collection collection
         Attachment attachment
         Record[] records
         destroy()
-        read()
+        read(String sort)
         create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
-        create_from_path(String path, Collection collection)
+        create_from_path(Collection collection, String path, String filename)
         update_mapping(Column[] columns)
-        import_records()
+        run()
+        enqueue()
+        set_running()
+        set_failed()
+        set_imported()
     }
     class Record {
         Import import

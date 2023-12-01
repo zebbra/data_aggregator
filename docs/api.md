@@ -98,6 +98,7 @@ classDiagram
         UtcDatetimeUsec updated_at
         Float digitizing_progress
         Integer records_count
+        Integer imports_count
         Institution institution
         Import[] imports
         Record[] records
@@ -107,21 +108,31 @@ classDiagram
         read(String sort)
     }
     class Import {
+        Atom state
         UUID id
         Column[] columns
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        UtcDatetime imported_at
+        String collection_name
+        String attachment_url
+        Integer attachment_byte_size
+        String attachment_filename
         Term attachment_data
         Integer records_count
         Collection collection
         Attachment attachment
         Record[] records
         destroy()
-        read()
+        read(String sort)
         create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
-        create_from_path(String path, Collection collection)
+        create_from_path(Collection collection, String path, String filename)
         update_mapping(Column[] columns)
-        import_records()
+        run()
+        enqueue()
+        set_running()
+        set_failed()
+        set_imported()
     }
     class Record {
         Import import
@@ -234,12 +245,19 @@ erDiagram
         UtcDatetimeUsec updated_at
         Float digitizing_progress
         Integer records_count
+        Integer imports_count
     }
     Import {
+        Atom state
         UUID id
         ArrayOfColumn columns
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        UtcDatetime imported_at
+        String collection_name
+        String attachment_url
+        Integer attachment_byte_size
+        String attachment_filename
         Term attachment_data
         Integer records_count
     }
@@ -361,10 +379,12 @@ erDiagram
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| **state** | Atom |  |
 | **id** | UUID |  |
 | **columns** | Column[] |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
+| **imported_at** | UtcDatetime |  |
 | **collection_id** | UUID |  |
 | **attachment_id** | UUID |  |
 
@@ -373,11 +393,15 @@ erDiagram
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
 | **destroy** | _destroy_ | <ul></ul> |  |
-| **read** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>columns</b> <i>Column[]</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
-| **create_from_path** | _create_ | <ul><li><b>path</b> <i>String</i> </li><li><b>collection</b> <i>Collection</i> </li></ul> |  |
+| **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>columns</b> <i>Column[]</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>imported_at</b> <i>UtcDatetime</i> attribute</li></ul> |  |
+| **create_from_path** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>path</b> <i>String</i> </li><li><b>filename</b> <i>String</i> </li></ul> |  |
 | **update_mapping** | _update_ | <ul><li><b>columns</b> <i>Column[]</i> attribute</li></ul> |  |
-| **import_records** | _update_ | <ul></ul> |  |
+| **run** | _update_ | <ul></ul> |  |
+| **enqueue** | _update_ | <ul></ul> |  |
+| **set_running** | _update_ | <ul></ul> |  |
+| **set_failed** | _update_ | <ul></ul> |  |
+| **set_imported** | _update_ | <ul></ul> |  |
 
 ### Record
 
@@ -672,10 +696,11 @@ classDiagram
     class Attachment {
         UUID id
         String filename
+        Integer byte_size
         String url
         String cached_file
         read()
-        import_from_path(String path)
+        import_from_path(String path, String filename)
         destroy()
     }
 ```
@@ -687,6 +712,7 @@ erDiagram
     Attachment {
         UUID id
         String filename
+        Integer byte_size
         String url
         String cached_file
     }
@@ -706,6 +732,7 @@ erDiagram
 | ---- | ---- | ----------- |
 | **id** | UUID |  |
 | **filename** | String |  |
+| **byte_size** | Integer |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
 
@@ -714,7 +741,7 @@ erDiagram
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
 | **read** | _read_ | <ul></ul> |  |
-| **import_from_path** | _create_ | <ul><li><b>path</b> <i>String</i> </li></ul> |  |
+| **import_from_path** | _create_ | <ul><li><b>path</b> <i>String</i> </li><li><b>filename</b> <i>String</i> attribute</li></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
 
 

@@ -76,7 +76,7 @@ defmodule Mix.Tasks.DataAggregator.Records.Import do
 
     # :eprof.start_profiling([self()])
 
-    import |> Import.import_records!()
+    import |> Import.run!()
 
     # :eprof.stop_profiling()
     # :eprof.analyze(:total, filter: [calls: 10])

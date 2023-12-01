@@ -12,8 +12,9 @@ config :data_aggregator, DataAggregator.Repo,
   hostname: "localhost",
   # database: "data-aggregator-test#{System.get_env("MIX_TEST_PARTITION")}",
   database: "data_aggregator_test",
-  pool_size: 10,
+  pool_size: 20,
   pool: Ecto.Adapters.SQL.Sandbox,
+  queue_target: 100,
   log: false
 
 # We don't run a server during test. If one is required,
@@ -31,6 +32,15 @@ config :data_aggregator, serve_files_from: "priv/storage/test/files"
 
 # Cache files in the test environment
 config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/test/cache"
+
+# Use small batches to allow small datasets
+config :data_aggregator, DataAggregator.Records,
+  import_batch_size: 3,
+  import_max_concurrency: 1,
+  async_import_progress?: false
+
+# Prevent Oban from running jobs and plugins during test runs
+config :data_aggregator, Oban, testing: :inline
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false

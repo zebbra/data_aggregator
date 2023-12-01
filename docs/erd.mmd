@@ -2,6 +2,7 @@ erDiagram
   file_attachments {
     uuid id PK
     varchar filename
+    integer byte_size
     timestamp inserted_at
     timestamp updated_at
   }
@@ -32,10 +33,12 @@ erDiagram
     uuid institution_id
   }
   imports {
+    varchar state
     uuid id PK
     array columns
     timestamp inserted_at
     timestamp updated_at
+    timestamp imported_at
     uuid collection_id
     uuid attachment_id
   }
@@ -130,8 +133,28 @@ erDiagram
     uuid default_catalog_id
   }
   schema_migrations {
-    integer version
+    integer version PK
     timestamp inserted_at
+  }
+  oban_jobs {
+    integer id PK
+    varchar state
+    varchar queue
+    varchar worker
+    jsonb args
+    jsonb meta
+    array tags
+    array errors
+    integer attempt
+    array attempted_by
+    integer max_attempts
+    integer priority
+    timestamp attempted_at
+    timestamp cancelled_at
+    timestamp completed_at
+    timestamp discarded_at
+    timestamp inserted_at
+    timestamp scheduled_at
   }
   catalogs ||--|{ attribute_resolving_strategies : ""
   catalogs ||--|{ dwc_attributes : ""

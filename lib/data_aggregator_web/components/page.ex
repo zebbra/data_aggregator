@@ -1,12 +1,16 @@
 defmodule DataAggregatorWeb.Page do
-  @moduledoc false
+  @moduledoc """
+  Shared entrypoint for all pages.
+  """
 
   use Phoenix.Component
 
   # Core UI components and translation
-  import DataAggregatorWeb.CoreComponents, only: [icon: 1]
-  import DataAggregatorWeb.HeadlessComponents
   import DataAggregatorWeb.Gettext
+  import DataAggregatorWeb.Components.Backdrop, only: [backdrop: 1]
+  import DataAggregatorWeb.Components.Icon, only: [icon: 1]
+  import DataAggregatorWeb.Components.Menu
+  import DataAggregatorWeb.Headless.Dialog, only: [dialog: 1, dialog_panel: 1]
 
   # Shortcut for generating JS commands
   alias Phoenix.LiveView.JS
@@ -27,9 +31,9 @@ defmodule DataAggregatorWeb.Page do
 
   def page(assigns) do
     ~H"""
-    <div class="dark:bg-gray-900 no-scrollbar isolate h-screen overflow-y-auto">
+    <div class="no-scrollbar isolate h-screen overflow-y-auto dark:bg-gray-900">
       <!-- Static sidebar for desktop -->
-      <div class="lg:fixed lg:inset-y-0 lg:z-30 lg:flex lg:w-72 lg:flex-col hidden">
+      <div class="hidden lg:fixed lg:inset-y-0 lg:z-30 lg:flex lg:w-72 lg:flex-col">
         <.sidebar_nav active_link={@active_link} environment={@environment} />
       </div>
       <%!-- Main content --%>
@@ -63,34 +67,129 @@ defmodule DataAggregatorWeb.Page do
   def locale_select(assigns) do
     ~H"""
     <div id="locale-select-wrapper" phx-hook="LocaleSelect">
-      <.menu id="locale-select">
-        <.menu_button
-          id="locale-select__button"
-          class="dark:bg-gray-900 hover:text-gray-500 dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 dark:focus-visible:ring-white focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 relative flex items-center p-1 text-gray-400 bg-white rounded-full"
-        >
-          <span class="absolute -inset-1.5" />
-          <.icon name="hero-globe-alt" class="w-6 h-6" />
-          <span class="px-1"><%= current_locale() %></span>
-        </.menu_button>
-        <.menu_items id="locale-select__items" width="w-20">
-          <div class="py-1" role="none">
-            <.menu_item
-              :for={locale <- locale_options()}
-              as="div"
-              id={"locale-select__item-#{locale.id}"}
-              phx-click={
-                JS.dispatch("set-locale", to: "#locale-select-wrapper", detail: locale[:value])
-              }
-            >
-              <%= locale.label %>
-              <span :if={current_locale() == locale.label} class="text-cyan-600 font-bold">
-                &check;
-              </span>
-            </.menu_item>
-          </div>
-        </.menu_items>
+      <.menu id="locale-select" width="w-20">
+        <:menu_button>
+          <.menu_button
+            id="locale-select__button"
+            class="dark:bg-gray-900 hover:text-gray-500 dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 dark:focus-visible:ring-white focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 relative flex items-center p-1 text-gray-400 bg-white rounded-full"
+          >
+            <span class="absolute -inset-1.5" />
+            <.icon name="hero-globe-alt" class="w-6 h-6" />
+            <span class="px-1"><%= current_locale() %></span>
+          </.menu_button>
+        </:menu_button>
+
+        <div class="py-1" role="none">
+          <.menu_item
+            :for={locale <- locale_options()}
+            as="div"
+            id={"locale-select__item-#{locale.id}"}
+            phx-click={
+              JS.dispatch("set-locale", to: "#locale-select-wrapper", detail: locale[:value])
+            }
+          >
+            <%= locale.label %>
+            <span :if={current_locale() == locale.label} class="font-bold text-cyan-600">
+              &check;
+            </span>
+          </.menu_item>
+        </div>
       </.menu>
     </div>
+    """
+  end
+
+  attr :id, :string, required: true
+
+  attr :parent_id, :string,
+    default: nil,
+    doc: "the id of the parent component if it's a nested dialog"
+
+  attr :as, :string, default: "div"
+
+  attr :show, :boolean,
+    default: true,
+    doc: "set to false if you do not want to render the slideover on mount"
+
+  attr :class, :string, default: "hidden relative z-10", doc: "the class of the dialog"
+
+  attr :width, :string,
+    default: "max-w-xs",
+    doc: "the width of the slideover in tailwindcss format"
+
+  attr :role, :string, default: "dialog", doc: "the role attribute of the dialog"
+  attr :backdrop, :boolean, default: true, doc: "set to false if you do not want a backdrop"
+
+  attr :close_button, :boolean,
+    default: true,
+    doc: "set to false if you do not want a close button"
+
+  attr :on_cancel, JS, default: %JS{}, doc: "JS callback for the cancel button"
+  attr :on_confirm, JS, default: %JS{}, doc: "JS callback for the confirm button"
+
+  attr :show_panel_transition, :map,
+    default: {"ease-in-out duration-300", "-translate-x-full", "translate-x-0"},
+    doc: "the transition for showing the panel"
+
+  attr :hide_panel_transition, :map,
+    default: {"ease-in-out duration-300", "translate-x-0", "-translate-x-full"},
+    doc: "the transition for hiding the panel"
+
+  attr :show_backdrop_transition, :map,
+    default: {"ease-linear duration-300", "opacity-0", "opacity-100"},
+    doc: "the transition for showing the backdrop"
+
+  attr :hide_backdrop_transition, :map,
+    default: {"ease-linear duration-300", "opacity-100", "opacity-0"},
+    doc: "the transition for hiding the backdrop"
+
+  attr :rest, :global
+
+  slot :inner_block, required: true
+
+  defp mobile_slideover_nav(assigns) do
+    ~H"""
+    <.dialog
+      id={@id}
+      parent_id={@parent_id}
+      as={@as}
+      show={@show}
+      responsive="lg:hidden"
+      role={@role}
+      class={@class}
+      on_cancel={@on_cancel}
+      on_confirm={@on_confirm}
+      display="flex"
+      show_panel_transition={@show_panel_transition}
+      hide_panel_transition={@hide_panel_transition}
+      show_backdrop_transition={@show_backdrop_transition}
+      hide_backdrop_transition={@hide_backdrop_transition}
+      {@rest}
+    >
+      <.backdrop :if={@backdrop} id={@id} variant="slideover" />
+
+      <div class="fixed inset-0 flex">
+        <.dialog_panel
+          id={@id <> "__panel"}
+          slideover
+          class="relative flex flex-1 w-full max-w-xs mr-16"
+        >
+          <%= render_slot(@inner_block) %>
+
+          <div class="absolute top-0 left-full flex w-16 justify-center pt-5">
+            <button
+              phx-click={JS.exec("data-cancel", to: "##{@id}")}
+              id={"#{@id}__close"}
+              type="button"
+              class="-m-2.5 hidden p-2.5"
+              aria-label={gettext("close")}
+            >
+              <.icon name="hero-x-mark" class="w-6 h-6 text-white" />
+            </button>
+          </div>
+        </.dialog_panel>
+      </div>
+    </.dialog>
     """
   end
 

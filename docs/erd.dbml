@@ -3,6 +3,7 @@
 Table file_attachments {
   id uuid [pk]
   filename varchar
+  byte_size integer
   inserted_at timestamp
   updated_at timestamp
 }
@@ -36,10 +37,12 @@ Table collections {
 }
 
 Table imports {
+  state varchar
   id uuid [pk]
   columns array
   inserted_at timestamp
   updated_at timestamp
+  imported_at timestamp
   collection_id uuid
   attachment_id uuid
 }
@@ -141,8 +144,29 @@ Table dwc_attributes {
 }
 
 Table schema_migrations {
-  version integer
+  version integer [pk]
   inserted_at timestamp
+}
+
+Table oban_jobs {
+  id integer [pk]
+  state varchar
+  queue varchar
+  worker varchar
+  args jsonb
+  meta jsonb
+  tags array
+  errors array
+  attempt integer
+  attempted_by array
+  max_attempts integer
+  priority integer
+  attempted_at timestamp
+  cancelled_at timestamp
+  completed_at timestamp
+  discarded_at timestamp
+  inserted_at timestamp
+  scheduled_at timestamp
 }
 
 Table "" {

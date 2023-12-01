@@ -55,6 +55,11 @@ defmodule DataAggregator.Records.Record do
     end
   end
 
+  preparations do
+    prepare build(sort: [id: :asc])
+    prepare DataAggregator.Preparations.Sort
+  end
+
   actions do
     defaults [:update, :destroy]
 
@@ -80,9 +85,6 @@ defmodule DataAggregator.Records.Record do
 
       argument :import, Import, allow_nil?: false
       argument :params, :map, allow_nil?: false
-      # Note: This does not seem to work with bulk create!
-      # -> Create custom action and create Import.Records manually
-      # change manage_relationship(:import, :imports, type: :append)
       change Record.Changes.RelateImport
       change Record.Changes.RelateCollectionFromImport
       change Record.Changes.ExtractAttributes
@@ -105,6 +107,10 @@ defmodule DataAggregator.Records.Record do
     end
   end
 
+  identities do
+    identity :collection_mte_material_entity_id, [:collection_id, :mte_material_entity_id]
+  end
+
   code_interface do
     define_for DataAggregator.Records
     define :read
@@ -119,15 +125,6 @@ defmodule DataAggregator.Records.Record do
   postgres do
     table "records"
     repo DataAggregator.Repo
-  end
-
-  identities do
-    identity :collection_mte_material_entity_id, [:collection_id, :mte_material_entity_id]
-  end
-
-  preparations do
-    prepare build(sort: [id: :asc])
-    prepare DataAggregator.Preparations.Sort
   end
 
   graphql do

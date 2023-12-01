@@ -15,7 +15,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
      |> allow_upload(:file,
        max_entries: 1,
        accept: ~w(.csv .jpg),
-       max_file_size: 80_000_000,
+       max_file_size: 200 * 1024 * 1024,
        auto_upload: true
      )
      |> assign_form()}
@@ -25,7 +25,13 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.form_header icon={@icon} title={@title} />
+      <.modal_header
+        modal_id="import-modal"
+        icon={@icon}
+        title={@title}
+        description={~t"Select a file containing your Records"m}
+      />
+
       <.simple_form
         for={@form}
         id="import-form"
@@ -36,52 +42,47 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
         <%!-- use phx-drop-target with the upload ref to enable file drag and drop --%>
         <section
           phx-drop-target={@uploads.file.ref}
-          class="border-gray-900/25 dark:border-white/25 flex flex-col py-10 px-6 mt-2 rounded-md border border-dashed"
+          class="border-gray-900/25 mt-2 flex flex-col rounded-md border border-dashed px-6 py-10 dark:border-white/25"
         >
           <div class="flex justify-center">
             <div class="text-center">
               <.icon
                 name="hero-photo-mini"
-                class="dark:text-gray-500 mx-auto w-12 h-12 text-gray-300"
+                class="dark:text-gray-500 w-12 h-12 mx-auto text-gray-300"
               />
-              <div class="dark:text-gray-400 flex mt-4 text-sm leading-6 text-gray-600">
+              <div class="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400">
                 <label
                   for={@uploads.file.ref}
-                  class="dark:bg-gray-900 dark:text-white focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 dark:focus-within:ring-offset-gray-900 hover:text-indigo-500 relative font-semibold text-indigo-600 bg-white rounded-md cursor-pointer"
+                  class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500 dark:bg-gray-900 dark:text-white dark:focus-within:ring-offset-gray-900"
                 >
                   <span><%= ~t"Choose a file"m %></span>
                   <.live_file_input upload={@uploads.file} class="sr-only" />
                 </label>
                 <p class="pl-1"><%= ~t"or drag and drop"m %></p>
               </div>
-              <p class="dark:text-gray-400 text-xs leading-5 text-gray-600">
+              <p class="text-xs leading-5 text-gray-600 dark:text-gray-400">
                 <%= pretty_accept_list(@uploads.file.accept) %>
                 <%= pretty_max_file_size(@uploads.file.max_file_size) %>
               </p>
             </div>
           </div>
 
-          <div class="dark:text-white mt-4 space-y-2 text-gray-600">
+          <div class="mt-4 space-y-2 text-gray-600 dark:text-white">
             <%!-- render each file entry --%>
             <article :for={entry <- @uploads.file.entries}>
               <span class="text-sm"><%= entry.client_name %></span>
 
-              <div class="flex space-x-4">
-                <div class="dark:bg-gray-700 mt-2 w-full h-2 bg-gray-200 rounded-full">
-                  <div
-                    class="dark:bg-indigo-500 h-2 bg-indigo-600 rounded-full"
-                    style={"width: #{entry.progress}%;"}
-                  />
-                </div>
+              <div class="flex items-center space-x-4">
+                <.progress value={entry.progress} />
                 <button
                   type="button"
                   phx-click="cancel-upload"
                   phx-target={@myself}
                   phx-value-ref={entry.ref}
                   aria-label="cancel"
-                  class="text-gray-600"
+                  class="flex h-full items-center"
                 >
-                  &times;
+                  <.icon name="hero-x-mark-mini" class="text-gray-600" />
                 </button>
               </div>
 
@@ -98,50 +99,17 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
           <.button
             type="submit"
             class="sm:ml-3 sm:w-auto inline-flex justify-center w-full"
-            phx-disable-with={~t"Uploading..."m}
-          >
-            <%= ~t"Upload file"m %>
-          </.button>
+            label={~t"Upload file"m}
+          />
           <.button
-            variant="secondary"
-            class="sm:mt-0 sm:w-auto inline-flex justify-center mt-3 w-full"
+            color="secondary"
+            class="sm:mt-0 sm:w-auto inline-flex justify-center w-full mt-3"
+            label={~t"Cancel"m}
             phx-click={JS.exec("data-cancel", to: "#import-modal")}
             phx-disable-with
-          >
-            <%= ~t"Cancel"m %>
-          </.button>
+          />
         </:actions>
       </.simple_form>
-    </div>
-    """
-  end
-
-  attr :icon, :string, default: nil
-  attr :title, :string, required: true
-
-  defp form_header(assigns) do
-    ~H"""
-    <div class="sm:flex sm:items-start">
-      <div
-        :if={@icon}
-        class="sm:mx-0 sm:h-10 sm:w-10 flex flex-shrink-0 justify-center items-center mx-auto w-12 h-12 bg-indigo-100 rounded-full"
-      >
-        <.icon name={@icon} class="w-6 h-6 text-indigo-600" />
-      </div>
-      <div class={["mt-3 text-center sm:mt-0 sm:text-left", @icon && "sm:ml-4"]}>
-        <.dialog_title
-          id="import-modal__title"
-          class="dark:text-white text-base font-semibold leading-6 text-gray-900"
-        >
-          <%= @title %>
-        </.dialog_title>
-        <.dialog_description
-          id="import-modal__description"
-          class="dark:text-gray-400 mt-2 text-sm text-gray-500"
-        >
-          <%= ~t"Select a file containing your Records"m %>
-        </.dialog_description>
-      </div>
     </div>
     """
   end

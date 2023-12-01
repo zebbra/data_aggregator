@@ -135,4 +135,26 @@ defmodule DataAggregator.DarwinCore.Schema do
   def prefixed_attribute_names do
     prefixed_attributes() |> Enum.map(& &1.name)
   end
+
+  @doc """
+  Returns the attributes as options for a select input grouped by category.
+  """
+  def attribute_options do
+    for category <- @categories do
+      options =
+        for attribute <- category.attributes do
+          name =
+            if attribute.allow_nil?,
+              do: attribute.name,
+              else: "#{attribute.name} (required)"
+
+          value = Category.prefixed_attribute_name(category, attribute)
+
+          {name, value}
+        end
+
+      category_label = category.name |> Atom.to_string() |> String.upcase()
+      {category_label, options}
+    end
+  end
 end

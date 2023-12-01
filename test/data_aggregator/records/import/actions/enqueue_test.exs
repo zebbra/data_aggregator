@@ -1,0 +1,39 @@
+defmodule DataAggregator.Records.Import.Actions.EnqeueTest do
+  @moduledoc false
+
+  use DataAggregator.DataCase, async: true
+
+  alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Import
+
+  describe "DataAggregator.Records.Import.enqueue/1" do
+    setup do
+      collection = Collection.create!(%{name: "Test Collection", owner: "Max Powers"})
+      [collection: collection]
+    end
+
+    setup %{collection: collection, path: path} do
+      mapping = [
+        %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
+        %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"}
+      ]
+
+      import =
+        collection
+        |> Import.create_from_path!(path)
+        |> Import.update_mapping!(mapping)
+
+      [import: import]
+    end
+
+    @tag path: "test/support/fixtures/files/museum-dataset-import-example.csv"
+    test "enqueues a runner job", %{import: import} do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {:ok, import} = Import.enqueue(import)
+
+        assert import.state == :queued
+        assert_enqueued(worker: Import.Runner, args: %{id: import.id})
+      end)
+    end
+  end
+end

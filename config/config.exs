@@ -65,6 +65,12 @@ config :data_aggregator, DataAggregatorWeb.Gettext,
   default_locale: "en",
   locales: ~w(de fr)
 
+# Configure Oban job queues
+config :data_aggregator, Oban,
+  repo: DataAggregator.Repo,
+  plugins: [Oban.Plugins.Pruner],
+  queues: [imports: 1]
+
 # Configure Cldr
 config :ex_cldr,
   default_backend: DataAggregatorWeb.Cldr,
@@ -132,6 +138,9 @@ config :spark, :formatter,
       :relationships,
       :calculations,
       :aggregates,
+      :state_machine,
+      :preparations,
+      :changes,
       :actions,
       :code_interface,
       :policies,

@@ -7,10 +7,11 @@
     :ash_phoenix,
     :ash_postgres,
     :ash_graphql,
-    :ash_uuid
+    :ash_uuid,
+    :ash_state_machine
   ],
   subdirectories: ["priv/*/migrations"],
-  plugins: [Phoenix.LiveView.HTMLFormatter, Spark.Formatter],
+  plugins: [TailwindFormatter, Phoenix.LiveView.HTMLFormatter, Spark.Formatter],
   inputs: [
     "*.{heex,ex,exs}",
     "{config,lib,test}/**/*.{heex,ex,exs}",

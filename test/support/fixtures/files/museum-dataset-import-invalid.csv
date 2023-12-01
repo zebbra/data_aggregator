@@ -1,0 +1,9 @@
+Scientific Name,Numéro scientifique GBIF,Ordre,Famille,Genre,Espèce,Sous espèce,Auteur et date ssp,Sexe,Age,Parties,Autres numéros,Pays,Province,Localité,Station,LongitudeDecimale,LatitudeDecimale,PrecisionGEO,Remarques,DAYCOLLECTED,MONTHCOLLECTED,YEARCOLLECTED,ENDOFPERIODDAY,ENDOFPERIODMONTH,ENDOFPERIODYEAR,Collecteur
+abcd,MHNG-MAM-8.085,Pilosa,Bradypodidae,Bradypus,tridactylus,cuculliger,"Wagler, 1831",F.,,Peau+crâne,,,,Amérique du Sud,,-59,-13,2 pays seulement,ex.- variegatus; attention: aucun Bradypus n’a jamais été signalé d’Argentine,,,,,,,Dr Gosse
+abcd,MHNG-MAM-9.008,Primates,Callitrichidae,Saguinus,midas,,,F.,,Peau+crâne,,,,Amérique méridionale,,-96,17,2 pays seulement,,,,,,,,Sorret
+abcd,MHNG-MAM-14.062,Carnivora,Mustelidae,Martes,foina,foina,"(Erxleben, 1777)",ind.,indet.,Crâne,,Suisse,Genève,Genève,,"6.149991","46.200006",4 localité seulement,"peau détruite en 1907, NA
+Dr François-Isaac Mayor (1779-1854)",,,,,,,Dr Mayor
+,MHNG-MAM-8.085,Pilosa,Bradypodidae,Bradypus,tridactylus,cuculliger,"Wagler, 1831",F.,,Peau+crâne,,,,Amérique du Sud,,-59,-13,2 pays seulement,ex.- variegatus; attention: aucun Bradypus n’a jamais été signalé d’Argentine,,,,,,,Dr Gosse
+abcd,MHNG-MAM-14.070,Rodentia,Sciuridae,Euxerus,erythropus,erythropus,"(É. Geoffroy Saint-Hilaire, 1803)",M.,indet.,Démonté+crâne,,Sénégal,,,,"-14.45","14.49",2 pays seulement,Dr François-Isaac Mayor (1779-1854),,,,,,,Dr Mayor
+abcd,MHNG-MAM-14.077,Rodentia,Sciuridae,Glaucomys,volans,,,ind.,indet.,Peau,,,,Amérique du Nord,,"-102.4","41.31",2 pays seulement,,,,,,,,Bâcle
+abcd,MHNG-MAM-14.078,Primates,Cercopithecidae,Papio,papio,,,M.,ad.,Monté,,Sénégal,,,,"-14.45","14.49",2 pays seulement,"Podium Rocher Afrique, NA

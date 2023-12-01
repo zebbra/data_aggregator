@@ -9,7 +9,7 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
 
   def preview(assigns) do
     ~H"""
-    <aside class="xl:block xl:fixed xl:bottom-0 xl:right-0 xl:top-16 xl:w-96 xl:overflow-y-auto hidden">
+    <aside class="hidden xl:fixed xl:top-16 xl:right-0 xl:bottom-0 xl:block xl:w-96 xl:overflow-y-auto">
       <.preview_content record={@record} current_path_params={@current_path_params} />
     </aside>
 
@@ -19,7 +19,7 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
       show={false}
       on_cancel={JS.push("select", value: %{id: @record.id})}
     >
-      <div class="flex flex-col h-full">
+      <div class="flex h-full flex-col">
         <.preview_content
           record={@record}
           current_path_params={@current_path_params}
@@ -40,12 +40,12 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
     ~H"""
     <.sidebar>
       <:header>
-        <.header dialog_header_id={@slideover_id} class="sticky top-0">
+        <.sidebar_header sidebar_id={@slideover_id} class="sticky top-0">
           <%= @record.id %>
           <:subtitle>
             <%= ~t"This is a record from your database."m %>
           </:subtitle>
-        </.header>
+        </.sidebar_header>
       </:header>
       <.list>
         <:item title={~t"ID"m}><%= @record.id %></:item>
@@ -54,16 +54,18 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
       </.list>
       <:footer>
         <.button
-          variant="secondary"
+          label={~t"Close"m}
+          color="secondary"
           class="inline-flex mr-2"
           phx-click={JS.push("select", value: %{id: @record.id})}
-        >
-          <span><%= ~t"Close"m %></span>
-        </.button>
-        <.styled_link patch={~p"/records/#{@record}/edit?#{@current_path_params}"} id={@modal_id}>
-          <.icon name="hero-pencil-square-mini" class="-ml-0.5 mr-1.5 h-5 w-5" />
-          <span><%= ~t"Edit Record"m %></span>
-        </.styled_link>
+        />
+        <.button
+          id={@modal_id}
+          to={~p"/records/#{@record}/edit?#{@current_path_params}"}
+          link_type="live_patch"
+          icon="hero-pencil-square-mini"
+          label={~t"Edit Record"m}
+        />
       </:footer>
     </.sidebar>
     """

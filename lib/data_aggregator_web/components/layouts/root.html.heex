@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html
   lang={to_string(DataAggregatorWeb.Cldr.get_locale())}
-  class="[scrollbar-gutter:stable] h-full"
+  class="h-full [scrollbar-gutter:stable]"
 >
   <head>
     <meta charset="utf-8" />
@@ -20,7 +20,7 @@
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
   </head>
-  <body class="dark:bg-gray-900 h-full antialiased">
+  <body class="h-full antialiased dark:bg-gray-900">
     <%= @inner_content %>
   </body>
 </html>

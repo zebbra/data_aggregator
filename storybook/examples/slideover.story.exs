@@ -1,10 +1,8 @@
 defmodule Storybook.Examples.Slideover do
   use PhoenixStorybook.Story, :example
+  use DataAggregatorWeb.Components
 
   alias Phoenix.LiveView.JS
-
-  import DataAggregatorWeb.HeadlessComponents, only: [slideover: 1]
-  import DataAggregatorWeb.CoreComponents
 
   def doc,
     do:
@@ -25,10 +23,10 @@ defmodule Storybook.Examples.Slideover do
   @impl true
   def render(assigns) do
     ~H"""
-    <.button id="record-slideover__button" phx-click="toggle">Show</.button>
+    <.button id="record-slideover__button" phx-click="toggle" label="Show" />
     <aside
       :if={@show}
-      class="xl:block xl:fixed xl:bottom-0 xl:right-0 xl:top-16 xl:w-96 xl:overflow-y-auto dark:bg-gray-900 hidden"
+      class="hidden dark:bg-gray-900 xl:fixed xl:top-16 xl:right-0 xl:bottom-0 xl:block xl:w-96 xl:overflow-y-auto"
     >
       <.preview_content />
     </aside>
@@ -40,7 +38,7 @@ defmodule Storybook.Examples.Slideover do
       show={false}
       on_cancel={JS.push("toggle")}
     >
-      <div class="flex flex-col h-full">
+      <div class="flex h-full flex-col">
         <.preview_content slideover_id="record-slideover" />
       </div>
     </.slideover>
@@ -53,12 +51,12 @@ defmodule Storybook.Examples.Slideover do
     ~H"""
     <.sidebar>
       <:header>
-        <.header dialog_header_id={@slideover_id} class="sticky top-0">
+        <.sidebar_header sidebar_id={@slideover_id} class="sticky top-0">
           Record ID
           <:subtitle>
             This is a record from your database.
           </:subtitle>
-        </.header>
+        </.sidebar_header>
       </:header>
       <.list>
         <:item title="ID">1234</:item>
@@ -66,13 +64,8 @@ defmodule Storybook.Examples.Slideover do
         <:item title="Scientific Name">Stone 1</:item>
       </.list>
       <:footer>
-        <.button phx-click="toggle" variant="secondary" class="inline-flex mr-2">
-          <span>Close</span>
-        </.button>
-        <.styled_link>
-          <.icon name="hero-pencil-square-mini" class="-ml-0.5 mr-1.5 h-5 w-5" />
-          <span>Edit Record</span>
-        </.styled_link>
+        <.button phx-click="toggle" color="secondary" label="Close" class="mr-2" />
+        <.button icon="hero-pencil-square-mini" label="Edit Record" />
       </:footer>
     </.sidebar>
     """
