@@ -33,6 +33,7 @@ classDiagram
         Integer rows_valid_count
         Integer rows_invalid_count
         Integer rows_imported_count
+        Integer job_id
         Float import_progress
         Integer rows_validated_count
         Float rows_valid_ratio
@@ -49,6 +50,7 @@ classDiagram
         Collection collection
         Attachment attachment
         Record[] records
+        Job job
         destroy()
         read(String sort)
         create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
@@ -148,6 +150,7 @@ classDiagram
     Attachment -- Import
     Attachment -- Record
     Attachment -- Image
+    Job -- Import
     Institution -- Collection
     Collection -- Import
     Collection -- Record

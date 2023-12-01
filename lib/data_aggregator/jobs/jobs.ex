@@ -8,7 +8,7 @@ defmodule DataAggregator.Jobs do
 
   ## Resources
 
-
+  #{File.read!(@class_diagram)}
   """
 
   use Ash.Api

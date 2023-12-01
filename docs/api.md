@@ -119,6 +119,7 @@ classDiagram
         Integer rows_valid_count
         Integer rows_invalid_count
         Integer rows_imported_count
+        Integer job_id
         Float import_progress
         Integer rows_validated_count
         Float rows_valid_ratio
@@ -135,6 +136,7 @@ classDiagram
         Collection collection
         Attachment attachment
         Record[] records
+        Job job
         destroy()
         read(String sort)
         create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
@@ -234,6 +236,7 @@ classDiagram
     Attachment -- Import
     Attachment -- Record
     Attachment -- Image
+    Job -- Import
     Institution -- Collection
     Collection -- Import
     Collection -- Record
@@ -273,6 +276,7 @@ erDiagram
         Integer rows_valid_count
         Integer rows_invalid_count
         Integer rows_imported_count
+        Integer job_id
         Float import_progress
         Integer rows_validated_count
         Float rows_valid_ratio
@@ -352,6 +356,7 @@ erDiagram
     Attachment ||--|| Import : ""
     Attachment ||--|| Record : ""
     Attachment ||--|| Image : ""
+    Job ||--|| Import : ""
     Institution ||--|| Collection : ""
     Collection ||--|| Import : ""
     Collection ||--|| Record : ""
@@ -418,6 +423,7 @@ erDiagram
 | **rows_imported_count** | Integer |  |
 | **collection_id** | UUID |  |
 | **attachment_id** | UUID |  |
+| **job_id** | Integer |  |
 
 #### Actions
 
@@ -425,7 +431,7 @@ erDiagram
 | ---- | ---- | ----- | ----------- |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
-| **create** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>columns</b> <i>Column[]</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>rows_valid_count</b> <i>Integer</i> attribute</li><li><b>rows_invalid_count</b> <i>Integer</i> attribute</li><li><b>rows_imported_count</b> <i>Integer</i> attribute</li></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>columns</b> <i>Column[]</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>rows_valid_count</b> <i>Integer</i> attribute</li><li><b>rows_invalid_count</b> <i>Integer</i> attribute</li><li><b>rows_imported_count</b> <i>Integer</i> attribute</li><li><b>job_id</b> <i>Integer</i> attribute</li></ul> |  |
 | **create_from_path** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>path</b> <i>String</i> </li><li><b>filename</b> <i>String</i> </li></ul> |  |
 | **update_mapping** | _update_ | <ul><li><b>columns</b> <i>Column[]</i> attribute</li></ul> |  |
 | **add_validation_progress** | _update_ | <ul><li><b>valid</b> <i>Integer</i> </li><li><b>invalid</b> <i>Integer</i> </li></ul> |  |
@@ -776,5 +782,70 @@ erDiagram
 | **read** | _read_ | <ul></ul> |  |
 | **import_from_path** | _create_ | <ul><li><b>path</b> <i>String</i> </li><li><b>filename</b> <i>String</i> attribute</li></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
+
+## API DataAggregator.Jobs
+
+### Class Diagram
+
+```mermaid
+classDiagram
+    class Job {
+        Integer id
+        Atom state
+        String queue
+        String worker
+        Map args
+        Map[] errors
+        Integer attempt
+        String[] attempted_by
+        Integer max_attempts
+        read()
+    }
+```
+
+### ER Diagram
+
+```mermaid
+erDiagram
+    Job {
+        Integer id
+        Atom state
+        String queue
+        String worker
+        Map args
+        ArrayOfMap errors
+        Integer attempt
+        ArrayOfString attempted_by
+        Integer max_attempts
+    }
+```
+
+### Resources
+
+- [Job](#job)
+
+### Job
+
+
+
+#### Attributes
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **id** | Integer |  |
+| **state** | Atom |  |
+| **queue** | String |  |
+| **worker** | String |  |
+| **args** | Map |  |
+| **errors** | Map[] |  |
+| **attempt** | Integer |  |
+| **attempted_by** | String[] |  |
+| **max_attempts** | Integer |  |
+
+#### Actions
+
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **read** | _read_ | <ul></ul> |  |
 
 

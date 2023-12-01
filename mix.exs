@@ -130,6 +130,9 @@ defmodule DataAggregator.MixProject do
       "Records API": [
         ~r/^DataAggregator\.Records/
       ],
+      "Jobs API": [
+        ~r/^DataAggregator\.Jobs/
+      ],
       Preparations: [
         ~r/^DataAggregator\.Preparations/
       ],

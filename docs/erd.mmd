@@ -46,6 +46,7 @@ erDiagram
     integer rows_imported_count
     uuid collection_id
     uuid attachment_id
+    integer job_id
   }
   import_records {
     uuid import_id PK
@@ -171,5 +172,6 @@ erDiagram
   file_attachments ||--|{ record_images : ""
   imports ||--|{ import_records : ""
   institutions ||--|{ collections : ""
+  oban_jobs ||--|{ imports : ""
   records ||--|{ import_records : ""
   records ||--|{ record_images : ""
