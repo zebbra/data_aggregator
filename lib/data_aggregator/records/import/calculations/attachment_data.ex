@@ -81,9 +81,13 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
 
   defp maybe_apply_mapping(%Explorer.DataFrame{} = data, import, _opts, %{mapped: true}) do
     %Import{columns: columns} = import
-    mappings = column_mappings(columns)
 
-    Explorer.DataFrame.rename(data, mappings)
+    mappings = column_mappings(columns)
+    columns = Map.keys(mappings)
+
+    data
+    |> Explorer.DataFrame.select(columns)
+    |> Explorer.DataFrame.rename(mappings)
   end
 
   defp maybe_apply_mapping(data, _import, _opts, _ctx) do

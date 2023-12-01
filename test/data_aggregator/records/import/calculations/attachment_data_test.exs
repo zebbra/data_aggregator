@@ -31,22 +31,25 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentDataTest do
   test "original data", %{import: import} do
     {:ok, import} = Records.load(import, :attachment_data)
 
-    import.attachment_data
-    |> Explorer.DataFrame.dtypes()
-    |> assert_map_includes(%{
+    columns =
+      Explorer.DataFrame.dtypes(import.attachment_data)
+
+    assert_map_includes(columns, %{
       "Age" => :string,
-      "Auteur et date ssp" => :string
+      "Auteur et date ssp" => :string,
+      "Numéro scientifique GBIF" => :string
     })
   end
 
   test "mapped data", %{import: import} do
     {:ok, import} = Records.load(import, attachment_data: [mapped: true])
 
-    import.attachment_data
-    |> Explorer.DataFrame.dtypes()
-    |> assert_map_includes(%{
-      "age" => :string,
-      "author_and_date_ssp" => :string
-    })
+    columns =
+      Explorer.DataFrame.dtypes(import.attachment_data)
+
+    assert columns == %{
+             "age" => :string,
+             "author_and_date_ssp" => :string
+           }
   end
 end
