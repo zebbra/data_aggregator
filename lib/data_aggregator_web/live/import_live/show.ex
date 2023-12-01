@@ -17,6 +17,7 @@ defmodule DataAggregatorWeb.ImportLive.Show do
     :rows_validated_count,
     :missing_mappings,
     :duration,
+    :job,
     attachment: [:url, :filename, :byte_size]
   ]
 
@@ -194,6 +195,12 @@ defmodule DataAggregatorWeb.ImportLive.Show do
               <%= format_date_interval(@import.started_at, @import.finished_at) %>
             </div>
             <%= @import.duration %>
+          </:item>
+
+          <:item title="Job">
+            <div :if={@import.job}>
+              <%= @import.job.id %> <%= @import.job.state %>
+            </div>
           </:item>
         </.list>
       </div>

@@ -369,7 +369,7 @@ msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Show Import"
 msgstr "Import anzeigen"
 
-#: lib/data_aggregator_web/live/import_live/show.ex:67
+#: lib/data_aggregator_web/live/import_live/show.ex:68
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Show Import"
@@ -639,7 +639,7 @@ msgstr ""
 msgid "Search mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/show.ex:265
+#: lib/data_aggregator_web/live/import_live/show.ex:272
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Import could not be started"
@@ -752,19 +752,19 @@ msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Started at"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/show.ex:229
+#: lib/data_aggregator_web/live/import_live/show.ex:236
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Column"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/show.ex:104
+#: lib/data_aggregator_web/live/import_live/show.ex:105
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Import Records"
 msgstr "Records importieren"
 
-#: lib/data_aggregator_web/live/import_live/show.ex:232
+#: lib/data_aggregator_web/live/import_live/show.ex:239
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Mapped to"

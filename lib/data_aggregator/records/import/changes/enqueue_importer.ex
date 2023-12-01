@@ -12,23 +12,24 @@ defmodule DataAggregator.Records.Import.Changes.EnqueueImporter do
 
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.after_transaction(changeset, &enqueue_importer/2)
-
-    # changeset |> Changeset.after_action(&enqueue_importer/2)
+    Changeset.before_action(changeset, &enqueue_importer/1)
   end
 
-  defp enqueue_importer(_changeset, {:ok, %Import{id: id} = import}) do
-    %{id: id}
-    |> Import.Workers.Importer.new()
-    |> Oban.insert()
-    |> case do
-      {:ok, _job} -> {:ok, import}
-      {:error, reason} -> {:error, reason}
+  defp enqueue_importer(%Changeset{data: import} = changeset) do
+    case insert_job(import) do
+      {:ok, job} ->
+        Logger.info("Enqueued import job #{inspect(job.id)}")
+        Changeset.change_attribute(changeset, :job_id, job.id)
+
+      {:error, error} ->
+        Logger.error("Failed to enqueue import job: #{inspect(error)}")
+        Changeset.add_error(changeset, error)
     end
   end
 
-  defp enqueue_importer(_changeset, {:error, error}) do
-    Logger.error(error)
-    {:error, error}
+  defp insert_job(%Import{id: id}) do
+    %{id: id}
+    |> Import.Workers.Importer.new()
+    |> Oban.insert()
   end
 end

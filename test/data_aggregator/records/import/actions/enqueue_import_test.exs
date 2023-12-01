@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Import.Actions.EnqeueImporterTest do
+defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
@@ -32,6 +32,8 @@ defmodule DataAggregator.Records.Import.Actions.EnqeueImporterTest do
         assert {:ok, import} = Import.enqueue_import(import)
 
         assert import.state == :import_queued
+        assert import.job != nil
+
         assert_enqueued(worker: Import.Workers.Importer, args: %{id: import.id})
       end)
     end

@@ -36,7 +36,8 @@ config :data_aggregator,
     DataAggregator.Platform,
     DataAggregator.Records,
     DataAggregator.Taxonomy,
-    DataAggregator.Files
+    DataAggregator.Files,
+    DataAggregator.Jobs
   ]
 
 config :data_aggregator, :ash_uuid,

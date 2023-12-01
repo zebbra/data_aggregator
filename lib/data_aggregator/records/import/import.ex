@@ -18,9 +18,11 @@ defmodule DataAggregator.Records.Import do
 
   require Ash.Resource.Change.Builtins
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import.Column
   alias DataAggregator.Records.Import.Record, as: ImportRecord
+  alias DataAggregator.Records.Record
   alias __MODULE__
 
   attributes do
@@ -50,10 +52,16 @@ defmodule DataAggregator.Records.Import do
       api DataAggregator.Files
     end
 
-    many_to_many :records, DataAggregator.Records.Record do
-      api DataAggregator.Records
+    many_to_many :records, Record do
       through ImportRecord
       join_relationship :import_records
+    end
+
+    belongs_to :job, Job do
+      api DataAggregator.Jobs
+      attribute_type :integer
+      attribute_writable? true
+      allow_nil? true
     end
   end
 
@@ -120,8 +128,6 @@ defmodule DataAggregator.Records.Import do
   preparations do
     prepare build(sort: [id: :asc])
     prepare DataAggregator.Preparations.Sort
-    prepare build(load: [columns: [:mapped?]])
-    prepare build(load: [:mappings])
   end
 
   actions do
@@ -171,6 +177,7 @@ defmodule DataAggregator.Records.Import do
       accept []
       change transition_state(:import_queued)
       change Import.Changes.EnqueueImporter
+      change load(:job)
     end
 
     update :import do
