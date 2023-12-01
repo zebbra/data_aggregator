@@ -12,7 +12,10 @@ defmodule DataAggregator.Records do
   @default_env [
     import_timeout: :timer.minutes(60),
     import_batch_size: 1000,
-    async_import_progress?: true
+    async_import_progress?: true,
+    export_timeout: :timer.minutes(60),
+    export_batch_size: 1000,
+    async_export_progress?: true
   ]
 
   resources do
@@ -36,6 +39,7 @@ defmodule DataAggregator.Records do
   end
 
   def get_env(key, default \\ nil), do: get_all_env() |> Keyword.get(key, default)
+
   def import_timeout, do: get_env(:import_timeout)
   def import_batch_size, do: get_env(:import_batch_size)
   def async_import_progress?, do: get_env(:async_import_progress?)
@@ -43,5 +47,14 @@ defmodule DataAggregator.Records do
   def import_max_concurrency do
     num_cpus = :erlang.system_info(:logical_processors_available)
     get_env(:import_max_concurrency, num_cpus)
+  end
+
+  def export_timeout, do: get_env(:export_timeout)
+  def export_batch_size, do: get_env(:export_batch_size)
+  def async_export_progress?, do: get_env(:async_export_progress?)
+
+  def export_max_concurrency do
+    num_cpus = :erlang.system_info(:logical_processors_available)
+    get_env(:export_max_concurrency, num_cpus)
   end
 end

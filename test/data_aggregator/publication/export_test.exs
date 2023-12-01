@@ -6,8 +6,6 @@ defmodule DataAggregator.ExportTest do
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Platform.Publication.Consumer
   alias DataAggregator.Platform.Publication.Export
-  alias DataAggregator.Records.Collection
-  alias DataAggregator.Records.Record
 
   import DataAggregator.PublicationFixtures
   import DataAggregator.RecordsFixtures
@@ -84,13 +82,6 @@ defmodule DataAggregator.ExportTest do
     end
   end
 
-  setup do
-    {:ok, collection} =
-      Collection.create(%{name: "Collection for Publication", owner: "David Attenborough"})
-
-    %{collection: collection}
-  end
-
   describe "publication" do
     @invalid_custom_mapping :invalid
     @valid_custom_mapping %{
@@ -115,7 +106,7 @@ defmodule DataAggregator.ExportTest do
       case consumer |> create_export_with_mapping(collected_records, mapping) do
         {:ok, result} ->
           case result |> Export.publish() do
-            {:ok, attachment} -> [export: result, attachment: attachment]
+            {:ok, export} -> [export: result, attachment: export.attachment]
             {:error, error} -> [export: result, error: error]
           end
 
@@ -162,38 +153,5 @@ defmodule DataAggregator.ExportTest do
         &(&1.field == :mapping and String.match?(&1.message, ~r/is invalid/))
       )
     end
-  end
-
-  defp get_publishable_record do
-    publishable_record_attrs()
-    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
-    |> Record.create!()
-  end
-
-  defp get_unpublishable_record do
-    publishable_record_attrs()
-    |> Map.delete(:tax_kingdom)
-  end
-
-  defp publishable_record_attrs do
-    %{
-      mte_material_entity_id: "MHNG-MAM-8.085",
-      tax_scientific_name: "Bradyphus Burmeister, 1866",
-      tax_order: "Pilosa",
-      tax_family: "Bradypodidae",
-      tax_genus: "Bradypus",
-      tax_kingdom: "Animalia",
-      tax_taxon_id: "taxon-id-1"
-    }
-  end
-
-  defp create_export_with_mapping(consumer, records, mapping) do
-    %{
-      name: "gbif.org - Export",
-      consumer: consumer,
-      records: records
-    }
-    |> Export.create!()
-    |> Export.update_mapping(mapping)
   end
 end

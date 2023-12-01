@@ -37,7 +37,10 @@ config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/test/cac
 config :data_aggregator, DataAggregator.Records,
   import_batch_size: 3,
   import_max_concurrency: 1,
-  async_import_progress?: false
+  async_import_progress?: false,
+  export_batch_size: 3,
+  export_max_concurrency: 1,
+  async_export_progress?: false
 
 # Prevent Oban from running jobs and plugins during test runs
 config :data_aggregator, Oban, testing: :inline

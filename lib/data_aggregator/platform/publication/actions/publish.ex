@@ -7,6 +7,7 @@ defmodule DataAggregator.Platform.Publication.Actions.PublishRecords do
 
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Platform.Publication.Export
 
   @impl true
   def run(input, _opts, _context) do
@@ -15,8 +16,11 @@ defmodule DataAggregator.Platform.Publication.Actions.PublishRecords do
     mapping = get_mapping(export.mapping)
     mapped_records = export.records |> map_records(mapping)
 
-    "#{Path.join([System.tmp_dir!(), "export"])}#{Ecto.UUID.generate()}.csv"
-    |> export_to_s3(mapped_records, mapping)
+    attachment =
+      "#{Path.join([System.tmp_dir!(), "export"])}#{Ecto.UUID.generate()}.csv"
+      |> export_to_s3(mapped_records, mapping)
+
+    export |> Export.update_attachment(attachment)
   end
 
   defp export_to_s3(path, records, mapping) do
@@ -24,7 +28,7 @@ defmodule DataAggregator.Platform.Publication.Actions.PublishRecords do
     |> store_local_file(records, mapping)
     |> File.close()
 
-    Attachment.import_from_path(path)
+    Attachment.import_from_path!(path)
   end
 
   defp store_local_file(file, records, mapping) do

@@ -5,10 +5,10 @@ defmodule DataAggregator.Platform.Publication.Export do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine]
 
+  alias DataAggregator.Files.Attachment
   alias DataAggregator.Platform.Publication
-  alias DataAggregator.Platform.Publication.Changes
   alias DataAggregator.Platform.Publication.Consumer
   alias DataAggregator.Platform.Publication.Record, as: ExportRecord
 
@@ -17,6 +17,8 @@ defmodule DataAggregator.Platform.Publication.Export do
 
     attribute :name, :string, allow_nil?: false
     attribute :exported_at, :utc_datetime, allow_nil?: true
+    attribute :started_at, :utc_datetime, allow_nil?: true
+    attribute :finished_at, :utc_datetime, allow_nil?: true
     attribute :mapping, :map, allow_nil?: true
 
     timestamps private?: false, writable?: false
@@ -28,6 +30,10 @@ defmodule DataAggregator.Platform.Publication.Export do
     has_many :export_records, DataAggregator.Platform.Publication.Record do
     end
 
+    belongs_to :attachment, Attachment do
+      api DataAggregator.Files
+    end
+
     many_to_many :records, DataAggregator.Records.Record do
       api DataAggregator.Records
       through ExportRecord
@@ -37,6 +43,18 @@ defmodule DataAggregator.Platform.Publication.Export do
 
   aggregates do
     count :records_count, :records
+  end
+
+  state_machine do
+    initial_states [:pending]
+    default_initial_state :pending
+
+    transitions do
+      transition :enqueue, from: [:pending, :exported, :failed], to: :queued
+      transition :run, from: [:pending, :exported, :failed, :queued], to: :running
+      transition :set_exported, from: :running, to: :exported
+      transition :set_failed, from: :running, to: :failed
+    end
   end
 
   actions do
@@ -54,7 +72,7 @@ defmodule DataAggregator.Platform.Publication.Export do
     update :update_mapping do
       argument :mapping, :map, allow_nil?: true
 
-      change Changes.UpdateMapping
+      change Publication.Changes.UpdateMapping
     end
 
     update :update do
@@ -64,6 +82,47 @@ defmodule DataAggregator.Platform.Publication.Export do
 
       change manage_relationship(:consumer, :consumer, type: :append)
       change manage_relationship(:records, :records, type: :append)
+    end
+
+    update :enqueue do
+      accept []
+      change transition_state(:queued)
+      change Publication.Changes.EnqueueRunner
+    end
+
+    update :set_running do
+      accept []
+      change set_attribute(:state, :running)
+      change set_attribute(:started_at, &DateTime.utc_now/0)
+      change set_attribute(:finished_at, nil)
+    end
+
+    update :set_failed do
+    end
+
+    update :run do
+      accept []
+      change Publication.Changes.SetTimeout
+      change Publication.Changes.SetRunningBeforeTransaction
+      change transition_state(:running)
+      change set_attribute(:started_at, &DateTime.utc_now/0)
+      change Publication.Changes.ExportRecords
+      change Publication.Changes.SetExportedAfterAction
+      change load(:attachment)
+      change load(:records_count)
+    end
+
+    update :set_exported do
+      accept []
+      change transition_state(:exported)
+      change set_attribute(:finished_at, &DateTime.utc_now/0)
+      change set_attribute(:exported_at, &DateTime.utc_now/0)
+    end
+
+    update :update_attachment do
+      accept []
+      argument :attachment, Attachment, allow_nil?: false
+      change manage_relationship(:attachment, :attachment, type: :append)
     end
 
     action :publish, :map do
@@ -82,6 +141,12 @@ defmodule DataAggregator.Platform.Publication.Export do
     define :get_by_id, action: :read, get_by: [:id]
     define :publish, action: :publish, args: [:export]
     define :update_mapping, action: :update_mapping, args: [:mapping]
+    define :run
+    define :enqueue
+    define :set_exported
+    define :set_running
+    define :set_failed
+    define :update_attachment, action: :update_attachment, args: [:attachment]
   end
 
   postgres do
