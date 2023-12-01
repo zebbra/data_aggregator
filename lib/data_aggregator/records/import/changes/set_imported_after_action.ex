@@ -1,6 +1,6 @@
 defmodule DataAggregator.Records.Import.Changes.SetImportedAfterAction do
   @moduledoc """
-  Calls `DataAggregator.Records.Import.imported/1` after the action has completed
+  Calls `DataAggregator.Records.Import.set_imported/1` after the action has completed
   to update the state to `:imported`.
   """
 

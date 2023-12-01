@@ -113,23 +113,23 @@ classDiagram
         Column[] columns
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
-        UtcDatetime validation_started_at
-        UtcDatetime validated_at
-        UtcDatetime import_started_at
-        UtcDatetime imported_at
+        UtcDatetime started_at
+        UtcDatetime finished_at
         Integer rows_count
         Integer rows_valid_count
         Integer rows_invalid_count
         Integer rows_imported_count
         Float import_progress
-        Integer import_duration
+        Integer rows_validated_count
+        Float rows_valid_ratio
         Float validation_progress
-        Integer validation_duration
+        Time duration
         String collection_name
         String attachment_url
         Integer attachment_byte_size
         String attachment_filename
         Term attachment_data
+        Column[] mappings
         Map missing_mappings
         Integer records_count
         Collection collection
@@ -140,9 +140,6 @@ classDiagram
         create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
         create_from_path(Collection collection, String path, String filename)
         update_mapping(Column[] columns)
-        enqueue_validate()
-        validate()
-        set_validating()
         add_validation_progress(Integer valid, Integer invalid)
         enqueue_import()
         import()
@@ -270,23 +267,23 @@ erDiagram
         ArrayOfColumn columns
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
-        UtcDatetime validation_started_at
-        UtcDatetime validated_at
-        UtcDatetime import_started_at
-        UtcDatetime imported_at
+        UtcDatetime started_at
+        UtcDatetime finished_at
         Integer rows_count
         Integer rows_valid_count
         Integer rows_invalid_count
         Integer rows_imported_count
         Float import_progress
-        Integer import_duration
+        Integer rows_validated_count
+        Float rows_valid_ratio
         Float validation_progress
-        Integer validation_duration
+        Time duration
         String collection_name
         String attachment_url
         Integer attachment_byte_size
         String attachment_filename
         Term attachment_data
+        ArrayOfColumn mappings
         Map missing_mappings
         Integer records_count
     }
@@ -413,10 +410,8 @@ erDiagram
 | **columns** | Column[] |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
-| **validation_started_at** | UtcDatetime |  |
-| **validated_at** | UtcDatetime |  |
-| **import_started_at** | UtcDatetime |  |
-| **imported_at** | UtcDatetime |  |
+| **started_at** | UtcDatetime |  |
+| **finished_at** | UtcDatetime |  |
 | **rows_count** | Integer |  |
 | **rows_valid_count** | Integer |  |
 | **rows_invalid_count** | Integer |  |
@@ -430,12 +425,9 @@ erDiagram
 | ---- | ---- | ----- | ----------- |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
-| **create** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>columns</b> <i>Column[]</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>validation_started_at</b> <i>UtcDatetime</i> attribute</li><li><b>validated_at</b> <i>UtcDatetime</i> attribute</li><li><b>import_started_at</b> <i>UtcDatetime</i> attribute</li><li><b>imported_at</b> <i>UtcDatetime</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>rows_valid_count</b> <i>Integer</i> attribute</li><li><b>rows_invalid_count</b> <i>Integer</i> attribute</li><li><b>rows_imported_count</b> <i>Integer</i> attribute</li></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>columns</b> <i>Column[]</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>rows_valid_count</b> <i>Integer</i> attribute</li><li><b>rows_invalid_count</b> <i>Integer</i> attribute</li><li><b>rows_imported_count</b> <i>Integer</i> attribute</li></ul> |  |
 | **create_from_path** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>path</b> <i>String</i> </li><li><b>filename</b> <i>String</i> </li></ul> |  |
 | **update_mapping** | _update_ | <ul><li><b>columns</b> <i>Column[]</i> attribute</li></ul> |  |
-| **enqueue_validate** | _update_ | <ul></ul> |  |
-| **validate** | _update_ | <ul></ul> |  |
-| **set_validating** | _update_ | <ul></ul> |  |
 | **add_validation_progress** | _update_ | <ul><li><b>valid</b> <i>Integer</i> </li><li><b>invalid</b> <i>Integer</i> </li></ul> |  |
 | **enqueue_import** | _update_ | <ul></ul> |  |
 | **import** | _update_ | <ul></ul> |  |

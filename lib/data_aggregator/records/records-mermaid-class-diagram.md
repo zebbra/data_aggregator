@@ -27,23 +27,23 @@ classDiagram
         Column[] columns
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
-        UtcDatetime validation_started_at
-        UtcDatetime validated_at
-        UtcDatetime import_started_at
-        UtcDatetime imported_at
+        UtcDatetime started_at
+        UtcDatetime finished_at
         Integer rows_count
         Integer rows_valid_count
         Integer rows_invalid_count
         Integer rows_imported_count
         Float import_progress
-        Integer import_duration
+        Integer rows_validated_count
+        Float rows_valid_ratio
         Float validation_progress
-        Integer validation_duration
+        Time duration
         String collection_name
         String attachment_url
         Integer attachment_byte_size
         String attachment_filename
         Term attachment_data
+        Column[] mappings
         Map missing_mappings
         Integer records_count
         Collection collection
@@ -54,9 +54,6 @@ classDiagram
         create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
         create_from_path(Collection collection, String path, String filename)
         update_mapping(Column[] columns)
-        enqueue_validate()
-        validate()
-        set_validating()
         add_validation_progress(Integer valid, Integer invalid)
         enqueue_import()
         import()

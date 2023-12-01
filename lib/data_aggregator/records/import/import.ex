@@ -1,10 +1,14 @@
 defmodule DataAggregator.Records.Import do
+  # ensure module is recompiled when the flow chart changes
+  @flow_chart Path.expand("import-mermaid-flowchart.md", __DIR__)
+  @external_resource @flow_chart
+
   @moduledoc """
   Resource for importing records into a collection from a file.
 
   ## Flow Chart
 
-  #{"import-mermaid-flowchart.md" |> Path.expand(__DIR__) |> File.read!()}
+  #{File.read!(@flow_chart)}
   """
 
   use Ash.Resource,

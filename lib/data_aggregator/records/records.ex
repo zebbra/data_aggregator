@@ -1,10 +1,14 @@
 defmodule DataAggregator.Records do
+  # ensure module is recompiled when the class diagram changes
+  @class_diagram Path.expand("records-mermaid-class-diagram.md", __DIR__)
+  @external_resource @class_diagram
+
   @moduledoc """
   Data API
 
   ## Resources
 
-  #{"records-mermaid-class-diagram.md" |> Path.expand(__DIR__) |> File.read!()}
+  #{File.read!(@class_diagram)}
   """
 
   use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api]
