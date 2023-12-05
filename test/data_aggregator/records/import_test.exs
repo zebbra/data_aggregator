@@ -7,7 +7,13 @@ defmodule DataAggregator.Records.ImportTest do
   alias DataAggregator.Records.Import
 
   setup do
-    {:ok, collection} = Collection.create(%{name: "Test Collection", owner: "Max Powers"})
+    {:ok, collection} =
+      Collection.create(%{
+        name: "Test Collection",
+        owner: "Max Powers",
+        reviewer: :swiss_bryophytes
+      })
+
     %{collection: collection}
   end
 

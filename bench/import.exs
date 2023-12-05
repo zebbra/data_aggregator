@@ -13,7 +13,7 @@ defmodule Benchmarks do
   end
 
   defp create_import() do
-    %{name: "Benchmark Collection", owner: "test", items_to_digitize: 100_000}
+    %{name: "Benchmark Collection", owner: "test", items_to_digitize: 100_000, reviewer: :swiss_bryophytes}
     |> DataAggregator.Records.Collection.create!()
     |> DataAggregator.Records.Import.create!()
   end

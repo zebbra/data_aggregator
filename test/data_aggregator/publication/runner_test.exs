@@ -3,12 +3,14 @@ defmodule DataAggregator.Platform.Publication.Export.RunnerTest do
 
   use DataAggregator.DataCase, async: true
 
-  alias DataAggregator.Platform.Publication.Consumer
   alias DataAggregator.Platform.Publication.Export
   alias DataAggregator.Platform.Publication.Export.Runner
+  alias DataAggregator.Records.Collection
 
   import DataAggregator.PublicationFixtures
+  import DataAggregator.RecordsFixtures
 
+  @tag run: true
   describe "DataAggregator.Platform.Publication.Export.Runner.perform/1" do
     @valid_custom_mapping %{
       :mte_material_entity_id => "Numéro scientifique GBIF",
@@ -16,18 +18,19 @@ defmodule DataAggregator.Platform.Publication.Export.RunnerTest do
     }
 
     setup do
-      get_publishable_record()
-      get_publishable_record()
-      # this one should not be published
-      get_unpublishable_record()
+      collection = collection_fixture()
 
-      consumer = consumer_fixture()
-      records = consumer |> Consumer.collect!()
+      get_publishable_record(collection)
+      get_publishable_record(collection)
+      # this one should not be published
+      get_unpublishable_record(collection)
+
+      records = collection |> Collection.collect_reviewable_records!()
 
       {:ok, export} =
         %{
           name: "gbif.org - Export",
-          consumer: consumer,
+          collection: collection,
           records: records
         }
         |> Export.create!()

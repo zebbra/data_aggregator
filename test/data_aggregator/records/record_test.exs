@@ -81,7 +81,13 @@ defmodule DataAggregator.RecordTest do
     alias DataAggregator.Records.Import
 
     setup do
-      collection = Collection.create!(%{name: "My Collection", owner: "Max Powers"})
+      collection =
+        Collection.create!(%{
+          name: "My Collection",
+          owner: "Max Powers",
+          reviewer: :swiss_bryophytes
+        })
+
       [collection: collection]
     end
 
@@ -197,7 +203,13 @@ defmodule DataAggregator.RecordTest do
 
       record = import |> Record.import!(params)
 
-      other_collection = Collection.create!(%{name: "Another Collection", owner: "Max Powers"})
+      other_collection =
+        Collection.create!(%{
+          name: "Another Collection",
+          owner: "Max Powers",
+          reviewer: :swiss_bryophytes
+        })
+
       other_import = Import.create!(other_collection)
 
       assert {:ok, other_record} = Record.import(other_import, params)

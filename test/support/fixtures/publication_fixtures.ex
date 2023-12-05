@@ -1,32 +1,17 @@
 defmodule DataAggregator.PublicationFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  Consumer entities via the `DataAggregator.Platform` context.
+  Publication entities via the `DataAggregator.Platform` context.
   """
 
-  alias DataAggregator.Platform.Publication.Consumer
   alias DataAggregator.Platform.Publication.Export
   alias DataAggregator.Records.Record
 
   import DataAggregator.RecordsFixtures
 
-  @consumers_defaults %{
-    name: "gbif.org",
-    publication_type: :gbif
-  }
-
   @export_defaults %{
     name: "gbif.org - Export"
   }
-
-  @doc """
-  Generate a consumer.
-  """
-  def consumer_fixture(attrs \\ %{}) do
-    @consumers_defaults
-    |> Map.merge(attrs)
-    |> Consumer.create!()
-  end
 
   @doc """
   Generate an export.
@@ -34,25 +19,27 @@ defmodule DataAggregator.PublicationFixtures do
   def export_fixture(attrs \\ %{}) do
     @export_defaults
     |> Map.merge(attrs)
-    |> Map.put_new_lazy(:consumer, fn -> consumer_fixture() end)
+    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
     |> Map.put(:records, [])
     |> Export.create!()
   end
 
-  def get_publishable_record do
+  def get_publishable_record(collection) do
     publishable_record_attrs()
-    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Map.put_new_lazy(:collection, fn -> collection end)
     |> Record.create!()
   end
 
-  def get_unpublishable_record do
+  def get_unpublishable_record(collection) do
     publishable_record_attrs()
+    |> Map.put_new_lazy(:collection, fn -> collection end)
     |> Map.delete(:tax_kingdom)
+    |> Record.create!()
   end
 
   def publishable_record_attrs do
     %{
-      mte_material_entity_id: "MHNG-MAM-8.085",
+      mte_material_entity_id: "MHNG-MAM-8.085-#{Ecto.UUID.generate()}",
       tax_scientific_name: "Bradyphus Burmeister, 1866",
       tax_order: "Pilosa",
       tax_family: "Bradypodidae",
@@ -62,10 +49,10 @@ defmodule DataAggregator.PublicationFixtures do
     }
   end
 
-  def create_export_with_mapping(consumer, records, mapping) do
+  def create_export_with_mapping(collection, records, mapping) do
     %{
       name: "gbif.org - Export",
-      consumer: consumer,
+      colection: collection,
       records: records
     }
     |> Export.create!()

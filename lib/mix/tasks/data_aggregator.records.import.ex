@@ -61,7 +61,11 @@ defmodule Mix.Tasks.DataAggregator.Records.Import do
     timestamp = DateTime.utc_now() |> DateTime.to_iso8601()
 
     collection =
-      Collection.create!(%{name: "Test Collection #{timestamp}", owner: "Example Import"})
+      Collection.create!(%{
+        name: "Test Collection #{timestamp}",
+        owner: "Example Import",
+        reviewer: :swiss_bryophytes
+      })
 
     Mix.shell().info(
       "Creating import from file #{inspect(file)} for collection #{inspect(collection.name)} ..."

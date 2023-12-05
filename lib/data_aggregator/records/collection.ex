@@ -7,6 +7,8 @@ defmodule DataAggregator.Records.Collection do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias DataAggregator.Records.Actions
+
   attributes do
     uuid_attribute :id, prefix: "col"
 
@@ -24,6 +26,20 @@ defmodule DataAggregator.Records.Collection do
     attribute :description, :string
 
     attribute :mapping, :map
+
+    attribute :reviewer, :atom,
+      allow_nil?: false,
+      constraints: [
+        one_of: [
+          :swiss_bryophytes,
+          :swiss_lichens,
+          :swiss_fungi,
+          :info_fauna,
+          :info_flora,
+          :cco_kof,
+          :ornithology
+        ]
+      ]
 
     # allow sorting by inserted_at/updated_at
     timestamps private?: false, writable?: false
@@ -72,6 +88,11 @@ defmodule DataAggregator.Records.Collection do
       primary? true
       argument :sort, :string, allow_nil?: true
     end
+
+    action :collect_reviewable_records, :map do
+      argument :collection, :struct
+      run Actions.CollectReviewableRecords
+    end
   end
 
   code_interface do
@@ -82,6 +103,7 @@ defmodule DataAggregator.Records.Collection do
     define :update, action: :update
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
+    define :collect_reviewable_records, action: :collect_reviewable_records, args: [:collection]
   end
 
   postgres do

@@ -1,6 +1,6 @@
 defmodule DataAggregator.Platform.Publication.Changes.ExportRecords do
   @moduledoc """
-  Changeset hook to export records for a consumer
+  Changeset hook to export records
   """
 
   use Ash.Resource.Change

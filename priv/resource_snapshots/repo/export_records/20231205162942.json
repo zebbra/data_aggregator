@@ -11,8 +11,8 @@
         "schema": "public",
         "multitenancy": {
           "global": null,
-          "strategy": null,
-          "attribute": null
+          "attribute": null,
+          "strategy": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -37,8 +37,8 @@
         "schema": "public",
         "multitenancy": {
           "global": null,
-          "strategy": null,
-          "attribute": null
+          "attribute": null,
+          "strategy": null
         },
         "primary_key?": true,
         "on_delete": null,
@@ -54,14 +54,14 @@
     }
   ],
   "table": "export_records",
-  "hash": "68FBE260EBF6A46AD2F9DB98298EB117F3C8C028E0BD60405FDC0F885ABD6789",
+  "hash": "7B94C335C0E378CB7BC79FF88DE3B4222D9F3E63C8342ADEE0AA0394B06CD70D",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,
   "multitenancy": {
     "global": null,
-    "strategy": null,
-    "attribute": null
+    "attribute": null,
+    "strategy": null
   },
   "base_filter": null,
   "check_constraints": [],

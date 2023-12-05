@@ -1,6 +1,6 @@
 defmodule DataAggregator.Platform.Publication.Export do
   @moduledoc """
-  An export represents an exported set of records for a given consumer with a certain state
+  An export represents an exported set of records
   """
 
   use Ash.Resource,
@@ -9,8 +9,8 @@ defmodule DataAggregator.Platform.Publication.Export do
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Platform.Publication
-  alias DataAggregator.Platform.Publication.Consumer
   alias DataAggregator.Platform.Publication.Record, as: ExportRecord
+  alias DataAggregator.Records.Collection
 
   attributes do
     uuid_attribute :id, prefix: "exp"
@@ -25,9 +25,11 @@ defmodule DataAggregator.Platform.Publication.Export do
   end
 
   relationships do
-    belongs_to :consumer, Consumer
-
     has_many :export_records, DataAggregator.Platform.Publication.Record do
+    end
+
+    belongs_to :collection, Collection do
+      api DataAggregator.Records
     end
 
     belongs_to :attachment, Attachment do
@@ -62,10 +64,10 @@ defmodule DataAggregator.Platform.Publication.Export do
 
     create :create do
       primary? true
-      argument :consumer, Consumer, allow_nil?: false
+      argument :collection, Collection, allow_nil?: false
       argument :records, {:array, :struct}, allow_nil?: false
 
-      change manage_relationship(:consumer, :consumer, type: :append)
+      change manage_relationship(:collection, :collection, type: :append)
       change manage_relationship(:records, :records, type: :append)
     end
 
@@ -77,10 +79,8 @@ defmodule DataAggregator.Platform.Publication.Export do
 
     update :update do
       primary? true
-      argument :consumer, Consumer, allow_nil?: false
       argument :records, {:array, :struct}, allow_nil?: false
 
-      change manage_relationship(:consumer, :consumer, type: :append)
       change manage_relationship(:records, :records, type: :append)
     end
 

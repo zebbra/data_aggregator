@@ -4,8 +4,8 @@ defmodule DataAggregator.ExportTest do
   use DataAggregator.DataCase, async: true
 
   alias DataAggregator.DarwinCore.Schema
-  alias DataAggregator.Platform.Publication.Consumer
   alias DataAggregator.Platform.Publication.Export
+  alias DataAggregator.Records.Collection
 
   import DataAggregator.PublicationFixtures
   import DataAggregator.RecordsFixtures
@@ -50,7 +50,7 @@ defmodule DataAggregator.ExportTest do
 
       updated_export = %{
         name: "gbif.org_2",
-        consumer: consumer_fixture(),
+        collection: collection_fixture(),
         records: [
           record_fixture(),
           record_fixture()
@@ -60,7 +60,7 @@ defmodule DataAggregator.ExportTest do
       assert {:ok, %Export{} = export} =
                export
                |> Export.update(updated_export)
-               |> DataAggregator.Platform.load([:consumer, :records_count])
+               |> DataAggregator.Platform.load([:collection, :records_count])
 
       assert export.records_count == 2
       assert export.name == "gbif.org_2"
@@ -93,17 +93,17 @@ defmodule DataAggregator.ExportTest do
                      |> Enum.into(%{})
 
     setup %{mapping: mapping} do
+      collection = collection_fixture()
+
       # those two should be published
-      get_publishable_record()
-      get_publishable_record()
+      get_publishable_record(collection)
+      get_publishable_record(collection)
       # this one should not be published
-      get_unpublishable_record()
+      get_unpublishable_record(collection)
 
-      consumer = consumer_fixture()
+      collected_records = collection |> Collection.collect_reviewable_records!()
 
-      collected_records = consumer |> Consumer.collect!()
-
-      case consumer |> create_export_with_mapping(collected_records, mapping) do
+      case collection |> create_export_with_mapping(collected_records, mapping) do
         {:ok, result} ->
           case result |> Export.publish() do
             {:ok, export} -> [export: result, attachment: export.attachment]

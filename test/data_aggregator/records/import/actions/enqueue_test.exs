@@ -8,7 +8,13 @@ defmodule DataAggregator.Records.Import.Actions.EnqeueTest do
 
   describe "DataAggregator.Records.Import.enqueue/1" do
     setup do
-      collection = Collection.create!(%{name: "Test Collection", owner: "Max Powers"})
+      collection =
+        Collection.create!(%{
+          name: "Test Collection",
+          owner: "Max Powers",
+          reviewer: :swiss_bryophytes
+        })
+
       [collection: collection]
     end
 

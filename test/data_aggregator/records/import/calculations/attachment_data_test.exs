@@ -15,7 +15,13 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentDataTest do
   ]
 
   setup do
-    {:ok, collection} = Collection.create(%{name: "Test Collection", owner: "Max Powers"})
+    {:ok, collection} =
+      Collection.create(%{
+        name: "Test Collection",
+        owner: "Max Powers",
+        reviewer: :swiss_bryophytes
+      })
+
     %{collection: collection}
   end
 

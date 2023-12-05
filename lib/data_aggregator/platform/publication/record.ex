@@ -1,6 +1,6 @@
 defmodule DataAggregator.Platform.Publication.Record do
   @moduledoc """
-  Resource representing a collection of records which is exported to a certain consumer.
+  Resource representing a collection of records
   """
 
   use Ash.Resource,

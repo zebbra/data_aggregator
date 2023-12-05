@@ -18,7 +18,13 @@ defmodule DataAggregator.Records.Import.RunnerTest do
     ]
 
     setup do
-      collection = Collection.create!(%{name: "Test Collection", owner: "Max Powers"})
+      collection =
+        Collection.create!(%{
+          name: "Test Collection",
+          owner: "Max Powers",
+          reviewer: :swiss_bryophytes
+        })
+
       [collection: collection]
     end
 

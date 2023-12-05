@@ -1,6 +1,6 @@
 defmodule DataAggregator.Platform.Publication.Actions.PublishRecords do
   @moduledoc """
-  Custom action to publish records according to a set of rules for a consumer
+  Custom action to publish records
   """
 
   use Ash.Resource.Actions.Implementation

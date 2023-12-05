@@ -14,7 +14,8 @@ defmodule DataAggregator.RecordsFixtures do
 
   @collection_defaults %{
     name: "Collection",
-    owner: "Max Powers"
+    owner: "Max Powers",
+    reviewer: :swiss_bryophytes
   }
 
   @doc """
