@@ -12,15 +12,35 @@ defmodule DataAggregator.Records.Import.Column do
     attribute :mapped_to, :string, allow_nil?: true
   end
 
+  calculations do
+    calculate :mapped?, :boolean, expr(not is_nil(mapped_to))
+  end
+
   actions do
+    read :read do
+      primary? true
+      prepare build(load: [:mapped?])
+    end
+
     create :create do
       primary? true
-      accept [:name]
+      accept [:name, :type, :mapped_to]
+    end
+
+    create :create_mapping do
+      accept [:name, :mapped_to]
+      require_attributes [:mapped_to]
+      allow_nil_input [:type]
     end
 
     update :update do
       primary? true
       accept [:mapped_to]
+    end
+
+    update :update_mapping do
+      accept [:name, :mapped_to]
+      require_attributes [:mapped_to]
     end
   end
 end

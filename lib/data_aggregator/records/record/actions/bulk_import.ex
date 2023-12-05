@@ -16,7 +16,7 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
 
     # Eager load the imports collection to avoid N+1 queries when
     # creating the records
-    {:ok, import} = import |> Records.load([:collection], lazy?: true)
+    {:ok, import} = Records.load(import, [:collection], lazy?: true)
 
     max_concurrency = Records.import_max_concurrency()
     batch_size = ceil(Records.import_batch_size() / max_concurrency)

@@ -15,7 +15,7 @@ defmodule DataAggregatorWeb.LiveState do
   end
 
   defp handle_event("toggle-sidebar-nav", _params, socket) do
-    {:halt, socket |> update(:sidebar_nav, &(!&1))}
+    {:halt, update(socket, :sidebar_nav, &(!&1))}
   end
 
   defp handle_event(_event, _params, socket), do: {:cont, socket}

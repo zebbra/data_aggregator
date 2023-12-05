@@ -12,8 +12,7 @@ defmodule DataAggregator.Files.Attachment.Changes.DeleteFile do
   require Logger
 
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    changeset
-    |> Changeset.after_action(&delete_file/2, append: true)
+    Changeset.after_action(changeset, &delete_file/2, append: true)
   end
 
   defp delete_file(%Changeset{}, %Attachment{filename: filename} = attachment) do

@@ -15,18 +15,21 @@ defmodule DataAggregatorWeb.Components.List do
         <:item title="Views"><%= @post.views %></:item>
       </.list>
   """
+  attr :class, :string, default: nil
+  attr :rest, :global
+
   slot :item, required: true do
     attr :title, :string, required: true
   end
 
   def list(assigns) do
     ~H"""
-    <dl class="w-full divide-y divide-gray-200 dark:divide-white/5">
-      <div :for={item <- @item} class="px-6 py-5">
-        <dt class="text-sm font-medium text-gray-500 dark:text-white">
+    <dl class={["divide-base-content/10 w-full divide-y", @class]} {@rest}>
+      <div :for={item <- @item} class="px-8 py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-base-content/90 text-sm font-medium leading-6">
           <%= item.title %>
         </dt>
-        <dd class="mt-1 text-sm text-gray-700 dark:text-gray-200">
+        <dd class="text-base-content mt-1 text-sm leading-6 sm:col-span-2 sm:mt-0">
           <%= render_slot(item) %>
         </dd>
       </div>

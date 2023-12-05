@@ -59,8 +59,7 @@ defmodule DataAggregatorWeb.Components.Button do
 
   def button(%{type: "submit"} = assigns) do
     assigns =
-      assigns
-      |> assign(:classes, button_classes(assigns))
+      assign(assigns, :classes, button_classes(assigns))
 
     ~H"""
     <button type="submit" class={@classes} disabled={@disabled} {@rest}>
@@ -90,8 +89,7 @@ defmodule DataAggregatorWeb.Components.Button do
 
   def button(assigns) do
     assigns =
-      assigns
-      |> assign(:classes, button_classes(assigns))
+      assign(assigns, :classes, button_classes(assigns))
 
     ~H"""
     <.a to={@to} link_type={@link_type} class={@classes} disabled={@disabled} {@rest}>

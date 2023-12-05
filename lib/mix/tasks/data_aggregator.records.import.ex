@@ -58,7 +58,7 @@ defmodule Mix.Tasks.DataAggregator.Records.Import do
 
     Mix.Task.run("app.start")
 
-    timestamp = DateTime.utc_now() |> DateTime.to_iso8601()
+    timestamp = DateTime.to_iso8601(DateTime.utc_now())
 
     collection =
       Collection.create!(%{name: "Test Collection #{timestamp}", owner: "Example Import"})
@@ -75,8 +75,7 @@ defmodule Mix.Tasks.DataAggregator.Records.Import do
     Mix.shell().info("Importing records ...")
 
     # :eprof.start_profiling([self()])
-
-    import |> Import.run!()
+    Import.import!(import)
 
     # :eprof.stop_profiling()
     # :eprof.analyze(:total, filter: [calls: 10])

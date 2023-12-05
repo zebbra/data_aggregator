@@ -1,10 +1,14 @@
 defmodule DataAggregator.Taxonomy do
+  # ensure module is recompiled when the class diagram changes
+  @class_diagram Path.expand("taxonomy-mermaid-class-diagram.md", __DIR__)
+  @external_resource @class_diagram
+
   @moduledoc """
   Taxonomy API
 
   ## Resources
 
-  #{"taxonomy-mermaid-class-diagram.md" |> Path.expand(__DIR__) |> File.read!()}
+  #{File.read!(@class_diagram)}
   """
 
   use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api]

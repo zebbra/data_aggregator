@@ -15,8 +15,8 @@ defmodule Mix.Tasks.Repo.Dump.Staging do
     pod = get_pod()
 
     if Mix.shell().yes?("Dumping database from #{pod} to #{@destination}?") do
-      pod |> dump_db()
-      pod |> copy_dump()
+      dump_db(pod)
+      copy_dump(pod)
     end
   end
 
@@ -25,15 +25,13 @@ defmodule Mix.Tasks.Repo.Dump.Staging do
 
     pg_dump = "pg_dump --verbose -Fc -n public -U postgres #{@database} > #{@temp}"
 
-    ["exec", "-i", pod, "-c", "postgres", "--", "bash", "-c", pg_dump]
-    |> kubectl()
+    kubectl(["exec", "-i", pod, "-c", "postgres", "--", "bash", "-c", pg_dump])
   end
 
   defp copy_dump(pod) do
     Mix.shell().info("Copying dump from #{pod} to #{@destination} ...")
 
-    ["cp", "#{pod}:#{@temp}", @destination, "--retries", "5"]
-    |> kubectl()
+    kubectl(["cp", "#{pod}:#{@temp}", @destination, "--retries", "5"])
   end
 
   defp get_pod do

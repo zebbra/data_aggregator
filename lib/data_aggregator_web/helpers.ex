@@ -9,11 +9,18 @@ defmodule DataAggregatorWeb.Helpers do
   @placeholder Phoenix.HTML.raw("&mdash;")
 
   def format_number(number, opts \\ [])
-
   def format_number(nil, _opts), do: @placeholder
+  def format_number(number, opts), do: Cldr.Number.to_string!(number, opts)
 
-  def format_number(number, opts) do
-    Cldr.Number.to_string!(number, opts)
+  def format_percent(number, opts \\ [])
+  def format_percent(nil, _opts), do: @placeholder
+
+  def format_percent(number, opts) do
+    {precision, opts} = Keyword.pop(opts, :precision, 0)
+
+    number = Float.round(number * 100.0, precision)
+    opts = Keyword.merge([unit: "percent", style: :short], opts)
+    Cldr.Unit.to_string!(number, opts)
   end
 
   def format_date(date, opts \\ []), do: Cldr.Date.to_string!(date, opts)
@@ -48,7 +55,7 @@ defmodule DataAggregatorWeb.Helpers do
       end
 
     precision = Keyword.get(opts, :precision, 1)
-    value = value |> Float.round(precision)
+    value = Float.round(value, precision)
 
     opts =
       opts

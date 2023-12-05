@@ -17,7 +17,7 @@ defmodule DataAggregator.Files.Cache do
   """
   def store(%Attachment{} = attachment) do
     with {:ok, attachment} <- Files.load(attachment, [:url], lazy?: true) do
-      attachment |> maybe_download()
+      maybe_download(attachment)
     end
   end
 
@@ -45,11 +45,11 @@ defmodule DataAggregator.Files.Cache do
   end
 
   defp maybe_download(%Attachment{url: url} = attachment) do
-    path = attachment |> cached_file_path()
+    path = cached_file_path(attachment)
 
     case File.exists?(path) do
       true -> {:ok, path}
-      false -> url |> download_to(path)
+      false -> download_to(url, path)
     end
   end
 

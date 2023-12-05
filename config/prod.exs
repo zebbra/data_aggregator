@@ -26,7 +26,7 @@ config :data_aggregator, DataAggregator.Repo,
   ssl_opts: [verify: :verify_none]
 
 # Enable dev routes for dashboard and mailbox
-# TODO: remove the line below before going live
+# remove the line below before going live
 config :data_aggregator, dev_routes: true
 
 # Runtime production configuration, including reading

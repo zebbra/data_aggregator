@@ -117,7 +117,7 @@ defmodule DataAggregatorWeb.Components.Modal do
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
           <.dialog_panel
             id={@id <> "__panel"}
-            class="sm:my-8 sm:w-full sm:max-w-lg sm:p-6 dark:bg-gray-900 dark:border dark:border-white/10 min-w-[calc(100vw-20px)] sm:min-w-fit relative px-4 pt-5 pb-4 overflow-hidden text-left bg-white rounded-lg shadow-xl"
+            class="sm:my-8 sm:w-full sm:max-w-lg sm:p-6 min-w-[calc(100vw-20px)] sm:min-w-fit relative px-4 pt-5 pb-4 overflow-hidden text-left bg-base-100 rounded-lg shadow-xl"
           >
             <%= render_slot(@inner_block) %>
 

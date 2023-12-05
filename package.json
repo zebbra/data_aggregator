@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "phoenix_typed_hook": "^0.18.2"
+  }
+}

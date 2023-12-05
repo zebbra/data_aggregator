@@ -13,7 +13,7 @@ defmodule DataAggregator.Preparations.Sort do
 
     case Ash.Sort.parse_input(query.resource, sort) do
       {:ok, sort} ->
-        query |> Ash.Query.sort(sort, prepend?: true)
+        Ash.Query.sort(query, sort, prepend?: true)
 
       {:error, error} ->
         Logger.warning("Invalid sort: #{inspect(error)}")

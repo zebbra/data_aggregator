@@ -16,7 +16,7 @@ defmodule DataAggregator.Files.Attachment.Calculations.Url do
   end
 
   defp calculate_url(%Attachment{filename: filename} = attachment, _opts, context) do
-    {url_args, _context} = context |> Map.split(@url_args)
-    Store.url({filename, attachment}, url_args |> Map.to_list())
+    {url_args, _context} = Map.split(context, @url_args)
+    Store.url({filename, attachment}, Map.to_list(url_args))
   end
 end

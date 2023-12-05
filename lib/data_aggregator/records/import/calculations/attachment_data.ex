@@ -35,6 +35,7 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
   require Logger
 
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Records.DataFrame
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.Import.Column
 
@@ -58,7 +59,7 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
 
   defp attachment_data(%Import{} = import, opts, context) do
     with {:ok, data} <- create_dataframe(import, opts, context) do
-      data = data |> maybe_apply_mapping(import, opts, context)
+      data = maybe_apply_mapping(data, import, opts, context)
       {:ok, data}
     end
   end
@@ -66,7 +67,7 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
   defp create_dataframe(import, _opts, _context) do
     %Import{attachment: %Attachment{cached_file: cached_file}} = import
 
-    case Explorer.DataFrame.from_csv(cached_file) do
+    case DataFrame.from_file(cached_file) do
       {:ok, data} ->
         {:ok, data}
 
@@ -80,9 +81,13 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
 
   defp maybe_apply_mapping(%Explorer.DataFrame{} = data, import, _opts, %{mapped: true}) do
     %Import{columns: columns} = import
-    mappings = column_mappings(columns)
 
-    data |> Explorer.DataFrame.rename(mappings)
+    mappings = column_mappings(columns)
+    columns = Map.keys(mappings)
+
+    data
+    |> Explorer.DataFrame.select(columns)
+    |> Explorer.DataFrame.rename(mappings)
   end
 
   defp maybe_apply_mapping(data, _import, _opts, _ctx) do
