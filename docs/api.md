@@ -24,18 +24,6 @@ classDiagram
         read()
         create(UUID id, String name, String code, String address, ...)
     }
-    class Consumer {
-        UUID id
-        String name
-        Atom publication_type
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-        destroy()
-        update(UUID id, String name, Atom publication_type, UtcDatetimeUsec inserted_at, ...)
-        read()
-        create(UUID id, String name, Atom publication_type, UtcDatetimeUsec inserted_at, ...)
-        collect(Struct consumer)
-    }
     class Export {
         Atom state
         UUID id
@@ -47,15 +35,15 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Integer records_count
-        Consumer consumer
         Record[] export_records
+        Collection collection
         Attachment attachment
         Record[] records
         destroy()
         read()
-        create(Consumer consumer, Struct[] records, UUID id, String name, ...)
+        create(Collection collection, Struct[] records, UUID id, String name, ...)
         update_mapping(Map mapping, UUID id, String name, UtcDatetime exported_at, ...)
-        update(Consumer consumer, Struct[] records, UUID id, String name, ...)
+        update(Struct[] records, UUID id, String name, UtcDatetime exported_at, ...)
         enqueue()
         set_running()
         set_failed(UUID id, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
@@ -74,8 +62,8 @@ classDiagram
     }
 
     Attachment -- Export
-    Consumer -- Export
     Export -- Record
+    Export -- Collection
     Export -- Record
     Record -- Record
 ```
@@ -98,13 +86,6 @@ erDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
     }
-    Consumer {
-        UUID id
-        String name
-        Atom publication_type
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-    }
     Export {
         Atom state
         UUID id
@@ -122,8 +103,8 @@ erDiagram
     }
 
     Attachment ||--|| Export : ""
-    Consumer ||--|| Export : ""
     Export ||--|| Record : ""
+    Export ||--|| Collection : ""
     Export ||--|| Record : ""
     Record ||--|| Record : ""
 ```
@@ -131,7 +112,6 @@ erDiagram
 ### Resources
 
 - [Institution](#institution)
-- [Consumer](#consumer)
 - [Export](#export)
 - [Record](#record)
 
@@ -165,30 +145,6 @@ erDiagram
 | **read** | _read_ | <ul></ul> |  |
 | **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>address</b> <i>String</i> attribute</li><li><b>zip_code</b> <i>String</i> attribute</li><li><b>city</b> <i>String</i> attribute</li><li><b>country</b> <i>String</i> attribute</li><li><b>mail</b> <i>String</i> attribute</li><li><b>tel</b> <i>String</i> attribute</li><li><b>contact_person</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 
-### Consumer
-
-
-
-#### Attributes
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| **id** | UUID |  |
-| **name** | String |  |
-| **publication_type** | Atom |  |
-| **inserted_at** | UtcDatetimeUsec |  |
-| **updated_at** | UtcDatetimeUsec |  |
-
-#### Actions
-
-| Name | Type | Input | Description |
-| ---- | ---- | ----- | ----------- |
-| **destroy** | _destroy_ | <ul></ul> |  |
-| **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>publication_type</b> <i>Atom</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
-| **read** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>publication_type</b> <i>Atom</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
-| **collect** | _action_ | <ul><li><b>consumer</b> <i>Struct</i> </li></ul> |  |
-
 ### Export
 
 
@@ -206,7 +162,7 @@ erDiagram
 | **mapping** | Map |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
-| **consumer_id** | UUID |  |
+| **collection_id** | UUID |  |
 | **attachment_id** | UUID |  |
 
 #### Actions
@@ -215,9 +171,9 @@ erDiagram
 | ---- | ---- | ----- | ----------- |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>consumer</b> <i>Consumer</i> </li><li><b>records</b> <i>Struct[]</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>records</b> <i>Struct[]</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 | **update_mapping** | _update_ | <ul><li><b>mapping</b> <i>Map</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
-| **update** | _update_ | <ul><li><b>consumer</b> <i>Consumer</i> </li><li><b>records</b> <i>Struct[]</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>records</b> <i>Struct[]</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 | **enqueue** | _update_ | <ul></ul> |  |
 | **set_running** | _update_ | <ul></ul> |  |
 | **set_failed** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
@@ -260,6 +216,7 @@ classDiagram
         String code
         String description
         Map mapping
+        Atom reviewer
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Float digitizing_progress
@@ -272,6 +229,7 @@ classDiagram
         update(UUID id, Integer items_to_digitize, String owner, String name, ...)
         create(UUID id, Integer items_to_digitize, String owner, String name, ...)
         read(String sort)
+        collect_reviewable_records(Struct collection)
     }
     class Import {
         Atom state
@@ -423,6 +381,7 @@ erDiagram
         String code
         String description
         Map mapping
+        Atom reviewer
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Float digitizing_progress
@@ -554,6 +513,7 @@ erDiagram
 | **code** | String | an iternationally valid code to identify the collection |
 | **description** | String |  |
 | **mapping** | Map |  |
+| **reviewer** | Atom |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
 | **institution_id** | UUID |  |
@@ -563,9 +523,10 @@ erDiagram
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
 | **destroy** | _destroy_ | <ul></ul> |  |
-| **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
-| **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>reviewer</b> <i>Atom</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>reviewer</b> <i>Atom</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 | **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
+| **collect_reviewable_records** | _action_ | <ul><li><b>collection</b> <i>Struct</i> </li></ul> |  |
 
 ### Import
 

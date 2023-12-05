@@ -20,13 +20,6 @@ erDiagram
     timestamp inserted_at
     timestamp updated_at
   }
-  consumers {
-    uuid id PK
-    varchar name
-    varchar publication_type
-    timestamp inserted_at
-    timestamp updated_at
-  }
   exports {
     varchar state
     uuid id PK
@@ -37,7 +30,7 @@ erDiagram
     jsonb mapping
     timestamp inserted_at
     timestamp updated_at
-    uuid consumer_id
+    uuid collection_id
     uuid attachment_id
   }
   export_records {
@@ -52,6 +45,7 @@ erDiagram
     varchar code
     varchar description
     jsonb mapping
+    varchar reviewer
     timestamp inserted_at
     timestamp updated_at
     uuid institution_id
@@ -194,9 +188,9 @@ erDiagram
   catalogs ||--|{ attribute_resolving_strategies : ""
   catalogs ||--|{ dwc_attributes : ""
   collections ||--|{ attribute_resolving_strategies : ""
+  collections ||--|{ exports : ""
   collections ||--|{ imports : ""
   collections ||--|{ records : ""
-  consumers ||--|{ exports : ""
   dwc_attributes ||--|{ attribute_resolving_strategies : ""
   exports ||--|{ export_records : ""
   file_attachments ||--|{ exports : ""

@@ -8,6 +8,7 @@ classDiagram
         String code
         String description
         Map mapping
+        Atom reviewer
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Float digitizing_progress
@@ -20,6 +21,7 @@ classDiagram
         update(UUID id, Integer items_to_digitize, String owner, String name, ...)
         create(UUID id, Integer items_to_digitize, String owner, String name, ...)
         read(String sort)
+        collect_reviewable_records(Struct collection)
     }
     class Import {
         Atom state

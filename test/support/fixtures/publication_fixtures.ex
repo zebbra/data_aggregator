@@ -52,7 +52,7 @@ defmodule DataAggregator.PublicationFixtures do
   def create_export_with_mapping(collection, records, mapping) do
     %{
       name: "gbif.org - Export",
-      colection: collection,
+      collection: collection,
       records: records
     }
     |> Export.create!()

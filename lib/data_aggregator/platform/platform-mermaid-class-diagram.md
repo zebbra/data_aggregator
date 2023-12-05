@@ -18,18 +18,6 @@ classDiagram
         read()
         create(UUID id, String name, String code, String address, ...)
     }
-    class Consumer {
-        UUID id
-        String name
-        Atom publication_type
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-        destroy()
-        update(UUID id, String name, Atom publication_type, UtcDatetimeUsec inserted_at, ...)
-        read()
-        create(UUID id, String name, Atom publication_type, UtcDatetimeUsec inserted_at, ...)
-        collect(Struct consumer)
-    }
     class Export {
         Atom state
         UUID id
@@ -41,15 +29,15 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Integer records_count
-        Consumer consumer
         Record[] export_records
+        Collection collection
         Attachment attachment
         Record[] records
         destroy()
         read()
-        create(Consumer consumer, Struct[] records, UUID id, String name, ...)
+        create(Collection collection, Struct[] records, UUID id, String name, ...)
         update_mapping(Map mapping, UUID id, String name, UtcDatetime exported_at, ...)
-        update(Consumer consumer, Struct[] records, UUID id, String name, ...)
+        update(Struct[] records, UUID id, String name, UtcDatetime exported_at, ...)
         enqueue()
         set_running()
         set_failed(UUID id, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
@@ -68,8 +56,8 @@ classDiagram
     }
 
     Attachment -- Export
-    Consumer -- Export
     Export -- Record
+    Export -- Collection
     Export -- Record
     Record -- Record
 
