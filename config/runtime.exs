@@ -46,8 +46,7 @@ end
 
 # Configure Sentry runtime environment
 config :sentry,
-  server_name: System.get_env("HOSTNAME"),
-  log_level: System.get_env("SENTRY_LOG_LEVEL", "warning") |> String.to_atom()
+  environment_name: System.get_env("SENTRY_ENVIRONMENT", config_env() |> to_string())
 
 # ## Waffle
 config :waffle,

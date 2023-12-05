@@ -252,7 +252,7 @@ defmodule DataAggregator.MixProject do
 
       # Monitoring and Tracing
       {:phoenix_live_dashboard, "~> 0.8.1"},
-      {:sentry, "~> 9.1"},
+      {:sentry, "~> 10.0"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
 

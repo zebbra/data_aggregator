@@ -160,10 +160,9 @@ config :spark, :formatter,
 # Configure error reporting using Sentry. The Sentry DSN is configured
 # dynamically based on the SENTRY_DSN environment variable.
 config :sentry,
-  environment_name: Mix.env(),
-  included_environments: [:prod],
   enable_source_code_context: true,
-  root_source_code_paths: [File.cwd!()]
+  root_source_code_paths: [File.cwd!()],
+  context_lines: 5
 
 # Configure Sentry logger handler, which will send logs to Sentry
 # See https://hexdocs.pm/sentry/Sentry.LoggerHandler.html
