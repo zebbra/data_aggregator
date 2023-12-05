@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Import.Actions.EnqeueTest do
+defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
@@ -35,10 +35,12 @@ defmodule DataAggregator.Records.Import.Actions.EnqeueTest do
     @tag path: "test/support/fixtures/files/museum-dataset-import-example.csv"
     test "enqueues a runner job", %{import: import} do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        assert {:ok, import} = Import.enqueue(import)
+        assert {:ok, import} = Import.enqueue_import(import)
 
-        assert import.state == :queued
-        assert_enqueued(worker: Import.Runner, args: %{id: import.id})
+        assert import.state == :import_queued
+        assert import.job != nil
+
+        assert_enqueued(worker: Import.Workers.Importer, args: %{id: import.id})
       end)
     end
   end

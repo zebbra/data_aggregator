@@ -14,13 +14,13 @@ defmodule DataAggregator.Platform.Publication.Actions.PublishRecords do
     export = DataAggregator.Platform.load!(input.arguments.export, [:records])
 
     mapping = get_mapping(export.mapping)
-    mapped_records = export.records |> map_records(mapping)
+    mapped_records = map_records(export.records, mapping)
 
     attachment =
       "#{Path.join([System.tmp_dir!(), "export"])}#{Ecto.UUID.generate()}.csv"
       |> export_to_s3(mapped_records, mapping)
 
-    export |> Export.update_attachment(attachment)
+    Export.update_attachment(export, attachment)
   end
 
   defp export_to_s3(path, records, mapping) do
@@ -41,7 +41,7 @@ defmodule DataAggregator.Platform.Publication.Actions.PublishRecords do
   end
 
   defp map_records(records, mapping) do
-    records |> Stream.map(&map_record(&1, mapping))
+    Stream.map(records, &map_record(&1, mapping))
   end
 
   defp map_record(record, mapping) do

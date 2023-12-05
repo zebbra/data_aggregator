@@ -11,18 +11,25 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.Record
 
+  import DataAggregator.Records.Import.Helpers
+
   require Logger
 
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    changeset |> Changeset.before_action(&import_records/1)
+    Changeset.before_action(changeset, &import_records/1, append?: true)
   end
 
   defp import_records(%Changeset{data: import} = changeset) do
-    Logger.info("Importing records for #{inspect(import.id)} ...")
+    if changeset.valid? do
+      Logger.info("Importing records for #{inspect(import.id)} ...")
 
-    case rows_stream(import) do
-      {:ok, rows} -> changeset |> import_in_chunks(rows)
-      {:error, error} -> changeset |> add_error(error)
+      case rows_stream(import) do
+        {:ok, rows} -> import_in_chunks(changeset, rows)
+        {:error, error} -> add_error(changeset, error)
+      end
+    else
+      Logger.warning("Import #{inspect(import.id)} is invalid. Skipped...")
+      changeset
     end
   end
 
@@ -31,7 +38,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
     Logger.info("Importing records in chunks of #{chunk_size} rows ...")
 
     # make sure collection is loaded to avoid N+1 queries
-    import = import |> Records.load!([:collection], lazy?: true)
+    import = Records.load!(import, [:collection], lazy?: true)
 
     rows
     |> Stream.chunk_every(chunk_size)
@@ -42,18 +49,13 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
   end
 
   defp import_chunk(import, {chunk, index}) do
-    Logger.info("Importing chunk ##{index} with #{length(chunk)} rows ...")
-
-    valid_row? = fn row ->
-      changeset = Record.changeset_to_import(import, row)
-      changeset.valid?
-    end
+    Logger.debug("Importing chunk ##{index} with #{length(chunk)} rows ...")
 
     max_concurrency = Records.import_max_concurrency()
 
     {valid, invalid} =
       chunk
-      |> Task.async_stream(&{&1, valid_row?.(&1)}, max_concurrency: max_concurrency)
+      |> Task.async_stream(&{&1, valid_import_row?(import, &1)}, max_concurrency: max_concurrency)
       |> Enum.reduce({[], []}, fn
         {:ok, {row, true}}, {valid, invalid} -> {[row | valid], invalid}
         {:ok, {row, false}}, {valid, invalid} -> {valid, [row | invalid]}
@@ -63,7 +65,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
       Logger.warning("#{length(invalid)} invalid row(s) dropped from chunk!")
     end
 
-    Logger.info("Importing #{length(valid)}/#{length(invalid)} valid rows ...")
+    Logger.debug("Importing #{length(valid)} valid rows ...")
     res = Record.bulk_import!(import, Enum.reverse(valid))
 
     {res, length(valid), length(invalid)}
@@ -72,11 +74,11 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
   def reduce_import_results(results, changeset) do
     Enum.reduce_while(results, changeset, fn
       {%BulkResult{status: :success}, imported, invalid}, changeset ->
-        changeset = changeset |> report_progress(imported, invalid)
+        changeset = report_progress(changeset, imported, invalid)
         {:cont, changeset}
 
       {%BulkResult{errors: errors}, _, _}, changeset ->
-        changeset = errors |> Enum.reduce(changeset, &add_error(&1, &2))
+        changeset = Enum.reduce(errors, changeset, &add_error(&1, &2))
         {:halt, changeset}
     end)
   end
@@ -86,7 +88,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
 
     %Changeset{data: import} = changeset
 
-    add_progress = fn -> Import.add_progress!(import, imported, invalid) end
+    add_progress = fn -> Import.add_import_progress!(import, imported) end
 
     import =
       if Records.async_import_progress?() do
@@ -101,8 +103,8 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
   defp error_if_nothing_imported(changeset) do
     %Changeset{data: import} = changeset
 
-    if import.imported_count == 0 do
-      changeset |> add_error("No records imported!")
+    if import.rows_imported_count == 0 do
+      add_error(changeset, "No records imported!")
     else
       changeset
     end
@@ -116,6 +118,6 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
 
   defp add_error(changeset, error) do
     Logger.error("Error importing records: #{inspect(error)}")
-    changeset |> Changeset.add_error(error)
+    Changeset.add_error(changeset, error)
   end
 end

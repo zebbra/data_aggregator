@@ -12,6 +12,8 @@ defmodule DataAggregatorWeb.Page do
   import DataAggregatorWeb.Components.Menu
   import DataAggregatorWeb.Headless.Dialog, only: [dialog: 1, dialog_panel: 1]
 
+  use DataAggregatorWeb.Components.ThemeSelect
+
   # Shortcut for generating JS commands
   alias Phoenix.LiveView.JS
 
@@ -31,7 +33,7 @@ defmodule DataAggregatorWeb.Page do
 
   def page(assigns) do
     ~H"""
-    <div class="no-scrollbar isolate h-screen overflow-y-auto dark:bg-gray-900">
+    <div class="no-scrollbar bg-base-100 isolate h-screen overflow-y-auto">
       <!-- Static sidebar for desktop -->
       <div class="hidden lg:fixed lg:inset-y-0 lg:z-30 lg:flex lg:w-72 lg:flex-col">
         <.sidebar_nav active_link={@active_link} environment={@environment} />
@@ -67,19 +69,18 @@ defmodule DataAggregatorWeb.Page do
   def locale_select(assigns) do
     ~H"""
     <div id="locale-select-wrapper" phx-hook="LocaleSelect">
-      <.menu id="locale-select" width="w-20">
+      <.menu id="locale-select" width="w-20" class="z-30">
         <:menu_button>
           <.menu_button
             id="locale-select__button"
-            class="dark:bg-gray-900 hover:text-gray-500 dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 dark:focus-visible:ring-white focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 relative flex items-center p-1 text-gray-400 bg-white rounded-full"
+            class="btn btn-ghost rounded-full text-base-content/75 hover:text-base-content"
           >
-            <span class="absolute -inset-1.5" />
-            <.icon name="hero-globe-alt" class="w-6 h-6" />
-            <span class="px-1"><%= current_locale() %></span>
+            <.icon name="hero-globe-alt" class="w-5 h-5" />
+            <%= current_locale() %>
           </.menu_button>
         </:menu_button>
 
-        <div class="py-1" role="none">
+        <div class="z-30 py-1" role="none">
           <.menu_item
             :for={locale <- locale_options()}
             as="div"
@@ -89,9 +90,7 @@ defmodule DataAggregatorWeb.Page do
             }
           >
             <%= locale.label %>
-            <span :if={current_locale() == locale.label} class="font-bold text-cyan-600">
-              &check;
-            </span>
+            <.icon :if={current_locale() == locale.label} name="hero-check-mini" class="w-4 h-4" />
           </.menu_item>
         </div>
       </.menu>
@@ -194,8 +193,7 @@ defmodule DataAggregatorWeb.Page do
   end
 
   defp locale_options do
-    DataAggregatorWeb.Locale.locales()
-    |> Enum.map(fn x ->
+    Enum.map(DataAggregatorWeb.Locale.locales(), fn x ->
       case x do
         "de-CH" -> option("DE", x)
         "fr-CH" -> option("FR", x)

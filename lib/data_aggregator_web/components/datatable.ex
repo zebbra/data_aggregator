@@ -176,8 +176,7 @@ defmodule DataAggregatorWeb.Components.Datatable do
 
   # Private function to determine if the row is selected
   defp row_selected({_id, row}) when is_map(row) do
-    row
-    |> Map.has_key?(:selected) && row.selected == true
+    Map.has_key?(row, :selected) && row.selected == true
   end
 
   defp row_selected({_id, _row}) do

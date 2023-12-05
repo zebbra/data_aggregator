@@ -24,13 +24,11 @@ defmodule DataAggregatorWeb.RecordLive.Show do
   end
 
   defp apply_action(socket, :show, _params) do
-    socket
-    |> assign(:page_title, ~t"Show Record"m)
+    assign(socket, :page_title, ~t"Show Record"m)
   end
 
   defp apply_action(socket, :edit, _params) do
-    socket
-    |> assign(:page_title, ~t"Edit Record"m)
+    assign(socket, :page_title, ~t"Edit Record"m)
   end
 
   @impl true

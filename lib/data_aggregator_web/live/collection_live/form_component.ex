@@ -84,8 +84,11 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
       case Form.submit(socket.assigns.form, params: params) do
         {:ok, collection} ->
           collection =
-            collection
-            |> DataAggregator.Records.load!([:records_count, :imports_count, :digitizing_progress])
+            DataAggregator.Records.load!(collection, [
+              :records_count,
+              :imports_count,
+              :digitizing_progress
+            ])
 
           notify_parent({:saved, collection})
 

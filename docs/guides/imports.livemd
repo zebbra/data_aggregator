@@ -131,7 +131,7 @@ import.columns
 
 ```elixir
 # run the job
-# {:ok, import} = import |> Import.run()
+# {:ok, import} = import |> Import.import()
 
 import |> render_struct(keys: [:id, :state, :imported_at, :records_count])
 ```

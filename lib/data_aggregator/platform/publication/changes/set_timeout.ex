@@ -14,6 +14,6 @@ defmodule DataAggregator.Platform.Publication.Changes.SetTimeout do
   def change(%Changeset{} = changeset, _opts, _ctx) do
     timeout = Records.export_timeout()
     Logger.info("Export timeout set to #{timeout}ms")
-    changeset |> Changeset.timeout(timeout)
+    Changeset.timeout(changeset, timeout)
   end
 end

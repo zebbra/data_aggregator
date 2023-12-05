@@ -8,8 +8,8 @@ defmodule Storybook.Examples.Table do
   @impl true
   def mount(_params, _session, socket) do
     socket =
-      socket
-      |> stream(
+      stream(
+        socket,
         :results,
         [
           %{id: 1, username: "jose"},

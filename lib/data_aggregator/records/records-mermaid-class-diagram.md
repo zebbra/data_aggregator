@@ -29,30 +29,40 @@ classDiagram
         Column[] columns
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
-        UtcDatetime imported_at
         UtcDatetime started_at
         UtcDatetime finished_at
-        Integer imported_count
-        Integer invalid_count
-        Integer duration
+        Integer rows_count
+        Integer rows_valid_count
+        Integer rows_invalid_count
+        Integer rows_imported_count
+        Integer job_id
+        Float import_progress
+        Integer rows_validated_count
+        Float rows_valid_ratio
+        Float validation_progress
+        Time duration
         String collection_name
         String attachment_url
         Integer attachment_byte_size
         String attachment_filename
         Term attachment_data
+        Column[] mappings
+        Map missing_mappings
         Integer records_count
         Collection collection
         Attachment attachment
         Record[] records
+        Job job
         destroy()
         read(String sort)
         create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
         create_from_path(Collection collection, String path, String filename)
         update_mapping(Column[] columns)
-        enqueue()
-        run()
-        add_progress(Integer imported, Integer invalid)
-        set_running()
+        add_validation_progress(Integer valid, Integer invalid)
+        enqueue_import()
+        import()
+        set_importing()
+        add_import_progress(Integer imported)
         set_failed()
         set_imported()
     }
@@ -150,6 +160,7 @@ classDiagram
     Attachment -- Import
     Attachment -- Record
     Attachment -- Image
+    Job -- Import
     Institution -- Collection
     Export -- Record
     Record -- Record

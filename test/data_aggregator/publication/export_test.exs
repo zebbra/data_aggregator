@@ -68,7 +68,7 @@ defmodule DataAggregator.ExportTest do
 
     test "update/2 with invalid data fails and returns an error changeset" do
       assert {:error, %Ash.Error.Invalid{}} =
-               export_fixture() |> Export.update(@invalid_attrs)
+               Export.update(export_fixture(), @invalid_attrs)
     end
 
     test "destroy/1 deletes a export" do
@@ -101,11 +101,11 @@ defmodule DataAggregator.ExportTest do
       # this one should not be published
       get_unpublishable_record(collection)
 
-      collected_records = collection |> Collection.collect_reviewable_records!()
+      collected_records = Collection.collect_reviewable_records!(collection)
 
-      case collection |> create_export_with_mapping(collected_records, mapping) do
+      case create_export_with_mapping(collection, collected_records, mapping) do
         {:ok, result} ->
-          case result |> Export.publish() do
+          case Export.publish(result) do
             {:ok, export} -> [export: result, attachment: export.attachment]
             {:error, error} -> [export: result, error: error]
           end
@@ -124,9 +124,9 @@ defmodule DataAggregator.ExportTest do
 
       df = Explorer.DataFrame.from_csv!(attachment.url)
 
-      assert df |> Explorer.DataFrame.n_columns() == Enum.count(Map.keys(@default_mapping))
+      assert Explorer.DataFrame.n_columns(df) == Enum.count(Map.keys(@default_mapping))
 
-      assert df |> Explorer.DataFrame.n_rows() == 2
+      assert Explorer.DataFrame.n_rows(df) == 2
     end
 
     @tag mapping: @valid_custom_mapping
@@ -138,9 +138,9 @@ defmodule DataAggregator.ExportTest do
 
       df = Explorer.DataFrame.from_csv!(attachment.url)
 
-      assert df |> Explorer.DataFrame.n_columns() == 2
+      assert Explorer.DataFrame.n_columns(df) == 2
 
-      assert df |> Explorer.DataFrame.n_rows() == 2
+      assert Explorer.DataFrame.n_rows(df) == 2
     end
 
     @tag mapping: @invalid_custom_mapping

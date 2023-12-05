@@ -23,6 +23,8 @@ defmodule DataAggregatorWeb.Components do
         Table,
         Transitions
       }
+
+      use DataAggregatorWeb.Components.ThemeSelect
     end
   end
 end

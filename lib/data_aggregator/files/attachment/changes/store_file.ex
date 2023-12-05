@@ -26,7 +26,7 @@ defmodule DataAggregator.Files.Attachment.Changes.StoreFile do
     if valid_path?(path) do
       changeset
     else
-      changeset |> Changeset.add_error(field: :path, message: "path is invalid", value: path)
+      Changeset.add_error(changeset, field: :path, message: "path is invalid", value: path)
     end
   end
 

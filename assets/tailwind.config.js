@@ -2,8 +2,10 @@
 // https://tailwindcss.com/docs/configuration
 
 const plugin = require("tailwindcss/plugin");
+const colors = require("tailwindcss/colors");
 const fs = require("fs");
 const path = require("path");
+const themes = require("daisyui/src/theming/themes");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -13,26 +15,6 @@ module.exports = {
     "../lib/*_web.ex",
     "../lib/*_web/**/*.*ex",
   ],
-  darkMode: ["class", ".theme-dark"],
-  theme: {
-    extend: {
-      colors: {
-        brand: {
-          50: "#FFF6EC",
-          100: "#FFECD3",
-          200: "#FFD4A5",
-          300: "#FFB66D",
-          400: "#FF8B32",
-          500: "#FF6A0A",
-          DEFAULT: "#FD4F00",
-          600: "#CC3702",
-          700: "#A12B0B",
-          800: "#82260C",
-          900: "#461004",
-        },
-      },
-    },
-  },
 
   // DaisyUI config
   daisyui: {
@@ -40,15 +22,41 @@ module.exports = {
     themes: [
       {
         light: {
-          ...require("daisyui/src/theming/themes").themes.light,
-          primary: "rgb(79, 70, 229)",
+          ...themes.light,
+          primary: colors.indigo["600"],
+          "primary-content": colors.indigo["50"],
+          secondary: colors.purple["600"],
+          "secondary-content": colors.purple["50"],
+          accent: colors.pink["600"],
+          "accent-content": colors.pink["50"],
+          success: colors.green["600"],
+          "success-content": colors.green["50"],
+          warning: colors.amber["600"],
+          "warning-content": colors.amber["50"],
+          error: colors.red["600"],
+          "error-content": colors.red["50"],
+          info: colors.blue["600"],
+          "info-content": colors.blue["50"],
           "--rounded-box": "0.5rem",
           "--rounded-btn": "0.375rem",
         },
 
         dark: {
-          ...require("daisyui/src/theming/themes").themes.dark,
-          primary: "rgb(79, 70, 229)",
+          ...themes.dark,
+          primary: colors.indigo["600"],
+          "primary-content": colors.indigo["50"],
+          secondary: colors.purple["600"],
+          "secondary-content": colors.purple["50"],
+          accent: colors.pink["600"],
+          "accent-content": colors.pink["50"],
+          success: colors.green["600"],
+          "success-content": colors.green["50"],
+          warning: colors.amber["600"],
+          "warning-content": colors.amber["50"],
+          error: colors.red["600"],
+          "error-content": colors.red["50"],
+          info: colors.blue["600"],
+          "info-content": colors.blue["50"],
           "--rounded-box": "0.5rem",
           "--rounded-btn": "0.375rem",
         },
@@ -57,8 +65,8 @@ module.exports = {
   },
 
   plugins: [
-    // Default form styles (might be conflicting with daisyui)
-    require("@tailwindcss/forms"),
+    // Default typography styles
+    // require("@tailwindcss/typography"),
 
     // DaisyUI
     require("daisyui"),
@@ -72,6 +80,12 @@ module.exports = {
       addVariant("phx-no-feedback", [
         ".phx-no-feedback&",
         ".phx-no-feedback &",
+      ]),
+    ),
+    plugin(({ addVariant }) =>
+      addVariant("phx-feedback", [
+        ".form-control:not(.phx-no-feedback) &",
+        ".form-control:not(.phx-no-feedback)&",
       ]),
     ),
     plugin(({ addVariant }) =>

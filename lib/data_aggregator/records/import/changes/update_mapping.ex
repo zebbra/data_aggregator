@@ -11,25 +11,28 @@ defmodule DataAggregator.Records.Import.Changes.UpdateMapping do
   require Logger
 
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    columns = Changeset.get_data(changeset, :columns)
-    mappings = Changeset.get_attribute(changeset, :columns)
+    case Changeset.fetch_change(changeset, :columns) do
+      :error ->
+        changeset
 
-    columns = merge_mappings(columns, mappings)
-    Changeset.change_attribute(changeset, :columns, columns)
-  end
-
-  def merge_mappings(columns, mappings) do
-    columns |> Enum.map(&merge_mapping(&1, mappings))
-  end
-
-  def merge_mapping(%Column{name: name} = column, mappings) do
-    case get_column(mappings, name) do
-      %Column{mapped_to: mapped_to} -> %{column | mapped_to: mapped_to}
-      nil -> column
+      {:ok, mappings} ->
+        columns = changeset |> Changeset.get_data(:columns) |> merge_mappings(mappings)
+        Changeset.change_attribute(changeset, :columns, columns)
     end
   end
 
-  def get_column(columns, name) do
-    Enum.find(columns, &(&1.name == name))
+  def merge_mappings(columns, mappings) do
+    Enum.map(columns, &merge_mapping(&1, mappings))
+  end
+
+  def merge_mapping(%Column{name: name} = column, mappings) do
+    case get_column_mapping(mappings, name) do
+      %Column{mapped_to: mapped_to} -> %{column | mapped_to: mapped_to}
+      nil -> %{column | mapped_to: nil}
+    end
+  end
+
+  def get_column_mapping(mappings, name) do
+    Enum.find(mappings, &(&1.name == name))
   end
 end

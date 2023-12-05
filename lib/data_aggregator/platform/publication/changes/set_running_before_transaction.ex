@@ -11,8 +11,7 @@ defmodule DataAggregator.Platform.Publication.Changes.SetRunningBeforeTransactio
   require Logger
 
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    changeset
-    |> Changeset.before_transaction(&set_running/1)
+    Changeset.before_transaction(changeset, &set_running/1)
   end
 
   defp set_running(%Changeset{data: export} = changeset) do
@@ -21,7 +20,7 @@ defmodule DataAggregator.Platform.Publication.Changes.SetRunningBeforeTransactio
         %Changeset{changeset | data: export}
 
       {:error, reason} ->
-        changeset |> Changeset.add_error(reason)
+        Changeset.add_error(changeset, reason)
     end
   end
 end

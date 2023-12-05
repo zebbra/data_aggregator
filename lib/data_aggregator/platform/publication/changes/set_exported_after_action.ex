@@ -11,7 +11,7 @@ defmodule DataAggregator.Platform.Publication.Changes.SetExportedAfterAction do
   require Logger
 
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    changeset |> Changeset.after_action(&set_exported/2)
+    Changeset.after_action(changeset, &set_exported/2)
   end
 
   defp set_exported(_changeset, export) do

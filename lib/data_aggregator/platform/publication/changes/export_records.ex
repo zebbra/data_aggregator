@@ -11,19 +11,19 @@ defmodule DataAggregator.Platform.Publication.Changes.ExportRecords do
   require Logger
 
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    changeset |> Changeset.before_action(&export_records/1)
+    Changeset.before_action(changeset, &export_records/1)
   end
 
   defp export_records(%Changeset{data: original_export} = changeset) do
-    case original_export |> Export.publish() do
+    case Export.publish(original_export) do
       {:ok, _export} -> changeset
-      {:error, error} -> changeset |> add_error(error, original_export)
+      {:error, error} -> add_error(changeset, error, original_export)
     end
   end
 
   defp add_error(changeset, error, export) do
     Logger.error("Error export records: #{inspect(error)}")
-    export |> Export.set_failed()
-    changeset |> Changeset.add_error(error)
+    Export.set_failed(export)
+    Changeset.add_error(changeset, error)
   end
 end

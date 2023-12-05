@@ -96,6 +96,7 @@ defmodule DataAggregator.RecordTest do
       [import: import]
     end
 
+    @tag :focus
     test "importing a record", %{import: import} do
       params = %{
         mte_material_entity_id: "ex-123",
@@ -201,7 +202,7 @@ defmodule DataAggregator.RecordTest do
         tax_scientific_name: "Example"
       }
 
-      record = import |> Record.import!(params)
+      record = Record.import!(import, params)
 
       other_collection =
         Collection.create!(%{

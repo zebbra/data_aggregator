@@ -34,66 +34,42 @@ defmodule DataAggregatorWeb.Components.Flash do
     <div
       :if={msg = render_slot(@inner_block) || Phoenix.Flash.get(@flash, @kind)}
       id={@id}
-      phx-mounted={Enum.member?(["server-error", "client-error"], @id) == false && show("##{@id}")}
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
-      class={[
-        "pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg shadow-lg ring-1",
-        @kind == :info && "bg-green-50 ring-green-500",
-        @kind == :error && "bg-red-50 ring-red-500"
-      ]}
+      class={[" pointer-events-auto w-full max-w-sm"]}
       {@rest}
     >
-      <div class="p-4">
-        <div class="flex items-start">
-          <div class="flex-shrink-0">
-            <.icon
-              :if={@kind == :info}
-              name="hero-information-circle-mini text-green-400"
-              class="w-6 h-6"
-            />
-            <.icon
-              :if={@kind == :error}
-              name="hero-exclamation-circle-mini text-red-400"
-              class="w-6 h-6"
-            />
-          </div>
+      <div class={[
+        "alert overflow-hidden",
+        @kind == :info && "alert-success bg-success-content text-success",
+        @kind == :error && "alert-error bg-error-content text-error"
+      ]}>
+        <.icon :if={@kind == :info} name="hero-information-circle-mini" class="w-6 h-6 shrink-0" />
+        <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="w-6 h-6 shrink-0" />
 
-          <div class="ml-3 w-0 flex-1 pt-0.5">
-            <p
-              :if={@title}
-              class={[
-                "mb-2 text-sm font-medium text-gray-900",
-                @kind == :info && "text-green-800",
-                @kind == :error && "text-red-800"
-              ]}
-            >
-              <%= @title %>
-            </p>
-            <p class={[
-              "text-sm",
-              @kind == :info && "text-green-700",
-              @kind == :error && "text-red-700"
-            ]}>
-              <%= msg %>
-            </p>
+        <div>
+          <h3 :if={@title} class="font-medium">
+            <%= @title %>
+          </h3>
+          <div class="text-sm">
+            <%= msg %>
           </div>
+        </div>
 
-          <div class="ml-4 flex flex-shrink-0">
-            <button
-              type="button"
-              class={[
-                "inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2",
-                @kind == :info &&
-                  "bg-green-50 text-green-500 hover:bg-green-100 focus:ring-green-600 focus:ring-offset-green-50",
-                @kind == :error &&
-                  "bg-red-50 text-red-500 hover:bg-red-100 focus:ring-red-600 focus:ring-offset-red-50"
-              ]}
-              aria-label={gettext("close")}
-            >
-              <.icon name="hero-x-mark-solid" class="w-5 h-5" />
-            </button>
-          </div>
+        <div class="ml-4 flex flex-shrink-0">
+          <button
+            type="button"
+            class={[
+              "inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2",
+              @kind == :info &&
+                "bg-green-50 text-green-500 hover:bg-green-100 focus:ring-green-600 focus:ring-offset-green-50",
+              @kind == :error &&
+                "bg-red-50 text-red-500 hover:bg-red-100 focus:ring-red-600 focus:ring-offset-red-50"
+            ]}
+            aria-label={gettext("close")}
+          >
+            <.icon name="hero-x-mark-solid" class="w-5 h-5" />
+          </button>
         </div>
       </div>
     </div>

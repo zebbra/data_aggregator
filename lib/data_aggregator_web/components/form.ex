@@ -35,9 +35,9 @@ defmodule DataAggregatorWeb.Components.Form do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="mt-8 space-y-8 bg-white dark:bg-gray-900">
+      <div class="space-y-8">
         <%= render_slot(@inner_block, f) %>
-        <div :for={action <- @actions} class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+        <div :for={action <- @actions} class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse sm:gap-4">
           <%= render_slot(action, f) %>
         </div>
       </div>
@@ -88,6 +88,7 @@ defmodule DataAggregatorWeb.Components.Form do
   attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
   attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
+  attr :class, :string, default: nil, doc: "additinal css class for input"
 
   attr :rest, :global,
     include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
@@ -98,36 +99,11 @@ defmodule DataAggregatorWeb.Components.Form do
   def input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     assigns
     |> assign(field: nil, id: assigns.id || field.id)
+    # |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
     |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
     |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
     |> assign_new(:value, fn -> field.value end)
     |> input()
-  end
-
-  def input(%{type: "radio"} = assigns) do
-    assigns =
-      assign_new(assigns, :checked, fn -> Form.normalize_value("radio", assigns[:value]) end)
-
-    ~H"""
-    <div phx-feedback-for={@name}>
-      <label class="flex items-center gap-3 text-sm font-medium leading-6 text-gray-900 dark:text-white">
-        <input type="hidden" name={@name} value="false" />
-        <input
-          type="radio"
-          id={@id}
-          name={@name}
-          value="true"
-          checked={@checked}
-          class="h-4 w-4 border-gray-300 text-indigo-600 checked:border-transparent checked:bg-current focus:ring-indigo-600 dark:border-white/10 dark:bg-white/5 dark:checked:border-transparent dark:checked:bg-current dark:focus:ring-offset-gray-900"
-          aria-invalid={@errors != []}
-          aria-describedby={@errors != [] && "#{@id}-error"}
-          {@rest}
-        />
-        <%= @label %>
-      </label>
-      <.error :for={msg <- @errors} id={"#{@id}-error"}><%= msg %></.error>
-    </div>
-    """
   end
 
   def input(%{type: "checkbox"} = assigns) do
@@ -135,99 +111,148 @@ defmodule DataAggregatorWeb.Components.Form do
       assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", assigns[:value]) end)
 
     ~H"""
-    <div phx-feedback-for={@name}>
-      <label class="flex items-center gap-3 text-sm font-medium leading-6 text-gray-900 dark:text-white">
-        <input type="hidden" name={@name} value="false" />
+    <div phx-feedback-for={@name} class="form-control">
+      <input type="hidden" name={@name} value="false" />
+      <label class="label cursor-pointer justify-start space-x-4">
         <input
           type="checkbox"
           id={@id}
           name={@name}
           value="true"
           checked={@checked}
-          class="h-4 w-4 rounded border-gray-300 text-indigo-600 checked:border-transparent checked:bg-current focus:ring-indigo-600 dark:border-white/10 dark:bg-white/5 dark:checked:border-transparent dark:checked:bg-current dark:focus:ring-offset-gray-900"
+          class="checkbox"
           aria-invalid={@errors != []}
           aria-describedby={@errors != [] && "#{@id}-error"}
           {@rest}
         />
-        <%= @label %>
+        <span class="label-text"><%= @label %></span>
       </label>
-      <.error :for={msg <- @errors} id={"#{@id}-error"}><%= msg %></.error>
+
+      <.errors errors={@errors} />
+    </div>
+    """
+  end
+
+  def input(%{type: "radio"} = assigns) do
+    assigns =
+      assign_new(assigns, :checked, fn -> Form.normalize_value("radio", assigns[:value]) end)
+
+    ~H"""
+    <div phx-feedback-for={@name} class="form-control">
+      <input type="hidden" name={@name} value="false" />
+      <label class="label cursor-pointer justify-start space-x-4">
+        <input
+          type="radio"
+          id={@id}
+          name={@name}
+          value="true"
+          checked={@checked}
+          class="radio"
+          aria-invalid={@errors != []}
+          aria-describedby={@errors != [] && "#{@id}-error"}
+          {@rest}
+        />
+        <span class="label-text"><%= @label %></span>
+      </label>
+
+      <.errors errors={@errors} />
     </div>
     """
   end
 
   def input(%{type: "select"} = assigns) do
     ~H"""
-    <div phx-feedback-for={@name}>
-      <.label for={@id}><%= @label %></.label>
-      <div class={[
-        "mt-2",
-        @errors != [] && "relative rounded-md shadow-md phx-no-feedback:shadow-none"
-      ]}>
-        <select
-          id={@id}
-          name={@name}
-          class={[
-            "block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6",
-            "text-gray-900 dark:bg-white/5 dark:text-white",
-            "phx-no-feedback:ring-gray-300 phx-no-feedback:focus:ring-indigo-600 dark:phx-no-feedback:ring-white/10 dark:phx-no-feedback:focus:ring-indigo-500",
-            @errors == [] &&
-              "ring-gray-300 focus:ring-indigo-600 dark:ring-white/10 dark:focus:ring-indigo-500",
-            @errors != [] &&
-              "ring-red-300 focus:ring-red-500 dark:ring-red-400 dark:focus:ring-red-500"
-          ]}
-          multiple={@multiple}
-          aria-invalid={@errors != []}
-          aria-describedby={@errors != [] && "#{@id}-error"}
-          {@rest}
-        >
-          <option :if={@prompt} value=""><%= @prompt %></option>
-          <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
-        </select>
-        <div
-          :if={@errors != []}
-          class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 phx-no-feedback:hidden"
-        >
-          <.icon name="hero-exclamation-circle-mini" class="w-5 h-5 text-red-500" />
-        </div>
-      </div>
-      <.error :for={msg <- @errors} id={"#{@id}-error"}><%= msg %></.error>
+    <div
+      phx-feedback-for={@name}
+      class={["form-control w-full", @errors != [] && "[&_select]:phx-feedback:select-error"]}
+    >
+      <.label :if={@label} for={@id}><%= @label %></.label>
+
+      <select
+        id={@id}
+        name={@name}
+        class={["select select-bordered", @class]}
+        multiple={@multiple}
+        aria-invalid={@errors != []}
+        aria-describedby={@errors != [] && "#{@id}-error"}
+        {@rest}
+      >
+        <option :if={@prompt} value=""><%= @prompt %></option>
+        <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+      </select>
+
+      <.errors errors={@errors} />
     </div>
     """
   end
 
   def input(%{type: "textarea"} = assigns) do
     ~H"""
-    <div phx-feedback-for={@name}>
-      <.label for={@id}><%= @label %></.label>
-      <div class={[
-        "mt-2",
-        @errors != [] && "relative rounded-md shadow-md phx-no-feedback:shadow-none"
-      ]}>
-        <textarea
-          id={@id}
+    <div phx-feedback-for={@name} class="form-control w-full">
+      <.label :if={@label} for={@id}><%= @label %></.label>
+
+      <textarea
+        name={@name}
+        id={@id}
+        class={["textarea textarea-bordered", @errors != [] && "phx-feedback:textarea-error", @class]}
+        aria-invalid={@errors != []}
+        aria-describedby={@errors != [] && "#{@id}-error"}
+        {@rest}
+      ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
+
+      <.errors errors={@errors} />
+    </div>
+    """
+  end
+
+  def input(%{type: "range"} = assigns) do
+    ~H"""
+    <div phx-feedback-for={@name} class="form-control w-full">
+      <.label :if={@label} for={@id}><%= @label %></.label>
+
+      <input
+        type={@type}
+        name={@name}
+        id={@id}
+        value={Phoenix.HTML.Form.normalize_value("range", @value)}
+        class={["range", @errors != [] && "phx-feedback:range-error", @class]}
+        aria-invalid={@errors != []}
+        aria-describedby={@errors != [] && "#{@id}-error"}
+        {@rest}
+      />
+
+      <.errors errors={@errors} />
+    </div>
+    """
+  end
+
+  def input(%{type: "search"} = assigns) do
+    ~H"""
+    <div phx-feedback-for={@name} class="form-control w-full">
+      <.label :if={@label} for={@id}><%= @label %></.label>
+
+      <div class="relative w-full">
+        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+          <.icon name="hero-magnifying-glass" class="w-5 h-5 text-base-content/50" />
+        </div>
+
+        <input
+          type="search"
           name={@name}
+          id={@id}
+          value={Phoenix.HTML.Form.normalize_value(@type, @value)}
           class={[
-            "block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6",
-            "text-gray-900 dark:bg-white/5 dark:text-white",
-            "phx-no-feedback:ring-gray-300 phx-no-feedback:focus:ring-indigo-600 dark:phx-no-feedback:ring-white/10 dark:phx-no-feedback:focus:ring-indigo-500",
-            @errors == [] &&
-              "ring-gray-300 focus:ring-indigo-600 dark:ring-white/10 dark:focus:ring-indigo-500",
-            @errors != [] &&
-              "ring-red-300 focus:ring-red-500 dark:ring-red-400 dark:focus:ring-red-500"
+            "input input-bordered !pl-10 w-full rounded-full",
+            @errors != [] && "phx-feedback:input-error",
+            @class
           ]}
           aria-invalid={@errors != []}
           aria-describedby={@errors != [] && "#{@id}-error"}
           {@rest}
-        ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
-        <div
-          :if={@errors != []}
-          class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 phx-no-feedback:hidden"
-        >
-          <.icon name="hero-exclamation-circle-mini" class="w-5 h-5 text-red-500" />
-        </div>
+        />
       </div>
-      <.error :for={msg <- @errors} id={"#{@id}-error"}><%= msg %></.error>
+
+      <.errors errors={@errors} />
     </div>
     """
   end
@@ -235,43 +260,26 @@ defmodule DataAggregatorWeb.Components.Form do
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
-    <div phx-feedback-for={@name}>
-      <.label for={@id}><%= @label %></.label>
-      <div class={[
-        "mt-2",
-        @errors != [] && "relative rounded-md shadow-md phx-no-feedback:shadow-none"
-      ]}>
-        <input
-          type={@type}
-          name={@name}
-          id={@id}
-          value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-          class={[
-            "block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6",
-            "text-gray-900 dark:bg-white/5 dark:text-white",
-            "phx-no-feedback:ring-gray-300 phx-no-feedback:focus:ring-indigo-600 dark:phx-no-feedback:ring-white/10 dark:phx-no-feedback:focus:ring-indigo-500",
-            @errors == [] &&
-              "ring-gray-300 focus:ring-indigo-600 dark:ring-white/10 dark:focus:ring-indigo-500",
-            @errors != [] &&
-              "ring-red-300 focus:ring-red-500 dark:ring-red-400 dark:focus:ring-red-500"
-          ]}
-          aria-invalid={@errors != []}
-          aria-describedby={@errors != [] && "#{@id}-error"}
-          {@rest}
-        />
-        <div
-          :if={@errors != []}
-          class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 phx-no-feedback:hidden"
-        >
-          <.icon name="hero-exclamation-circle-mini" class="w-5 h-5 text-red-500" />
-        </div>
-      </div>
-      <.error :for={msg <- @errors} id={"#{@id}-error"}><%= msg %></.error>
+    <div phx-feedback-for={@name} class="form-control w-full">
+      <.label :if={@label} for={@id}><%= @label %></.label>
+
+      <input
+        type={@type}
+        name={@name}
+        id={@id}
+        value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+        class={["input input-bordered", @errors != [] && "input-error", @class]}
+        aria-invalid={@errors != []}
+        aria-describedby={@errors != [] && "#{@id}-error"}
+        {@rest}
+      />
+
+      <.errors errors={@errors} />
     </div>
     """
   end
 
-  @doc ~S"""
+  @doc """
   Renders a label.
   """
   attr :for, :string, default: nil
@@ -279,27 +287,28 @@ defmodule DataAggregatorWeb.Components.Form do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-medium leading-6 text-gray-900 dark:text-white">
-      <%= render_slot(@inner_block) %>
+    <label for={@for} class="label">
+      <span class="label-text">
+        <%= render_slot(@inner_block) %>
+      </span>
     </label>
     """
   end
 
-  @doc ~S"""
+  @doc """
   Generates a generic error message.
   """
-  attr :id, :string
-  slot :inner_block, required: true
+  attr :errors, :list, required: true
 
-  def error(assigns) do
+  def errors(assigns) do
     ~H"""
-    <p id={@id} class="mt-2 text-sm text-red-600 phx-no-feedback:hidden">
-      <%= render_slot(@inner_block) %>
-    </p>
+    <label :if={@errors != []} class="label phx-no-feedback:hidden">
+      <span :for={msg <- @errors} class="label-text-alt text-error"><%= msg %></span>
+    </label>
     """
   end
 
-  @doc ~S"""
+  @doc """
   Translates an error message using gettext.
   """
   def translate_error({msg, opts}) do
@@ -320,7 +329,7 @@ defmodule DataAggregatorWeb.Components.Form do
     end
   end
 
-  @doc ~S"""
+  @doc """
   Translates the errors for a field from a keyword list of errors.
   """
   def translate_errors(errors, field) when is_list(errors) do

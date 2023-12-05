@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.ImportTest do
+defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
@@ -6,25 +6,28 @@ defmodule DataAggregator.Records.ImportTest do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
 
-  setup do
-    {:ok, collection} =
-      Collection.create(%{
-        name: "Test Collection",
-        owner: "Max Powers",
-        reviewer: :swiss_bryophytes
-      })
+  @valid_path "test/support/fixtures/files/museum-dataset-import-example.csv"
+  @invalid_path "test/support/fixtures/files/no-recent-events.jpeg"
 
-    %{collection: collection}
-  end
+  describe "DataAggregator.Records.Import.create_from_path/2" do
+    setup do
+      collection =
+        Collection.create!(%{
+          name: "Test Collection",
+          owner: "Max Powers",
+          reviewer: :swiss_bryophytes
+        })
 
-  describe "action: create_from_path" do
+      [collection: collection]
+    end
+
     test "with valid file", %{collection: collection} do
-      path = "test/support/fixtures/files/museum-dataset-import-example.csv"
-      {:ok, import} = Import.create_from_path(collection, path)
+      {:ok, import} = Import.create_from_path(collection, @valid_path)
 
       assert import.state == :pending
+      assert import.rows_count == 891
 
-      columns = import.columns |> Enum.map(&{&1.name, &1.type})
+      columns = Enum.map(import.columns, &{&1.name, &1.type})
 
       assert columns == [
                {"Age", :string},
@@ -58,19 +61,17 @@ defmodule DataAggregator.Records.ImportTest do
     end
 
     test "with custom filename", %{collection: collection} do
-      path = "test/support/fixtures/files/museum-dataset-import-example.csv"
-      {:ok, import} = Import.create_from_path(collection, path, %{filename: "custom.csv"})
+      {:ok, import} = Import.create_from_path(collection, @valid_path, %{filename: "custom.csv"})
 
       assert import.attachment_filename == "custom.csv"
     end
 
     test "with invalid file", %{collection: collection} do
-      path = "test/support/fixtures/files/no-recent-events.jpeg"
-      {:error, error} = Import.create_from_path(collection, path)
+      {:error, error} = Import.create_from_path(collection, @invalid_path)
 
       assert_invalid_path(
         error,
-        "path is invalid (Polars Error: invalid utf-8 sequence in csv)"
+        ~r/Could not detect CSV delimiter/
       )
     end
 
@@ -80,24 +81,24 @@ defmodule DataAggregator.Records.ImportTest do
 
       assert_invalid_path(
         error,
-        ~r/path is invalid/
+        ~r/no such file or directory/
       )
     end
-  end
 
-  defp assert_invalid_path(error, message) when is_binary(message) do
-    assert_has_error(
-      error.changeset,
-      Ash.Error.Invalid,
-      &(&1.message == message)
-    )
-  end
+    defp assert_invalid_path(error, message) when is_binary(message) do
+      assert_has_error(
+        error.changeset,
+        Ash.Error.Invalid,
+        &(&1.field == :path && &1.message == message)
+      )
+    end
 
-  defp assert_invalid_path(error, message) when is_struct(message, Regex) do
-    assert_has_error(
-      error.changeset,
-      Ash.Error.Invalid,
-      &String.match?(&1.message, message)
-    )
+    defp assert_invalid_path(error, message) when is_struct(message, Regex) do
+      assert_has_error(
+        error.changeset,
+        Ash.Error.Invalid,
+        &(&1.field == :path && String.match?(&1.message, message))
+      )
+    end
   end
 end

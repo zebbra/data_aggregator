@@ -1,8 +1,8 @@
 defmodule Storybook.Components.Menu do
   use PhoenixStorybook.Story, :component
 
-  alias DataAggregatorWeb.Components.Menu
   alias DataAggregatorWeb.Components.Button
+  alias DataAggregatorWeb.Components.Menu
 
   def function, do: &Menu.menu/1
 

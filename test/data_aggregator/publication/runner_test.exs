@@ -25,7 +25,7 @@ defmodule DataAggregator.Platform.Publication.Export.RunnerTest do
       # this one should not be published
       get_unpublishable_record(collection)
 
-      records = collection |> Collection.collect_reviewable_records!()
+      records = Collection.collect_reviewable_records!(collection)
 
       {:ok, export} =
         %{

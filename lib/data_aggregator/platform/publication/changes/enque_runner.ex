@@ -12,7 +12,7 @@ defmodule DataAggregator.Platform.Publication.Changes.EnqueueRunner do
 
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    changeset |> Changeset.after_transaction(&enqueue_runner/2)
+    Changeset.after_transaction(changeset, &enqueue_runner/2)
   end
 
   defp enqueue_runner(_changeset, {:ok, %Export{id: id} = export}) do

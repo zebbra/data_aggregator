@@ -12,8 +12,7 @@ defmodule Mix.Tasks.Repo.Restore do
       Mix.Task.run("repo.drop", ["--force-drop"])
       Mix.Task.run("repo.create")
 
-      ["--no-acl", "--no-owner", "-d", @database, @source]
-      |> pg_restore()
+      pg_restore(["--no-acl", "--no-owner", "-d", @database, @source])
     end
   end
 

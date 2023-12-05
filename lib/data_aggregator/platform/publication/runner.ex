@@ -28,7 +28,7 @@ defmodule DataAggregator.Platform.Publication.Export.Runner do
   def perform(%Oban.Job{args: %{"id" => id}}) do
     with {:ok, export} <- Export.get_by_id(id) do
       Logger.info("Running export #{inspect(export.id)} ...")
-      export |> Export.run()
+      Export.run(export)
     end
   end
 

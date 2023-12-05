@@ -1,4 +1,5 @@
 import Config
+
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the
 # system starts, so it is typically used to load production configuration
@@ -38,10 +39,14 @@ if System.get_env("LOG_LEVEL") do
   config :logger, level: level
 end
 
+if System.get_env("IMPORT_MAX_CONCURRENCY") do
+  max_concurrency = System.get_env("IMPORT_MAX_CONCURRENCY") |> String.to_integer()
+  config :data_aggregator, DataAggregator.Records, import_max_concurrency: max_concurrency
+end
+
 # Configure Sentry runtime environment
 config :sentry,
-  server_name: System.get_env("HOSTNAME"),
-  log_level: System.get_env("SENTRY_LOG_LEVEL", "warning") |> String.to_atom()
+  environment_name: System.get_env("SENTRY_ENVIRONMENT", to_string(config_env()))
 
 # ## Waffle
 config :waffle,
@@ -139,6 +144,7 @@ if config_env() == :prod do
     http: [
       port: port,
       ip: listen_ip
+
       # transport_options: [max_connections: :infinity] # not valid for bandit
     ],
     secret_key_base: secret_key_base

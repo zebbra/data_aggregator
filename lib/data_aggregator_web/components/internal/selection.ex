@@ -6,8 +6,7 @@ defmodule DataAggregatorWeb.Components.Internal.Selection do
 
   # Ensure the current selected record exists in the socket assigns
   def assign_current_selected(socket) do
-    socket
-    |> assign(:current_selected, Map.get(socket.assigns, :current_selected, nil))
+    assign(socket, :current_selected, Map.get(socket.assigns, :current_selected, nil))
   end
 
   # Handle a select event from the client

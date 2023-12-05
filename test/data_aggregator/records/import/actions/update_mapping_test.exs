@@ -31,7 +31,14 @@ defmodule DataAggregator.Records.Import.Actions.UpdateMappingTest do
       ]
 
       {:ok, import} = Import.update_mapping(import, mappings)
-      columns = import.columns |> Enum.map(&{&1.name, &1.type, &1.mapped_to})
+      columns = Enum.map(import.columns, &{&1.name, &1.type, &1.mapped_to})
+
+      missing_attributes =
+        Enum.map(import.missing_mappings, fn cat ->
+          {cat.name, Enum.map(cat.attributes, & &1.name)}
+        end)
+
+      assert missing_attributes == [{:tax, [:scientific_name]}, {:mte, [:material_entity_id]}]
 
       assert import.state == :pending
 
@@ -71,7 +78,7 @@ defmodule DataAggregator.Records.Import.Actions.UpdateMappingTest do
       ]
 
       {:ok, import} = Import.update_mapping(import, mappings)
-      columns = import.columns |> Enum.map(&{&1.name, &1.type, &1.mapped_to})
+      columns = Enum.map(import.columns, &{&1.name, &1.type, &1.mapped_to})
 
       assert columns == [
                {"Age", :string, nil},
