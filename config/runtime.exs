@@ -46,7 +46,7 @@ end
 
 # Configure Sentry runtime environment
 config :sentry,
-  environment_name: System.get_env("SENTRY_ENVIRONMENT", config_env() |> to_string())
+  environment_name: System.get_env("SENTRY_ENVIRONMENT", to_string(config_env()))
 
 # ## Waffle
 config :waffle,
