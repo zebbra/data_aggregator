@@ -238,7 +238,7 @@ defmodule DataAggregator.MixProject do
       {:swoosh, "~> 1.3"},
 
       # Data Processing and Parsing
-      {:explorer, "0.7.1"},
+      {:explorer, "~> 0.7.2"},
       {:csv, "~> 3.2"},
       {:waffle, "~> 1.1"},
       {:ex_aws, "~> 2.5.0"},
