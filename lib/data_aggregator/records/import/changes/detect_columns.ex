@@ -41,11 +41,16 @@ defmodule DataAggregator.Records.Import.Changes.DetectColumns do
       columns =
         df
         |> Explorer.DataFrame.dtypes()
-        |> Enum.map(fn {name, type} -> %Import.Column{name: name, type: type} end)
+        |> Enum.map(&build_column/1)
 
       Logger.info("Detected #{length(columns)} in import file #{inspect(filename)}")
 
       {:ok, columns}
     end
   end
+
+  # explorer returns {:f, length} for float columns
+  # https://github.com/elixir-explorer/explorer/pull/739
+  defp build_column({name, {:f, _}}), do: build_column({name, :float})
+  defp build_column({name, type}), do: %Import.Column{name: name, type: type}
 end
