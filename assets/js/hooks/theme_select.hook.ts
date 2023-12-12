@@ -1,4 +1,4 @@
-import { Hook, makeHook } from "phoenix_typed_hook";
+import { Hook, makeHook } from "./hook";
 
 class ThemeSelect extends Hook {
   mounted() {
