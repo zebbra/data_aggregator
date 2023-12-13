@@ -1,11 +1,11 @@
-defmodule DataAggregator.PublicationFixtures do
+defmodule DataAggregator.ExportFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  Publication entities via the `DataAggregator.Platform` context.
+  Publication entities via the `DataAggregator.Records` context.
   """
 
-  alias DataAggregator.Platform.Publication.Export
   alias DataAggregator.Records
+  alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
 
   import DataAggregator.RecordsFixtures

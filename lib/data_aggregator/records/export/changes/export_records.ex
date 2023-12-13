@@ -1,4 +1,4 @@
-defmodule DataAggregator.Platform.Publication.Changes.ExportRecords do
+defmodule DataAggregator.Records.Changes.ExportRecords do
   @moduledoc """
   Changeset hook to export records
   """
@@ -6,10 +6,9 @@ defmodule DataAggregator.Platform.Publication.Changes.ExportRecords do
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Platform
-  alias DataAggregator.Platform.Publication.Export
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Export
 
   require Logger
 
@@ -18,7 +17,7 @@ defmodule DataAggregator.Platform.Publication.Changes.ExportRecords do
   end
 
   defp export_records(%Changeset{data: original_export} = changeset) do
-    export = Platform.load!(original_export, [:collection])
+    export = Records.load!(original_export, [:collection])
     collection = Records.load!(export.collection, [:records_to_publish_query])
 
     case Collection.export(export, collection.records_to_publish_query) do

@@ -1,4 +1,4 @@
-defmodule DataAggregator.Platform.Publication.Changes.SetTimeout do
+defmodule DataAggregator.Records.Changes.SetTimeout do
   @moduledoc """
   Timeout for the export/publication action. In `DataAggregator.Records.export_timeout/0` you can see how to change various export configurations.
   """

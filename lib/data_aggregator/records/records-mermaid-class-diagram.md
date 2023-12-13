@@ -12,6 +12,7 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Float digitizing_progress
+        Map records_to_publish_query
         Integer records_count
         Integer imports_count
         Institution institution
@@ -21,7 +22,33 @@ classDiagram
         update(UUID id, Integer items_to_digitize, String owner, String name, ...)
         create(UUID id, Integer items_to_digitize, String owner, String name, ...)
         read(String sort)
-        collect_reviewable_records(Struct collection)
+        publish(Struct export)
+        export(Struct export, Struct records_query)
+    }
+    class Export {
+        Atom state
+        UUID id
+        String name
+        UtcDatetime exported_at
+        UtcDatetime started_at
+        UtcDatetime finished_at
+        Map mapping
+        Integer exported_count
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        Collection collection
+        Attachment attachment
+        destroy()
+        read()
+        create(Collection collection, UUID id, String name, UtcDatetime exported_at, ...)
+        update_mapping(Map mapping, UUID id, String name, UtcDatetime exported_at, ...)
+        update(Struct[] records, UUID id, String name, UtcDatetime exported_at, ...)
+        enqueue()
+        set_running()
+        set_failed(UUID id, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
+        run()
+        set_exported()
+        update_attachment(Attachment attachment)
     }
     class Import {
         Atom state
@@ -134,7 +161,6 @@ classDiagram
         UtcDatetimeUsec updated_at
         Collection collection
         Import[] imports
-        Export[] exports
         Image[] images
         Attachment[] image_attachments
         destroy()
@@ -157,13 +183,13 @@ classDiagram
         create(UUID id, Integer size, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
     }
 
+    Attachment -- Export
     Attachment -- Import
     Attachment -- Record
     Attachment -- Image
     Job -- Import
     Institution -- Collection
-    Export -- Record
-    Record -- Record
+    Collection -- Export
     Collection -- Import
     Collection -- Record
     Import -- Record

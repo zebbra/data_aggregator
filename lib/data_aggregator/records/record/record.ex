@@ -19,8 +19,6 @@ defmodule DataAggregator.Records.Record do
 
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Platform.Publication.Export
-  alias DataAggregator.Platform.Publication.Record, as: ExportRecord
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
   alias __MODULE__
@@ -44,11 +42,6 @@ defmodule DataAggregator.Records.Record do
     many_to_many :imports, Import do
       api DataAggregator.Records
       through Import.Record
-    end
-
-    many_to_many :exports, Export do
-      api DataAggregator.Platform
-      through ExportRecord
     end
 
     has_many :images, Record.Image

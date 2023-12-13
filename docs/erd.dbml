@@ -23,25 +23,6 @@ Table institutions {
   updated_at timestamp
 }
 
-Table exports {
-  state varchar
-  id uuid [pk]
-  name varchar
-  exported_at timestamp
-  started_at timestamp
-  finished_at timestamp
-  mapping jsonb
-  inserted_at timestamp
-  updated_at timestamp
-  collection_id uuid
-  attachment_id uuid
-}
-
-Table export_records {
-  export_id uuid [pk]
-  record_id uuid [pk]
-}
-
 Table collections {
   id uuid [pk]
   items_to_digitize integer
@@ -54,6 +35,21 @@ Table collections {
   inserted_at timestamp
   updated_at timestamp
   institution_id uuid
+}
+
+Table exports {
+  state varchar
+  id uuid [pk]
+  name varchar
+  exported_at timestamp
+  started_at timestamp
+  finished_at timestamp
+  mapping jsonb
+  exported_count integer
+  inserted_at timestamp
+  updated_at timestamp
+  collection_id uuid
+  attachment_id uuid
 }
 
 Table imports {
@@ -217,13 +213,11 @@ Ref: collections.id < exports.collection_id
 Ref: collections.id < imports.collection_id
 Ref: collections.id < records.collection_id
 Ref: dwc_attributes.id < attribute_resolving_strategies.dwc_attribute_id
-Ref: exports.id < export_records.export_id
 Ref: file_attachments.id < exports.attachment_id
 Ref: file_attachments.id < imports.attachment_id
 Ref: file_attachments.id < record_images.attachment_id
 Ref: imports.id < import_records.import_id
 Ref: institutions.id < collections.institution_id
 Ref: oban_jobs.id < imports.job_id
-Ref: records.id < export_records.record_id
 Ref: records.id < import_records.record_id
 Ref: records.id < record_images.record_id

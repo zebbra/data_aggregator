@@ -1,12 +1,12 @@
-defmodule DataAggregator.Platform.Publication.Changes.SetExportedAfterAction do
+defmodule DataAggregator.Records.Changes.SetExportedAfterAction do
   @moduledoc """
-  Action call to `DataAggregator.Platform.Publication.Export.set_exported/1` after the publish action
+  Action call to `DataAggregator.Records.Export.set_exported/1` after the publish action
   """
 
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Platform.Publication.Export
+  alias DataAggregator.Records.Export
 
   require Logger
 

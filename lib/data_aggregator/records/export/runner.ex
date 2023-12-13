@@ -1,14 +1,14 @@
-defmodule DataAggregator.Platform.Publication.Export.Runner do
+defmodule DataAggregator.Records.Export.Runner do
   @moduledoc """
-  `Oban.Worker` to run `DataAggregator.Plaform.Publication.Export.run/1` async.
+  `Oban.Worker` to run `DataAggregator.Records.Export.run/1` async.
 
-  Used in `DataAggregator.Platform.Publication.Export.enqueue/1` (and tests) like:
+  Used in `DataAggregator.Records.Export.enqueue/1` (and tests) like:
 
   ```elixir
   {:ok, export} =
     export_id
-    |> DataAggregator.Platform.Publication.Export.get_by_id!()
-    |> DataAggregator.Platform.Publication.Export.enqueue()
+    |> DataAggregator.Records.Export.get_by_id!()
+    |> DataAggregator.Records.Export.enqueue()
   ```
 
   ## Arguments
@@ -19,8 +19,8 @@ defmodule DataAggregator.Platform.Publication.Export.Runner do
 
   use Oban.Worker, queue: :exports, max_attempts: 1
 
-  alias DataAggregator.Platform.Publication.Export
   alias DataAggregator.Records
+  alias DataAggregator.Records.Export
 
   require Logger
 

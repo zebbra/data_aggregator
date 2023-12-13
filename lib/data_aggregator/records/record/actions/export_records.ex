@@ -7,8 +7,8 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
 
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Platform.Publication.Export
   alias DataAggregator.Records
+  alias DataAggregator.Records.Export
 
   @impl true
   def run(input, _opts, _context) do

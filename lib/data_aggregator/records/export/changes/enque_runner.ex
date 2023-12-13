@@ -1,12 +1,12 @@
-defmodule DataAggregator.Platform.Publication.Changes.EnqueueRunner do
+defmodule DataAggregator.Records.Changes.EnqueueRunner do
   @moduledoc """
-  Enques a job to run by the `DataAggregator.Platform.Publication.Export.Runner` worker with the given export object as parameter
+  Enques a job to run by the `DataAggregator.Records.Export.Runner` worker with the given export object as parameter
   """
 
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Platform.Publication.Export
+  alias DataAggregator.Records.Export
 
   require Logger
 

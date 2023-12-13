@@ -1,4 +1,4 @@
-defmodule DataAggregator.Platform.Publication.Export do
+defmodule DataAggregator.Records.Export do
   @moduledoc """
   An export represents an exported set of records
   """
@@ -8,7 +8,7 @@ defmodule DataAggregator.Platform.Publication.Export do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine]
 
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Platform.Publication
+  alias DataAggregator.Records.Changes
   alias DataAggregator.Records.Collection
 
   attributes do
@@ -25,9 +25,7 @@ defmodule DataAggregator.Platform.Publication.Export do
   end
 
   relationships do
-    belongs_to :collection, Collection do
-      api DataAggregator.Records
-    end
+    belongs_to :collection, Collection
 
     belongs_to :attachment, Attachment do
       api DataAggregator.Files
@@ -53,15 +51,13 @@ defmodule DataAggregator.Platform.Publication.Export do
       primary? true
       argument :collection, Collection, allow_nil?: false
 
-      # change Publication.Changes.UpdateMapping
-
       change manage_relationship(:collection, :collection, type: :append)
     end
 
     update :update_mapping do
       argument :mapping, :map, allow_nil?: true
 
-      change Publication.Changes.UpdateMapping
+      change Changes.UpdateMapping
       change load(:attachment)
     end
 
@@ -73,7 +69,7 @@ defmodule DataAggregator.Platform.Publication.Export do
     update :enqueue do
       accept []
       change transition_state(:queued)
-      change Publication.Changes.EnqueueRunner
+      change Changes.EnqueueRunner
     end
 
     update :set_running do
@@ -90,12 +86,12 @@ defmodule DataAggregator.Platform.Publication.Export do
 
     update :run do
       accept []
-      change Publication.Changes.SetTimeout
-      change Publication.Changes.SetRunningBeforeTransaction
+      change Changes.SetTimeout
+      change Changes.SetRunningBeforeTransaction
       change transition_state(:running)
       change set_attribute(:started_at, &DateTime.utc_now/0)
-      change Publication.Changes.ExportRecords
-      change Publication.Changes.SetExportedAfterAction
+      change Changes.ExportRecords
+      change Changes.SetExportedAfterAction
       change load(:attachment)
     end
 
@@ -115,7 +111,7 @@ defmodule DataAggregator.Platform.Publication.Export do
   end
 
   code_interface do
-    define_for DataAggregator.Platform
+    define_for DataAggregator.Records
     define :read
     define :create
     define :update

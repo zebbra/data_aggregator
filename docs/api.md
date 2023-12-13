@@ -24,48 +24,6 @@ classDiagram
         read()
         create(UUID id, String name, String code, String address, ...)
     }
-    class Export {
-        Atom state
-        UUID id
-        String name
-        UtcDatetime exported_at
-        UtcDatetime started_at
-        UtcDatetime finished_at
-        Map mapping
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-        Integer records_count
-        Record[] export_records
-        Collection collection
-        Attachment attachment
-        Record[] records
-        destroy()
-        read()
-        create(Collection collection, Struct[] records, UUID id, String name, ...)
-        update_mapping(Map mapping, UUID id, String name, UtcDatetime exported_at, ...)
-        update(Struct[] records, UUID id, String name, UtcDatetime exported_at, ...)
-        enqueue()
-        set_running()
-        set_failed(UUID id, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
-        run()
-        set_exported()
-        update_attachment(Attachment attachment)
-        publish(Struct export)
-    }
-    class Record {
-        Export export
-        Record record
-        update()
-        destroy()
-        read()
-        create(Export export, Record record)
-    }
-
-    Attachment -- Export
-    Export -- Record
-    Export -- Collection
-    Export -- Record
-    Record -- Record
 ```
 
 ### ER Diagram
@@ -86,34 +44,11 @@ erDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
     }
-    Export {
-        Atom state
-        UUID id
-        String name
-        UtcDatetime exported_at
-        UtcDatetime started_at
-        UtcDatetime finished_at
-        Map mapping
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-        Integer records_count
-    }
-    Record {
-
-    }
-
-    Attachment ||--|| Export : ""
-    Export ||--|| Record : ""
-    Export ||--|| Collection : ""
-    Export ||--|| Record : ""
-    Record ||--|| Record : ""
 ```
 
 ### Resources
 
 - [Institution](#institution)
-- [Export](#export)
-- [Record](#record)
 
 ### Institution
 
@@ -145,63 +80,6 @@ erDiagram
 | **read** | _read_ | <ul></ul> |  |
 | **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>address</b> <i>String</i> attribute</li><li><b>zip_code</b> <i>String</i> attribute</li><li><b>city</b> <i>String</i> attribute</li><li><b>country</b> <i>String</i> attribute</li><li><b>mail</b> <i>String</i> attribute</li><li><b>tel</b> <i>String</i> attribute</li><li><b>contact_person</b> <i>String</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 
-### Export
-
-
-
-#### Attributes
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| **state** | Atom |  |
-| **id** | UUID |  |
-| **name** | String |  |
-| **exported_at** | UtcDatetime |  |
-| **started_at** | UtcDatetime |  |
-| **finished_at** | UtcDatetime |  |
-| **mapping** | Map |  |
-| **inserted_at** | UtcDatetimeUsec |  |
-| **updated_at** | UtcDatetimeUsec |  |
-| **collection_id** | UUID |  |
-| **attachment_id** | UUID |  |
-
-#### Actions
-
-| Name | Type | Input | Description |
-| ---- | ---- | ----- | ----------- |
-| **destroy** | _destroy_ | <ul></ul> |  |
-| **read** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>records</b> <i>Struct[]</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
-| **update_mapping** | _update_ | <ul><li><b>mapping</b> <i>Map</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
-| **update** | _update_ | <ul><li><b>records</b> <i>Struct[]</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
-| **enqueue** | _update_ | <ul></ul> |  |
-| **set_running** | _update_ | <ul></ul> |  |
-| **set_failed** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
-| **run** | _update_ | <ul></ul> |  |
-| **set_exported** | _update_ | <ul></ul> |  |
-| **update_attachment** | _update_ | <ul><li><b>attachment</b> <i>Attachment</i> </li></ul> |  |
-| **publish** | _action_ | <ul><li><b>export</b> <i>Struct</i> </li></ul> |  |
-
-### Record
-
-
-
-#### Attributes
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| **export_id** | UUID |  |
-| **record_id** | UUID |  |
-
-#### Actions
-
-| Name | Type | Input | Description |
-| ---- | ---- | ----- | ----------- |
-| **update** | _update_ | <ul></ul> |  |
-| **destroy** | _destroy_ | <ul></ul> |  |
-| **read** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>export</b> <i>Export</i> </li><li><b>record</b> <i>Record</i> </li></ul> |  |
-
 ## API DataAggregator.Records
 
 ### Class Diagram
@@ -220,6 +98,7 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Float digitizing_progress
+        Map records_to_publish_query
         Integer records_count
         Integer imports_count
         Institution institution
@@ -229,7 +108,33 @@ classDiagram
         update(UUID id, Integer items_to_digitize, String owner, String name, ...)
         create(UUID id, Integer items_to_digitize, String owner, String name, ...)
         read(String sort)
-        collect_reviewable_records(Struct collection)
+        publish(Struct export)
+        export(Struct export, Struct records_query)
+    }
+    class Export {
+        Atom state
+        UUID id
+        String name
+        UtcDatetime exported_at
+        UtcDatetime started_at
+        UtcDatetime finished_at
+        Map mapping
+        Integer exported_count
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        Collection collection
+        Attachment attachment
+        destroy()
+        read()
+        create(Collection collection, UUID id, String name, UtcDatetime exported_at, ...)
+        update_mapping(Map mapping, UUID id, String name, UtcDatetime exported_at, ...)
+        update(Struct[] records, UUID id, String name, UtcDatetime exported_at, ...)
+        enqueue()
+        set_running()
+        set_failed(UUID id, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
+        run()
+        set_exported()
+        update_attachment(Attachment attachment)
     }
     class Import {
         Atom state
@@ -342,7 +247,6 @@ classDiagram
         UtcDatetimeUsec updated_at
         Collection collection
         Import[] imports
-        Export[] exports
         Image[] images
         Attachment[] image_attachments
         destroy()
@@ -365,13 +269,13 @@ classDiagram
         create(UUID id, Integer size, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
     }
 
+    Attachment -- Export
     Attachment -- Import
     Attachment -- Record
     Attachment -- Image
     Job -- Import
     Institution -- Collection
-    Export -- Record
-    Record -- Record
+    Collection -- Export
     Collection -- Import
     Collection -- Record
     Import -- Record
@@ -396,8 +300,21 @@ erDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Float digitizing_progress
+        Map records_to_publish_query
         Integer records_count
         Integer imports_count
+    }
+    Export {
+        Atom state
+        UUID id
+        String name
+        UtcDatetime exported_at
+        UtcDatetime started_at
+        UtcDatetime finished_at
+        Map mapping
+        Integer exported_count
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
     }
     Import {
         Atom state
@@ -495,13 +412,13 @@ erDiagram
         UtcDatetimeUsec updated_at
     }
 
+    Attachment ||--|| Export : ""
     Attachment ||--|| Import : ""
     Attachment ||--|| Record : ""
     Attachment ||--|| Image : ""
     Job ||--|| Import : ""
     Institution ||--|| Collection : ""
-    Export ||--|| Record : ""
-    Record ||--|| Record : ""
+    Collection ||--|| Export : ""
     Collection ||--|| Import : ""
     Collection ||--|| Record : ""
     Import ||--|| Record : ""
@@ -513,6 +430,7 @@ erDiagram
 ### Resources
 
 - [Collection](#collection)
+- [Export](#export)
 - [Import](#import)
 - [Record](#record)
 - [Record](#record)
@@ -546,7 +464,45 @@ erDiagram
 | **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>reviewer</b> <i>Atom</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 | **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>reviewer</b> <i>Atom</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 | **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
-| **collect_reviewable_records** | _action_ | <ul><li><b>collection</b> <i>Struct</i> </li></ul> |  |
+| **publish** | _action_ | <ul><li><b>export</b> <i>Struct</i> </li></ul> |  |
+| **export** | _action_ | <ul><li><b>export</b> <i>Struct</i> </li><li><b>records_query</b> <i>Struct</i> </li></ul> |  |
+
+### Export
+
+
+
+#### Attributes
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **state** | Atom |  |
+| **id** | UUID |  |
+| **name** | String |  |
+| **exported_at** | UtcDatetime |  |
+| **started_at** | UtcDatetime |  |
+| **finished_at** | UtcDatetime |  |
+| **mapping** | Map |  |
+| **exported_count** | Integer |  |
+| **inserted_at** | UtcDatetimeUsec |  |
+| **updated_at** | UtcDatetimeUsec |  |
+| **collection_id** | UUID |  |
+| **attachment_id** | UUID |  |
+
+#### Actions
+
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **destroy** | _destroy_ | <ul></ul> |  |
+| **read** | _read_ | <ul></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>exported_count</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **update_mapping** | _update_ | <ul><li><b>mapping</b> <i>Map</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>exported_count</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>records</b> <i>Struct[]</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>exported_count</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **enqueue** | _update_ | <ul></ul> |  |
+| **set_running** | _update_ | <ul></ul> |  |
+| **set_failed** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>exported_count</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **run** | _update_ | <ul></ul> |  |
+| **set_exported** | _update_ | <ul></ul> |  |
+| **update_attachment** | _update_ | <ul><li><b>attachment</b> <i>Attachment</i> </li></ul> |  |
 
 ### Import
 

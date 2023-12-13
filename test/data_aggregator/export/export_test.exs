@@ -4,11 +4,11 @@ defmodule DataAggregator.ExportTest do
   use DataAggregator.DataCase, async: true
 
   alias DataAggregator.DarwinCore.Schema
-  alias DataAggregator.Platform.Publication.Export
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Export
 
-  import DataAggregator.PublicationFixtures
+  import DataAggregator.ExportFixtures
   import DataAggregator.RecordsFixtures
 
   describe "export crud tests" do
@@ -61,7 +61,7 @@ defmodule DataAggregator.ExportTest do
       assert {:ok, %Export{} = export} =
                export
                |> Export.update(updated_export)
-               |> DataAggregator.Platform.load([:collection])
+               |> Records.load([:collection])
 
       assert export.name == "gbif.org_2"
     end

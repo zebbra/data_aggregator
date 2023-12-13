@@ -1,17 +1,17 @@
-defmodule DataAggregator.Platform.Publication.Export.RunnerTest do
+defmodule DataAggregator.Records.Export.RunnerTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
 
-  alias DataAggregator.Platform.Publication.Export
-  alias DataAggregator.Platform.Publication.Export.Runner
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Export
+  alias DataAggregator.Records.Export.Runner
 
-  import DataAggregator.PublicationFixtures
+  import DataAggregator.ExportFixtures
   import DataAggregator.RecordsFixtures
 
-  describe "DataAggregator.Platform.Publication.Export.Runner.perform/1" do
+  describe "DataAggregator.Records.Export.Runner.perform/1" do
     @valid_custom_mapping %{
       :mte_material_entity_id => "Numéro scientifique GBIF",
       :tax_family => "Famille"

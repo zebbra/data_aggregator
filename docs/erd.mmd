@@ -20,23 +20,6 @@ erDiagram
     timestamp inserted_at
     timestamp updated_at
   }
-  exports {
-    varchar state
-    uuid id PK
-    varchar name
-    timestamp exported_at
-    timestamp started_at
-    timestamp finished_at
-    jsonb mapping
-    timestamp inserted_at
-    timestamp updated_at
-    uuid collection_id
-    uuid attachment_id
-  }
-  export_records {
-    uuid export_id PK
-    uuid record_id PK
-  }
   collections {
     uuid id PK
     integer items_to_digitize
@@ -49,6 +32,20 @@ erDiagram
     timestamp inserted_at
     timestamp updated_at
     uuid institution_id
+  }
+  exports {
+    varchar state
+    uuid id PK
+    varchar name
+    timestamp exported_at
+    timestamp started_at
+    timestamp finished_at
+    jsonb mapping
+    integer exported_count
+    timestamp inserted_at
+    timestamp updated_at
+    uuid collection_id
+    uuid attachment_id
   }
   imports {
     varchar state
@@ -194,13 +191,11 @@ erDiagram
   collections ||--|{ imports : ""
   collections ||--|{ records : ""
   dwc_attributes ||--|{ attribute_resolving_strategies : ""
-  exports ||--|{ export_records : ""
   file_attachments ||--|{ exports : ""
   file_attachments ||--|{ imports : ""
   file_attachments ||--|{ record_images : ""
   imports ||--|{ import_records : ""
   institutions ||--|{ collections : ""
   oban_jobs ||--|{ imports : ""
-  records ||--|{ export_records : ""
   records ||--|{ import_records : ""
   records ||--|{ record_images : ""

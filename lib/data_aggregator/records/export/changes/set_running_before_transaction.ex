@@ -1,4 +1,4 @@
-defmodule DataAggregator.Platform.Publication.Changes.SetRunningBeforeTransaction do
+defmodule DataAggregator.Records.Changes.SetRunningBeforeTransaction do
   @moduledoc """
   Sets the state to `:running` before the transaction is started
   """
@@ -6,7 +6,7 @@ defmodule DataAggregator.Platform.Publication.Changes.SetRunningBeforeTransactio
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Platform.Publication.Export
+  alias DataAggregator.Records.Export
 
   require Logger
 
