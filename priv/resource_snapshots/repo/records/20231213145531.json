@@ -585,9 +585,11 @@
           "strategy": null
         },
         "primary_key?": true,
-        "on_delete": null,
         "destination_attribute": "id",
+        "on_delete": null,
         "deferrable": false,
+        "match_type": null,
+        "match_with": null,
         "on_update": null,
         "destination_attribute_default": null,
         "destination_attribute_generated": null

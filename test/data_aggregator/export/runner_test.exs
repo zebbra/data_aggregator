@@ -5,12 +5,12 @@ defmodule DataAggregator.Platform.Publication.Export.RunnerTest do
 
   alias DataAggregator.Platform.Publication.Export
   alias DataAggregator.Platform.Publication.Export.Runner
+  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
 
   import DataAggregator.PublicationFixtures
   import DataAggregator.RecordsFixtures
 
-  @tag run: true
   describe "DataAggregator.Platform.Publication.Export.Runner.perform/1" do
     @valid_custom_mapping %{
       :mte_material_entity_id => "Numéro scientifique GBIF",
@@ -18,23 +18,20 @@ defmodule DataAggregator.Platform.Publication.Export.RunnerTest do
     }
 
     setup do
-      collection = collection_fixture()
+      collection = Records.load!(collection_fixture(), [:records_to_publish_query])
 
       get_publishable_record(collection)
       get_publishable_record(collection)
       # this one should not be published
       get_unpublishable_record(collection)
 
-      records = Collection.collect_reviewable_records!(collection)
-
-      {:ok, export} =
-        %{
-          name: "gbif.org - Export",
+      export =
+        Export.create!(%{
+          name: "export-#{collection.name}-#{Ecto.UUID.generate()}",
           collection: collection,
-          records: records
-        }
-        |> Export.create!()
-        |> Export.update_mapping(@valid_custom_mapping)
+          mapping: @valid_custom_mapping
+        })
+        |> Collection.export!(collection.records_to_publish_query)
 
       [export: export]
     end
@@ -44,10 +41,9 @@ defmodule DataAggregator.Platform.Publication.Export.RunnerTest do
     } do
       perform_job(Runner, %{id: export.id})
 
-      export_with_attachment = Export.get_by_id!(export.id, load: [:attachment, :records_count])
+      export_with_attachment = Export.get_by_id!(export.id, load: [:attachment])
 
       assert export_with_attachment.attachment.url != nil
-      assert export_with_attachment.records_count == 2
       assert export_with_attachment.state == :exported
       assert export_with_attachment.exported_at != nil
       assert export_with_attachment.finished_at != nil

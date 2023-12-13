@@ -5,6 +5,7 @@ defmodule DataAggregator.ExportTest do
 
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Platform.Publication.Export
+  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
 
   import DataAggregator.PublicationFixtures
@@ -60,9 +61,8 @@ defmodule DataAggregator.ExportTest do
       assert {:ok, %Export{} = export} =
                export
                |> Export.update(updated_export)
-               |> DataAggregator.Platform.load([:collection, :records_count])
+               |> DataAggregator.Platform.load([:collection])
 
-      assert export.records_count == 2
       assert export.name == "gbif.org_2"
     end
 
@@ -82,18 +82,17 @@ defmodule DataAggregator.ExportTest do
     end
   end
 
-  describe "publication" do
-    @invalid_custom_mapping :invalid
+  describe "export" do
     @valid_custom_mapping %{
-      :mte_material_entity_id => "Numéro scientifique GBIF",
-      :tax_family => "Famille"
+      "mte_material_entity_id" => "Numéro scientifique GBIF",
+      "tax_family" => "Famille"
     }
     @default_mapping Schema.prefixed_attribute_names()
                      |> Enum.map(fn name -> {name, Atom.to_string(name)} end)
                      |> Enum.into(%{})
 
     setup %{mapping: mapping} do
-      collection = collection_fixture()
+      collection = Records.load!(collection_fixture(), [:records_to_publish_query])
 
       # those two should be published
       get_publishable_record(collection)
@@ -101,28 +100,26 @@ defmodule DataAggregator.ExportTest do
       # this one should not be published
       get_unpublishable_record(collection)
 
-      collected_records = Collection.collect_reviewable_records!(collection)
+      export =
+        Export.create!(%{
+          name: "export-#{collection.name}-#{Ecto.UUID.generate()}",
+          collection: collection,
+          mapping: mapping
+        })
 
-      case create_export_with_mapping(collection, collected_records, mapping) do
-        {:ok, result} ->
-          case Export.publish(result) do
-            {:ok, export} -> [export: result, attachment: export.attachment]
-            {:error, error} -> [export: result, error: error]
-          end
-
-        {:error, error} ->
-          [export: nil, error: error]
+      case Collection.export(export, collection.records_to_publish_query) do
+        {:ok, result} -> [export: result]
+        {:error, error} -> [error: error]
       end
     end
 
     @tag mapping: nil
-    test "publish records for export with no mapping, so default mapping should be used", %{
-      export: export,
-      attachment: attachment
+    test "export records with no mapping, so default mapping should be used", %{
+      export: export
     } do
-      assert export.mapping == nil
+      df = Explorer.DataFrame.from_csv!(export.attachment.url)
 
-      df = Explorer.DataFrame.from_csv!(attachment.url)
+      assert export.mapping == nil
 
       assert Explorer.DataFrame.n_columns(df) == Enum.count(Map.keys(@default_mapping))
 
@@ -130,28 +127,16 @@ defmodule DataAggregator.ExportTest do
     end
 
     @tag mapping: @valid_custom_mapping
-    test "publish records for export with valid custom mapping", %{
-      export: export,
-      attachment: attachment
+    test "export records with valid custom mapping", %{
+      export: export
     } do
-      assert export.mapping == @valid_custom_mapping
+      df = Explorer.DataFrame.from_csv!(export.attachment.url)
 
-      df = Explorer.DataFrame.from_csv!(attachment.url)
+      assert export.mapping == @valid_custom_mapping
 
       assert Explorer.DataFrame.n_columns(df) == 2
 
       assert Explorer.DataFrame.n_rows(df) == 2
-    end
-
-    @tag mapping: @invalid_custom_mapping
-    test "publish records for export with invalid custom mapping", %{
-      error: error
-    } do
-      assert_has_error(
-        error.changeset,
-        Ash.Error.Invalid,
-        &(&1.field == :mapping and String.match?(&1.message, ~r/is invalid/))
-      )
     end
   end
 end

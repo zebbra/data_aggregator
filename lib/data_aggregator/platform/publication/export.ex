@@ -9,7 +9,6 @@ defmodule DataAggregator.Platform.Publication.Export do
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Platform.Publication
-  alias DataAggregator.Platform.Publication.Record, as: ExportRecord
   alias DataAggregator.Records.Collection
 
   attributes do
@@ -20,14 +19,12 @@ defmodule DataAggregator.Platform.Publication.Export do
     attribute :started_at, :utc_datetime, allow_nil?: true
     attribute :finished_at, :utc_datetime, allow_nil?: true
     attribute :mapping, :map, allow_nil?: true
+    attribute :exported_count, :integer, allow_nil?: false, default: 0
 
     timestamps private?: false, writable?: false
   end
 
   relationships do
-    has_many :export_records, DataAggregator.Platform.Publication.Record do
-    end
-
     belongs_to :collection, Collection do
       api DataAggregator.Records
     end
@@ -35,16 +32,6 @@ defmodule DataAggregator.Platform.Publication.Export do
     belongs_to :attachment, Attachment do
       api DataAggregator.Files
     end
-
-    many_to_many :records, DataAggregator.Records.Record do
-      api DataAggregator.Records
-      through ExportRecord
-      join_relationship :export_records
-    end
-  end
-
-  aggregates do
-    count :records_count, :records
   end
 
   state_machine do
@@ -65,23 +52,22 @@ defmodule DataAggregator.Platform.Publication.Export do
     create :create do
       primary? true
       argument :collection, Collection, allow_nil?: false
-      argument :records, {:array, :struct}, allow_nil?: false
+
+      # change Publication.Changes.UpdateMapping
 
       change manage_relationship(:collection, :collection, type: :append)
-      change manage_relationship(:records, :records, type: :append)
     end
 
     update :update_mapping do
       argument :mapping, :map, allow_nil?: true
 
       change Publication.Changes.UpdateMapping
+      change load(:attachment)
     end
 
     update :update do
       primary? true
       argument :records, {:array, :struct}, allow_nil?: false
-
-      change manage_relationship(:records, :records, type: :append)
     end
 
     update :enqueue do
@@ -98,6 +84,8 @@ defmodule DataAggregator.Platform.Publication.Export do
     end
 
     update :set_failed do
+      change transition_state(:failed)
+      change set_attribute(:finished_at, &DateTime.utc_now/0)
     end
 
     update :run do
@@ -109,7 +97,6 @@ defmodule DataAggregator.Platform.Publication.Export do
       change Publication.Changes.ExportRecords
       change Publication.Changes.SetExportedAfterAction
       change load(:attachment)
-      change load(:records_count)
     end
 
     update :set_exported do
@@ -123,12 +110,7 @@ defmodule DataAggregator.Platform.Publication.Export do
       accept []
       argument :attachment, Attachment, allow_nil?: false
       change manage_relationship(:attachment, :attachment, type: :append)
-    end
-
-    action :publish, :map do
-      argument :export, :struct, allow_nil?: false
-
-      run Publication.Actions.PublishRecords
+      change load(:attachment)
     end
   end
 
@@ -139,7 +121,6 @@ defmodule DataAggregator.Platform.Publication.Export do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
-    define :publish, action: :publish, args: [:export]
     define :update_mapping, action: :update_mapping, args: [:mapping]
     define :run
     define :enqueue

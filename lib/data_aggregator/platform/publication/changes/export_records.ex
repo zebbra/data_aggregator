@@ -6,7 +6,10 @@ defmodule DataAggregator.Platform.Publication.Changes.ExportRecords do
   use Ash.Resource.Change
 
   alias Ash.Changeset
+  alias DataAggregator.Platform
   alias DataAggregator.Platform.Publication.Export
+  alias DataAggregator.Records
+  alias DataAggregator.Records.Collection
 
   require Logger
 
@@ -15,9 +18,12 @@ defmodule DataAggregator.Platform.Publication.Changes.ExportRecords do
   end
 
   defp export_records(%Changeset{data: original_export} = changeset) do
-    case Export.publish(original_export) do
-      {:ok, _export} -> changeset
-      {:error, error} -> add_error(changeset, error, original_export)
+    export = Platform.load!(original_export, [:collection])
+    collection = Records.load!(export.collection, [:records_to_publish_query])
+
+    case Collection.export(export, collection.records_to_publish_query) do
+      {:ok, export} -> add_success(changeset, export)
+      {:error, error} -> add_error(changeset, error, export)
     end
   end
 
@@ -25,5 +31,11 @@ defmodule DataAggregator.Platform.Publication.Changes.ExportRecords do
     Logger.error("Error export records: #{inspect(error)}")
     Export.set_failed(export)
     Changeset.add_error(changeset, error)
+  end
+
+  defp add_success(changeset, export) do
+    Logger.info("Successfully exported #{export.exported_count} records")
+
+    changeset
   end
 end

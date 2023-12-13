@@ -4,6 +4,7 @@ defmodule DataAggregator.RecordsFixtures do
   entities via the `DataAggregator.Records` context.
   """
 
+  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
 
@@ -29,8 +30,11 @@ defmodule DataAggregator.RecordsFixtures do
   end
 
   def collection_fixture(attrs \\ %{}) do
-    @collection_defaults
-    |> Map.merge(attrs)
-    |> Collection.create!()
+    collection =
+      @collection_defaults
+      |> Map.merge(attrs)
+      |> Collection.create!()
+
+    Records.load!(collection, [:records_to_publish_query])
   end
 end

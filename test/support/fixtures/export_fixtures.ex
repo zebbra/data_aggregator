@@ -5,6 +5,7 @@ defmodule DataAggregator.PublicationFixtures do
   """
 
   alias DataAggregator.Platform.Publication.Export
+  alias DataAggregator.Records
   alias DataAggregator.Records.Record
 
   import DataAggregator.RecordsFixtures
@@ -17,10 +18,11 @@ defmodule DataAggregator.PublicationFixtures do
   Generate an export.
   """
   def export_fixture(attrs \\ %{}) do
+    collection = Records.load!(collection_fixture(), [:records_to_publish_query])
+
     @export_defaults
     |> Map.merge(attrs)
-    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
-    |> Map.put(:records, [])
+    |> Map.put_new_lazy(:collection, fn -> collection end)
     |> Export.create!()
   end
 

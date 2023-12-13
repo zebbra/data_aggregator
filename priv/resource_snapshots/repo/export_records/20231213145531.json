@@ -15,9 +15,11 @@
           "strategy": null
         },
         "primary_key?": true,
-        "on_delete": null,
         "destination_attribute": "id",
+        "on_delete": null,
         "deferrable": false,
+        "match_type": null,
+        "match_with": null,
         "on_update": null,
         "destination_attribute_default": null,
         "destination_attribute_generated": null
@@ -41,9 +43,11 @@
           "strategy": null
         },
         "primary_key?": true,
-        "on_delete": null,
         "destination_attribute": "id",
+        "on_delete": null,
         "deferrable": false,
+        "match_type": null,
+        "match_with": null,
         "on_update": null,
         "destination_attribute_default": null,
         "destination_attribute_generated": null
@@ -54,7 +58,7 @@
     }
   ],
   "table": "export_records",
-  "hash": "7B94C335C0E378CB7BC79FF88DE3B4222D9F3E63C8342ADEE0AA0394B06CD70D",
+  "hash": "3680A6CD280CE8B8BBFE432656AE7CD507DE64D75CF753F5C6F2ED1F64E14590",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,

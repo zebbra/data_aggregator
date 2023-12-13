@@ -1,16 +1,6 @@
 {
   "attributes": [
     {
-      "default": "\"pending\"",
-      "size": null,
-      "type": "text",
-      "source": "state",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
       "default": "nil",
       "size": null,
       "type": "uuid",
@@ -19,6 +9,26 @@
       "allow_nil?": false,
       "generated?": false,
       "primary_key?": true
+    },
+    {
+      "default": "0",
+      "size": null,
+      "type": "bigint",
+      "source": "items_to_digitize",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "owner",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -33,8 +43,8 @@
     {
       "default": "nil",
       "size": null,
-      "type": "utc_datetime",
-      "source": "exported_at",
+      "type": "text",
+      "source": "code",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -43,18 +53,8 @@
     {
       "default": "nil",
       "size": null,
-      "type": "utc_datetime",
-      "source": "started_at",
-      "references": null,
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "utc_datetime",
-      "source": "finished_at",
+      "type": "text",
+      "source": "description",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -65,6 +65,16 @@
       "size": null,
       "type": "map",
       "source": "mapping",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "reviewer",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -94,10 +104,10 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "collection_id",
+      "source": "institution_id",
       "references": {
-        "name": "exports_collection_id_fkey",
-        "table": "collections",
+        "name": "collections_institution_id_fkey",
+        "table": "institutions",
         "schema": "public",
         "multitenancy": {
           "global": null,
@@ -105,35 +115,11 @@
           "strategy": null
         },
         "primary_key?": true,
-        "on_delete": null,
         "destination_attribute": "id",
-        "deferrable": false,
-        "on_update": null,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null
-      },
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "attachment_id",
-      "references": {
-        "name": "exports_attachment_id_fkey",
-        "table": "file_attachments",
-        "schema": "public",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
         "on_delete": null,
-        "destination_attribute": "id",
         "deferrable": false,
+        "match_type": null,
+        "match_with": null,
         "on_update": null,
         "destination_attribute_default": null,
         "destination_attribute_generated": null
@@ -143,8 +129,8 @@
       "primary_key?": false
     }
   ],
-  "table": "exports",
-  "hash": "FF7CE32C99CD6BBF20463C521094FB73B4C437DE1BCA4F11A5DA2F353AE1C231",
+  "table": "collections",
+  "hash": "868D744E9B3D33CD4A8365F0EFD7B69AE5A8212BF740EE7A0046986D760CE859",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,

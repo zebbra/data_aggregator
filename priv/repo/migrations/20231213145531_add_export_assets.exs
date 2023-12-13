@@ -1,4 +1,4 @@
-defmodule DataAggregator.Repo.Migrations.AddPublicationAssets do
+defmodule DataAggregator.Repo.Migrations.AddExportAssets do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
@@ -26,6 +26,7 @@ defmodule DataAggregator.Repo.Migrations.AddPublicationAssets do
       add :started_at, :utc_datetime
       add :finished_at, :utc_datetime
       add :mapping, :map
+      add :exported_count, :bigint, null: false, default: 0
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
 
@@ -69,7 +70,7 @@ defmodule DataAggregator.Repo.Migrations.AddPublicationAssets do
     end
 
     alter table(:collections) do
-      add :reviewer, :text, null: false
+      add :reviewer, :text
     end
   end
 

@@ -7,7 +7,8 @@ defmodule DataAggregator.Records.Collection do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Records.Actions
+  alias DataAggregator.Records
+  alias DataAggregator.Records.Export.Calculations
 
   attributes do
     uuid_attribute :id, prefix: "col"
@@ -28,7 +29,7 @@ defmodule DataAggregator.Records.Collection do
     attribute :mapping, :map
 
     attribute :reviewer, :atom,
-      allow_nil?: false,
+      allow_nil?: true,
       constraints: [
         one_of: [
           :swiss_bryophytes,
@@ -69,6 +70,8 @@ defmodule DataAggregator.Records.Collection do
                   else: 0
                 )
               )
+
+    calculate :records_to_publish_query, :map, Calculations.RecordsToPublish
   end
 
   aggregates do
@@ -89,9 +92,17 @@ defmodule DataAggregator.Records.Collection do
       argument :sort, :string, allow_nil?: true
     end
 
-    action :collect_reviewable_records, :map do
-      argument :collection, :struct
-      run Actions.CollectReviewableRecords
+    action :publish, :map do
+      argument :export, :struct, allow_nil?: false
+
+      run Records.Actions.PublishRecords
+    end
+
+    action :export, :map do
+      argument :export, :struct, allow_nil?: false
+      argument :records_query, :struct, allow_nil?: false
+
+      run Records.Actions.ExportRecords
     end
   end
 
@@ -103,7 +114,8 @@ defmodule DataAggregator.Records.Collection do
     define :update, action: :update
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
-    define :collect_reviewable_records, action: :collect_reviewable_records, args: [:collection]
+    define :publish, action: :publish, args: [:export]
+    define :export, action: :export, args: [:export, :records_query]
   end
 
   postgres do

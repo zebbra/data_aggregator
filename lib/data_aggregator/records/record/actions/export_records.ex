@@ -1,6 +1,6 @@
-defmodule DataAggregator.Platform.Publication.Actions.PublishRecords do
+defmodule DataAggregator.Records.Actions.ExportRecords do
   @moduledoc """
-  Custom action to publish records
+  Custom action to export records
   """
 
   use Ash.Resource.Actions.Implementation
@@ -8,22 +8,28 @@ defmodule DataAggregator.Platform.Publication.Actions.PublishRecords do
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Platform.Publication.Export
+  alias DataAggregator.Records
 
   @impl true
   def run(input, _opts, _context) do
-    export = DataAggregator.Platform.load!(input.arguments.export, [:records])
+    export = input.arguments.export
+    records_query = input.arguments.records_query
 
     mapping = get_mapping(export.mapping)
-    mapped_records = map_records(export.records, mapping)
+
+    path = "#{Path.join([System.tmp_dir!(), "export"])}#{Ecto.UUID.generate()}.csv"
 
     attachment =
-      "#{Path.join([System.tmp_dir!(), "export"])}#{Ecto.UUID.generate()}.csv"
-      |> export_to_s3(mapped_records, mapping)
+      Records.stream!(records_query)
+      |> Stream.map(&map_records(&1, mapping))
+      |> export_to_s3(path, mapping)
 
+    Export.update(export, %{exported_count: Records.count!(records_query)})
+    Export.update_mapping(export, mapping)
     Export.update_attachment(export, attachment)
   end
 
-  defp export_to_s3(path, records, mapping) do
+  defp export_to_s3(records, path, mapping) do
     File.open!(path, [:write, :utf8])
     |> store_local_file(records, mapping)
     |> File.close()
