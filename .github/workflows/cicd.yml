@@ -131,3 +131,13 @@ jobs:
           exec: helm upgrade aggregator ./helm/charts/aggregator --install --wait --atomic --namespace scnat -f ./helm/staging.yaml --set image.tag=sha-${GITHUB_SHA::7}
           kubeconfig: "${{ secrets.KUBECONFIG }}"
           overrule_existing_kubeconfig: true
+
+      - name: Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: zebbra
+          SENTRY_PROJECT: scnat-data-aggregator
+          SENTRY_URL: https://sentry.zebbra.ch
+        with:
+          environment: staging
