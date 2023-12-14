@@ -23,6 +23,7 @@ defmodule DataAggregator.ExportFixtures do
     @export_defaults
     |> Map.merge(attrs)
     |> Map.put_new_lazy(:collection, fn -> collection end)
+    |> Map.put(:records_query, collection.records_to_publish_query)
     |> Export.create!()
   end
 
@@ -57,6 +58,7 @@ defmodule DataAggregator.ExportFixtures do
       collection: collection,
       records: records
     }
+    |> Map.put(:records_query, collection.records_to_publish_query)
     |> Export.create!()
     |> Export.update_mapping(mapping)
   end

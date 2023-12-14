@@ -18,9 +18,8 @@ defmodule DataAggregator.Records.Changes.ExportRecords do
 
   defp export_records(%Changeset{data: original_export} = changeset) do
     export = Records.load!(original_export, [:collection])
-    collection = Records.load!(export.collection, [:records_to_publish_query])
 
-    case Collection.export(export, collection.records_to_publish_query) do
+    case Collection.export(export) do
       {:ok, export} -> add_success(changeset, export)
       {:error, error} -> add_error(changeset, error, export)
     end

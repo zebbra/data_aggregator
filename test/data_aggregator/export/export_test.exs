@@ -104,10 +104,11 @@ defmodule DataAggregator.ExportTest do
         Export.create!(%{
           name: "export-#{collection.name}-#{Ecto.UUID.generate()}",
           collection: collection,
-          mapping: mapping
+          mapping: mapping,
+          records_query: collection.records_to_publish_query
         })
 
-      case Collection.export(export, collection.records_to_publish_query) do
+      case Collection.export(export) do
         {:ok, result} -> [export: result]
         {:error, error} -> [error: error]
       end

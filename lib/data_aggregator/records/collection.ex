@@ -100,7 +100,6 @@ defmodule DataAggregator.Records.Collection do
 
     action :export, :map do
       argument :export, :struct, allow_nil?: false
-      argument :records_query, :struct, allow_nil?: false
 
       run Records.Actions.ExportRecords
     end
@@ -115,7 +114,7 @@ defmodule DataAggregator.Records.Collection do
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :publish, action: :publish, args: [:export]
-    define :export, action: :export, args: [:export, :records_query]
+    define :export, action: :export, args: [:export]
   end
 
   postgres do

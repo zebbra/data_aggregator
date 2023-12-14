@@ -29,9 +29,10 @@ defmodule DataAggregator.Records.Export.RunnerTest do
         Export.create!(%{
           name: "export-#{collection.name}-#{Ecto.UUID.generate()}",
           collection: collection,
-          mapping: @valid_custom_mapping
+          mapping: @valid_custom_mapping,
+          records_query: collection.records_to_publish_query
         })
-        |> Collection.export!(collection.records_to_publish_query)
+        |> Collection.export!()
 
       [export: export]
     end

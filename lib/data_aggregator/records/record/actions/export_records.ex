@@ -13,7 +13,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   @impl true
   def run(input, _opts, _context) do
     export = input.arguments.export
-    records_query = input.arguments.records_query
+    records_query = export.records_query
 
     mapping = get_mapping(export.mapping)
 

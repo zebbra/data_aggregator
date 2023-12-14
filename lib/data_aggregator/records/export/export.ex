@@ -19,6 +19,7 @@ defmodule DataAggregator.Records.Export do
     attribute :started_at, :utc_datetime, allow_nil?: true
     attribute :finished_at, :utc_datetime, allow_nil?: true
     attribute :mapping, :map, allow_nil?: true
+    attribute :records_query, :term, allow_nil?: false
     attribute :exported_count, :integer, allow_nil?: false, default: 0
 
     timestamps private?: false, writable?: false
