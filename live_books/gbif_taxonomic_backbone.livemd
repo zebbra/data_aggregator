@@ -1,0 +1,23 @@
+# Wiggling with GBIF taxonomic backbone
+
+```elixir
+Mix.install([
+  {:explorer, "~> 0.7.2"},
+  {:kino_explorer, "~> 0.1.13"}
+])
+```
+
+## Section
+
+```elixir
+require Explorer.DataFrame, as: DF
+file = File.read!("/Users/berawan0/Downloads/gibif-thesaurus-backbone/Taxon.tsv")
+
+taxonomy = DF.load_csv!(file, delimiter: "\t", eol_delimiter: "\n")
+```
+
+<!-- livebook:{"attrs":{"assign_to":null,"collect":false,"data_frame":"taxonomy","data_frame_alias":"Elixir.DF","is_data_frame":true,"lazy":true,"missing_require":null,"operations":[{"active":true,"column":null,"data_options":{"acceptedNameUsageID":"string","canonicalName":"string","class":"string","datasetID":"string","family":"string","genericName":"string","genus":"string","infraspecificEpithet":"string","kingdom":"string","nameAccordingTo":"string","namePublishedIn":"string","nomenclaturalStatus":"string","order":"string","originalNameUsageID":"string","parentNameUsageID":"integer","phylum":"string","scientificName":"string","scientificNameAuthorship":"string","specificEpithet":"string","taxonID":"integer","taxonRank":"string","taxonRemarks":"string","taxonomicStatus":"string"},"datalist":[],"filter":null,"operation_type":"filters","type":"string","value":null}]},"chunks":null,"kind":"Elixir.KinoExplorer.DataTransformCell","livebook_object":"smart_cell"} -->
+
+```elixir
+taxonomy
+```

@@ -232,6 +232,64 @@ classDiagram
         read()
         create(UUID id, Integer size, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
     }
+    class EncodedRecord {
+        String mts_material_sample_type
+        String mte_material_entity_id
+        String occ_occurrence_remarks
+        String occ_associated_occurrences
+        String occ_sex
+        String occ_recorded_by
+        String loc_georeference_remarks
+        Float loc_decimal_latitude
+        Float loc_decimal_longitude
+        String loc_state_province
+        String loc_verbatim_locality
+        String loc_locality
+        String loc_country
+        String loc_continent
+        String spp_life_stage
+        String tax_specific_epithet
+        String tax_infraspecific_epithet
+        String tax_scientific_name_authorship
+        String tax_scientific_name
+        String tax_genus
+        String tax_family
+        String tax_order
+        String rrp_relationship_of_resource_id
+        String rrp_relationship_of_resource
+        Date ref_relationship_established_date
+        String ref_title
+        String ref_source
+        String ref_rights
+        Date ref_date
+        String ref_creator
+        String ref_bibliographic_citation
+        String idf_type_status
+        String idf_identified_by
+        Date idf_date_identified
+        Integer eve_end_of_period_year
+        Integer eve_end_of_period_month
+        Integer eve_end_of_period_day
+        Integer eve_year
+        Integer eve_month
+        Integer eve_day
+        Date eve_event_date
+        Date prs_date_of_birth
+        String prs_last_name
+        String prs_first_name
+        String prs_contact_point
+        UUID id
+        Map extra_data
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        Record record
+        destroy()
+        update(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
+        read(String sort)
+        create(Record record, String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, ...)
+        upsert(Record record, Map params, String mts_material_sample_type, String mte_material_entity_id, ...)
+        encode(Record[] records)
+    }
 
     Attachment -- Import
     Attachment -- Record
@@ -240,6 +298,7 @@ classDiagram
     Institution -- Collection
     Collection -- Import
     Collection -- Record
+    EncodedRecord -- Record
     Import -- Record
     Import -- Record
     Record -- Record
@@ -352,6 +411,57 @@ erDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
     }
+    EncodedRecord {
+        String mts_material_sample_type
+        String mte_material_entity_id
+        String occ_occurrence_remarks
+        String occ_associated_occurrences
+        String occ_sex
+        String occ_recorded_by
+        String loc_georeference_remarks
+        Float loc_decimal_latitude
+        Float loc_decimal_longitude
+        String loc_state_province
+        String loc_verbatim_locality
+        String loc_locality
+        String loc_country
+        String loc_continent
+        String spp_life_stage
+        String tax_specific_epithet
+        String tax_infraspecific_epithet
+        String tax_scientific_name_authorship
+        String tax_scientific_name
+        String tax_genus
+        String tax_family
+        String tax_order
+        String rrp_relationship_of_resource_id
+        String rrp_relationship_of_resource
+        Date ref_relationship_established_date
+        String ref_title
+        String ref_source
+        String ref_rights
+        Date ref_date
+        String ref_creator
+        String ref_bibliographic_citation
+        String idf_type_status
+        String idf_identified_by
+        Date idf_date_identified
+        Integer eve_end_of_period_year
+        Integer eve_end_of_period_month
+        Integer eve_end_of_period_day
+        Integer eve_year
+        Integer eve_month
+        Integer eve_day
+        Date eve_event_date
+        Date prs_date_of_birth
+        String prs_last_name
+        String prs_first_name
+        String prs_contact_point
+        UUID id
+        Map extra_data
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+    }
 
     Attachment ||--|| Import : ""
     Attachment ||--|| Record : ""
@@ -360,6 +470,7 @@ erDiagram
     Institution ||--|| Collection : ""
     Collection ||--|| Import : ""
     Collection ||--|| Record : ""
+    EncodedRecord ||--|| Record : ""
     Import ||--|| Record : ""
     Import ||--|| Record : ""
     Record ||--|| Record : ""
@@ -373,6 +484,7 @@ erDiagram
 - [Record](#record)
 - [Record](#record)
 - [Image](#image)
+- [EncodedRecord](#encodedrecord)
 
 ### Collection
 
@@ -564,6 +676,82 @@ the `DataAggregator.Records.Record.import/2` action.
 | **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>size</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
 | **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>size</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+
+### EncodedRecord
+
+
+
+#### Attributes
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **mts_material_sample_type** | String |  |
+| **mte_material_entity_id** | String |  |
+| **occ_occurrence_remarks** | String |  |
+| **occ_associated_occurrences** | String |  |
+| **occ_sex** | String |  |
+| **occ_recorded_by** | String |  |
+| **loc_georeference_remarks** | String |  |
+| **loc_decimal_latitude** | Float |  |
+| **loc_decimal_longitude** | Float |  |
+| **loc_state_province** | String |  |
+| **loc_verbatim_locality** | String |  |
+| **loc_locality** | String |  |
+| **loc_country** | String |  |
+| **loc_continent** | String |  |
+| **spp_life_stage** | String |  |
+| **tax_specific_epithet** | String |  |
+| **tax_infraspecific_epithet** | String |  |
+| **tax_scientific_name_authorship** | String |  |
+| **tax_scientific_name** | String |  |
+| **tax_genus** | String |  |
+| **tax_family** | String |  |
+| **tax_order** | String |  |
+| **rrp_relationship_of_resource_id** | String |  |
+| **rrp_relationship_of_resource** | String |  |
+| **ref_relationship_established_date** | Date |  |
+| **ref_title** | String |  |
+| **ref_source** | String |  |
+| **ref_rights** | String |  |
+| **ref_date** | Date |  |
+| **ref_creator** | String |  |
+| **ref_bibliographic_citation** | String |  |
+| **idf_type_status** | String |  |
+| **idf_identified_by** | String |  |
+| **idf_date_identified** | Date |  |
+| **eve_end_of_period_year** | Integer |  |
+| **eve_end_of_period_month** | Integer |  |
+| **eve_end_of_period_day** | Integer |  |
+| **eve_year** | Integer |  |
+| **eve_month** | Integer |  |
+| **eve_day** | Integer |  |
+| **eve_event_date** | Date |  |
+| **prs_date_of_birth** | Date |  |
+| **prs_last_name** | String |  |
+| **prs_first_name** | String |  |
+| **prs_contact_point** | String | TODO: Add attribute descriptions |
+| **id** | UUID |  |
+| **extra_data** | Map |  |
+| **inserted_at** | UtcDatetimeUsec |  |
+| **updated_at** | UtcDatetimeUsec |  |
+| **record_id** | UUID |  |
+
+#### Actions
+
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **destroy** | _destroy_ | <ul></ul> |  |
+| **update** | _update_ | <ul><li><b>mts_material_sample_type</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>occ_occurrence_remarks</b> <i>String</i> attribute</li><li><b>occ_associated_occurrences</b> <i>String</i> attribute</li><li><b>occ_sex</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>loc_georeference_remarks</b> <i>String</i> attribute</li><li><b>loc_decimal_latitude</b> <i>Float</i> attribute</li><li><b>loc_decimal_longitude</b> <i>Float</i> attribute</li><li><b>loc_state_province</b> <i>String</i> attribute</li><li><b>loc_verbatim_locality</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>spp_life_stage</b> <i>String</i> attribute</li><li><b>tax_specific_epithet</b> <i>String</i> attribute</li><li><b>tax_infraspecific_epithet</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>tax_genus</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>eve_end_of_period_year</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_month</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_day</b> <i>Integer</i> attribute</li><li><b>eve_year</b> <i>Integer</i> attribute</li><li><b>eve_month</b> <i>Integer</i> attribute</li><li><b>eve_day</b> <i>Integer</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>id</b> <i>UUID</i> attribute</li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
+| **create** | _create_ | <ul><li><b>record</b> <i>Record</i> </li><li><b>mts_material_sample_type</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>occ_occurrence_remarks</b> <i>String</i> attribute</li><li><b>occ_associated_occurrences</b> <i>String</i> attribute</li><li><b>occ_sex</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>loc_georeference_remarks</b> <i>String</i> attribute</li><li><b>loc_decimal_latitude</b> <i>Float</i> attribute</li><li><b>loc_decimal_longitude</b> <i>Float</i> attribute</li><li><b>loc_state_province</b> <i>String</i> attribute</li><li><b>loc_verbatim_locality</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>spp_life_stage</b> <i>String</i> attribute</li><li><b>tax_specific_epithet</b> <i>String</i> attribute</li><li><b>tax_infraspecific_epithet</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>tax_genus</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>eve_end_of_period_year</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_month</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_day</b> <i>Integer</i> attribute</li><li><b>eve_year</b> <i>Integer</i> attribute</li><li><b>eve_month</b> <i>Integer</i> attribute</li><li><b>eve_day</b> <i>Integer</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>id</b> <i>UUID</i> attribute</li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **upsert** | _create_ | <ul><li><b>record</b> <i>Record</i> </li><li><b>params</b> <i>Map</i> </li><li><b>mts_material_sample_type</b> <i>String</i> attribute</li><li><b>mte_material_entity_id</b> <i>String</i> attribute</li><li><b>occ_occurrence_remarks</b> <i>String</i> attribute</li><li><b>occ_associated_occurrences</b> <i>String</i> attribute</li><li><b>occ_sex</b> <i>String</i> attribute</li><li><b>occ_recorded_by</b> <i>String</i> attribute</li><li><b>loc_georeference_remarks</b> <i>String</i> attribute</li><li><b>loc_decimal_latitude</b> <i>Float</i> attribute</li><li><b>loc_decimal_longitude</b> <i>Float</i> attribute</li><li><b>loc_state_province</b> <i>String</i> attribute</li><li><b>loc_verbatim_locality</b> <i>String</i> attribute</li><li><b>loc_locality</b> <i>String</i> attribute</li><li><b>loc_country</b> <i>String</i> attribute</li><li><b>loc_continent</b> <i>String</i> attribute</li><li><b>spp_life_stage</b> <i>String</i> attribute</li><li><b>tax_specific_epithet</b> <i>String</i> attribute</li><li><b>tax_infraspecific_epithet</b> <i>String</i> attribute</li><li><b>tax_scientific_name_authorship</b> <i>String</i> attribute</li><li><b>tax_scientific_name</b> <i>String</i> attribute</li><li><b>tax_genus</b> <i>String</i> attribute</li><li><b>tax_family</b> <i>String</i> attribute</li><li><b>tax_order</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource_id</b> <i>String</i> attribute</li><li><b>rrp_relationship_of_resource</b> <i>String</i> attribute</li><li><b>ref_relationship_established_date</b> <i>Date</i> attribute</li><li><b>ref_title</b> <i>String</i> attribute</li><li><b>ref_source</b> <i>String</i> attribute</li><li><b>ref_rights</b> <i>String</i> attribute</li><li><b>ref_date</b> <i>Date</i> attribute</li><li><b>ref_creator</b> <i>String</i> attribute</li><li><b>ref_bibliographic_citation</b> <i>String</i> attribute</li><li><b>idf_type_status</b> <i>String</i> attribute</li><li><b>idf_identified_by</b> <i>String</i> attribute</li><li><b>idf_date_identified</b> <i>Date</i> attribute</li><li><b>eve_end_of_period_year</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_month</b> <i>Integer</i> attribute</li><li><b>eve_end_of_period_day</b> <i>Integer</i> attribute</li><li><b>eve_year</b> <i>Integer</i> attribute</li><li><b>eve_month</b> <i>Integer</i> attribute</li><li><b>eve_day</b> <i>Integer</i> attribute</li><li><b>eve_event_date</b> <i>Date</i> attribute</li><li><b>prs_date_of_birth</b> <i>Date</i> attribute</li><li><b>prs_last_name</b> <i>String</i> attribute</li><li><b>prs_first_name</b> <i>String</i> attribute</li><li><b>prs_contact_point</b> <i>String</i> attribute</li><li><b>id</b> <i>UUID</i> attribute</li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> | Creates or updates a `EncodedRecord` from the given `params`.
+
+it contains all attributes, which the `DataAggregator.Records.Record` has as well. but gets its values from the encoding process.
+
+The encoded_record is associated with its `DataAggregator.Records.Record`
+
+ |
+| **encode** | _action_ | <ul><li><b>records</b> <i>Record[]</i> </li></ul> |  |
 
 ## API DataAggregator.Taxonomy
 

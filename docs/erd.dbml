@@ -36,6 +36,59 @@ Table collections {
   institution_id uuid
 }
 
+Table encoded_records {
+  mts_material_sample_type varchar
+  mte_material_entity_id varchar
+  occ_occurrence_remarks varchar
+  occ_associated_occurrences varchar
+  occ_sex varchar
+  occ_recorded_by varchar
+  loc_georeference_remarks varchar
+  loc_decimal_latitude float
+  loc_decimal_longitude float
+  loc_state_province varchar
+  loc_verbatim_locality varchar
+  loc_locality varchar
+  loc_country varchar
+  loc_continent varchar
+  spp_life_stage varchar
+  tax_specific_epithet varchar
+  tax_infraspecific_epithet varchar
+  tax_scientific_name_authorship varchar
+  tax_scientific_name varchar
+  tax_genus varchar
+  tax_family varchar
+  tax_order varchar
+  rrp_relationship_of_resource_id varchar
+  rrp_relationship_of_resource varchar
+  ref_relationship_established_date date
+  ref_title varchar
+  ref_source varchar
+  ref_rights varchar
+  ref_date date
+  ref_creator varchar
+  ref_bibliographic_citation varchar
+  idf_type_status varchar
+  idf_identified_by varchar
+  idf_date_identified date
+  eve_end_of_period_year integer
+  eve_end_of_period_month integer
+  eve_end_of_period_day integer
+  eve_year integer
+  eve_month integer
+  eve_day integer
+  eve_event_date date
+  prs_date_of_birth date
+  prs_last_name varchar
+  prs_first_name varchar
+  prs_contact_point varchar
+  id uuid [pk]
+  extra_data jsonb
+  inserted_at timestamp
+  updated_at timestamp
+  record_id uuid [pk]
+}
+
 Table imports {
   state varchar
   id uuid [pk]
@@ -194,5 +247,6 @@ Ref: file_attachments.id < record_images.attachment_id
 Ref: imports.id < import_records.import_id
 Ref: institutions.id < collections.institution_id
 Ref: oban_jobs.id < imports.job_id
+Ref: records.id < encoded_records.record_id
 Ref: records.id < import_records.record_id
 Ref: records.id < record_images.record_id

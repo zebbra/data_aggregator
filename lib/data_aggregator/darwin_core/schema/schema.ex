@@ -129,6 +129,14 @@ defmodule DataAggregator.DarwinCore.Schema do
   end
 
   @doc """
+  Returns a list of all mandatory (allow_nil == false) attributes prefixed with their category name.
+  """
+  @spec mandatory_prefixed_attributes() :: [Attribute.t()]
+  def mandatory_prefixed_attributes do
+    Enum.filter(prefixed_attributes(), &(&1.allow_nil? == false))
+  end
+
+  @doc """
   Returns a list of all attribute names prefixed with their category name.
   """
   @spec prefixed_attribute_names() :: [atom()]
