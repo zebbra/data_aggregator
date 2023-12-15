@@ -267,7 +267,7 @@ defmodule DataAggregator.MixProject do
       {:ex_doc, "~> 0.27", runtime: false},
 
       # Liveview Widgets
-      {:kino, "~> 0.11.2", only: :dev},
+      {:kino, "~> 0.12.0", only: :dev},
       {:kino_explorer, "~> 0.1.10", only: :dev}
     ]
   end
