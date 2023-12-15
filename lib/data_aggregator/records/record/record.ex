@@ -23,14 +23,16 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.Import
   alias __MODULE__
 
+  @type t :: %Record{}
+
   @default_limit 15
   def default_limit, do: @default_limit
 
   attributes do
-    uuid_attribute :id, prefix: "rec"
+    uuid_attribute(:id, prefix: "rec")
     attribute :import_data, :map
     attribute :extra_data, :map
-    timestamps private?: false, writable?: false
+    timestamps(private?: false, writable?: false)
   end
 
   relationships do

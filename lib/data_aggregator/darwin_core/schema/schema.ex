@@ -52,7 +52,8 @@ defmodule DataAggregator.DarwinCore.Schema do
     %Attribute{name: :scientific_name, type: :string, allow_nil?: false},
     %Attribute{name: :scientific_name_authorship, type: :string, allow_nil?: true},
     %Attribute{name: :infraspecific_epithet, type: :string, allow_nil?: true},
-    %Attribute{name: :specific_epithet, type: :string, allow_nil?: true}
+    %Attribute{name: :specific_epithet, type: :string, allow_nil?: true},
+    %Attribute{name: :taxon_id, type: :string, allow_nil?: true}
   ]
 
   @spp_attributes [
@@ -134,6 +135,14 @@ defmodule DataAggregator.DarwinCore.Schema do
   @spec mandatory_prefixed_attributes() :: [Attribute.t()]
   def mandatory_prefixed_attributes do
     Enum.filter(prefixed_attributes(), &(&1.allow_nil? == false))
+  end
+
+  @doc """
+  Returns a list of all optional (allow_nil == true) attributes prefixed with their category name.
+  """
+  @spec optional_prefixed_attributes() :: [Attribute.t()]
+  def optional_prefixed_attributes do
+    Enum.filter(prefixed_attributes(), &(&1.allow_nil? == true))
   end
 
   @doc """

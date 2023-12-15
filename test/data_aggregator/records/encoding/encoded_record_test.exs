@@ -3,6 +3,7 @@ defmodule DataAggregator.EncodedRecordTest do
 
   use DataAggregator.DataCase, async: true
 
+  alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
 
   import DataAggregator.EncodedRecordsFixtures
@@ -37,11 +38,17 @@ defmodule DataAggregator.EncodedRecordTest do
     end
 
     test "create/1 with valid data creates a encoded_record" do
+      record = record_fixture()
+
       attrs = %{
-        record: record_fixture()
+        record: record
       }
 
-      assert {:ok, %EncodedRecord{} = _encoded_record} = EncodedRecord.create(attrs)
+      assert {:ok, %EncodedRecord{} = result} = EncodedRecord.create(attrs)
+
+      encoded_record = Records.load!(result, [:record])
+
+      assert encoded_record.record.id == record.id
     end
 
     test "create/1 with invalid data returns error changeset" do

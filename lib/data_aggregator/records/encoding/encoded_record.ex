@@ -20,6 +20,9 @@ defmodule DataAggregator.Records.EncodedRecord do
   alias DataAggregator.DarwinCore
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Record
+  alias __MODULE__
+
+  @type t :: %EncodedRecord{}
 
   @default_limit 15
   def default_limit, do: @default_limit
@@ -56,6 +59,7 @@ defmodule DataAggregator.Records.EncodedRecord do
       argument :record, Record, allow_nil?: false
 
       change Encoding.Changes.SetMandatoryAttributes
+      change Encoding.Changes.SetOptionalAttributes
       change manage_relationship(:record, :record, type: :append)
     end
 
