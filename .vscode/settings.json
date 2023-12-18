@@ -25,5 +25,8 @@
   // Elixir
   "elixir.credo.strictMode": true,
   // Classes are sorted using "mix format"
-  "headwind.runOnSave": false
+  "headwind.runOnSave": false,
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": "file:///Users/hw/Projects/data_aggregator/.github/workflows/deploy.yml"
+  }
 }
