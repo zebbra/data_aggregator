@@ -1,16 +1,15 @@
 import Config
 
 # Configure your database
+database_url = "ecto://postgres:postgres@localhost:5432/data_aggregator_dev"
+
 config :data_aggregator, DataAggregator.Repo,
-  # username: "postgres",
-  # password: "postgres",
-  port: 5432,
-  hostname: "localhost",
-  database: "data_aggregator_dev",
+  url: System.get_env("DATABASE_URL") || database_url,
+  pool_size: 20,
+  queue_target: 100,
+  log: false,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
-  pool_size: 20,
-  log: false,
   timeout: 10 * 60 * 1000
 
 # backoff_max: 120_000,
