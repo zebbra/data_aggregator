@@ -1,8 +1,8 @@
 name: CI/CD
 
 on:
-  push:
-    branches: ["github-actions"]
+  - push
+  - pull_request
 
 env:
   MIX_ENV: test
@@ -75,7 +75,7 @@ jobs:
     name: Build docker image
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/github-actions'
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout code
@@ -113,7 +113,7 @@ jobs:
 
   deploy:
     name: Deploy to staging
-    if: github.ref == 'refs/heads/github-actions'
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
 
