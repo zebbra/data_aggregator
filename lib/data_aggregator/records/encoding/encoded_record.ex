@@ -58,35 +58,24 @@ defmodule DataAggregator.Records.EncodedRecord do
       primary? true
       argument :record, Record, allow_nil?: false
 
+      upsert? true
+      upsert_fields [:extra_data | DarwinCore.Schema.prefixed_attribute_names()]
+      upsert_identity :record_mte_material_entity_id
+
       change Encoding.Changes.SetMandatoryAttributes
       change Encoding.Changes.SetOptionalAttributes
       change manage_relationship(:record, :record, type: :append)
     end
 
-    create :upsert do
-      description """
-      Creates or updates a `EncodedRecord` from the given `params`.
-
-      it contains all attributes, which the `DataAggregator.Records.Record` has as well. but gets its values from the encoding process.
-
-      The encoded_record is associated with its `DataAggregator.Records.Record`
-
-      """
-
-      argument :record, Record, allow_nil?: false
-      argument :params, :map, allow_nil?: false
-
-      upsert? true
-      upsert_fields [:extra_data | DarwinCore.Schema.prefixed_attribute_names()]
-
-      change manage_relationship(:record, :record, type: :append)
-    end
-
     action :encode, :map do
-      argument :records, {:array, Record}, allow_nil?: false
+      argument :records, :term, allow_nil?: false
 
       run Encoding.Actions.EncodeRecord
     end
+  end
+
+  identities do
+    identity :record_mte_material_entity_id, [:record_id, :mte_material_entity_id]
   end
 
   code_interface do
@@ -96,6 +85,7 @@ defmodule DataAggregator.Records.EncodedRecord do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
+    define :get_by_record, action: :read, get_by: [:record]
     define :encode, args: [:records]
   end
 

@@ -5,12 +5,14 @@ defmodule DataAggregator.EncodedRecordsFixtures do
   """
 
   alias DataAggregator.Records.EncodedRecord
+  alias DataAggregator.Records.Record
 
   import DataAggregator.RecordsFixtures
 
   @encoded_record_defaults %{
     mte_material_entity_id: "encoded_record1",
-    tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
+    tax_scientific_name: "Oenanthe Pallas, 1771",
+    tax_kingdom: "Animalia"
   }
 
   @doc """
@@ -21,5 +23,12 @@ defmodule DataAggregator.EncodedRecordsFixtures do
     |> Map.merge(attrs)
     |> Map.put_new_lazy(:record, fn -> record_fixture() end)
     |> EncodedRecord.create!()
+  end
+
+  def record_fixture_for_encoding(attrs \\ %{}) do
+    @encoded_record_defaults
+    |> Map.merge(attrs)
+    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Record.create!()
   end
 end

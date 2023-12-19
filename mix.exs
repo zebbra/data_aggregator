@@ -232,7 +232,7 @@ defmodule DataAggregator.MixProject do
       {:jason, "~> 1.2"},
       {:open_api_spex, "~> 3.18"},
       {:redoc_ui_plug, "~> 0.2.1"},
-      {:req, "~> 0.4.5"},
+      {:req, "~> 0.4.8"},
 
       # Mailing
       {:swoosh, "~> 1.3"},
