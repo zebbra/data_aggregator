@@ -29,7 +29,11 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
   ]
 
   # the url to the gbif taxonomy api
-  @api_url "https://api.gbif.org/v1/species/match"
+  @match_api_url "https://api.gbif.org/v1/species/match"
+  @species_api_url "https://api.gbif.org/v1/species"
+
+  def match_api_url, do: @match_api_url
+  def species_api_url, do: @species_api_url
 
   # the minimum confidence level to accept a result
   @min_confidence 80
@@ -47,8 +51,10 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
     {:ok,
      record
      |> build_request_params()
-     |> fetch_gbif_api()
+     |> fetch_match_api()
      |> parse_response()
+     |> parse_match_api_body()
+     |> handle_synonym()
      |> update_encoded_record(record)}
   catch
     error ->
@@ -57,17 +63,23 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
 
   @spec build_request_params(EncodedRecord.t()) :: list()
   defp build_request_params(record) do
-    request_params =
-      Enum.map(@input_attributes, fn {record_attribute, request_attribute} ->
-        {request_attribute, Map.get(record, record_attribute, "")}
-      end)
-
-    request_params
+    Enum.map(@input_attributes, fn {record_attribute, request_attribute} ->
+      {request_attribute, Map.get(record, record_attribute, "")}
+    end)
   end
 
-  @spec fetch_gbif_api(list()) :: map()
-  defp fetch_gbif_api(request_params) do
-    case Req.get(@api_url, params: request_params) do
+  @spec fetch_match_api(list()) :: map()
+  defp fetch_match_api(request_params) do
+    fetch_api(@match_api_url, request_params)
+  end
+
+  @spec fetch_species_api(list()) :: map()
+  defp fetch_species_api(species_key) do
+    fetch_api("#{@species_api_url}/#{species_key}", [])
+  end
+
+  defp fetch_api(url, request_params) do
+    case Req.get(url, params: request_params) do
       {:ok, response} -> response
       {:error, error} -> throw_error(error)
     end
@@ -75,14 +87,30 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
 
   @spec parse_response(map()) :: map()
   defp parse_response(response)
-       when is_nil(response.status) == false and is_nil(response.body) == false do
-    case response.status do
-      200 -> parse_body(response.body)
-      _ -> throw("Non 200 response code while fetching gbif taxonomy api: #{inspect(response)}")
-    end
+       when is_nil(response.status) == false and is_nil(response.body) == false,
+       do: response.body
+
+  defp parse_response(response)
+       when is_nil(response.status) or is_nil(response.body),
+       do: throw("invalid response from gbif taxonomy api: #{inspect(response)}")
+
+  defp parse_response(response)
+       when response.status != 200,
+       do: throw("Non 200 response code while fetching gbif taxonomy api: #{inspect(response)}")
+
+  defp handle_synonym(body) when body.synonym == false, do: body
+
+  defp handle_synonym(body) when body.synonym == true do
+    fetch_species_api(body.acceptedUsageKey)
+    |> parse_response()
+    |> parse_species_api_body()
   end
 
-  defp parse_body(unparsed_body) do
+  defp parse_species_api_body(unparsed_body) do
+    to_map(unparsed_body)
+  end
+
+  defp parse_match_api_body(unparsed_body) do
     body = to_map(unparsed_body)
 
     case validate_body(body) do
@@ -114,6 +142,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
     error -> {:error, error}
   end
 
+  defp is_correct_match_type(body) when body.taxonomicStatus == ~c"ACCEPTED", do: true
   defp is_correct_match_type(body) when body.matchType == "EXACT", do: true
   defp is_correct_match_type(body) when body.matchType == "FUZZY", do: true
 
@@ -126,10 +155,10 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
     do: throw("response value #{inspect(body)} is not confident (min #{@min_confidence}) enough")
 
   @spec update_encoded_record(map(), EncodedRecord.t()) :: EncodedRecord.t()
-  defp update_encoded_record(response, record) do
+  defp update_encoded_record(response_body, record) do
     updated_attributes =
       Enum.map(@output_attributes, fn {record_attribute, response_attribute} ->
-        {record_attribute, Map.get(response, response_attribute)}
+        {record_attribute, Map.get(response_body, response_attribute)}
       end)
       |> Enum.into(%{})
 

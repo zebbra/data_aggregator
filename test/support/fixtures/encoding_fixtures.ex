@@ -11,7 +11,7 @@ defmodule DataAggregator.EncodingFixtures do
 
   @encoded_record_defaults %{
     mte_material_entity_id: "encoded_record1",
-    tax_scientific_name: "Oenanthe Pallas, 1771",
+    tax_scientific_name: "Oenanthea Pallas",
     tax_kingdom: "Animalia"
   }
 
@@ -32,6 +32,15 @@ defmodule DataAggregator.EncodingFixtures do
     |> Record.create!()
   end
 
+  def record_fixture_for_encoding_invalid_confidence(attrs \\ %{}) do
+    @encoded_record_defaults
+    |> Map.merge(attrs)
+    |> Map.put(:tax_scientific_name, "this leads to wrong confidence")
+    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Record.create!()
+  end
+
+  # "confidence" => 79 is below the minimum confidence level of 80
   def response_body_with_invalid_confidence do
     %{
       "acceptedUsageKey" => 2_492_483,
@@ -45,7 +54,7 @@ defmodule DataAggregator.EncodingFixtures do
       "genusKey" => 2_492_483,
       "kingdom" => "Animalia",
       "kingdomKey" => 1,
-      "matchType" => "EXACT",
+      "matchType" => "FUZZY",
       "order" => "Passeriformes",
       "orderKey" => 729,
       "phylum" => "Chordata",
@@ -58,20 +67,20 @@ defmodule DataAggregator.EncodingFixtures do
     }
   end
 
-  def correct_response_body do
+  def correct_match_api_response_body do
     %{
       "acceptedUsageKey" => 2_492_483,
       "canonicalName" => "Oenanthe",
       "class" => "Aves",
       "classKey" => 212,
-      "confidence" => 97,
+      "confidence" => 88,
       "family" => "Muscicapidae",
       "familyKey" => 9322,
       "genus" => "Oenanthe",
       "genusKey" => 2_492_483,
       "kingdom" => "Animalia",
       "kingdomKey" => 1,
-      "matchType" => "EXACT",
+      "matchType" => "FUZZY",
       "order" => "Passeriformes",
       "orderKey" => 729,
       "phylum" => "Chordata",
@@ -81,6 +90,48 @@ defmodule DataAggregator.EncodingFixtures do
       "status" => "SYNONYM",
       "synonym" => true,
       "usageKey" => 7_984_973
+    }
+  end
+
+  def correct_species_api_response_body do
+    %{
+      "orderKey" => 729,
+      "kingdom" => "Animalia",
+      "numDescendants" => 111,
+      "rank" => "GENUS",
+      "nameType" => "SCIENTIFIC",
+      "lastCrawled" => "2023-08-22T23:20:59.545+00:00",
+      "parent" => "Muscicapidae",
+      "canonicalName" => "Oenanthe",
+      "taxonID" => "gbif:2492483",
+      "key" => 2_492_483,
+      "genus" => "Oenanthe",
+      "family" => "Muscicapidae",
+      "authorship" => "Vieillot, 1816",
+      "origin" => "SOURCE",
+      "genusKey" => 2_492_483,
+      "kingdomKey" => 1,
+      "constituentKey" => "7ddf754f-d193-4cc9-b351-99906754a03b",
+      "scientificName" => "Oenanthe Vieillot, 1816",
+      "lastInterpreted" => "2023-08-22T22:19:29.194+00:00",
+      "order" => "Passeriformes",
+      "taxonomicStatus" => "ACCEPTED",
+      "class" => "Aves",
+      "remarks" => "",
+      "parentKey" => 9322,
+      "nameKey" => 7_724_841,
+      "publishedIn" =>
+        "Vieillot, Louis P. 1816. Analyse d'une nouvelle ornithologie élémentaire. Deterville, Paris.: 1-70.",
+      "nubKey" => 2_492_483,
+      "classKey" => 212,
+      "familyKey" => 9322,
+      "nomenclaturalStatus" => [],
+      "datasetKey" => "d7dddbf4-2cf0-4f39-9b2a-bb099caae36c",
+      "sourceTaxonKey" => 172_764_999,
+      "phylumKey" => 44,
+      "issues" => [],
+      "vernacularName" => "wheatear",
+      "phylum" => "Chordata"
     }
   end
 end
