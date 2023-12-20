@@ -3,7 +3,7 @@ defmodule DataAggregator.EncodingTest do
 
   use DataAggregator.DataCase, async: true
 
-  alias DataAggregator.Records.EncodedRecord
+  alias DataAggregator.Records.Record
 
   import DataAggregator.EncodedRecordsFixtures
 
@@ -23,7 +23,7 @@ defmodule DataAggregator.EncodingTest do
     test "encode/1 for :gbif_taxonomy catalog which returns all successful encoded_records", %{
       records: records
     } do
-      {:ok, encoding_result} = EncodedRecord.encode(records)
+      {:ok, encoding_result} = Record.encode(records)
 
       # add more asserts for encoded fields on encoded_record items
       assert Enum.count(encoding_result.records) == 5

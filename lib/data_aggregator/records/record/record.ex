@@ -20,6 +20,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
   alias __MODULE__
 
@@ -107,6 +108,12 @@ defmodule DataAggregator.Records.Record do
       argument :rows, :term, allow_nil?: false
       run Record.Actions.BulkImport
     end
+
+    action :encode, :map do
+      argument :records, :term, allow_nil?: false
+
+      run Encoding.Actions.EncodeRecord
+    end
   end
 
   identities do
@@ -122,6 +129,7 @@ defmodule DataAggregator.Records.Record do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
+    define :encode, args: [:records]
   end
 
   postgres do

@@ -66,12 +66,6 @@ defmodule DataAggregator.Records.EncodedRecord do
       change Encoding.Changes.SetOptionalAttributes
       change manage_relationship(:record, :record, type: :append)
     end
-
-    action :encode, :map do
-      argument :records, :term, allow_nil?: false
-
-      run Encoding.Actions.EncodeRecord
-    end
   end
 
   identities do
@@ -86,7 +80,6 @@ defmodule DataAggregator.Records.EncodedRecord do
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :get_by_record, action: :read, get_by: [:record]
-    define :encode, args: [:records]
   end
 
   postgres do
