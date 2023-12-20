@@ -114,6 +114,12 @@ defmodule DataAggregator.Records.Record do
 
       run Encoding.Actions.EncodeRecord
     end
+
+    action :bulk_encode, :map do
+      argument :records, :term, allow_nil?: false
+
+      run Encoding.Actions.EncodeRecord
+    end
   end
 
   identities do

@@ -2,6 +2,7 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   @moduledoc """
   Encode Records with configured catalogs
   """
+  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.Strategy
 
   use Ash.Resource.Actions.Implementation
@@ -22,7 +23,9 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
           errors = get_errors(result)
 
           records =
-            get_records(result)
+            Enum.map(get_records(result), fn record ->
+              EncodedRecord.update!(record, Map.from_struct(record))
+            end)
 
           %{errors: errors, records: records}
         end)

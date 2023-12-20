@@ -212,6 +212,7 @@ defmodule DataAggregator.MixProject do
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
       {:recode, "~> 0.6", only: [:dev, :test]},
+      {:mimic, "~> 1.7", only: :test},
 
       # Asserts
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},

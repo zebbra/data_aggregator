@@ -6,7 +6,7 @@ defmodule DataAggregator.EncodedRecordTest do
   alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
 
-  import DataAggregator.EncodedRecordsFixtures
+  import DataAggregator.EncodingFixtures
   import DataAggregator.RecordsFixtures
 
   describe "encoded_records" do

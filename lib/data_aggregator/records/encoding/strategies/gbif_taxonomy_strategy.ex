@@ -22,9 +22,10 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
     {:tax_kingdom, :kingdom},
     {:tax_phylum, :phylum},
     {:tax_class, :class},
-    {:tax_order, :order},
     {:tax_family, :family},
-    {:tax_genus, :genus}
+    {:tax_order, :order},
+    {:tax_genus, :genus},
+    {:tax_scientific_name, :scientificName}
   ]
 
   # the url to the gbif taxonomy api
@@ -84,7 +85,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
   defp parse_body(unparsed_body) do
     body = to_map(unparsed_body)
 
-    case is_confident(body) do
+    case validate_body(body) do
       {:ok, body} -> body
       {:error, error} -> throw_error(error)
     end
@@ -104,21 +105,35 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
     key
   end
 
-  defp is_confident(body) when body.confidence >= @min_confidence do
+  defp validate_body(body) do
+    is_correct_match_type(body)
+    is_confident(body)
+
     {:ok, body}
+  catch
+    error -> {:error, error}
   end
 
-  defp is_confident(body) when body.confidence < @min_confidence do
-    {:error, "response value #{inspect(body)} is not confident (min #{@min_confidence}) enough"}
-  end
+  defp is_correct_match_type(body) when body.matchType == "EXACT", do: true
+  defp is_correct_match_type(body) when body.matchType == "FUZZY", do: true
+
+  defp is_correct_match_type(body) when body.matchType == "NONE",
+    do: throw("matchType #{inspect(body.matchType)} is not accepted")
+
+  defp is_confident(body) when body.confidence >= @min_confidence, do: true
+
+  defp is_confident(body) when body.confidence < @min_confidence,
+    do: throw("response value #{inspect(body)} is not confident (min #{@min_confidence}) enough")
 
   @spec update_encoded_record(map(), EncodedRecord.t()) :: EncodedRecord.t()
   defp update_encoded_record(response, record) do
-    Enum.each(@output_attributes, fn attribute ->
-      Map.update(record, attribute, nil, fn _ -> Map.get(response, attribute) end)
-    end)
+    updated_attributes =
+      Enum.map(@output_attributes, fn {record_attribute, response_attribute} ->
+        {record_attribute, Map.get(response, response_attribute)}
+      end)
+      |> Enum.into(%{})
 
-    record
+    Map.merge(record, updated_attributes)
   end
 
   @spec throw_error(map()) :: {:ok, map()} | {:error, any()}
