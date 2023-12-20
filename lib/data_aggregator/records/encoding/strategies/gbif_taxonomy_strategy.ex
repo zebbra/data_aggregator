@@ -68,16 +68,17 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
     end)
   end
 
-  @spec fetch_match_api(list()) :: map()
+  @spec fetch_match_api(list()) :: Req.Response.t()
   defp fetch_match_api(request_params) do
     fetch_api(@match_api_url, request_params)
   end
 
-  @spec fetch_species_api(list()) :: map()
+  @spec fetch_species_api(list()) :: Req.Response.t()
   defp fetch_species_api(species_key) do
     fetch_api("#{@species_api_url}/#{species_key}", [])
   end
 
+  @spec fetch_api(String.t(), list()) :: Req.Response.t()
   defp fetch_api(url, request_params) do
     case Req.get(url, params: request_params) do
       {:ok, response} -> response
@@ -85,7 +86,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
     end
   end
 
-  @spec parse_response(map()) :: map()
+  @spec parse_response(Req.Response.t()) :: map()
   defp parse_response(response)
        when is_nil(response.status) == false and is_nil(response.body) == false,
        do: response.body
@@ -98,6 +99,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
        when response.status != 200,
        do: throw("Non 200 response code while fetching gbif taxonomy api: #{inspect(response)}")
 
+  @spec handle_synonym(map()) :: map()
   defp handle_synonym(body) when body.synonym == false, do: body
 
   defp handle_synonym(body) when body.synonym == true do
@@ -106,10 +108,12 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
     |> parse_species_api_body()
   end
 
+  @spec parse_species_api_body(map()) :: map()
   defp parse_species_api_body(unparsed_body) do
     to_map(unparsed_body)
   end
 
+  @spec parse_match_api_body(map()) :: map()
   defp parse_match_api_body(unparsed_body) do
     body = to_map(unparsed_body)
 
@@ -133,6 +137,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
     key
   end
 
+  @spec validate_body(map()) :: {:ok, map()} | {:error, any()}
   defp validate_body(body) do
     is_correct_match_type(body)
     is_confident(body)
@@ -142,6 +147,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
     error -> {:error, error}
   end
 
+  @spec is_correct_match_type(map()) :: boolean()
   defp is_correct_match_type(body) when body.taxonomicStatus == ~c"ACCEPTED", do: true
   defp is_correct_match_type(body) when body.matchType == "EXACT", do: true
   defp is_correct_match_type(body) when body.matchType == "FUZZY", do: true
@@ -149,6 +155,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
   defp is_correct_match_type(body) when body.matchType == "NONE",
     do: throw("matchType #{inspect(body.matchType)} is not accepted")
 
+  @spec is_confident(map()) :: boolean()
   defp is_confident(body) when body.confidence >= @min_confidence, do: true
 
   defp is_confident(body) when body.confidence < @min_confidence,

@@ -16,7 +16,7 @@ defmodule DataAggregator.EncodingFixtures do
   }
 
   @doc """
-  Generate a encoded_record.
+    Generate a encoded_record.
   """
   def encoded_record_fixture(attrs \\ %{}) do
     @encoded_record_defaults
@@ -25,6 +25,9 @@ defmodule DataAggregator.EncodingFixtures do
     |> EncodedRecord.create!()
   end
 
+  @doc """
+    Generate a record for encoding process
+  """
   def record_fixture_for_encoding(attrs \\ %{}) do
     @encoded_record_defaults
     |> Map.merge(attrs)
@@ -32,6 +35,9 @@ defmodule DataAggregator.EncodingFixtures do
     |> Record.create!()
   end
 
+  @doc """
+    Generate a record for encoding process, which will lead to an invalid confidence
+  """
   def record_fixture_for_encoding_invalid_confidence(attrs \\ %{}) do
     @encoded_record_defaults
     |> Map.merge(attrs)
