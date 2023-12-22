@@ -2,13 +2,11 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
-
   use Mimic
-
-  alias DataAggregator.Records.Encoding.Strategy.GbifTaxonomy
-
   use DataAggregator.DataCase, async: true
 
+  alias DataAggregator.Records.EncodedRecord
+  alias DataAggregator.Records.Encoding.Strategy.GbifTaxonomy
   alias DataAggregator.Records.Record
 
   import DataAggregator.EncodingFixtures
@@ -34,15 +32,25 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
 
       {:ok, encoding_result} = Record.encode(records)
 
-      # add more asserts for encoded fields on encoded_record items
-      assert Enum.count(encoding_result.records) == 5
+      %{successful_records: successful_records, errors: errors, failed_records: failed_records} =
+        encoding_result
 
-      assert Enum.each(encoding_result.records, fn encoded_record ->
+      assert Enum.count(successful_records) == 5
+
+      assert Enum.each(successful_records, fn record ->
+               encoded_record = EncodedRecord.get_by_record!(record)
+
                assert encoded_record.tax_family === "Muscicapidae"
+
                assert encoded_record.tax_scientific_name === "Oenanthe Vieillot, 1816"
              end)
 
-      assert Enum.empty?(encoding_result.errors)
+      assert Enum.each(successful_records, fn record ->
+               assert record.state === :encoded
+             end)
+
+      assert Enum.empty?(errors)
+      assert Enum.empty?(failed_records)
     end
 
     test "encode/1 for :gbif_taxonomy catalog which returns successful encoded_records and errors" do
@@ -53,9 +61,17 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
       {{:ok, encoding_result}, logs} =
         with_log(fn -> Record.encode(records_with_invalid_confidence) end)
 
+      %{successful_records: successful_records, errors: errors, failed_records: failed_records} =
+        encoding_result
+
       # add more asserts for encoded fields on encoded_record items
-      assert Enum.empty?(encoding_result.records) == true
-      assert Enum.count(encoding_result.errors) == 1
+      assert Enum.empty?(successful_records) == true
+      assert Enum.count(errors) == 1
+      assert Enum.count(failed_records) == 1
+
+      assert Enum.each(failed_records, fn failed_record ->
+               assert failed_record.state === :encoding_failed
+             end)
 
       assert logs =~ "is not confident (min 80) enough"
     end

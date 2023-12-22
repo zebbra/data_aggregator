@@ -1,9 +1,11 @@
-defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
+defmodule DataAggregator.Records.Encoding.Actions.EncodeRecords do
   @moduledoc """
   Encode Records with configured catalogs
   """
+  alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.Strategy
+  alias DataAggregator.Records.Record
 
   use Ash.Resource.Actions.Implementation
 
@@ -11,23 +13,34 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
 
   @impl true
   def run(input, _opts, _context) do
-    records_to_encode = input.arguments.records
+    passedd_records = input.arguments.records
 
     try do
       encoding_result =
         Enum.map(Strategy.get_catalogs(), fn catalog ->
           Logger.info("Encoding records with catalog: #{to_string(catalog)}")
 
+          records_to_encode = set_encoding_state(passedd_records)
+
           result = Strategy.encode(records_to_encode, catalog)
 
           errors = get_errors(result)
 
-          records =
-            Enum.map(get_records(result), fn record ->
-              EncodedRecord.update!(record, Map.from_struct(record))
+          encoded_records =
+            Enum.map(get_records(result), fn encoded_record ->
+              updated_encoded_record =
+                EncodedRecord.update(encoded_record, Map.from_struct(encoded_record))
+                |> Records.load!([:record])
+
+              updated_encoded_record.record
             end)
 
-          %{errors: errors, records: records}
+          failed_records =
+            get_failed_records(records_to_encode, encoded_records)
+
+          %{success: success, failed: failed} = set_final_state(failed_records, encoded_records)
+
+          %{errors: errors, successful_records: success, failed_records: failed}
         end)
         |> List.flatten()
         |> List.first()
@@ -36,6 +49,42 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
     catch
       error -> {:error, error}
     end
+  end
+
+  # set the state of all processed records to `:encoded` or `:encoding_failed`
+  @spec set_final_state([Record.t()], [Record.t()]) ::
+          %{success: [Record.t()], failed: [Record.t()]}
+  defp set_final_state(failed_records, encoded_records) do
+    success = set_encoded_state(encoded_records)
+    failed = set_encoding_failed_state(failed_records)
+
+    %{success: success, failed: failed}
+  end
+
+  defp get_failed_records(records, encoded_records) do
+    Enum.reject(records, fn record ->
+      Enum.any?(encoded_records, fn encoded_record ->
+        encoded_record.id == record.id
+      end)
+    end)
+  end
+
+  defp set_encoding_state(records) do
+    Enum.map(records, fn record ->
+      Record.set_encoding!(record)
+    end)
+  end
+
+  defp set_encoded_state(records) do
+    Enum.map(records, fn record ->
+      Record.set_encoded!(record)
+    end)
+  end
+
+  defp set_encoding_failed_state(records) do
+    Enum.map(records, fn record ->
+      Record.set_encoding_failed!(record)
+    end)
   end
 
   defp get_errors(result) do

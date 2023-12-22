@@ -63,8 +63,11 @@ defmodule DataAggregator.EncodedRecordTest do
         tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
       }
 
-      assert {:ok, %EncodedRecord{} = _encoded_record} =
+      assert {:ok, %EncodedRecord{} = encoded_record} =
                EncodedRecord.update(encoded_record, update_attrs)
+
+      assert EncodedRecord.get_by_id!(encoded_record.id).mte_material_entity_id ==
+               "encoded_record2"
     end
 
     test "update/2 with invalid data returns error changeset" do

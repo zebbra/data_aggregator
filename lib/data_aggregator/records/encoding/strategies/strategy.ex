@@ -18,13 +18,13 @@ defmodule DataAggregator.Records.Encoding.Strategy do
 
   @spec encode([Record.t()], atom()) :: [EncodedRecord.t() | {:error, any()}]
   def encode(records, catalog) when catalog == :gbif_taxonomy do
-    encoded_records = Enum.map(records, &upsert_encoded_record(&1))
+    encoded_records = Enum.map(records, &create_encoded_record(&1))
 
     GbifTaxonomy.apply_strategy(encoded_records)
   end
 
-  @spec upsert_encoded_record(Record.t()) :: EncodedRecord.t()
-  defp upsert_encoded_record(record) do
+  @spec create_encoded_record(Record.t()) :: EncodedRecord.t()
+  defp create_encoded_record(record) do
     encoded_record =
       case EncodedRecord.get_by_record(record) do
         {:ok, result} -> result

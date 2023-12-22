@@ -169,7 +169,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
       end)
       |> Enum.into(%{})
 
-    Map.merge(record, updated_attributes)
+    EncodedRecord.update!(record, updated_attributes)
   end
 
   @spec throw_error(map()) :: {:ok, map()} | {:error, any()}

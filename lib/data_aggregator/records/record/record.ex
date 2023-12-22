@@ -14,7 +14,8 @@ defmodule DataAggregator.Records.Record do
       AshUUID,
       AshGraphql.Resource,
       AshJsonApi.Resource,
-      DataAggregator.DarwinCore.Resource
+      DataAggregator.DarwinCore.Resource,
+      AshStateMachine
     ]
 
   alias DataAggregator.DarwinCore
@@ -58,6 +59,18 @@ defmodule DataAggregator.Records.Record do
     end
   end
 
+  state_machine do
+    initial_states [:imported]
+    default_initial_state :imported
+
+    transitions do
+      transition :set_imported, from: [:encoded, :encoding_failed, :imported], to: :imported
+      transition :set_encoding, from: [:imported, :encoding_failed, :encoded], to: :encoding
+      transition :set_encoded, from: :encoding, to: :encoded
+      transition :set_encoding_failed, from: :encoding, to: :encoding_failed
+    end
+  end
+
   preparations do
     prepare build(sort: [id: :asc])
     prepare DataAggregator.Preparations.Sort
@@ -75,6 +88,8 @@ defmodule DataAggregator.Records.Record do
     create :create do
       primary? true
       argument :collection, Collection, allow_nil?: false
+
+      change Record.Changes.SetImportedAfterAction
       change manage_relationship(:collection, :collection, type: :append)
     end
 
@@ -91,6 +106,8 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.RelateImport
       change Record.Changes.RelateCollectionFromImport
       change Record.Changes.ExtractAttributes
+      change Record.Changes.SetImportedAfterAction
+
       upsert? true
       upsert_identity :collection_mte_material_entity_id
       upsert_fields [:import_data, :extra_data | DarwinCore.Schema.prefixed_attribute_names()]
@@ -112,13 +129,23 @@ defmodule DataAggregator.Records.Record do
     action :encode, :map do
       argument :records, :term, allow_nil?: false
 
-      run Encoding.Actions.EncodeRecord
+      run Encoding.Actions.EncodeRecords
     end
 
-    action :bulk_encode, :map do
-      argument :records, :term, allow_nil?: false
+    update :set_imported do
+      change transition_state(:imported)
+    end
 
-      run Encoding.Actions.EncodeRecord
+    update :set_encoding do
+      change transition_state(:encoding)
+    end
+
+    update :set_encoded do
+      change transition_state(:encoded)
+    end
+
+    update :set_encoding_failed do
+      change transition_state(:encoding_failed)
     end
   end
 
@@ -136,6 +163,10 @@ defmodule DataAggregator.Records.Record do
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :encode, args: [:records]
+    define :set_imported
+    define :set_encoding
+    define :set_encoded
+    define :set_encoding_failed
   end
 
   postgres do
