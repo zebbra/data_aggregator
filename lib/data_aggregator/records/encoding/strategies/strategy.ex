@@ -23,6 +23,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     GbifTaxonomy.apply_strategy(encoded_records)
   end
 
+  # create an encoded record if it does not exist yet
   @spec create_encoded_record(Record.t()) :: EncodedRecord.t()
   defp create_encoded_record(record) do
     encoded_record =
