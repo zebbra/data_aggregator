@@ -127,9 +127,10 @@ defmodule DataAggregator.Records.Record do
     end
 
     action :encode, :map do
-      argument :records, :term, allow_nil?: false
+      argument :record, :term, allow_nil?: false
+      argument :catalog, :atom, allow_nil?: false
 
-      run Encoding.Actions.EncodeRecords
+      run Encoding.Actions.EncodeRecord
     end
 
     update :set_imported do
@@ -162,7 +163,7 @@ defmodule DataAggregator.Records.Record do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
-    define :encode, args: [:records]
+    define :encode, args: [:record, :catalog]
     define :set_imported
     define :set_encoding
     define :set_encoded

@@ -16,11 +16,11 @@ defmodule DataAggregator.Records.Encoding.Strategy do
 
   def get_catalogs, do: @catalogs
 
-  @spec encode([Record.t()], atom()) :: [EncodedRecord.t() | {:error, any()}]
-  def encode(records, catalog) when catalog == :gbif_taxonomy do
-    encoded_records = Enum.map(records, &create_encoded_record(&1))
+  @spec encode(Record.t(), atom()) :: {:ok, EncodedRecord.t()} | {:error, any()}
+  def encode(record, catalog) when catalog == :gbif_taxonomy do
+    encoded_record = create_encoded_record(record)
 
-    GbifTaxonomy.apply_strategy(encoded_records)
+    GbifTaxonomy.apply_strategy(encoded_record)
   end
 
   # create an encoded record if it does not exist yet

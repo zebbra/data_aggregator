@@ -39,11 +39,11 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
   @min_confidence 80
 
   @doc """
-    query the gbif taxanomy api and return a list of encoded records
+    query the gbif taxanomy api and return the encoded record
   """
-  @spec apply_strategy([EncodedRecord.t()]) :: [{:ok, EncodedRecord.t()} | {:error, any()}]
-  def apply_strategy(records) do
-    Enum.map(records, &process_record/1)
+  @spec apply_strategy(EncodedRecord.t()) :: {:ok, EncodedRecord.t()} | {:error, any()}
+  def apply_strategy(record) do
+    process_record(record)
   end
 
   @spec process_record(EncodedRecord.t()) :: {:ok, EncodedRecord.t()} | {:error, any()}

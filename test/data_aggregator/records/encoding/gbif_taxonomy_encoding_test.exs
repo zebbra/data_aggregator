@@ -13,66 +13,48 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
 
   describe "encoding of records with " do
     setup do
-      records = [
-        record_fixture_for_encoding(),
-        record_fixture_for_encoding(),
-        record_fixture_for_encoding(),
-        record_fixture_for_encoding(),
-        record_fixture_for_encoding()
-      ]
-
-      [records: records]
+      record = record_fixture_for_encoding()
+      [record: record]
     end
 
-    test "encode/1 for :gbif_taxonomy catalog which returns all successful encoded_records", %{
-      records: records
+    test "encode/2 for :gbif_taxonomy catalog which returns the encoded_record", %{
+      record: record
     } do
       expect_correct_matching_api_call()
       expect_correct_species_api_call()
 
-      {:ok, encoding_result} = Record.encode(records)
+      {:ok, encoding_result} = Record.encode(record, :gbif_taxonomy)
 
-      %{successful_records: successful_records, errors: errors, failed_records: failed_records} =
+      %{encoded_record: encoded_record, error: error, failed_record: failed_record} =
         encoding_result
 
-      assert Enum.count(successful_records) == 5
+      assert encoded_record !== nil
 
-      assert Enum.each(successful_records, fn record ->
-               encoded_record = EncodedRecord.get_by_record!(record)
+      lookedup_encoded_record = EncodedRecord.get_by_record!(encoded_record)
 
-               assert encoded_record.tax_family === "Muscicapidae"
-
-               assert encoded_record.tax_scientific_name === "Oenanthe Vieillot, 1816"
-             end)
-
-      assert Enum.each(successful_records, fn record ->
-               assert record.state === :encoded
-             end)
-
-      assert Enum.empty?(errors)
-      assert Enum.empty?(failed_records)
+      assert lookedup_encoded_record !== nil
+      assert failed_record === nil
+      assert error === nil
+      assert lookedup_encoded_record.tax_family === "Muscicapidae"
+      assert lookedup_encoded_record.tax_scientific_name === "Oenanthe Vieillot, 1816"
+      assert encoded_record.state === :encoded
     end
 
-    test "encode/1 for :gbif_taxonomy catalog which returns successful encoded_records and errors" do
-      records_with_invalid_confidence = [record_fixture_for_encoding_invalid_confidence()]
+    test "encode/2 for :gbif_taxonomy catalog which returns the failed_record and the error" do
+      record_with_invalid_confidence = record_fixture_for_encoding_invalid_confidence()
 
       expect_invalid_confidence_from_matching_api_call()
 
       {{:ok, encoding_result}, logs} =
-        with_log(fn -> Record.encode(records_with_invalid_confidence) end)
+        with_log(fn -> Record.encode(record_with_invalid_confidence, :gbif_taxonomy) end)
 
-      %{successful_records: successful_records, errors: errors, failed_records: failed_records} =
+      %{encoded_record: encoded_record, error: error, failed_record: failed_record} =
         encoding_result
 
-      # add more asserts for encoded fields on encoded_record items
-      assert Enum.empty?(successful_records) == true
-      assert Enum.count(errors) == 1
-      assert Enum.count(failed_records) == 1
-
-      assert Enum.each(failed_records, fn failed_record ->
-               assert failed_record.state === :encoding_failed
-             end)
-
+      assert encoded_record === nil
+      assert failed_record !== nil
+      assert error !== nil
+      assert failed_record.state === :encoding_failed
       assert logs =~ "is not confident (min 80) enough"
     end
   end
