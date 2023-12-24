@@ -3,8 +3,11 @@ defmodule DataAggregator.EncodingFixtures do
   This module defines test helpers for creating
   entities via the `DataAggregator.Records` context.
   """
+  use ExUnit.Case, async: true
+  use Mimic
 
   alias DataAggregator.Records.EncodedRecord
+  alias DataAggregator.Records.Encoding.Strategy.GbifTaxonomy
   alias DataAggregator.Records.Record
 
   import DataAggregator.RecordsFixtures
@@ -139,5 +142,47 @@ defmodule DataAggregator.EncodingFixtures do
       "vernacularName" => "wheatear",
       "phylum" => "Chordata"
     }
+  end
+
+  # this mocks the call to the match api --> https://api.gbif.org/v1/species/match
+  def expect_correct_matching_api_call do
+    url = GbifTaxonomy.match_api_url()
+
+    expect(Req, :get, fn ^url, [params: [name: "Oenanthea Pallas", kingdom: ""]] ->
+      {:ok,
+       %{
+         status: 200,
+         body: correct_match_api_response_body()
+       }}
+    end)
+  end
+
+  # this mocks the call to the species api --> https://api.gbif.org/v1/species/2492483
+  # because the response of the matching api above indicates, that the record is a synonym,
+  # the accepted species is fetched from the species api and therefore mocked here
+  def expect_correct_species_api_call do
+    url = "#{GbifTaxonomy.species_api_url()}/2492483"
+
+    expect(Req, :get, fn ^url, [params: []] ->
+      {:ok,
+       %{
+         status: 200,
+         body: correct_species_api_response_body()
+       }}
+    end)
+  end
+
+  # this mocks the call to the match api --> https://api.gbif.org/v1/species/match
+  # we expect an incorrect confidence level in the response body
+  def expect_invalid_confidence_from_matching_api_call do
+    url = GbifTaxonomy.match_api_url()
+
+    expect(Req, :get, fn ^url, [params: [name: "this leads to wrong confidence", kingdom: ""]] ->
+      {:ok,
+       %{
+         status: 200,
+         body: response_body_with_invalid_confidence()
+       }}
+    end)
   end
 end

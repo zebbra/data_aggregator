@@ -20,6 +20,7 @@ defmodule DataAggregator.Records.Record do
 
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
@@ -57,6 +58,16 @@ defmodule DataAggregator.Records.Record do
       destination_attribute_on_join_resource :attachment_id
       join_relationship :images
     end
+
+    has_many :encoder_jobs, Record.EncoderJob
+
+    many_to_many :encoders, Job do
+      api DataAggregator.Jobs
+      through Record.EncoderJob
+      source_attribute_on_join_resource :record_id
+      destination_attribute_on_join_resource :job_id
+      join_relationship :encoder_jobs
+    end
   end
 
   state_machine do
@@ -65,7 +76,12 @@ defmodule DataAggregator.Records.Record do
 
     transitions do
       transition :set_imported, from: [:encoded, :encoding_failed, :imported], to: :imported
-      transition :set_encoding, from: [:imported, :encoding_failed, :encoded], to: :encoding
+      transition :enqueue_encoder, from: :imported, to: :record_queued
+
+      transition :set_encoding,
+        from: [:record_queued, :imported, :encoding_failed, :encoded],
+        to: :encoding
+
       transition :set_encoded, from: :encoding, to: :encoded
       transition :set_encoding_failed, from: :encoding, to: :encoding_failed
     end
@@ -111,6 +127,13 @@ defmodule DataAggregator.Records.Record do
       upsert? true
       upsert_identity :collection_mte_material_entity_id
       upsert_fields [:import_data, :extra_data | DarwinCore.Schema.prefixed_attribute_names()]
+    end
+
+    update :enqueue_encoder do
+      accept []
+      change transition_state(:record_queued)
+      change Record.Changes.EnqueueEncoder
+      change load(:encoder_jobs)
     end
 
     action :bulk_import, :map do
@@ -168,6 +191,7 @@ defmodule DataAggregator.Records.Record do
     define :set_encoding
     define :set_encoded
     define :set_encoding_failed
+    define :enqueue_encoder
   end
 
   postgres do
