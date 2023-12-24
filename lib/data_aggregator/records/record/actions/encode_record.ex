@@ -24,7 +24,7 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
     catalog = input.arguments.catalog
 
     try do
-      Logger.info("Encoding records with catalog: #{to_string(catalog)}")
+      Logger.info("Encoding record with catalog: #{to_string(catalog)}")
 
       # the record which will be encoded, whith it's state set to `:encoding`
       record_to_encode = set_encoding_state(record)
@@ -44,9 +44,20 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
       # set the final encoding state of the processed record and pattern match the result for returning
       %{success: success, failed: failed} = set_final_state(failed_record, encoded_record)
 
-      {:ok, %{error: error, encoded_record: success, failed_record: failed}}
+      encoding_result = {:ok, %{error: error, encoded_record: success, failed_record: failed}}
+
+      Logger.info(
+        "Encoding for record #{record.id} with catalog: #{to_string(catalog)} finished with result: #{inspect(encoding_result)}}"
+      )
+
+      encoding_result
     catch
-      error -> {:error, error}
+      error ->
+        Logger.error(
+          "Encoding for record #{record.id} with catalog: #{to_string(catalog)} failed, due to: #{inspect(error)}"
+        )
+
+        {:error, error}
     end
   end
 
