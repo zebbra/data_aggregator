@@ -1,6 +1,6 @@
 defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   @moduledoc """
-  Encode Record with passed catalogs
+  Encode Record with passed catalog
   """
   alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
@@ -26,16 +26,22 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
     try do
       Logger.info("Encoding records with catalog: #{to_string(catalog)}")
 
+      # the record which will be encoded, whith it's state set to `:encoding`
       record_to_encode = set_encoding_state(record)
 
+      # process the encoding with the passed catalog
       result = Strategy.encode(record_to_encode, catalog)
 
-      error = get_error(result)
-
+      # extract the record `Record.t()` from the encoding result
       encoded_record = get_record(result)
 
+      # extract the failed record `Record.t()` from the encoding result
       failed_record = get_failed_record(result, record_to_encode)
 
+      # extract the error `any()` from the encoding result
+      error = get_error(result)
+
+      # set the final encoding state of the processed record and pattern match the result for returning
       %{success: success, failed: failed} = set_final_state(failed_record, encoded_record)
 
       {:ok, %{error: error, encoded_record: success, failed_record: failed}}
