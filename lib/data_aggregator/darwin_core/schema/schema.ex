@@ -49,6 +49,7 @@ defmodule DataAggregator.DarwinCore.Schema do
     %Attribute{name: :order, type: :string, allow_nil?: true},
     %Attribute{name: :family, type: :string, allow_nil?: true},
     %Attribute{name: :genus, type: :string, allow_nil?: true},
+    %Attribute{name: :kingdom, type: :string, allow_nil?: true},
     %Attribute{name: :scientific_name, type: :string, allow_nil?: false},
     %Attribute{name: :scientific_name_authorship, type: :string, allow_nil?: true},
     %Attribute{name: :infraspecific_epithet, type: :string, allow_nil?: true},

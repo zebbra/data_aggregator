@@ -12,24 +12,12 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    collection =
-      Collection.get_by_id!(id,
-        load: [
-          :records,
-          :records_count,
-          :digitizing_progress,
-          :records_count_not_encoded,
-          :records_count_imported,
-          :records_count_encoding_queued,
-          :records_count_encoding,
-          :records_count_encoded,
-          :records_count_failed
-        ]
-      )
+    collection = get_collection(id)
 
     socket =
       socket
       |> assign(:collection, collection)
+      |> assign(:encoding_state, get_encoding_state(collection))
       |> apply_action(socket.assigns.live_action, params)
 
     {:noreply, socket}
@@ -47,12 +35,11 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
   def handle_event("encode_collection", _params, socket) do
     collection = socket.assigns.collection
 
-    # TO-DO: check this then add encoding batch (rotating icon) to collection overview page
     Stream.chunk_every(collection.records, 10)
     |> Stream.map(&queue_chunk(&1))
     |> Stream.run()
 
-    {:noreply, socket}
+    {:noreply, assign(socket, :encoding_state, get_encoding_state(collection))}
   end
 
   @spec queue_chunk([Record.t()]) :: :ok
@@ -130,7 +117,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
               Encoding State
             </dt>
             <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-700 dark:text-gray-200">
-              <.encoding_state collection={@collection} />
+              <.encoding_state state={@encoding_state} />
             </dd>
           </div>
         </dl>
@@ -158,53 +145,42 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
   end
 
   def encoding_state(assigns) do
-    collection =
-      Records.load!(
-        assigns.collection,
-        [
-          :records_count,
-          :records_count_not_encoded,
-          :records_count_imported,
-          :records_count_encoding_queued,
-          :records_count_encoding,
-          :records_count_encoded,
-          :records_count_failed
-        ],
-        lazy?: true
-      )
-
-    case collection_state(collection) do
+    case assigns.state do
       :encoded ->
         ~H"""
-        <div class="badge badge-success">
-          encoded
+        <div class="badge badge-lg badge-ghost text-success gap-2">
+          <div class="hero-check"></div>
+          <div>successful</div>
         </div>
         """
 
       :failed ->
         ~H"""
-        <div class="badge badge-error">
-          failed
+        <div class="badge badge-lg badge-ghost text-error gap-2">
+          <div class="hero-x-circle"></div>
+          <div>failed</div>
         </div>
         """
 
       :encoding ->
         ~H"""
-        <div class="badge badge-info">
-          encoding...
+        <div class="badge badge-lg badge-ghost gap-2 text-slate-500">
+          <div class="hero-cog-6-tooth-solid animate-spin "></div>
+          <div>processing</div>
         </div>
         """
 
       :not_encoded ->
         ~H"""
-        <div class="badge badge-secondary">
-          not encoded
+        <div class="badge badge-lg badge-ghost text-warning gap-2">
+          <div class="hero-exclamation-triangle"></div>
+          <div>incomplete</div>
         </div>
         """
     end
   end
 
-  defp collection_state(collection) do
+  defp get_encoding_state(collection) do
     cond do
       collection.records_count_encoded == collection.records_count ->
         :encoded
@@ -218,5 +194,21 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
       true ->
         :not_encoded
     end
+  end
+
+  defp get_collection(id) do
+    Collection.get_by_id!(id,
+      load: [
+        :records,
+        :records_count,
+        :digitizing_progress,
+        :records_count_not_encoded,
+        :records_count_imported,
+        :records_count_encoding_queued,
+        :records_count_encoding,
+        :records_count_encoded,
+        :records_count_failed
+      ]
+    )
   end
 end
