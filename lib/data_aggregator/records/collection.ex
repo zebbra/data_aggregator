@@ -8,7 +8,7 @@ defmodule DataAggregator.Records.Collection do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   attributes do
-    uuid_attribute :id, prefix: "col"
+    uuid_attribute(:id, prefix: "col")
 
     attribute :items_to_digitize, :integer, allow_nil?: false, default: 0
     attribute :owner, :string, allow_nil?: false
@@ -26,7 +26,7 @@ defmodule DataAggregator.Records.Collection do
     attribute :mapping, :map
 
     # allow sorting by inserted_at/updated_at
-    timestamps private?: false, writable?: false
+    timestamps(private?: false, writable?: false)
   end
 
   relationships do
@@ -58,6 +58,35 @@ defmodule DataAggregator.Records.Collection do
   aggregates do
     count :records_count, :records
     count :imports_count, :imports
+
+    count :records_count_not_encoded, :records do
+      filter expr(
+               state == :imported or
+                 state == :queued or
+                 state == :encoding or
+                 state == :failed
+             )
+    end
+
+    count :records_count_imported, :records do
+      filter expr(state == :imported)
+    end
+
+    count :records_count_encoding_queued, :records do
+      filter expr(state == :queued)
+    end
+
+    count :records_count_encoding, :records do
+      filter expr(state == :encoding)
+    end
+
+    count :records_count_encoded, :records do
+      filter expr(state == :encoded)
+    end
+
+    count :records_count_failed, :records do
+      filter expr(state == :encoded)
+    end
   end
 
   preparations do

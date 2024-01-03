@@ -9,6 +9,7 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
   alias AshPhoenix.Form
 
   alias DataAggregator.DarwinCore
+  alias DataAggregator.Records
   alias DataAggregator.Records.Import
 
   @impl true
@@ -39,6 +40,8 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
   end
 
   defp build_form(%{import: import}) do
+    import_with_mappings = Records.load!(import, [:mappings], lazy?: true)
+
     import
     |> Form.for_update(
       :update_mapping,
@@ -46,7 +49,7 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
       as: "import",
       forms: [
         columns: [
-          data: import.mappings,
+          data: import_with_mappings.mappings,
           type: :list,
           resource: Import.Column,
           create_action: :create_mapping,
@@ -59,9 +62,10 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
   end
 
   defp add_missing_mappings(%Form{data: import} = form) do
+    import_with_missing_mappings = Records.load!(import, [:missing_mappings], lazy?: true)
     add_missing_mapping = &Form.add_form(&2, [:columns], params: %{"mapped_to" => &1.name})
 
-    import.missing_mappings
+    import_with_missing_mappings.missing_mappings
     |> Enum.flat_map(&DarwinCore.Schema.Category.prefixed_attributes/1)
     |> Enum.reduce(form, add_missing_mapping)
   end
@@ -98,8 +102,8 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
     """
   end
 
-  attr :form, Phoenix.HTML.Form, required: true
-  attr :rest, :global
+  attr(:form, Phoenix.HTML.Form, required: true)
+  attr(:rest, :global)
 
   defp filter_form(assigns) do
     ~H"""
@@ -109,10 +113,10 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
     """
   end
 
-  attr :form, Phoenix.HTML.Form, required: true
-  attr :filter, Phoenix.HTML.Form, required: true
-  attr :target, :string, required: true
-  attr :rest, :global
+  attr(:form, Phoenix.HTML.Form, required: true)
+  attr(:filter, Phoenix.HTML.Form, required: true)
+  attr(:target, :string, required: true)
+  attr(:rest, :global)
 
   defp mapping_form(assigns) do
     # |> Enum.reject(& &1.mapped?)
@@ -174,11 +178,11 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
     """
   end
 
-  attr :form, Phoenix.HTML.Form, required: true
-  attr :filter, Phoenix.HTML.Form, required: true
-  attr :target, :string, required: true
-  attr :mapped_to_opts, :list, required: true
-  attr :name_opts, :list, required: true
+  attr(:form, Phoenix.HTML.Form, required: true)
+  attr(:filter, Phoenix.HTML.Form, required: true)
+  attr(:target, :string, required: true)
+  attr(:mapped_to_opts, :list, required: true)
+  attr(:name_opts, :list, required: true)
 
   defp column_input(assigns) do
     %{form: form, filter: filter} = assigns

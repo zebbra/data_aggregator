@@ -59,14 +59,11 @@ defmodule DataAggregator.Records.Record do
       join_relationship :images
     end
 
-    has_many :encoder_jobs, Record.EncoderJob
-
-    many_to_many :encoders, Job do
+    belongs_to :encoder_job, Job do
       api DataAggregator.Jobs
-      through Record.EncoderJob
-      source_attribute_on_join_resource :record_id
-      destination_attribute_on_join_resource :job_id
-      join_relationship :encoder_jobs
+      attribute_type :integer
+      attribute_writable? true
+      allow_nil? true
     end
   end
 
@@ -75,15 +72,15 @@ defmodule DataAggregator.Records.Record do
     default_initial_state :imported
 
     transitions do
-      transition :set_imported, from: [:encoded, :encoding_failed, :imported], to: :imported
-      transition :enqueue_encoder, from: :imported, to: :record_queued
+      transition :set_imported, from: [:encoded, :failed, :imported], to: :imported
+      transition :enqueue_encoder, from: :imported, to: :queued
 
       transition :set_encoding,
-        from: [:record_queued, :imported, :encoding_failed, :encoded],
+        from: [:queued, :imported, :failed, :encoded],
         to: :encoding
 
       transition :set_encoded, from: :encoding, to: :encoded
-      transition :set_encoding_failed, from: :encoding, to: :encoding_failed
+      transition :set_failed, from: :encoding, to: :failed
     end
   end
 
@@ -131,9 +128,9 @@ defmodule DataAggregator.Records.Record do
 
     update :enqueue_encoder do
       accept []
-      change transition_state(:record_queued)
+      change transition_state(:queued)
       change Record.Changes.EnqueueEncoder
-      change load(:encoder_jobs)
+      change load(:encoder_job)
     end
 
     action :bulk_import, :map do
@@ -168,8 +165,8 @@ defmodule DataAggregator.Records.Record do
       change transition_state(:encoded)
     end
 
-    update :set_encoding_failed do
-      change transition_state(:encoding_failed)
+    update :set_failed do
+      change transition_state(:failed)
     end
   end
 
@@ -190,7 +187,7 @@ defmodule DataAggregator.Records.Record do
     define :set_imported
     define :set_encoding
     define :set_encoded
-    define :set_encoding_failed
+    define :set_failed
     define :enqueue_encoder
   end
 

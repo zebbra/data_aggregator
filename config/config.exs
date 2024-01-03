@@ -75,7 +75,7 @@ config :data_aggregator, DataAggregatorWeb.Gettext,
 config :data_aggregator, Oban,
   repo: DataAggregator.Repo,
   plugins: [Oban.Plugins.Pruner],
-  queues: [imports: 1]
+  queues: [imports: 1, encoders: 1]
 
 # Configure Cldr
 config :ex_cldr,

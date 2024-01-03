@@ -24,9 +24,7 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
       Oban.Testing.with_testing_mode(:manual, fn ->
         assert {:ok, record} = Record.enqueue_encoder(correct_record)
 
-        assert record.state == :record_queued
-
-        assert Enum.count(record.encoder_jobs) == 1
+        assert record.state == :queued
 
         assert_enqueued(worker: Record.Workers.Encoder, args: %{id: correct_record.id})
       end)
@@ -34,14 +32,9 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
 
     test "enqueues 3 runner jobs with invalid record", %{invalid_record: invalid_record} do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        Record.enqueue_encoder(invalid_record)
-        Record.enqueue_encoder(invalid_record)
-
         assert {:ok, record} = Record.enqueue_encoder(invalid_record)
 
-        assert record.state == :record_queued
-
-        assert Enum.count(record.encoder_jobs) == 3
+        assert record.state == :queued
 
         assert_enqueued(worker: Record.Workers.Encoder, args: %{id: record.id})
       end)

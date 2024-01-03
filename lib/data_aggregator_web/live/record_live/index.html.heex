@@ -42,6 +42,9 @@
     <:col :let={{_id, record}} label={~t"Scientific Name"m} field="tax_scientific_name" sort>
       <%= record.tax_scientific_name %>
     </:col>
+    <:col :let={{_id, record}} label={~t"Encoding"m} field="state" sort>
+      <%= record.state %>
+    </:col>
     <:col :let={{_id, record}} label={~t"Inserted At"m} field="inserted_at" sort align="right">
       <%= format_datetime(record.inserted_at) %>
     </:col>

@@ -39,7 +39,7 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
       {result, logs} = with_log(fn -> perform_job(Encoder, %{id: invalid_record.id}) end)
 
       assert {:ok, %{failed_record: record}} = result
-      assert record.state == :encoding_failed
+      assert record.state == :failed
 
       assert logs =~ "is not confident (min 80) enough"
     end

@@ -13,6 +13,12 @@ classDiagram
         Float digitizing_progress
         Integer records_count
         Integer imports_count
+        Integer records_count_not_encoded
+        Integer records_count_imported
+        Integer records_count_encoding_queued
+        Integer records_count_encoding
+        Integer records_count_encoded
+        Integer records_count_failed
         Institution institution
         Import[] imports
         Record[] records
@@ -73,6 +79,7 @@ classDiagram
         create(Import import, Record record)
     }
     class Record {
+        Atom state
         String mts_material_sample_type
         String mte_material_entity_id
         String occ_occurrence_remarks
@@ -88,6 +95,7 @@ classDiagram
         String loc_country
         String loc_continent
         String spp_life_stage
+        String tax_taxon_id
         String tax_specific_epithet
         String tax_infraspecific_epithet
         String tax_scientific_name_authorship
@@ -123,16 +131,24 @@ classDiagram
         Map extra_data
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Integer encoder_job_id
         Collection collection
         Import[] imports
         Image[] images
         Attachment[] image_attachments
+        Job encoder_job
         destroy()
         update(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
         read(String sort)
         create(Collection collection, String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, ...)
         import(Import import, Map params, String mts_material_sample_type, String mte_material_entity_id, ...)
+        enqueue_encoder()
         bulk_import(Import import, Term rows)
+        encode(Term record, Atom catalog)
+        set_imported(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
+        set_encoding(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
+        set_encoded(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
+        set_failed(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
     }
     class Image {
         UUID id
@@ -162,6 +178,7 @@ classDiagram
         String loc_country
         String loc_continent
         String spp_life_stage
+        String tax_taxon_id
         String tax_specific_epithet
         String tax_infraspecific_epithet
         String tax_scientific_name_authorship
@@ -201,14 +218,13 @@ classDiagram
         update(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
         read(String sort)
         create(Record record, String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, ...)
-        upsert(Record record, Map params, String mts_material_sample_type, String mte_material_entity_id, ...)
-        encode(Record[] records)
     }
 
     Attachment -- Import
     Attachment -- Record
     Attachment -- Image
     Job -- Import
+    Job -- Record
     Institution -- Collection
     Collection -- Import
     Collection -- Record

@@ -48,6 +48,7 @@ erDiagram
     varchar loc_country
     varchar loc_continent
     varchar spp_life_stage
+    varchar tax_taxon_id
     varchar tax_specific_epithet
     varchar tax_infraspecific_epithet
     varchar tax_scientific_name_authorship
@@ -105,6 +106,7 @@ erDiagram
     uuid record_id PK
   }
   records {
+    varchar state
     varchar mts_material_sample_type
     varchar mte_material_entity_id
     varchar occ_occurrence_remarks
@@ -120,6 +122,7 @@ erDiagram
     varchar loc_country
     varchar loc_continent
     varchar spp_life_stage
+    varchar tax_taxon_id
     varchar tax_specific_epithet
     varchar tax_infraspecific_epithet
     varchar tax_scientific_name_authorship
@@ -156,6 +159,7 @@ erDiagram
     timestamp inserted_at
     timestamp updated_at
     uuid collection_id
+    integer encoder_job_id
   }
   record_images {
     uuid id PK
@@ -225,6 +229,7 @@ erDiagram
   imports ||--|{ import_records : ""
   institutions ||--|{ collections : ""
   oban_jobs ||--|{ imports : ""
+  oban_jobs ||--|{ records : ""
   records ||--|{ encoded_records : ""
   records ||--|{ import_records : ""
   records ||--|{ record_images : ""

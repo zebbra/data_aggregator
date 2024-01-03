@@ -52,6 +52,7 @@ Table encoded_records {
   loc_country varchar
   loc_continent varchar
   spp_life_stage varchar
+  tax_taxon_id varchar
   tax_specific_epithet varchar
   tax_infraspecific_epithet varchar
   tax_scientific_name_authorship varchar
@@ -112,6 +113,7 @@ Table import_records {
 }
 
 Table records {
+  state varchar
   mts_material_sample_type varchar
   mte_material_entity_id varchar
   occ_occurrence_remarks varchar
@@ -127,6 +129,7 @@ Table records {
   loc_country varchar
   loc_continent varchar
   spp_life_stage varchar
+  tax_taxon_id varchar
   tax_specific_epithet varchar
   tax_infraspecific_epithet varchar
   tax_scientific_name_authorship varchar
@@ -163,6 +166,7 @@ Table records {
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid
+  encoder_job_id integer
 }
 
 Table record_images {
@@ -247,6 +251,7 @@ Ref: file_attachments.id < record_images.attachment_id
 Ref: imports.id < import_records.import_id
 Ref: institutions.id < collections.institution_id
 Ref: oban_jobs.id < imports.job_id
+Ref: oban_jobs.id < records.encoder_job_id
 Ref: records.id < encoded_records.record_id
 Ref: records.id < import_records.record_id
 Ref: records.id < record_images.record_id

@@ -54,19 +54,19 @@ msgctxt "DataAggregatorWeb.RecordLive.FormComponent"
 msgid "Save Record"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.html.heex:64
+#: lib/data_aggregator_web/live/record_live/index.html.heex:67
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.html.heex:66
+#: lib/data_aggregator_web/live/record_live/index.html.heex:69
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Delete"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.html.heex:57
+#: lib/data_aggregator_web/live/record_live/index.html.heex:60
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Edit"
@@ -78,7 +78,7 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Edit Record"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.html.heex:45
+#: lib/data_aggregator_web/live/record_live/index.html.heex:48
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Inserted At"
@@ -98,7 +98,7 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "New Record"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.html.heex:54
+#: lib/data_aggregator_web/live/record_live/index.html.heex:57
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Show"
@@ -110,7 +110,7 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "MaterialEntityID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.html.heex:48
+#: lib/data_aggregator_web/live/record_live/index.html.heex:51
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Updated At"
@@ -220,14 +220,14 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Updated At"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:28
-#: lib/data_aggregator_web/live/collection_live/show.ex:63
+#: lib/data_aggregator_web/live/collection_live/show.ex:43
+#: lib/data_aggregator_web/live/collection_live/show.ex:95
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Import Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:24
+#: lib/data_aggregator_web/live/collection_live/show.ex:39
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Show Collection"
@@ -405,49 +405,31 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Records Count"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:55
+#: lib/data_aggregator_web/live/collection_live/show.ex:87
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Back to Collections"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:77
+#: lib/data_aggregator_web/live/collection_live/show.ex:120
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Digitization Progress"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:85
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Show"
-msgid "Expert Reviews"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/show.ex:86
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Show"
-msgid "Last Contribution"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/show.ex:71
+#: lib/data_aggregator_web/live/collection_live/show.ex:111
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:72
+#: lib/data_aggregator_web/live/collection_live/show.ex:112
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Owner"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:75
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Show"
-msgid "Records Published"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/show.ex:73
+#: lib/data_aggregator_web/live/collection_live/show.ex:113
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Type"
@@ -459,55 +441,55 @@ msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:74
+#: lib/data_aggregator_web/live/collection_live/show.ex:114
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Records in Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:42
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:41
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Amount of Collections"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:51
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:48
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Contributors"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:46
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:43
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Digitization Progress"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:49
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:46
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Last Contribution"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:50
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:47
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Open Reviews"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:47
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:44
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Records Published"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:48
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:45
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Records Reviewed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/dashboard_live/index.ex:45
+#: lib/data_aggregator_web/live/dashboard_live/index.ex:42
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Total Records"
@@ -634,7 +616,7 @@ msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "State"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/components/mapping_form.ex:107
+#: lib/data_aggregator_web/live/import_live/components/mapping_form.ex:111
 #, elixir-autogen, elixir-format
 msgid "Search mapping"
 msgstr ""
@@ -734,13 +716,13 @@ msgctxt "DataAggregatorWeb.Components.Table"
 msgid "Actions"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/components/mapping_form.ex:270
+#: lib/data_aggregator_web/live/import_live/components/mapping_form.ex:274
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Components.MappingForm"
 msgid "Mapping updated"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/components/mapping_form.ex:275
+#: lib/data_aggregator_web/live/import_live/components/mapping_form.ex:279
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Components.MappingForm"
 msgid "Unable to update mapping"
@@ -768,4 +750,22 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Mapped to"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:103
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Encode Records"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:116
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Encoded"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/index.html.heex:45
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Encoding"
 msgstr ""

@@ -61,13 +61,13 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
     end
   end
 
-  # set the state the processed record to `:encoded` or `:encoding_failed` and return it
+  # set the state the processed record to `:encoded` or `:failed` and return it
   @spec set_final_state(Record.t(), Record.t()) ::
           %{success: Record.t(), failed: Record.t()}
   defp set_final_state(failed_record, encoded_record) do
     case failed_record do
       nil -> %{success: set_encoded_state(encoded_record), failed: nil}
-      _ -> %{success: nil, failed: set_encoding_failed_state(failed_record)}
+      _ -> %{success: nil, failed: set_failed_state(failed_record)}
     end
   end
 
@@ -83,10 +83,10 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
     Record.set_encoded!(record)
   end
 
-  # update state of record to `:encoding_failed`
-  @spec set_encoding_failed_state(Record.t()) :: Record.t()
-  defp set_encoding_failed_state(record) do
-    Record.set_encoding_failed!(record)
+  # update state of record to `:failed`
+  @spec set_failed_state(Record.t()) :: Record.t()
+  defp set_failed_state(record) do
+    Record.set_failed!(record)
   end
 
   # returns the error from the result, or nil, if there was no error
