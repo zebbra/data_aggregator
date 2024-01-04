@@ -148,7 +148,7 @@ defmodule DataAggregator.EncodingFixtures do
   def expect_correct_matching_api_call do
     url = GbifTaxonomy.match_api_url()
 
-    expect(Req, :get, fn ^url, [params: [name: "Oenanthea Pallas", kingdom: ""]] ->
+    expect(Req, :get, fn ^url, [params: [name: "Oenanthea Pallas", kingdom: "Animalia"]] ->
       {:ok,
        %{
          status: 200,
@@ -177,7 +177,8 @@ defmodule DataAggregator.EncodingFixtures do
   def expect_invalid_confidence_from_matching_api_call do
     url = GbifTaxonomy.match_api_url()
 
-    expect(Req, :get, fn ^url, [params: [name: "this leads to wrong confidence", kingdom: ""]] ->
+    expect(Req, :get, fn ^url,
+                         [params: [name: "this leads to wrong confidence", kingdom: "Animalia"]] ->
       {:ok,
        %{
          status: 200,
