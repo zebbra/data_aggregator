@@ -102,7 +102,9 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   @impl true
   def handle_event("select", %{"id" => id}, socket) do
-    new_selected = DataAggregator.Records.load!(Record.get_by_id!(id), [:collection])
+    new_selected =
+      DataAggregator.Records.load!(Record.get_by_id!(id), [:collection, :encoded_record])
+
     handle_select(socket, new_selected)
   end
 

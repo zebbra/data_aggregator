@@ -67,7 +67,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
         <%= ~t"Listing Imports"m %>
       </.header>
 
-      <.table
+      <.datatable
         id="imports"
         rows={@streams.results}
         row_click={
@@ -122,7 +122,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
             <%= ~t"Delete"m %>
           </.link>
         </:action>
-      </.table>
+      </.datatable>
     </.page>
     """
   end

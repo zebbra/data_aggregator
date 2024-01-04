@@ -16,7 +16,7 @@ defmodule DataAggregatorWeb.Components.StatCard do
 
   def stat_card(assigns) do
     ~H"""
-    <div class="overflow-hidden rounded-lg border border-indigo-400 bg-white px-4 py-5 shadow dark:border-gray-600 dark:bg-gray-900 sm:p-6">
+    <div class="overflow-hidden rounded-md border border-indigo-400 bg-white px-4 py-5 shadow dark:border-gray-600 dark:bg-gray-900 sm:p-6">
       <dt class="truncate text-sm font-medium text-gray-500">
         <%= @label %><%= @label_suffix %>
       </dt>

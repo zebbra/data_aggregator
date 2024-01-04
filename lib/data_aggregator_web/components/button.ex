@@ -18,14 +18,15 @@ defmodule DataAggregatorWeb.Components.Button do
       <.button to={~p"/records"} link_type="live_patch" color="secondary">Back</.button>
 
   """
-  attr :size, :string, default: "lg", values: ["xs", "sm", "md", "lg", "xl"], doc: "button sizes"
+  attr(:size, :string, default: "lg", values: ["xs", "sm", "md", "lg", "xl"], doc: "button sizes")
 
-  attr :variant, :string,
+  attr(:variant, :string,
     default: "solid",
     values: ["solid"],
     doc: "button variant"
+  )
 
-  attr :color, :string,
+  attr(:color, :string,
     default: "primary",
     values: [
       "primary",
@@ -34,28 +35,31 @@ defmodule DataAggregatorWeb.Components.Button do
       "simple"
     ],
     doc: "button color"
+  )
 
-  attr :to, :string, default: nil, doc: "link path"
-  attr :loading, :boolean, default: false, doc: "indicates a loading state"
-  attr :disabled, :boolean, default: false, doc: "indicates a disabled state"
-  attr :icon, :string, default: nil, doc: "name of a Heroicon at the front of the button"
-  attr :with_icon, :boolean, default: false, doc: "adds some icon base classes"
-  attr :responsive, :boolean, default: false, doc: "hides label on small screens"
+  attr(:to, :string, default: nil, doc: "link path")
+  attr(:loading, :boolean, default: false, doc: "indicates a loading state")
+  attr(:disabled, :boolean, default: false, doc: "indicates a disabled state")
+  attr(:icon, :string, default: nil, doc: "name of a Heroicon at the front of the button")
+  attr(:with_icon, :boolean, default: false, doc: "adds some icon base classes")
+  attr(:responsive, :boolean, default: false, doc: "hides label on small screens")
 
-  attr :type, :string, default: "button", values: ["button", "submit"], doc: "button type"
+  attr(:type, :string, default: "button", values: ["button", "submit"], doc: "button type")
 
-  attr :link_type, :string,
+  attr(:link_type, :string,
     default: "button",
     values: ["a", "live_patch", "live_redirect", "button"],
     doc: "link type"
+  )
 
-  attr :class, :string, default: "", doc: "CSS class"
-  attr :label, :string, default: nil, doc: "labels your button"
+  attr(:class, :string, default: "", doc: "CSS class")
+  attr(:label, :string, default: nil, doc: "labels your button")
 
-  attr :rest, :global,
+  attr(:rest, :global,
     include: ~w(method download hreflang ping referrerpolicy rel target type value name form)
+  )
 
-  slot :inner_block, required: false
+  slot(:inner_block, required: false)
 
   def button(%{type: "submit"} = assigns) do
     assigns =
@@ -229,24 +233,25 @@ defmodule DataAggregatorWeb.Components.Button do
     case size do
       "xs" -> "px-2 py-1 text-xs rounded"
       "sm" -> "px-2 py-1 text-sm rounded"
-      "md" -> "px-2.5 py-1.5 text-sm rounded-md"
-      "lg" -> "px-3 py-2 text-sm rounded-md"
-      "xl" -> "px-3.5 py-2.5 text-sm rounded-md"
+      "md" -> "px-2.5 py-1.5 text-sm rounded-full"
+      "lg" -> "px-3 py-2 text-sm rounded-full"
+      "xl" -> "px-3.5 py-2.5 text-sm rounded-full"
       _ -> nil
     end
   end
 
-  attr :class, :any, default: "", doc: "CSS class for link (either a string or list)"
-  attr :link_type, :string, default: "a", values: ["a", "live_patch", "live_redirect", "button"]
-  attr :label, :string, default: nil, doc: "label your link"
-  attr :to, :string, default: nil, doc: "link path"
+  attr(:class, :any, default: "", doc: "CSS class for link (either a string or list)")
+  attr(:link_type, :string, default: "a", values: ["a", "live_patch", "live_redirect", "button"])
+  attr(:label, :string, default: nil, doc: "label your link")
+  attr(:to, :string, default: nil, doc: "link path")
 
-  attr :disabled, :boolean,
+  attr(:disabled, :boolean,
     default: false,
     doc: "disables the link. This will turn an <a> into a <button> (<a> tags can't be disabled)"
+  )
 
-  attr :rest, :global, include: ~w(replace method download)
-  slot :inner_block, required: false
+  attr(:rest, :global, include: ~w(replace method download))
+  slot(:inner_block, required: false)
 
   def a(%{link_type: "button", disabled: true} = assigns) do
     assigns = update_in(assigns.rest, &Map.drop(&1, [:"phx-click"]))

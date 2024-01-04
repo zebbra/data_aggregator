@@ -78,18 +78,19 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
             id="import-modal__button"
             to={~p"/collections/#{@collection}/import"}
             link_type="live_patch"
-            icon="hero-plus-circle-mini"
-            label={~t"Import Records"m}
+            icon="hero-plus"
+            label={~t"Import"m}
             responsive
           />
 
           <.button
             :if={@encoding_state != :encoding}
+            color="primary"
             id="encode_start__button"
             phx-click="encode_collection"
             link_type="live_patch"
-            icon="hero-arrow-path-rounded-square"
-            label={~t"Encode Records"m}
+            icon="hero-puzzle-piece"
+            label={~t"Encode"m}
             responsive
           />
           <.button
@@ -108,12 +109,8 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
         <dl class="mt-5 grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-6">
           <.stat_card label={~t"Name"m} stat={@collection.name} />
           <.stat_card label={~t"Owner"m} stat={@collection.owner} />
-          <.stat_card label={~t"Type"m} stat="OTHERS" />
           <.stat_card label={~t"Records in Collection"m} stat={@collection.records_count} />
-          <.stat_card
-            label={~t"Encoded"m}
-            stat={"#{@collection.records_count_encoded} / #{@collection.records_count}"}
-          />
+
           <.stat_card
             label={~t"Digitization Progress"m}
             stat={
@@ -123,7 +120,11 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
             }
             stat_suffix="%"
           />
-          <div class="overflow-hidden rounded-lg border border-indigo-400 bg-white px-4 py-5 shadow dark:border-gray-600 dark:bg-gray-900 sm:p-6">
+          <.stat_card
+            label={~t"Encoded"m}
+            stat={"#{@collection.records_count_encoded} / #{@collection.records_count}"}
+          />
+          <div class="overflow-hidden rounded-md border border-indigo-400 bg-white px-4 py-5 shadow dark:border-gray-600 dark:bg-gray-900 sm:p-6">
             <dt class="truncate text-sm font-medium text-gray-500">
               Encoding State
             </dt>
