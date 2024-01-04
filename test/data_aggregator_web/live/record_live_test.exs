@@ -6,6 +6,8 @@ defmodule DataAggregatorWeb.RecordLiveTest do
   import Phoenix.LiveViewTest
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Records
+
   @update_attrs %{
     mte_material_entity_id: "record2",
     tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
@@ -14,7 +16,7 @@ defmodule DataAggregatorWeb.RecordLiveTest do
   @invalid_attrs %{mte_material_entity_id: nil, tax_scientific_name: nil}
 
   defp create_record(_) do
-    record = record_fixture()
+    record = Records.load!(record_fixture(), [:collection, :encoded_record], lazy?: true)
 
     %{record: record}
   end

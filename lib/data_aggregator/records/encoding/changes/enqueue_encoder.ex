@@ -29,8 +29,6 @@ defmodule DataAggregator.Records.Record.Changes.EnqueueEncoder do
   end
 
   defp insert_job(%Record{id: id}) do
-    %{id: id}
-    |> Record.Workers.Encoder.new()
-    |> Oban.insert()
+    %{id: id} |> Record.Workers.Encoder.new() |> Oban.insert()
   end
 end

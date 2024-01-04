@@ -36,20 +36,34 @@
         label={record.mte_material_entity_id}
       />
     </:col>
-    <:col :let={{_id, record}} label={~t"Collection"m} field="collection.name" sort>
+
+    <:col :let={{_id, record}} label={~t"Scientific Name"m} field="tax_scientific_name" sort>
+      <%= encoded_attribute(record, :tax_scientific_name) %>
+    </:col>
+
+    <:col :let={{_id, record}} label={~t"Genus"m} field="tax_genus" sort>
+      <%= encoded_attribute(record, :tax_genus) %>
+    </:col>
+    <:col :let={{_id, record}} label={~t"Family"m} field="tax_family" sort>
+      <%= encoded_attribute(record, :tax_family) %>
+    </:col>
+    <:col :let={{_id, record}} label={~t"Order"m} field="tax_order" sort>
+      <%= encoded_attribute(record, :tax_order) %>
+    </:col>
+    <:col :let={{_id, record}} label={~t"Class"m} field="tax_class" sort>
+      <%= encoded_attribute(record, :tax_class) %>
+    </:col>
+    <:col :let={{_id, record}} label={~t"Phylum"m} field="tax_phylum" sort>
+      <%= encoded_attribute(record, :tax_phylum) %>
+    </:col>
+    <:col :let={{_id, record}} label={~t"Encoding"m} field="state" sort align="center">
+      <.encoding_state state={record.state} small />
+    </:col>
+    <:col :let={{_id, record}} label={~t"Collection"m} field="collection.name">
       <%= record.collection.name %>
     </:col>
-    <:col :let={{_id, record}} label={~t"Scientific Name"m} field="tax_scientific_name" sort>
-      <%= record.tax_scientific_name %>
-    </:col>
-    <:col :let={{_id, record}} label={~t"Encoding"m} field="state" sort>
-      <%= record.state %>
-    </:col>
-    <:col :let={{_id, record}} label={~t"Inserted At"m} field="inserted_at" sort align="right">
-      <%= format_datetime(record.inserted_at) %>
-    </:col>
-    <:col :let={{_id, record}} label={~t"Updated At"m} field="updated_at" sort align="right">
-      <%= format_datetime(record.updated_at) %>
+    <:col :let={{_id, record}} label={~t"Updated At"m} field="updated_at" sort align="center">
+      <%= format_datetime(record.updated_at, format: :medium) %>
     </:col>
 
     <:action :let={{_id, record}}>

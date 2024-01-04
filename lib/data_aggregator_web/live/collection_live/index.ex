@@ -10,7 +10,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    results = Collection.read!(load: [:records_count])
+    results = Collection.read!(load: [:records_count, :digitizing_progress])
     socket = stream(socket, :results, results)
 
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}

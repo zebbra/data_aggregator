@@ -3,6 +3,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   use DataAggregatorWeb.Components.Internal.Pagination
   use DataAggregatorWeb.Components.Internal.Sort
+  use DataAggregatorWeb.CollectionLive.Components
 
   alias DataAggregator.Records.Record
 
@@ -44,7 +45,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     page =
       Record.read!(%{sort: current_sort},
         page: pagination_options(current_page, current_limit),
-        load: :collection
+        load: [:collection, :encoded_record]
       )
 
     stream_page(socket, page)
@@ -108,5 +109,14 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   defp patch_params(socket, params) do
     params = Map.reject(params, &(elem(&1, 1) in ["", nil]))
     push_patch(socket, to: ~p"/records?#{params}", replace: true)
+  end
+
+  @spec encoded_attribute(Record.t(), atom()) :: any()
+  def encoded_attribute(record, attribute) do
+    cond do
+      is_nil(record.encoded_record) == false -> Map.get(record.encoded_record, attribute)
+      Map.get(record, attribute) != nil -> Map.get(record, attribute)
+      true -> "-"
+    end
   end
 end

@@ -1,7 +1,7 @@
 defmodule DataAggregatorWeb.CollectionLive.Show do
   use DataAggregatorWeb, :live_view
+  use DataAggregatorWeb.CollectionLive.Components
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
 
@@ -82,12 +82,23 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
             label={~t"Import Records"m}
             responsive
           />
+
           <.button
-            id="encode-modal__button"
+            :if={@encoding_state != :encoding}
+            id="encode_start__button"
             phx-click="encode_collection"
             link_type="live_patch"
             icon="hero-arrow-path-rounded-square"
             label={~t"Encode Records"m}
+            responsive
+          />
+          <.button
+            :if={@encoding_state == :encoding}
+            disabled
+            id="encoding__button"
+            link_type="live_patch"
+            icon="hero-cog-6-tooth-solid animate-spin"
+            label={~t"Encoding"m}
             responsive
           />
         </:actions>
@@ -144,42 +155,6 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
     """
   end
 
-  def encoding_state(assigns) do
-    case assigns.state do
-      :encoded ->
-        ~H"""
-        <div class="badge badge-lg badge-ghost text-success gap-2">
-          <div class="hero-check"></div>
-          <div>successful</div>
-        </div>
-        """
-
-      :failed ->
-        ~H"""
-        <div class="badge badge-lg badge-ghost text-error gap-2">
-          <div class="hero-x-circle"></div>
-          <div>failed</div>
-        </div>
-        """
-
-      :encoding ->
-        ~H"""
-        <div class="badge badge-lg badge-ghost gap-2 text-slate-500">
-          <div class="hero-cog-6-tooth-solid animate-spin "></div>
-          <div>processing</div>
-        </div>
-        """
-
-      :not_encoded ->
-        ~H"""
-        <div class="badge badge-lg badge-ghost text-warning gap-2">
-          <div class="hero-exclamation-triangle"></div>
-          <div>incomplete</div>
-        </div>
-        """
-    end
-  end
-
   defp get_encoding_state(collection) do
     cond do
       collection.records_count_encoded == collection.records_count ->
@@ -191,8 +166,11 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
       collection.records_count_encoding > 0 or collection.records_count_encoding_queued > 0 ->
         :encoding
 
+      collection.records_count > collection.records_count_encoded ->
+        :incomplete
+
       true ->
-        :not_encoded
+        :unknown
     end
   end
 

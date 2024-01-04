@@ -49,7 +49,7 @@ defmodule DataAggregator.Records.Collection do
               expr(
                 if(
                   items_to_digitize > 0 and records_count > 0,
-                  do: 100 / (items_to_digitize * records_count),
+                  do: 100 * records_count / items_to_digitize,
                   else: 0
                 )
               )
@@ -85,7 +85,7 @@ defmodule DataAggregator.Records.Collection do
     end
 
     count :records_count_failed, :records do
-      filter expr(state == :encoded)
+      filter expr(state == :failed)
     end
   end
 

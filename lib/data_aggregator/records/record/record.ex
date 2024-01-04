@@ -22,6 +22,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
   alias __MODULE__
@@ -65,6 +66,10 @@ defmodule DataAggregator.Records.Record do
       attribute_writable? true
       allow_nil? true
     end
+
+    has_one :encoded_record, EncodedRecord do
+      allow_nil? true
+    end
   end
 
   state_machine do
@@ -73,7 +78,7 @@ defmodule DataAggregator.Records.Record do
 
     transitions do
       transition :set_imported, from: [:encoded, :failed, :imported], to: :imported
-      transition :enqueue_encoder, from: :imported, to: :queued
+      transition :enqueue_encoder, from: [:imported, :encoded, :failed, :iencoded], to: :queued
 
       transition :set_encoding,
         from: [:queued, :imported, :failed, :encoded],
