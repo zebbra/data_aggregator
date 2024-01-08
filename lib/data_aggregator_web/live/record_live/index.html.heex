@@ -57,7 +57,7 @@
       <%= encoded_attribute(record, :tax_phylum) %>
     </:col>
     <:col :let={{_id, record}} label={~t"Encoding"m} field="state" sort align="center">
-      <.encoding_state state={record.state} small />
+      <.encoding_state record={record} small />
     </:col>
     <:col :let={{_id, record}} label={~t"Collection"m} field="collection.name">
       <%= record.collection.name %>

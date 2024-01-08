@@ -36,6 +36,7 @@ defmodule DataAggregator.Records.Record do
     uuid_attribute(:id, prefix: "rec")
     attribute :import_data, :map
     attribute :extra_data, :map
+    attribute :errors, :map
     timestamps(private?: false, writable?: false)
   end
 

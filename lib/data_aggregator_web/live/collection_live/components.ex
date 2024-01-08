@@ -1,12 +1,18 @@
 defmodule DataAggregatorWeb.CollectionLive.Components do
   use DataAggregatorWeb, :html
 
-  attr :state, :atom, default: :not_encoded
+  alias DataAggregator.Records.Record
+
+  attr :record, Record, default: nil
+  attr :state, :atom, default: nil
   attr :small, :boolean, default: false
 
   def encoding_state(assigns) do
+    assigns = assign(assigns, :error, get_error(assigns.record))
+    state = assign(assigns, :state, assigns.state || assigns.record.state)
+
     cond do
-      assigns.state in [:encoded] ->
+      state in [:encoded] ->
         ~H"""
         <div
           :if={!assigns.small}
@@ -23,21 +29,22 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
         </div>
         """
 
-      assigns.state in [:failed] ->
+      state in [:failed] ->
         ~H"""
-        <div :if={!assigns.small} class="badge badge-lg alert alert-error bg-error/10 text-error gap-2">
-          <div class="hero-x-circle-solid"></div>
-          <div>Failed</div>
+        <div :if={!assigns.small} class="tooltip tooltip-error" data-tip={@error}>
+          <div class="badge badge-lg alert alert-error bg-error/10 text-error gap-2">
+            <div class="hero-x-circle-solid"></div>
+            <div>Failed</div>
+          </div>
         </div>
-
-        <div :if={assigns.small} class="tooltip tooltip-error" data-tip="Failed">
+        <div :if={assigns.small} class="tooltip tooltip-error" data-tip={@error}>
           <div class="badge badge-sm alert alert-error bg-error/10 text-error gap-2">
             <div class="hero-x-circle-solid"></div>
           </div>
         </div>
         """
 
-      assigns.state in [:encoding, :queued] ->
+      state in [:encoding, :queued] ->
         ~H"""
         <div :if={!assigns.small} class="badge badge-lg alert alert-info gap-2 text-slate-500">
           <div class="hero-cog-6-tooth-solid animate-spin"></div>
@@ -51,7 +58,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
         </div>
         """
 
-      assigns.state in [:incomplete, :imported] ->
+      state in [:incomplete, :imported] ->
         ~H"""
         <div :if={!assigns.small} class="badge badge-lg alert alert-warning text-warning gap-2">
           <div class="hero-exclamation-triangle"></div>
@@ -69,15 +76,23 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
         ~H"""
         <div :if={!assigns.small} class="badge badge-lg alert alert-ghost gap-2 text-slate-500">
           <div class="hero-question-mark-circle-solid"></div>
-          <div>Unknown (<%= assigns.state %>)</div>
+          <div>Unknown (<%= @state %>)</div>
         </div>
 
-        <div :if={assigns.small} class="tooltip" data-tip={"Unknown (#{assigns.state})"}>
+        <div :if={assigns.small} class="tooltip" data-tip={"Unknown (#{@state})"}>
           <div class="badge badge-sm alert gap-2 text-slate-500">
             <div class="hero-question-mark-circle-solid"></div>
           </div>
         </div>
         """
+    end
+  end
+
+  defp get_error(record) do
+    if record != nil do
+      Map.get(record.errors || %{}, "encoding")
+    else
+      "Encoding failed"
     end
   end
 

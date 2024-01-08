@@ -18,7 +18,11 @@ defmodule DataAggregatorWeb.Components.Button do
       <.button to={~p"/records"} link_type="live_patch" color="secondary">Back</.button>
 
   """
-  attr(:size, :string, default: "lg", values: ["xs", "sm", "md", "lg", "xl"], doc: "button sizes")
+  attr(:size, :string,
+    default: "lg",
+    values: ["xs", "sm", "md", "lg", "xl", "xxl"],
+    doc: "button sizes"
+  )
 
   attr(:variant, :string,
     default: "solid",
@@ -32,6 +36,7 @@ defmodule DataAggregatorWeb.Components.Button do
       "primary",
       "secondary",
       "accent",
+      "ghost",
       "simple"
     ],
     doc: "button color"
@@ -219,6 +224,12 @@ defmodule DataAggregatorWeb.Components.Button do
           "text-indigo-600 hover:text-indigo-900",
           "dark:text-indigo-400 dark:hover:text-indigo-300"
         ]
+
+      ["solid", "ghost"] ->
+        [
+          "text-base-secondary",
+          "hover:bg-slate-900 hove:text-slate-500 rounded-lg"
+        ]
     end
   end
 
@@ -236,6 +247,7 @@ defmodule DataAggregatorWeb.Components.Button do
       "md" -> "px-2.5 py-1.5 text-sm rounded-full"
       "lg" -> "px-3 py-2 text-sm rounded-full"
       "xl" -> "px-3.5 py-2.5 text-sm rounded-full"
+      "xxl" -> "px-1.5 py-2.5 text-lg rounded-full"
       _ -> nil
     end
   end

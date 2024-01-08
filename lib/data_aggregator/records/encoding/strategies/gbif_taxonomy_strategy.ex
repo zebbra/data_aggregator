@@ -152,14 +152,26 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
   defp is_correct_match_type(body) when body.matchType == "EXACT", do: true
   defp is_correct_match_type(body) when body.matchType == "FUZZY", do: true
 
+  defp is_correct_match_type(body) when body.matchType == "HIGHERRANK",
+    do:
+      throw(
+        "For this species name we could not find a matching taxonomy. matchType #{inspect(body.matchType)} is not accepted"
+      )
+
   defp is_correct_match_type(body) when body.matchType == "NONE",
-    do: throw("matchType #{inspect(body.matchType)} is not accepted")
+    do:
+      throw(
+        "For this species name we could not find a matching taxonomy. matchType #{inspect(body.matchType)} is not accepted"
+      )
 
   @spec is_confident(map()) :: boolean()
   defp is_confident(body) when body.confidence >= @min_confidence, do: true
 
   defp is_confident(body) when body.confidence < @min_confidence,
-    do: throw("response value #{inspect(body)} is not confident (min #{@min_confidence}) enough")
+    do:
+      throw(
+        "For this species name we could not find a matching taxonomy. response value #{inspect(body)} is not confident (min #{@min_confidence}) enough"
+      )
 
   @spec update_encoded_record(map(), EncodedRecord.t()) :: EncodedRecord.t()
   defp update_encoded_record(response_body, record) do

@@ -1,6 +1,7 @@
 defmodule DataAggregatorWeb.CollectionLive.Index do
   use DataAggregatorWeb, :live_view
 
+  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
 
   @impl true
@@ -19,13 +20,19 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   defp apply_action(socket, :show, %{"id" => id}) do
     socket
     |> assign(:page_title, ~t"Show Collection"m)
-    |> assign(:collection, Collection.get_by_id!(id))
+    |> assign(
+      :collection,
+      Collection.get_by_id!(id, load: [:records_count, :digitizing_progress])
+    )
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, ~t"Edit Collection"m)
-    |> assign(:collection, Collection.get_by_id!(id))
+    |> assign(
+      :collection,
+      Collection.get_by_id!(id, load: [:records_count, :digitizing_progress])
+    )
   end
 
   defp apply_action(socket, :new, _params) do
@@ -45,7 +52,12 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         {DataAggregatorWeb.CollectionLive.FormComponent, {:saved, collection}},
         socket
       ) do
-    {:noreply, stream_insert(socket, :results, collection)}
+    {:noreply,
+     stream_insert(
+       socket,
+       :results,
+       Records.load!(collection, [:records_count, :digitizing_progress], lazy?: true)
+     )}
   end
 
   @impl true

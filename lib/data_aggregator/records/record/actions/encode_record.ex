@@ -36,9 +36,9 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
       encoded_record = get_record(result)
 
       # extract the failed record `Record.t()` from the encoding result
-      failed_record = get_failed_record(result, record_to_encode)
+      failed_record = handle_failed_record(result, record_to_encode)
 
-      # extract the error `any()` from the encoding result
+      # extract the error from the encoding result
       error = get_error(result)
 
       # set the final encoding state of the processed record and pattern match the result for returning
@@ -89,6 +89,15 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
     Record.set_failed!(record)
   end
 
+  # store error to record
+  @spec store_error(String.t(), any()) :: Record.t()
+  defp store_error(record_id, error) do
+    record = Record.get_by_id!(record_id)
+    errors = Map.put(record.errors || %{}, :encoding, error)
+
+    Record.update!(record, %{errors: errors})
+  end
+
   # returns the error from the result, or nil, if there was no error
   @spec get_error({:error, any()} | {:ok, EncodedRecord.t()}) :: any() | nil
   defp get_error(result) do
@@ -112,12 +121,12 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   end
 
   # returns the original record, to indicate, that it was failed to encode, and nil, if there was no error
-  @spec get_failed_record({:error, any()} | {:ok, EncodedRecord.t()}, Record.t()) ::
+  @spec handle_failed_record({:error, any()} | {:ok, EncodedRecord.t()}, Record.t()) ::
           Record.t() | nil
-  defp get_failed_record(result, record_to_encode) do
+  defp handle_failed_record(result, record_to_encode) do
     case get_error(result) do
       nil -> nil
-      _ -> record_to_encode
+      error -> store_error(record_to_encode.id, error)
     end
   end
 end

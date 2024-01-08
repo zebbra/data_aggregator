@@ -61,6 +61,8 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
       assert error !== nil
       assert failed_record.state === :failed
       assert logs =~ "is not confident (min 80) enough"
+
+      assert failed_record.errors.encoding =~ "is not confident (min 80) enough"
     end
   end
 end

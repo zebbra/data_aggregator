@@ -167,12 +167,12 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
       </table>
 
       <:actions>
-        <.link class="btn" patch={~p"/imports/#{@form.data}"}>
+        <.button type="submit">
+          Save
+        </.button>
+        <.link class="btn btn-simple rounded-full" patch={~p"/imports/#{@form.data}"}>
           Cancel
         </.link>
-        <button class="btn btn-primary" type="submit">
-          Save
-        </button>
       </:actions>
     </.simple_form>
     """

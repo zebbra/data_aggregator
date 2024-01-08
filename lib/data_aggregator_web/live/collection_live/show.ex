@@ -62,18 +62,19 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
   def render(assigns) do
     ~H"""
     <.page active_link={:collections} environment={@environment} sidebar_nav={@sidebar_nav}>
-      <.header class="top-16 sticky">
-        <%= @collection.name %>
-
+      <.header class="top-16 sticky flex">
+        <.button
+          class="inline-block align-middle"
+          to={~p"/collections"}
+          size="xxl"
+          link_type="live_redirect"
+          color="ghost"
+          label={~t"Collections"m}
+          responsive
+        />
+        <.icon class="inline-block align-middle" name="hero-chevron-right" />
+        <span class="inline-block align-middle"><%= @collection.name %></span>
         <:actions>
-          <.button
-            to={~p"/collections"}
-            link_type="live_redirect"
-            color="secondary"
-            icon="hero-arrow-left-mini"
-            label={~t"Back to Collections"m}
-            responsive
-          />
           <.button
             id="import-modal__button"
             to={~p"/collections/#{@collection}/import"}

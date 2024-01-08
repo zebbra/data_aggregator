@@ -119,13 +119,12 @@ defmodule DataAggregatorWeb.ImportLive.Show do
             <.icon name="hero-exclamation-triangle-solid" /> Mapping is invalid
           </div>
 
-          <button
-            class="btn btn-primary"
+          <.button
             phx-click="import:run"
             disabled={@import.state == :running || @import.missing_mappings != []}
           >
             Run Import
-          </button>
+          </.button>
         </div>
       </:actions>
     </.header>
@@ -211,8 +210,11 @@ defmodule DataAggregatorWeb.ImportLive.Show do
           <:subtitle>Map columns to record attributes</:subtitle>
 
           <:actions>
-            <.link class="btn btn-primary btn-sm" patch={~p"/imports/#{@import}/mappings"}>
-              Edit Mapping
+            <.link
+              class="btn btn-primary btn-sm rounded-full"
+              patch={~p"/imports/#{@import}/mappings"}
+            >
+              <%= ~t"Edit Mapping"m %>
             </.link>
           </:actions>
         </.header>
