@@ -5,5 +5,5 @@
     "citext",
     "ash-uuid_v1"
   ],
-  "ash_functions_version": 1
+  "ash_functions_version": 3
 }
