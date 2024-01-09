@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.Registry do
     ]
 
   entries do
+    entry DataAggregator.Records.ChangeEvent
     entry DataAggregator.Records.Collection
     entry DataAggregator.Records.Import
     entry DataAggregator.Records.Import.Record
