@@ -1,4 +1,4 @@
-defmodule DataAggregator.Repo.Migrations.AddRecordErrorsField do
+defmodule DataAggregator.Repo.Migrations.TemporaryAddTaxKingdom do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
@@ -9,13 +9,21 @@ defmodule DataAggregator.Repo.Migrations.AddRecordErrorsField do
 
   def up do
     alter table(:records) do
-      add :errors, :map
+      add :tax_kingdom, :text
+    end
+
+    alter table(:encoded_records) do
+      add :tax_kingdom, :text
     end
   end
 
   def down do
+    alter table(:encoded_records) do
+      remove :tax_kingdom
+    end
+
     alter table(:records) do
-      remove :errors
+      remove :tax_kingdom
     end
   end
 end

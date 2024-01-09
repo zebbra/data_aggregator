@@ -8,8 +8,10 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
   attr :small, :boolean, default: false
 
   def encoding_state(assigns) do
+    state = assigns.state || assigns.record.state
+
     assigns = assign(assigns, :error, get_error(assigns.record))
-    state = assign(assigns, :state, assigns.state || assigns.record.state)
+    assigns = assign(assigns, :state, assigns.state || assigns.record.state)
 
     cond do
       state in [:encoded] ->
