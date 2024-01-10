@@ -24,10 +24,14 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
       |> Stream.map(&map_records(&1, mapping))
       |> export_to_s3(path, mapping)
 
-    export
-    |> Export.update!(%{exported_count: Records.count!(records_query)})
-    |> Export.update_mapping!(mapping)
-    |> Export.update_attachment!(attachment)
+    with {:ok, export} <- Export.update(export, %{exported_count: Records.count!(records_query)}),
+         {:ok, export} <- Export.update_mapping(export, mapping),
+         {:ok, export} <- Export.update_attachment(export, attachment) do
+      {:ok, export}
+    else
+      {:error, error} ->
+        {:error, error}
+    end
   end
 
   defp export_to_s3(records, path, mapping) do

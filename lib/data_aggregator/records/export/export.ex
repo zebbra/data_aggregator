@@ -64,7 +64,7 @@ defmodule DataAggregator.Records.Export do
 
     update :update do
       primary? true
-      argument :records, {:array, :struct}, allow_nil?: false
+      argument :records, {:array, :struct}, allow_nil?: true
     end
 
     update :enqueue do

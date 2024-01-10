@@ -120,7 +120,7 @@ defmodule DataAggregator.ExportTest do
     } do
       df = Explorer.DataFrame.from_csv!(export.attachment.url)
 
-      assert export.mapping == nil
+      assert export.mapping == @default_mapping
 
       assert Explorer.DataFrame.n_columns(df) == Enum.count(Map.keys(@default_mapping))
 
