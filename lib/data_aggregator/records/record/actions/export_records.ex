@@ -2,6 +2,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   @moduledoc """
   Custom action to export records
   """
+  require Logger
 
   use Ash.Resource.Actions.Implementation
 
@@ -15,21 +16,31 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
     export = input.arguments.export
     records_query = export.records_query
 
-    mapping = get_mapping(export.mapping)
+    try do
+      mapping = get_mapping(export.mapping)
 
-    path = "#{Path.join([System.tmp_dir!(), "export"])}#{Ecto.UUID.generate()}.csv"
+      path = "#{Path.join([System.tmp_dir!(), "export"])}#{Ecto.UUID.generate()}.csv"
 
-    attachment =
-      Records.stream!(records_query)
-      |> Stream.map(&map_records(&1, mapping))
-      |> export_to_s3(path, mapping)
+      attachment =
+        Records.stream!(records_query)
+        |> Stream.map(&map_records(&1, mapping))
+        |> export_to_s3(path, mapping)
 
-    with {:ok, export} <- Export.update(export, %{exported_count: Records.count!(records_query)}),
-         {:ok, export} <- Export.update_mapping(export, mapping),
-         {:ok, export} <- Export.update_attachment(export, attachment) do
-      {:ok, export}
-    else
-      {:error, error} ->
+      with {:ok, export} <-
+             Export.update(export, %{exported_count: Records.count!(records_query)}),
+           {:ok, export} <- Export.update_mapping(export, mapping),
+           {:ok, export} <- Export.update_attachment(export, attachment) do
+        {:ok, export}
+      else
+        {:error, error} ->
+          handle_error(export.id, error)
+
+          {:error, error}
+      end
+    catch
+      error ->
+        handle_error(export.id, error)
+
         {:error, error}
     end
   end
@@ -74,5 +85,11 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
 
   defp get_headers(mapping) do
     get_mapping(mapping) |> Map.values()
+  end
+
+  defp handle_error(export_id, error) do
+    Logger.error(
+      "Error in export with ID #{export_id} while exporting records. error was: #{inspect(error)}"
+    )
   end
 end
