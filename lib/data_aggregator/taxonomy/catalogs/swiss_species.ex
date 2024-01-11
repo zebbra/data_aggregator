@@ -8,10 +8,10 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpecies do
   attributes do
     uuid_attribute :id, prefix: "spc"
 
-    attribute :taxon_id_ch, :string, allow_nil?: false
+    attribute :taxon_id_ch, :integer, primary_key?: true, allow_nil?: false
     attribute :accepted_name, :string, allow_nil?: true
-    attribute :usage_key, :string, allow_nil?: true
-    attribute :accepted_usage_key, :string, allow_nil?: true
+    attribute :usage_key, :integer, primary_key?: true, allow_nil?: false
+    attribute :accepted_usage_key, :integer, allow_nil?: true
     attribute :scientific_name, :string, allow_nil?: true
     attribute :rank, :string, allow_nil?: true
 
@@ -32,6 +32,7 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpecies do
     define :update, action: :update
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
+    define :get_by_usage_key, action: :read, get_by: [:usage_key]
   end
 
   postgres do
@@ -56,6 +57,10 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpecies do
 
   json_api do
     type "swiss_species"
+
+    primary_key do
+      keys([:id])
+    end
 
     routes do
       base("/swiss_species")

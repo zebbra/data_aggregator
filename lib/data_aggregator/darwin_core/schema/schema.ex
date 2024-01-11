@@ -59,7 +59,8 @@ defmodule DataAggregator.DarwinCore.Schema do
     %Attribute{name: :taxon_id, type: :string, allow_nil?: true},
     %Attribute{name: :taxon_id_ch, type: :string, allow_nil?: true},
     %Attribute{name: :accepted_name_usage, type: :string, allow_nil?: true},
-    %Attribute{name: :accepted_name_usage_id, type: :string, allow_nil?: true}
+    %Attribute{name: :accepted_name_usage_id, type: :string, allow_nil?: true},
+    %Attribute{name: :taxon_rank, type: :string, allow_nil?: true}
   ]
 
   @spp_attributes [

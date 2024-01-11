@@ -6,6 +6,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   require Logger
 
   alias DataAggregator.Records.EncodedRecord
+  alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
 
   # the input attributes are the attributes that will be used to build the request body.
@@ -44,12 +45,12 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   @doc """
     query the gbif taxanomy api and return the encoded record
   """
-  @spec apply_strategy(EncodedRecord.t()) :: {:ok, EncodedRecord.t()} | {:error, any()}
+  @spec apply_strategy(EncodedRecord.t()) :: EncodingResult.t()
   def apply_strategy(record) do
     process_record(record)
   end
 
-  @spec process_record(EncodedRecord.t()) :: {:ok, EncodedRecord.t()} | {:error, any()}
+  @spec process_record(EncodedRecord.t()) :: EncodingResult.t()
   defp process_record(record) do
     {:ok,
      record

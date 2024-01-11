@@ -2,7 +2,7 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter do
   @moduledoc """
   Import swiss species catalog from csv file
   """
-
+  require Logger
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
   def import_swiss_species_catalog_from_csv(path) do
@@ -15,8 +15,14 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter do
 
   defp import_swiss_species_from_csv(attrs) do
     parsed_attrs = parse_csv_attributes(attrs)
-
+    Logger.info("importing swiss species: #{inspect(parsed_attrs)}")
     SwissSpecies.create!(parsed_attrs)
+  rescue
+    error ->
+      Logger.error("could not import swiss species: #{inspect(attrs)}")
+      Logger.error("error: #{inspect(error)}")
+
+      throw(error)
   end
 
   defp parse_csv_attributes(attrs) do

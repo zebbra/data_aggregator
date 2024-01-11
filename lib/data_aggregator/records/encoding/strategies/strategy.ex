@@ -53,10 +53,10 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   end
 
   @spec update_encoded_record(map(), EncodedRecord.t(), list()) :: EncodedRecord.t()
-  def update_encoded_record(response_body, record, output_attributes) do
+  def update_encoded_record(update_values, record, output_attributes) do
     updated_attributes =
-      Enum.map(output_attributes, fn {record_attribute, response_attribute} ->
-        {record_attribute, Map.get(response_body, response_attribute)}
+      Enum.map(output_attributes, fn {record_attribute, catalog_attribute} ->
+        {record_attribute, Map.get(update_values, catalog_attribute)}
       end)
       |> Enum.into(%{})
 
