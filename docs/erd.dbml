@@ -23,6 +23,17 @@ Table institutions {
   updated_at timestamp
 }
 
+Table change_events {
+  id uuid [pk]
+  dwc_attribute varchar
+  value varchar
+  previous_value varchar
+  category varchar
+  inserted_at timestamp
+  updated_at timestamp
+  record_id uuid
+}
+
 Table collections {
   id uuid [pk]
   items_to_digitize integer
@@ -52,6 +63,9 @@ Table encoded_records {
   loc_country varchar
   loc_continent varchar
   spp_life_stage varchar
+  tax_accepted_name_usage_id varchar
+  tax_accepted_name_usage varchar
+  tax_taxon_id_ch varchar
   tax_taxon_id varchar
   tax_specific_epithet varchar
   tax_infraspecific_epithet varchar
@@ -60,6 +74,9 @@ Table encoded_records {
   tax_genus varchar
   tax_family varchar
   tax_order varchar
+  tax_class varchar
+  tax_phylum varchar
+  tax_kingdom varchar
   rrp_relationship_of_resource_id varchar
   rrp_relationship_of_resource varchar
   ref_relationship_established_date date
@@ -129,6 +146,9 @@ Table records {
   loc_country varchar
   loc_continent varchar
   spp_life_stage varchar
+  tax_accepted_name_usage_id varchar
+  tax_accepted_name_usage varchar
+  tax_taxon_id_ch varchar
   tax_taxon_id varchar
   tax_specific_epithet varchar
   tax_infraspecific_epithet varchar
@@ -137,6 +157,9 @@ Table records {
   tax_genus varchar
   tax_family varchar
   tax_order varchar
+  tax_class varchar
+  tax_phylum varchar
+  tax_kingdom varchar
   rrp_relationship_of_resource_id varchar
   rrp_relationship_of_resource varchar
   ref_relationship_established_date date
@@ -163,6 +186,7 @@ Table records {
   id uuid [pk]
   import_data jsonb
   extra_data jsonb
+  errors jsonb
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid
@@ -178,32 +202,16 @@ Table record_images {
   record_id uuid
 }
 
-Table attribute_resolving_strategies {
+Table swiss_species {
   id uuid [pk]
-  do_not_encode boolean
+  taxon_id_ch varchar
+  accepted_name varchar
+  usage_key varchar
+  accepted_usage_key varchar
+  scientific_name varchar
+  rank varchar
   inserted_at timestamp
   updated_at timestamp
-  collection_id uuid
-  dwc_attribute_id uuid
-  catalog_id uuid
-}
-
-Table catalogs {
-  id uuid [pk]
-  name varchar
-  description varchar
-  url varchar
-  version integer
-  inserted_at timestamp
-  updated_at timestamp
-}
-
-Table dwc_attributes {
-  id uuid [pk]
-  name varchar
-  inserted_at timestamp
-  updated_at timestamp
-  default_catalog_id uuid
 }
 
 Table schema_migrations {
@@ -240,18 +248,15 @@ Table oban_jobs {
   scheduled_at timestamp
 }
 
-Ref: catalogs.id < attribute_resolving_strategies.catalog_id
-Ref: catalogs.id < dwc_attributes.default_catalog_id
-Ref: collections.id < attribute_resolving_strategies.collection_id
 Ref: collections.id < imports.collection_id
 Ref: collections.id < records.collection_id
-Ref: dwc_attributes.id < attribute_resolving_strategies.dwc_attribute_id
 Ref: file_attachments.id < imports.attachment_id
 Ref: file_attachments.id < record_images.attachment_id
 Ref: imports.id < import_records.import_id
 Ref: institutions.id < collections.institution_id
 Ref: oban_jobs.id < imports.job_id
 Ref: oban_jobs.id < records.encoder_job_id
-Ref: records.id < encoded_records.record_id
+Ref: records.id < change_events.record_id
+Ref: records.id - encoded_records.record_id
 Ref: records.id < import_records.record_id
 Ref: records.id < record_images.record_id

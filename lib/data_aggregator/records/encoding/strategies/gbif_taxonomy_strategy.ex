@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
+defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   @moduledoc """
     Encode Records with the gbif taxonomy catalog
   """
@@ -6,6 +6,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
   require Logger
 
   alias DataAggregator.Records.EncodedRecord
+  alias DataAggregator.Records.Encoding.Strategy
 
   # the input attributes are the attributes that will be used to build the request body.
   # the first element is the attribute on the encoded record and the second
@@ -25,7 +26,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
     {:tax_family, :family},
     {:tax_order, :order},
     {:tax_genus, :genus},
-    {:tax_scientific_name, :scientificName}
+    {:tax_scientific_name, :scientificName},
+    {:tax_taxon_id, :key},
+    {:tax_taxon_id, :acceptedUsageKey}
   ]
 
   # the url to the gbif taxonomy api
@@ -55,7 +58,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
      |> parse_response()
      |> parse_match_api_body()
      |> handle_synonym()
-     |> update_encoded_record(record)}
+     |> Strategy.update_encoded_record(record, @output_attributes)}
   catch
     error ->
       {:error, error}
@@ -64,7 +67,11 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
   @spec build_request_params(EncodedRecord.t()) :: list()
   defp build_request_params(record) do
     Enum.map(@input_attributes, fn {record_attribute, request_attribute} ->
-      {request_attribute, Map.get(record, record_attribute, "")}
+      response_value = Map.get(record, record_attribute, nil)
+
+      if response_value != nil do
+        {request_attribute, response_value}
+      end
     end)
   end
 
@@ -172,17 +179,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomy do
       throw(
         "For this species name we could not find a matching taxonomy. response value #{inspect(body)} is not confident (min #{@min_confidence}) enough"
       )
-
-  @spec update_encoded_record(map(), EncodedRecord.t()) :: EncodedRecord.t()
-  defp update_encoded_record(response_body, record) do
-    updated_attributes =
-      Enum.map(@output_attributes, fn {record_attribute, response_attribute} ->
-        {record_attribute, Map.get(response_body, response_attribute)}
-      end)
-      |> Enum.into(%{})
-
-    EncodedRecord.update!(record, updated_attributes)
-  end
 
   @spec throw_error(map()) :: {:ok, map()} | {:error, any()}
   defp throw_error(error) do

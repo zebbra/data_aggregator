@@ -1,5 +1,19 @@
 ```mermaid
 classDiagram
+    class ChangeEvent {
+        UUID id
+        Atom dwc_attribute
+        String value
+        String previous_value
+        EventCategory category
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        Record record
+        destroy()
+        read()
+        create(Record record, UUID id, Atom dwc_attribute, String value, ...)
+        update(Record record, UUID id, Atom dwc_attribute, String value, ...)
+    }
     class Collection {
         UUID id
         Integer items_to_digitize
@@ -95,6 +109,9 @@ classDiagram
         String loc_country
         String loc_continent
         String spp_life_stage
+        String tax_accepted_name_usage_id
+        String tax_accepted_name_usage
+        String tax_taxon_id_ch
         String tax_taxon_id
         String tax_specific_epithet
         String tax_infraspecific_epithet
@@ -103,6 +120,9 @@ classDiagram
         String tax_genus
         String tax_family
         String tax_order
+        String tax_class
+        String tax_phylum
+        String tax_kingdom
         String rrp_relationship_of_resource_id
         String rrp_relationship_of_resource
         Date ref_relationship_established_date
@@ -129,6 +149,7 @@ classDiagram
         UUID id
         Map import_data
         Map extra_data
+        Map errors
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Integer encoder_job_id
@@ -137,6 +158,7 @@ classDiagram
         Image[] images
         Attachment[] image_attachments
         Job encoder_job
+        EncodedRecord encoded_record
         destroy()
         update(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
         read(String sort)
@@ -178,6 +200,9 @@ classDiagram
         String loc_country
         String loc_continent
         String spp_life_stage
+        String tax_accepted_name_usage_id
+        String tax_accepted_name_usage
+        String tax_taxon_id_ch
         String tax_taxon_id
         String tax_specific_epithet
         String tax_infraspecific_epithet
@@ -186,6 +211,9 @@ classDiagram
         String tax_genus
         String tax_family
         String tax_order
+        String tax_class
+        String tax_phylum
+        String tax_kingdom
         String rrp_relationship_of_resource_id
         String rrp_relationship_of_resource
         Date ref_relationship_established_date
@@ -226,6 +254,7 @@ classDiagram
     Job -- Import
     Job -- Record
     Institution -- Collection
+    ChangeEvent -- Record
     Collection -- Import
     Collection -- Record
     EncodedRecord -- Record

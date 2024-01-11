@@ -20,6 +20,16 @@ erDiagram
     timestamp inserted_at
     timestamp updated_at
   }
+  change_events {
+    uuid id PK
+    varchar dwc_attribute
+    varchar value
+    varchar previous_value
+    varchar category
+    timestamp inserted_at
+    timestamp updated_at
+    uuid record_id
+  }
   collections {
     uuid id PK
     integer items_to_digitize
@@ -48,6 +58,9 @@ erDiagram
     varchar loc_country
     varchar loc_continent
     varchar spp_life_stage
+    varchar tax_accepted_name_usage_id
+    varchar tax_accepted_name_usage
+    varchar tax_taxon_id_ch
     varchar tax_taxon_id
     varchar tax_specific_epithet
     varchar tax_infraspecific_epithet
@@ -56,6 +69,9 @@ erDiagram
     varchar tax_genus
     varchar tax_family
     varchar tax_order
+    varchar tax_class
+    varchar tax_phylum
+    varchar tax_kingdom
     varchar rrp_relationship_of_resource_id
     varchar rrp_relationship_of_resource
     date ref_relationship_established_date
@@ -122,6 +138,9 @@ erDiagram
     varchar loc_country
     varchar loc_continent
     varchar spp_life_stage
+    varchar tax_accepted_name_usage_id
+    varchar tax_accepted_name_usage
+    varchar tax_taxon_id_ch
     varchar tax_taxon_id
     varchar tax_specific_epithet
     varchar tax_infraspecific_epithet
@@ -130,6 +149,9 @@ erDiagram
     varchar tax_genus
     varchar tax_family
     varchar tax_order
+    varchar tax_class
+    varchar tax_phylum
+    varchar tax_kingdom
     varchar rrp_relationship_of_resource_id
     varchar rrp_relationship_of_resource
     date ref_relationship_established_date
@@ -156,6 +178,7 @@ erDiagram
     uuid id PK
     jsonb import_data
     jsonb extra_data
+    jsonb errors
     timestamp inserted_at
     timestamp updated_at
     uuid collection_id
@@ -169,30 +192,16 @@ erDiagram
     uuid attachment_id
     uuid record_id
   }
-  attribute_resolving_strategies {
+  swiss_species {
     uuid id PK
-    boolean do_not_encode
+    varchar taxon_id_ch
+    varchar accepted_name
+    varchar usage_key
+    varchar accepted_usage_key
+    varchar scientific_name
+    varchar rank
     timestamp inserted_at
     timestamp updated_at
-    uuid collection_id
-    uuid dwc_attribute_id
-    uuid catalog_id
-  }
-  catalogs {
-    uuid id PK
-    varchar name
-    varchar description
-    varchar url
-    integer version
-    timestamp inserted_at
-    timestamp updated_at
-  }
-  dwc_attributes {
-    uuid id PK
-    varchar name
-    timestamp inserted_at
-    timestamp updated_at
-    uuid default_catalog_id
   }
   schema_migrations {
     integer version PK
@@ -218,18 +227,15 @@ erDiagram
     timestamp inserted_at
     timestamp scheduled_at
   }
-  catalogs ||--|{ attribute_resolving_strategies : ""
-  catalogs ||--|{ dwc_attributes : ""
-  collections ||--|{ attribute_resolving_strategies : ""
   collections ||--|{ imports : ""
   collections ||--|{ records : ""
-  dwc_attributes ||--|{ attribute_resolving_strategies : ""
   file_attachments ||--|{ imports : ""
   file_attachments ||--|{ record_images : ""
   imports ||--|{ import_records : ""
   institutions ||--|{ collections : ""
   oban_jobs ||--|{ imports : ""
   oban_jobs ||--|{ records : ""
-  records ||--|{ encoded_records : ""
+  records ||--|{ change_events : ""
+  records ||--o| encoded_records : ""
   records ||--|{ import_records : ""
   records ||--|{ record_images : ""

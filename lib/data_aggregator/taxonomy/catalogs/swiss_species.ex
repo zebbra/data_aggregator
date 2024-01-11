@@ -1,22 +1,24 @@
-defmodule DataAggregator.Taxonomy.DwcAttribute do
+defmodule DataAggregator.Taxonomy.Catalogs.SwissSpecies do
   @moduledoc false
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
-  alias DataAggregator.Taxonomy.Catalog
-
   attributes do
-    uuid_attribute :id, prefix: "da"
+    uuid_attribute :id, prefix: "spc"
 
-    attribute :name, :string
+    attribute :taxon_id_ch, :string, allow_nil?: false
+    attribute :accepted_name, :string, allow_nil?: true
+    attribute :usage_key, :string, allow_nil?: true
+    attribute :accepted_usage_key, :string, allow_nil?: true
+    attribute :scientific_name, :string, allow_nil?: true
+    attribute :rank, :string, allow_nil?: true
 
     timestamps private?: false, writable?: false
   end
 
   relationships do
-    belongs_to :default_catalog, Catalog
   end
 
   actions do
@@ -33,30 +35,30 @@ defmodule DataAggregator.Taxonomy.DwcAttribute do
   end
 
   postgres do
-    table "dwc_attributes"
+    table "swiss_species"
     repo DataAggregator.Repo
   end
 
   graphql do
-    type :dwc_attribute
+    type :catalog
 
     queries do
-      get :get_dwc_attribute, :read
-      list :list_dwc_attributes, :read
+      get :get_swiss_species, :read
+      list :list_swiss_species, :read
     end
 
     mutations do
-      create :create_dwc_attribute, :create
-      update :update_dwc_attribute, :update
-      destroy :destroy_dwc_attribute, :destroy
+      create :create_swiss_species, :create
+      update :update_swiss_species, :update
+      destroy :destroy_swiss_species, :destroy
     end
   end
 
   json_api do
-    type "dwc_attribute"
+    type "swiss_species"
 
     routes do
-      base("/dwc_attributes")
+      base("/swiss_species")
 
       get(:read)
       index :read

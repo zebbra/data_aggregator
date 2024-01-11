@@ -6,13 +6,14 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     implement the encode/2 function with the corresponding `when` statement
 
     to keep this module clean, the actual encoding logic is delegated to a
-    strategy module like we do with the GbifTaxonomy module
+    strategy module like we do with the `DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy` or the `DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy` module
   """
   alias DataAggregator.Records.EncodedRecord
-  alias DataAggregator.Records.Encoding.Strategy.GbifTaxonomy
+  alias DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy
+  alias DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy
   alias DataAggregator.Records.Record
 
-  @catalogs [:gbif_taxonomy]
+  @catalogs [:gbif_taxonomy, :gbif_swiss_species]
 
   def get_catalogs, do: @catalogs
 
@@ -20,7 +21,14 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   def encode(record, catalog) when catalog == :gbif_taxonomy do
     encoded_record = create_encoded_record(record)
 
-    GbifTaxonomy.apply_strategy(encoded_record)
+    GbifTaxonomyStrategy.apply_strategy(encoded_record)
+  end
+
+  @spec encode(Record.t(), atom()) :: {:ok, EncodedRecord.t()} | {:error, any()}
+  def encode(record, catalog) when catalog == :gbif_swiss_species do
+    encoded_record = create_encoded_record(record)
+
+    SwissSpeciesStrategy.apply_strategy(encoded_record)
   end
 
   # create an encoded record if it does not exist yet
@@ -42,5 +50,16 @@ defmodule DataAggregator.Records.Encoding.Strategy do
       _ ->
         encoded_record
     end
+  end
+
+  @spec update_encoded_record(map(), EncodedRecord.t(), list()) :: EncodedRecord.t()
+  def update_encoded_record(response_body, record, output_attributes) do
+    updated_attributes =
+      Enum.map(output_attributes, fn {record_attribute, response_attribute} ->
+        {record_attribute, Map.get(response_body, response_attribute)}
+      end)
+      |> Enum.into(%{})
+
+    EncodedRecord.update!(record, updated_attributes)
   end
 end

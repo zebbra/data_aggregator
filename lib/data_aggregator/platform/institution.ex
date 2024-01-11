@@ -1,6 +1,6 @@
 defmodule DataAggregator.Platform.Institution do
   @moduledoc """
-  An institution is a collection of data sources.
+  An institution represents the over all owner of a set of collections.
   """
 
   use Ash.Resource,
@@ -12,7 +12,7 @@ defmodule DataAggregator.Platform.Institution do
     attribute :name, :string, allow_nil?: false
 
     attribute :code, :string do
-      description "an iternationally valid code to identify the collection"
+      description "an iternationally valid code to identify the institution"
     end
 
     attribute :address, :string

@@ -56,7 +56,10 @@ defmodule DataAggregator.DarwinCore.Schema do
     %Attribute{name: :scientific_name_authorship, type: :string, allow_nil?: true},
     %Attribute{name: :infraspecific_epithet, type: :string, allow_nil?: true},
     %Attribute{name: :specific_epithet, type: :string, allow_nil?: true},
-    %Attribute{name: :taxon_id, type: :string, allow_nil?: true}
+    %Attribute{name: :taxon_id, type: :string, allow_nil?: true},
+    %Attribute{name: :taxon_id_ch, type: :string, allow_nil?: true},
+    %Attribute{name: :accepted_name_usage, type: :string, allow_nil?: true},
+    %Attribute{name: :accepted_name_usage_id, type: :string, allow_nil?: true}
   ]
 
   @spp_attributes [
