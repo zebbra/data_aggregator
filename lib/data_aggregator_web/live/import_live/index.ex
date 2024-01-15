@@ -7,11 +7,14 @@ defmodule DataAggregatorWeb.ImportLive.Index do
   alias DataAggregator.Records.Import
 
   @load [
+    # :import_progress,
+    # :validation_progress,
     :duration,
     :collection_name,
     :records_count,
     :attachment_filename,
     :attachment_byte_size,
+    # :rows_valid_ratio,
     attachment: [:filename, :url, :byte_size]
   ]
 
@@ -37,7 +40,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
   end
 
   defp assign_imports(socket) do
-    socket |> stream(:results, list_imports())
+    stream(socket, :results, list_imports())
   end
 
   defp list_imports do
@@ -74,11 +77,12 @@ defmodule DataAggregatorWeb.ImportLive.Index do
         }
       >
         <:col :let={{_id, import}} label={~t"State"m} field="state">
-          <.import_state_badge state={import.state} />
+          <.import_state_badge import={import} />
         </:col>
 
         <:col :let={{_id, import}} label={~t"File"m} field="attachment_filename">
-          <span class="font-mono"><%= import.attachment.filename %></span>
+          <div class="font-mono"><%= import.attachment.filename %></div>
+          <div class="text-base-content/50 text-xs"><%= format_number(import.rows_count) %> rows</div>
         </:col>
 
         <:col :let={{_id, import}} label={~t"Size"m} field="attachment_byte_size">
@@ -91,24 +95,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
 
         <:col :let={{_id, import}} label={~t"Started at"m} field="started_at">
           <%= format_datetime(import.started_at, format: :short) %>
-        </:col>
-
-        <:col :let={{_id, import}} label={~t"Finished at"m} field="finished_at">
-          <%= format_datetime(import.finished_at, format: :short) %>
-        </:col>
-
-        <:col :let={{_id, import}} label={~t"Duration"m} field="duration">
-          <%= format_seconds(import.duration) %>
-        </:col>
-
-        <:col :let={{_id, import}} label={~t"Imported"m} field="imported_count">
-          <%= format_number(import.imported_count, format: :short) %>
-          <span :if={import.invalid_count && import.invalid_count > 0}>
-            /
-            <span class="text-red-500">
-              <%= format_number(import.invalid_count, format: :short) %>
-            </span>
-          </span>
+          <%= import.duration %>
         </:col>
 
         <:col :let={{_id, import}} label={~t"Records"m} field="records_count">
@@ -151,7 +138,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
   def handle_info({topic, _event, notification}, socket)
       when topic in ["import:created", "import:updated"] do
     %Ash.Notifier.Notification{data: import} = notification
-    import = import |> Records.load!(@load, lazy?: true)
+    import = Records.load!(import, @load, lazy?: true)
     {:noreply, stream_insert(socket, :results, import)}
   end
 
@@ -167,7 +154,7 @@ defmodule DataAggregatorWeb.ImportLive.Index do
   end
 
   def handle_event("import:run", %{"id" => id}, socket) do
-    id |> Import.get_by_id!() |> Import.enqueue!()
+    id |> Import.get_by_id!() |> Import.enqueue_import!()
     {:noreply, socket}
   end
 end

@@ -21,13 +21,11 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
   end
 
   defp apply_action(socket, :show, _params) do
-    socket
-    |> assign(:page_title, ~t"Show Collection"m)
+    assign(socket, :page_title, ~t"Show Collection"m)
   end
 
   defp apply_action(socket, :import, _params) do
-    socket
-    |> assign(:page_title, ~t"Import Records"m)
+    assign(socket, :page_title, ~t"Import Records"m)
   end
 
   @impl true

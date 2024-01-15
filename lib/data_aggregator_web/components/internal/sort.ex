@@ -13,23 +13,21 @@ defmodule DataAggregatorWeb.Components.Internal.Sort do
 
     validate_sort_field(sort)
 
-    socket
-    |> assign(:current_sort, sort)
+    assign(socket, :current_sort, sort)
   end
 
   # Extract the sort field from current_sort
   def current_sort_field(current_sort) when is_nil(current_sort), do: ""
 
   def current_sort_field(current_sort) do
-    current_sort
-    |> String.replace("-", "")
+    String.replace(current_sort, "-", "")
   end
 
   # Extract the sort direction from current_sort
   def current_sort_dir(current_sort) when is_nil(current_sort), do: "asc"
 
   def current_sort_dir(current_sort) do
-    if current_sort |> String.starts_with?("-") do
+    if String.starts_with?(current_sort, "-") do
       "desc"
     else
       "asc"

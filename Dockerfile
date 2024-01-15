@@ -62,6 +62,7 @@ RUN mix assets.deploy
 
 # Compile the release
 RUN mix compile
+RUN mix sentry.package_source_code
 
 # Generate documentation
 RUN mix docs

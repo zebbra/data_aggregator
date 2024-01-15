@@ -39,7 +39,6 @@ defmodule DataAggregatorWeb.Headless.Menu do
   """
   attr :id, :string, required: true
   attr :as, :string, default: "div"
-  attr :class, :string, default: nil
   attr :hide_transition, :map, default: nil
   attr :rest, :global
   slot :inner_block, required: true
@@ -51,7 +50,6 @@ defmodule DataAggregatorWeb.Headless.Menu do
       phx-remove={hide_menu(@id, @hide_transition)}
       id={@id}
       name={@as}
-      class={@class}
       {@rest}
     >
       <%= render_slot(@inner_block) %>

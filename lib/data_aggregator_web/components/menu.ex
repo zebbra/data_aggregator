@@ -39,7 +39,7 @@ defmodule DataAggregatorWeb.Components.Menu do
 
   attr :id, :string, required: true
   attr :as, :string, default: "div"
-  attr :class, :string, default: "relative inline-block text-left", doc: "the class of the menu"
+  attr :class, :string, default: nil, doc: "the class of the menu"
   attr :label, :string, default: nil, doc: "the label of the menu button"
 
   attr :custom_container, :boolean,
@@ -65,7 +65,13 @@ defmodule DataAggregatorWeb.Components.Menu do
 
   def menu(assigns) do
     ~H"""
-    <.headless_menu id={@id} as={@as} class={@class} hide_transition={@hide_transition} {@rest}>
+    <.headless_menu
+      id={@id}
+      as={@as}
+      class={["relative inline-block text-left", @class]}
+      hide_transition={@hide_transition}
+      {@rest}
+    >
       <.menu_button :if={@label != nil} id={@id <> "__button"} as="div" class="">
         <.button color="secondary" label={@label} />
       </.menu_button>

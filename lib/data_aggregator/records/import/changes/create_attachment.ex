@@ -13,6 +13,6 @@ defmodule DataAggregator.Records.Import.Changes.CreateAttachment do
 
     attachment = %{path: path, filename: filename}
 
-    changeset |> Changeset.manage_relationship(:attachment, attachment, type: :create)
+    Changeset.manage_relationship(changeset, :attachment, attachment, type: :create)
   end
 end

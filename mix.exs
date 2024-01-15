@@ -91,8 +91,7 @@ defmodule DataAggregator.MixProject do
   defp before_closing_body_tag(_), do: ""
 
   defp extras() do
-    "docs/**/*.{md,livemd,cheatmd}"
-    |> Path.wildcard()
+    Path.wildcard("docs/**/*.{md,livemd,cheatmd}")
   end
 
   defp groups_for_extras do
@@ -130,6 +129,9 @@ defmodule DataAggregator.MixProject do
       ],
       "Records API": [
         ~r/^DataAggregator\.Records/
+      ],
+      "Jobs API": [
+        ~r/^DataAggregator\.Jobs/
       ],
       Preparations: [
         ~r/^DataAggregator\.Preparations/
@@ -207,12 +209,13 @@ defmodule DataAggregator.MixProject do
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:assertions, "~> 0.19", only: :test},
-
-      # Dev Tools
-      {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
+      {:recode, "~> 0.6", only: [:dev, :test]},
+
+      # Asserts
+      {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
 
       # Internationalization and Localization
       {:gettext, "~> 0.20"},
@@ -235,7 +238,7 @@ defmodule DataAggregator.MixProject do
       {:swoosh, "~> 1.3"},
 
       # Data Processing and Parsing
-      {:explorer, "~> 0.7.1"},
+      {:explorer, "~> 0.7.2"},
       {:csv, "~> 3.2"},
       {:waffle, "~> 1.1"},
       {:ex_aws, "~> 2.5.0"},
@@ -249,7 +252,7 @@ defmodule DataAggregator.MixProject do
 
       # Monitoring and Tracing
       {:phoenix_live_dashboard, "~> 0.8.1"},
-      {:sentry, "~> 9.1"},
+      {:sentry, "~> 10.0"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
 
@@ -264,7 +267,7 @@ defmodule DataAggregator.MixProject do
       {:ex_doc, "~> 0.27", runtime: false},
 
       # Liveview Widgets
-      {:kino, "~> 0.11.2", only: :dev},
+      {:kino, "~> 0.12.0", only: :dev},
       {:kino_explorer, "~> 0.1.10", only: :dev}
     ]
   end

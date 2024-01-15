@@ -12,14 +12,13 @@ msgid ""
 msgstr ""
 
 #: lib/data_aggregator_web/components/datatable.ex:124
-#: lib/data_aggregator_web/components/table.ex:68
 #, elixir-autogen, elixir-format
 msgid "Actions"
 msgstr ""
 
-#: lib/data_aggregator_web/components/flash.ex:92
+#: lib/data_aggregator_web/components/flash.ex:69
 #: lib/data_aggregator_web/components/modal.ex:170
-#: lib/data_aggregator_web/components/page.ex:185
+#: lib/data_aggregator_web/components/page.ex:184
 #: lib/data_aggregator_web/components/slide_over.ex:110
 #, elixir-autogen, elixir-format
 msgid "close"
@@ -147,7 +146,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Save Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:107
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:110
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Cancel"
@@ -221,14 +220,14 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Updated At"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:30
-#: lib/data_aggregator_web/live/collection_live/show.ex:65
+#: lib/data_aggregator_web/live/collection_live/show.ex:28
+#: lib/data_aggregator_web/live/collection_live/show.ex:63
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Import Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:25
+#: lib/data_aggregator_web/live/collection_live/show.ex:24
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Show Collection"
@@ -240,13 +239,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Use this form to manage collections in your database."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:58
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:61
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Choose a file"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:61
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:64
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "or drag and drop"
@@ -301,14 +300,14 @@ msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "This is a record from your database."
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/show.ex:33
-#: lib/data_aggregator_web/live/record_live/show.ex:57
+#: lib/data_aggregator_web/live/record_live/show.ex:31
+#: lib/data_aggregator_web/live/record_live/show.ex:55
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Show"
 msgid "Edit Record"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/show.ex:28
+#: lib/data_aggregator_web/live/record_live/show.ex:27
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Show"
 msgid "Show Record"
@@ -327,50 +326,50 @@ msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "Material Entity ID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:102
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:105
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Upload file"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:186
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:189
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "up to %{max_file_size}"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.ex:133
+#: lib/data_aggregator_web/live/import_live/index.ex:120
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.ex:135
+#: lib/data_aggregator_web/live/import_live/index.ex:122
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Delete"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.ex:55
-#: lib/data_aggregator_web/live/import_live/index.ex:64
+#: lib/data_aggregator_web/live/import_live/index.ex:58
+#: lib/data_aggregator_web/live/import_live/index.ex:67
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Listing Imports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.ex:120
+#: lib/data_aggregator_web/live/import_live/index.ex:107
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Show"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.ex:49
+#: lib/data_aggregator_web/live/import_live/index.ex:52
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Show Import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/show.ex:58
+#: lib/data_aggregator_web/live/import_live/show.ex:69
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Show Import"
@@ -394,7 +393,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Total items to digitize"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:32
+#: lib/data_aggregator_web/live/collection_live/import_form_component.ex:35
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImportFormComponent"
 msgid "Select a file containing your Records"
@@ -406,61 +405,61 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Records Count"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:57
+#: lib/data_aggregator_web/live/collection_live/show.ex:55
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Back to Collections"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:79
+#: lib/data_aggregator_web/live/collection_live/show.ex:77
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Digitization Progress"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:87
+#: lib/data_aggregator_web/live/collection_live/show.ex:85
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Expert Reviews"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:88
+#: lib/data_aggregator_web/live/collection_live/show.ex:86
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Last Contribution"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:73
+#: lib/data_aggregator_web/live/collection_live/show.ex:71
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:74
+#: lib/data_aggregator_web/live/collection_live/show.ex:72
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Owner"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:77
+#: lib/data_aggregator_web/live/collection_live/show.ex:75
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Records Published"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:75
+#: lib/data_aggregator_web/live/collection_live/show.ex:73
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Type"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.ex:88
+#: lib/data_aggregator_web/live/import_live/index.ex:92
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:76
+#: lib/data_aggregator_web/live/collection_live/show.ex:74
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Records in Collection"
@@ -593,31 +592,31 @@ msgctxt "DataAggregatorWeb.Page"
 msgid "scnat"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.ex:114
+#: lib/data_aggregator_web/live/import_live/index.ex:101
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Records"
 msgstr ""
 
-#: lib/data_aggregator_web/components/flash.ex:132
+#: lib/data_aggregator_web/components/flash.ex:108
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Flash"
 msgid "Attempting to reconnect"
 msgstr ""
 
-#: lib/data_aggregator_web/components/flash.ex:123
+#: lib/data_aggregator_web/components/flash.ex:99
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Flash"
 msgid "Error!"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.ex:80
+#: lib/data_aggregator_web/live/import_live/index.ex:83
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "File"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.ex:84
+#: lib/data_aggregator_web/live/import_live/index.ex:88
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Size"
@@ -629,36 +628,36 @@ msgctxt "DataAggregatorWeb.Components.Pagination"
 msgid "No results"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.ex:76
+#: lib/data_aggregator_web/live/import_live/index.ex:79
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "State"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/components/mapping_form.ex:89
+#: lib/data_aggregator_web/live/import_live/components/mapping_form.ex:107
 #, elixir-autogen, elixir-format
 msgid "Search mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/show.ex:133
+#: lib/data_aggregator_web/live/import_live/show.ex:273
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Import could not be started"
 msgstr ""
 
-#: lib/data_aggregator_web/components/flash.ex:144
+#: lib/data_aggregator_web/components/flash.ex:120
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Flash"
 msgid "Hang in there while we get back on track"
 msgstr ""
 
-#: lib/data_aggregator_web/components/flash.ex:122
+#: lib/data_aggregator_web/components/flash.ex:98
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Flash"
 msgid "Success!"
 msgstr ""
 
-#: lib/data_aggregator_web/components/flash.ex:127
+#: lib/data_aggregator_web/components/flash.ex:103
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Flash"
 msgid "We can't find the internet"
@@ -717,44 +716,56 @@ msgctxt "DataAggregatorWeb.Components.Pagination"
 msgid "to"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/show.ex:49
+#: lib/data_aggregator_web/live/record_live/show.ex:47
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Show"
 msgid "Back to Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.ex:100
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.ImportLive.Index"
-msgid "Duration"
-msgstr ""
-
-#: lib/data_aggregator_web/live/import_live/index.ex:96
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.ImportLive.Index"
-msgid "Finished at"
-msgstr ""
-
-#: lib/data_aggregator_web/live/import_live/index.ex:104
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.ImportLive.Index"
-msgid "Imported"
-msgstr ""
-
-#: lib/data_aggregator_web/live/import_live/index.ex:126
+#: lib/data_aggregator_web/live/import_live/index.ex:113
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Run"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/index.ex:92
+#: lib/data_aggregator_web/components/table.ex:52
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Components.Table"
+msgid "Actions"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/components/mapping_form.ex:270
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Components.MappingForm"
+msgid "Mapping updated"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/components/mapping_form.ex:275
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Components.MappingForm"
+msgid "Unable to update mapping"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/index.ex:96
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Index"
 msgid "Started at"
 msgstr ""
 
-#: lib/data_aggregator_web/live/import_live/components.ex:17
+#: lib/data_aggregator_web/live/import_live/show.ex:237
 #, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.ImportLive.Components"
+msgctxt "DataAggregatorWeb.ImportLive.Show"
+msgid "Column"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/show.ex:106
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Import Records"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/show.ex:240
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Show"
+msgid "Mapped to"
 msgstr ""

@@ -53,7 +53,7 @@ defmodule DataAggregatorWeb.Gettext do
   end
 
   def with_default_locale(fun) do
-    default_locale() |> with_locale(fun)
+    with_locale(default_locale(), fun)
   end
 
   defmacro mgettext(text, opts \\ []) do

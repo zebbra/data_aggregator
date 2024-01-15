@@ -19,14 +19,13 @@ defmodule DataAggregator.PubSub do
     %Ash.Notifier.Notification{resource: resource} = notification
     resource_name = resource |> to_string() |> String.replace_prefix("Elixir.", "")
 
-    topic |> log("#{resource_name}:#{event}")
-
+    log(topic, "#{resource_name}:#{event}")
     message = {topic, event, notification}
     Phoenix.PubSub.broadcast(@name, topic, message)
   end
 
   def subscribe(topic) when is_binary(topic) do
-    topic |> log("subscribed")
+    log(topic, "subscribed")
     Phoenix.PubSub.subscribe(@name, topic)
   end
 
@@ -35,7 +34,7 @@ defmodule DataAggregator.PubSub do
   end
 
   def unsubscribe(topic) when is_binary(topic) do
-    topic |> log("unsubscribed")
+    log(topic, "unsubscribed")
     Phoenix.PubSub.unsubscribe(@name, topic)
   end
 
@@ -44,13 +43,13 @@ defmodule DataAggregator.PubSub do
   end
 
   def broadcast(topic, message) when is_binary(topic) do
-    topic |> log("broadcast")
+    log(topic, "broadcast")
     Phoenix.PubSub.broadcast(@name, topic, message)
   end
 
   defp log(topic, message) do
     [:blue, "[PubSub] ", :reset, message, " -> ", :faint, topic]
     |> IO.ANSI.format()
-    |> Logger.info()
+    |> Logger.debug()
   end
 end

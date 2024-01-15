@@ -23,7 +23,12 @@ config :mime, :types, %{
 }
 
 config :mime, :extensions, %{
-  "json" => "application/vnd.api+json"
+  "json" => "application/vnd.api+json",
+  "tsv" => "text/plain",
+  "pqt" => "application/octet-stream",
+  "parquet" => "application/octet-stream",
+  "ipc" => "application/octet-stream",
+  "arrow" => "application/octet-stream"
 }
 
 config :data_aggregator,
@@ -31,7 +36,8 @@ config :data_aggregator,
     DataAggregator.Platform,
     DataAggregator.Records,
     DataAggregator.Taxonomy,
-    DataAggregator.Files
+    DataAggregator.Files,
+    DataAggregator.Jobs
   ]
 
 config :data_aggregator, :ash_uuid,
@@ -90,7 +96,7 @@ config :esbuild,
   version: "0.17.11",
   default: [
     args:
-      ~w(js/app.ts js/color-mode.ts js/storybook.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+      ~w(js/app.ts js/storybook.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
@@ -140,8 +146,9 @@ config :spark, :formatter,
       :aggregates,
       :state_machine,
       :preparations,
-      :changes,
       :actions,
+      :changes,
+      :pub_sub,
       :code_interface,
       :policies,
       :postgres,
@@ -153,10 +160,9 @@ config :spark, :formatter,
 # Configure error reporting using Sentry. The Sentry DSN is configured
 # dynamically based on the SENTRY_DSN environment variable.
 config :sentry,
-  environment_name: Mix.env(),
-  included_environments: [:prod],
   enable_source_code_context: true,
-  root_source_code_paths: [File.cwd!()]
+  root_source_code_paths: [File.cwd!()],
+  context_lines: 5
 
 # Configure Sentry logger handler, which will send logs to Sentry
 # See https://hexdocs.pm/sentry/Sentry.LoggerHandler.html

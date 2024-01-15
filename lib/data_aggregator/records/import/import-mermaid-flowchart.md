@@ -1,12 +1,14 @@
 ```mermaid
 stateDiagram-v2
-pending --> queued: enqueue
-queued --> running: run
-running --> imported: set_imported
-imported --> queued: enqueue
-imported --> running: run
-running --> failed: set_failed
-failed --> queued: enqueue
-failed --> running: run
-pending --> running: run
+pending --> pending: update_mapping
+pending --> import_queued: enqueue_import
+import_queued --> importing: import
+importing --> imported: import
+imported --> pending: update_mapping
+imported --> import_queued: enqueue_import
+importing --> imported: set_imported
+importing --> failed: set_failed
+failed --> pending: update_mapping
+failed --> import_queued: enqueue_import
+pending --> importing: import
 ```
