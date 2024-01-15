@@ -25,6 +25,8 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
     test "encode/2 for :swiss_species catalog which returns the encoded_record", %{
       correct_record: correct_record
     } do
+      expect_correct_swiss_species_api_call()
+
       {:ok, encoded_record} = Record.encode(correct_record, :swiss_species)
 
       assert encoded_record !== nil
