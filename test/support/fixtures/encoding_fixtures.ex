@@ -9,13 +9,15 @@ defmodule DataAggregator.EncodingFixtures do
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy
   alias DataAggregator.Records.Record
+  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
   import DataAggregator.RecordsFixtures
 
   @encoded_record_defaults %{
     mte_material_entity_id: "encoded_record1",
     tax_scientific_name: "Oenanthea Pallas",
-    tax_kingdom: "Animalia"
+    tax_kingdom: "Animalia",
+    tax_taxon_id: 1_012_187
   }
 
   @doc """
@@ -45,6 +47,17 @@ defmodule DataAggregator.EncodingFixtures do
     @encoded_record_defaults
     |> Map.merge(attrs)
     |> Map.put(:tax_scientific_name, "this leads to wrong confidence")
+    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Record.create!()
+  end
+
+  @doc """
+    Generate a record for encoding process, which will lead to an invalid confidence
+  """
+  def record_fixture_for_encoding_swiss_species(attrs \\ %{}) do
+    @encoded_record_defaults
+    |> Map.merge(attrs)
+    |> Map.put(:tax_taxon_id, 0)
     |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
     |> Record.create!()
   end
@@ -183,6 +196,21 @@ defmodule DataAggregator.EncodingFixtures do
        %{
          status: 200,
          body: response_body_with_invalid_confidence()
+       }}
+    end)
+  end
+
+  def expect_correct_swiss_species_api_call do
+    expect(SwissSpecies, :get_by_usage_key, fn _key ->
+      {:ok,
+       %SwissSpecies{
+         id: "spc_02vSBcLj4G1ReRVJNXDLVo",
+         taxon_id_ch: 15_311,
+         accepted_name: "Enantiulus dentigerus (Verhoeff, 1901)",
+         usage_key: 1_012_187,
+         accepted_usage_key: nil,
+         scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
+         rank: "SPECIES"
        }}
     end)
   end

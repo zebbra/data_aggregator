@@ -22,3 +22,7 @@
         height: -webkit-fill-available;
     }
 }
+
+.tooltip:before {
+    max-width: unset;
+}

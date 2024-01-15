@@ -10,7 +10,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
   def encoding_state(assigns) do
     state = assigns.state || assigns.record.state
 
-    assigns = assign(assigns, :error, get_error(assigns.record))
+    assigns = assign(assigns, :errors, get_errors(assigns.record))
     assigns = assign(assigns, :state, assigns.state || assigns.record.state)
 
     cond do
@@ -33,13 +33,13 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
 
       state in [:failed] ->
         ~H"""
-        <div :if={!assigns.small} class="tooltip tooltip-error" data-tip={@error}>
+        <div :if={!assigns.small} class="tooltip tooltip-error" data-tip={@errors}>
           <div class="badge badge-lg alert alert-error bg-error/10 text-error gap-2">
             <div class="hero-x-circle-solid"></div>
             <div>Failed</div>
           </div>
         </div>
-        <div :if={assigns.small} class="tooltip tooltip-error" data-tip={@error}>
+        <div :if={assigns.small} class="tooltip tooltip-error" data-tip={@errors}>
           <div class="badge badge-sm alert alert-error bg-error/10 text-error gap-2">
             <div class="hero-x-circle-solid"></div>
           </div>
@@ -90,9 +90,13 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
     end
   end
 
-  defp get_error(record) do
+  defp get_errors(record) do
     if record != nil do
-      Map.get(record.errors || %{}, "encoding")
+      errors = Map.get(record.errors || %{}, "encoding")
+
+      Enum.map_join(errors || [], "\n", fn {key, value} ->
+        "#{key}: #{value}"
+      end)
     else
       "Encoding failed"
     end

@@ -32,8 +32,14 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"id" => id}}) do
     with {:ok, record} <- Record.get_by_id(id) do
-      Logger.info("Record #{inspect(record.id)} ...")
-      Record.encode(record, :gbif_taxonomy)
+      Logger.info("Encoding for Record #{inspect(record.id)} in progress...")
+
+      with {:ok, record} <- Record.encode(record, :gbif_taxonomy),
+           {:ok, record} <- Record.encode(record, :swiss_species) do
+        {:ok, record}
+      else
+        {:error, error} -> {:error, error}
+      end
     end
   end
 

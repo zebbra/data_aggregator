@@ -28,18 +28,13 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
       expect_correct_matching_api_call()
       expect_correct_species_api_call()
 
-      {:ok, encoding_result} = Record.encode(correct_record, :gbif_taxonomy)
-
-      %{encoded_record: encoded_record, error: error, failed_record: failed_record} =
-        encoding_result
+      {:ok, encoded_record} = Record.encode(correct_record, :gbif_taxonomy)
 
       assert encoded_record !== nil
 
       lookedup_encoded_record = EncodedRecord.get_by_record!(encoded_record)
 
       assert lookedup_encoded_record !== nil
-      assert failed_record === nil
-      assert error === nil
       assert lookedup_encoded_record.tax_family === "Muscicapidae"
       assert lookedup_encoded_record.tax_scientific_name === "Oenanthe Vieillot, 1816"
       assert encoded_record.state === :encoded
@@ -50,19 +45,18 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
       # mocking the api call to the GBIF API
       expect_invalid_confidence_from_matching_api_call()
 
-      {{:ok, encoding_result}, logs} =
+      {{:error, error}, logs} =
         with_log(fn -> Record.encode(invalid_record, :gbif_taxonomy) end)
 
-      %{encoded_record: encoded_record, error: error, failed_record: failed_record} =
-        encoding_result
+      encoded_record = Record.get_by_id!(invalid_record.id)
 
-      assert encoded_record === nil
-      assert failed_record !== nil
-      assert error !== nil
-      assert failed_record.state === :failed
+      assert encoded_record != nil
+      assert error != nil
+      assert encoded_record.state == :failed
       assert logs =~ "is not confident (min 80) enough"
 
-      assert failed_record.errors.encoding =~ "is not confident (min 80) enough"
+      assert encoded_record.errors |> Map.get("encoding") |> Map.get("gbif_taxonomy") =~
+               "is not confident (min 80) enough"
     end
   end
 end

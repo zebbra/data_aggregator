@@ -2,7 +2,9 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic.DSL
 
+  alias DataAggregator.Records.Record
   alias DataAggregator.Records.Record.Workers.Encoder
 
   import DataAggregator.EncodingFixtures
@@ -24,10 +26,9 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
       # mocking the api calls to the GBIF API
       expect_correct_matching_api_call()
       expect_correct_species_api_call()
+      expect_correct_swiss_species_api_call()
 
-      {:ok, result} = perform_job(Encoder, %{id: correct_record.id})
-
-      assert %{encoded_record: record} = result
+      {:ok, record} = perform_job(Encoder, %{id: correct_record.id})
 
       assert record.state == :encoded
     end
@@ -36,9 +37,10 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
       # mocking the api call to the GBIF API
       expect_invalid_confidence_from_matching_api_call()
 
-      {result, logs} = with_log(fn -> perform_job(Encoder, %{id: invalid_record.id}) end)
+      {_result, logs} = with_log(fn -> perform_job(Encoder, %{id: invalid_record.id}) end)
 
-      assert {:ok, %{failed_record: record}} = result
+      record = Record.get_by_id!(invalid_record.id)
+
       assert record.state == :failed
 
       assert logs =~ "is not confident (min 80) enough"

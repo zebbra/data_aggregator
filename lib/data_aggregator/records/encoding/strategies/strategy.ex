@@ -13,7 +13,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   alias DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy
   alias DataAggregator.Records.Record
 
-  @catalogs [:gbif_taxonomy, :gbif_swiss_species]
+  @catalogs [:gbif_taxonomy, :swiss_species]
 
   def get_catalogs, do: @catalogs
 
@@ -25,7 +25,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   end
 
   @spec encode(Record.t(), atom()) :: {:ok, EncodedRecord.t()} | {:error, any()}
-  def encode(record, catalog) when catalog == :gbif_swiss_species do
+  def encode(record, catalog) when catalog == :swiss_species do
     encoded_record = create_encoded_record(record)
 
     SwissSpeciesStrategy.apply_strategy(encoded_record)
@@ -33,7 +33,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
 
   # create an encoded record if it does not exist yet
   @spec create_encoded_record(Record.t()) :: EncodedRecord.t()
-  defp create_encoded_record(record) do
+  def create_encoded_record(record) do
     encoded_record =
       case EncodedRecord.get_by_record(record) do
         {:ok, result} -> result
@@ -53,10 +53,10 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   end
 
   @spec update_encoded_record(map(), EncodedRecord.t(), list()) :: EncodedRecord.t()
-  def update_encoded_record(update_values, record, output_attributes) do
+  def update_encoded_record(updated_values, record, output_attributes) do
     updated_attributes =
       Enum.map(output_attributes, fn {record_attribute, catalog_attribute} ->
-        {record_attribute, Map.get(update_values, catalog_attribute)}
+        {record_attribute, Map.get(updated_values, catalog_attribute)}
       end)
       |> Enum.into(%{})
 

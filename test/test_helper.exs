@@ -1,4 +1,8 @@
+alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
+
 Mimic.copy(Req)
+Mimic.copy(SwissSpecies)
+
 ExUnit.start()
 Ecto.Adapters.SQL.Sandbox.mode(DataAggregator.Repo, :manual)
 

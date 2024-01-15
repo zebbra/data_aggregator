@@ -13,18 +13,38 @@
     {
       "default": "nil",
       "size": null,
-      "type": "text",
-      "source": "dwc_attribute",
+      "type": "bigint",
+      "source": "taxon_id_ch",
       "references": null,
       "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": true
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "accepted_name",
+      "references": null,
+      "allow_nil?": true,
       "generated?": false,
       "primary_key?": false
     },
     {
       "default": "nil",
       "size": null,
-      "type": "text",
-      "source": "value",
+      "type": "bigint",
+      "source": "usage_key",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": true
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "bigint",
+      "source": "accepted_usage_key",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -34,7 +54,7 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "previous_value",
+      "source": "scientific_name",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -44,9 +64,9 @@
       "default": "nil",
       "size": null,
       "type": "text",
-      "source": "category",
+      "source": "rank",
       "references": null,
-      "allow_nil?": false,
+      "allow_nil?": true,
       "generated?": false,
       "primary_key?": false
     },
@@ -69,45 +89,17 @@
       "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
-      "type": "uuid",
-      "source": "record_id",
-      "references": {
-        "name": "change_events_record_id_fkey",
-        "table": "records",
-        "schema": "public",
-        "multitenancy": {
-          "global": null,
-          "attribute": null,
-          "strategy": null
-        },
-        "primary_key?": true,
-        "destination_attribute": "id",
-        "on_delete": null,
-        "deferrable": false,
-        "match_type": null,
-        "match_with": null,
-        "on_update": null,
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null
-      },
-      "allow_nil?": true,
-      "generated?": false,
-      "primary_key?": false
     }
   ],
-  "table": "change_events",
-  "hash": "B0A1E171507FFC5AB3BACB0F2F6545FE9D59CD72406CE91C36250B9D89B0348D",
+  "table": "swiss_species",
+  "hash": "23B1F98211DC83E52AFDEC7474FF17D6B7C5980319573D6A1D6937C23437AA20",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "check_constraints": [],

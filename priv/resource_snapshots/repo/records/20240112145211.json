@@ -1,6 +1,16 @@
 {
   "attributes": [
     {
+      "default": "\"imported\"",
+      "size": null,
+      "type": "text",
+      "source": "state",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
       "default": "nil",
       "size": null,
       "type": "text",
@@ -154,6 +164,16 @@
       "default": "nil",
       "size": null,
       "type": "text",
+      "source": "tax_taxon_rank",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
       "source": "tax_accepted_name_usage_id",
       "references": null,
       "allow_nil?": true,
@@ -173,7 +193,7 @@
     {
       "default": "nil",
       "size": null,
-      "type": "text",
+      "type": "bigint",
       "source": "tax_taxon_id_ch",
       "references": null,
       "allow_nil?": true,
@@ -183,7 +203,7 @@
     {
       "default": "nil",
       "size": null,
-      "type": "text",
+      "type": "bigint",
       "source": "tax_taxon_id",
       "references": null,
       "allow_nil?": true,
@@ -534,7 +554,27 @@
       "default": "nil",
       "size": null,
       "type": "map",
+      "source": "import_data",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "map",
       "source": "extra_data",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "map",
+      "source": "errors",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -564,10 +604,10 @@
       "default": "nil",
       "size": null,
       "type": "uuid",
-      "source": "record_id",
+      "source": "collection_id",
       "references": {
-        "name": "encoded_records_record_id_fkey",
-        "table": "records",
+        "name": "records_collection_id_fkey",
+        "table": "collections",
         "schema": "public",
         "multitenancy": {
           "global": null,
@@ -586,20 +626,48 @@
       },
       "allow_nil?": false,
       "generated?": false,
-      "primary_key?": true
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "bigint",
+      "source": "encoder_job_id",
+      "references": {
+        "name": "records_encoder_job_id_fkey",
+        "table": "oban_jobs",
+        "schema": "public",
+        "multitenancy": {
+          "global": null,
+          "strategy": null,
+          "attribute": null
+        },
+        "primary_key?": true,
+        "destination_attribute": "id",
+        "on_delete": null,
+        "deferrable": false,
+        "match_type": null,
+        "match_with": null,
+        "on_update": null,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null
+      },
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
     }
   ],
-  "table": "encoded_records",
-  "hash": "C892488D0B48B76677EAFEDDEFC5EE9CDD279E20714BA1BF326C2DE667826D51",
+  "table": "records",
+  "hash": "7C3C6DCB8D8A557AAF971A89E8F00BBF6130B4F28C513E030C3A56CBB3908ADC",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [
     {
-      "name": "record_mte_material_entity_id",
+      "name": "collection_mte_material_entity_id",
       "keys": [
-        "record_id",
+        "collection_id",
         "mte_material_entity_id"
       ],
-      "index_name": "encoded_records_record_mte_material_entity_id_index",
+      "index_name": "records_collection_mte_material_entity_id_index",
       "base_filter": null
     }
   ],

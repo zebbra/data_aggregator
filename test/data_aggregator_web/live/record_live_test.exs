@@ -38,9 +38,9 @@ defmodule DataAggregatorWeb.RecordLiveTest do
       {:ok, show_live, _html} = live(conn, ~p"/records")
 
       assert show_live
-             |> element("tbody > tr > td", record.tax_scientific_name)
+             |> element("tbody > tr > td", record.mte_material_entity_id)
              |> render_click() =~
-               record.tax_scientific_name
+               record.mte_material_entity_id
     end
   end
 

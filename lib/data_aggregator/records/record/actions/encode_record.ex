@@ -4,6 +4,7 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   """
   alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
+  alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
   alias DataAggregator.Records.Record
 
@@ -26,25 +27,11 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
     try do
       Logger.info("Encoding record with catalog: #{to_string(catalog)}")
 
-      # the record which will be encoded, whith it's state set to `:encoding`
-      record_to_encode = set_encoding_state(record)
-
       # process the encoding with the passed catalog
-      result = Strategy.encode(record_to_encode, catalog)
-
-      # extract the record `Record.t()` from the encoding result
-      encoded_record = get_record(result)
-
-      # extract the failed record `Record.t()` from the encoding result
-      failed_record = handle_failed_record(result, record_to_encode)
-
-      # extract the error from the encoding result
-      error = get_error(result)
-
-      # set the final encoding state of the processed record and pattern match the result for returning
-      %{success: success, failed: failed} = set_final_state(failed_record, encoded_record)
-
-      encoding_result = {:ok, %{error: error, encoded_record: success, failed_record: failed}}
+      encoding_result =
+        set_encoding_state(record)
+        |> Strategy.encode(catalog)
+        |> update_state()
 
       Logger.info(
         "Encoding for record #{record.id} with catalog: #{to_string(catalog)} finished with result: #{inspect(encoding_result)}}"
@@ -57,18 +44,45 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
           "Encoding for record #{record.id} with catalog: #{to_string(catalog)} failed, due to: #{inspect(error)}"
         )
 
+        store_error(record.id, catalog, error)
+        |> set_failed_state()
+
         {:error, error}
     end
   end
 
   # set the state the processed record to `:encoded` or `:failed` and return it
-  @spec set_final_state(Record.t(), Record.t()) ::
-          %{success: Record.t(), failed: Record.t()}
-  defp set_final_state(failed_record, encoded_record) do
-    case failed_record do
-      nil -> %{success: set_encoded_state(encoded_record), failed: nil}
-      _ -> %{success: nil, failed: set_failed_state(failed_record)}
+  @spec update_state(EncodingResult.t()) ::
+          {:ok, Record.t()} | {:error, any()}
+  defp update_state(encoding_result) do
+    case encoding_result do
+      {:ok, encoded_record} ->
+        record = get_record(encoded_record)
+        {:ok, set_encoded_state(record)}
+
+      {:error, error} ->
+        throw(error)
     end
+  end
+
+  # returns the encoded record from the result, or nil, if there was an error
+  @spec get_record(EncodedRecord.t()) ::
+          Record.t()
+  defp get_record(encoded_record) do
+    with_record = Records.load!(encoded_record, [:record], lazy?: true)
+    with_record.record
+  end
+
+  # store error to record
+  @spec store_error(String.t(), atom(), any()) :: Record.t()
+  defp store_error(record_id, catalog, error) do
+    record = Record.get_by_id!(record_id)
+
+    encoding_error = Map.put_new(%{}, catalog, error)
+
+    errors = Map.put_new(record.errors || %{}, :encoding, encoding_error)
+
+    Record.update!(record, %{errors: errors})
   end
 
   # update state of records to `:encoding`
@@ -87,46 +101,5 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   @spec set_failed_state(Record.t()) :: Record.t()
   defp set_failed_state(record) do
     Record.set_failed!(record)
-  end
-
-  # store error to record
-  @spec store_error(String.t(), any()) :: Record.t()
-  defp store_error(record_id, error) do
-    record = Record.get_by_id!(record_id)
-    errors = Map.put(record.errors || %{}, :encoding, error)
-
-    Record.update!(record, %{errors: errors})
-  end
-
-  # returns the error from the result, or nil, if there was no error
-  @spec get_error({:error, any()} | {:ok, EncodedRecord.t()}) :: any() | nil
-  defp get_error(result) do
-    case result do
-      {:error, error} -> error
-      _ -> nil
-    end
-  end
-
-  # returns the encoded record from the result, or nil, if there was an error
-  @spec get_record({:error, any()} | {:ok, EncodedRecord.t()}) :: Record.t() | nil
-  defp get_record(result) do
-    case result do
-      {:ok, encoded_record} ->
-        with_record = Records.load!(encoded_record, [:record], lazy?: true)
-        with_record.record
-
-      {:error, _error} ->
-        nil
-    end
-  end
-
-  # returns the original record, to indicate, that it was failed to encode, and nil, if there was no error
-  @spec handle_failed_record({:error, any()} | {:ok, EncodedRecord.t()}, Record.t()) ::
-          Record.t() | nil
-  defp handle_failed_record(result, record_to_encode) do
-    case get_error(result) do
-      nil -> nil
-      error -> store_error(record_to_encode.id, error)
-    end
   end
 end

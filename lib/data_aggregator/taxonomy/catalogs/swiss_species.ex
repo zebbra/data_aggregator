@@ -5,6 +5,10 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpecies do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias __MODULE__
+
+  @type t :: %SwissSpecies{}
+
   attributes do
     uuid_attribute :id, prefix: "spc"
 
