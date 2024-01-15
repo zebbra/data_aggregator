@@ -182,10 +182,10 @@ defmodule DataAggregator.MixProject do
       {:bandit, "~> 1.1.0"},
       {:phoenix, "~> 1.7.7"},
       {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_html, "~> 3.3"},
+      {:phoenix_html, "~> 4.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.20.1"},
-      {:phoenix_storybook, "~> 0.5.0"},
+      {:phoenix_storybook, "~> 0.6.0"},
 
       # Ash Framework
       {:ash, "~> 2.13"},

@@ -9,7 +9,7 @@ defmodule Storybook.Components.Input do
   def template do
     """
     <.simple_form :let={f} for={%{}} as={:story} class="w-full">
-      <.lsb-variation-group field={f[:field]}/>
+      <.psb-variation-group field={f[:field]}/>
     </.simple_form>
     """
   end

@@ -11,8 +11,8 @@ defmodule Storybook.Components.Flash do
   def template do
     """
     <div class="bg-base-100 rounded p-6" data-theme={@theme}>
-      <.button phx-click={show("#:variation_id")} lsb-code-hidden label="Open flash" />
-      <.lsb-variation />
+      <.button phx-click={show("#:variation_id")} psb-code-hidden label="Open flash" />
+      <.psb-variation />
     </div>
     """
   end
