@@ -63,7 +63,7 @@ jobs:
             deps
             _build
             priv/plts
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock', '**/.tool-versions') }}
 
       - run: mix assets.setup
       - run: mix assets.build
