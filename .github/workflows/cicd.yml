@@ -47,7 +47,7 @@ jobs:
             deps
             _build
             priv/plts
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock', '.tool-versions') }}
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock', '**/.tool-versions') }}
           restore-keys: |
             ${{ runner.os }}-mix-
 
