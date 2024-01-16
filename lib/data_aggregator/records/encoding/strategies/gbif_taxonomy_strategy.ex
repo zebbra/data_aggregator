@@ -8,29 +8,17 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
+  alias DataAggregator.Taxonomy.Catalog
 
   # the input attributes are the attributes that will be used to build the request body.
   # the first element is the attribute on the encoded record and the second
   # element is the attribute to be used in the request body
-  @input_attributes [
-    {:tax_scientific_name, :name},
-    {:tax_kingdom, :kingdom}
-  ]
+  @input_attributes Catalog.get_input_attributes(:gbif_taxonomy)
 
   # the output attributes are the attributes that will be updated on the encoded record.
   # the first element is the attribute on the encoded record and the second
   # element is the attribute on the gbif response
-  @output_attributes [
-    {:tax_kingdom, :kingdom},
-    {:tax_phylum, :phylum},
-    {:tax_class, :class},
-    {:tax_family, :family},
-    {:tax_order, :order},
-    {:tax_genus, :genus},
-    {:tax_scientific_name, :scientificName},
-    {:tax_taxon_id, :key},
-    {:tax_taxon_id, :acceptedUsageKey}
-  ]
+  @output_attributes Catalog.get_output_attributes(:gbif_taxonomy)
 
   # the url to the gbif taxonomy api
   @match_api_url "https://api.gbif.org/v1/species/match"
@@ -172,6 +160,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
         "For this species name we could not find a matching taxonomy. matchType #{inspect(body.matchType)} is not accepted"
       )
 
+  # the gbif api returns a confidence value between 0 and 100,
+  # we accept items only if the confidence is >= @min_confidence
   @spec is_confident(map()) :: boolean()
   defp is_confident(body) when body.confidence >= @min_confidence, do: true
 

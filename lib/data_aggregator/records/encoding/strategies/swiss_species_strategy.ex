@@ -8,18 +8,16 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
+  alias DataAggregator.Taxonomy.Catalog
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
+
+  # the input attributes are the attributes that will be used to query the catalog, so far we only use the tax_taxon_id
+  @input_attribute hd(Catalog.get_input_dwc_attributes(:swiss_species))
 
   # the output attributes are the attributes that will be updated on the encoded record.
   # the first element is the attribute on the encoded record and the second
   # element is the attribute on returning data structure of the catalog
-  @output_attributes [
-    {:tax_taxon_id_ch, :taxon_id_ch},
-    {:tax_accepted_name_usage, :accepted_name},
-    {:tax_accepted_name_usage_id, :accepted_usage_key},
-    {:tax_scientific_name, :scientific_name},
-    {:tax_taxon_rank, :rank}
-  ]
+  @output_attributes Catalog.get_output_attributes(:swiss_species)
 
   @doc """
     lookup the swiss species registry and return the encoded record
@@ -44,7 +42,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
 
   @spec process_record(EncodedRecord.t()) :: EncodingResult.t()
   defp process_record(record) do
-    case SwissSpecies.get_by_usage_key(record.tax_taxon_id) do
+    case SwissSpecies.get_by_usage_key(Map.get(record, @input_attribute)) do
       {:ok, result} ->
         {:ok,
          result
@@ -52,7 +50,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
          |> Strategy.update_encoded_record(record, @output_attributes)}
 
       {:error, %Ash.Error.Query.NotFound{}} ->
-        {:error, "no matching record found for taxon_id: #{record.tax_taxon_id}"}
+        Logger.warning("no matching record found for taxon_id: #{record.tax_taxon_id}")
+
+        {:ok, record}
 
       {:error, error} ->
         {:error, error}

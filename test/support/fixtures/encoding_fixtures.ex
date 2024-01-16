@@ -13,6 +13,8 @@ defmodule DataAggregator.EncodingFixtures do
 
   import DataAggregator.RecordsFixtures
 
+  require Logger
+
   @encoded_record_defaults %{
     mte_material_entity_id: "encoded_record1",
     tax_scientific_name: "Oenanthea Pallas",
@@ -212,6 +214,14 @@ defmodule DataAggregator.EncodingFixtures do
          scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
          rank: "SPECIES"
        }}
+    end)
+  end
+
+  def expect_failing_swiss_species_api_call do
+    expect(SwissSpecies, :get_by_usage_key, fn _key ->
+      Logger.error("unknown error occured")
+
+      {:error, %Ash.Error.Unknown{}}
     end)
   end
 end

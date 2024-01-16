@@ -26,6 +26,7 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
 
   alias DataAggregator.Records
   alias DataAggregator.Records.Record
+  alias DataAggregator.Taxonomy.Catalog
 
   require Logger
 
@@ -34,12 +35,22 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
     with {:ok, record} <- Record.get_by_id(id) do
       Logger.info("Encoding for Record #{inspect(record.id)} in progress...")
 
-      with {:ok, record} <- Record.encode(record, :gbif_taxonomy),
-           {:ok, record} <- Record.encode(record, :swiss_species) do
-        {:ok, record}
-      else
-        {:error, error} -> {:error, error}
-      end
+      # process the encoding with the passed catalog.
+      # do as long as there is no error, then stop and return.
+      # if there is no error, a success tuple is returned containing the encoded record
+      Enum.reduce_while(
+        Catalog.get_catalogs(),
+        {:ok, record},
+        fn catalog, {:ok, acc} ->
+          case Record.encode(acc, catalog) do
+            {:ok, encoded_record} ->
+              {:cont, {:ok, encoded_record}}
+
+            {:error, error} ->
+              {:halt, {:error, error}}
+          end
+        end
+      )
     end
   end
 

@@ -47,19 +47,40 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       assert encoded_record.state === :encoded
     end
 
-    test "encode/2 for :swiss_species catalog which returns the failed_record and the error",
+    @tag run: true
+    test "encode/2 for :swiss_species catalog which returns ok but no matching record",
          %{invalid_record: invalid_record} do
-      {{:error, error}, logs} =
+      {{:ok, record}, logs} =
         with_log(fn -> Record.encode(invalid_record, :swiss_species) end)
 
       encoded_record = Record.get_by_id!(invalid_record.id)
 
-      assert encoded_record.state === :failed
-      assert error != nil
+      assert encoded_record.state === :encoded
+      assert record != nil
       assert logs =~ "no matching record found for taxon_id: 0"
+    end
 
-      assert encoded_record.errors |> Map.get("encoding") |> Map.get("swiss_species") =~
-               "no matching record found for taxon_id: 0"
+    test "encode/2 for :swiss_species catalog which returns an error", %{
+      invalid_record: invalid_record
+    } do
+      expect_failing_swiss_species_api_call()
+
+      {{:error, error}, logs} =
+        with_log(fn -> Record.encode(invalid_record, :swiss_species) end)
+
+      assert %Ash.Error.Unknown{} = error
+
+      assert logs =~ "unknown error occured"
+    end
+
+    test "encode/2 for :unknown catalog which returns an error", %{
+      correct_record: correct_record
+    } do
+      {{:error, error}, logs} =
+        with_log(fn -> Record.encode(correct_record, :unknown) end)
+
+      assert error === "no encoding strategy found for catalog: :unknown"
+      assert logs =~ "no encoding strategy found for catalog: :unknown"
     end
   end
 end
