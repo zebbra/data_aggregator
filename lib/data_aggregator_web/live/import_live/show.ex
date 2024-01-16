@@ -15,6 +15,7 @@ defmodule DataAggregatorWeb.ImportLive.Show do
     :validation_progress,
     :rows_valid_ratio,
     :rows_validated_count,
+    :mappings,
     :missing_mappings,
     :duration,
     :job,
