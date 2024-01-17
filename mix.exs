@@ -303,7 +303,8 @@ defmodule DataAggregator.MixProject do
       "repo.setup": [
         "repo.create",
         "repo.migrate",
-        "run priv/repo/seeds.exs"
+        "run priv/repo/seeds.exs",
+        "run priv/repo/catalogs/init.exs"
       ],
       "repo.reset": [
         "repo.drop",
@@ -311,6 +312,9 @@ defmodule DataAggregator.MixProject do
       ],
       "repo.lint": [
         "ash_postgres.generate_migrations --check"
+      ],
+      "catalogs.import": [
+        "run priv/repo/catalogs/init.exs"
       ],
 
       # Run tests

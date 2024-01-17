@@ -4,6 +4,7 @@
     "*.{heex,ex,exs}",
     "{config,lib,test}/**/*.{heex,ex,exs}",
     "priv/*/seeds.exs",
+    "priv/*/init.exs",
     "storybook/**/*.exs"
   ],
   import_deps: [
