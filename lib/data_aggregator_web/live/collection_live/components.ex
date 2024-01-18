@@ -62,13 +62,13 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
       state in [:unchanged] ->
         ~H"""
         <div :if={!assigns.small} class="badge badge-lg alert alert-info text-info gap-2">
-          <div class="hero-scale-solid"></div>
+          <div class="hero-information-circle"></div>
           <div>Unchanged</div>
         </div>
 
         <div :if={assigns.small} class="tooltip tooltip-info" data-tip="Unchanged">
           <div class="badge badge-sm alert alert-info text-info gap-2">
-            <div class="hero-scale-solid"></div>
+            <div class="hero-information-circle"></div>
           </div>
         </div>
         """

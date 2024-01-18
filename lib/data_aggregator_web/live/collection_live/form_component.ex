@@ -3,6 +3,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
 
   alias AshPhoenix.Form
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.CollectionType
 
   @impl true
   def update(assigns, socket) do
@@ -14,6 +15,13 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
 
   @impl true
   def render(assigns) do
+    assigns =
+      assign(
+        assigns,
+        :collection_types,
+        Enum.map(CollectionType.get_collection_types(), fn {_key, value} -> value end)
+      )
+
     ~H"""
     <div>
       <.modal_header
@@ -37,6 +45,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
           label={~t"Total items to digitize"m}
           placeholder="42042"
         />
+        <.input type="select" field={@form[:type]} options={@collection_types} prompt="Select a type" />
 
         <:actions>
           <.button

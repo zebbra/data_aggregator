@@ -7,8 +7,10 @@ defmodule DataAggregator.Records.Collection do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias DataAggregator.Records.CollectionType
+
   attributes do
-    uuid_attribute(:id, prefix: "col")
+    uuid_attribute :id, prefix: "col"
 
     attribute :items_to_digitize, :integer, allow_nil?: false, default: 0
     attribute :owner, :string, allow_nil?: false
@@ -25,8 +27,10 @@ defmodule DataAggregator.Records.Collection do
 
     attribute :mapping, :map
 
+    attribute :type, CollectionType, default: :other
+
     # allow sorting by inserted_at/updated_at
-    timestamps(private?: false, writable?: false)
+    timestamps private?: false, writable?: false
   end
 
   relationships do

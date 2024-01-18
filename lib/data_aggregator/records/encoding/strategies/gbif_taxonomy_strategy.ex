@@ -5,6 +5,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
   require Logger
 
+  alias DataAggregator.Records
+  alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
@@ -55,13 +57,15 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
   @spec build_request_params(EncodedRecord.t()) :: list()
   defp build_request_params(record) do
-    Enum.map(@input_attributes, fn {record_attribute, request_attribute} ->
-      response_value = Map.get(record, record_attribute, nil)
+    ([kingdom: get_kingdom_from_collection(record)] ++
+       Enum.map(@input_attributes, fn {record_attribute, request_attribute} ->
+         response_value = Map.get(record, record_attribute, nil)
 
-      if response_value != nil do
-        {request_attribute, response_value}
-      end
-    end)
+         if response_value != nil do
+           {request_attribute, response_value}
+         end
+       end))
+    |> Enum.filter(&(&1 !== nil))
   end
 
   @spec fetch_match_api(list()) :: Req.Response.t()
@@ -176,5 +180,16 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     Logger.error("Error while fetching gbif taxonomy api: #{inspect(error)}")
 
     throw(error)
+  end
+
+  @spec get_kingdom_from_collection(EncodedRecord.t()) :: String.t()
+  defp get_kingdom_from_collection(encoded_record) do
+    encoded_record = Records.load!(encoded_record, [:record], lazy?: true)
+    record = Records.load!(encoded_record.record, [:collection], lazy?: true)
+
+    Enum.find(CollectionType.get_collection_types(), fn {key, _value} ->
+      key == record.collection.type
+    end)
+    |> elem(1)
   end
 end

@@ -55,11 +55,10 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
     <.sidebar>
       <:header>
         <.sidebar_header sidebar_id={@slideover_id} class="sticky top-0">
-          <%= @record.id %>
+          <%= encoded_attribute(@record, :tax_scientific_name) %>
           <:subtitle>
-            <div><%= @record.tax_scientific_name %></div>
+            <div><%= encoded_attribute(@record, :tax_kingdom) %></div>
             <div><%= @record.collection.name %></div>
-            <div><%= @record.tax_kingdom %></div>
           </:subtitle>
         </.sidebar_header>
       </:header>

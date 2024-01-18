@@ -6,16 +6,7 @@
 >
   <.header class="top-16 sticky">
     <%= ~t"Listing Records"m %>
-    <:actions>
-      <.button
-        id="record-modal__button"
-        to={~p"/records/new?#{@current_path_params}"}
-        link_type="live_patch"
-        icon="hero-plus"
-        label={~t"New Record"m}
-        responsive
-      />
-    </:actions>
+    <:actions></:actions>
   </.header>
 
   <.datatable
@@ -70,9 +61,6 @@
       <div class="sr-only">
         <.link patch={~p"/records/#{record}"}><%= ~t"Show"m %></.link>
       </div>
-      <.link patch={~p"/records/#{record}/edit?#{@current_path_params}"}>
-        <%= ~t"Edit"m %>
-      </.link>
     </:action>
 
     <:action :let={{id, record}}>
