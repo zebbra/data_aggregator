@@ -5,7 +5,8 @@ defmodule DataAggregator.Records.Collection do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
+    notifiers: [Ash.Notifier.PubSub]
 
   alias DataAggregator.Records.CollectionType
 
@@ -105,6 +106,13 @@ defmodule DataAggregator.Records.Collection do
       primary? true
       argument :sort, :string, allow_nil?: true
     end
+  end
+
+  pub_sub do
+    module DataAggregator.PubSub
+    prefix "collection"
+
+    publish_all :update, ["updated", [:id, nil]]
   end
 
   code_interface do

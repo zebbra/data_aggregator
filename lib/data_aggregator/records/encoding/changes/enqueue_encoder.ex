@@ -19,7 +19,6 @@ defmodule DataAggregator.Records.Record.Changes.EnqueueEncoder do
     case insert_job(record) do
       {:ok, job} ->
         Logger.info("Enqueued record encoding job #{inspect(job.id)}")
-        # Changeset.change_attribute(changeset, :encoder_job_id, job.id)
         Changeset.manage_relationship(changeset, :encoder_job, job)
 
       {:error, error} ->
@@ -29,6 +28,8 @@ defmodule DataAggregator.Records.Record.Changes.EnqueueEncoder do
   end
 
   defp insert_job(%Record{id: id}) do
-    %{id: id} |> Record.Workers.Encoder.new() |> Oban.insert()
+    %{id: id}
+    |> Record.Workers.Encoder.new()
+    |> Oban.insert()
   end
 end

@@ -2,11 +2,20 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Components
 
+  alias DataAggregator.PubSub
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
+  alias Phoenix.LiveView.Socket
+
+  require Logger
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(%{"id" => id} = _params, _session, socket) do
+    socket =
+      socket
+      |> assign(:collection, get_collection(id))
+      |> subscribe_for_updates()
+
     {:ok, socket}
   end
 
@@ -23,6 +32,23 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
     {:noreply, socket}
   end
 
+  defp subscribe_for_updates(socket) do
+    with true <- connected?(socket),
+         %Socket{assigns: %{collection: collection}} <- socket,
+         %Collection{id: id} <- collection,
+         topic <- "collection:updated:#{id}" do
+      PubSub.subscribe(topic)
+      socket
+    else
+      false ->
+        socket
+
+      other ->
+        Logger.warning("Unable to subscribe for collection updates: #{other}")
+        socket
+    end
+  end
+
   defp apply_action(socket, :show, _params) do
     assign(socket, :page_title, ~t"Show Collection"m)
   end
@@ -31,20 +57,33 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
     assign(socket, :page_title, ~t"Import Records"m)
   end
 
-  @impl true
-  def handle_event("encode_collection", _params, socket) do
-    collection = socket.assigns.collection
+  @spec queue(Record.t()) :: :ok
+  defp queue(record) do
+    Record.enqueue_encoder!(record)
 
-    Stream.chunk_every(collection.records, 10)
-    |> Stream.map(&queue_chunk(&1))
-    |> Stream.run()
-
-    {:noreply, assign(socket, :encoding_state, get_encoding_state(collection))}
+    :ok
   end
 
-  @spec queue_chunk([Record.t()]) :: :ok
-  defp queue_chunk(records) do
-    Enum.each(records, &Record.enqueue_encoder(&1))
+  @impl true
+  def handle_event("encode_collection", _params, socket) do
+    live_view = self()
+
+    Task.start(fn ->
+      collection = socket.assigns.collection
+
+      collection.records
+      |> Task.async_stream(&queue(&1))
+      |> Stream.run()
+
+      # we update the encoding state after the encoding has been queued
+      send(live_view, {:encoding_state, :encoding})
+    end)
+
+    {:noreply, assign(socket, :encoding_state, :encoding)}
+  end
+
+  def handle_info({:encoding_state, state}, socket) do
+    {:noreply, assign(socket, encoding_state: state)}
   end
 
   @impl true
@@ -162,11 +201,11 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
       collection.records_count_encoded == collection.records_count ->
         :encoded
 
-      collection.records_count_failed > 0 ->
-        :failed
-
       collection.records_count_encoding > 0 or collection.records_count_encoding_queued > 0 ->
         :encoding
+
+      collection.records_count_failed > 0 ->
+        :failed
 
       collection.records_count > collection.records_count_encoded ->
         :incomplete

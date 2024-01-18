@@ -66,6 +66,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
          end
        end))
     |> Enum.filter(&(&1 !== nil))
+    |> Enum.uniq()
   end
 
   @spec fetch_match_api(list()) :: Req.Response.t()
@@ -84,6 +85,13 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
       {:ok, response} -> response
       {:error, error} -> throw_error(error)
     end
+
+    # to get a response for testing purposes
+    # %{
+    #   status: 200,
+    #   headers: "",
+    #   body: nil
+    # }
   end
 
   @spec parse_response(Req.Response.t()) :: map()

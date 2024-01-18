@@ -78,7 +78,7 @@ defmodule DataAggregator.Records.Record do
     default_initial_state :imported
 
     transitions do
-      transition :set_imported, from: [:encoded, :failed, :imported], to: :imported
+      transition :set_imported, from: [:encoded, :failed, :encoding, :imported], to: :imported
       transition :enqueue_encoder, from: [:imported, :encoded, :failed, :iencoded], to: :queued
 
       transition :set_encoding,
