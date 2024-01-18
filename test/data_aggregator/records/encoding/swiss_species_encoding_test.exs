@@ -47,7 +47,6 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       assert encoded_record.state === :encoded
     end
 
-    @tag run: true
     test "encode/2 for :swiss_species catalog which returns ok but no matching record",
          %{invalid_record: invalid_record} do
       {{:ok, record}, logs} =
