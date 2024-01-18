@@ -1,5 +1,3 @@
-alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
-
 # Script for populating the database. You can run it as:
 #
 #     mix run priv/repo/seeds.exs

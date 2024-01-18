@@ -3,7 +3,7 @@ defmodule DataAggregator.DarwinCore.Schema.Category do
   A Darwin Core category.
   """
 
-  defstruct [:name, attributes: [], description: nil]
+  defstruct [:name, label: "", attributes: [], description: nil]
 
   alias Ash.Resource.Attribute
 

@@ -112,17 +112,4 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     params = Map.reject(params, &(elem(&1, 1) in ["", nil]))
     push_patch(socket, to: ~p"/records?#{params}", replace: true)
   end
-
-  @spec encoded_attribute(Record.t(), atom()) :: any()
-  def encoded_attribute(record, attribute) do
-    if record.encoded_record != nil do
-      record.encoded_record |> Map.get(attribute) |> value_for_record_attribute()
-    else
-      "-"
-    end
-  end
-
-  defp value_for_record_attribute(value) when is_nil(value), do: "-"
-  defp value_for_record_attribute(value) when value === "", do: "-"
-  defp value_for_record_attribute(value), do: value
 end

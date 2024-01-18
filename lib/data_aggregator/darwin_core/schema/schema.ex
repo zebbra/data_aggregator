@@ -96,19 +96,70 @@ defmodule DataAggregator.DarwinCore.Schema do
   @categories [
     %Category{
       name: :prs,
+      label: "Person",
       description: "Attributes related to a person",
       attributes: @prs_attributes
     },
-    %Category{name: :eve, attributes: @eve_attributes},
-    %Category{name: :idf, attributes: @idf_attributes},
-    %Category{name: :ref, attributes: @ref_attributes},
-    %Category{name: :rrp, attributes: @rrp_attributes},
-    %Category{name: :tax, attributes: @tax_attributes},
-    %Category{name: :spp, attributes: @spp_attributes},
-    %Category{name: :loc, attributes: @loc_attributes},
-    %Category{name: :occ, attributes: @occ_attributes},
-    %Category{name: :mte, attributes: @mte_attributes},
-    %Category{name: :mts, attributes: @mts_attributes}
+    %Category{
+      name: :eve,
+      label: "Event",
+      description: "The circumstances of the extraction",
+      attributes: @eve_attributes
+    },
+    %Category{
+      name: :idf,
+      label: "Identification",
+      description: "Characteristics of the item",
+      attributes: @idf_attributes
+    },
+    %Category{
+      name: :ref,
+      label: "Reference",
+      description: "Literature and mentions",
+      attributes: @ref_attributes
+    },
+    %Category{
+      name: :rrp,
+      label: "Resource Relationship",
+      description: "Refernces to other resources",
+      attributes: @rrp_attributes
+    },
+    %Category{
+      name: :tax,
+      label: "Taxon",
+      description: "Classification structure of the item",
+      attributes: @tax_attributes
+    },
+    %Category{
+      name: :spp,
+      label: "Species Profile",
+      description: "Life stage and characteristics of the species",
+      attributes: @spp_attributes
+    },
+    %Category{
+      name: :loc,
+      label: "Location",
+      description: "Geographical description",
+      attributes: @loc_attributes
+    },
+    %Category{
+      name: :occ,
+      label: "Occurence",
+      description: "Properties of the recorded observation",
+      attributes: @occ_attributes
+    },
+    %Category{
+      name: :mte,
+      label: "Material Entity",
+      description: "Distinguishing marks of the specimen",
+      attributes: @mte_attributes
+    },
+    %Category{
+      name: :mts,
+      label: "Material Sample",
+      description: "Spcimens documented (bio)chemical elements",
+      attributes: @mts_attributes
+    }
   ]
 
   @moduledoc """
@@ -177,7 +228,7 @@ defmodule DataAggregator.DarwinCore.Schema do
           {name, value}
         end
 
-      category_label = category.name |> Atom.to_string() |> String.upcase()
+      category_label = category.description
       {category_label, options}
     end
   end

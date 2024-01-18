@@ -144,7 +144,9 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     Map.take(encoded_record, Catalog.get_input_dwc_attributes(catalog))
   end
 
-  # create an encoded record if it does not exist yet
+  @doc """
+    create an encoded record if it does not exist yet
+  """
   @spec create_encoded_record(Record.t()) :: EncodedRecord.t()
   def create_encoded_record(record) do
     encoded_record =

@@ -10,11 +10,10 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
   def encoding_state(assigns) do
     state = assigns.state || assigns.record.state
 
-    assigns = assign(assigns, :errors, get_errors(assigns.record))
     assigns = assign(assigns, :state, assigns.state || assigns.record.state)
 
     cond do
-      state in [:encoded] ->
+      state in [:encoded, :success] ->
         ~H"""
         <div
           :if={!assigns.small}
@@ -31,15 +30,15 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
         </div>
         """
 
-      state in [:failed] ->
+      state in [:failed, :error] ->
         ~H"""
-        <div :if={!assigns.small} class="tooltip tooltip-error" data-tip={@errors}>
+        <div :if={!assigns.small} class="tooltip tooltip-error" data-tip="Error occured">
           <div class="badge badge-lg alert alert-error bg-error/10 text-error gap-2">
             <div class="hero-x-circle-solid"></div>
             <div>Failed</div>
           </div>
         </div>
-        <div :if={assigns.small} class="tooltip tooltip-error" data-tip={@errors}>
+        <div :if={assigns.small} class="tooltip tooltip-error" data-tip="Error">
           <div class="badge badge-sm alert alert-error bg-error/10 text-error gap-2">
             <div class="hero-x-circle-solid"></div>
           </div>
@@ -56,6 +55,20 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
         <div :if={assigns.small} class="tooltip tooltip-info" data-tip="Processing">
           <div class="badge badge-sm alert alert-info gap-2 text-slate-500">
             <div class="hero-cog-6-tooth-solid animate-spin"></div>
+          </div>
+        </div>
+        """
+
+      state in [:unchanged] ->
+        ~H"""
+        <div :if={!assigns.small} class="badge badge-lg alert alert-info text-info gap-2">
+          <div class="hero-scale-solid"></div>
+          <div>Unchanged</div>
+        </div>
+
+        <div :if={assigns.small} class="tooltip tooltip-info" data-tip="Unchanged">
+          <div class="badge badge-sm alert alert-info text-info gap-2">
+            <div class="hero-scale-solid"></div>
           </div>
         </div>
         """
@@ -87,18 +100,6 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
           </div>
         </div>
         """
-    end
-  end
-
-  defp get_errors(record) do
-    if record != nil do
-      errors = Map.get(record.errors || %{}, "encoding")
-
-      Enum.map_join(errors || [], "\n", fn {key, value} ->
-        "#{key}: #{value}"
-      end)
-    else
-      "Encoding failed"
     end
   end
 

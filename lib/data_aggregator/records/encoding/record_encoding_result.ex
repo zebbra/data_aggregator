@@ -39,6 +39,13 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
   actions do
     defaults [:read, :destroy]
 
+    read :filter_by_record do
+      argument :record_id, :string, allow_nil?: false
+
+      filter expr(record_id == ^arg(:record_id))
+      prepare build(sort: [inserted_at: :desc])
+    end
+
     create :create do
       primary? true
       argument :record, Record
@@ -61,6 +68,7 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
+    define :filter_by_record, args: [:record_id]
   end
 
   postgres do

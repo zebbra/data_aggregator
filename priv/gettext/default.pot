@@ -257,34 +257,16 @@ msgctxt "DataAggregatorWeb.RecordLive.FormComponent"
 msgid "Use this form to manage records in your database."
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/preview_component.ex:57
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:103
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "Close"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/preview_component.ex:67
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:113
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "Edit Record"
-msgstr ""
-
-#: lib/data_aggregator_web/live/record_live/preview_component.ex:51
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
-msgid "ID"
-msgstr ""
-
-#: lib/data_aggregator_web/live/record_live/preview_component.ex:53
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
-msgid "Scientific Name"
-msgstr ""
-
-#: lib/data_aggregator_web/live/record_live/preview_component.ex:46
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
-msgid "This is a record from your database."
 msgstr ""
 
 #: lib/data_aggregator_web/live/record_live/show.ex:31
@@ -304,12 +286,6 @@ msgstr ""
 #: lib/data_aggregator_web/live/record_live/form_component.ex:36
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.FormComponent"
-msgid "Material Entity ID"
-msgstr ""
-
-#: lib/data_aggregator_web/live/record_live/preview_component.ex:52
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
 msgid "Material Entity ID"
 msgstr ""
 
@@ -809,4 +785,58 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.ImportLive.Show"
 msgid "Edit Mapping"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:90
+#, elixir-autogen, elixir-format
+msgid "Catalog"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:96
+#, elixir-autogen, elixir-format
+msgid "Created"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:82
+#, elixir-autogen, elixir-format
+msgid "Encoded"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:79
+#, elixir-autogen, elixir-format
+msgid "Imported"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:76
+#, elixir-autogen, elixir-format
+msgid "Name"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:93
+#, elixir-autogen, elixir-format
+msgid "State"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:69
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
+msgid "Attributes of the record"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:70
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
+msgid "Characteristics according to the darwin core standard"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:88
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
+msgid "Record encodings"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/preview_component.ex:88
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.PreviewComponent"
+msgid "Results by catalog"
 msgstr ""

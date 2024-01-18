@@ -1,6 +1,12 @@
 defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
   use DataAggregatorWeb, :html
+  use DataAggregatorWeb.CollectionLive.Components
+  use Phoenix.Component
 
+  import DataAggregatorWeb.Helpers
+
+  alias DataAggregator.DarwinCore.Schema
+  alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
 
   attr :record, Record, required: true
@@ -32,26 +38,66 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
   end
 
   attr :record, Record, required: true
+  attr :record_encoding_results, :any, required: false
   attr :current_path_params, :string, required: true
   attr :slideover_id, :string, default: nil
   attr :modal_id, :string, default: nil
 
   defp preview_content(assigns) do
+    assigns =
+      assign(
+        assigns,
+        record_encoding_results: RecordEncodingResult.filter_by_record!(assigns.record.id),
+        attrs_in_categories: attrs_by_category_in_layers(assigns.record)
+      )
+
     ~H"""
     <.sidebar>
       <:header>
         <.sidebar_header sidebar_id={@slideover_id} class="sticky top-0">
           <%= @record.id %>
           <:subtitle>
-            <%= ~t"This is a record from your database."m %>
+            <div><%= @record.tax_scientific_name %></div>
+            <div><%= @record.collection.name %></div>
+            <div><%= @record.tax_kingdom %></div>
           </:subtitle>
         </.sidebar_header>
       </:header>
-      <.list>
-        <:item title={~t"ID"m}><%= @record.id %></:item>
-        <:item title={~t"Material Entity ID"m}><%= @record.mte_material_entity_id %></:item>
-        <:item title={~t"Scientific Name"m}><%= @record.tax_scientific_name %></:item>
-      </.list>
+      <div class="divide-base-content/10 w-full divide-y">
+        <.heading
+          size="lg"
+          title={~t"Attributes of the record"m}
+          subtitle={~t"Characteristics according to the darwin core standard"m}
+        />
+        <%= for category <- @attrs_in_categories do %>
+          <div class="pt-3">
+            <.heading size="sm" title={category.label} subtitle={category.description} />
+            <.table id="data_layers-table" rows={category.attributes}>
+              <:col :let={attribute} label={~t"Name"}>
+                <%= attribute.name %>
+              </:col>
+              <:col :let={attribute} label={~t"Imported"}>
+                <%= attribute.imported %>
+              </:col>
+              <:col :let={attribute} label={~t"Encoded"}>
+                <%= attribute.encoded %>
+              </:col>
+            </.table>
+          </div>
+        <% end %>
+        <.heading size="lg" title={~t"Record encodings"m} subtitle={~t"Results by catalog"m} />
+        <.table id="encoding_result-table" rows={@record_encoding_results}>
+          <:col :let={result} label={~t"Catalog"}>
+            <%= result.catalog %>
+          </:col>
+          <:col :let={result} label={~t"State"}>
+            <.encoding_state state={result.state} small={true} />
+          </:col>
+          <:col :let={result} label={~t"Created"}>
+            <%= format_datetime(result.inserted_at, format: :short) %>
+          </:col>
+        </.table>
+      </div>
       <:footer>
         <.button
           label={~t"Close"m}
@@ -68,6 +114,42 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
         />
       </:footer>
     </.sidebar>
+    """
+  end
+
+  defp attrs_by_category_in_layers(record) do
+    for category <- Schema.categories() do
+      attributes =
+        for attribute <- category.attributes do
+          %{
+            name: attribute.name,
+            imported:
+              imported_attribute(
+                record,
+                String.to_existing_atom("#{category.name}_#{attribute.name}")
+              ),
+            encoded:
+              encoded_attribute(
+                record,
+                String.to_existing_atom("#{category.name}_#{attribute.name}")
+              )
+          }
+        end
+
+      %{label: category.label, description: category.description, attributes: attributes}
+    end
+  end
+
+  attr :size, :string, values: ["xs", "sm", "lg", "xl"], default: "lg"
+  attr :title, :string, required: true
+  attr :subtitle, :string, required: false
+
+  def heading(assigns) do
+    ~H"""
+    <div class="border-b- p-4">
+      <h4 class={"text-#{@size} text-base-content font-bold"}><%= @title %></h4>
+      <p :if={@subtitle} class="text-base-content/50 text-sm"><%= @subtitle %></p>
+    </div>
     """
   end
 end
