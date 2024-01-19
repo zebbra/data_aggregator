@@ -26,7 +26,7 @@ defmodule DataAggregator.Records.Collection do
 
     attribute :description, :string
 
-    attribute :mapping, :map
+    attribute :import_mapping, {:array, :map}
 
     attribute :type, CollectionType, default: :other
 
@@ -106,6 +106,10 @@ defmodule DataAggregator.Records.Collection do
       primary? true
       argument :sort, :string, allow_nil?: true
     end
+
+    update :update_import_mapping do
+      accept [:import_mapping]
+    end
   end
 
   pub_sub do
@@ -121,6 +125,7 @@ defmodule DataAggregator.Records.Collection do
     define :create, action: :create
     define :read_all, action: :read
     define :update, action: :update
+    define :update_import_mapping, args: [:import_mapping]
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
   end

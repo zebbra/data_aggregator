@@ -96,8 +96,8 @@ defmodule DataAggregatorWeb.ImportLive.Show do
     """
   end
 
-  attr :import, Import, required: true
-  attr :action, :atom, default: nil
+  attr(:import, Import, required: true)
+  attr(:action, :atom, default: nil)
 
   def import_header(assigns) do
     ~H"""
@@ -132,8 +132,8 @@ defmodule DataAggregatorWeb.ImportLive.Show do
     """
   end
 
-  attr :import, :map, required: true
-  attr :action, :atom, required: true
+  attr(:import, :map, required: true)
+  attr(:action, :atom, required: true)
 
   def render_action(%{import: import, action: action} = assigns)
       when action in [:show, :mappings] do
@@ -211,11 +211,22 @@ defmodule DataAggregatorWeb.ImportLive.Show do
           <:subtitle>Map columns to record attributes</:subtitle>
 
           <:actions>
+            <.button
+              class="tooltip tooltip-ghost tooltip-left"
+              color="secondary"
+              data-tip={~t"Ruse mapping from previous imports of this collection"m}
+              phx-click="apply:collection:mapping"
+              icon="hero-arrow-path-rounded-square"
+              disabled={@import.collection.import_mapping == nil}
+            >
+              <%= ~t"Reuse Mapping"m %>
+            </.button>
             <.link
-              class="btn btn-primary btn-sm rounded-full"
+              class="btn btn-primary btn-md rounded-full tooltip tooltip-primary tooltip-left pt-4"
+              data-tip={~t"Create a new mapping for this collection"m}
               patch={~p"/imports/#{@import}/mappings"}
             >
-              <%= ~t"Edit Mapping"m %>
+              <%= ~t"Create Mapping"m %>
             </.link>
           </:actions>
         </.header>
@@ -273,6 +284,23 @@ defmodule DataAggregatorWeb.ImportLive.Show do
         {:error, error} ->
           Logger.error(error)
           put_flash(socket, :error, ~t"Import could not be started"m)
+      end
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("apply:collection:mapping", _params, socket) do
+    %Socket{assigns: %{import: import}} = socket
+
+    socket =
+      case Import.update_mapping(import, import.collection.import_mapping) do
+        {:ok, import} ->
+          assign(socket, :import, import)
+
+        {:error, error} ->
+          Logger.error(error)
+          put_flash(socket, :error, ~t"Mapping from collection could not be used"m)
       end
 
     {:noreply, socket}
