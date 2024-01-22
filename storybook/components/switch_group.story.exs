@@ -21,7 +21,7 @@ defmodule Storybook.Components.SwitchGroup do
           Available to hire
         </.switch_label>
       </span>
-      <.lsb-variation/>
+      <.psb-variation/>
       <Switch.switch_description
         id=":variation_id__description"
         as="span"

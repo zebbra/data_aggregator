@@ -47,7 +47,7 @@ jobs:
             deps
             _build
             priv/plts
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock', '**/.tool-versions') }}
           restore-keys: |
             ${{ runner.os }}-mix-
 
@@ -63,7 +63,7 @@ jobs:
             deps
             _build
             priv/plts
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock', '**/.tool-versions') }}
 
       - run: mix assets.setup
       - run: mix assets.build
@@ -75,8 +75,6 @@ jobs:
     name: Build docker image
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -104,7 +102,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: true
+          push: ${{ github.ref == 'refs/heads/main'}}
           platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

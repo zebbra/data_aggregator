@@ -9,7 +9,7 @@ defmodule Storybook.Components.Sidebar do
   def template do
     """
     <aside class="w-full h-screen">
-      <.lsb-variation/>
+      <.psb-variation/>
     </aside>
     """
   end
