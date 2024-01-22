@@ -2,7 +2,7 @@ import Config
 
 # Configure your database
 #
-database_url = "ecto://postgres:postgres@localhost/data_aggregator_test"
+database_url = "ecto://postgres:postgres@localhost:5432/data_aggregator_test"
 
 config :data_aggregator, DataAggregator.Repo,
   url: System.get_env("DATABASE_URL") || database_url,

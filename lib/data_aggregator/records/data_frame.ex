@@ -119,7 +119,7 @@ defmodule DataAggregator.Records.DataFrame do
   def detect_format_from_content(filename) do
     [header] =
       filename
-      |> File.stream!([], 6)
+      |> File.stream!(6)
       |> Enum.take(1)
 
     case header do
