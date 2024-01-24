@@ -10,15 +10,27 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      patch-updates:
+        update-types: ["patch"]
 
   # Enable version updates for npm
   - package-ecosystem: "npm"
     directory: "/assets"
     schedule:
       interval: "weekly"
+    groups:
+      minor-updates:
+        update-types: ["patch", "minor"]
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
