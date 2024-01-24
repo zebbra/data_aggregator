@@ -49,8 +49,8 @@ defmodule DataAggregator.Records.Import.Changes.DetectColumns do
     end
   end
 
-  # explorer returns {:f, length} for float columns
-  # https://github.com/elixir-explorer/explorer/pull/739
+  # map the explorer 0.8.0+ types to a type that can be used in the database
   defp build_column({name, {:f, _}}), do: build_column({name, :float})
+  defp build_column({name, {:s, _}}), do: build_column({name, :integer})
   defp build_column({name, type}), do: %Import.Column{name: name, type: type}
 end
