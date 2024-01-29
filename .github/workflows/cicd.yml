@@ -70,6 +70,12 @@ jobs:
       - run: mix lint
       - run: mix test
 
+      - name: Test Summary
+        uses: test-summary/action@v2
+        with:
+          paths: test/reports/test-junit-report.xml
+        if: always()
+
   build:
     name: Build Docker image
     needs: test

@@ -212,8 +212,9 @@ defmodule DataAggregator.MixProject do
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
       {:recode, "~> 0.6", only: [:dev, :test]},
+      {:junit_formatter, "~> 3.3", only: :test},
 
-      # Asserts
+      # Assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
 
@@ -266,7 +267,7 @@ defmodule DataAggregator.MixProject do
       {:ecto_erd, "~> 0.5", only: :dev},
       {:ex_doc, "~> 0.27", runtime: false},
 
-      # Liveview Widgets
+      # Livebook Widgets
       {:kino, "~> 0.12.0", only: :dev},
       {:kino_explorer, "~> 0.1.10", only: :dev}
     ]
