@@ -1,0 +1,155 @@
+name: CI/CD
+
+on:
+  - push
+
+env:
+  MIX_ENV: test
+  DATABASE_URL: postgres://data_aggregator:secret@localhost:5432/data_aggregator
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: data_aggregator
+          POSTGRES_PASSWORD: secret
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          version-file: .tool-versions
+          version-type: strict
+
+      - name: Restore cache
+        id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            deps
+            _build
+            priv/plts
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock', '**/.tool-versions') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
+
+      - run: mix deps.get
+      - run: mix compile
+      - run: mix dialyzer --plt
+
+      - name: Save cache
+        uses: actions/cache/save@v4
+        if: steps.cache.outputs.cache-hit != 'true'
+        with:
+          path: |
+            deps
+            _build
+            priv/plts
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock', '**/.tool-versions') }}
+
+      - run: mix assets.setup
+      - run: mix assets.build
+      - run: mix compile --warnings-as-errors
+      - run: mix lint
+      - run: mix test
+
+      - name: Test Summary
+        uses: test-summary/action@v2
+        with:
+          paths: test/reports/test-junit-report.xml
+        if: always()
+
+  build:
+    name: Build Docker image
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Generate image tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            quay.io/zebbra/data_aggregator
+          tags: |
+            type=sha
+
+      - name: Login to quay.io
+        if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+
+      - name: Build image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Push image to quay.io
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+  deploy:
+    name: Deploy to staging
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: staging
+      url: https://staging.aggregator.scnat.zebbra.ch
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Helm deployment
+        uses: WyriHaximus/github-action-helm3@v3
+        with:
+          exec: helm upgrade aggregator ./helm/charts/aggregator --install --wait --atomic --namespace scnat -f ./helm/staging.yaml --set image.tag=sha-${GITHUB_SHA::7}
+          kubeconfig: "${{ secrets.KUBECONFIG }}"
+          overrule_existing_kubeconfig: true
+
+      - name: Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: zebbra
+          SENTRY_PROJECT: scnat-data-aggregator
+          SENTRY_URL: https://sentry.zebbra.ch
+        with:
+          environment: staging

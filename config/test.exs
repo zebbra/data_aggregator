@@ -2,16 +2,10 @@ import Config
 
 # Configure your database
 #
-# The MIX_TEST_PARTITION environment variable can be used
-# to provide built-in test partitioning in CI environment.
-# Run `mix help test` for more information.
+database_url = "ecto://postgres:postgres@localhost:5432/data_aggregator_test"
+
 config :data_aggregator, DataAggregator.Repo,
-  username: "postgres",
-  password: "postgres",
-  port: 5432,
-  hostname: "localhost",
-  # database: "data-aggregator-test#{System.get_env("MIX_TEST_PARTITION")}",
-  database: "data_aggregator_test",
+  url: System.get_env("DATABASE_URL") || database_url,
   pool_size: 20,
   pool: Ecto.Adapters.SQL.Sandbox,
   queue_target: 100,
@@ -56,3 +50,8 @@ config :ash, :validate_api_config_inclusion?, false
 config :ash, :validate_api_resource_inclusion?, false
 
 config :mix_test_watch, clear: true
+
+config :junit_formatter,
+  report_file: "test-junit-report.xml",
+  report_dir: Path.expand("../test/reports", __DIR__),
+  include_filename?: true

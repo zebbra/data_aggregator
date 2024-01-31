@@ -77,3 +77,6 @@ priv/repo/dump/*.dump
 # Ignore large datasets for testing
 # use `mix data_aggregator.records` to load them
 test/support/fixtures/files/dataset-*.csv
+
+# Ignore test reports
+test/reports/*.xml

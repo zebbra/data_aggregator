@@ -18,10 +18,10 @@ defmodule Storybook.MyPage do
   # This is a dummy fonction that you should replace with your own HEEx content.
   def render(assigns = %{tab: :welcome}) do
     ~H"""
-    <div class="lsb-welcome-page">
+    <div class="psb-welcome-page">
       <p>
         We generated your storybook with an example of a page and a component.
-        Explore the generated <code class="lsb-inline">*.story.exs</code>
+        Explore the generated <code class="psb-inline">*.story.exs</code>
         files in your <code class="inline">/storybook</code>
         directory. When you're ready to add your own, just drop your new story & index files into the same directory and refresh your storybook.
       </p>
@@ -52,7 +52,7 @@ defmodule Storybook.MyPage do
       )
 
     ~H"""
-    <p class="lsb-leading-relaxed lsb-text-slate-400 lsb-w-full lsb-text-left lsb-mb-4 lsb-mt-2 lsb-italic md:lsb-text-lg">
+    <p class="psb-leading-relaxed psb-text-slate-400 psb-w-full psb-text-left psb-mb-4 psb-mt-2 psb-italic md:psb-text-lg">
       <a
         class="hover:text-indigo-700"
         href={"https://hexdocs.pm/phoenix_storybook/#{@guide}.html"}
@@ -61,7 +61,7 @@ defmodule Storybook.MyPage do
         This and other guides are also available on HexDocs.
       </a>
     </p>
-    <div class="lsb-welcome-page lsb-border-t lsb-border-gray-200 lsb-pt-4">
+    <div class="psb-welcome-page psb-border-t psb-border-gray-200 psb-pt-4">
       <%= Phoenix.HTML.raw(@guide_content) %>
     </div>
     """
@@ -69,17 +69,17 @@ defmodule Storybook.MyPage do
 
   defp description_list(assigns) do
     ~H"""
-    <div class="lsb-w-full md:lsb-px-8">
-      <div class="lsb-border-gray-200 lsb-px-4 lsb-py-5 lsb-w-full sm:lsb-p-0 md:lsb-border-t md:lsb-my-6">
-        <dl class="sm:lsb-divide-y sm:lsb-divide-gray-200">
+    <div class="psb-w-full md:psb-px-8">
+      <div class="psb-border-gray-200 psb-px-4 psb-py-5 psb-w-full sm:psb-p-0 md:psb-border-t md:psb-my-6">
+        <dl class="sm:psb-divide-y sm:psb-divide-gray-200">
           <%= for {dt, link} <- @items do %>
-            <div class="lsb-py-4 lsb-max-w-full sm:lsb-grid sm:lsb-grid-cols-3 sm:lsb-gap-4 sm:lsb-py-5 sm:lsb-px-6">
-              <dt class="lsb-text-base lsb-font-medium lsb-text-indigo-700">
+            <div class="psb-py-4 psb-max-w-full sm:psb-grid sm:psb-grid-cols-3 sm:psb-gap-4 sm:psb-py-5 sm:psb-px-6">
+              <dt class="psb-text-base psb-font-medium psb-text-indigo-700">
                 <%= dt %>
               </dt>
-              <dd class="lsb-mt-1 lsb-text-base lsb-text-slate-400 lsb-group lsb-cursor-pointer lsb-max-w-full sm:lsb-col-span-2 sm:lsb-mt-0">
+              <dd class="psb-mt-1 psb-text-base psb-text-slate-400 psb-group psb-cursor-pointer psb-max-w-full sm:psb-col-span-2 sm:psb-mt-0">
                 <a
-                  class="lsb-max-w-full lsb-inline-block lsb-truncate group-hover:lsb-text-indigo-700"
+                  class="psb-max-w-full psb-inline-block psb-truncate group-hover:psb-text-indigo-700"
                   href={link}
                   target="_blank"
                 >

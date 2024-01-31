@@ -182,10 +182,10 @@ defmodule DataAggregator.MixProject do
       {:bandit, "~> 1.1.0"},
       {:phoenix, "~> 1.7.7"},
       {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_html, "~> 3.3"},
+      {:phoenix_html, "~> 4.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.20.1"},
-      {:phoenix_storybook, "~> 0.5.0"},
+      {:phoenix_storybook, "~> 0.6.0"},
 
       # Ash Framework
       {:ash, "~> 2.13"},
@@ -212,8 +212,9 @@ defmodule DataAggregator.MixProject do
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
       {:recode, "~> 0.6", only: [:dev, :test]},
+      {:junit_formatter, "~> 3.3", only: :test},
 
-      # Asserts
+      # Assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
 
@@ -238,7 +239,7 @@ defmodule DataAggregator.MixProject do
       {:swoosh, "~> 1.3"},
 
       # Data Processing and Parsing
-      {:explorer, "~> 0.7.2"},
+      {:explorer, "~> 0.8.0"},
       {:csv, "~> 3.2"},
       {:waffle, "~> 1.1"},
       {:ex_aws, "~> 2.5.0"},
@@ -266,7 +267,7 @@ defmodule DataAggregator.MixProject do
       {:ecto_erd, "~> 0.5", only: :dev},
       {:ex_doc, "~> 0.27", runtime: false},
 
-      # Liveview Widgets
+      # Livebook Widgets
       {:kino, "~> 0.12.0", only: :dev},
       {:kino_explorer, "~> 0.1.10", only: :dev}
     ]
@@ -345,6 +346,8 @@ defmodule DataAggregator.MixProject do
 
       # Run linters
       lint: [
+        # temporarily disabled because of deprecation warning in Waffle
+        # "compile --all-warnings --warnings-as-errors",
         "format --check-formatted",
         "credo --strict",
         "deps.audit",
