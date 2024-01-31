@@ -213,8 +213,9 @@ defmodule DataAggregator.MixProject do
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
       {:recode, "~> 0.6", only: [:dev, :test]},
       {:mimic, "~> 1.7", only: :test},
+      {:junit_formatter, "~> 3.3", only: :test},
 
-      # Asserts
+      # Assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
 
@@ -239,7 +240,7 @@ defmodule DataAggregator.MixProject do
       {:swoosh, "~> 1.3"},
 
       # Data Processing and Parsing
-      {:explorer, "~> 0.7.2"},
+      {:explorer, "~> 0.8.0"},
       {:csv, "~> 3.2"},
       {:waffle, "~> 1.1"},
       {:ex_aws, "~> 2.5.0"},
@@ -267,7 +268,7 @@ defmodule DataAggregator.MixProject do
       {:ecto_erd, "~> 0.5", only: :dev},
       {:ex_doc, "~> 0.27", runtime: false},
 
-      # Liveview Widgets
+      # Livebook Widgets
       {:kino, "~> 0.12.0", only: :dev},
       {:kino_explorer, "~> 0.1.10", only: :dev}
     ]

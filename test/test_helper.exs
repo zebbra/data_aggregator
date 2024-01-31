@@ -1,5 +1,7 @@
 alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
+ExUnit.configure(formatters: [JUnitFormatter, ExUnit.CLIFormatter])
+
 Mimic.copy(Req)
 Mimic.copy(SwissSpecies)
 
