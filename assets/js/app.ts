@@ -39,6 +39,8 @@ const csrfToken = document
   ?.getAttribute("content");
 
 const liveSocket = new LiveSocket("/live", Socket, {
+  // @ts-expect-error longPollFallbackMs is not yet in the types
+  longPollFallbackMs: 2500,
   params: {
     _csrf_token: csrfToken,
     theme: localStorage.getItem("theme"),

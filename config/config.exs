@@ -94,7 +94,7 @@ config :data_aggregator, DataAggregator.Mailer, adapter: Swoosh.Adapters.Local
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
-  default: [
+  data_aggregator: [
     args:
       ~w(js/app.ts js/storybook.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
@@ -103,8 +103,8 @@ config :esbuild,
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "3.3.5",
-  default: [
+  version: "3.4.1",
+  data_aggregator: [
     args: ~w(
       --config=tailwind.config.js
       --input=css/app.css

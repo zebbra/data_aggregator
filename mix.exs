@@ -218,6 +218,14 @@ defmodule DataAggregator.MixProject do
       # Assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
+      {:heroicons,
+       github: "tailwindlabs/heroicons",
+       tag: "v2.1.1",
+       sparse: "optimized",
+       app: false,
+       compile: false,
+       depth: 1,
+       override: true},
 
       # Internationalization and Localization
       {:gettext, "~> 0.20"},
@@ -340,12 +348,12 @@ defmodule DataAggregator.MixProject do
         "cmd cd assets && npm install"
       ],
       "assets.build": [
-        "tailwind default",
-        "esbuild default"
+        "tailwind data_aggregator",
+        "esbuild data_aggregator"
       ],
       "assets.deploy": [
-        "tailwind default --minify",
-        "esbuild default --minify",
+        "tailwind data_aggregator --minify",
+        "esbuild data_aggregator --minify",
         "phx.digest"
       ],
 
