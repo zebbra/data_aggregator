@@ -9,12 +9,12 @@ defmodule DataAggregatorWeb.Layouts.Primary do
 
   import DataAggregatorWeb.Gettext
 
-  embed_templates "shared/*"
+  embed_templates("shared/*")
 
-  attr :current, :string, required: true, doc: "Current page"
+  attr(:current, :string, required: true, doc: "Current page")
 
-  slot :inner_block, required: true
-  slot :portal, doc: "Portal slot for modal, dialog, etc."
+  slot(:inner_block, required: true)
+  slot(:portal, doc: "Portal slot for modal, dialog, etc.")
 
   def page(assigns) do
     ~H"""

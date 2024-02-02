@@ -408,6 +408,163 @@ msgid "Records"
 msgstr "Einträge"
 
 #: lib/data_aggregator_web/live/collection_live/show.ex:165
+#: lib/data_aggregator_web/components/shared/sticky_topbar.html.heex:32
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.Page"
+msgid "Search..."
+msgstr "Suchen..."
+
+#: lib/data_aggregator_web/components/shared/sidebar_nav.html.heex:218
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.Page"
+msgid "Storybook"
+msgstr ""
+
+#: lib/data_aggregator_web/components/shared/sidebar_nav.html.heex:152
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.Page"
+msgid "scnat"
+msgstr ""
+
+#: lib/data_aggregator_web/live/import_live/index.ex:101
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Index"
+msgid "Records"
+msgstr "Einträge"
+
+#: lib/data_aggregator_web/components/flash.ex:108
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.Components.Flash"
+msgid "Attempting to reconnect"
+msgstr "Wiederverbindung wird versucht"
+
+#: lib/data_aggregator_web/components/components/flash.ex:96
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.Components.Flash"
+msgid "Error!"
+msgstr "Fehler!"
+
+#: lib/data_aggregator_web/components/components/flash.ex:117
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Components.Flash"
+msgid "Hang in there while we get back on track"
+msgstr "Wir sind gleich zurück"
+
+#: lib/data_aggregator_web/components/components/flash.ex:95
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Components.Flash"
+msgid "Success!"
+msgstr "Erfolgreich"
+
+#: lib/data_aggregator_web/components/components/flash.ex:100
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Components.Flash"
+msgid "We can't find the internet"
+msgstr "Kein Verbindung"
+
+#: lib/data_aggregator_web/components/components/table.ex:53
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.Components.Table"
+msgid "Actions"
+msgstr "Aktionen"
+
+#: lib/data_aggregator_web/live/import_live/components/mapping_form.ex:274
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Components.MappingForm"
+msgid "Mapping updated"
+msgstr "Mapping aktualisiert"
+
+#: lib/data_aggregator_web/live/import_live/components/mapping_form.ex:279
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Components.MappingForm"
+msgid "Unable to update mapping"
+msgstr "Mapping konnte nicht aktualisiert werden"
+
+#: lib/data_aggregator_web/live/import_live/index.ex:96
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Index"
+msgid "Started at"
+msgstr "Gestartet um"
+
+#: lib/data_aggregator_web/live/import_live/show.ex:250
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Show"
+msgid "Column"
+msgstr "Spalte"
+
+#: lib/data_aggregator_web/live/import_live/show.ex:106
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.ImportLive.Show"
+msgid "Import Records"
+msgstr "Records importieren"
+
+#: lib/data_aggregator_web/live/import_live/show.ex:253
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.ImportLive.Show"
+msgid "Mapped to"
+msgstr "Gemappt auf"
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:154
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Encoded"
+msgstr "Enkodiert"
+
+#: lib/data_aggregator_web/live/record_live/index.html.heex:50
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Encoding"
+msgstr "Enkodieren"
+
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:39
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Digitizing Progress"
+msgstr "Digitalisierungs Prozess"
+
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:29
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Records (count)"
+msgstr "Anzahl Einträge"
+
+#: lib/data_aggregator_web/live/collection_live/index.html.heex:33
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Total items to digitize"
+msgstr "Anzahl Items zum Digitalisieren"
+
+#: lib/data_aggregator_web/live/record_live/index.html.heex:44
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Class"
+msgstr "Klasse"
+
+#: lib/data_aggregator_web/live/record_live/index.html.heex:38
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Family"
+msgstr "Fimilie"
+
+#: lib/data_aggregator_web/live/record_live/index.html.heex:35
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Genus"
+msgstr "Gattung"
+
+#: lib/data_aggregator_web/live/record_live/index.html.heex:41
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Order"
+msgstr "Ordnung"
+
+#: lib/data_aggregator_web/live/record_live/index.html.heex:47
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Phylum"
+msgstr "Stamm"
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:132
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Show Collection"
@@ -441,6 +598,7 @@ msgstr "Unveröffentlicht"
 #: lib/data_aggregator_web/live/collection_live/show.ex:74
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Collections"
 msgstr "Sammlungen"
 

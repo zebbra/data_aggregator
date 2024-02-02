@@ -61,15 +61,15 @@ defmodule DataAggregatorWeb.Components.Modal do
         </.simple_form>
       </.modal>
   """
-  attr :id, :string, required: true
-  attr :class, :string, default: nil, doc: "Additional CSS classes to add to the modal box."
-  attr :show, :boolean, default: false, doc: "Whether the modal visibility is controlled."
-  attr :on_cancel, JS, default: %JS{}, doc: "JS commands to run when the modal is closed."
-  attr :responsive, :boolean, default: false, doc: "Show at bottom on small screens."
-  attr :backdrop, :boolean, default: true, doc: "Show a backdrop behind the modal."
-  attr :rest, :global, doc: "the arbitrary HTML attributes to add to the modal box."
+  attr(:id, :string, required: true)
+  attr(:class, :string, default: nil, doc: "Additional CSS classes to add to the modal box.")
+  attr(:show, :boolean, default: false, doc: "Whether the modal visibility is controlled.")
+  attr(:on_cancel, JS, default: %JS{}, doc: "JS commands to run when the modal is closed.")
+  attr(:responsive, :boolean, default: false, doc: "Show at bottom on small screens.")
+  attr(:backdrop, :boolean, default: true, doc: "Show a backdrop behind the modal.")
+  attr(:rest, :global, doc: "the arbitrary HTML attributes to add to the modal box.")
 
-  slot :inner_block, required: true, doc: "The modal content."
+  slot(:inner_block, required: true, doc: "The modal content.")
 
   def modal(assigns) do
     ~H"""

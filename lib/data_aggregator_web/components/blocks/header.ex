@@ -8,18 +8,19 @@ defmodule DataAggregatorWeb.Blocks.Header do
   @doc """
   Renders a header with title, subtitle, breadcrumbs, secondary navigation, and actions.
   """
-  attr :class, :string, default: nil, doc: "the header class"
-  attr :action_class, :string, default: nil
+  attr(:class, :string, default: nil, doc: "the header class")
+  attr(:action_class, :string, default: nil)
 
-  attr :break, :boolean,
+  attr(:break, :boolean,
     default: false,
     doc: "whether to break the header actions into a new line on small screens"
+  )
 
-  slot :navbar, doc: "the optional navbar displayed above the title"
-  slot :breadcrumbs, doc: "the optional breadcrumbs displayed above the title"
-  slot :inner_block, required: true, doc: "the title of the header"
-  slot :subtitle, doc: "the optional subtitle displayed below the title"
-  slot :actions, doc: "the optional actions displayed on the right side of the header"
+  slot(:navbar, doc: "the optional navbar displayed above the title")
+  slot(:breadcrumbs, doc: "the optional breadcrumbs displayed above the title")
+  slot(:inner_block, required: true, doc: "the title of the header")
+  slot(:subtitle, doc: "the optional subtitle displayed below the title")
+  slot(:actions, doc: "the optional actions displayed on the right side of the header")
 
   def header(assigns) do
     ~H"""

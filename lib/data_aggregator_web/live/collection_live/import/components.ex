@@ -10,9 +10,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
 
   @states AshStateMachine.Info.state_machine_all_states(Import)
 
-  attr :import, Import, required: false
-  attr :state, :atom, required: false, values: @states
-  attr :progress, :float, required: false, default: nil
+  attr(:import, Import, required: false)
+  attr(:state, :atom, required: false, values: @states)
+  attr(:progress, :float, required: false, default: nil)
 
   def import_state_badge(%{import: import} = assigns) when is_struct(import) do
     progress =
@@ -41,8 +41,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
     """
   end
 
-  attr :state, :atom, required: true, values: @states
-  attr :progress, :float, required: false, default: nil
+  attr(:state, :atom, required: true, values: @states)
+  attr(:progress, :float, required: false, default: nil)
 
   def import_state_badge_label(%{state: :importing} = assigns) do
     ~H"""
@@ -76,7 +76,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
     end
   end
 
-  attr :state, :atom, required: true, values: @states
+  attr(:state, :atom, required: true, values: @states)
 
   def import_state_icon(%{state: state} = assigns) do
     {icon, class} = import_state_icon_class(state)
