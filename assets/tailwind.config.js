@@ -2,72 +2,25 @@
 // https://tailwindcss.com/docs/configuration
 
 const plugin = require("tailwindcss/plugin");
-const colors = require("tailwindcss/colors");
 const fs = require("fs");
 const path = require("path");
-const themes = require("daisyui/src/theming/themes");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
     "./js/**/*.js",
     "./js/**/*.ts",
-    "../lib/*_web.ex",
-    "../lib/*_web/**/*.*ex",
+    "../lib/data_aggregator_web.ex",
+    "../lib/data_aggregator_web/**/*.*ex",
   ],
-
-  // DaisyUI config
-  daisyui: {
-    // Overrides to match the TailwindUI look
-    themes: [
-      {
-        light: {
-          ...themes.light,
-          primary: colors.indigo["600"],
-          "primary-content": colors.indigo["50"],
-          secondary: colors.purple["600"],
-          "secondary-content": colors.purple["50"],
-          accent: colors.pink["600"],
-          "accent-content": colors.pink["50"],
-          success: colors.green["600"],
-          "success-content": colors.green["50"],
-          warning: colors.amber["600"],
-          "warning-content": colors.amber["50"],
-          error: colors.red["600"],
-          "error-content": colors.red["50"],
-          info: colors.blue["600"],
-          "info-content": colors.blue["50"],
-          "--rounded-box": "0.5rem",
-          "--rounded-btn": "0.375rem",
-        },
-
-        dark: {
-          ...themes.dark,
-          primary: colors.indigo["600"],
-          "primary-content": colors.indigo["50"],
-          secondary: colors.purple["600"],
-          "secondary-content": colors.purple["50"],
-          accent: colors.pink["600"],
-          "accent-content": colors.pink["50"],
-          success: colors.green["600"],
-          "success-content": colors.green["50"],
-          warning: colors.amber["600"],
-          "warning-content": colors.amber["50"],
-          error: colors.red["600"],
-          "error-content": colors.red["50"],
-          info: colors.blue["600"],
-          "info-content": colors.blue["50"],
-          "--rounded-box": "0.5rem",
-          "--rounded-btn": "0.375rem",
-        },
+  theme: {
+    extend: {
+      screens: {
+        "3xl": "1850px",
       },
-    ],
+    },
   },
-
   plugins: [
-    // Default typography styles
-    // require("@tailwindcss/typography"),
-
     // DaisyUI
     require("daisyui"),
 
@@ -81,8 +34,8 @@ module.exports = {
     ),
     plugin(({ addVariant }) =>
       addVariant("phx-feedback", [
-        ".form-control:not(.phx-no-feedback) &",
         ".form-control:not(.phx-no-feedback)&",
+        ".form-control:not(.phx-no-feedback) &",
       ])
     ),
     plugin(({ addVariant }) =>

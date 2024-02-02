@@ -8,7 +8,6 @@
 import Config
 
 config :data_aggregator,
-  environment: config_env(),
   ecto_repos: [DataAggregator.Repo],
   generators: [timestamp_type: :utc_datetime]
 
@@ -71,16 +70,16 @@ config :data_aggregator, DataAggregatorWeb.Gettext,
   default_locale: "en",
   locales: ~w(de fr)
 
+# Configure Cldr
+config :ex_cldr,
+  default_backend: DataAggregatorWeb.Cldr,
+  json_library: Jason
+
 # Configure Oban job queues
 config :data_aggregator, Oban,
   repo: DataAggregator.Repo,
   plugins: [Oban.Plugins.Pruner],
   queues: [imports: 1, encoders: 1]
-
-# Configure Cldr
-config :ex_cldr,
-  default_backend: DataAggregatorWeb.Cldr,
-  json_library: Jason
 
 # Configures the mailer
 #
@@ -93,10 +92,10 @@ config :data_aggregator, DataAggregator.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.17.11",
+  version: "0.19.11",
   data_aggregator: [
     args:
-      ~w(js/app.ts js/storybook.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+      ~w(js/app.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
@@ -109,14 +108,6 @@ config :tailwind,
       --config=tailwind.config.js
       --input=css/app.css
       --output=../priv/static/assets/app.css
-    ),
-    cd: Path.expand("../assets", __DIR__)
-  ],
-  storybook: [
-    args: ~w(
-      --config=tailwind.config.js
-      --input=css/storybook.css
-      --output=../priv/static/assets/storybook.css
     ),
     cd: Path.expand("../assets", __DIR__)
   ]

@@ -5,7 +5,7 @@ defmodule DataAggregator.MixProject do
     [
       app: :data_aggregator,
       version: "0.1.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.16",
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [ignore_module_conflict: true],
       start_permanent: Mix.env() == :prod,
@@ -151,15 +151,14 @@ defmodule DataAggregator.MixProject do
         ~r/^DataAggregatorWeb\.\w+Live/
       ],
       Components: [
-        DataAggregatorWeb.ColorMode,
+        ~r/^DataAggregatorWeb\.Blocks/,
         ~r/^DataAggregatorWeb\.Components/,
-        ~r/^DataAggregatorWeb\.Headless/
+        ~r/^DataAggregatorWeb\.LiveComponents/,
+        ~r/^DataAggregatorWeb\.Layouts/
       ],
       "Live Hooks": [
         DataAggregatorWeb.LiveLocale,
-        DataAggregatorWeb.LiveLogger,
-        DataAggregatorWeb.LiveState,
-        DataAggregatorWeb.LiveNavigator
+        DataAggregatorWeb.LiveLogger
       ],
       Localisation: [
         DataAggregatorWeb.Locale,

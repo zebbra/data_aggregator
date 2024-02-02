@@ -21,7 +21,8 @@ classDiagram
         String name
         String code
         String description
-        Map mapping
+        Map[] import_mapping
+        CollectionType type
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Float digitizing_progress
@@ -40,9 +41,25 @@ classDiagram
         update(UUID id, Integer items_to_digitize, String owner, String name, ...)
         create(UUID id, Integer items_to_digitize, String owner, String name, ...)
         read(String sort)
+        update_import_mapping(Map[] import_mapping)
+    }
+    class RecordEncodingResult {
+        UUID id
+        Map input
+        Map output
+        String message
+        Catalog catalog
+        EncodingResultState state
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        Record record
+        destroy()
+        read()
+        filter_by_record(String record_id)
+        create(Record record, UUID id, Map input, Map output, ...)
+        update(Record record, UUID id, Map input, Map output, ...)
     }
     class Import {
-        Atom state
         UUID id
         Column[] columns
         UtcDatetimeUsec inserted_at
@@ -54,6 +71,7 @@ classDiagram
         Integer rows_invalid_count
         Integer rows_imported_count
         Integer job_id
+        Atom state
         Float import_progress
         Integer rows_validated_count
         Float rows_valid_ratio
@@ -93,7 +111,6 @@ classDiagram
         create(Import import, Record record)
     }
     class Record {
-        Atom state
         String mts_material_sample_type
         String mte_material_entity_id
         String occ_occurrence_remarks
@@ -109,10 +126,11 @@ classDiagram
         String loc_country
         String loc_continent
         String spp_life_stage
+        String tax_taxon_rank
         String tax_accepted_name_usage_id
         String tax_accepted_name_usage
-        String tax_taxon_id_ch
-        String tax_taxon_id
+        Integer tax_taxon_id_ch
+        Integer tax_taxon_id
         String tax_specific_epithet
         String tax_infraspecific_epithet
         String tax_scientific_name_authorship
@@ -153,6 +171,7 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Integer encoder_job_id
+        Atom state
         Collection collection
         Import[] imports
         Image[] images
@@ -200,10 +219,11 @@ classDiagram
         String loc_country
         String loc_continent
         String spp_life_stage
+        String tax_taxon_rank
         String tax_accepted_name_usage_id
         String tax_accepted_name_usage
-        String tax_taxon_id_ch
-        String tax_taxon_id
+        Integer tax_taxon_id_ch
+        Integer tax_taxon_id
         String tax_specific_epithet
         String tax_infraspecific_epithet
         String tax_scientific_name_authorship
@@ -258,6 +278,7 @@ classDiagram
     Collection -- Import
     Collection -- Record
     EncodedRecord -- Record
+    RecordEncodingResult -- Record
     Import -- Record
     Import -- Record
     Record -- Record

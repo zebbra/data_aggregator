@@ -1,0 +1,9 @@
+<div id="main-wrapper" class="h-dvh overflow-y-auto" phx-hook="MainScrollListener">
+  <%!-- Static topbar --%>
+  <.appbar />
+
+  <%!-- Main area --%>
+  <main class="p-6 lg:px-8">
+    <%= render_slot(@inner_block) %>
+  </main>
+</div>

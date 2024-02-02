@@ -64,9 +64,39 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
     patterns: [
       ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/data_aggregator_web/(controllers|live|components)/.*(ex|heex)$",
+      ~r"lib/data_aggregator/(controllers|live|components)/.*(ex|heex)$",
       ~r"storybook/.*(exs)$"
     ]
+  ]
+
+# Configure esbuild (the version is required)
+config :esbuild,
+  version: "0.19.11",
+  data_aggregator: [
+    args:
+      ~w(js/app.ts js/storybook.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+  ]
+
+# Configure tailwind (the version is required)
+config :tailwind,
+  version: "3.4.1",
+  data_aggregator: [
+    args: ~w(
+      --config=tailwind.config.js
+      --input=css/app.css
+      --output=../priv/static/assets/app.css
+    ),
+    cd: Path.expand("../assets", __DIR__)
+  ],
+  storybook: [
+    args: ~w(
+          --config=tailwind.storybook.config.js
+          --input=css/storybook.css
+          --output=../priv/static/assets/storybook.css
+        ),
+    cd: Path.expand("../assets", __DIR__)
   ]
 
 # Enable dev routes for dashboard and mailbox

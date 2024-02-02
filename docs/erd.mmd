@@ -37,7 +37,8 @@ erDiagram
     varchar name
     varchar code
     varchar description
-    jsonb mapping
+    array import_mapping
+    varchar type
     timestamp inserted_at
     timestamp updated_at
     uuid institution_id
@@ -58,10 +59,11 @@ erDiagram
     varchar loc_country
     varchar loc_continent
     varchar spp_life_stage
+    varchar tax_taxon_rank
     varchar tax_accepted_name_usage_id
     varchar tax_accepted_name_usage
-    varchar tax_taxon_id_ch
-    varchar tax_taxon_id
+    integer tax_taxon_id_ch
+    integer tax_taxon_id
     varchar tax_specific_epithet
     varchar tax_infraspecific_epithet
     varchar tax_scientific_name_authorship
@@ -101,8 +103,18 @@ erDiagram
     timestamp updated_at
     uuid record_id PK
   }
-  imports {
+  record_encoding_results {
+    uuid id PK
+    jsonb input
+    jsonb output
+    varchar message
+    varchar catalog
     varchar state
+    timestamp inserted_at
+    timestamp updated_at
+    uuid record_id
+  }
+  imports {
     uuid id PK
     array columns
     timestamp inserted_at
@@ -116,13 +128,13 @@ erDiagram
     uuid collection_id
     uuid attachment_id
     integer job_id
+    varchar state
   }
   import_records {
     uuid import_id PK
     uuid record_id PK
   }
   records {
-    varchar state
     varchar mts_material_sample_type
     varchar mte_material_entity_id
     varchar occ_occurrence_remarks
@@ -138,10 +150,11 @@ erDiagram
     varchar loc_country
     varchar loc_continent
     varchar spp_life_stage
+    varchar tax_taxon_rank
     varchar tax_accepted_name_usage_id
     varchar tax_accepted_name_usage
-    varchar tax_taxon_id_ch
-    varchar tax_taxon_id
+    integer tax_taxon_id_ch
+    integer tax_taxon_id
     varchar tax_specific_epithet
     varchar tax_infraspecific_epithet
     varchar tax_scientific_name_authorship
@@ -183,6 +196,7 @@ erDiagram
     timestamp updated_at
     uuid collection_id
     integer encoder_job_id
+    varchar state
   }
   record_images {
     uuid id PK
@@ -194,10 +208,10 @@ erDiagram
   }
   swiss_species {
     uuid id PK
-    varchar taxon_id_ch
+    integer taxon_id_ch PK
     varchar accepted_name
-    varchar usage_key
-    varchar accepted_usage_key
+    integer usage_key PK
+    integer accepted_usage_key
     varchar scientific_name
     varchar rank
     timestamp inserted_at
@@ -238,4 +252,5 @@ erDiagram
   records ||--|{ change_events : ""
   records ||--o| encoded_records : ""
   records ||--|{ import_records : ""
+  records ||--|{ record_encoding_results : ""
   records ||--|{ record_images : ""

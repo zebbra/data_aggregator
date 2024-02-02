@@ -4,10 +4,15 @@ defmodule DataAggregatorWeb.LiveLocale do
   which has been set by Cldr.
   """
 
+  require Logger
+
   import Phoenix.Component, only: [assign: 2]
 
   def on_mount(:default, _params, session, socket) do
     {:ok, locale} = Cldr.Plug.put_locale_from_session(session)
+
+    Logger.debug("LiveLocale set to #{inspect(locale)}")
+
     {:cont, assign(socket, locale: locale)}
   end
 end

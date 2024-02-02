@@ -81,8 +81,9 @@ defmodule DataAggregatorWeb do
 
   defp html_helpers do
     quote do
-      # Core UI components
+      # UI components and blocks
       use DataAggregatorWeb.Components
+      use DataAggregatorWeb.Blocks
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
@@ -92,9 +93,6 @@ defmodule DataAggregatorWeb do
 
       # Translation
       import DataAggregatorWeb.Gettext
-
-      # Layouts
-      import DataAggregatorWeb.Page, only: [page: 1]
 
       # Formatters
       import DataAggregatorWeb.Helpers
@@ -113,7 +111,7 @@ defmodule DataAggregatorWeb do
     end
   end
 
-  @doc ~S"""
+  @doc """
   When used, dispatch to the appropriate controller/view/etc.
   """
   defmacro __using__(which) when is_atom(which) do

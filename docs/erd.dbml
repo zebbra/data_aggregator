@@ -41,7 +41,8 @@ Table collections {
   name varchar
   code varchar
   description varchar
-  mapping jsonb
+  import_mapping array
+  type varchar
   inserted_at timestamp
   updated_at timestamp
   institution_id uuid
@@ -63,10 +64,11 @@ Table encoded_records {
   loc_country varchar
   loc_continent varchar
   spp_life_stage varchar
+  tax_taxon_rank varchar
   tax_accepted_name_usage_id varchar
   tax_accepted_name_usage varchar
-  tax_taxon_id_ch varchar
-  tax_taxon_id varchar
+  tax_taxon_id_ch integer
+  tax_taxon_id integer
   tax_specific_epithet varchar
   tax_infraspecific_epithet varchar
   tax_scientific_name_authorship varchar
@@ -107,8 +109,19 @@ Table encoded_records {
   record_id uuid [pk]
 }
 
-Table imports {
+Table record_encoding_results {
+  id uuid [pk]
+  input jsonb
+  output jsonb
+  message varchar
+  catalog varchar
   state varchar
+  inserted_at timestamp
+  updated_at timestamp
+  record_id uuid
+}
+
+Table imports {
   id uuid [pk]
   columns array
   inserted_at timestamp
@@ -122,6 +135,7 @@ Table imports {
   collection_id uuid
   attachment_id uuid
   job_id integer
+  state varchar
 }
 
 Table import_records {
@@ -130,7 +144,6 @@ Table import_records {
 }
 
 Table records {
-  state varchar
   mts_material_sample_type varchar
   mte_material_entity_id varchar
   occ_occurrence_remarks varchar
@@ -146,10 +159,11 @@ Table records {
   loc_country varchar
   loc_continent varchar
   spp_life_stage varchar
+  tax_taxon_rank varchar
   tax_accepted_name_usage_id varchar
   tax_accepted_name_usage varchar
-  tax_taxon_id_ch varchar
-  tax_taxon_id varchar
+  tax_taxon_id_ch integer
+  tax_taxon_id integer
   tax_specific_epithet varchar
   tax_infraspecific_epithet varchar
   tax_scientific_name_authorship varchar
@@ -191,6 +205,7 @@ Table records {
   updated_at timestamp
   collection_id uuid
   encoder_job_id integer
+  state varchar
 }
 
 Table record_images {
@@ -204,10 +219,10 @@ Table record_images {
 
 Table swiss_species {
   id uuid [pk]
-  taxon_id_ch varchar
+  taxon_id_ch integer [pk]
   accepted_name varchar
-  usage_key varchar
-  accepted_usage_key varchar
+  usage_key integer [pk]
+  accepted_usage_key integer
   scientific_name varchar
   rank varchar
   inserted_at timestamp
@@ -259,4 +274,5 @@ Ref: oban_jobs.id < records.encoder_job_id
 Ref: records.id < change_events.record_id
 Ref: records.id - encoded_records.record_id
 Ref: records.id < import_records.record_id
+Ref: records.id < record_encoding_results.record_id
 Ref: records.id < record_images.record_id

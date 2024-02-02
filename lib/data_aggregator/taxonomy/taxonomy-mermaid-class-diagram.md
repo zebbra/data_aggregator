@@ -2,18 +2,18 @@
 classDiagram
     class SwissSpecies {
         UUID id
-        String taxon_id_ch
+        Integer taxon_id_ch
         String accepted_name
-        String usage_key
-        String accepted_usage_key
+        Integer usage_key
+        Integer accepted_usage_key
         String scientific_name
         String rank
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         destroy()
-        update(UUID id, String taxon_id_ch, String accepted_name, String usage_key, ...)
+        update(UUID id, Integer taxon_id_ch, String accepted_name, Integer usage_key, ...)
         read()
-        create(UUID id, String taxon_id_ch, String accepted_name, String usage_key, ...)
+        create(UUID id, Integer taxon_id_ch, String accepted_name, Integer usage_key, ...)
     }
 
 

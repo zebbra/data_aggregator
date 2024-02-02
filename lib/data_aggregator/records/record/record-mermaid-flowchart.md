@@ -3,6 +3,7 @@ stateDiagram-v2
 imported --> imported: set_imported
 imported --> queued: enqueue_encoder
 queued --> encoding: set_encoding
+encoding --> imported: set_imported
 encoding --> encoded: set_encoded
 encoded --> imported: set_imported
 encoded --> queued: enqueue_encoder
