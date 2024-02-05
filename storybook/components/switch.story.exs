@@ -1,4 +1,5 @@
 defmodule Storybook.Components.Switch do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
 
   def function, do: &DataAggregatorWeb.Components.Switch.switch/1

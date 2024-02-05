@@ -1,7 +1,7 @@
 defmodule Mix.Tasks.Repo.Restore do
-  @moduledoc false
   @shortdoc "Restores the database from a dump file"
 
+  @moduledoc false
   use Mix.Task
 
   @source "priv/repo/dump/staging.dump"

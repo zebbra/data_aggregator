@@ -1,4 +1,5 @@
 defmodule Storybook.Components.Button do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
 
   alias DataAggregatorWeb.Components.Button

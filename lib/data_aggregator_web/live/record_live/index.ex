@@ -1,18 +1,15 @@
 defmodule DataAggregatorWeb.RecordLive.Index do
+  @moduledoc false
   use DataAggregatorWeb, :live_view
-
   use DataAggregatorWeb.Components.Internal.Pagination
   use DataAggregatorWeb.Components.Internal.Sort
 
-  alias DataAggregator.Records.Record
-
+  import DataAggregatorWeb.Components.Internal.Path
+  import DataAggregatorWeb.Components.Internal.Selection
+  import DataAggregatorWeb.Components.Internal.Stream
   import DataAggregatorWeb.RecordLive.PreviewComponent
 
-  import DataAggregatorWeb.Components.Internal.{
-    Path,
-    Selection,
-    Stream
-  }
+  alias DataAggregator.Records.Record
 
   @impl true
   def mount(_params, _session, socket) do
@@ -54,7 +51,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     socket
     |> assign(:page_title, ~t"Edit Record"m)
     |> assign(:current_selected, nil)
-    |> assign(:record, Record.get_by_id!(id) |> Map.put(:selected, false))
+    |> assign(:record, id |> Record.get_by_id!() |> Map.put(:selected, false))
   end
 
   defp apply_action(socket, :new, _params) do
@@ -71,10 +68,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   end
 
   @impl true
-  def handle_info(
-        {DataAggregatorWeb.RecordLive.FormComponent, {:saved, record}},
-        socket
-      ) do
+  def handle_info({DataAggregatorWeb.RecordLive.FormComponent, {:saved, record}}, socket) do
     socket =
       stream_insert(socket, :results, Map.put(record, :selected, false))
 

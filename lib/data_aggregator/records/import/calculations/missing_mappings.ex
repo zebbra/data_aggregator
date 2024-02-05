@@ -6,12 +6,12 @@ defmodule DataAggregator.Records.Import.Calculations.MissingMappings do
 
   use Ash.Calculation
 
-  require Logger
-
   alias Ash.Resource.Attribute
   alias DataAggregator.DarwinCore
   alias DataAggregator.DarwinCore.Schema.Category
   alias DataAggregator.Records.Import
+
+  require Logger
 
   @impl Ash.Calculation
   def calculate(imports, opts, ctx) do

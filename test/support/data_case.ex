@@ -13,14 +13,16 @@ defmodule DataAggregator.DataCase do
   by setting `use DataAggregator.DataCase, async: true`, although
   this option is not recommended for other databases.
   """
-  alias Ecto.Adapters.SQL.Sandbox
   use ExUnit.CaseTemplate
+
+  alias Ecto.Adapters.SQL.Sandbox
 
   using do
     quote do
-      import DataAggregator.DataCase
       use Oban.Testing, repo: DataAggregator.Repo
       use DataAggregator.TestHelpers
+
+      import DataAggregator.DataCase
     end
   end
 

@@ -1,4 +1,5 @@
 defmodule DataAggregatorWeb.CollectionLive.Index do
+  @moduledoc false
   use DataAggregatorWeb, :live_view
 
   alias DataAggregator.Records.Collection
@@ -41,10 +42,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   end
 
   @impl true
-  def handle_info(
-        {DataAggregatorWeb.CollectionLive.FormComponent, {:saved, collection}},
-        socket
-      ) do
+  def handle_info({DataAggregatorWeb.CollectionLive.FormComponent, {:saved, collection}}, socket) do
     {:noreply, stream_insert(socket, :results, collection)}
   end
 

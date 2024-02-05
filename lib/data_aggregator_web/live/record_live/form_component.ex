@@ -1,4 +1,5 @@
 defmodule DataAggregatorWeb.RecordLive.FormComponent do
+  @moduledoc false
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form

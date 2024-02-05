@@ -5,9 +5,9 @@ defmodule DataAggregatorWeb.Components.Form do
 
   use Phoenix.Component
 
-  alias Phoenix.HTML.Form
-
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
+
+  alias Phoenix.HTML.Form
 
   @doc ~S"""
   Renders a simple form.
@@ -80,8 +80,7 @@ defmodule DataAggregatorWeb.Components.Form do
     values: ~w(checkbox color date datetime-local email file hidden month number password
                range radio search select tel text textarea time url week)
 
-  attr :field, Phoenix.HTML.FormField,
-    doc: "a form field struct retrieved from the form, for example: @form[:email]"
+  attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
   attr :errors, :list, default: []
   attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
@@ -90,8 +89,7 @@ defmodule DataAggregatorWeb.Components.Form do
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
   attr :class, :string, default: nil, doc: "additinal css class for input"
 
-  attr :rest, :global,
-    include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
+  attr :rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
                 multiple pattern placeholder readonly required rows size step)
 
   slot :inner_block

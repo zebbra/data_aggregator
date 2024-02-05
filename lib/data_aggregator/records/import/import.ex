@@ -1,14 +1,12 @@
-defmodule DataAggregator.Records.Import do
-  # ensure module is recompiled when the flow chart changes
-  @flow_chart Path.expand("import-mermaid-flowchart.md", __DIR__)
-  @external_resource @flow_chart
+flow_chart = Path.expand("import-mermaid-flowchart.md", __DIR__)
 
+defmodule DataAggregator.Records.Import do
   @moduledoc """
   Resource for importing records into a collection from a file.
 
   ## Flow Chart
 
-  #{File.read!(@flow_chart)}
+  #{File.read!(flow_chart)}
   """
 
   use Ash.Resource,
@@ -16,14 +14,18 @@ defmodule DataAggregator.Records.Import do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub]
 
-  require Ash.Resource.Change.Builtins
+  alias __MODULE__
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import.Column
   alias DataAggregator.Records.Import.Record, as: ImportRecord
   alias DataAggregator.Records.Record
-  alias __MODULE__
+
+  require Ash.Resource.Change.Builtins
+
+  # ensure module is recompiled when the flow chart changes
+  @external_resource flow_chart
 
   attributes do
     uuid_attribute :id, prefix: "if"

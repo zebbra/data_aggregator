@@ -17,11 +17,11 @@ defmodule DataAggregator.Records.Record do
       DataAggregator.DarwinCore.Resource
     ]
 
+  alias __MODULE__
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
-  alias __MODULE__
 
   @default_limit 15
   def default_limit, do: @default_limit

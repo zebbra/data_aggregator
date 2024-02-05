@@ -1,4 +1,5 @@
 defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
+  @moduledoc false
   use DataAggregatorWeb, :html
 
   alias DataAggregator.Records.Record

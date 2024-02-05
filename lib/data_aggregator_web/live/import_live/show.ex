@@ -1,4 +1,5 @@
 defmodule DataAggregatorWeb.ImportLive.Show do
+  @moduledoc false
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.ImportLive.Components
 
@@ -41,8 +42,8 @@ defmodule DataAggregatorWeb.ImportLive.Show do
   defp subscribe_for_updates(socket) do
     with true <- connected?(socket),
          %Socket{assigns: %{import: import}} <- socket,
-         %Import{id: id} <- import,
-         topic <- "import:updated:#{id}" do
+         %Import{id: id} <- import do
+      topic = "import:updated:#{id}"
       PubSub.subscribe(topic)
       socket
     else
@@ -136,8 +137,7 @@ defmodule DataAggregatorWeb.ImportLive.Show do
   attr :import, :map, required: true
   attr :action, :atom, required: true
 
-  def render_action(%{import: import, action: action} = assigns)
-      when action in [:show, :mappings] do
+  def render_action(%{import: import, action: action} = assigns) when action in [:show, :mappings] do
     {mapped_columns, unmapped_columns} = Enum.split_with(import.columns, & &1.mapped?)
 
     assigns =

@@ -7,10 +7,10 @@ defmodule DataAggregatorWeb.Headless.Dialog do
 
   use Phoenix.Component
 
-  alias Phoenix.LiveView.JS
-
   import DataAggregatorWeb.Headless.Description
   import DataAggregatorWeb.Headless.Helpers
+
+  alias Phoenix.LiveView.JS
 
   @doc ~S"""
   Renders a dialog component. Per default you set show to true and render the dialog
@@ -125,8 +125,7 @@ defmodule DataAggregatorWeb.Headless.Dialog do
     """
   end
 
-  defp show_dialog(js \\ %JS{}, id, panel_transition, backdrop_transition, display)
-       when is_binary(id) do
+  defp show_dialog(js \\ %JS{}, id, panel_transition, backdrop_transition, display) when is_binary(id) do
     js
     |> JS.show(to: "##{id}")
     |> show_backdrop(id, backdrop_transition)

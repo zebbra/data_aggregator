@@ -127,8 +127,7 @@ defmodule DataAggregatorWeb.Components.Switch do
 
   attr :passive, :boolean,
     default: false,
-    doc:
-      "set to true if you want to use the switch label as a passive label which does not toggle the switch"
+    doc: "set to true if you want to use the switch label as a passive label which does not toggle the switch"
 
   attr :as, :string, default: "label"
   attr :rest, :global

@@ -1,4 +1,5 @@
 defmodule Storybook.Imports.ImportStateBadge do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
 
   alias DataAggregatorWeb.ImportLive.Components
@@ -18,7 +19,6 @@ defmodule Storybook.Imports.ImportStateBadge do
   end
 
   defp available_states do
-    DataAggregator.Records.Import
-    |> AshStateMachine.Info.state_machine_all_states()
+    AshStateMachine.Info.state_machine_all_states(DataAggregator.Records.Import)
   end
 end

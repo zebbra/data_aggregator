@@ -1,12 +1,11 @@
 defmodule Storybook.Examples.Slideover do
+  @moduledoc false
   use PhoenixStorybook.Story, :example
   use DataAggregatorWeb.Components
 
   alias Phoenix.LiveView.JS
 
-  def doc,
-    do:
-      "This an advanced slideover example with fixed sidebar on xl and responsive slideover on < xl."
+  def doc, do: "This an advanced slideover example with fixed sidebar on xl and responsive slideover on < xl."
 
   @impl true
   def mount(_params, _session, socket) do
