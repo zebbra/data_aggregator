@@ -62,13 +62,13 @@ defmodule DataAggregator.Platform.Institution do
     type "institution"
 
     routes do
-      base("/institutions")
+      base "/institutions"
 
-      get(:read)
+      get :read
       index :read
-      post(:create)
-      patch(:update)
-      delete(:destroy)
+      post :create
+      patch :update
+      delete :destroy
     end
   end
 end

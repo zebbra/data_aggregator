@@ -274,11 +274,11 @@ defmodule DataAggregator.Records.Import do
     type "import"
 
     routes do
-      base("/imports")
+      base "/imports"
 
-      get(:read)
+      get :read
       index :read
-      post(:create_from_path)
+      post :create_from_path
     end
   end
 end

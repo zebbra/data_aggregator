@@ -63,17 +63,17 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpecies do
     type "swiss_species"
 
     primary_key do
-      keys([:id])
+      keys [:id]
     end
 
     routes do
-      base("/swiss_species")
+      base "/swiss_species"
 
-      get(:read)
+      get :read
       index :read
-      post(:create)
-      patch(:update)
-      delete(:destroy)
+      post :create
+      patch :update
+      delete :destroy
     end
   end
 end

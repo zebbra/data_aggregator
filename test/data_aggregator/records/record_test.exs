@@ -3,6 +3,7 @@ defmodule DataAggregator.RecordTest do
 
   use DataAggregator.DataCase, async: true
 
+  alias DataAggregator.Records
   alias DataAggregator.Records.Record
 
   import DataAggregator.RecordsFixtures
@@ -42,7 +43,11 @@ defmodule DataAggregator.RecordTest do
         collection: collection_fixture()
       }
 
-      assert {:ok, %Record{} = _record} = Record.create(attrs)
+      assert {:ok, %Record{} = record} = Record.create(attrs)
+
+      record = Records.load!(record, [:paper_trail_versions])
+
+      assert length(record.paper_trail_versions) == 1
     end
 
     test "create/1 with invalid data returns error changeset" do
@@ -58,6 +63,10 @@ defmodule DataAggregator.RecordTest do
       }
 
       assert {:ok, %Record{} = _record} = Record.update(record, update_attrs)
+
+      record = Records.load!(record, [:paper_trail_versions])
+
+      assert length(record.paper_trail_versions) == 2
     end
 
     test "update/2 with invalid data returns error changeset" do
@@ -90,7 +99,6 @@ defmodule DataAggregator.RecordTest do
       [import: import]
     end
 
-    @tag :focus
     test "importing a record", %{import: import} do
       params = %{
         mte_material_entity_id: "ex-123",
@@ -120,6 +128,10 @@ defmodule DataAggregator.RecordTest do
           "some_extra_data" => "Extra"
         }
       })
+
+      record = Records.load!(record, [:paper_trail_versions])
+
+      assert length(record.paper_trail_versions) == 1
     end
 
     test "updating a record for the same import", %{import: import} do
@@ -155,6 +167,10 @@ defmodule DataAggregator.RecordTest do
           "some_other_extra_data" => "Other Extra"
         }
       })
+
+      record = Records.load!(record, [:paper_trail_versions])
+
+      assert length(record.paper_trail_versions) == 2
     end
 
     test "updating a record from another import", %{import: import} do
@@ -188,6 +204,10 @@ defmodule DataAggregator.RecordTest do
         "tax_scientific_name" => "Updated Example",
         "some_other_extra_data" => "Other Extra"
       })
+
+      record = Records.load!(record, [:paper_trail_versions])
+
+      assert length(record.paper_trail_versions) == 2
     end
 
     test "importing a record for another collection", %{import: import} do

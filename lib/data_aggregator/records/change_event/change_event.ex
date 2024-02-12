@@ -76,13 +76,13 @@ defmodule DataAggregator.Records.ChangeEvent do
     type "change_event"
 
     routes do
-      base("/change_events")
+      base "/change_events"
 
-      get(:read)
+      get :read
       index :read
-      post(:create)
-      patch(:update)
-      delete(:destroy)
+      post :create
+      patch :update
+      delete :destroy
     end
   end
 end
