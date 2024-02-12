@@ -1,4 +1,6 @@
 defmodule DataAggregator.Records.RecordVersionMixin do
+  @moduledoc false
+
   defmacro __using__(_) do
     quote do
       json_api do
