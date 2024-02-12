@@ -15,8 +15,10 @@
     :ash_phoenix,
     :ash_postgres,
     :ash_graphql,
+    :ash_json_api,
     :ash_uuid,
-    :ash_state_machine
+    :ash_state_machine,
+    :ash_paper_trail
   ],
   plugins: [
     TailwindFormatter,

@@ -11,7 +11,7 @@ defmodule DataAggregator.Records do
   #{File.read!(@class_diagram)}
   """
 
-  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api]
+  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api, AshPaperTrail.Api]
 
   @default_env [
     import_timeout: :timer.minutes(60),

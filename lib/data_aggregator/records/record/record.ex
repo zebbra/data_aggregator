@@ -15,7 +15,8 @@ defmodule DataAggregator.Records.Record do
       AshGraphql.Resource,
       AshJsonApi.Resource,
       DataAggregator.DarwinCore.Resource,
-      AshStateMachine
+      AshStateMachine,
+      AshPaperTrail.Resource
     ]
 
   alias DataAggregator.DarwinCore
@@ -71,6 +72,21 @@ defmodule DataAggregator.Records.Record do
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
     end
+  end
+
+  paper_trail do
+    # default is :snapshot
+    change_tracking_mode :changes_only
+    # default is false
+    store_action_name? true
+    # the primary keys are always ignored
+    ignore_attributes [:inserted_at, :updated_at]
+    # used to have working destroy actions on the record resource
+    reference_source? false
+
+    # exetending the default paper_trail resource to have more interfaces
+    mixin DataAggregator.Records.RecordVersionMixin
+    version_extensions extensions: [AshJsonApi.Resource]
   end
 
   state_machine do
@@ -182,6 +198,7 @@ defmodule DataAggregator.Records.Record do
 
   code_interface do
     define_for DataAggregator.Records
+
     define :read
     define :create
     define :import, args: [:import, :params]
@@ -220,12 +237,12 @@ defmodule DataAggregator.Records.Record do
     type "records"
 
     routes do
-      base("/records")
+      base "/records"
 
-      get(:read)
+      get :read
       index :read
-      patch(:update)
-      delete(:destroy)
+      patch :update
+      delete :destroy
     end
   end
 end

@@ -154,13 +154,13 @@ defmodule DataAggregator.Records.Collection do
     type "collection"
 
     routes do
-      base("/collections")
+      base "/collections"
 
-      get(:read)
+      get :read
       index :read
-      post(:create)
-      patch(:update)
-      delete(:destroy)
+      post :create
+      patch :update
+      delete :destroy
     end
   end
 end

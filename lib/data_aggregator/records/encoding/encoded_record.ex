@@ -105,16 +105,16 @@ defmodule DataAggregator.Records.EncodedRecord do
     type "encoded_records"
 
     primary_key do
-      keys([:id])
+      keys [:id]
     end
 
     routes do
-      base("/encoded_records")
+      base "/encoded_records"
 
-      get(:read)
+      get :read
       index :read
-      patch(:update)
-      delete(:destroy)
+      patch :update
+      delete :destroy
     end
   end
 end
