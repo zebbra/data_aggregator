@@ -21,7 +21,7 @@ defmodule DataAggregatorWeb.Components.Internal.Stream do
 
     socket
     |> assign(:page_meta, page)
-    |> stream(:results, results, reset: true, at: 0, limit: 0)
+    |> stream(:results, results, reset: true, at: 0)
   end
 
   def stream_results(socket, results) do
@@ -29,7 +29,7 @@ defmodule DataAggregatorWeb.Components.Internal.Stream do
     # if the stream does alredy exist. So we reverse the results in this case.
     results = if stream_exists?(socket), do: Enum.reverse(results), else: results
 
-    stream(socket, :results, results, reset: true, at: 0, limit: 0)
+    stream(socket, :results, results, reset: true, at: 0)
   end
 
   # Helper function to check if a stream exists
