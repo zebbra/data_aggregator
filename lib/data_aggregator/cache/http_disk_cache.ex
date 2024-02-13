@@ -6,8 +6,8 @@ defmodule DataAggregator.Cache.HttpDiskCache do
   """
   require Logger
 
-  # default cache time is 1 hour
-  @max_cache_age_seconds 60 * 60
+  # 10 days
+  @max_cache_age_seconds 10 * 24 * 60 * 60
   # accepted http states for caching according to rfc-editor.org/rfc/rfc7231
   @cachable_response_states [200, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501]
 
@@ -19,7 +19,7 @@ defmodule DataAggregator.Cache.HttpDiskCache do
 
   def attach(%Req.Request{} = request, options \\ []) do
     request
-    |> Req.Request.register_options([:cache_dir, :max_cache_age_seconds])
+    |> Req.Request.register_options([:cache_dir])
     |> Req.Request.merge_options(options)
     |> Req.Request.append_request_steps(custom_cache: &request_cache_step/1)
     |> Req.Request.prepend_response_steps(custom_cache: &response_cache_step/1)
@@ -27,9 +27,8 @@ defmodule DataAggregator.Cache.HttpDiskCache do
 
   defp request_cache_step(request) do
     cache_path = cache_path(request)
-    max_cache_age_seconds = request.options[:max_cache_age_seconds] || @max_cache_age_seconds
 
-    if valid_cache_file?(cache_path, max_cache_age_seconds) do
+    if valid_cache_file?(cache_path) do
       Logger.debug("File found in cache (#{cache_path})")
 
       {request, load_cache(cache_path)}
@@ -41,9 +40,8 @@ defmodule DataAggregator.Cache.HttpDiskCache do
   defp response_cache_step({request, response}) do
     if response.status in @cachable_response_states do
       cache_path = cache_path(request)
-      max_cache_age_seconds = request.options[:max_cache_age_seconds] || @max_cache_age_seconds
 
-      if valid_cache_file?(cache_path, max_cache_age_seconds) === false do
+      if valid_cache_file?(cache_path) === false do
         Logger.debug("Saving file to cache (#{cache_path})")
 
         write_cache(cache_path, response)
@@ -55,9 +53,9 @@ defmodule DataAggregator.Cache.HttpDiskCache do
     {request, response}
   end
 
-  defp valid_cache_file?(path, max_cache_age_seconds) do
+  defp valid_cache_file?(path) do
     if File.exists?(path) do
-      file_younger_than?(path, max_cache_age_seconds)
+      file_younger_than?(path)
     else
       Logger.debug("no cache file at #{path} found")
 
@@ -93,15 +91,15 @@ defmodule DataAggregator.Cache.HttpDiskCache do
     path |> File.read!() |> :erlang.binary_to_term()
   end
 
-  defp file_younger_than?(file_path, max_cache_age_seconds) do
+  defp file_younger_than?(file_path) do
     case File.stat(file_path, time: :posix) do
       {:ok, %File.Stat{mtime: mtime}} ->
         current_time = System.system_time(:second)
-        oldest_possible_time = current_time - max_cache_age_seconds
+        oldest_possible_time = current_time - @max_cache_age_seconds
 
         # if file is older than max allowed age, delete it
         if oldest_possible_time > mtime do
-          Logger.debug("Cache file is older than #{max_cache_age_seconds} seconds, deleting it")
+          Logger.debug("Cache file is older than #{@max_cache_age_seconds} seconds, deleting it")
 
           File.rm!(file_path)
 

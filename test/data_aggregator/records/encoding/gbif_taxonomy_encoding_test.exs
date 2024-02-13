@@ -38,6 +38,9 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
 
     test "encode/2 for :gbif_taxonomy catalog which returns the failed_record and the error",
          %{invalid_record: invalid_record} do
+      # mocking the api call to the GBIF API
+      # expect_invalid_confidence_from_matching_api_call()
+
       {{:error, error}, logs} =
         with_log(fn -> Record.encode(invalid_record, :gbif_taxonomy) end)
 
