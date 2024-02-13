@@ -13,7 +13,7 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
   describe "encoding of records with " do
     setup do
       correct_record = record_fixture_for_encoding()
-      invalid_record = record_fixture_for_encoding_invalid_confidence()
+      invalid_record = record_fixture_for_encoding_gbif_taxonomy_invalid()
 
       [
         correct_record: correct_record,
@@ -24,10 +24,6 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
     test "encode/2 for :gbif_taxonomy catalog which returns the encoded_record", %{
       correct_record: correct_record
     } do
-      # mocking the api calls to the GBIF API
-      expect_correct_matching_api_call()
-      expect_correct_species_api_call()
-
       {:ok, encoded_record} = Record.encode(correct_record, :gbif_taxonomy)
 
       assert encoded_record !== nil
@@ -43,7 +39,7 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
     test "encode/2 for :gbif_taxonomy catalog which returns the failed_record and the error",
          %{invalid_record: invalid_record} do
       # mocking the api call to the GBIF API
-      expect_invalid_confidence_from_matching_api_call()
+      # expect_invalid_confidence_from_matching_api_call()
 
       {{:error, error}, logs} =
         with_log(fn -> Record.encode(invalid_record, :gbif_taxonomy) end)
@@ -53,7 +49,9 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
       assert encoded_record != nil
       assert error != nil
       assert encoded_record.state == :failed
-      assert logs =~ "is not confident (min 80) enough"
+
+      assert logs =~
+               "For this species name we could not find a matching taxonomy. matchType \\\"HIGHERRANK\\\" is not accepted"
     end
   end
 end

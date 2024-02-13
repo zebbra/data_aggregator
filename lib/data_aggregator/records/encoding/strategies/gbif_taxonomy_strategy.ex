@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
   require Logger
 
+  alias DataAggregator.Cache.HttpDiskCache
   alias DataAggregator.Records
   alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.EncodedRecord
@@ -57,7 +58,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
   @spec build_request_params(EncodedRecord.t()) :: list()
   defp build_request_params(record) do
-    ([kingdom: get_kingdom_from_collection(record)] ++
+    ([kingdom: get_kingdom(record)] ++
        Enum.map(@input_attributes, fn {record_attribute, request_attribute} ->
          response_value = Map.get(record, record_attribute, nil)
 
@@ -81,17 +82,12 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
   @spec fetch_api(String.t(), list()) :: Req.Response.t()
   defp fetch_api(url, request_params) do
-    case Req.get(url, params: request_params) do
+    req = HttpDiskCache.attach(Req.new(params: request_params))
+
+    case Req.get(req, url: url) do
       {:ok, response} -> response
       {:error, error} -> throw_error(error)
     end
-
-    # to get a response for testing purposes
-    # %{
-    #   status: 200,
-    #   headers: "",
-    #   body: nil
-    # }
   end
 
   @spec parse_response(Req.Response.t()) :: map()
@@ -190,14 +186,23 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     throw(error)
   end
 
-  @spec get_kingdom_from_collection(EncodedRecord.t()) :: String.t()
-  defp get_kingdom_from_collection(encoded_record) do
+  @spec get_kingdom(EncodedRecord.t()) :: String.t()
+  defp get_kingdom(encoded_record) do
     encoded_record = Records.load!(encoded_record, [:record], lazy?: true)
     record = Records.load!(encoded_record.record, [:collection], lazy?: true)
 
-    Enum.find(CollectionType.get_collection_types(), fn {key, _value} ->
-      key == record.collection.type
-    end)
-    |> elem(1)
+    list_of_collection_types =
+      Enum.map(CollectionType.get_collection_types(), fn {_key, value} -> value end)
+
+    cond do
+      record.tax_kingdom in list_of_collection_types ->
+        record.tax_kingdom
+
+      record.collection.type in list_of_collection_types ->
+        record.collection.type
+
+      true ->
+        throw("No kingdom found for record #{record.id}. not on the collection nor the record")
+    end
   end
 end

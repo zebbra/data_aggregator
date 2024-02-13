@@ -12,7 +12,7 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
   describe "DataAggregator.Records.Record.Workers.Encoder.perform/1" do
     setup do
       correct_record = record_fixture_for_encoding()
-      invalid_record = record_fixture_for_encoding_invalid_confidence()
+      invalid_record = record_fixture_for_encoding_gbif_taxonomy_invalid()
 
       [
         correct_record: correct_record,
@@ -23,9 +23,6 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
     test "succeeds a valid record to encode", %{
       correct_record: correct_record
     } do
-      # mocking the api calls to the GBIF API
-      expect_correct_matching_api_call()
-      expect_correct_species_api_call()
       expect_correct_swiss_species_api_call()
 
       {:ok, record} = perform_job(Encoder, %{id: correct_record.id})
@@ -34,16 +31,14 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
     end
 
     test "fails an invalid record to encode", %{invalid_record: invalid_record} do
-      # mocking the api call to the GBIF API
-      expect_invalid_confidence_from_matching_api_call()
-
       {_result, logs} = with_log(fn -> perform_job(Encoder, %{id: invalid_record.id}) end)
 
       record = Record.get_by_id!(invalid_record.id)
 
       assert record.state == :failed
 
-      assert logs =~ "is not confident (min 80) enough"
+      assert logs =~
+               "For this species name we could not find a matching taxonomy. matchType \\\"HIGHERRANK\\\" is not accepted"
     end
   end
 end
