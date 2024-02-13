@@ -124,22 +124,12 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
           />
 
           <.button
-            :if={@encoding_state != :encoding}
             color="primary"
             id="encode_start__button"
             phx-click="encode_collection"
             link_type="live_patch"
             icon="hero-puzzle-piece"
             label={~t"Encode"m}
-            responsive
-          />
-          <.button
-            :if={@encoding_state == :encoding}
-            disabled
-            id="encoding__button"
-            link_type="live_patch"
-            icon="hero-cog-6-tooth-solid animate-spin"
-            label={~t"Encoding"m}
             responsive
           />
         </:actions>

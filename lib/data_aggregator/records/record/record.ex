@@ -95,7 +95,10 @@ defmodule DataAggregator.Records.Record do
 
     transitions do
       transition :set_imported, from: [:encoded, :failed, :encoding, :imported], to: :imported
-      transition :enqueue_encoder, from: [:imported, :encoded, :failed, :iencoded], to: :queued
+
+      transition :enqueue_encoder,
+        from: [:imported, :encoded, :failed, :iencoded, :encoding],
+        to: :queued
 
       transition :set_encoding,
         from: [:queued, :imported, :failed, :encoded],

@@ -14,7 +14,7 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
     setup do
       correct_record = record_fixture_for_encoding()
 
-      invalid_record = record_fixture_for_encoding_swiss_species()
+      invalid_record = record_fixture_for_encoding_swiss_species_invalid()
 
       [
         correct_record: correct_record,

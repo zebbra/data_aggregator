@@ -90,7 +90,7 @@ defmodule DataAggregatorWeb.RecordLive.PreviewComponent do
             <%= result.catalog %>
           </:col>
           <:col :let={result} label={~t"State"}>
-            <.encoding_state state={result.state} small={true} />
+            <.encoding_state reason={result.message} state={result.state} small={true} />
           </:col>
           <:col :let={result} label={~t"Created"}>
             <%= format_datetime(result.inserted_at, format: :short) %>

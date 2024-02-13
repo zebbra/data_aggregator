@@ -10,7 +10,7 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
   describe "DataAggregator.Records.Record.enqueue_encode/2" do
     setup do
       correct_record = record_fixture_for_encoding()
-      invalid_record = record_fixture_for_encoding_invalid_confidence()
+      invalid_record = record_fixture_for_encoding_gbif_taxonomy_invalid()
 
       [
         correct_record: correct_record,

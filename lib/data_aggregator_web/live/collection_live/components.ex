@@ -6,6 +6,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
   attr :record, Record, default: nil
   attr :state, :atom, default: nil
   attr :small, :boolean, default: false
+  attr :reason, :string, default: nil
 
   def encoding_state(assigns) do
     state = assigns.state || assigns.record.state
@@ -32,13 +33,21 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
 
       state in [:failed, :error] ->
         ~H"""
-        <div :if={!assigns.small} class="tooltip tooltip-error" data-tip="Error occured">
+        <div
+          :if={!assigns.small}
+          class="tooltip tooltip-error"
+          data-tip={assigns.reason || "Error occured"}
+        >
           <div class="badge badge-lg alert alert-error bg-error/10 text-error gap-2">
             <div class="hero-x-circle-solid"></div>
             <div>Failed</div>
           </div>
         </div>
-        <div :if={assigns.small} class="tooltip tooltip-error" data-tip="Error">
+        <div
+          :if={assigns.small}
+          class="tooltip tooltip-error"
+          data-tip={assigns.reason || "Error occured"}
+        >
           <div class="badge badge-sm alert alert-error bg-error/10 text-error gap-2">
             <div class="hero-x-circle-solid"></div>
           </div>
