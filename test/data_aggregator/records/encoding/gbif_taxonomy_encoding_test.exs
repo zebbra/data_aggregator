@@ -21,6 +21,7 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
       ]
     end
 
+    @tag run: true
     test "encode/2 for :gbif_taxonomy catalog which returns the encoded_record", %{
       correct_record: correct_record
     } do

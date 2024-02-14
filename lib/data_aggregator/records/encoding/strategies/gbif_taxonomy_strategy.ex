@@ -57,7 +57,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
   @spec build_request_params(EncodedRecord.t()) :: list()
   defp build_request_params(record) do
-    ([kingdom: get_kingdom(record)] ++
+    (get_taxon_parameters(record) ++
        Enum.map(@input_attributes, fn {record_attribute, request_attribute} ->
          response_value = Map.get(record, record_attribute, nil)
 
@@ -81,11 +81,13 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
   @spec fetch_api(String.t(), list()) :: Req.Response.t()
   defp fetch_api(url, request_params) do
-    req = HttpDiskCache.attach(Req.new(params: request_params))
+    req =
+      HttpDiskCache.attach(Req.new(params: request_params))
 
-    case Req.get(req, url: url) do
+    # we cache requests for 30 days
+    case Req.get(req, url: url, max_cache_age_seconds: 30 * 24 * 60 * 60) do
       {:ok, response} -> response
-      {:error, error} -> throw_error(error)
+      {:error, error} -> log_and_throw(error)
     end
   end
 
@@ -185,23 +187,53 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     throw(error)
   end
 
-  @spec get_kingdom(EncodedRecord.t()) :: String.t()
-  defp get_kingdom(encoded_record) do
+  defp get_taxon_parameters(encoded_record) do
     encoded_record = Records.load!(encoded_record, [:record], lazy?: true)
     record = Records.load!(encoded_record.record, [:collection], lazy?: true)
 
-    list_of_collection_types =
-      Enum.map(CollectionType.get_collection_types(), fn {_key, value} -> value end)
+    taxon_param_keys = [
+      tax_kingdom: :kingdom,
+      tax_phylum: :phylum,
+      tax_class: :class,
+      tax_order: :order,
+      tax_family: :family
+    ]
 
+    params =
+      Enum.map(taxon_param_keys, fn {key, value} ->
+        attribute_value = Map.get(record, key)
+
+        {value, attribute_value}
+      end)
+      |> Enum.filter(fn {_key, value} -> value !== nil end)
+
+    case add_kingdom_fallback(params, record) do
+      [] ->
+        throw(
+          "No taxonomy parameters (eighter tax_kingdom, tax_phylum, tax_class, tax_order or tax_family) found to query the gbif_taxonomy api"
+        )
+
+      _ ->
+        params
+    end
+  end
+
+  # if no taxon attributes were found on the record, we try to add at least the kingdom
+  # from the collection as fallback, if this was also not found we return an empty list
+  defp add_kingdom_fallback(params, record) do
     cond do
-      record.tax_kingdom in list_of_collection_types ->
-        record.tax_kingdom
+      params !== [] ->
+        params
 
-      record.collection.type in list_of_collection_types ->
-        record.collection.type
+      record.collection.type !== nil ->
+        [kingdom: record.collection.type]
 
       true ->
-        throw("No kingdom found for record #{record.id}. not on the collection nor the record")
+        Logger.warning(
+          "No fallback kingdom found for record #{record.id} on the collection #{record.collection.name}"
+        )
+
+        []
     end
   end
 end
