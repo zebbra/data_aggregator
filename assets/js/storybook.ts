@@ -3,6 +3,7 @@
 // such:
 //
 import Hooks from "./hooks";
+import { onInitialPageLoad } from "./src/utils";
 // import * as Params from "./params";
 // import * as Uploaders from "./uploaders";
 
@@ -18,13 +19,11 @@ declare global {
   // window.storybook = { Hooks, Params, Uploaders };
   window.storybook = { Hooks };
 
-  window.addEventListener("phx:page-loading-stop", (info) => {
-    if (initialPageLoad(info as CustomEvent)) {
-      const current = currentThemeFromLocation();
-      if (current) applyTheme(current);
-      registerThemeSelect();
-      registerConsoleLoggerListener();
-    }
+  onInitialPageLoad(() => {
+    const current = currentThemeFromLocation();
+    if (current) applyTheme(current);
+    registerThemeSelect();
+    registerConsoleLoggerListener();
   });
 })();
 
@@ -32,10 +31,6 @@ function registerConsoleLoggerListener() {
   window.addEventListener("storybook:console:log", (info) => {
     console.log(info);
   });
-}
-
-function initialPageLoad(info: CustomEvent) {
-  return info.detail?.kind == "initial";
 }
 
 function currentThemeFromLocation() {

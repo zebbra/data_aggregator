@@ -9,7 +9,10 @@ defmodule Storybook.Components.Form.Fieldset do
       {Components.Form,
        [
          simple_form: 1,
-         fieldgroup: 1,
+         fieldgroup: 1
+       ]},
+      {Components.Field,
+       [
          field: 1,
          label: 1,
          description: 1,

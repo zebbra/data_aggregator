@@ -46,10 +46,15 @@ defmodule DataAggregatorWeb.Components.Table do
     <table role="table" class={["text-base-content table", @class]}>
       <thead role="rowgroup">
         <tr role="row" class="border-base-content/10">
-          <th :for={col <- @col} role="columnheader" scope="col" class={col[:class]}>
+          <th
+            :for={col <- @col}
+            role="columnheader"
+            scope="col"
+            class={["first:pl-6 last:pr-6 lg:first:pl-8 lg:last:pr-8", col[:class]]}
+          >
             <%= col[:label] %>
           </th>
-          <th :if={@action != []} role="columnheader" scope="col">
+          <th :if={@action != []} role="columnheader" scope="col" class="pr-8 lg:pr-10">
             <span class="sr-only"><%= ~t"Actions"m %></span>
           </th>
         </tr>
@@ -69,11 +74,11 @@ defmodule DataAggregatorWeb.Components.Table do
             :for={col <- @col}
             phx-click={@row_click && @row_click.(row)}
             role="cell"
-            class={col[:class]}
+            class={["first:pl-6 last:pr-6 lg:first:pl-8 lg:last:pr-8", col[:class]]}
           >
             <%= render_slot(col, @row_item.(row)) %>
           </td>
-          <td :if={@action != []} role="cell" class="whitespace-nowrap text-right">
+          <td :if={@action != []} role="cell" class="whitespace-nowrap pr-8 text-right lg:pr-10">
             <span :for={action <- @action} class={action[:class]}>
               <%= render_slot(action, @row_item.(row)) %>
             </span>

@@ -1,16 +1,18 @@
+import { AlertCommandContext } from "../src/data-confirm-interceptor";
+import { inject, provide } from "../src/inject-provide";
 import { Hook, makeHook } from "./hook";
 
-// https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html#link/1-overriding-the-default-confirm-behaviour
-class AlertHook extends Hook {
+class DialogHook extends Hook {
   execCmd(cmd: string | null | undefined): void {
     if (cmd && cmd !== "[]") {
       this.liveSocket.execJS(this.el, cmd);
     }
   }
+
   mounted(): void {
     const dialog = this.el as HTMLDialogElement;
 
-    // if alert is controlled by :if={...} we need to show it
+    // if dialog is controlled by :if={...} we need to show it
     // manually on mount if it's data-show attribute is present
     if (dialog.hasAttribute("data-show")) {
       dialog.showModal();
@@ -23,8 +25,7 @@ class AlertHook extends Hook {
       cancelButton.addEventListener("keydown", (e) => {
         if ([" ", "Enter"].includes((e as KeyboardEvent).key)) {
           e.preventDefault();
-          dialog.returnValue = "cancel";
-          dialog.close();
+          dialog.close("cancel");
         }
       });
     }
@@ -36,71 +37,58 @@ class AlertHook extends Hook {
       confirmButton.addEventListener("keydown", (e) => {
         if ([" ", "Enter"].includes((e as KeyboardEvent).key)) {
           e.preventDefault();
-          dialog.returnValue = "confirm";
-          dialog.close();
+          dialog.close("confirm");
         }
       });
     }
 
-    // store the command to be executed on confirm
-    let cmd: string | null | undefined = null;
+    // if the on_cancel, on_confirm, or data-confirm attribute is present, we need to
+    // execute the command on close
+    dialog.addEventListener("close", () => {
+      // if the return value is submit:close, we don't want to execute the command
+      // as the form submit event will take care of it
+      if (dialog.returnValue === "submit:close") return;
 
-    dialog.addEventListener("close", (e) => {
+      let cmd: string | null | undefined = null;
       if (dialog.returnValue === "confirm") {
         // use the command stored on phx-click if present
         // otherwise use the command stored on data-confirm
-        cmd = cmd || dialog.dataset["confirm"];
+        cmd =
+          inject(dialog.id, AlertCommandContext) || dialog.dataset["confirm"];
       } else {
         cmd = dialog.dataset["cancel"];
       }
 
       this.execCmd(cmd);
+
       // reset the command
-      cmd = null;
+      provide(dialog.id, AlertCommandContext, null);
+      cmd = undefined;
     });
 
     // if we use the phx-submit attribute inside the modal form,
     // we need to close the dialog on submit and let the default
-    // submit event do the rest
+    // submit event do the rest. in this case set the return value
+    // to submit:close to prevent the on_cancel command from being executed
     dialog.addEventListener("submit:close", () => {
-      dialog.returnValue = "confirm";
-      dialog.close();
+      dialog.close("submit:close");
     });
 
-    // override the default confirm behaviour
-    // listen on document.body, so it's executed before the default of
-    // phoenix_html, which is listening on the window object
-    document.body.addEventListener(
-      "phoenix.link.click",
-      function (e) {
-        // prevent propagation to default implementation
-        e.stopPropagation();
-
-        const target = e.target as HTMLElement;
-
-        const message = target.getAttribute("data-confirm");
-        if (!message) return;
-
-        // currently only supporting the phx-click event
-        const phxEvent = target.getAttribute("phx-click");
-        if (!phxEvent) return;
-
-        // introduce alternative implementation if data-confirm is present
-        // and store the command to be executed on confirm
-
-        // prevent default implementation
-        e.preventDefault();
-
-        // set the command to be executed on confirm
-        cmd = phxEvent;
-
-        dialog.showModal();
-      },
-      false
-    );
+    this.handleEvent("submit:close", () => {
+      dialog.close("submit:close");
+    });
+  }
+  // if the dialog's show attribute is dynamically updated
+  // we need to show it manually if it's data-show attribute is present
+  // after the update
+  updated(): void {
+    const dialog = this.el as HTMLDialogElement;
+    if (dialog.hasAttribute("data-show") && !dialog.open) {
+      dialog.showModal();
+    }
   }
 }
 
-const alertHook = makeHook(AlertHook);
+const dialogHook = makeHook(DialogHook);
 
-export default alertHook;
+export default dialogHook;

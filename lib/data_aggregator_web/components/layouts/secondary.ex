@@ -21,11 +21,10 @@ defmodule DataAggregatorWeb.Layouts.Secondary do
 
   def page(assigns) do
     ~H"""
-    <.drawer id="sidebar-nav" class="isolate md:drawer-open" side_class="pr-px" overlay>
+    <.drawer id="main_navigation_drawer" class="isolate md:drawer-open" overlay>
       <.drawer
         id="secondary-column"
         class={class_names(["drawer-end", @open && "3xl:drawer-open"])}
-        side_class="pl-px"
         checked={@open}
       >
         <.main {assigns} />
@@ -35,7 +34,7 @@ defmodule DataAggregatorWeb.Layouts.Secondary do
       </.drawer>
 
       <:side>
-        <.sidebar current={@current} />
+        <.main_navigation current={@current} />
       </:side>
     </.drawer>
 

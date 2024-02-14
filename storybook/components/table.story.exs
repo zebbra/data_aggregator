@@ -59,7 +59,7 @@ defmodule Storybook.Components.Table do
             <.icon name="hero-ellipsis-horizontal-micro" />
           </summary>
         </:summary>
-        <ul class="dropdown-content z-10 menu menu-sm bg-base-200 rounded-box border-white/5 outline-black/5 w-28 gap-1 border p-2 shadow-2xl outline outline-1">
+        <ul class="dropdown-content z-10 menu menu-sm bg-base-200 rounded-box border-black-white/10 w-28 gap-1 border p-2 shadow-2xl">
           <li><button type="button" class="hover:bg-primary hover:text-primary-content">View</button></li>
           <li><button type="button" class="hover:bg-primary hover:text-primary-content">Edit</button></li>
           <li><button type="button" class="hover:bg-primary hover:text-primary-content">Delete</button></li>

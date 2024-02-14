@@ -20,12 +20,13 @@ defmodule Storybook.Layouts.Secondary do
     ~H"""
     <.page current="home" open={@show}>
       <.header>Dashboard</.header>
-      <button type="button" class="btn btn-neutral" phx-click="toggle">
-        Toggle secondary
-      </button>
+      <div class="px-6 lg:px-8">
+        <button type="button" class="btn btn-neutral" phx-click="toggle">
+          Toggle secondary
+        </button>
+      </div>
       <:secondary>
-        <div class="bg-base-100 border-white/5 outline-black/5 min-h-screen w-80 border-l p-4 outline outline-1">
-        </div>
+        <div class="bg-base-100 border-black-white/10 min-h-screen w-80 border-l p-4"></div>
       </:secondary>
     </.page>
     """

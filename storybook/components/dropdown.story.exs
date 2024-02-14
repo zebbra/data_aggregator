@@ -74,7 +74,7 @@ defmodule Storybook.Components.Dropdown do
 
   def content do
     """
-    <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-white/5 outline-black/5 top-px mt-16 w-44 gap-1 border p-2 shadow-2xl outline outline-1">
+    <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px mt-16 w-44 gap-1 border p-2 shadow-2xl">
       <li>
         <button type="button" class="active">
           <span class="badge badge-sm badge-outline font-mono text-[.6rem] pt-px pr-1 pl-1.5 font-bold tracking-widest opacity-50">

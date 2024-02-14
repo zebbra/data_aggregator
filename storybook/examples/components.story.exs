@@ -44,6 +44,13 @@ defmodule Storybook.Examples.Components do
     <.page current="users" open={@selected_user != nil}>
       <div class="grid gap-y-4">
         <.header>
+          <:navbar>
+            <.secondary_navigation>
+              <.secondary_navigation_item label="Overview" href="#" active />
+              <.secondary_navigation_item label="Details" href="#" />
+              <.secondary_navigation_item label="Settings" href="#" />
+            </.secondary_navigation>
+          </:navbar>
           List of users
           <:subtitle>Feel free to add any missing user!</:subtitle>
           <:actions>
@@ -79,44 +86,37 @@ defmodule Storybook.Examples.Components do
             </:col>
 
             <:action :let={user} class="-mx-3 -my-1.5 sm:-mx-2.5">
-              <.dropdown id={"user-#{user.id}"} class="dropdown-left">
-                <:summary>
-                  <summary class="btn btn-sm btn-ghost btn-square text-base-content/75 hover:text-base-content">
-                    <.icon name="hero-ellipsis-horizontal-micro" />
-                  </summary>
-                </:summary>
-                <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-white/5 outline-black/5 z-10 w-28 gap-1 border p-2 shadow-lg outline outline-1">
-                  <li>
-                    <button
-                      type="button"
-                      class="hover:bg-primary hover:text-primary-content"
-                      phx-click={JS.push("select_user", value: %{id: user.id})}
-                    >
-                      View
-                    </button>
-                  </li>
-                  <li>
-                    <button type="button" class="hover:bg-primary hover:text-primary-content">
-                      Edit
-                    </button>
-                  </li>
-                  <li>
-                    <.link
-                      phx-click={JS.push("delete", value: %{id: user.id})}
-                      class="hover:bg-primary hover:text-primary-content"
-                      data-confirm="Are you sure?"
-                    >
-                      Delete
-                    </.link>
-                  </li>
-                </ul>
-              </.dropdown>
+              <.table_actions id={"user-#{user.id}"}>
+                <li>
+                  <button
+                    type="button"
+                    class="hover:bg-primary hover:text-primary-content"
+                    phx-click={JS.push("select_user", value: %{id: user.id})}
+                  >
+                    View
+                  </button>
+                </li>
+                <li>
+                  <button type="button" class="hover:bg-primary hover:text-primary-content">
+                    Edit
+                  </button>
+                </li>
+                <li>
+                  <.link
+                    phx-click={JS.push("delete", value: %{id: user.id})}
+                    class="hover:bg-primary hover:text-primary-content"
+                    data-confirm="Are you sure?"
+                  >
+                    Delete
+                  </.link>
+                </li>
+              </.table_actions>
             </:action>
           </.table>
         </div>
       </div>
       <:secondary>
-        <div class="bg-base-100 border-white/5 outline-black/5 divide-base-content/10 min-h-dvh flex w-96 flex-col divide-y border-l outline outline-1 md:ml-6">
+        <div class="bg-base-100 border-black-white/10 divide-base-content/10 min-h-dvh flex w-96 flex-col divide-y border-l md:ml-6">
           <div :if={@selected_user} class="flex min-h-0 flex-1 flex-col overflow-y-scroll p-4">
             <.header>
               User details

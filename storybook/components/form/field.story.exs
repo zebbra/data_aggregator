@@ -2,7 +2,7 @@ defmodule Storybook.Components.Form.Field do
   use PhoenixStorybook.Story, :component
   alias DataAggregatorWeb.Components
 
-  def function, do: &Components.Form.field/1
+  def function, do: &Components.Field.field/1
   def imports, do: [{Components.Form, [simple_form: 1, fieldgroup: 1]}]
 
   def template do
@@ -22,7 +22,7 @@ defmodule Storybook.Components.Form.Field do
         variations:
           for type <-
                 ~w(checkbox color date datetime-local email hidden month number password
-               range search tel text textarea time url week toggle)a do
+               range search tel text textarea time url week toggle file)a do
             %Variation{
               id: type,
               attributes: %{
@@ -35,11 +35,66 @@ defmodule Storybook.Components.Form.Field do
           end
       },
       %VariationGroup{
+        id: :inputs_with_start_icon,
+        variations:
+          for type <-
+                ~w(checkbox color date datetime-local email month number password
+               range search tel text textarea time url week toggle file)a do
+            %Variation{
+              id: type,
+              attributes: %{
+                type: to_string(type),
+                label: String.capitalize("#{type} input"),
+                icon_start: icon_lookup(to_string(type)),
+                autocomplete: to_string(type),
+                description: String.capitalize("#{type} input description")
+              }
+            }
+          end
+      },
+      %VariationGroup{
+        id: :inputs_with_end_icon,
+        variations:
+          for type <-
+                ~w(checkbox color date datetime-local email month number password
+               range search tel text textarea time url week toggle file)a do
+            %Variation{
+              id: type,
+              attributes: %{
+                type: to_string(type),
+                label: String.capitalize("#{type} input"),
+                icon_end: icon_lookup(to_string(type)),
+                autocomplete: to_string(type),
+                description: String.capitalize("#{type} input description")
+              }
+            }
+          end
+      },
+      %VariationGroup{
+        id: :inputs_with_start_and_end_icon,
+        variations:
+          for type <-
+                ~w(checkbox color date datetime-local email month number password
+               range search tel text textarea time url week toggle file)a do
+            %Variation{
+              id: type,
+              attributes: %{
+                type: to_string(type),
+                label: String.capitalize("#{type} input"),
+                icon_start: icon_lookup(to_string(type)),
+                icon_end: icon_lookup(to_string(type)),
+                autocomplete: to_string(type),
+                description: String.capitalize("#{type} input description")
+              }
+            }
+          end
+      },
+      %VariationGroup{
         id: :disabled_inputs,
         variations:
           for type <-
                 ~w(checkbox color date datetime-local email hidden month number password
-               range search tel text textarea time url week toggle)a do
+               range search tel text textarea time url week toggle file)a do
             %Variation{
               id: type,
               attributes: %{
@@ -124,5 +179,24 @@ defmodule Storybook.Components.Form.Field do
         }
       }
     ]
+  end
+
+  defp icon_lookup(type) do
+    cond do
+      type == "color" -> "hero-swatch-mini"
+      type == "date" -> "hero-calendar-days-mini"
+      type == "datetime-local" -> "hero-calendar-days-mini"
+      type == "email" -> "hero-envelope-mini"
+      type == "month" -> "hero-calendar-days-mini"
+      type == "number" -> "hero-calculator-mini"
+      type == "password" -> "hero-key-mini"
+      type == "search" -> "hero-magnifying-glass-mini"
+      type == "tel" -> "hero-phone-mini"
+      type == "text" -> "hero-user-mini"
+      type == "time" -> "hero-clock-mini"
+      type == "url" -> "hero-link-mini"
+      type == "week" -> "hero-calendar-days-mini"
+      true -> "hero-user-mini"
+    end
   end
 end

@@ -6,7 +6,8 @@ defmodule Storybook.Components.Alert do
 
   def imports,
     do: [
-      {Components.Form, [simple_form: 1, fieldset: 1, fieldgroup: 1, field: 1]}
+      {Components.Form, [simple_form: 1, fieldset: 1, fieldgroup: 1]},
+      {Components.Field, [field: 1]}
     ]
 
   def template do

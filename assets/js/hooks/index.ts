@@ -1,13 +1,11 @@
-import AlertHook from "./alert.hook";
+import DialogHook from "./dialog.hook";
 import LocaleSelect from "./locale_select.hook";
 import MainScrollListener from "./main_scroll_listener.hook";
-import ModalHook from "./modal.hook";
 import ThemeSelect from "./theme_select.hook";
 
 export default {
-  AlertHook,
+  DialogHook,
   LocaleSelect,
   MainScrollListener,
-  ModalHook,
   ThemeSelect,
 };

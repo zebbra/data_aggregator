@@ -22,6 +22,7 @@ import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 
 import hooks from "./hooks";
+import "./src/data-confirm-interceptor";
 import topbar from "../vendor/topbar";
 
 // Global type definitions

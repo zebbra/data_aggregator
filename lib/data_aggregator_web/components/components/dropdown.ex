@@ -15,7 +15,7 @@ defmodule DataAggregatorWeb.Components.Dropdown do
   ## Examples
 
       <.dropdown id="dropdown class="dropdown-end" label="Language" icon="hero-language">
-        <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-white/5 outline-black/5 top-px mt-16 w-44 gap-1 border p-2 shadow-2xl outline outline-1">
+        <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px mt-16 w-44 gap-1 border p-2 shadow-2xl">
           <li :for={option <- options()}>
             <button
               type="button"
@@ -66,6 +66,24 @@ defmodule DataAggregatorWeb.Components.Dropdown do
       <% end %>
       <%= render_slot(@inner_block) %>
     </details>
+    """
+  end
+
+  attr :id, :string, required: true, doc: "ID of the dropdown"
+  slot :inner_block, required: true, doc: "Actual content of the dropdown"
+
+  def table_actions(assigns) do
+    ~H"""
+    <.dropdown id={@id} class="dropdown-left">
+      <:summary>
+        <summary class="btn btn-sm btn-ghost btn-square text-base-content/75 hover:text-base-content">
+          <.icon name="hero-ellipsis-horizontal-micro" />
+        </summary>
+      </:summary>
+      <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 z-10 w-28 gap-1 border p-2 shadow-lg">
+        <%= render_slot(@inner_block) %>
+      </ul>
+    </.dropdown>
     """
   end
 end

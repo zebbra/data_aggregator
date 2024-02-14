@@ -22,7 +22,7 @@ defmodule Storybook.Components.Form.InputValidation do
         variations:
           for type <-
                 ~w(checkbox color date datetime-local email hidden month number password
-               range search tel text textarea time url week toggle)a do
+               range search tel text textarea time url week toggle file)a do
             %Variation{
               id: type,
               attributes: %{

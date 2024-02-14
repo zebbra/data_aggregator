@@ -6,7 +6,8 @@ defmodule DataAggregatorWeb.Blocks do
   defmacro __using__(_) do
     quote do
       import DataAggregatorWeb.Blocks.{
-        Header
+        Header,
+        SecondaryNavigation
       }
     end
   end

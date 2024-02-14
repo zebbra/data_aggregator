@@ -11,4 +11,10 @@ defmodule DataAggregator.Records.CollectionType do
     Returns all possible collection types.
   """
   def get_collection_types, do: @collection_types
+
+  @doc """
+    Returns all possible collection type options.
+  """
+  def get_collection_type_options,
+    do: @collection_types |> Enum.map(fn {key, value} -> {value, key} end)
 end

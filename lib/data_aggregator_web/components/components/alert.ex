@@ -36,7 +36,7 @@ defmodule DataAggregatorWeb.Components.Alert do
     <dialog
       id={@id}
       class="modal"
-      phx-hook="AlertHook"
+      phx-hook="DialogHook"
       data-cancel={@on_cancel}
       data-confirm={@on_confirm}
     >
@@ -52,7 +52,7 @@ defmodule DataAggregatorWeb.Components.Alert do
               <button class="btn btn-ghost" value="cancel">
                 <%= ~t"Cancel"m %>
               </button>
-              <button type="submit" value="confirm" class="btn btn-neutral">
+              <button type="submit" value="confirm" class="btn btn-error">
                 <%= ~t"OK"m %>
               </button>
             </div>

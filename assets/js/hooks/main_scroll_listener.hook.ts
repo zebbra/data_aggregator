@@ -10,9 +10,9 @@ class MainScrollListener extends Hook {
       content.addEventListener("scroll", (event) => {
         const scrollY = (event.target as any)?.scrollTop;
         if (scrollY > 10) {
-          appbar.classList.add("shadow-sm", "border-b", "outline");
+          appbar.classList.add("shadow-sm", "border-b");
         } else {
-          appbar.classList.remove("shadow-sm", "border-b", "outline");
+          appbar.classList.remove("shadow-sm", "border-b");
         }
       });
     }

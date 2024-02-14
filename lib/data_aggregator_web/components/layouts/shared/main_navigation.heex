@@ -1,4 +1,8 @@
-<nav class="bg-base-100 border-white/5 outline-black/5 flex min-h-screen flex-col border-r outline outline-1 max-md:w-72">
+<nav
+  aria-labelledby="main_navigation"
+  class="bg-base-100 border-black-white/10 flex min-h-screen flex-col border-r max-md:w-72"
+>
+  <h2 id="main_navigation" class="sr-only">Main Navigation</h2>
   <div class="bg-base-100 sticky top-0 z-10 flex h-16 items-center bg-opacity-90 px-4 backdrop-blur md:justify-center">
     <.link
       href="/"
@@ -46,7 +50,7 @@
           @current == "records" && "active"
         ]}
       >
-        <.icon name="hero-user-group" />
+        <.icon name="hero-bug-ant" />
         <span class="md:hidden lg:inline"><%= ~t"Records"m %></span>
       </.link>
     </li>
@@ -58,7 +62,6 @@
           @current == "tasks" && "active",
           "md:max-lg:indicator"
         ]}
-        data-tip={~t"Tasks"m}
       >
         <.icon name="hero-queue-list" />
         <span class="md:hidden lg:inline">
@@ -67,7 +70,7 @@
             9
           </span>
         </span>
-        <span class="badge badge-primary indicator-item ml-auto lg:hidden">
+        <span class="badge badge-primary indicator-item ml-auto md:hidden">
           9
         </span>
       </.link>

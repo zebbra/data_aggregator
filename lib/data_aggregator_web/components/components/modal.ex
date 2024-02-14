@@ -29,10 +29,10 @@ defmodule DataAggregatorWeb.Components.Modal do
 
   The modal component is designed to be used with a form. In this case you should use
   backdrop={false} attr to prevent outside clicks from closing the modal. Further, you have
-  to chain the phx-submit JS command with |> JS.dispatch("submit:form"). This event
-  is handled in the modal.hook.ts ModalHook and will manually close the dialog. If you
+  to push the submit:close event on successfull form submit to the client. This event
+  is handled in the dialog.hook.ts DialogHook and will manually close the dialog. If you
   control the modal with the :if directive combined with the show attr, you do not need
-  to chain the JS command.
+  to push this event.
 
   For example:
 
@@ -41,7 +41,7 @@ defmodule DataAggregatorWeb.Components.Modal do
           :let={f}
           for={%{}}
           as={:user}
-          phx-submit={JS.push("save_user") |> JS.dispatch("submit:close")}
+          phx-submit={JS.push("save_user")}
         >
           <.fieldset legend="Create new user" text="This won't be persisted into DB, memory only">
             <.fieldgroup>
@@ -76,7 +76,7 @@ defmodule DataAggregatorWeb.Components.Modal do
     <dialog
       id={@id}
       class={["modal", @responsive && "modal-bottom sm:modal-middle"]}
-      phx-hook="ModalHook"
+      phx-hook="DialogHook"
       data-show={@show}
       data-cancel={@on_cancel}
     >

@@ -10,8 +10,7 @@ defmodule Storybook.Components.Drawer do
       %Variation{
         id: :drawer_right,
         attributes: %{
-          class: "drawer-end",
-          side_class: "pl-px"
+          class: "drawer-end"
         },
         slots: [
           content("drawer-single-drawer-right"),
@@ -20,9 +19,6 @@ defmodule Storybook.Components.Drawer do
       },
       %Variation{
         id: :drawer_left,
-        attributes: %{
-          side_class: "pr-px"
-        },
         slots: [
           content("drawer-single-drawer-left"),
           side("drawer-single-drawer-left")
@@ -32,7 +28,6 @@ defmodule Storybook.Components.Drawer do
         id: :drawer_with_overlay,
         attributes: %{
           class: "drawer-end",
-          side_class: "pl-px",
           overlay: true
         },
         slots: [
@@ -44,7 +39,6 @@ defmodule Storybook.Components.Drawer do
         id: :drawer_responsive,
         attributes: %{
           class: "drawer-end 3xl:drawer-open",
-          side_class: "pl-px",
           overlay: true
         },
         slots: [
@@ -58,7 +52,7 @@ defmodule Storybook.Components.Drawer do
   def side() do
     """
     <:side>
-      <div class="bg-base-100 border-white/5 outline-black/5 min-h-screen w-80 border-l p-4 outline outline-1">
+      <div class="bg-base-100 border-black-white/10 min-h-screen w-80 border-x p-4">
         Sidebar content
       </div>
     </:side>
@@ -68,7 +62,7 @@ defmodule Storybook.Components.Drawer do
   def side(id) do
     """
     <:side>
-      <div class="bg-base-100 border-white/5 outline-black/5 min-h-screen w-80 border-l p-4 outline outline-1">
+      <div class="bg-base-100 border-black-white/10 min-h-screen w-80 border-x p-4">
         <label
           aria-label="Close drawer"
           for="#{id}"

@@ -13,7 +13,6 @@ defmodule DataAggregatorWeb.Components.Drawer do
       <.drawer
         id="drawer-right"
         class="drawer-end"
-        side_class="pl-px"
         overlay
       >
         <section>
@@ -27,7 +26,7 @@ defmodule DataAggregatorWeb.Components.Drawer do
           Main content
         </section>
         <:side>
-          <div class="bg-base-100 border-white/5 outline-black/5 min-h-screen w-80 border-l p-4 outline outline-1">
+          <div class="bg-base-100 border-black-white/10 min-h-screen w-80 border-l p-4">
             Sidebar content
           </div>
         </:side>

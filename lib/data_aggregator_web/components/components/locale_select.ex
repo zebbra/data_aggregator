@@ -17,7 +17,7 @@ defmodule DataAggregatorWeb.Components.LocaleSelect do
     ~H"""
     <div id={"#{@id}-wrapper"} phx-hook="LocaleSelect">
       <.dropdown id={@id} class="dropdown-end" label={short(current())} icon="hero-language">
-        <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-white/5 outline-black/5 top-px mt-16 w-44 gap-1 border p-2 shadow-2xl outline outline-1">
+        <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px mt-16 w-44 gap-1 border p-2 shadow-2xl">
           <li :for={option <- options()}>
             <button
               type="button"

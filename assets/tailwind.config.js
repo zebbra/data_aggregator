@@ -1,9 +1,10 @@
 // See the Tailwind configuration guide for advanced usage
 // https://tailwindcss.com/docs/configuration
 
-const plugin = require("tailwindcss/plugin");
-const fs = require("fs");
-const path = require("path");
+import plugin from "tailwindcss/plugin";
+import fs from "fs";
+import path from "path";
+import themes from "daisyui/src/theming/themes";
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -15,10 +16,29 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        "black-white": "oklch(var(--black-white) / <alpha-value>)",
+      },
       screens: {
         "3xl": "1850px",
       },
     },
+  },
+  daisyui: {
+    themes: [
+      {
+        light: {
+          ...themes.light,
+          "--black-white": "0% 0 0",
+        },
+      },
+      {
+        dark: {
+          ...themes.dark,
+          "--black-white": "100% 0 0",
+        },
+      },
+    ],
   },
   plugins: [
     // DaisyUI

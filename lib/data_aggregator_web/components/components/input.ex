@@ -8,6 +8,9 @@ defmodule DataAggregatorWeb.Components.Input do
   alias Phoenix.HTML.Form
 
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
+  import DataAggregatorWeb.Helpers, only: [class_names: 1]
+
+  @valid_inside_types ~w(email number password tel text url)
 
   @doc """
   Renders an input.
@@ -34,31 +37,38 @@ defmodule DataAggregatorWeb.Components.Input do
       <.input field={@form[:email]} type="email" />
       <.input name="my-input" errors={["oh no!"]} />
   """
-  attr :id, :any, default: nil
-  attr :name, :any
-  attr :label, :string, default: nil
-  attr :value, :any
+  attr(:id, :any, default: nil)
+  attr(:name, :any)
+  attr(:label, :string, default: nil)
+  attr(:value, :any)
 
-  attr :type, :string,
+  attr(:type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file hidden month number password
                range radio search select tel text textarea time url week toggle)
+  )
 
-  attr :field, Phoenix.HTML.FormField,
+  attr(:field, Phoenix.HTML.FormField,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
+  )
 
-  attr :errors, :list, default: []
-  attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
-  attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
-  attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
-  attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
-  attr :class, :string, default: nil, doc: "additional css class for input"
+  attr(:errors, :list, default: [])
+  attr(:checked, :boolean, doc: "the checked flag for checkbox inputs")
+  attr(:prompt, :string, default: nil, doc: "the prompt for select inputs")
+  attr(:options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2")
+  attr(:multiple, :boolean, default: false, doc: "the multiple flag for select inputs")
+  attr(:class, :string, default: nil, doc: "additional css class for input")
+  attr(:inline, :boolean, default: false, doc: "whether the fieldgroup is inline")
+  attr(:inside, :boolean, default: false, doc: "whether the field is inside")
+  attr(:icon_start, :string, default: nil, doc: "icon name for the start of the input")
+  attr(:icon_end, :string, default: nil, doc: "icon name for the end of the input")
 
-  attr :rest, :global,
+  attr(:rest, :global,
     include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
                 multiple pattern placeholder readonly required rows size step)
+  )
 
-  slot :inner_block
+  slot(:inner_block)
 
   def input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     assigns
@@ -174,32 +184,49 @@ defmodule DataAggregatorWeb.Components.Input do
     """
   end
 
-  def input(%{type: "search"} = assigns) do
+  def input(%{type: "file"} = assigns) do
     ~H"""
-    <div class={["relative w-full", @class]}>
-      <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-        <.icon name="hero-magnifying-glass" class="size-5 text-base-content/50" />
-      </div>
-
-      <input
-        type="search"
-        id={@id}
-        name={@name}
-        value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-        class={[
-          "input input-bordered !pl-10 w-full rounded-full",
-          @errors != [] && "phx-feedback:input-error"
-        ]}
-        aria-invalid={@errors != []}
-        aria-describedby={@errors != [] && "#{@id}-error"}
-        {@rest}
-      />
-    </div>
+    <input
+      type={@type}
+      id={@id}
+      name={@name}
+      value={Phoenix.HTML.Form.normalize_value("file", @value)}
+      class={[
+        "file file-input file-input-bordered",
+        @class,
+        @errors != [] && "phx-feedback:file-input-error"
+      ]}
+      aria-invalid={@errors != []}
+      aria-describedby={@errors != [] && "#{@id}-error"}
+      {@rest}
+    />
     """
   end
 
-  # All other inputs text, datetime-local, url, password, etc. are handled here...
-  def input(assigns) do
+  # All other inside inputs text, datetime-local, url, password, etc. are handled here...
+  def input(%{inside: true} = assigns) do
+    # throw error if type is not in valid types
+    unless Enum.member?(@valid_inside_types, assigns[:type]) do
+      raise ArgumentError,
+            "type must be one of #{inspect(@valid_inside_types)}, got: #{inspect(assigns[:type])}"
+    end
+
+    ~H"""
+    <input
+      type={@type}
+      id={@id}
+      name={@name}
+      value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+      class={["grow", @class, @errors != [] && "phx-feedback:input-error"]}
+      aria-invalid={@errors != []}
+      aria-describedby={@errors != [] && "#{@id}-error"}
+      {@rest}
+    />
+    """
+  end
+
+  # All other inline inputs text, datetime-local, url, password, etc. are handled here...
+  def input(%{icon_start: nil, icon_end: nil, inline: true} = assigns) do
     ~H"""
     <input
       type={@type}
@@ -211,6 +238,78 @@ defmodule DataAggregatorWeb.Components.Input do
       aria-describedby={@errors != [] && "#{@id}-error"}
       {@rest}
     />
+    """
+  end
+
+  # All other inputs text, datetime-local, url, password, etc. are handled here...
+  def input(%{icon_start: nil, icon_end: nil} = assigns) do
+    ~H"""
+    <input
+      type={@type}
+      id={@id}
+      name={@name}
+      value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+      class={["input input-bordered", @class, @errors != [] && "phx-feedback:input-error"]}
+      aria-invalid={@errors != []}
+      aria-describedby={@errors != [] && "#{@id}-error"}
+      {@rest}
+    />
+    """
+  end
+
+  def input(%{icon_start: _, icon_end: nil} = assigns) do
+    ~H"""
+    <div class={[@class, "relative w-full"]}>
+      <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+        <.icon
+          name={@icon_start}
+          class={
+            class_names(["size-5 text-base-content/50", @errors != [] && "phx-feedback:text-error"])
+          }
+        />
+      </div>
+      <%= input(%{assigns | icon_start: nil, class: "w-full pl-10"}) %>
+    </div>
+    """
+  end
+
+  def input(%{icon_start: nil, icon_end: _} = assigns) do
+    ~H"""
+    <div class={[@class, "relative w-full"]}>
+      <%= input(%{assigns | icon_end: nil, class: "w-full pr-10"}) %>
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+        <.icon
+          name={@icon_end}
+          class={
+            class_names(["size-5 text-base-content/50", @errors != [] && "phx-feedback:text-error"])
+          }
+        />
+      </div>
+    </div>
+    """
+  end
+
+  def input(%{icon_start: _, icon_end: _} = assigns) do
+    ~H"""
+    <div class={[@class, "relative w-full"]}>
+      <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+        <.icon
+          name={@icon_start}
+          class={
+            class_names(["size-5 text-base-content/50", @errors != [] && "phx-feedback:text-error"])
+          }
+        />
+      </div>
+      <%= input(%{assigns | icon_start: nil, icon_end: nil, class: "w-full pl-10 pr-10"}) %>
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+        <.icon
+          name={@icon_end}
+          class={
+            class_names(["size-5 text-base-content/50", @errors != [] && "phx-feedback:text-error"])
+          }
+        />
+      </div>
+    </div>
     """
   end
 end
