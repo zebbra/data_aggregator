@@ -38,7 +38,7 @@ module.exports = {
           "--black-white": "100% 0 0",
         },
       },
-    },
+    ],
   },
   plugins: [
     // DaisyUI

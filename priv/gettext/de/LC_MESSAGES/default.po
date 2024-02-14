@@ -19,6 +19,7 @@ msgid "Dashboard"
 msgstr ""
 
 #: lib/data_aggregator_web/components/components/flash.ex:105
+<<<<<<< HEAD
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Components.Flash"
 msgid "Attempting to reconnect"
@@ -433,6 +434,8 @@ msgid "Records"
 msgstr "Einträge"
 
 #: lib/data_aggregator_web/components/flash.ex:108
+=======
+>>>>>>> 3666bbf (save current state)
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Components.Flash"
 msgid "Attempting to reconnect"
@@ -462,7 +465,7 @@ msgctxt "DataAggregatorWeb.Components.Flash"
 msgid "We can't find the internet"
 msgstr "Kein Verbindung"
 
-#: lib/data_aggregator_web/components/components/table.ex:53
+#: lib/data_aggregator_web/components/components/table.ex:58
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Components.Table"
 msgid "Actions"
@@ -588,6 +591,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Records with issues"
 msgstr "Einträge mit Problemen"
 
+<<<<<<< HEAD
 #: lib/data_aggregator_web/live/collection_live/show.ex:111
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
@@ -607,3 +611,393 @@ msgstr "Sammlungen"
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Add"
 msgstr "Neu"
+=======
+#: lib/data_aggregator_web/components/components/alert.ex:46
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.Components.Alert"
+msgid "Are you sure?"
+msgstr "Bist du sicher"
+
+#: lib/data_aggregator_web/components/components/alert.ex:53
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.Components.Alert"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: lib/data_aggregator_web/components/components/alert.ex:56
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Components.Alert"
+msgid "OK"
+msgstr ""
+
+#: lib/data_aggregator_web/components/components/alert.ex:63
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.Components.Alert"
+msgid "close"
+msgstr "schliessen"
+
+#: lib/data_aggregator_web/components/components/flash.ex:112
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Components.Flash"
+msgid "Something went wrong!"
+msgstr ""
+
+#: lib/data_aggregator_web/components/components/flash.ex:67
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.Components.Flash"
+msgid "close"
+msgstr "schliessen"
+
+#: lib/data_aggregator_web/components/components/modal.ex:88
+#: lib/data_aggregator_web/components/components/modal.ex:97
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.Components.Modal"
+msgid "close"
+msgstr "schliessen"
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:42
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.Layouts.Primary"
+msgid "Collections"
+msgstr "Sammlungen"
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:30
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Primary"
+msgid "Home"
+msgstr "Start"
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:68
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Primary"
+msgid "Tasks"
+msgstr "Prozesse"
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:42
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.Layouts.Secondary"
+msgid "Collections"
+msgstr "Sammlungen"
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:30
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Secondary"
+msgid "Home"
+msgstr "Start"
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:68
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Secondary"
+msgid "Tasks"
+msgstr "Prozesse"
+
+#: lib/data_aggregator_web/live/task_live/index.ex:23
+#: lib/data_aggregator_web/live/task_live/index.ex:29
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.TaskLive.Index"
+msgid "Tasks"
+msgstr "Prozesse"
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:54
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Primary"
+msgid "Records"
+msgstr "Einträge"
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:54
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Secondary"
+msgid "Records"
+msgstr "Einträge"
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:66
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:106
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Collection created successfully"
+msgstr "Eintrag erfolgreich erstellt"
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:107
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Collection updated successfully"
+msgstr "Sammlung erfolgreich aktualisiert"
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:41
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "My Collection"
+msgstr "Sammlungen"
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:40
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Name"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:44
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Owner"
+msgstr "Eigentümer"
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:68
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Reset"
+msgstr "Zurücksetzen"
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:69
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Save collection"
+msgstr "Speichern"
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:52
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Select a type"
+msgstr "Wähle einen Typ"
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:57
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Total items to digitize"
+msgstr "Total zu digitalisierende Einträge"
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:50
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Type"
+msgstr "Typ"
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:35
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Use this form to manage collections in your database."
+msgstr "Benutze dieses Formular um Sammlungen in deiner Datenbank zu verwalten."
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:99
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Are you sure?"
+msgstr "Bist du sicher"
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:47
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Code"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:174
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Collection deleted successfully"
+msgstr "Eintrag erfolgreich erstellt"
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:101
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Delete"
+msgstr "Löschen"
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:92
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:147
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Edit Collection"
+msgstr "Bearbeiten"
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:51
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Institution"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:41
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Name"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:32
+#: lib/data_aggregator_web/live/collection_live/index.ex:141
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "New Collection"
+msgstr "Sammlungen"
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:34
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "New collection"
+msgstr "Neue Sammlung"
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:55
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Progress"
+msgstr "Fortschritt"
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:69
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Records count / est."
+msgstr "Einträge / geschätzt"
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:73
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Updated At"
+msgstr "Zuletzt aktualisiert"
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:84
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "View"
+msgstr "Anzeigen"
+
+#: lib/data_aggregator_web/live/record_live/index.ex:23
+#: lib/data_aggregator_web/live/record_live/index.ex:29
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Records"
+msgstr "Einträge"
+
+#: lib/data_aggregator_web/live/collection_live/components.ex:55
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Components"
+msgid "Encoded"
+msgstr "Enkodiert"
+
+#: lib/data_aggregator_web/live/collection_live/components.ex:58
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Components"
+msgid "Encoding"
+msgstr "Enkodierung"
+
+#: lib/data_aggregator_web/live/collection_live/components.ex:57
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Components"
+msgid "Failed"
+msgstr "Fehlgeschlagen"
+
+#: lib/data_aggregator_web/live/collection_live/components.ex:62
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Components"
+msgid "Imported"
+msgstr "Importiert"
+
+#: lib/data_aggregator_web/live/collection_live/components.ex:61
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Components"
+msgid "Incomplete"
+msgstr "Unvollständig"
+
+#: lib/data_aggregator_web/live/collection_live/components.ex:59
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Components"
+msgid "Queued"
+msgstr "Wartend"
+
+#: lib/data_aggregator_web/live/collection_live/components.ex:56
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Components"
+msgid "Success"
+msgstr "Erfolgreich"
+
+#: lib/data_aggregator_web/live/collection_live/components.ex:60
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Components"
+msgid "Unchagned"
+msgstr "Unverändert"
+
+#: lib/data_aggregator_web/live/collection_live/components.ex:63
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Components"
+msgid "Unknown"
+msgstr "Unbekannt"
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:58
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Collection Information"
+msgstr "Sammlungsinformationen"
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:54
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Encodings"
+msgstr "Enkodierungen"
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:76
+#: lib/data_aggregator_web/live/collection_live/show.ex:78
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Import dataset"
+msgstr "Datensatz importieren"
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:50
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Imports"
+msgstr "Importe"
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:45
+#: lib/data_aggregator_web/live/collection_live/show.ex:66
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Records"
+msgstr "Einträge"
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:146
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Show Collection"
+msgstr "Sammlungen"
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:84
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "All records"
+msgstr "Alle Einträge"
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:86
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Not encoded"
+msgstr "Nicht enkodiert"
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:96
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Records with issues"
+msgstr "Einträge mit Problemen"
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:94
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Unpublished"
+msgstr "Unveröffentlicht"
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:65
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Show Collection"
+msgstr "Sammlung Anzeigen"
+
+#: lib/data_aggregator_web/live/collection_live/show.ex:64
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Show"
+msgid "Collections"
+msgstr "Sammlungen"
+>>>>>>> 3666bbf (save current state)

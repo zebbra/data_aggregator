@@ -7,12 +7,13 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok,
-     assign(socket,
-       current_id: 20,
-       selected_user: nil,
-       users: seed_users()
-     )}
+    {:ok, socket}
+  end
+
+  @impl true
+  def handle_params(params, _url, socket) do
+    socket = apply_action(socket, socket.assigns.live_action, params)
+    {:noreply, socket}
   end
 
   @impl true
