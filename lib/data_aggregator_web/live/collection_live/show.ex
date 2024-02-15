@@ -1,6 +1,7 @@
 defmodule DataAggregatorWeb.CollectionLive.Show do
   use DataAggregatorWeb, :live_view
-  use DataAggregatorWeb.CollectionLive.Components
+  use DataAggregatorWeb.CollectionLive.Components, only: [scope_stat: 1]
+  use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_indicator: 1]
 
   alias DataAggregator.PubSub
   alias DataAggregator.Records.Collection
@@ -75,11 +76,13 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
             %{label: @collection.name, link: ~p"/collections/#{@collection.id}"}
           ]}
         />
-        <div class="flex items-center gap-x-3 sm:hidden">
-          <.state_indicator state={@encoding_state} />
-          <%= @collection.name %>
-        </div>
-        <:subtitle :if={@collection.description}><%= @collection.description %></:subtitle>
+        <span class="sm:hidden"><%= @collection.name %></span>
+        <:subtitle>
+          <div class="max-sm:pt-2">
+            <.encoding_state_badge state={@encoding_state} />
+            <%= @collection.description %>
+          </div>
+        </:subtitle>
         <:actions>
           <.link patch={~p"/collections/new"} class="btn btn-neutral max-sm:btn-sm">
             <.icon name="hero-plus-mini" class="max-sm:hidden" />
