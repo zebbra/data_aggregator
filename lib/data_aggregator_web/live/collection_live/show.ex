@@ -60,47 +60,58 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
           </.secondary_navigation>
         </:navbar>
         <:breadcrumbs>
-          <.breadcrumbs items={[
-            %{label: ~t"Collections"m, link: ~p"/collections"},
-            %{label: ~t"Show Collection", link: ~p"/collections/#{@collection.id}"},
-            %{label: ~t"Records"m, link: ~p"/collections/#{@collection.id}"}
-          ]} />
+          <.breadcrumbs
+            class="sm:hidden text-sm"
+            items={[
+              %{label: ~t"Collections"m, link: ~p"/collections"},
+              %{label: ~t"Records"m, link: ~p"/collections/#{@collection.id}"}
+            ]}
+          />
         </:breadcrumbs>
-        <div class="flex items-center gap-x-3">
+        <.breadcrumbs
+          class="max-sm:hidden text-lg/6"
+          items={[
+            %{label: ~t"Collections"m, link: ~p"/collections"},
+            %{label: @collection.name, link: ~p"/collections/#{@collection.id}"}
+          ]}
+        />
+        <div class="flex items-center gap-x-3 sm:hidden">
           <.state_indicator state={@encoding_state} />
           <%= @collection.name %>
         </div>
         <:subtitle :if={@collection.description}><%= @collection.description %></:subtitle>
         <:actions>
           <.link patch={~p"/collections/new"} class="btn btn-neutral max-sm:btn-sm">
-            <span class="sr-only"><%= ~t"Import dataset"m %></span>
-            <.icon name="hero-plus-mini" />
-            <%= ~t"Import dataset"m %>
+            <.icon name="hero-plus-mini" class="max-sm:hidden" />
+            <span class="max-sm:hidden"><%= ~t"Import dataset"m %></span>
+            <span class="sm:hidden"><%= ~t"Add"m %></span>
           </.link>
         </:actions>
       </.header>
 
-      <div class="divide-black-white/10 border-black-white/10 bg-black-white/10 border-y-[0.8px] hidden divide-y sm:grid-cols-2 sm:gap-px sm:divide-y-0 md:grid lg:grid-cols-4">
-        <.scope_stat title={~t"All records"m} value={1.0} desc={@collection.records_count} active />
-        <.scope_stat
-          title={~t"Not encoded"m}
-          value={
-            if @collection.records_count_not_encoded == 0,
-              do: 1,
-              else: @collection.records_count_not_encoded / @collection.records_count
-          }
-          desc={@collection.records_count_not_encoded}
-        />
-        <.scope_stat title={~t"Unpublished"m} value={0.0} desc={0} />
-        <.scope_stat
-          title={~t"Records with issues"m}
-          value={
-            if @collection.records_count_failed == 0,
-              do: 0,
-              else: @collection.records_count_failed / @collection.records_count
-          }
-          desc={@collection.records_count_failed}
-        />
+      <div class="px-6 max-md:hidden lg:px-8">
+        <div class="grid grid-cols-2 gap-2 lg:grid-cols-4">
+          <.scope_stat title={~t"All records"m} value={1.0} desc={@collection.records_count} active />
+          <.scope_stat
+            title={~t"Not encoded"m}
+            value={
+              if @collection.records_count_not_encoded == 0,
+                do: 1,
+                else: @collection.records_count_not_encoded / @collection.records_count
+            }
+            desc={@collection.records_count_not_encoded}
+          />
+          <.scope_stat title={~t"Unpublished"m} value={0.0} desc={0} />
+          <.scope_stat
+            title={~t"Records with issues"m}
+            value={
+              if @collection.records_count_failed == 0,
+                do: 0,
+                else: @collection.records_count_failed / @collection.records_count
+            }
+            desc={@collection.records_count_failed}
+          />
+        </div>
       </div>
 
       <%!-- <div class="bg-base-100 top-[104px] sticky z-10 flex flex-wrap justify-between p-6 lg:px-8">

@@ -10,14 +10,14 @@ defmodule DataAggregatorWeb.Components.Breadcrumbs do
   @doc """
   Renders a list of breadcrumbs.
   """
-  attr(:class, :string, default: nil, doc: "the breadcrumbs class")
+  attr(:class, :string, default: "text-sm", doc: "the breadcrumbs class")
   attr(:items, :list, default: [], doc: "the list of breadcrumbs items")
 
   def breadcrumbs(assigns) do
     assigns = assign(assigns, length: length(assigns[:items]))
 
     ~H"""
-    <nav aria-label="Breadcrumb" class="breadcrumbs no-scrollbar text-sm sm:snap-x">
+    <nav aria-label="Breadcrumb" class={["breadcrumbs no-scrollbar pt-0 sm:snap-x", @class]}>
       <ol role="list">
         <%= for {item, index} <- Enum.with_index(@items) do %>
           <li class={["sm:snap-start", li_class(index, @length)]}>

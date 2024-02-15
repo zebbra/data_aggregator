@@ -49,10 +49,8 @@ defmodule Storybook.Blocks.Header do
           <:breadcrumbs>
             <.breadcrumbs items={#{inspect(breadcrumbs())}} />
           </:breadcrumbs>
-          """,
-          "Hello World",
-          "<:subtitle>I'm a header subtitle</:subtitle>",
-          """
+          Hello World
+          <:subtitle>I'm a header subtitle</:subtitle>
           <:actions>
             <button type="button" class="btn btn-neutral max-sm:btn-sm">Link</button>
           </:actions>
