@@ -89,10 +89,17 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
         </:actions>
       </.header>
 
-      <div class="px-6 max-md:hidden lg:px-8">
-        <div class="grid grid-cols-2 gap-2 lg:grid-cols-4">
-          <.scope_stat title={~t"All records"m} value={1.0} desc={@collection.records_count} active />
+      <div class="px-6 lg:px-8">
+        <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
           <.scope_stat
+            href="#"
+            title={~t"All records"m}
+            value={1.0}
+            desc={@collection.records_count}
+            active
+          />
+          <.scope_stat
+            href="#"
             title={~t"Not encoded"m}
             value={
               if @collection.records_count_not_encoded == 0,
@@ -101,8 +108,9 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
             }
             desc={@collection.records_count_not_encoded}
           />
-          <.scope_stat title={~t"Unpublished"m} value={0.0} desc={0} />
+          <.scope_stat href="#" title={~t"Unpublished"m} value={0.0} desc={0} />
           <.scope_stat
+            href="#"
             title={~t"Records with issues"m}
             value={
               if @collection.records_count_failed == 0,

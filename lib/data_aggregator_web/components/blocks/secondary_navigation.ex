@@ -9,9 +9,9 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
   Renders a secondary, horizontal navigation which will scroll on small screens.
   """
 
-  attr :id, :string, default: "secondary_navigation", doc: "ID of the navigation"
+  attr(:id, :string, default: "secondary_navigation", doc: "ID of the navigation")
 
-  slot :inner_block, required: true, doc: "The navigation items"
+  slot(:inner_block, required: true, doc: "The navigation items")
 
   def secondary_navigation(assigns) do
     ~H"""
@@ -34,9 +34,9 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
   Renders a secondary navigation item.
   """
 
-  attr :label, :string, required: true, doc: "Label of the item"
-  attr :href, :string, required: true, doc: "URL of the item"
-  attr :active, :boolean, default: false, doc: "Whether the item is active"
+  attr(:label, :string, required: true, doc: "Label of the item")
+  attr(:href, :string, required: true, doc: "URL of the item")
+  attr(:active, :boolean, default: false, doc: "Whether the item is active")
 
   def secondary_navigation_item(assigns) do
     ~H"""

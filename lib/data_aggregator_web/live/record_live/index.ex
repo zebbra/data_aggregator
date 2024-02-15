@@ -17,12 +17,6 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   end
 
   @impl true
-  def handle_params(params, _url, socket) do
-    socket = apply_action(socket, socket.assigns.live_action, params)
-    {:noreply, socket}
-  end
-
-  @impl true
   def render(assigns) do
     ~H"""
     <.page current="records">

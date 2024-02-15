@@ -1,6 +1,7 @@
 defmodule DataAggregatorWeb.CollectionLive.Components do
   use DataAggregatorWeb, :html
 
+  attr(:href, :string, required: true)
   attr(:title, :string, required: true)
   attr(:value, :float, required: true)
   attr(:desc, :integer, required: true)
@@ -8,15 +9,20 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
 
   def scope_stat(assigns) do
     ~H"""
-    <div class={[
-      "stat border-black-white/10 cursor-pointer rounded-md border",
-      @active && "bg-base-200/80",
-      @active == false && "bg-base-300/10 hover:bg-base-200/80"
-    ]}>
-      <div class="stat-title"><%= @title %></div>
-      <div class="stat-value"><%= format_percent(@value) %></div>
-      <div class="stat-desc"><%= format_number(@desc) %></div>
-    </div>
+    <.link
+      patch={@href}
+      class={[
+        "stat cursor-pointer rounded-md max-lg:text-sm max-lg:px-3 max-lg:py-1.5",
+        @active && "bg-neutral text-neutral-content",
+        @active == false && "border border-black-white/10 hover:bg-base-content/10"
+      ]}
+    >
+      <div class={["stat-title truncate", @active && "text-neutral-content"]}><%= @title %></div>
+      <div class={["stat-value max-lg:hidden"]}><%= format_percent(@value) %></div>
+      <div class={["stat-desc max-lg:hidden", @active && "text-neutral-content"]}>
+        <%= format_number(@desc) %>
+      </div>
+    </.link>
     """
   end
 
