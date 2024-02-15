@@ -1,17 +1,17 @@
 defmodule DataAggregatorWeb.CollectionLive.Components do
   use DataAggregatorWeb, :html
 
-  attr :title, :string, required: true
-  attr :value, :float, required: true
-  attr :desc, :integer, required: true
-  attr :active, :boolean, default: false
+  attr(:title, :string, required: true)
+  attr(:value, :float, required: true)
+  attr(:desc, :integer, required: true)
+  attr(:active, :boolean, default: false)
 
   def scope_stat(assigns) do
     ~H"""
     <div class={[
-      "bg-base-100 stat cursor-pointer p-6 lg:px-8",
-      @active && "ring-primary/50 ring-1 ring-inset",
-      @active == false && "hover:ring-primary/25 hover:ring-1 hover:ring-inset"
+      "stat border-black-white/10 cursor-pointer rounded-md border",
+      @active && "bg-base-200/80",
+      @active == false && "bg-base-300/10 hover:bg-base-200/80"
     ]}>
       <div class="stat-title"><%= @title %></div>
       <div class="stat-value"><%= format_percent(@value) %></div>
@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
     """
   end
 
-  attr :state, :atom, default: nil
+  attr(:state, :atom, default: nil)
 
   def state_indicator(assigns) do
     ~H"""

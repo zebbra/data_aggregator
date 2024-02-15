@@ -60,13 +60,14 @@ defmodule Storybook.Components.Dropdown do
       %Variation{
         id: :with_custom_summary,
         slots: [
-          ~s|
-<:summary>
-  <summary class="btn text-base-content/75 hover:text-base-content">
-    Custom
-  </summary>
-</:summary>|,
-          content()
+          """
+          <:summary>
+            <summary class="btn text-base-content/75 hover:text-base-content">
+              Custom
+            </summary>
+          </:summary>
+          #{content()}
+          """
         ]
       }
     ]

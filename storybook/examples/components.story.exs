@@ -41,7 +41,7 @@ defmodule Storybook.Examples.Components do
   @impl true
   def render(assigns) do
     ~H"""
-    <.page current="users" open={@selected_user != nil}>
+    <.page current="records" open={@selected_user != nil}>
       <div class="grid gap-y-4">
         <.header>
           <:navbar>

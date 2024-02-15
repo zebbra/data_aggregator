@@ -29,8 +29,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           <%= ~t"Collections"m %>
           <:actions>
             <.link patch={~p"/collections/new"} class="btn btn-neutral max-sm:btn-sm">
-              <span class="sr-only"><%= ~t"New Collection"m %></span>
-              <.icon name="hero-plus-mini" />
+              <.icon name="hero-plus-mini" class="max-sm:hidden" />
               <%= ~t"New collection"m %>
             </.link>
           </:actions>
