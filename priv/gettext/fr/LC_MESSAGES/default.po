@@ -55,6 +55,7 @@ msgctxt "DataAggregatorWeb.Components.Table"
 msgid "Actions"
 msgstr ""
 
+<<<<<<< HEAD
 #: lib/data_aggregator_web/live/collection_live/index.ex:29
 #: lib/data_aggregator_web/live/collection_live/index.ex:134
 #, elixir-autogen, elixir-format, fuzzy
@@ -62,6 +63,8 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Collections"
 msgstr ""
 
+=======
+>>>>>>> 9be25b9 (chore(rebase): branch encoding)
 #: lib/data_aggregator_web/components/components/alert.ex:46
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Components.Alert"
@@ -939,4 +942,11 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Add"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:29
+#: lib/data_aggregator_web/live/collection_live/index.ex:134
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Collections"
 msgstr ""

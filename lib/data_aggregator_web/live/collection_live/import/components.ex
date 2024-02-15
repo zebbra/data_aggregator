@@ -63,7 +63,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
   end
 
   def import_state_badge_class(state) do
-    gray = "bg-neutral-content/50 text-neutral/50 ring-base-content/20"
+    gray = "bg-base-300 text-base-content/60 ring-base-content/30"
     blue = "bg-info/10 text-info ring-info/20"
     green = "bg-success/10 text-success ring-success/20"
     red = "bg-error/10 text-error ring-error/20"
