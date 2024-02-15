@@ -322,55 +322,55 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Records"
 msgstr "Einträge"
 
-#: lib/data_aggregator_web/live/collection_live/components.ex:55
+#: lib/data_aggregator_web/live/collection_live/components.ex:61
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Encoded"
 msgstr "Enkodiert"
 
-#: lib/data_aggregator_web/live/collection_live/components.ex:58
+#: lib/data_aggregator_web/live/collection_live/components.ex:64
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Encoding"
 msgstr "Enkodierung"
 
-#: lib/data_aggregator_web/live/collection_live/components.ex:57
+#: lib/data_aggregator_web/live/collection_live/components.ex:63
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Failed"
 msgstr "Fehlgeschlagen"
 
-#: lib/data_aggregator_web/live/collection_live/components.ex:62
+#: lib/data_aggregator_web/live/collection_live/components.ex:68
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Imported"
 msgstr "Importiert"
 
-#: lib/data_aggregator_web/live/collection_live/components.ex:61
+#: lib/data_aggregator_web/live/collection_live/components.ex:67
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Incomplete"
 msgstr "Unvollständig"
 
-#: lib/data_aggregator_web/live/collection_live/components.ex:59
+#: lib/data_aggregator_web/live/collection_live/components.ex:65
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Queued"
 msgstr "Wartend"
 
-#: lib/data_aggregator_web/live/collection_live/components.ex:56
+#: lib/data_aggregator_web/live/collection_live/components.ex:62
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Success"
 msgstr "Erfolgreich"
 
-#: lib/data_aggregator_web/live/collection_live/components.ex:60
+#: lib/data_aggregator_web/live/collection_live/components.ex:66
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Unchagned"
 msgstr "Unverändert"
 
-#: lib/data_aggregator_web/live/collection_live/components.ex:63
+#: lib/data_aggregator_web/live/collection_live/components.ex:69
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Unknown"
@@ -407,31 +407,31 @@ msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Records"
 msgstr "Einträge"
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:157
+#: lib/data_aggregator_web/live/collection_live/show.ex:165
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Show Collection"
 msgstr "Sammlungen"
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:94
+#: lib/data_aggregator_web/live/collection_live/show.ex:96
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "All records"
 msgstr "Alle Einträge"
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:96
+#: lib/data_aggregator_web/live/collection_live/show.ex:103
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Not encoded"
 msgstr "Nicht enkodiert"
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:106
+#: lib/data_aggregator_web/live/collection_live/show.ex:114
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Records with issues"
 msgstr "Einträge mit Problemen"
 
-#: lib/data_aggregator_web/live/collection_live/show.ex:104
+#: lib/data_aggregator_web/live/collection_live/show.ex:111
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Show"
 msgid "Unpublished"
