@@ -217,6 +217,16 @@ Table record_images {
   record_id uuid
 }
 
+Table records_versions {
+  id uuid [pk]
+  version_action_type varchar
+  version_action_name varchar
+  version_source_id uuid
+  changes jsonb
+  version_inserted_at timestamp
+  version_updated_at timestamp
+}
+
 Table swiss_species {
   id uuid [pk]
   taxon_id_ch integer [pk]
@@ -276,3 +286,4 @@ Ref: records.id - encoded_records.record_id
 Ref: records.id < import_records.record_id
 Ref: records.id < record_encoding_results.record_id
 Ref: records.id < record_images.record_id
+Ref: records.id < records_versions.version_source_id

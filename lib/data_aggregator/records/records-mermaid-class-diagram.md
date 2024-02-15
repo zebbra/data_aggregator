@@ -172,6 +172,7 @@ classDiagram
         UtcDatetimeUsec updated_at
         Integer encoder_job_id
         Atom state
+        Version[] paper_trail_versions
         Collection collection
         Import[] imports
         Image[] images
@@ -202,6 +203,17 @@ classDiagram
         update(UUID id, Integer size, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
         read()
         create(UUID id, Integer size, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
+    }
+    class Version {
+        UUID id
+        Atom version_action_type
+        Atom version_action_name
+        UUID version_source_id
+        Map changes
+        Record version_source
+        update(UUID id, Atom version_action_type, Atom version_action_name, UUID version_source_id, ...)
+        read()
+        create(UUID id, Atom version_action_type, Atom version_action_name, UUID version_source_id, ...)
     }
     class EncodedRecord {
         String mts_material_sample_type
@@ -283,5 +295,6 @@ classDiagram
     Import -- Record
     Record -- Record
     Record -- Image
+    Record -- Version
 
 ```

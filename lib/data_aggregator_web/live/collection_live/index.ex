@@ -24,86 +24,84 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   def render(assigns) do
     ~H"""
     <.page current="collections">
-      <div class="grid gap-y-4">
-        <.header>
-          <%= ~t"Collections"m %>
-          <:actions>
-            <.link patch={~p"/collections/new"} class="btn btn-neutral max-sm:btn-sm">
-              <.icon name="hero-plus-mini" class="max-sm:hidden" />
-              <%= ~t"New collection"m %>
+      <.header>
+        <%= ~t"Collections"m %>
+        <:actions>
+          <.link patch={~p"/collections/new"} class="btn btn-neutral max-sm:btn-sm">
+            <.icon name="hero-plus-mini" class="max-sm:hidden" />
+            <%= ~t"New collection"m %>
+          </.link>
+        </:actions>
+      </.header>
+
+      <div class="no-scrollbar overflow-x-auto pb-4">
+        <.table id="collections-table" rows={@streams.results}>
+          <:col :let={{_id, collection}} label={~t"Name"m}>
+            <.link navigate={~p"/collections/#{collection.id}/records"} class="link link-primary">
+              <%= collection.name %>
             </.link>
-          </:actions>
-        </.header>
+          </:col>
 
-        <div class="no-scrollbar overflow-x-auto pb-4">
-          <.table id="collections-table" rows={@streams.results}>
-            <:col :let={{_id, collection}} label={~t"Name"m}>
-              <.link navigate={~p"/collections/#{collection.id}"} class="link link-primary">
-                <%= collection.name %>
-              </.link>
-            </:col>
+          <:col :let={{_id, collection}} label={~t"Code"m}>
+            <%= collection.code %>
+          </:col>
 
-            <:col :let={{_id, collection}} label={~t"Code"m}>
-              <%= collection.code %>
-            </:col>
+          <:col :let={{_id, collection}} label={~t"Institution"m}>
+            <%= collection.institution %>
+          </:col>
 
-            <:col :let={{_id, collection}} label={~t"Institution"m}>
-              <%= collection.institution %>
-            </:col>
-
-            <:col :let={{_id, collection}} label={~t"Progress"m} class="text-right">
-              <div
-                class="tooltip tooltip-primary flex flex-1 items-center"
-                data-tip={
+          <:col :let={{_id, collection}} label={~t"Progress"m} class="text-right">
+            <div
+              class="tooltip tooltip-primary flex flex-1 items-center"
+              data-tip={
                 "#{collection.digitizing_progress |> Decimal.from_float() |> Decimal.round(1)}%"}
-              >
-                <progress
-                  class="progress progress-primary min-w-32"
-                  value={collection.digitizing_progress}
-                  max="100"
-                />
-              </div>
-            </:col>
+            >
+              <progress
+                class="progress progress-primary min-w-32"
+                value={collection.digitizing_progress}
+                max="100"
+              />
+            </div>
+          </:col>
 
-            <:col :let={{_id, collection}} label={~t"Records count / est."m}>
-              <%= inspect(collection.records_count) %> / <%= collection.items_to_digitize %>
-            </:col>
+          <:col :let={{_id, collection}} label={~t"Records count / est."m}>
+            <%= inspect(collection.records_count) %> / <%= collection.items_to_digitize %>
+          </:col>
 
-            <:col :let={{_id, collection}} label={~t"Updated At"m}>
-              <%= format_datetime(collection.updated_at, format: :short) %>
-            </:col>
+          <:col :let={{_id, collection}} label={~t"Updated At"m}>
+            <%= format_datetime(collection.updated_at, format: :short) %>
+          </:col>
 
-            <:action :let={{_id, collection}} class="-mx-3 -my-1.5 sm:-mx-2.5">
-              <.table_actions id={"collection-#{collection.id}"}>
-                <li>
-                  <.link
-                    patch={~p"/collections/#{collection.id}"}
-                    class="hover:bg-primary hover:text-primary-content"
-                  >
-                    <%= ~t"View"m %>
-                  </.link>
-                </li>
-                <li>
-                  <.link
-                    patch={~p"/collections/#{collection}/edit"}
-                    class="hover:bg-primary hover:text-primary-content"
-                  >
-                    <%= ~t"Edit"m %>
-                  </.link>
-                </li>
-                <li>
-                  <.link
-                    phx-click={JS.push("delete", value: %{id: collection.id})}
-                    class="hover:bg-primary hover:text-primary-content"
-                    data-confirm={~t"Are you sure?"m}
-                  >
-                    <%= ~t"Delete"m %>
-                  </.link>
-                </li>
-              </.table_actions>
-            </:action>
-          </.table>
-        </div>
+          <:action :let={{_id, collection}} class="-mx-3 -my-1.5 sm:-mx-2.5">
+            <.table_actions id={"collection-#{collection.id}"}>
+              <li>
+                <.link
+                  patch={~p"/collections/#{collection.id}/records"}
+                  class="hover:bg-primary hover:text-primary-content"
+                >
+                  <%= ~t"View"m %>
+                </.link>
+              </li>
+              <li>
+                <.link
+                  patch={~p"/collections/#{collection}/edit"}
+                  class="hover:bg-primary hover:text-primary-content"
+                >
+                  <%= ~t"Edit"m %>
+                </.link>
+              </li>
+              <li>
+                <.link
+                  phx-click={JS.push("delete", value: %{id: collection.id})}
+                  class="hover:bg-primary hover:text-primary-content"
+                  data-confirm={~t"Are you sure?"m}
+                >
+                  <%= ~t"Delete"m %>
+                </.link>
+              </li>
+            </.table_actions>
+          </:action>
+        </.table>
       </div>
 
       <:portal>

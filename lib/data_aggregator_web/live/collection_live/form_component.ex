@@ -58,6 +58,12 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
                 placeholder="42042"
               />
             </div>
+            <.field
+              type="textarea"
+              field={@form[:description]}
+              label={~t"Description"m}
+              placeholder={~t"Description"m}
+            />
           </.fieldgroup>
         </.fieldset>
 

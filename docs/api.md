@@ -258,6 +258,7 @@ classDiagram
         UtcDatetimeUsec updated_at
         Integer encoder_job_id
         Atom state
+        Version[] paper_trail_versions
         Collection collection
         Import[] imports
         Image[] images
@@ -288,6 +289,17 @@ classDiagram
         update(UUID id, Integer size, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
         read()
         create(UUID id, Integer size, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
+    }
+    class Version {
+        UUID id
+        Atom version_action_type
+        Atom version_action_name
+        UUID version_source_id
+        Map changes
+        Record version_source
+        update(UUID id, Atom version_action_type, Atom version_action_name, UUID version_source_id, ...)
+        read()
+        create(UUID id, Atom version_action_type, Atom version_action_name, UUID version_source_id, ...)
     }
     class EncodedRecord {
         String mts_material_sample_type
@@ -369,6 +381,7 @@ classDiagram
     Import -- Record
     Record -- Record
     Record -- Image
+    Record -- Version
 ```
 
 ### ER Diagram
@@ -514,6 +527,13 @@ erDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
     }
+    Version {
+        UUID id
+        Atom version_action_type
+        Atom version_action_name
+        UUID version_source_id
+        Map changes
+    }
     EncodedRecord {
         String mts_material_sample_type
         String mte_material_entity_id
@@ -589,6 +609,7 @@ erDiagram
     Import ||--|| Record : ""
     Record ||--|| Record : ""
     Record ||--|| Image : ""
+    Record ||--|| Version : ""
 ```
 
 ### Resources
@@ -600,6 +621,7 @@ erDiagram
 - [Record](#record)
 - [Record](#record)
 - [Image](#image)
+- [Version](#version)
 - [EncodedRecord](#encodedrecord)
 
 ### ChangeEvent
@@ -865,6 +887,30 @@ the `DataAggregator.Records.Record.import/2` action.
 | **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>size</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
 | **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>size</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+
+### Version
+
+
+
+#### Attributes
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **id** | UUID |  |
+| **version_action_type** | Atom |  |
+| **version_action_name** | Atom |  |
+| **version_source_id** | UUID |  |
+| **changes** | Map |  |
+| **version_inserted_at** | UtcDatetimeUsec |  |
+| **version_updated_at** | UtcDatetimeUsec |  |
+
+#### Actions
+
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **update** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>version_action_type</b> <i>Atom</i> attribute</li><li><b>version_action_name</b> <i>Atom</i> attribute</li><li><b>version_source_id</b> <i>UUID</i> attribute</li><li><b>changes</b> <i>Map</i> attribute</li></ul> |  |
+| **read** | _read_ | <ul></ul> |  |
+| **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>version_action_type</b> <i>Atom</i> attribute</li><li><b>version_action_name</b> <i>Atom</i> attribute</li><li><b>version_source_id</b> <i>UUID</i> attribute</li><li><b>changes</b> <i>Map</i> attribute</li></ul> |  |
 
 ### EncodedRecord
 

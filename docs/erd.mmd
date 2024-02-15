@@ -206,6 +206,15 @@ erDiagram
     uuid attachment_id
     uuid record_id
   }
+  records_versions {
+    uuid id PK
+    varchar version_action_type
+    varchar version_action_name
+    uuid version_source_id
+    jsonb changes
+    timestamp version_inserted_at
+    timestamp version_updated_at
+  }
   swiss_species {
     uuid id PK
     integer taxon_id_ch PK
@@ -254,3 +263,4 @@ erDiagram
   records ||--|{ import_records : ""
   records ||--|{ record_encoding_results : ""
   records ||--|{ record_images : ""
+  records ||--|{ records_versions : ""
