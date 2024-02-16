@@ -2,14 +2,27 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   @moduledoc false
 
   use DataAggregatorWeb, :live_view
+  use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_indicator: 1]
 
   alias DataAggregator.Records.Collection
 
   import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
+  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_encoding_state: 1]
+
+  @load [
+    :records_count,
+    :digitizing_progress,
+    :records_count_not_encoded,
+    :records_count_imported,
+    :records_count_encoding_queued,
+    :records_count_encoding,
+    :records_count_encoded,
+    :records_count_failed
+  ]
 
   @impl true
   def mount(_params, _session, socket) do
-    results = Collection.read!(load: [:records_count, :digitizing_progress])
+    results = Collection.read!(load: @load)
     socket = stream(socket, :results, results)
 
     {:ok, socket}
@@ -44,15 +57,12 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
               <%= collection.name %>
             </.link>
           </:col>
-
           <:col :let={{_id, collection}} label={~t"Code"m}>
             <%= collection.code %>
           </:col>
-
           <:col :let={{_id, collection}} label={~t"Institution"m}>
             <%= collection.institution %>
           </:col>
-
           <:col :let={{_id, collection}} label={~t"Progress"m} class="text-right">
             <div
               class="tooltip tooltip-primary flex flex-1 items-center"
@@ -66,12 +76,13 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
               />
             </div>
           </:col>
-
-          <:col :let={{_id, collection}} label={~t"Records count / est."m}>
+          <:col :let={{_id, collection}} label={~t"Records count / est."m} class="text-right">
             <%= inspect(collection.records_count) %> / <%= collection.items_to_digitize %>
           </:col>
-
-          <:col :let={{_id, collection}} label={~t"Updated At"m}>
+          <:col :let={{_id, collection}} label={~t"State"m} class="text-center">
+            <.encoding_state_badge state={get_encoding_state(collection)} />
+          </:col>
+          <:col :let={{_id, collection}} label={~t"Updated At"m} class="text-right">
             <%= format_datetime(collection.updated_at, format: :short) %>
           </:col>
 
@@ -147,7 +158,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
     |> assign(:page_title, ~t"Edit Collection"m)
     |> assign(
       :collection,
-      Collection.get_by_id!(id, load: [:records_count, :digitizing_progress])
+      Collection.get_by_id!(id, load: @load)
     )
   end
 
@@ -160,7 +171,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
      stream_insert(
        socket,
        :results,
-       Collection.get_by_id!(collection.id, load: [:records_count, :digitizing_progress])
+       Collection.get_by_id!(collection.id, load: @load)
      )}
   end
 

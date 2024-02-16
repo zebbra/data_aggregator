@@ -26,7 +26,6 @@ defmodule DataAggregatorWeb.Blocks.Header do
   def header(assigns) do
     ~H"""
     <header class={["w-full", @class]}>
-      <%= render_slot(@navbar) %>
       <div class={!@dense && "p-6 lg:px-8"}>
         <div class={[
           @break && "sm:flex sm:items-start sm:justify-between sm:gap-8",
@@ -34,7 +33,7 @@ defmodule DataAggregatorWeb.Blocks.Header do
         ]}>
           <div class="min-w-0 flex-1">
             <%= render_slot(@breadcrumbs) %>
-            <h1 class="text-base-content text-lg/6 truncate font-semibold">
+            <h1 class="min-h-12 text-base-content text-lg/6 truncate font-semibold">
               <%= render_slot(@inner_block) %>
             </h1>
             <p :if={@subtitle != []} class="text-base-content/50 text-sm/6 line-clamp-3">
@@ -46,6 +45,7 @@ defmodule DataAggregatorWeb.Blocks.Header do
           </div>
         </div>
       </div>
+      <%= render_slot(@navbar) %>
     </header>
     """
   end

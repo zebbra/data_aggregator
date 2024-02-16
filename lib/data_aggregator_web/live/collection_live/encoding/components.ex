@@ -35,7 +35,7 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Components do
     ~H"""
     <span
       class={[
-        "tooltip inline-flex h-8 items-center space-x-1.5 rounded-full px-1.5 py-1 text-sm font-medium ring-1 ring-inset",
+        "tooltip inline-flex h-8 items-center space-x-1.5 rounded-full px-1.5 py-1 text-sm font-medium ring-1 ring-inset before:text-xs",
         state_badge_class(@state)
       ]}
       data-tip={state_badge_tooltip(@state, @reason, @small)}
@@ -67,13 +67,13 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Components do
     blue = "bg-info/10 text-info ring-info/20 tooltip-info"
     green = "bg-success/10 text-success ring-success/20 tooltip-success"
     red = "bg-error/10 text-error ring-error/20 tooltip-error"
-    orange = "bg-warning/10 text-warning ring-warning/20 tooltip-warning"
+
+    # orange = "bg-warning/10 text-warning ring-warning/20 tooltip-warning"
 
     cond do
       state in [:encoded, :success] -> green
       state in [:failed, :error] -> red
-      state in [:encoding, :queued, :unchanged] -> blue
-      state in [:incomplete, :imported] -> orange
+      state in [:encoding, :queued, :unchanged, :imported, :incomplete] -> blue
       true -> gray
     end
   end
@@ -83,8 +83,7 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Components do
       state in [:encoded, :success] -> {"hero-check-circle-solid", nil}
       state in [:failed, :error] -> {"hero-x-circle-solid", nil}
       state in [:encoding, :queued] -> {"hero-cog-6-tooth-solid", "animate-spin"}
-      state in [:unchanged] -> {"hero-information-circle-solid", nil}
-      state in [:incomplete, :imported] -> {"hero-exclamation-triangle-solid", nil}
+      state in [:unchanged, :imported, :incomplete] -> {"hero-information-circle-solid", nil}
       true -> {"hero-question-mark-circle-solid", nil}
     end
   end

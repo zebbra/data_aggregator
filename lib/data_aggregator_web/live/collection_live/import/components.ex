@@ -4,15 +4,34 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
   """
   use DataAggregatorWeb, :html
 
+  alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Import
 
-  import DataAggregatorWeb.Helpers, only: [class_names: 1]
+  import DataAggregatorWeb.Helpers, only: [class_names: 1, format_bytes: 1]
 
   @states AshStateMachine.Info.state_machine_all_states(Import)
 
-  attr :import, Import, required: false
-  attr :state, :atom, required: false, values: @states
-  attr :progress, :float, required: false, default: nil
+  attr(:attachment, Attachment, required: true)
+  attr(:class, :string, default: nil)
+
+  def attachment_download_badge(assigns) do
+    ~H"""
+    <.link
+      href={@attachment.url}
+      class={[
+        "inline-flex items-center rounded-md bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 opacity-75 hover:opacity-100 gap-x-1",
+        @class
+      ]}
+    >
+      <.icon name="hero-arrow-down-tray-mini" class="size-3 shrink-0" />
+      <span class="whitespace-nowrap"><%= format_bytes(@attachment.byte_size) %></span>
+    </.link>
+    """
+  end
+
+  attr(:import, Import, required: false)
+  attr(:state, :atom, required: false, values: @states)
+  attr(:progress, :float, required: false, default: nil)
 
   def import_state_badge(%{import: import} = assigns) when is_struct(import) do
     progress =
@@ -41,8 +60,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
     """
   end
 
-  attr :state, :atom, required: true, values: @states
-  attr :progress, :float, required: false, default: nil
+  attr(:state, :atom, required: true, values: @states)
+  attr(:progress, :float, required: false, default: nil)
 
   def import_state_badge_label(%{state: :importing} = assigns) do
     ~H"""
@@ -58,7 +77,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
 
   def import_state_badge_label(assigns) do
     ~H"""
-    <span><%= @state |> Atom.to_string() |> String.capitalize() %></span>
+    <span><%= state_translation(@state) %></span>
     """
   end
 
@@ -76,7 +95,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
     end
   end
 
-  attr :state, :atom, required: true, values: @states
+  attr(:state, :atom, required: true, values: @states)
 
   def import_state_icon(%{state: state} = assigns) do
     {icon, class} = import_state_icon_class(state)
@@ -100,6 +119,16 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
 
       state in [:failed] ->
         {"hero-x-circle-solid", "text-error"}
+    end
+  end
+
+  defp state_translation(state) do
+    cond do
+      state in [:pending] -> ~t"Pending"m
+      state in [:import_queued] -> ~t"Queued"m
+      state in [:importing] -> ~t"Importing"m
+      state in [:imported] -> ~t"Imported"m
+      state in [:failed] -> ~t"Failed"m
     end
   end
 

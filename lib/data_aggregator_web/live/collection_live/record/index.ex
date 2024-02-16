@@ -46,7 +46,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     ~H"""
     <.page current="collections" open={@selected_record != nil}>
       <.collection_header collection={@collection} current={:records} />
-      <div class="px-6 lg:px-8">
+      <div class="p-6 lg:px-8">
         <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
           <.scope_stat
             href="#"
@@ -115,7 +115,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </div>
       </div> --%>
 
-      <div class="no-scrollbar overflow-x-auto pt-8 pb-4">
+      <div class="no-scrollbar overflow-x-auto py-4">
         <.table
           id="records-table"
           rows={@streams.results}

@@ -16,7 +16,7 @@ defmodule DataAggregator.Records.Record.Changes.SetImportedAfterAction do
   end
 
   defp set_imported(_changeset, record) do
-    Logger.info("Setting record to imported ...")
+    Logger.debug("Setting record to imported ...")
     Record.set_imported(record)
   end
 end
