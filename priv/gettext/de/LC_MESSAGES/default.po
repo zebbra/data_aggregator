@@ -57,7 +57,7 @@ msgstr "Zurücksetzen"
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Save collection"
-msgstr "Sammlung speichern"
+msgstr "Speichern"
 
 #: lib/data_aggregator_web/live/collection_live/form_component.ex:52
 #, elixir-autogen, elixir-format
@@ -83,50 +83,50 @@ msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Use this form to manage collections in your database."
 msgstr "Benutze dieses Formular, um Sammlungen in deiner Datenbank zu verwalten."
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:97
+#: lib/data_aggregator_web/live/collection_live/index.ex:100
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Are you sure?"
 msgstr "Bist du sicher?"
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:45
+#: lib/data_aggregator_web/live/collection_live/index.ex:48
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Code"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:171
+#: lib/data_aggregator_web/live/collection_live/index.ex:174
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Collection deleted successfully"
 msgstr "Sammlung erfolgreich gelöscht"
 
 #: lib/data_aggregator_web/live/collection_live/index.ex:28
-#: lib/data_aggregator_web/live/collection_live/index.ex:132
+#: lib/data_aggregator_web/live/collection_live/index.ex:135
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Collections"
 msgstr "Sammlungen"
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:99
+#: lib/data_aggregator_web/live/collection_live/index.ex:102
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Delete"
 msgstr "Löschen"
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:90
+#: lib/data_aggregator_web/live/collection_live/index.ex:93
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:144
+#: lib/data_aggregator_web/live/collection_live/index.ex:147
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Edit Collection"
 msgstr "Sammlung bearbeiten"
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:49
+#: lib/data_aggregator_web/live/collection_live/index.ex:52
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Institution"
@@ -138,7 +138,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:138
+#: lib/data_aggregator_web/live/collection_live/index.ex:141
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "New Collection"
@@ -150,25 +150,25 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "New collection"
 msgstr "Neue Sammlung"
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:53
+#: lib/data_aggregator_web/live/collection_live/index.ex:56
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Progress"
 msgstr "Fortschritt"
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:67
+#: lib/data_aggregator_web/live/collection_live/index.ex:70
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Records count / est."
 msgstr "Einträge / geschätzt"
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:71
+#: lib/data_aggregator_web/live/collection_live/index.ex:74
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Updated At"
 msgstr "Aktualisiert am"
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:82
+#: lib/data_aggregator_web/live/collection_live/index.ex:85
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "View"
@@ -308,8 +308,8 @@ msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Tasks"
 msgstr "Aufgaben"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:23
-#: lib/data_aggregator_web/live/record_live/index.ex:29
+#: lib/data_aggregator_web/live/record_live/index.ex:36
+#: lib/data_aggregator_web/live/record_live/index.ex:172
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Records"
@@ -429,31 +429,31 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Collection Imports"
 msgstr "Sammlungen"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:41
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:53
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "All records"
 msgstr "Alle Einträge"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:110
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:244
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Collection Records"
 msgstr "Sammlungen"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:48
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:60
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Not encoded"
 msgstr "Nicht enkodiert"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:59
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:71
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Records with issues"
 msgstr "Einträge mit Problemen"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:56
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:68
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Unpublished"
@@ -471,3 +471,327 @@ msgstr "Sammlungen"
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Description"
 msgstr "Beschreibung"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:201
+#: lib/data_aggregator_web/live/record_live/index.ex:129
+#, elixir-autogen, elixir-format
+msgid "Catalog"
+msgstr "Katalog"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:207
+#: lib/data_aggregator_web/live/record_live/index.ex:135
+#, elixir-autogen, elixir-format
+msgid "Created"
+msgstr "Erstellt"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:185
+#: lib/data_aggregator_web/live/record_live/index.ex:113
+#, elixir-autogen, elixir-format
+msgid "Encoded"
+msgstr "Enkodiert"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:182
+#: lib/data_aggregator_web/live/record_live/index.ex:110
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Imported"
+msgstr "Importe"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:179
+#: lib/data_aggregator_web/live/record_live/index.ex:107
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Name"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:204
+#: lib/data_aggregator_web/live/record_live/index.ex:132
+#, elixir-autogen, elixir-format
+msgid "State"
+msgstr "Status"
+
+#: lib/data_aggregator_web/live/record_live/index.ex:89
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Characteristics according to the darwin core standard"
+msgstr "Charakteristika gemäß dem Darwin Core Standard"
+
+#: lib/data_aggregator_web/live/record_live/index.ex:63
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Class"
+msgstr "Klasse"
+
+#: lib/data_aggregator_web/live/record_live/index.ex:72
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Collection"
+msgstr "Sammlungen"
+
+#: lib/data_aggregator_web/live/record_live/index.ex:69
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Encoding"
+msgstr "Enkodierungen"
+
+#: lib/data_aggregator_web/live/record_live/index.ex:57
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Family"
+msgstr "Familie"
+
+#: lib/data_aggregator_web/live/record_live/index.ex:54
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Genus"
+msgstr "Gattung"
+
+#: lib/data_aggregator_web/live/record_live/index.ex:48
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "MaterialEntityID"
+msgstr ""
+
+#: lib/data_aggregator_web/live/record_live/index.ex:60
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Order"
+msgstr "Ordnung"
+
+#: lib/data_aggregator_web/live/record_live/index.ex:66
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Phylum"
+msgstr "Stamm"
+
+#: lib/data_aggregator_web/live/record_live/index.ex:122
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Record encodings"
+msgstr "Enkodierungen"
+
+#: lib/data_aggregator_web/live/record_live/index.ex:123
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Results by catalog"
+msgstr "Resultate nach Katalog"
+
+#: lib/data_aggregator_web/live/record_live/index.ex:51
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Scientific Name"
+msgstr "Wissenschaftlicher Name"
+
+#: lib/data_aggregator_web/live/record_live/index.ex:80
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Updated At"
+msgstr "Aktualisiert am"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:102
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Attributes related to a person"
+msgstr "Auf eine Person bezogene Attribute"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:101
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Person"
+msgstr ""
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:114
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Characteristics of the item"
+msgstr "Charakteristika des Elements"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:132
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Classification structure of the item"
+msgstr "Klassifikationsstruktur des Elements"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:156
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Distinguishing marks of the specimen"
+msgstr "Unterscheidungsmerkmale des Exemplars"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:107
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Event"
+msgstr "Aktivität"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:144
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Geographical description"
+msgstr "Geographische Beschreibung"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:113
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Identification"
+msgstr "Identifikation"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:138
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Life stage and characteristics of the species"
+msgstr "Lebensstadium und Charakteristika der Art"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:120
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Literature and mentions"
+msgstr "Literatur und Erwähnungen"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:143
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Location"
+msgstr "Standort"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:155
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Material Entity"
+msgstr "Material Entität"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:161
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Material Sample"
+msgstr "Materialprobe"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:149
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Occurence"
+msgstr "Vorkommen"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:150
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Properties of the recorded observation"
+msgstr "Eigenschaften der aufgezeichneten Beobachtung"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:119
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Reference"
+msgstr "Referenz"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:125
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Resource Relationship"
+msgstr "Ressourcenbeziehung"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:137
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Species Profile"
+msgstr "Speziesprofil"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:131
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Taxon"
+msgstr ""
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:108
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "The circumstances of the extraction"
+msgstr "Die Umstände der Extraktion"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:126
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "References to other resources"
+msgstr "Referenzen zu anderen Ressourcen"
+
+#: lib/data_aggregator/darwin_core/schema/schema.ex:162
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregator.DarwinCore.Schema"
+msgid "Specimens documented (bio)chemical elements"
+msgstr "Spezimen dokumentierte (bio)chemische Elemente"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:161
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Characteristics according to the darwin core standard"
+msgstr "Charakteristika gemäß dem Darwin Core Standard"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:143
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Class"
+msgstr "Klasse"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:149
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Encoding"
+msgstr "Enkodierungen"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:137
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Family"
+msgstr "Familie"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:134
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Genus"
+msgstr "Gattung"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:128
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "MaterialEntityID"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:140
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Order"
+msgstr "Ordnung"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:146
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Phylum"
+msgstr "Stamm"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:194
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Record encodings"
+msgstr "Enkodierungen"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:195
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Results by catalog"
+msgstr "Resultate nach Katalog"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:131
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Scientific Name"
+msgstr "Wissenschaftlicher Name"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:152
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Updated At"
+msgstr "Aktualisiert am"
+
+#: lib/data_aggregator_web/components/blocks/slideover.ex:55
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.Blocks.Slideover"
+msgid "close"
+msgstr "schließen"

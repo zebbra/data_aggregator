@@ -31,22 +31,22 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
       <:navbar>
         <.secondary_navigation>
           <.secondary_navigation_item
-            href={~p"/collections/#{@collection.id}/records"}
+            href={~p"/collections/#{@collection}/records"}
             label={~t"Records"m}
             active={@current == :records}
           />
           <.secondary_navigation_item
-            href={~p"/collections/#{@collection.id}/imports"}
+            href={~p"/collections/#{@collection}/imports"}
             label={~t"Imports"m}
             active={@current == :imports}
           />
           <.secondary_navigation_item
-            href={~p"/collections/#{@collection.id}/encodings"}
+            href={~p"/collections/#{@collection}/encodings"}
             label={~t"Encodings"m}
             active={@current == :encodings}
           />
           <.secondary_navigation_item
-            href={~p"/collections/#{@collection.id}/details"}
+            href={~p"/collections/#{@collection}/details"}
             label={~t"Details"m}
             active={@current == :details}
           />
@@ -71,11 +71,11 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
       <span class="sm:hidden"><%= @collection.name %></span>
       <:subtitle>
         <div class="flex items-center gap-x-2 max-sm:pt-2">
-          <.encoding_state_badge state={@encoding_state} />
+          <span class="max-sm:hidden"><.encoding_state_badge state={@encoding_state} /></span>
           <%= @collection.description %>
         </div>
       </:subtitle>
-      <:actions>
+      <:actions :if={@current == :records}>
         <.link patch={~p"/collections/new"} class="btn btn-neutral max-sm:btn-sm">
           <.icon name="hero-plus-mini" class="max-sm:hidden" />
           <span class="max-sm:hidden"><%= ~t"Import dataset"m %></span>

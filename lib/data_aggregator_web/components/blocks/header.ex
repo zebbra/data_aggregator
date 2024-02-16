@@ -10,6 +10,7 @@ defmodule DataAggregatorWeb.Blocks.Header do
   """
   attr(:class, :string, default: nil, doc: "the header class")
   attr(:action_class, :string, default: nil)
+  attr(:dense, :boolean, default: false, doc: "whether to use a dense layout")
 
   attr(:break, :boolean,
     default: false,
@@ -24,9 +25,9 @@ defmodule DataAggregatorWeb.Blocks.Header do
 
   def header(assigns) do
     ~H"""
-    <header class={["min-h-12 w-full", @class]}>
+    <header class={["w-full", @class]}>
       <%= render_slot(@navbar) %>
-      <div class="p-6 lg:px-8">
+      <div class={!@dense && "p-6 lg:px-8"}>
         <div class={[
           @break && "sm:flex sm:items-start sm:justify-between sm:gap-8",
           @break == false && "flex items-start justify-between gap-6 sm:gap-8"
@@ -47,5 +48,43 @@ defmodule DataAggregatorWeb.Blocks.Header do
       </div>
     </header>
     """
+  end
+
+  attr :class, :string, default: nil, doc: "the header class"
+  attr :title, :string, required: true, doc: "the title of the header"
+  attr :subtitle, :string, required: false, doc: "the optional subtitle of the header"
+
+  attr :size, :string,
+    values: ["xs", "sm", "lg", "xl"],
+    default: "lg",
+    doc: "the size of the title"
+
+  def heading(assigns) do
+    ~H"""
+    <div class={@class}>
+      <h4 class={["text-base-content font-bold", heading_title_size_class(@size)]}><%= @title %></h4>
+      <p :if={@subtitle} class={["text-base-content/50", heading_subtitle_size_class(@size)]}>
+        <%= @subtitle %>
+      </p>
+    </div>
+    """
+  end
+
+  defp heading_title_size_class(size) do
+    case size do
+      "xs" -> "text-xs"
+      "sm" -> "text-sm"
+      "lg" -> "text-lg"
+      "xl" -> "text-xl"
+    end
+  end
+
+  defp heading_subtitle_size_class(size) do
+    case size do
+      "xs" -> "text-xs"
+      "sm" -> "text-sm"
+      "lg" -> "text-sm"
+      "xl" -> "text-sm"
+    end
   end
 end

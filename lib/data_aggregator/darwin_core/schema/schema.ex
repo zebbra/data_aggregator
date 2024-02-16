@@ -2,6 +2,8 @@ defmodule DataAggregator.DarwinCore.Schema do
   alias Ash.Resource.Attribute
   alias DataAggregator.DarwinCore.Schema.Category
 
+  import DataAggregatorWeb.Gettext
+
   @prs_attributes [
     %Attribute{
       name: :contact_point,
@@ -96,68 +98,68 @@ defmodule DataAggregator.DarwinCore.Schema do
   @categories [
     %Category{
       name: :prs,
-      label: "Person",
-      description: "Attributes related to a person",
+      label: ~t"Person"m,
+      description: ~t"Attributes related to a person"m,
       attributes: @prs_attributes
     },
     %Category{
       name: :eve,
-      label: "Event",
-      description: "The circumstances of the extraction",
+      label: ~t"Event"m,
+      description: ~t"The circumstances of the extraction"m,
       attributes: @eve_attributes
     },
     %Category{
       name: :idf,
-      label: "Identification",
-      description: "Characteristics of the item",
+      label: ~t"Identification"m,
+      description: ~t"Characteristics of the item"m,
       attributes: @idf_attributes
     },
     %Category{
       name: :ref,
-      label: "Reference",
-      description: "Literature and mentions",
+      label: ~t"Reference"m,
+      description: ~t"Literature and mentions"m,
       attributes: @ref_attributes
     },
     %Category{
       name: :rrp,
-      label: "Resource Relationship",
-      description: "Refernces to other resources",
+      label: ~t"Resource Relationship"m,
+      description: ~t"References to other resources"m,
       attributes: @rrp_attributes
     },
     %Category{
       name: :tax,
-      label: "Taxon",
-      description: "Classification structure of the item",
+      label: ~t"Taxon"m,
+      description: ~t"Classification structure of the item"m,
       attributes: @tax_attributes
     },
     %Category{
       name: :spp,
-      label: "Species Profile",
-      description: "Life stage and characteristics of the species",
+      label: ~t"Species Profile"m,
+      description: ~t"Life stage and characteristics of the species"m,
       attributes: @spp_attributes
     },
     %Category{
       name: :loc,
-      label: "Location",
-      description: "Geographical description",
+      label: ~t"Location"m,
+      description: ~t"Geographical description"m,
       attributes: @loc_attributes
     },
     %Category{
       name: :occ,
-      label: "Occurence",
-      description: "Properties of the recorded observation",
+      label: ~t"Occurence"m,
+      description: ~t"Properties of the recorded observation"m,
       attributes: @occ_attributes
     },
     %Category{
       name: :mte,
-      label: "Material Entity",
-      description: "Distinguishing marks of the specimen",
+      label: ~t"Material Entity"m,
+      description: ~t"Distinguishing marks of the specimen"m,
       attributes: @mte_attributes
     },
     %Category{
       name: :mts,
-      label: "Material Sample",
-      description: "Spcimens documented (bio)chemical elements",
+      label: ~t"Material Sample"m,
+      description: ~t"Specimens documented (bio)chemical elements"m,
       attributes: @mts_attributes
     }
   ]

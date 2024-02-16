@@ -7,7 +7,8 @@ defmodule DataAggregatorWeb.Blocks do
     quote do
       import DataAggregatorWeb.Blocks.{
         Header,
-        SecondaryNavigation
+        SecondaryNavigation,
+        Slideover
       }
     end
   end

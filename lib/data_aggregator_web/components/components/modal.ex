@@ -80,7 +80,7 @@ defmodule DataAggregatorWeb.Components.Modal do
       data-show={@show}
       data-cancel={@on_cancel}
     >
-      <div class={["modal-box", @class]} {@rest}>
+      <div class={["modal-box max-h-[calc(100dvh-5em)]", @class]} {@rest}>
         <.focus_wrap id={"#{@id}-content"}>
           <form method="dialog">
             <button

@@ -37,7 +37,10 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
       <div class="no-scrollbar overflow-x-auto pb-4">
         <.table id="collections-table" rows={@streams.results}>
           <:col :let={{_id, collection}} label={~t"Name"m}>
-            <.link navigate={~p"/collections/#{collection.id}/records"} class="link link-primary">
+            <.link
+              navigate={~p"/collections/#{collection.id}/records"}
+              class="link link-primary font-semibold link-hover"
+            >
               <%= collection.name %>
             </.link>
           </:col>
