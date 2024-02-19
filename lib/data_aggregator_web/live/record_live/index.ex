@@ -4,6 +4,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Encoding.Components
 
+  alias DataAggregator.Records
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
   alias DataAggregatorWeb.Components.DataTable
@@ -15,7 +16,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, socket}
+    {:ok, assign(socket, count: Records.count!(Record))}
   end
 
   @impl true
@@ -35,7 +36,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     <.page current="records" open={@selected_record != nil}>
       <.header><%= ~t"Records"m %></.header>
 
-      <div class="no-scrollbar overflow-x-auto pb-4">
+      <div :if={@count > 0} class="no-scrollbar overflow-x-auto pb-4">
         <.table
           id="records_table"
           rows={@streams.results}
@@ -82,6 +83,15 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           </:col>
         </.table>
       </div>
+
+      <.empty_state
+        :if={@count == 0}
+        title={~t"No records"m}
+        description={~t"Get started by importing a new dataset."m}
+        label={~t"Import"m}
+        icon="hero-bug-ant"
+        href={~p"/collections"}
+      />
 
       <:secondary>
         <.slideover

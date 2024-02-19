@@ -33,12 +33,14 @@ defmodule DataAggregatorWeb.Blocks.Header do
         ]}>
           <div class="min-w-0 flex-1">
             <%= render_slot(@breadcrumbs) %>
-            <h1 class="min-h-12 text-base-content text-lg/6 truncate font-semibold">
-              <%= render_slot(@inner_block) %>
-            </h1>
-            <p :if={@subtitle != []} class="text-base-content/50 text-sm/6 line-clamp-3">
-              <%= render_slot(@subtitle) %>
-            </p>
+            <div class="min-h-12">
+              <h1 class="text-base-content text-lg/6 truncate font-semibold">
+                <%= render_slot(@inner_block) %>
+              </h1>
+              <p :if={@subtitle != []} class="text-base-content/50 text-sm/6 line-clamp-3">
+                <%= render_slot(@subtitle) %>
+              </p>
+            </div>
           </div>
           <div class={["flex gap-x-3", @break && "max-sm:mt-4", @action_class]}>
             <%= render_slot(@actions) %>

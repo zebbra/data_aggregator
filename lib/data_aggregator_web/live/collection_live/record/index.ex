@@ -46,7 +46,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     ~H"""
     <.page current="collections" open={@selected_record != nil}>
       <.collection_header collection={@collection} current={:records} />
-      <div class="p-6 lg:px-8">
+      <div :if={length(@collection.records) > 0} class="p-6 lg:px-8">
         <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
           <.scope_stat
             href="#"
@@ -115,7 +115,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </div>
       </div> --%>
 
-      <div class="no-scrollbar overflow-x-auto py-4">
+      <div :if={length(@collection.records) > 0} class="no-scrollbar overflow-x-auto py-4">
         <.table
           id="records_table"
           rows={@streams.results}
@@ -154,6 +154,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </:col>
         </.table>
       </div>
+
+      <.empty_state
+        :if={length(@collection.records) == 0}
+        title={~t"No records"m}
+        description={~t"Get started by importing a new dataset"m}
+        label={~t"Import"m}
+        icon="hero-bug-ant"
+        href={~p"/collections/#{@collection}/imports/new"}
+      />
 
       <:secondary>
         <.slideover
