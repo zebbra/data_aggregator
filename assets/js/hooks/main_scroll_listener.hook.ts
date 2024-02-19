@@ -3,7 +3,7 @@ import { Hook, makeHook } from "./hook";
 // Show appbar border after scrolling down
 class MainScrollListener extends Hook {
   mounted(): void {
-    const content = document.querySelector("#main-wrapper");
+    const content = document.querySelector("#main_wrapper");
     const appbar = document.querySelector("#appbar");
 
     if (content && appbar) {

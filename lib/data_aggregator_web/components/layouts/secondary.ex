@@ -23,7 +23,7 @@ defmodule DataAggregatorWeb.Layouts.Secondary do
     ~H"""
     <.drawer id="main_navigation_drawer" class="isolate md:drawer-open" overlay>
       <.drawer
-        id="secondary-column"
+        id="secondary_column"
         class={class_names(["drawer-end", @open && "3xl:drawer-open"])}
         checked={@open}
       >
@@ -39,7 +39,7 @@ defmodule DataAggregatorWeb.Layouts.Secondary do
     </.drawer>
 
     <%!-- All registered portals are rendered in an isolated stack--%>
-    <div id="portal-root" class="isolate">
+    <div id="portal_root" class="isolate">
       <.alert id="confirm_alert" size="xs" />
       <%= for portal <- @portal do %>
         <%= render_slot(portal) %>

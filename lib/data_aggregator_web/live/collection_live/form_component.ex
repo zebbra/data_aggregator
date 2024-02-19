@@ -26,7 +26,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
     <div>
       <.simple_form
         for={@form}
-        id="collection-form"
+        id="collection_form"
         novalidate
         phx-target={@myself}
         phx-change="validate"

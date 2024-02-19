@@ -93,7 +93,7 @@ defmodule DataAggregatorWeb.Components.Input do
       checked={@checked}
       class={["checkbox", @class, @errors != [] && "phx-feedback:checkbox-error"]}
       aria-invalid={@errors != []}
-      aria-describedby={@errors != [] && "#{@id}-error"}
+      aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}
     />
     """
@@ -113,7 +113,7 @@ defmodule DataAggregatorWeb.Components.Input do
       checked={@checked}
       class={["toggle", @class, @errors != [] && "phx-feedback:checkbox-error"]}
       aria-invalid={@errors != []}
-      aria-describedby={@errors != [] && "#{@id}-error"}
+      aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}
     />
     """
@@ -133,7 +133,7 @@ defmodule DataAggregatorWeb.Components.Input do
       checked={@checked}
       class={["radio", @class, @errors != [] && "phx-feedback:radio-error"]}
       aria-invalid={@errors != []}
-      aria-describedby={@errors != [] && "#{@id}-error"}
+      aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}
     />
     """
@@ -147,7 +147,7 @@ defmodule DataAggregatorWeb.Components.Input do
       class={["select select-bordered", @class, @errors != [] && "phx-feedback:select-error"]}
       multiple={@multiple}
       aria-invalid={@errors != []}
-      aria-describedby={@errors != [] && "#{@id}-error"}
+      aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}
     >
       <option :if={@prompt} value=""><%= @prompt %></option>
@@ -163,7 +163,7 @@ defmodule DataAggregatorWeb.Components.Input do
       name={@name}
       class={["textarea textarea-bordered", @class, @errors != [] && "phx-feedback:textarea-error"]}
       aria-invalid={@errors != []}
-      aria-describedby={@errors != [] && "#{@id}-error"}
+      aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}
     ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
     """
@@ -178,7 +178,7 @@ defmodule DataAggregatorWeb.Components.Input do
       value={Phoenix.HTML.Form.normalize_value("range", @value)}
       class={["range", @class, @errors != [] && "phx-feedback:range-error"]}
       aria-invalid={@errors != []}
-      aria-describedby={@errors != [] && "#{@id}-error"}
+      aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}
     />
     """
@@ -197,7 +197,7 @@ defmodule DataAggregatorWeb.Components.Input do
         @errors != [] && "phx-feedback:file-input-error"
       ]}
       aria-invalid={@errors != []}
-      aria-describedby={@errors != [] && "#{@id}-error"}
+      aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}
     />
     """
@@ -219,7 +219,7 @@ defmodule DataAggregatorWeb.Components.Input do
       value={Phoenix.HTML.Form.normalize_value(@type, @value)}
       class={["grow", @class, @errors != [] && "phx-feedback:input-error"]}
       aria-invalid={@errors != []}
-      aria-describedby={@errors != [] && "#{@id}-error"}
+      aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}
     />
     """
@@ -235,7 +235,7 @@ defmodule DataAggregatorWeb.Components.Input do
       value={Phoenix.HTML.Form.normalize_value(@type, @value)}
       class={["input input-bordered", @class, @errors != [] && "phx-feedback:input-error"]}
       aria-invalid={@errors != []}
-      aria-describedby={@errors != [] && "#{@id}-error"}
+      aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}
     />
     """
@@ -251,7 +251,7 @@ defmodule DataAggregatorWeb.Components.Input do
       value={Phoenix.HTML.Form.normalize_value(@type, @value)}
       class={["input input-bordered", @class, @errors != [] && "phx-feedback:input-error"]}
       aria-invalid={@errors != []}
-      aria-describedby={@errors != [] && "#{@id}-error"}
+      aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}
     />
     """

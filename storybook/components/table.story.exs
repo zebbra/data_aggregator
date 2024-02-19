@@ -53,7 +53,7 @@ defmodule Storybook.Components.Table do
   def action do
     """
     <:action :let={user} class="-mx-3 -my-1.5 sm:-mx-2.5">
-      <.dropdown id={"user-" <> to_string(user.id)} class="dropdown-left">
+      <.dropdown id={"user_" <> to_string(user.id)} class="dropdown-left">
         <:summary>
           <summary class="btn btn-sm btn-ghost btn-square text-base-content/75 hover:text-base-content">
             <.icon name="hero-ellipsis-horizontal-micro" />

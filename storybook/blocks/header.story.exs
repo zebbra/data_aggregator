@@ -109,7 +109,7 @@ defmodule Storybook.Blocks.Header do
         slots: [
           """
           <:navbar>
-            <.secondary_navigation id="nav-1">
+            <.secondary_navigation id="nav_1">
               <.secondary_navigation_item label="Overview" href="#" active />
               <.secondary_navigation_item label="Details" href="#" />
               <.secondary_navigation_item label="Settings" href="#" />
@@ -128,7 +128,7 @@ defmodule Storybook.Blocks.Header do
         slots: [
           """
           <:navbar>
-            <.secondary_navigation id="nav-2">
+            <.secondary_navigation id="nav_2">
               <.secondary_navigation_item label="Overview" href="#" active />
               <.secondary_navigation_item label="Details" href="#" />
               <.secondary_navigation_item label="Settings" href="#" />
@@ -150,7 +150,7 @@ defmodule Storybook.Blocks.Header do
         slots: [
           """
           <:navbar>
-            <.secondary_navigation id="nav-3">
+            <.secondary_navigation id="nav_3">
               <.secondary_navigation_item label="Overview" href="#" active />
               <.secondary_navigation_item label="Details" href="#" />
               <.secondary_navigation_item label="Settings" href="#" />
@@ -172,7 +172,7 @@ defmodule Storybook.Blocks.Header do
         slots: [
           """
           <:navbar>
-            <.secondary_navigation id="nav-4">
+            <.secondary_navigation id="nav_4">
               <.secondary_navigation_item label="Overview" href="#" active />
               <.secondary_navigation_item label="Details" href="#" />
               <.secondary_navigation_item label="Settings" href="#" />

@@ -21,7 +21,7 @@ defmodule DataAggregatorWeb.ThemeSelectTest do
 
       html =
         assert view
-               |> element("#theme-selector")
+               |> element("#theme_selector")
                |> render_click()
 
       assert html =~ "hero-computer-desktop size-6"
@@ -37,7 +37,7 @@ defmodule DataAggregatorWeb.ThemeSelectTest do
 
       html =
         assert view
-               |> element("#theme-selector")
+               |> element("#theme_selector")
                |> render_click()
 
       assert html =~ "hero-computer-desktop size-6"
@@ -46,7 +46,7 @@ defmodule DataAggregatorWeb.ThemeSelectTest do
 
       html =
         assert view
-               |> element("#theme-selector")
+               |> element("#theme_selector")
                |> render_click()
 
       assert html =~ "hero-computer-desktop size-6"

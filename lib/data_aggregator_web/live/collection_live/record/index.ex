@@ -99,7 +99,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <span class="hidden font-normal lg:inline"><%= ~t"Layers"m %></span>
           </button>
         </div>
-        <div id="table actions" class="join flex lg:justify-end">
+        <div id="table_actions" class="join flex lg:justify-end">
           <button class="btn btn-outline border-black-white/10 join-item rounded-full">
             <.icon name="hero-puzzle-piece" />
             <span class="font-normal"><%= ~t"Encode"m %></span>
@@ -117,7 +117,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
       <div class="no-scrollbar overflow-x-auto py-4">
         <.table
-          id="records-table"
+          id="records_table"
           rows={@streams.results}
           row_click={
             fn {_id, record} ->

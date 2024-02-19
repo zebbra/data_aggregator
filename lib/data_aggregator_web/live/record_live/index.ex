@@ -37,7 +37,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
       <div class="no-scrollbar overflow-x-auto pb-4">
         <.table
-          id="records-table"
+          id="records_table"
           rows={@streams.results}
           row_click={
             fn {_id, record} ->

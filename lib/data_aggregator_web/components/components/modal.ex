@@ -14,7 +14,7 @@ defmodule DataAggregatorWeb.Components.Modal do
 
   ## Examples
 
-      <.modal id="confirm-modal">
+      <.modal id="confirm_modal">
         This is a modal.
       </.modal>
 
@@ -81,7 +81,7 @@ defmodule DataAggregatorWeb.Components.Modal do
       data-cancel={@on_cancel}
     >
       <div class={["modal-box max-h-[calc(100dvh-5em)]", @class]} {@rest}>
-        <.focus_wrap id={"#{@id}-content"}>
+        <.focus_wrap id={"#{@id}_content"}>
           <form method="dialog">
             <button
               class="btn btn-sm btn-circle btn-ghost absolute top-2 right-2"

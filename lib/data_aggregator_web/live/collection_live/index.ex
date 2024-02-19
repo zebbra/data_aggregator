@@ -4,6 +4,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_indicator: 1]
 
+  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
 
   import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
@@ -48,7 +49,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
       </.header>
 
       <div class="no-scrollbar overflow-x-auto pb-4">
-        <.table id="collections-table" rows={@streams.results}>
+        <.table id="collections_table" rows={@streams.results}>
           <:col :let={{_id, collection}} label={~t"Name"m}>
             <.link
               navigate={~p"/collections/#{collection.id}/records"}
@@ -87,7 +88,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           </:col>
 
           <:action :let={{_id, collection}} class="-mx-3 -my-1.5 sm:-mx-2.5">
-            <.table_actions id={"collection-#{collection.id}"}>
+            <.table_actions id={"collection_#{collection.id}"}>
               <li>
                 <.link
                   patch={~p"/collections/#{collection.id}/records"}
@@ -171,7 +172,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
      stream_insert(
        socket,
        :results,
-       Collection.get_by_id!(collection.id, load: @load)
+       Records.load!(collection, @load, lazy?: true)
      )}
   end
 

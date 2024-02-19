@@ -11,11 +11,11 @@ defmodule DataAggregatorWeb.Components.LocaleSelect do
 
   @locales DataAggregatorWeb.Locale.locales()
 
-  attr(:id, :string, default: "locale-selector")
+  attr(:id, :string, default: "locale_selector")
 
   def locale_select(assigns) do
     ~H"""
-    <div id={"#{@id}-wrapper"} phx-hook="LocaleSelect">
+    <div id={"#{@id}_wrapper"} phx-hook="LocaleSelect">
       <.dropdown id={@id} class="dropdown-end" label={short(current())} icon="hero-language">
         <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px mt-16 w-44 gap-1 border p-2 shadow-2xl">
           <li :for={option <- options()}>
@@ -23,7 +23,7 @@ defmodule DataAggregatorWeb.Components.LocaleSelect do
               type="button"
               class={option.selected && "active"}
               phx-click={
-                JS.dispatch("set-locale", to: "#locale-selector-wrapper", detail: option.value)
+                JS.dispatch("set-locale", to: "#locale_selector_wrapper", detail: option.value)
               }
             >
               <span class="badge badge-sm badge-outline font-mono text-[.6rem] pt-px pr-1 pl-1.5 font-bold tracking-widest opacity-50">
