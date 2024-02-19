@@ -101,7 +101,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy do
       {:ok, coords} ->
         coords
         |> fetch_api()
-        |> parse_response()
+        |> parse_reverse_response()
 
       {:error, error} ->
         Logger.info(error)
@@ -126,14 +126,14 @@ defmodule DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy do
 
   @spec fetch_api(list()) :: Req.Response.t()
   defp fetch_api(request_params) do
-    # why doesn't it work to get the env via Application.compile_env(...)?
+    # why doesn't it work to get the env via Application.compile_env(...) in module body?
     api_key =
       System.get_env("OPEN_CAGE_DATA_API_KEY") ||
         throw(
           "No open cage data api key found in the environment variables. set one under OPEN_CAGE_DATA_API_KEY"
         )
 
-    request_params = request_params ++ [{:key, api_key}]
+    request_params = request_params ++ [{:key, api_key}, {:language, "en"}, {:no_annotations, 1}]
 
     req = HttpDiskCache.attach(Req.new(params: request_params))
 
@@ -144,22 +144,27 @@ defmodule DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy do
     end
   end
 
-  @spec parse_response(Req.Response.t()) :: map()
-  defp parse_response(response) when response.status == 200 do
+  @spec parse_reverse_response(Req.Response.t()) :: map()
+  defp parse_reverse_response(response) when response.status == 200 do
     results = response.body["results"]
 
-    if results != nil and length(results) == 1 do
-      location = hd(results)
+    cond do
+      results != nil and length(results) == 1 ->
+        location = hd(results)
 
-      location["components"]
-    else
-      throw(
-        "Wrong amount of results found in response from geo api (Expected 1 but got #{length(results)}"
-      )
+        location["components"]
+
+      results == nil ->
+        log_and_throw("No results found in response from geo api")
+
+      true ->
+        log_and_throw(
+          "Wrong amount of results found in response from geo api (Expected 1 but got #{length(results)}"
+        )
     end
   end
 
-  defp parse_response(response) when response.status != 200,
+  defp parse_reverse_response(response) when response.status != 200,
     do: throw("No valid response (status #{response.status}) from geo api")
 
   defp add_municipality(update_params) do
@@ -168,47 +173,61 @@ defmodule DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy do
 
   @spec add_swiss_coordinates(map(), EncodedRecord.t()) :: map()
   defp add_swiss_coordinates(update_params, encoded_record) do
-    if encoded_record.loc_swiss_coordinates_x == nil or
-         encoded_record.loc_swiss_coordinates_y == nil or
-         encoded_record.loc_decimal_latitude != nil or
-         encoded_record.loc_decimal_longitude != nil do
-      swiss_coords =
-        Coordinates.wgs84_to_lv95!(%Coordinates{
-          e: encoded_record.loc_decimal_longitude,
-          n: encoded_record.loc_decimal_latitude
-        })
+    cond do
+      encoded_record.loc_decimal_latitude != nil and
+          encoded_record.loc_decimal_longitude != nil ->
+        swiss_coords =
+          Coordinates.wgs84_to_lv95!(%Coordinates{
+            e: encoded_record.loc_decimal_longitude,
+            n: encoded_record.loc_decimal_latitude
+          })
 
-      update_params
-      |> Map.put("loc_swiss_coordinates_x", swiss_coords.e)
-      |> Map.put("loc_swiss_coordinates_y", swiss_coords.n)
-    else
-      update_params
+        update_params
+        |> Map.put("loc_swiss_coordinates_x", swiss_coords.e)
+        |> Map.put("loc_swiss_coordinates_y", swiss_coords.n)
+
+      encoded_record.loc_swiss_coordinates_x != nil and
+          encoded_record.loc_swiss_coordinates_y != nil ->
+        # we need to set the coordinates here, otherwise they will be overwritten with nil
+        update_params
+        |> Map.put("loc_swiss_coordinates_x", encoded_record.loc_swiss_coordinates_x)
+        |> Map.put("loc_swiss_coordinates_y", encoded_record.loc_swiss_coordinates_y)
+
+      true ->
+        update_params
     end
   end
 
   @spec add_intl_coords(map(), EncodedRecord.t()) :: map()
   defp add_intl_coords(update_params, encoded_record) do
-    if encoded_record.loc_swiss_coordinates_x != nil or
-         encoded_record.loc_swiss_coordinates_y != nil or
-         encoded_record.loc_decimal_latitude == nil or
-         encoded_record.loc_decimal_longitude == nil do
-      intl_coords =
-        Coordinates.lv95_to_wgs84!(%Coordinates{
-          e: encoded_record.loc_swiss_coordinates_x,
-          n: encoded_record.loc_swiss_coordinates_y
-        })
+    cond do
+      encoded_record.loc_swiss_coordinates_x != nil and
+          encoded_record.loc_swiss_coordinates_y != nil ->
+        intl_coords =
+          Coordinates.lv95_to_wgs84!(%Coordinates{
+            e: encoded_record.loc_swiss_coordinates_x,
+            n: encoded_record.loc_swiss_coordinates_y
+          })
 
-      update_params
-      |> Map.put("loc_decimal_longitude", intl_coords.e)
-      |> Map.put("loc_decimal_latitude", intl_coords.n)
-    else
-      update_params
+        update_params
+        |> Map.put("loc_decimal_longitude", intl_coords.e)
+        |> Map.put("loc_decimal_latitude", intl_coords.n)
+
+      encoded_record.loc_decimal_latitude != nil and
+          encoded_record.loc_decimal_longitude != nil ->
+        # we need to set the coordinates here, otherwise they will be overwritten with nil
+        update_params
+        |> Map.put("loc_decimal_longitude", encoded_record.loc_decimal_longitude)
+        |> Map.put("loc_decimal_latitude", encoded_record.loc_decimal_latitude)
+
+      true ->
+        update_params
     end
   end
 
   @spec log_and_throw(map()) :: {:ok, map()} | {:error, any()}
   defp log_and_throw(error) do
-    Logger.error("Error while fetching geo api: #{inspect(error)}")
+    Logger.error("Error fetching geo api: #{inspect(error)}")
 
     throw(error)
   end

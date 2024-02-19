@@ -129,17 +129,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   end
 
   defp to_map(data) do
-    for {key, value} <- data, into: %{} do
-      {parse_key(key), value}
-    end
-  end
-
-  defp parse_key(key) when is_binary(key) do
-    String.to_atom(key)
-  end
-
-  defp parse_key(key) when is_atom(key) do
-    key
+    Map.new(data, fn {key, value} -> {String.to_atom(key), value} end)
   end
 
   @spec validate_body(map()) :: {:ok, map()} | {:error, any()}

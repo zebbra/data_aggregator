@@ -27,7 +27,7 @@ defmodule DataAggregator.GeoEncodingTest do
     end
 
     @tag run: true
-    test "encode/2 for :geo catalog - reverse geo encoding - successful",
+    test "encode/2 for :geo catalog - reverse geo encoding with intl coordinates - successful",
          %{
            correct_record_reverse: correct_record_reverse
          } do
@@ -54,22 +54,149 @@ defmodule DataAggregator.GeoEncodingTest do
       assert record.state === :encoded
     end
 
-    # test "encode/2 for :geo catalog which returns ok but no matching record",
-    #      %{
-    #        correct_record_forward: correct_record_forward,
-    #        correct_record_reverse: correct_record_reverse,
-    #        invalid_record_forward: invalid_record_forward,
-    #        invalid_record_reverse: invalid_record_reverse
-    #      } do
-    #   {{:ok, record}, logs} =
-    #     with_log(fn -> Record.encode(invalid_record, :geo) end)
+    @tag run: true
+    test "encode/2 for :geo catalog - reverse geo encoding with swiss coordinates - successful",
+         %{
+           correct_record_reverse: correct_record_reverse
+         } do
+      correct_record_reverse =
+        Record.update!(correct_record_reverse, %{
+          loc_decimal_latitude: nil,
+          loc_decimal_longitude: nil,
+          loc_swiss_coordinates_x: 2_601_391.156872048,
+          loc_swiss_coordinates_y: 1_199_508.5872802814
+        })
 
-    #   encoded_record = Record.get_by_id!(invalid_record.id)
+      {:ok, record} = Record.encode(correct_record_reverse, :geo)
 
-    #   assert encoded_record.state === :encoded
-    #   assert record != nil
-    #   assert logs =~ "no matching record found for taxon_id: 0"
-    # end
+      assert record !== nil
+
+      encoded_record = EncodedRecord.get_by_record!(record)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: 46.946659297095934,
+        loc_decimal_longitude: 7.456910040693462,
+        loc_swiss_coordinates_x: 2_601_391.156872048,
+        loc_swiss_coordinates_y: 1_199_508.5872802814,
+        loc_continent: "Europe",
+        loc_country: "Switzerland",
+        loc_country_code: "ch",
+        loc_state_province: "Bern",
+        loc_city: "Bern",
+        loc_municipality: "Bern"
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    @tag run: true
+    test "encode/2 for :geo catalog - reverse geo encoding with no coordinates - (no changes 1) successful",
+         %{
+           correct_record_reverse: correct_record_reverse
+         } do
+      correct_record_reverse =
+        Record.update!(correct_record_reverse, %{
+          loc_decimal_latitude: nil,
+          loc_decimal_longitude: nil,
+          loc_swiss_coordinates_x: nil,
+          loc_swiss_coordinates_y: nil
+        })
+
+      {:ok, record} = Record.encode(correct_record_reverse, :geo)
+
+      assert record !== nil
+
+      encoded_record = EncodedRecord.get_by_record!(record)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: nil,
+        loc_decimal_longitude: nil,
+        loc_swiss_coordinates_x: nil,
+        loc_swiss_coordinates_y: nil,
+        loc_continent: nil,
+        loc_country: nil,
+        loc_country_code: nil,
+        loc_state_province: nil,
+        loc_city: nil,
+        loc_municipality: nil
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    @tag run: true
+    test "encode/2 for :geo catalog - reverse geo encoding with no coordinates - (no changes 2) successful",
+         %{
+           correct_record_reverse: correct_record_reverse
+         } do
+      correct_record_reverse =
+        Record.update!(correct_record_reverse, %{
+          loc_decimal_latitude: 46.946659297095934,
+          loc_decimal_longitude: nil,
+          loc_swiss_coordinates_x: 2_601_391.156872048,
+          loc_swiss_coordinates_y: nil
+        })
+
+      {:ok, record} = Record.encode(correct_record_reverse, :geo)
+
+      assert record !== nil
+
+      encoded_record = EncodedRecord.get_by_record!(record)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: 46.946659297095934,
+        loc_decimal_longitude: nil,
+        loc_swiss_coordinates_x: 2_601_391.156872048,
+        loc_swiss_coordinates_y: nil,
+        loc_continent: nil,
+        loc_country: nil,
+        loc_country_code: nil,
+        loc_state_province: nil,
+        loc_city: nil,
+        loc_municipality: nil
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    @tag run: true
+    test "encode/2 for :geo catalog - reverse geo encoding with wrong coordinates - error (no result)",
+         %{
+           correct_record_reverse: correct_record_reverse
+         } do
+      correct_record_reverse =
+        Record.update!(correct_record_reverse, %{
+          loc_decimal_latitude: 4242.4242,
+          loc_decimal_longitude: 2424.2424,
+          loc_swiss_coordinates_x: nil,
+          loc_swiss_coordinates_y: nil
+        })
+
+      {{:error, error}, logs} =
+        with_log(fn -> Record.encode(correct_record_reverse, :geo) end)
+
+      encoded_record = Record.get_by_id!(correct_record_reverse.id)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: 4242.4242,
+        loc_decimal_longitude: 2424.2424,
+        loc_swiss_coordinates_x: nil,
+        loc_swiss_coordinates_y: nil,
+        loc_continent: nil,
+        loc_country: nil,
+        loc_country_code: nil,
+        loc_state_province: nil,
+        loc_city: nil,
+        loc_municipality: nil
+      })
+
+      assert encoded_record.state === :failed
+      assert error == "No valid response (status 400) from geo api"
+      assert logs =~ "No valid response (status 400) from geo api"
+    end
 
     # test "encode/2 for :geo catalog which returns an error", %{
     #   correct_record_forward: correct_record_forward,

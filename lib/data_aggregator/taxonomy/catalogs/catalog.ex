@@ -62,13 +62,14 @@ defmodule DataAggregator.Taxonomy.Catalog do
       :geo ->
         [
           {:loc_city, "city"},
-          {:loc_municipality, "city"},
           {:loc_continent, "continent"},
           {:loc_country, "country"},
           {:loc_country_code, "country_code"},
           {:loc_state_province, "state"},
           {:loc_swiss_coordinates_x, "loc_swiss_coordinates_x"},
           {:loc_swiss_coordinates_y, "loc_swiss_coordinates_y"},
+          {:loc_decimal_longitude, "loc_decimal_longitude"},
+          {:loc_decimal_latitude, "loc_decimal_latitude"},
           {:loc_municipality, "town"}
         ]
 

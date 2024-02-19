@@ -131,7 +131,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
         old_values = get_encoded_values(original_encoded_record, catalog)
 
         if Map.equal?(new_values, old_values) do
-          Logger.warning(
+          Logger.debug(
             "no changes during encoding of record #{original_encoded_record.id} with catalog #{inspect(catalog)}"
           )
 
@@ -182,6 +182,8 @@ defmodule DataAggregator.Records.Encoding.Strategy do
       Enum.map(output_attributes, fn {record_attribute, catalog_attribute} ->
         {record_attribute, Map.get(updated_values, catalog_attribute)}
       end)
+      |> Enum.filter(fn {_key, value} -> value != nil end)
+      |> Enum.uniq()
       |> Enum.into(%{})
 
     EncodedRecord.update!(record, updated_attributes)
