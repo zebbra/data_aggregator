@@ -31,8 +31,17 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
       lookedup_encoded_record = EncodedRecord.get_by_record!(encoded_record)
 
       assert lookedup_encoded_record !== nil
-      assert lookedup_encoded_record.tax_family === "Muscicapidae"
-      assert lookedup_encoded_record.tax_scientific_name === "Oenanthe Vieillot, 1816"
+
+      assert_map_includes(lookedup_encoded_record, %{
+        tax_scientific_name: "Oenanthe Vieillot, 1816",
+        tax_genus: "Oenanthe",
+        tax_family: "Muscicapidae",
+        tax_order: "Passeriformes",
+        tax_class: "Aves",
+        tax_phylum: "Chordata",
+        tax_kingdom: "Animalia"
+      })
+
       assert encoded_record.state === :encoded
     end
 

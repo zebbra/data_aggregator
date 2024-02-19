@@ -32,7 +32,7 @@ defmodule DataAggregator.EncodingFixtures do
   end
 
   @doc """
-    Generate a record for encoding process
+    Generate a record for encoding
   """
   def record_fixture_for_encoding(attrs \\ %{}) do
     @encoded_record_defaults
@@ -41,8 +41,10 @@ defmodule DataAggregator.EncodingFixtures do
     |> Record.create!()
   end
 
+  #### GBIF Taxonomy API Encoding ####
+
   @doc """
-    Generate a record for gbif_taxonomy encoding process, which will lead to an invalid match type
+    Generate a record for gbif_taxonomy encoding, which will lead to an invalid match type
   """
   def record_fixture_for_encoding_gbif_taxonomy_invalid(attrs \\ %{}) do
     @encoded_record_defaults
@@ -52,8 +54,10 @@ defmodule DataAggregator.EncodingFixtures do
     |> Record.create!()
   end
 
+  #### Swiss Species Catalog Encoding ####
+
   @doc """
-    Generate a record for swiss_species encoding process
+    Generate a invalid record for swiss_species encoding
   """
   def record_fixture_for_encoding_swiss_species_invalid(attrs \\ %{}) do
     @encoded_record_defaults
@@ -63,6 +67,9 @@ defmodule DataAggregator.EncodingFixtures do
     |> Record.create!()
   end
 
+  @doc """
+    Generate a correct record for swiss_species encoding
+  """
   def expect_correct_swiss_species_api_call do
     expect(SwissSpecies, :get_by_usage_key, fn _key ->
       {:ok,
@@ -78,11 +85,61 @@ defmodule DataAggregator.EncodingFixtures do
     end)
   end
 
+  @doc """
+    Generate a failing api call for swiss_species encoding
+  """
   def expect_failing_swiss_species_api_call do
     expect(SwissSpecies, :get_by_usage_key, fn _key ->
       Logger.error("unknown error occured")
 
       {:error, %Ash.Error.Unknown{}}
     end)
+  end
+
+  #### Geo Encoding API ####
+
+  @doc """
+    Generate a invalid record for forward geo encoding (address to coords)
+  """
+  def record_fixture_for_forward_geo_encoding_invalid(attrs \\ %{}) do
+    @encoded_record_defaults
+    |> Map.merge(attrs)
+    |> Map.put(:tax_taxon_id, 0)
+    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Record.create!()
+  end
+
+  @doc """
+    Generate a invalid record for reverse geo encoding (coords to address)
+  """
+  def record_fixture_for_reverse_geo_encoding_invalid(attrs \\ %{}) do
+    @encoded_record_defaults
+    |> Map.merge(attrs)
+    |> Map.put(:tax_taxon_id, 0)
+    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Record.create!()
+  end
+
+  @doc """
+    Generate a correct recordfor forward geo encoding (address to coords)
+  """
+  def record_fixture_for_forward_geo_encoding_correct(attrs \\ %{}) do
+    @encoded_record_defaults
+    |> Map.merge(attrs)
+    |> Map.put(:loc_city, "Bern")
+    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Record.create!()
+  end
+
+  @doc """
+    Generate a correct record for reverse geo encoding (coords to address)
+  """
+  def record_fixture_for_reverse_geo_encoding_correct(attrs \\ %{}) do
+    @encoded_record_defaults
+    |> Map.merge(attrs)
+    |> Map.put(:loc_decimal_longitude, 7.456905642729698)
+    |> Map.put(:loc_decimal_latitude, 46.946660986374766)
+    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Record.create!()
   end
 end

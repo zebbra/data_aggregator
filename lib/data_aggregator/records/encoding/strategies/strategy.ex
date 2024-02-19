@@ -13,6 +13,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy
+  alias DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy
   alias DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalog
@@ -32,6 +33,14 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     encoded_record = create_encoded_record(record)
 
     SwissSpeciesStrategy.apply_strategy(encoded_record)
+    |> check_for_changes(encoded_record, catalog)
+    |> handle_encoding_result(encoded_record, catalog)
+  end
+
+  def encode(record, catalog) when catalog == :geo do
+    encoded_record = create_encoded_record(record)
+
+    GeoEncodingStrategy.apply_strategy(encoded_record)
     |> check_for_changes(encoded_record, catalog)
     |> handle_encoding_result(encoded_record, catalog)
   end

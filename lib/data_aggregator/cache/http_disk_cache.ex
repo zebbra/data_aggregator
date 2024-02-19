@@ -3,6 +3,8 @@ defmodule DataAggregator.Cache.HttpDiskCache do
   Cache Strategy for Req using local disk to save responses.
   Will add a date to the cache file, and will not save if the status is not 200.
   Deletes the cache file if it is expired and then re-requests the resource.
+
+  inspired by https://thibautbarrere.com/2022/09/09/implementing-a-disk-cache-for-elixir-req
   """
   require Logger
 
