@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.Collection do
     notifiers: [Ash.Notifier.PubSub]
 
   alias DataAggregator.Records.CollectionType
+  alias DataAggregator.Records.Validations
 
   attributes do
     uuid_attribute :id, prefix: "col"
@@ -22,6 +23,10 @@ defmodule DataAggregator.Records.Collection do
 
     attribute :code, :string do
       description "an iternationally valid code to identify the collection"
+    end
+
+    attribute :grscicoll_reference, :string do
+      description "a code to identify the collection in the GrSciColl database"
     end
 
     attribute :description, :string
@@ -133,6 +138,12 @@ defmodule DataAggregator.Records.Collection do
   postgres do
     table "collections"
     repo DataAggregator.Repo
+  end
+
+  validations do
+    validate {Validations.CollectionGrSciCollValidator, attribute: :grscicoll_reference} do
+      on [:create, :update]
+    end
   end
 
   graphql do
