@@ -2,7 +2,7 @@ defmodule DataAggregator.Taxonomy.Catalog do
   @moduledoc """
   Enum to define all catalogs which we use to encode records
   """
-  @catalogs [:gbif_taxonomy, :swiss_species, :geo]
+  @catalogs [:gbif_taxonomy, :swiss_species, :geo_reverse, :geo_forward]
 
   use Ash.Type.Enum, values: @catalogs
 
@@ -23,7 +23,10 @@ defmodule DataAggregator.Taxonomy.Catalog do
       :swiss_species ->
         [{:tax_taxon_id, :tax_taxon_id}]
 
-      :geo ->
+      :geo_reverse ->
+        []
+
+      :geo_forward ->
         []
 
       _ ->
@@ -59,9 +62,10 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:tax_taxon_rank, :rank}
         ]
 
-      :geo ->
+      :geo_reverse ->
         [
           {:loc_city, "city"},
+          {:loc_municipality, "town"},
           {:loc_continent, "continent"},
           {:loc_country, "country"},
           {:loc_country_code, "country_code"},
@@ -69,8 +73,17 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:loc_swiss_coordinates_x, "loc_swiss_coordinates_x"},
           {:loc_swiss_coordinates_y, "loc_swiss_coordinates_y"},
           {:loc_decimal_longitude, "loc_decimal_longitude"},
-          {:loc_decimal_latitude, "loc_decimal_latitude"},
-          {:loc_municipality, "town"}
+          {:loc_decimal_latitude, "loc_decimal_latitude"}
+        ]
+
+      :geo_forward ->
+        [
+          {:loc_city, "city"},
+          {:loc_municipality, "town"},
+          {:loc_continent, "continent"},
+          {:loc_country, "country"},
+          {:loc_country_code, "country_code"},
+          {:loc_state_province, "state"}
         ]
 
       _ ->

@@ -37,6 +37,8 @@ defmodule DataAggregator.EncodingFixtures do
   def record_fixture_for_encoding(attrs \\ %{}) do
     @encoded_record_defaults
     |> Map.merge(attrs)
+    |> Map.put(:loc_city, "Bern")
+    |> Map.put(:loc_country, "Switzerland")
     |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
     |> Record.create!()
   end
@@ -99,40 +101,20 @@ defmodule DataAggregator.EncodingFixtures do
   #### Geo Encoding API ####
 
   @doc """
-    Generate a invalid record for forward geo encoding (address to coords)
-  """
-  def record_fixture_for_forward_geo_encoding_invalid(attrs \\ %{}) do
-    @encoded_record_defaults
-    |> Map.merge(attrs)
-    |> Map.put(:tax_taxon_id, 0)
-    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
-    |> Record.create!()
-  end
-
-  @doc """
-    Generate a invalid record for reverse geo encoding (coords to address)
-  """
-  def record_fixture_for_reverse_geo_encoding_invalid(attrs \\ %{}) do
-    @encoded_record_defaults
-    |> Map.merge(attrs)
-    |> Map.put(:tax_taxon_id, 0)
-    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
-    |> Record.create!()
-  end
-
-  @doc """
-    Generate a correct recordfor forward geo encoding (address to coords)
+    Generate a correct record for forward geo encoding (location to more location fields)
   """
   def record_fixture_for_forward_geo_encoding_correct(attrs \\ %{}) do
     @encoded_record_defaults
     |> Map.merge(attrs)
-    |> Map.put(:loc_city, "Bern")
+    |> Map.put(:loc_city, "Liebefeld")
+    |> Map.put(:loc_municipality, nil)
+    |> Map.put(:loc_state_province, "Bern")
     |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
     |> Record.create!()
   end
 
   @doc """
-    Generate a correct record for reverse geo encoding (coords to address)
+    Generate a correct record for reverse geo encoding (coords to location)
   """
   def record_fixture_for_reverse_geo_encoding_correct(attrs \\ %{}) do
     @encoded_record_defaults

@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy do
+defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
   @moduledoc """
-    Encode Records with the geo location api (opencagedata) to receive locations, coordinates and elevations
+    Encode Records with the geo location api (opencagedata) to receive reverse encoded geo locations
   """
 
   require Logger
@@ -14,13 +14,10 @@ defmodule DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy do
   alias DataAggregator.Records.Encoding.Strategy
   alias DataAggregator.Taxonomy.Catalog
 
-  # the input attributes are the attributes that will be used to query the forward encoding api
-  # @input_attributes Catalog.get_input_dwc_attributes(:geo)
-
   # the output attributes are the attributes that will be updated on the encoded record.
   # the first element is the attribute on the encoded record and the second
   # element is the attribute on returning data structure of the catalog
-  @output_attributes Catalog.get_output_attributes(:geo)
+  @output_attributes Catalog.get_output_attributes(:geo_reverse)
 
   @geo_api_url "https://api.opencagedata.com/geocode/v1/json"
 
@@ -31,7 +28,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy do
   def apply_strategy(encoded_record) do
     encoded_record = Records.load!(encoded_record, [:record])
 
-    case process_reverse_encoding(encoded_record) do
+    case process_record(encoded_record) do
       {:ok, encoded_record} ->
         {:ok, encoded_record}
 
@@ -47,16 +44,16 @@ defmodule DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy do
       {:error, error}
   end
 
-  @spec process_reverse_encoding(EncodedRecord.t()) :: EncodingResult.t()
-  defp process_reverse_encoding(encoded_record) do
+  @spec process_record(EncodedRecord.t()) :: EncodingResult.t()
+  defp process_record(encoded_record) do
     {
       :ok,
       encoded_record
-      |> build_params_reverse_encoding()
+      |> build_params()
       |> fetch_if_coords_available()
       |> add_swiss_coordinates(encoded_record)
       |> add_intl_coords(encoded_record)
-      |> add_municipality()
+      |> add_municipality_and_city()
       |> Strategy.update_encoded_record(encoded_record, @output_attributes)
     }
   catch
@@ -64,8 +61,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy do
       {:error, error}
   end
 
-  @spec build_params_reverse_encoding(EncodedRecord.t()) :: {:ok, list()} | {:error, any()}
-  defp build_params_reverse_encoding(record) do
+  @spec build_params(EncodedRecord.t()) :: {:ok, list()} | {:error, any()}
+  defp build_params(record) do
     case convert_coordinates(record) do
       {:ok, %{n: lat, e: long}} ->
         {:ok, [{:q, "#{lat},#{long}"}]}
@@ -101,7 +98,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy do
       {:ok, coords} ->
         coords
         |> fetch_api()
-        |> parse_reverse_response()
+        |> parse_response()
 
       {:error, error} ->
         Logger.info(error)
@@ -109,20 +106,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy do
         %{}
     end
   end
-
-  # @spec build_params_forward_encoding(EncodedRecord.t()) :: list()
-  # defp build_params_forward_encoding(record) do
-  #   Enum.map(@input_attributes, fn {record_attribute, request_attribute} ->
-  #     request_value = Map.get(record, record_attribute)
-
-  #     if request_value != nil do
-  #       {request_attribute, request_value}
-  #     end
-  #   end)
-  #   # |> check_parameters(record)
-  #   |> Enum.filter(&(&1 !== nil))
-  #   |> Enum.uniq()
-  # end
 
   @spec fetch_api(list()) :: Req.Response.t()
   defp fetch_api(request_params) do
@@ -140,12 +123,12 @@ defmodule DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy do
     # we cache requests for 30 days
     case Req.get(req, url: @geo_api_url, max_cache_age_seconds: 30 * 24 * 60 * 60) do
       {:ok, response} -> response
-      {:error, error} -> log_and_throw(error)
+      {:error, error} -> throw(error)
     end
   end
 
-  @spec parse_reverse_response(Req.Response.t()) :: map()
-  defp parse_reverse_response(response) when response.status == 200 do
+  @spec parse_response(Req.Response.t()) :: map()
+  defp parse_response(response) when response.status == 200 do
     results = response.body["results"]
 
     cond do
@@ -155,20 +138,31 @@ defmodule DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy do
         location["components"]
 
       results == nil ->
-        log_and_throw("No results found in response from geo api")
+        throw("No results found in response from geo api")
 
       true ->
-        log_and_throw(
+        throw(
           "Wrong amount of results found in response from geo api (Expected 1 but got #{length(results)}"
         )
     end
   end
 
-  defp parse_reverse_response(response) when response.status != 200,
+  defp parse_response(response) when response.status != 200,
     do: throw("No valid response (status #{response.status}) from geo api")
 
-  defp add_municipality(update_params) do
-    Map.put(update_params, "town", update_params["town"] || update_params["city"])
+  defp add_municipality_and_city(update_params) do
+    Map.put(
+      update_params,
+      "town",
+      update_params["town"] || update_params["township"] || update_params["village"] ||
+        update_params["city"] ||
+        update_params["_normalized_city"]
+    )
+    |> Map.put(
+      "city",
+      update_params["city"] || update_params["suburb"] || update_params["township"] ||
+        update_params["village"] || update_params["_normalized_city"]
+    )
   end
 
   @spec add_swiss_coordinates(map(), EncodedRecord.t()) :: map()
@@ -223,13 +217,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.GeoEncodingStrategy do
       true ->
         update_params
     end
-  end
-
-  @spec log_and_throw(map()) :: {:ok, map()} | {:error, any()}
-  defp log_and_throw(error) do
-    Logger.error("Error fetching geo api: #{inspect(error)}")
-
-    throw(error)
   end
 
   @spec handle_error(String.t(), map()) :: :ok

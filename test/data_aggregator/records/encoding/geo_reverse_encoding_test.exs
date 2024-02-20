@@ -1,4 +1,4 @@
-defmodule DataAggregator.GeoEncodingTest do
+defmodule DataAggregator.ReverseGeoEncodingTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
@@ -10,28 +10,20 @@ defmodule DataAggregator.GeoEncodingTest do
 
   import DataAggregator.EncodingFixtures
 
-  describe "encoding of records with " do
+  describe "reward encoding of records with " do
     setup do
-      invalid_record_forward = record_fixture_for_forward_geo_encoding_invalid()
-      invalid_record_reverse = record_fixture_for_reverse_geo_encoding_invalid()
-
-      correct_record_forward = record_fixture_for_forward_geo_encoding_correct()
-      correct_record_reverse = record_fixture_for_reverse_geo_encoding_correct()
+      record_fixture = record_fixture_for_reverse_geo_encoding_correct()
 
       [
-        correct_record_forward: correct_record_forward,
-        correct_record_reverse: correct_record_reverse,
-        invalid_record_forward: invalid_record_forward,
-        invalid_record_reverse: invalid_record_reverse
+        record_fixture: record_fixture
       ]
     end
 
-    @tag run: true
-    test "encode/2 for :geo catalog - reverse geo encoding with intl coordinates - successful",
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with intl coordinates - successful",
          %{
-           correct_record_reverse: correct_record_reverse
+           record_fixture: record_fixture
          } do
-      {:ok, record} = Record.encode(correct_record_reverse, :geo)
+      {:ok, record} = Record.encode(record_fixture, :geo_reverse)
 
       assert record !== nil
 
@@ -54,20 +46,19 @@ defmodule DataAggregator.GeoEncodingTest do
       assert record.state === :encoded
     end
 
-    @tag run: true
-    test "encode/2 for :geo catalog - reverse geo encoding with swiss coordinates - successful",
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with swiss coordinates - successful",
          %{
-           correct_record_reverse: correct_record_reverse
+           record_fixture: record_fixture
          } do
-      correct_record_reverse =
-        Record.update!(correct_record_reverse, %{
+      record_fixture =
+        Record.update!(record_fixture, %{
           loc_decimal_latitude: nil,
           loc_decimal_longitude: nil,
           loc_swiss_coordinates_x: 2_601_391.156872048,
           loc_swiss_coordinates_y: 1_199_508.5872802814
         })
 
-      {:ok, record} = Record.encode(correct_record_reverse, :geo)
+      {:ok, record} = Record.encode(record_fixture, :geo_reverse)
 
       assert record !== nil
 
@@ -90,20 +81,19 @@ defmodule DataAggregator.GeoEncodingTest do
       assert record.state === :encoded
     end
 
-    @tag run: true
-    test "encode/2 for :geo catalog - reverse geo encoding with no coordinates - (no changes 1) successful",
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with no coordinates - (no changes 1) successful",
          %{
-           correct_record_reverse: correct_record_reverse
+           record_fixture: record_fixture
          } do
-      correct_record_reverse =
-        Record.update!(correct_record_reverse, %{
+      record_fixture =
+        Record.update!(record_fixture, %{
           loc_decimal_latitude: nil,
           loc_decimal_longitude: nil,
           loc_swiss_coordinates_x: nil,
           loc_swiss_coordinates_y: nil
         })
 
-      {:ok, record} = Record.encode(correct_record_reverse, :geo)
+      {:ok, record} = Record.encode(record_fixture, :geo_reverse)
 
       assert record !== nil
 
@@ -126,20 +116,19 @@ defmodule DataAggregator.GeoEncodingTest do
       assert record.state === :encoded
     end
 
-    @tag run: true
-    test "encode/2 for :geo catalog - reverse geo encoding with no coordinates - (no changes 2) successful",
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with no coordinates - (no changes 2) successful",
          %{
-           correct_record_reverse: correct_record_reverse
+           record_fixture: record_fixture
          } do
-      correct_record_reverse =
-        Record.update!(correct_record_reverse, %{
+      record_fixture =
+        Record.update!(record_fixture, %{
           loc_decimal_latitude: 46.946659297095934,
           loc_decimal_longitude: nil,
           loc_swiss_coordinates_x: 2_601_391.156872048,
           loc_swiss_coordinates_y: nil
         })
 
-      {:ok, record} = Record.encode(correct_record_reverse, :geo)
+      {:ok, record} = Record.encode(record_fixture, :geo_reverse)
 
       assert record !== nil
 
@@ -162,13 +151,12 @@ defmodule DataAggregator.GeoEncodingTest do
       assert record.state === :encoded
     end
 
-    @tag run: true
-    test "encode/2 for :geo catalog - reverse geo encoding with wrong coordinates - error (no result)",
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with wrong coordinates - error (no result)",
          %{
-           correct_record_reverse: correct_record_reverse
+           record_fixture: record_fixture
          } do
-      correct_record_reverse =
-        Record.update!(correct_record_reverse, %{
+      record_fixture =
+        Record.update!(record_fixture, %{
           loc_decimal_latitude: 4242.4242,
           loc_decimal_longitude: 2424.2424,
           loc_swiss_coordinates_x: nil,
@@ -176,9 +164,9 @@ defmodule DataAggregator.GeoEncodingTest do
         })
 
       {{:error, error}, logs} =
-        with_log(fn -> Record.encode(correct_record_reverse, :geo) end)
+        with_log(fn -> Record.encode(record_fixture, :geo_reverse) end)
 
-      encoded_record = Record.get_by_id!(correct_record_reverse.id)
+      encoded_record = Record.get_by_id!(record_fixture.id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: 4242.4242,
@@ -194,37 +182,8 @@ defmodule DataAggregator.GeoEncodingTest do
       })
 
       assert encoded_record.state === :failed
-      assert error == "No valid response (status 400) from geo api"
+      assert error === "No valid response (status 400) from geo api"
       assert logs =~ "No valid response (status 400) from geo api"
     end
-
-    # test "encode/2 for :geo catalog which returns an error", %{
-    #   correct_record_forward: correct_record_forward,
-    #   correct_record_reverse: correct_record_reverse,
-    #   invalid_record_forward: invalid_record_forward,
-    #   invalid_record_reverse: invalid_record_reverse
-    # } do
-    #   # expect_failing_geo_api_call()
-
-    #   {{:error, error}, logs} =
-    #     with_log(fn -> Record.encode(invalid_record, :geo) end)
-
-    #   assert %Ash.Error.Unknown{} = error
-
-    #   assert logs =~ "unknown error occured"
-    # end
-
-    # test "encode/2 for :unknown catalog which returns an error", %{
-    #   correct_record_forward: correct_record_forward,
-    #   correct_record_reverse: correct_record_reverse,
-    #   invalid_record_forward: invalid_record_forward,
-    #   invalid_record_reverse: invalid_record_reverse
-    # } do
-    #   {{:error, error}, logs} =
-    #     with_log(fn -> Record.encode(correct_record, :unknown) end)
-
-    #   assert error === "no encoding strategy found for catalog: :unknown"
-    #   assert logs =~ "no encoding strategy found for catalog: :unknown"
-    # end
   end
 end
