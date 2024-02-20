@@ -138,19 +138,12 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
   defp parse_response(response) when response.status == 200 do
     results = response.body["results"]
 
-    cond do
-      results != nil && Enum.empty?(results) == false ->
-        location = hd(results)
+    if results != nil && Enum.empty?(results) == false do
+      location = hd(results)
 
-        location["components"]
-
-      results == nil || Enum.empty?(results) ->
-        throw("No results found in response from geo api")
-
-      true ->
-        throw(
-          "Wrong amount of results found in response from geo api (Expected 1 but got #{length(results)}"
-        )
+      location["components"]
+    else
+      throw("No results found in response from geo api")
     end
   end
 
