@@ -138,7 +138,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
   defp parse_response(response) when response.status == 200 do
     results = response.body["results"]
 
-    # TODO: go further here to determine whats a correct response
     cond do
       results != nil && Enum.empty?(results) == false ->
         location = hd(results)
