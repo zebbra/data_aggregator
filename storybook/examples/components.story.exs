@@ -160,7 +160,7 @@ defmodule Storybook.Examples.Components do
             as={:user}
             phx-submit={JS.push("create") |> JS.dispatch("submit:close")}
           >
-            <.fieldset legend="Create new user" text="This won't be persisted into DB, memory only">
+            <.fieldset legend="Create new user" text="This won't be persisted into DB, memory only.">
               <.fieldgroup>
                 <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
                   <.field field={f[:first_name]} label="First name" required />

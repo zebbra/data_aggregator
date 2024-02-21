@@ -110,3 +110,6 @@ msgstr ""
 
 msgid "must be equal to %{number}"
 msgstr ""
+
+msgid "is required"
+msgstr ""

@@ -33,16 +33,14 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Components do
     assigns = %{assigns | icon: icon, icon_class: icon_class}
 
     ~H"""
-    <span
-      class={[
-        "tooltip inline-flex h-8 items-center space-x-1.5 rounded-full px-1.5 py-1 text-sm font-medium ring-1 ring-inset before:text-xs",
-        state_badge_class(@state)
-      ]}
+    <.badge
+      class="tooltip before:text-xs"
+      color={state_color(@state)}
       data-tip={state_badge_tooltip(@state, @reason, @small)}
     >
       <.icon name={@icon} class={class_names([@icon_class, "size-5"])} />
       <span :if={!@small} class="truncate pr-1.5"><%= state_translation(@state) %></span>
-    </span>
+    </.badge>
     """
   end
 
@@ -62,19 +60,12 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Components do
     end
   end
 
-  defp state_badge_class(state) do
-    gray = "bg-base-300 text-base-content/60 ring-base-content/30"
-    blue = "bg-info/10 text-info ring-info/20 tooltip-info"
-    green = "bg-success/10 text-success ring-success/20 tooltip-success"
-    red = "bg-error/10 text-error ring-error/20 tooltip-error"
-
-    # orange = "bg-warning/10 text-warning ring-warning/20 tooltip-warning"
-
+  defp state_color(state) do
     cond do
-      state in [:encoded, :success] -> green
-      state in [:failed, :error] -> red
-      state in [:encoding, :queued, :unchanged, :imported, :incomplete] -> blue
-      true -> gray
+      state in [:encoded, :success] -> "green"
+      state in [:failed, :error] -> "red"
+      state in [:encoding, :queued, :unchanged, :imported, :incomplete] -> "blue"
+      true -> "gray"
     end
   end
 

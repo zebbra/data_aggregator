@@ -2,8 +2,6 @@ defmodule DataAggregator.DarwinCore.Schema do
   alias Ash.Resource.Attribute
   alias DataAggregator.DarwinCore.Schema.Category
 
-  import DataAggregatorWeb.Gettext
-
   @prs_attributes [
     %Attribute{
       name: :contact_point,
@@ -98,68 +96,68 @@ defmodule DataAggregator.DarwinCore.Schema do
   @categories [
     %Category{
       name: :prs,
-      label: ~t"Person"m,
-      description: ~t"Attributes related to a person"m,
+      label: "Person",
+      description: "Attributes related to a person",
       attributes: @prs_attributes
     },
     %Category{
       name: :eve,
-      label: ~t"Event"m,
-      description: ~t"The circumstances of the extraction"m,
+      label: "Eve",
+      description: "The circumstances of the extraction",
       attributes: @eve_attributes
     },
     %Category{
       name: :idf,
-      label: ~t"Identification"m,
-      description: ~t"Characteristics of the item"m,
+      label: "Identification",
+      description: "Characteristics of the item",
       attributes: @idf_attributes
     },
     %Category{
       name: :ref,
-      label: ~t"Reference"m,
-      description: ~t"Literature and mentions"m,
+      label: "Reference",
+      description: "Literature and mentions",
       attributes: @ref_attributes
     },
     %Category{
       name: :rrp,
-      label: ~t"Resource Relationship"m,
-      description: ~t"References to other resources"m,
+      label: "Resource Relationship",
+      description: "References to other resources",
       attributes: @rrp_attributes
     },
     %Category{
       name: :tax,
-      label: ~t"Taxon"m,
-      description: ~t"Classification structure of the item"m,
+      label: "Taxon",
+      description: "Classification structure of the item",
       attributes: @tax_attributes
     },
     %Category{
       name: :spp,
-      label: ~t"Species Profile"m,
-      description: ~t"Life stage and characteristics of the species"m,
+      label: "Species Profile",
+      description: "Life stage and characteristics of the species",
       attributes: @spp_attributes
     },
     %Category{
       name: :loc,
-      label: ~t"Location"m,
-      description: ~t"Geographical description"m,
+      label: "Location",
+      description: "Geographical description",
       attributes: @loc_attributes
     },
     %Category{
       name: :occ,
-      label: ~t"Occurence"m,
-      description: ~t"Properties of the recorded observation"m,
+      label: "Occurence",
+      description: "Properties of the recorded observation",
       attributes: @occ_attributes
     },
     %Category{
       name: :mte,
-      label: ~t"Material Entity"m,
-      description: ~t"Distinguishing marks of the specimen"m,
+      label: "Material Entity",
+      description: "Distinguishing marks of the specimen",
       attributes: @mte_attributes
     },
     %Category{
       name: :mts,
-      label: ~t"Material Sample"m,
-      description: ~t"Specimens documented (bio)chemical elements"m,
+      label: "Material Sample",
+      description: "Specimens documented (bio)chemical elements",
       attributes: @mts_attributes
     }
   ]
@@ -195,6 +193,13 @@ defmodule DataAggregator.DarwinCore.Schema do
   @spec mandatory_prefixed_attributes() :: [Attribute.t()]
   def mandatory_prefixed_attributes do
     Enum.filter(prefixed_attributes(), &(&1.allow_nil? == false))
+  end
+
+  @doc """
+  Returns a list of all mandatory (allow_nil == false) attribute names prefixed with their category name.
+  """
+  def mandatory_prefixed_attribute_names do
+    Enum.map(mandatory_prefixed_attributes(), & &1.name)
   end
 
   @doc """
@@ -234,4 +239,35 @@ defmodule DataAggregator.DarwinCore.Schema do
       {category_label, options}
     end
   end
+
+  @doc """
+  Returns the category of an attribute by the attributes name prefixed with the category name.
+  """
+  @spec category_from_prefixed_attribute_name(String.t()) :: Category.t() | nil
+  def category_from_prefixed_attribute_name(name) when is_binary(name) do
+    category_name = String.split(name, "_") |> List.first()
+
+    @categories
+    |> Enum.find(&(&1.name == String.to_atom(category_name)))
+  end
+
+  @spec category_from_prefixed_attribute_name(atom()) :: Category.t() | nil
+  def category_from_prefixed_attribute_name(name) when is_atom(name),
+    do: category_from_prefixed_attribute_name(to_string(name))
+
+  @doc """
+  Returns the attribute name without the category prefix.
+  """
+  @spec attribute_name_without_prefix(String.t()) :: atom()
+  def attribute_name_without_prefix(name) when is_binary(name) do
+    name
+    |> String.split("_")
+    |> List.delete_at(0)
+    |> Enum.join("_")
+    |> String.to_atom()
+  end
+
+  @spec attribute_name_without_prefix(atom()) :: atom()
+  def attribute_name_without_prefix(name) when is_atom(name),
+    do: attribute_name_without_prefix(to_string(name))
 end

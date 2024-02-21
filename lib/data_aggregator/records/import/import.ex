@@ -160,7 +160,7 @@ defmodule DataAggregator.Records.Import do
       accept [:columns]
       change Import.Changes.UpdateMapping
       change transition_state(:pending)
-      change load([:missing_mappings])
+      change load([:missing_mappings, :mappings])
     end
 
     update :add_validation_progress do

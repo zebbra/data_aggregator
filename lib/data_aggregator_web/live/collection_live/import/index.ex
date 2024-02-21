@@ -4,14 +4,15 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   use DataAggregatorWeb.CollectionLive.Import.Components, only: [import_state_badge: 1]
 
   alias DataAggregator.PubSub
+  alias DataAggregator.Records
   alias DataAggregator.Records.Import
   alias DataAggregatorWeb.Components.DataTable
 
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
-  import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
 
-  import DataAggregatorWeb.CollectionLive.Helpers,
-    only: [get_collection: 1, subscribe_for_updates: 2]
+  import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
+  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
+  import DataAggregatorWeb.CollectionLive.Import.Helpers
 
   @load [
     :duration,
@@ -34,9 +35,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     if connected, do: PubSub.subscribe(@topics)
 
     socket =
-      socket
-      |> assign(:collection, get_collection(id))
-      |> subscribe_for_updates(connected)
+      assign(socket, :collection, get_collection(id))
 
     {:ok, socket}
   end
@@ -46,6 +45,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     socket =
       socket
       |> assign(:collection, get_collection(id))
+      |> assign(count: Records.count!(collection_scope(params)))
       |> assign_imports(params)
       |> apply_action(socket.assigns.live_action, params)
 
@@ -57,8 +57,17 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     ~H"""
     <.page current="collections">
       <.collection_header collection={@collection} current={:imports} />
-      <div class="no-scrollbar overflow-x-auto py-4">
-        <.table id="imports_table" rows={@streams.results}>
+      <div :if={@count > 0} class="no-scrollbar overflow-x-auto py-4">
+        <.table
+          id="imports_table"
+          rows={@streams.results}
+          row_click={
+            fn {_id, import} ->
+              if import.state == :pending,
+                do: JS.navigate(~p"/collections/#{@collection}/imports/#{import}/edit")
+            end
+          }
+        >
           <:col :let={{_id, import}} label={~t"State"m}>
             <.import_state_badge import={import} />
           </:col>
@@ -89,7 +98,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               phx-click="import:run"
               phx-value-id={import.id}
               class={[
-                "link link-primary link-hover tooltip font-semibold",
+                "link link-primary link-hover tooltip tooltip-primary rounded-md",
                 can_run?(import) == false && "btn-disabled opacity-60",
                 import.state != :pending && "hidden"
               ]}
@@ -97,9 +106,53 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             >
               <.icon name="hero-play-circle-mini" class="size-6" />
             </button>
+
+            <button
+              type="button"
+              phx-click={JS.push("delete", value: %{id: import.id})}
+              class={[
+                "link link-error link-hover tooltip tooltip-error rounded-md",
+                import.state != :pending && "hidden"
+              ]}
+              data-tip={~t"Delete"m}
+              data-confirm={~t"Are you sure?"m}
+            >
+              <.icon name="hero-x-circle-mini" class="size-6" />
+            </button>
           </:action>
         </.table>
       </div>
+
+      <.empty_state
+        :if={@count == 0}
+        title={~t"No imports"m}
+        description={~t"Get started by importing a new dataset."m}
+        label={~t"Import"m}
+        icon="hero-arrow-down-tray"
+        href={~p"/collections/#{@collection}/imports/new"}
+      />
+
+      <:portal>
+        <.modal
+          id="import_modal"
+          class="no-scrollbar"
+          show={@live_action in [:new, :edit, :summary]}
+          size="2xl"
+          responsive
+          backdrop={false}
+          on_cancel={JS.patch(~p"/collections/#{@collection}/imports")}
+        >
+          <.live_component
+            :if={@live_action in [:new, :edit, :summary]}
+            module={DataAggregatorWeb.CollectionLive.Import.FormComponent}
+            id={@import.id || :new}
+            action={@live_action}
+            import={@import}
+            collection={@collection}
+            show_validation={Phoenix.Flash.get(@flash, :mapping_error)}
+          />
+        </.modal>
+      </:portal>
     </.page>
     """
   end
@@ -108,8 +161,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   def handle_info({topic, _event, notification}, socket)
       when topic in ["import:created", "import:updated"] do
     %Ash.Notifier.Notification{data: import} = notification
-    import = Import.get_by_id!(import.id, load: @load)
-
+    import = Records.load!(import, @load, lazy?: true)
     {:noreply, stream_insert(socket, :results, import)}
   end
 
@@ -119,8 +171,49 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     {:noreply, stream_delete(socket, :results, import)}
   end
 
+  @impl true
+  def handle_event("delete", %{"id" => id}, socket) do
+    import = Import.get_by_id!(id)
+    :ok = Import.destroy(import)
+
+    {:noreply,
+     socket
+     |> put_flash(:info, ~t"Import deleted successfully"m)
+     |> stream_delete(:results, import)}
+  end
+
   defp apply_action(socket, :index, _params) do
-    assign(socket, :page_title, ~t"Collection Imports"m)
+    socket
+    |> assign(:page_title, ~t"Collection Imports"m)
+    |> assign(:import, nil)
+  end
+
+  defp apply_action(socket, :new, _params) do
+    socket
+    |> assign(:page_title, ~t"New Import"m)
+    |> assign(:import, %Import{})
+  end
+
+  defp apply_action(socket, :edit, %{"import_id" => id}) do
+    import = Import.get_by_id!(id, load: [:collection, :missing_mappings, :mappings])
+
+    socket
+    |> assign(:page_title, ~t"Edit Import"m)
+    |> assign(:import, import)
+  end
+
+  defp apply_action(socket, :summary, %{"id" => collection_id, "import_id" => id}) do
+    import = Import.get_by_id!(id, load: [:missing_mappings])
+
+    if Enum.empty?(import.missing_mappings) do
+      socket
+      |> assign(:page_title, ~t"Import Summary"m)
+      |> assign(:import, import)
+    else
+      socket
+      |> put_flash(:mapping_error, true)
+      |> push_patch(to: ~p"/collections/#{collection_id}/imports/#{import}/edit")
+    end
   end
 
   defp assign_imports(socket, params) do
@@ -136,18 +229,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     case result do
       %Ash.Page.Offset{results: imports} -> imports
       imports -> imports
-    end
-  end
-
-  defp collection_scope(params) do
-    Import |> Ash.Query.filter_input(%{"collection" => %{"id" => params["id"]}})
-  end
-
-  defp can_run?(import) do
-    cond do
-      length(import.missing_mappings) > 0 -> false
-      import.state in [:pending] -> true
-      true -> false
     end
   end
 end

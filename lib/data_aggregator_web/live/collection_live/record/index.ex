@@ -12,17 +12,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   import DataAggregatorWeb.RecordLive.Helpers, only: [attrs_by_category_in_layers: 1]
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
 
-  import DataAggregatorWeb.CollectionLive.Helpers,
-    only: [get_collection: 1, subscribe_for_updates: 2]
+  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
 
   @load [:collection, :encoded_record]
 
   @impl true
   def mount(%{"id" => id} = _params, _session, socket) do
     socket =
-      socket
-      |> assign(:collection, get_collection(id))
-      |> subscribe_for_updates(connected?(socket))
+      assign(socket, :collection, get_collection(id))
 
     {:ok, socket}
   end

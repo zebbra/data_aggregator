@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   This module contains header components for the collection live view.
   """
 
-  use DataAggregatorWeb, :live_component
+  use DataAggregatorWeb, :html
   use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_indicator: 1]
 
   alias DataAggregator.Records.Collection
@@ -75,8 +75,11 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <%= @collection.description %>
         </div>
       </:subtitle>
-      <:actions :if={@current == :records}>
-        <.link patch={~p"/collections/new"} class="btn btn-neutral max-sm:btn-sm">
+      <:actions :if={@current in [:records, :imports]}>
+        <.link
+          patch={~p"/collections/#{@collection}/imports/new"}
+          class="btn btn-neutral max-sm:btn-sm"
+        >
           <.icon name="hero-plus-mini" class="max-sm:hidden" />
           <span class="max-sm:hidden"><%= ~t"Import dataset"m %></span>
           <span class="sm:hidden"><%= ~t"Add"m %></span>

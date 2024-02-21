@@ -23,7 +23,7 @@ defmodule Storybook.Components.Form.FieldInside do
         id: :inside_inputs,
         variations:
           for type <-
-                ~w(email number password tel text url)a do
+                ~w(email number password tel text url search)a do
             %Variation{
               id: type,
               attributes: %{
@@ -41,7 +41,7 @@ defmodule Storybook.Components.Form.FieldInside do
         id: :inside_inputs_after,
         variations:
           for type <-
-                ~w(email number password tel text url)a do
+                ~w(email number password tel text url search)a do
             %Variation{
               id: type,
               attributes: %{
@@ -59,7 +59,7 @@ defmodule Storybook.Components.Form.FieldInside do
         id: :inside_label,
         variations:
           for type <-
-                ~w(email number password tel text url)a do
+                ~w(email number password tel text url search)a do
             %Variation{
               id: type,
               attributes: %{
@@ -81,6 +81,7 @@ defmodule Storybook.Components.Form.FieldInside do
         "password" -> "hero-key-mini"
         "tel" -> "hero-phone-mini"
         "text" -> "hero-user-mini"
+        "search" -> "hero-magnifying-glass-mini"
         "url" -> "hero-link-mini"
       end
 
@@ -99,6 +100,7 @@ defmodule Storybook.Components.Form.FieldInside do
         "password" -> "hero-key-mini"
         "tel" -> "hero-phone-mini"
         "text" -> "hero-user-mini"
+        "search" -> "hero-magnifying-glass-mini"
         "url" -> "hero-link-mini"
       end
 

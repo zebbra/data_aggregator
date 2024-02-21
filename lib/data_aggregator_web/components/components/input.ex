@@ -10,7 +10,7 @@ defmodule DataAggregatorWeb.Components.Input do
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
-  @valid_inside_types ~w(email number password tel text url)
+  @valid_inside_types ~w(email number password tel text url search)
 
   @doc """
   Renders an input.
@@ -259,7 +259,7 @@ defmodule DataAggregatorWeb.Components.Input do
 
   def input(%{icon_start: _, icon_end: nil} = assigns) do
     ~H"""
-    <div class={[@class, "relative w-full"]}>
+    <div class={["relative w-full", @inline && @class]}>
       <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
         <.icon
           name={@icon_start}
@@ -268,15 +268,15 @@ defmodule DataAggregatorWeb.Components.Input do
           }
         />
       </div>
-      <%= input(%{assigns | icon_start: nil, class: "w-full pl-10"}) %>
+      <%= input(%{assigns | icon_start: nil, class: class_names(["w-full pl-10", @class])}) %>
     </div>
     """
   end
 
   def input(%{icon_start: nil, icon_end: _} = assigns) do
     ~H"""
-    <div class={[@class, "relative w-full"]}>
-      <%= input(%{assigns | icon_end: nil, class: "w-full pr-10"}) %>
+    <div class={["relative w-full", @inline && @class]}>
+      <%= input(%{assigns | icon_end: nil, class: class_names(["w-full pr-10", @class])}) %>
       <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
         <.icon
           name={@icon_end}
@@ -291,7 +291,7 @@ defmodule DataAggregatorWeb.Components.Input do
 
   def input(%{icon_start: _, icon_end: _} = assigns) do
     ~H"""
-    <div class={[@class, "relative w-full"]}>
+    <div class={["relative w-full", @inline && @class]}>
       <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
         <.icon
           name={@icon_start}
@@ -300,7 +300,12 @@ defmodule DataAggregatorWeb.Components.Input do
           }
         />
       </div>
-      <%= input(%{assigns | icon_start: nil, icon_end: nil, class: "w-full pl-10 pr-10"}) %>
+      <%= input(%{
+        assigns
+        | icon_start: nil,
+          icon_end: nil,
+          class: class_names(["w-full pl-10 pr-10", @class])
+      }) %>
       <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
         <.icon
           name={@icon_end}

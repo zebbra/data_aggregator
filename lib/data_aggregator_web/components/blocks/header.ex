@@ -54,20 +54,32 @@ defmodule DataAggregatorWeb.Blocks.Header do
 
   attr :class, :string, default: nil, doc: "the header class"
   attr :title, :string, required: true, doc: "the title of the header"
-  attr :subtitle, :string, required: false, doc: "the optional subtitle of the header"
+  attr :subtitle, :string, default: nil, doc: "the optional subtitle of the header"
 
   attr :size, :string,
     values: ["xs", "sm", "lg", "xl"],
     default: "lg",
     doc: "the size of the title"
 
+  slot :actions, doc: "the optional actions displayed on the right side of the header"
+
   def heading(assigns) do
     ~H"""
-    <div class={@class}>
-      <h4 class={["text-base-content font-bold", heading_title_size_class(@size)]}><%= @title %></h4>
-      <p :if={@subtitle} class={["text-base-content/50", heading_subtitle_size_class(@size)]}>
-        <%= @subtitle %>
-      </p>
+    <div class={["w-full sm:flex sm:items-baseline sm:justify-between", @class]}>
+      <div class="sm:w-0 sm:flex-1">
+        <h4 class={["text-base-content font-bold", heading_title_size_class(@size)]}>
+          <%= @title %>
+        </h4>
+        <p :if={@subtitle} class={["text-base-content/50", heading_subtitle_size_class(@size)]}>
+          <%= @subtitle %>
+        </p>
+      </div>
+      <div
+        :if={@actions != []}
+        class="mt-4 flex items-center justify-between gap-x-3 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex-row-reverse sm:justify-start"
+      >
+        <%= render_slot(@actions) %>
+      </div>
     </div>
     """
   end

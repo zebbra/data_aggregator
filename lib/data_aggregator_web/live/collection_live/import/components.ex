@@ -50,13 +50,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
 
   def import_state_badge(assigns) do
     ~H"""
-    <span class={[
-      "inline-flex h-8 items-center space-x-1.5 rounded-full py-1 pr-3 pl-1.5 text-sm font-medium ring-1 ring-inset",
-      import_state_badge_class(@state)
-    ]}>
+    <.badge class="pr-3" color={state_color(@state)}>
       <.import_state_icon state={@state} />
       <.import_state_badge_label state={@state} progress={@progress} />
-    </span>
+    </.badge>
     """
   end
 
@@ -81,17 +78,12 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
     """
   end
 
-  def import_state_badge_class(state) do
-    gray = "bg-base-300 text-base-content/60 ring-base-content/30"
-    blue = "bg-info/10 text-info ring-info/20"
-    green = "bg-success/10 text-success ring-success/20"
-    red = "bg-error/10 text-error ring-error/20"
-
+  def state_color(state) do
     cond do
-      state in [:pending] -> gray
-      state in [:import_queued, :importing] -> blue
-      state in [:imported] -> green
-      state in [:failed] -> red
+      state in [:pending] -> "gray"
+      state in [:import_queued, :importing] -> "blue"
+      state in [:imported] -> "green"
+      state in [:failed] -> "red"
     end
   end
 
@@ -130,6 +122,51 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
       state in [:imported] -> ~t"Imported"m
       state in [:failed] -> ~t"Failed"m
     end
+  end
+
+  attr :import, Import, required: true
+  attr :on_hide, JS, default: %JS{}
+
+  def import_mapping_validation(%{import: import} = assigns) do
+    attributes = for cat <- import.missing_mappings, attr <- cat.attributes, do: {cat, attr}
+    assigns = assign(assigns, attributes: attributes)
+
+    ~H"""
+    <div :if={@attributes == []} class="alert alert-success bg-success/10 text-success">
+      <.icon name="hero-check-circle-solid" />
+      <span><%= ~t"All required attributes are mapped"m %></span>
+    </div>
+
+    <div :if={@attributes != []} class="alert alert-error bg-error/10 text-error relative items-start">
+      <.icon name="hero-exclamation-triangle" class="mt-1" />
+
+      <div>
+        <h3 class="mb-4 flex items-center">
+          <%= ~t"The following mappings are required but missing:"m %>
+        </h3>
+
+        <div class="flex flex-wrap gap-4 text-xs max-sm:justify-center">
+          <div :for={{cat, attr} <- @attributes} class="inline-flex">
+            <div class="bg-error text-error-content rounded-l px-2 py-1 uppercase">
+              <%= cat.name %>
+            </div>
+            <div class="bg-base-100 rounded-r px-2 py-1"><%= attr.name %></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-6" />
+      <button
+        :if={@on_hide != %JS{}}
+        type="button"
+        phx-click={@on_hide}
+        class="btn btn-sm btn-circle btn-ghost absolute top-2 right-2"
+        aria-label={~t"close"m}
+      >
+        ✕
+      </button>
+    </div>
+    """
   end
 
   defmacro __using__(_opts) do

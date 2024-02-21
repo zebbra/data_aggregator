@@ -52,7 +52,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         <.table id="collections_table" rows={@streams.results}>
           <:col :let={{_id, collection}} label={~t"Name"m}>
             <.link
-              navigate={~p"/collections/#{collection.id}/records"}
+              navigate={~p"/collections/#{collection}/records"}
               class="link link-primary font-semibold link-hover"
             >
               <%= collection.name %>
@@ -91,7 +91,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             <.table_actions id={"collection_#{collection.id}"}>
               <li>
                 <.link
-                  patch={~p"/collections/#{collection.id}/records"}
+                  patch={~p"/collections/#{collection}/records"}
                   class="hover:bg-primary hover:text-primary-content"
                 >
                   <%= ~t"View"m %>

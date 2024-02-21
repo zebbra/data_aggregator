@@ -7,6 +7,7 @@ defmodule DataAggregatorWeb.Components do
     quote do
       import DataAggregatorWeb.Components.{
         Alert,
+        Badge,
         Breadcrumbs,
         Drawer,
         Dropdown,

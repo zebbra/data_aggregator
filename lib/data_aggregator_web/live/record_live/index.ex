@@ -73,7 +73,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           <:col :let={{_id, record}} label={~t"Collection"m}>
             <.link
               navigate={~p"/collections/#{record.collection}/records"}
-              class="link link-primary link-hover font-semibold"
+              class="link link-primary link-hover font-semibold rounded-md"
             >
               <%= record.collection.name %>
             </.link>
