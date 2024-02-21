@@ -10,7 +10,7 @@ defmodule DataAggregator.InstitutionTest do
   describe "institutions" do
     @invalid_attrs %{
       name: nil,
-      grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
+      grscicoll_reference: "5b487a79-76ef-4615-93d9-f4ea25a40c33"
     }
 
     test "read!/0 returns all institutions" do
