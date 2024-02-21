@@ -64,7 +64,7 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
     patterns: [
       ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/data_aggregator/(controllers|live|components)/.*(ex|heex)$",
+      ~r"lib/data_aggregator_web/(controllers|live|components)/.*(ex|heex)$",
       ~r"storybook/.*(exs)$"
     ]
   ]

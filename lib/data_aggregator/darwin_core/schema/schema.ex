@@ -102,7 +102,7 @@ defmodule DataAggregator.DarwinCore.Schema do
     },
     %Category{
       name: :eve,
-      label: "Eve",
+      label: "Event",
       description: "The circumstances of the extraction",
       attributes: @eve_attributes
     },
