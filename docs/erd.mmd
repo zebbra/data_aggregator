@@ -17,6 +17,7 @@ erDiagram
     varchar mail
     varchar tel
     varchar contact_person
+    varchar grscicoll_reference
     timestamp inserted_at
     timestamp updated_at
   }
@@ -36,6 +37,7 @@ erDiagram
     varchar owner
     varchar name
     varchar code
+    varchar grscicoll_reference
     varchar description
     array import_mapping
     varchar type
@@ -50,6 +52,12 @@ erDiagram
     varchar occ_associated_occurrences
     varchar occ_sex
     varchar occ_recorded_by
+    varchar loc_municipality
+    varchar loc_county
+    varchar loc_city
+    float loc_swiss_coordinates_y
+    float loc_swiss_coordinates_x
+    varchar loc_country_code
     varchar loc_georeference_remarks
     float loc_decimal_latitude
     float loc_decimal_longitude
@@ -141,6 +149,12 @@ erDiagram
     varchar occ_associated_occurrences
     varchar occ_sex
     varchar occ_recorded_by
+    varchar loc_municipality
+    varchar loc_county
+    varchar loc_city
+    float loc_swiss_coordinates_y
+    float loc_swiss_coordinates_x
+    varchar loc_country_code
     varchar loc_georeference_remarks
     float loc_decimal_latitude
     float loc_decimal_longitude

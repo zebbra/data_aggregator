@@ -11,6 +11,7 @@ classDiagram
         String mail
         String tel
         String contact_person
+        String grscicoll_reference
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         destroy()

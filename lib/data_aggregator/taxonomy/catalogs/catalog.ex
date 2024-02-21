@@ -2,7 +2,7 @@ defmodule DataAggregator.Taxonomy.Catalog do
   @moduledoc """
   Enum to define all catalogs which we use to encode records
   """
-  @catalogs [:gbif_taxonomy, :swiss_species]
+  @catalogs [:gbif_taxonomy, :swiss_species, :geo_reverse, :geo_forward]
 
   use Ash.Type.Enum, values: @catalogs
 
@@ -13,11 +13,24 @@ defmodule DataAggregator.Taxonomy.Catalog do
       :gbif_taxonomy ->
         [
           {:tax_scientific_name, :name},
-          {:tax_kingdom, :kingdom}
+          {:tax_kingdom, :kingdom},
+          {:tax_phylum, :phylum},
+          {:tax_class, :class},
+          {:tax_order, :order},
+          {:tax_family, :family}
         ]
 
       :swiss_species ->
         [{:tax_taxon_id, :tax_taxon_id}]
+
+      :geo_reverse ->
+        []
+
+      :geo_forward ->
+        []
+
+      _ ->
+        throw("no input attributes defined for catalog: #{catalog}")
     end
   end
 
@@ -48,6 +61,33 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:tax_scientific_name, :scientific_name},
           {:tax_taxon_rank, :rank}
         ]
+
+      :geo_reverse ->
+        [
+          {:loc_city, "city"},
+          {:loc_municipality, "town"},
+          {:loc_continent, "continent"},
+          {:loc_country, "country"},
+          {:loc_country_code, "country_code"},
+          {:loc_state_province, "state"},
+          {:loc_swiss_coordinates_x, "loc_swiss_coordinates_x"},
+          {:loc_swiss_coordinates_y, "loc_swiss_coordinates_y"},
+          {:loc_decimal_longitude, "loc_decimal_longitude"},
+          {:loc_decimal_latitude, "loc_decimal_latitude"}
+        ]
+
+      :geo_forward ->
+        [
+          {:loc_city, "city"},
+          {:loc_municipality, "town"},
+          {:loc_continent, "continent"},
+          {:loc_country, "country"},
+          {:loc_country_code, "country_code"},
+          {:loc_state_province, "state"}
+        ]
+
+      _ ->
+        throw("no output attributes defined for catalog: #{catalog}")
     end
   end
 

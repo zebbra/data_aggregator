@@ -11,7 +11,8 @@ defmodule DataAggregator.CollectionTest do
     @invalid_attrs %{
       name: nil,
       owner: "Max Powers",
-      type: :invalid
+      type: :invalid,
+      grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
     }
 
     test "read!/0 returns all collections" do
@@ -40,7 +41,8 @@ defmodule DataAggregator.CollectionTest do
       attrs = %{
         name: "Collection",
         owner: "Max Powers",
-        type: :animalia
+        type: :animalia,
+        grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
       }
 
       assert {:ok, %Collection{} = _collection} = Collection.create(attrs)
@@ -48,6 +50,18 @@ defmodule DataAggregator.CollectionTest do
 
     test "create/1 with invalid data returns error changeset" do
       assert {:error, %Ash.Error.Invalid{}} = Collection.create(@invalid_attrs)
+    end
+
+    test "create/1 with missing :grscicoll_reference data returns error changeset" do
+      attrs = @invalid_attrs |> Map.delete(:grscicoll_reference)
+
+      assert {:error, %Ash.Error.Invalid{}} = Collection.create(attrs)
+    end
+
+    test "create/1 with ivalid :grscicoll_reference data returns error changeset" do
+      attrs = @invalid_attrs |> Map.put(:grscicoll_reference, "this-is-super-wrong")
+
+      assert {:error, %Ash.Error.Invalid{}} = Collection.create(attrs)
     end
 
     test "update/2 with valid data updates the collection" do

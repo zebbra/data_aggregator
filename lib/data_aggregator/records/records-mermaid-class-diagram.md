@@ -20,6 +20,7 @@ classDiagram
         String owner
         String name
         String code
+        String grscicoll_reference
         String description
         Map[] import_mapping
         CollectionType type
@@ -117,6 +118,12 @@ classDiagram
         String occ_associated_occurrences
         String occ_sex
         String occ_recorded_by
+        String loc_municipality
+        String loc_county
+        String loc_city
+        Float loc_swiss_coordinates_y
+        Float loc_swiss_coordinates_x
+        String loc_country_code
         String loc_georeference_remarks
         Float loc_decimal_latitude
         Float loc_decimal_longitude
@@ -222,6 +229,12 @@ classDiagram
         String occ_associated_occurrences
         String occ_sex
         String occ_recorded_by
+        String loc_municipality
+        String loc_county
+        String loc_city
+        Float loc_swiss_coordinates_y
+        Float loc_swiss_coordinates_x
+        String loc_country_code
         String loc_georeference_remarks
         Float loc_decimal_latitude
         Float loc_decimal_longitude

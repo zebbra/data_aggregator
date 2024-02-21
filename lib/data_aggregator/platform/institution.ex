@@ -7,6 +7,8 @@ defmodule DataAggregator.Platform.Institution do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
+  alias DataAggregator.Records.Validations
+
   attributes do
     uuid_attribute :id, prefix: "ins"
     attribute :name, :string, allow_nil?: false
@@ -22,6 +24,12 @@ defmodule DataAggregator.Platform.Institution do
     attribute :mail, :string
     attribute :tel, :string
     attribute :contact_person, :string
+
+    attribute :grscicoll_reference, :string do
+      description "a code to identify the institution in the GrSciColl database"
+      allow_nil? false
+    end
+
     timestamps private?: false, writable?: false
   end
 
@@ -31,6 +39,7 @@ defmodule DataAggregator.Platform.Institution do
 
   code_interface do
     define_for DataAggregator.Platform
+    define :read
     define :create, action: :create
     define :read_all, action: :read
     define :update, action: :update
@@ -41,6 +50,13 @@ defmodule DataAggregator.Platform.Institution do
   postgres do
     table "institutions"
     repo DataAggregator.Repo
+  end
+
+  validations do
+    validate {Validations.GrSciCollValidator,
+              [attribute: :grscicoll_reference, kind: :institution]} do
+      on [:create, :update]
+    end
   end
 
   graphql do

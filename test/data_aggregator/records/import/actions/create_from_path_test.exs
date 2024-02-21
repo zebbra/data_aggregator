@@ -11,7 +11,13 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
 
   describe "DataAggregator.Records.Import.create_from_path/2" do
     setup do
-      collection = Collection.create!(%{name: "Test Collection", owner: "Max Powers"})
+      collection =
+        Collection.create!(%{
+          name: "Test Collection",
+          owner: "Max Powers",
+          grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
+        })
+
       [collection: collection]
     end
 

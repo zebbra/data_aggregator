@@ -47,7 +47,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
      |> build_request_params()
      |> fetch_match_api()
      |> parse_response()
-     |> parse_match_api_body()
+     |> parse_response_body()
      |> handle_synonym()
      |> Strategy.update_encoded_record(record, @output_attributes)}
   catch
@@ -57,14 +57,14 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
   @spec build_request_params(EncodedRecord.t()) :: list()
   defp build_request_params(record) do
-    (get_taxon_parameters(record) ++
-       Enum.map(@input_attributes, fn {record_attribute, request_attribute} ->
-         response_value = Map.get(record, record_attribute, nil)
+    Enum.map(@input_attributes, fn {record_attribute, request_attribute} ->
+      request_value = Map.get(record, record_attribute)
 
-         if response_value != nil do
-           {request_attribute, response_value}
-         end
-       end))
+      if request_value != nil do
+        {request_attribute, request_value}
+      end
+    end)
+    |> check_parameters(record)
     |> Enum.filter(&(&1 !== nil))
     |> Enum.uniq()
   end
@@ -118,8 +118,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     to_map(unparsed_body)
   end
 
-  @spec parse_match_api_body(map()) :: map()
-  defp parse_match_api_body(unparsed_body) do
+  @spec parse_response_body(map()) :: map()
+  defp parse_response_body(unparsed_body) do
     body = to_map(unparsed_body)
 
     case validate_body(body) do
@@ -129,17 +129,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   end
 
   defp to_map(data) do
-    for {key, value} <- data, into: %{} do
-      {parse_key(key), value}
-    end
-  end
-
-  defp parse_key(key) when is_binary(key) do
-    String.to_atom(key)
-  end
-
-  defp parse_key(key) when is_atom(key) do
-    key
+    Map.new(data, fn {key, value} -> {String.to_atom(key), value} end)
   end
 
   @spec validate_body(map()) :: {:ok, map()} | {:error, any()}
@@ -187,26 +177,11 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     throw(error)
   end
 
-  defp get_taxon_parameters(encoded_record) do
+  defp check_parameters(params, encoded_record) do
     encoded_record = Records.load!(encoded_record, [:record], lazy?: true)
     record = Records.load!(encoded_record.record, [:collection], lazy?: true)
 
-    taxon_param_keys = [
-      tax_kingdom: :kingdom,
-      tax_phylum: :phylum,
-      tax_class: :class,
-      tax_order: :order,
-      tax_family: :family
-    ]
-
-    params =
-      Enum.map(taxon_param_keys, fn {key, value} ->
-        attribute_value = Map.get(record, key)
-
-        {value, attribute_value}
-      end)
-      |> Enum.filter(fn {_key, value} -> value !== nil end)
-
+    # check if there is at least a kingdom parameter set
     case add_kingdom_fallback(params, record) do
       [] ->
         throw(

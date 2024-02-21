@@ -19,6 +19,7 @@ Table institutions {
   mail varchar
   tel varchar
   contact_person varchar
+  grscicoll_reference varchar
   inserted_at timestamp
   updated_at timestamp
 }
@@ -40,6 +41,7 @@ Table collections {
   owner varchar
   name varchar
   code varchar
+  grscicoll_reference varchar
   description varchar
   import_mapping array
   type varchar
@@ -55,6 +57,12 @@ Table encoded_records {
   occ_associated_occurrences varchar
   occ_sex varchar
   occ_recorded_by varchar
+  loc_municipality varchar
+  loc_county varchar
+  loc_city varchar
+  loc_swiss_coordinates_y float
+  loc_swiss_coordinates_x float
+  loc_country_code varchar
   loc_georeference_remarks varchar
   loc_decimal_latitude float
   loc_decimal_longitude float
@@ -150,6 +158,12 @@ Table records {
   occ_associated_occurrences varchar
   occ_sex varchar
   occ_recorded_by varchar
+  loc_municipality varchar
+  loc_county varchar
+  loc_city varchar
+  loc_swiss_coordinates_y float
+  loc_swiss_coordinates_x float
+  loc_country_code varchar
   loc_georeference_remarks varchar
   loc_decimal_latitude float
   loc_decimal_longitude float

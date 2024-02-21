@@ -32,6 +32,11 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         phx-change="validate"
         phx-submit={JS.push("save")}
       >
+        <.input
+          type="hidden"
+          field={@form[:grscicoll_reference]}
+          value="322ce107-3156-4420-8a2b-7f17efeaa472"
+        />
         <.fieldset legend={@title} text={~t"Use this form to manage collections in your database."m}>
           <.fieldgroup>
             <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">

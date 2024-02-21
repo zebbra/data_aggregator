@@ -75,7 +75,13 @@ defmodule DataAggregator.DarwinCore.Schema do
     %Attribute{name: :state_province, type: :string, allow_nil?: true},
     %Attribute{name: :decimal_longitude, type: :float, allow_nil?: true},
     %Attribute{name: :decimal_latitude, type: :float, allow_nil?: true},
-    %Attribute{name: :georeference_remarks, type: :string, allow_nil?: true}
+    %Attribute{name: :georeference_remarks, type: :string, allow_nil?: true},
+    %Attribute{name: :country_code, type: :string, allow_nil?: true},
+    %Attribute{name: :swiss_coordinates_x, type: :float, allow_nil?: true},
+    %Attribute{name: :swiss_coordinates_y, type: :float, allow_nil?: true},
+    %Attribute{name: :city, type: :string, allow_nil?: true},
+    %Attribute{name: :county, type: :string, allow_nil?: true},
+    %Attribute{name: :municipality, type: :string, allow_nil?: true}
   ]
 
   @occ_attributes [

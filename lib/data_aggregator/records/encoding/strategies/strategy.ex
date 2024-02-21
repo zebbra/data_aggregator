@@ -12,7 +12,9 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.RecordEncodingResult
+  alias DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy
   alias DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy
+  alias DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy
   alias DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalog
@@ -32,6 +34,22 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     encoded_record = create_encoded_record(record)
 
     SwissSpeciesStrategy.apply_strategy(encoded_record)
+    |> check_for_changes(encoded_record, catalog)
+    |> handle_encoding_result(encoded_record, catalog)
+  end
+
+  def encode(record, catalog) when catalog == :geo_reverse do
+    encoded_record = create_encoded_record(record)
+
+    ReverseGeoEncodingStrategy.apply_strategy(encoded_record)
+    |> check_for_changes(encoded_record, catalog)
+    |> handle_encoding_result(encoded_record, catalog)
+  end
+
+  def encode(record, catalog) when catalog == :geo_forward do
+    encoded_record = create_encoded_record(record)
+
+    ForwardGeoEncodingStrategy.apply_strategy(encoded_record)
     |> check_for_changes(encoded_record, catalog)
     |> handle_encoding_result(encoded_record, catalog)
   end
@@ -122,7 +140,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
         old_values = get_encoded_values(original_encoded_record, catalog)
 
         if Map.equal?(new_values, old_values) do
-          Logger.warning(
+          Logger.debug(
             "no changes during encoding of record #{original_encoded_record.id} with catalog #{inspect(catalog)}"
           )
 
@@ -173,6 +191,8 @@ defmodule DataAggregator.Records.Encoding.Strategy do
       Enum.map(output_attributes, fn {record_attribute, catalog_attribute} ->
         {record_attribute, Map.get(updated_values, catalog_attribute)}
       end)
+      |> Enum.filter(fn {_key, value} -> value != nil end)
+      |> Enum.uniq()
       |> Enum.into(%{})
 
     EncodedRecord.update!(record, updated_attributes)
