@@ -43,7 +43,6 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
       assert record.state === :encoded
     end
 
-    @tag run: true
     test "encode/2 for :geo_forward catalog - forward geo encoding - (with locality) successful",
          %{
            record_fixture: record_fixture

@@ -27,6 +27,7 @@ defmodule DataAggregator.Records.Collection do
 
     attribute :grscicoll_reference, :string do
       description "a code to identify the collection in the GrSciColl database"
+      allow_nil? false
     end
 
     attribute :description, :string
@@ -141,7 +142,8 @@ defmodule DataAggregator.Records.Collection do
   end
 
   validations do
-    validate {Validations.CollectionGrSciCollValidator, attribute: :grscicoll_reference} do
+    validate {Validations.GrSciCollValidator,
+              [attribute: :grscicoll_reference, kind: :collection]} do
       on [:create, :update]
     end
   end
