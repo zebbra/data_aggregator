@@ -3,7 +3,6 @@ defmodule DataAggregatorWeb.Helpers do
   Formatting helpers for date, datetime, etc.
   """
 
-  alias DataAggregator.Records.Record
   alias DataAggregatorWeb.Cldr
 
   @timezone "Europe/Zurich"
@@ -76,28 +75,6 @@ defmodule DataAggregatorWeb.Helpers do
     format = &String.pad_leading(Integer.to_string(&1), 2, "0")
     "#{format.(hours)}:#{format.(minutes)}:#{format.(seconds)}"
   end
-
-  @spec imported_attribute(Record.t(), atom()) :: any()
-  def imported_attribute(record, attribute) do
-    if record != nil do
-      record |> Map.get(attribute) |> value_for_record_attribute()
-    else
-      "-"
-    end
-  end
-
-  @spec encoded_attribute(Record.t(), atom()) :: any()
-  def encoded_attribute(record, attribute) do
-    if record.encoded_record != nil do
-      record.encoded_record |> Map.get(attribute) |> value_for_record_attribute()
-    else
-      Map.get(record, attribute)
-    end
-  end
-
-  defp value_for_record_attribute(value) when is_nil(value), do: "-"
-  defp value_for_record_attribute(value) when value === "", do: "-"
-  defp value_for_record_attribute(value), do: value
 
   @doc ~S"""
   Returns a string of class names from a list of class names.

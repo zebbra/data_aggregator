@@ -29,8 +29,8 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         id="collection_form"
         novalidate
         phx-target={@myself}
-        phx-change="validate"
-        phx-submit={JS.push("save")}
+        phx-change="collection:validate"
+        phx-submit="collection:save"
       >
         <.input
           type="hidden"
@@ -73,11 +73,11 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         </.fieldset>
 
         <:actions>
+          <button type="submit" class="btn btn-neutral"><%= ~t"Save collection"m %></button>
+          <button type="reset" class="btn btn-ghost'"><%= ~t"Reset"m %></button>
           <button type="button" class="btn btn-ghost" onclick="collection_modal.close()">
             <%= ~t"Cancel"m %>
           </button>
-          <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
-          <button type="submit" class="btn btn-neutral"><%= ~t"Save collection"m %></button>
         </:actions>
       </.simple_form>
     </div>
@@ -101,17 +101,15 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   end
 
   @impl true
-  def handle_event("validate", %{"collection" => params}, socket) do
+  def handle_event("collection:validate", %{"collection" => params}, socket) do
     form = Form.validate(socket.assigns.form, params)
     {:noreply, assign(socket, form: form)}
   end
 
-  def handle_event("save", %{"collection" => params}, socket) do
+  def handle_event("collection:save", %{"collection" => params}, socket) do
     socket =
       case Form.submit(socket.assigns.form, params: params) do
-        {:ok, collection} ->
-          notify_parent({:saved, collection})
-
+        {:ok, _} ->
           message =
             case socket.assigns.action do
               :new -> ~t"Collection created successfully"m
@@ -129,6 +127,4 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
 
     {:noreply, socket}
   end
-
-  defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 end

@@ -10,7 +10,9 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   alias DataAggregatorWeb.Components.DataTable
 
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
-  import DataAggregatorWeb.RecordLive.Helpers, only: [attrs_by_category_in_layers: 1]
+
+  import DataAggregatorWeb.RecordLive.Helpers,
+    only: [attrs_by_category_in_layers: 1, encoded_attribute: 2]
 
   @load [:collection, :encoded_record]
 
@@ -42,7 +44,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           rows={@streams.results}
           row_click={
             fn {_id, record} ->
-              JS.push("select_record", value: %{id: record.id})
+              JS.push("record:select", value: %{id: record.id})
             end
           }
         >
@@ -98,7 +100,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           title={@selected_record != nil && encoded_attribute(@selected_record, :tax_scientific_name)}
           subtitle={~t"Characteristics according to the darwin core standard"m}
           open={@selected_record != nil}
-          on_cancel={JS.push("select_record", value: %{id: nil})}
+          on_cancel={JS.push("record:select", value: %{id: nil})}
           size="xl"
         >
           <%= for category <- @attrs_in_categories do %>
@@ -155,7 +157,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   end
 
   @impl true
-  def handle_event("select_record", %{"id" => nil}, socket) do
+  def handle_event("record:select", %{"id" => nil}, socket) do
     socket =
       socket
       |> assign(:selected_record, nil)
@@ -166,7 +168,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   end
 
   @impl true
-  def handle_event("select_record", %{"id" => id}, socket) do
+  def handle_event("record:select", %{"id" => id}, socket) do
     record = get_record(id)
 
     socket =

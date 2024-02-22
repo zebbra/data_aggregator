@@ -35,7 +35,10 @@ defmodule DataAggregatorWeb.Components.Form do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
       <%= render_slot(@inner_block, f) %>
-      <div :for={action <- @actions} class={[action[:class] || "modal-action"]}>
+      <div
+        :for={action <- @actions}
+        class={[action[:class] || "modal-action flex-row-reverse justify-start"]}
+      >
         <%= render_slot(action, f) %>
       </div>
     </.form>

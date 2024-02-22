@@ -21,10 +21,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   @impl true
   def mount(socket) do
-    socket =
-      socket
-      |> assign_filter()
-      |> assign(:refresh, false)
+    socket = assign_filter(socket)
 
     {:ok, socket}
   end
@@ -61,30 +58,17 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
             <.filter_form
               form={@filter}
               phx-target={@myself}
-              phx-change="filter"
+              phx-change="mapping:filter"
               phx-submit="filter"
               phx-window-keydown={JS.focus(to: "#filter_query")}
               phx-key="/"
             />
-            <.badge
-              :if={@refresh}
-              color="orange"
-              class="before:text-xs sm:tooltip-warning sm:tooltip sm:leading-6"
-              data-tip="Your mappings have changed, please refresh..."
-            >
-              <.link
-                patch={~p"/collections/#{@collection}/imports/#{@import}/edit"}
-                class="link link-hover link-warning truncate px-1.5"
-              >
-                <%= ~t"Refresh"m %>
-              </.link>
-            </.badge>
           </:actions>
         </.heading>
         <.import_mapping_validation
           :if={@show_validation && @import}
           import={@import}
-          on_hide={JS.push("hide:validation", target: @myself)}
+          on_hide={JS.push("validation:hide", target: @myself)}
         />
         <.simple_form
           id="import_mapping_form"
@@ -92,8 +76,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           class="space-y-8"
           novalidate
           phx-target={@myself}
-          phx-change="validate"
-          phx-submit={JS.push("save")}
+          phx-change="mapping:validate"
+          phx-submit="mapping:save"
         >
           <div :if={@reuse_mapping} class="alert alert-info bg-info/10 text-info text-sm">
             <.icon name="hero-information-circle-solid" />
@@ -101,7 +85,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
             <.link
               type="button"
               class="link link-hover link-info font-semibold flex items-center gap-x-1 hover:no-underline rounded-md"
-              phx-click="apply:collection:mapping"
+              phx-click="mapping:apply"
               phx-target={@myself}
             >
               <%= ~t"Load"m %> <.icon name="hero-arrow-right-micro" />
@@ -128,11 +112,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           </.fieldset>
 
           <:actions>
+            <button type="submit" class="btn btn-neutral"><%= ~t"Save"m %></button>
+            <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
             <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
               <%= ~t"Cancel"m %>
             </button>
-            <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
-            <button type="submit" class="btn btn-neutral"><%= ~t"Save"m %></button>
           </:actions>
         </.simple_form>
       </div>
@@ -335,12 +319,12 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   end
 
   @impl true
-  def handle_event("hide:validation", _, socket) do
+  def handle_event("validation:hide", _, socket) do
     {:noreply, assign(socket, :show_validation, false)}
   end
 
   @impl true
-  def handle_event("filter", %{"filter" => params}, socket) do
+  def handle_event("mapping:filter", %{"filter" => params}, socket) do
     socket = assign_filter(socket, params)
     {:noreply, socket}
   end
@@ -371,7 +355,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   end
 
   @impl true
-  def handle_event("validate", %{"import" => params}, socket) do
+  def handle_event("mapping:validate", %{"import" => params}, socket) do
     disabled = Enum.any?(@mandatory_attributes -- extract_mapped_to_with_name(params))
 
     socket =
@@ -385,7 +369,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   end
 
   @impl true
-  def handle_event("save", %{"import" => params}, socket) do
+  def handle_event("mapping:save", %{"import" => params}, socket) do
     socket =
       case Form.submit(socket.assigns.form, params: params) do
         {:ok, import} ->
@@ -403,7 +387,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   end
 
   @impl true
-  def handle_event("apply:collection:mapping", _params, socket) do
+  def handle_event("mapping:apply", _params, socket) do
     %{assigns: %{import: import}} = socket
 
     socket =

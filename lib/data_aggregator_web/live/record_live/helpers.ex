@@ -4,8 +4,7 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
   """
 
   alias DataAggregator.DarwinCore.Schema
-
-  import DataAggregatorWeb.Helpers, only: [imported_attribute: 2, encoded_attribute: 2]
+  alias DataAggregator.Records.Record
 
   def attrs_by_category_in_layers(record) do
     for category <- Schema.categories() do
@@ -29,4 +28,26 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
       %{label: category.label, description: category.description, attributes: attributes}
     end
   end
+
+  @spec imported_attribute(Record.t(), atom()) :: any()
+  def imported_attribute(record, attribute) do
+    if record != nil do
+      record |> Map.get(attribute) |> value_for_record_attribute()
+    else
+      "-"
+    end
+  end
+
+  @spec encoded_attribute(Record.t(), atom()) :: any()
+  def encoded_attribute(record, attribute) do
+    if record.encoded_record != nil do
+      record.encoded_record |> Map.get(attribute) |> value_for_record_attribute()
+    else
+      Map.get(record, attribute)
+    end
+  end
+
+  defp value_for_record_attribute(value) when is_nil(value), do: "-"
+  defp value_for_record_attribute(value) when value === "", do: "-"
+  defp value_for_record_attribute(value), do: value
 end

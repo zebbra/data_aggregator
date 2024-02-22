@@ -8,12 +8,10 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   alias DataAggregator.Records.Collection
 
-  import DataAggregatorWeb.CollectionLive.Helpers,
-    only: [get_collection: 1, get_encoding_state: 1]
+  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
 
   attr(:collection_id, :any, default: nil)
   attr(:collection, Collection, default: nil)
-  attr(:encoding_state, :atom, default: nil)
   attr(:current, :atom, default: :records, values: ~w(records imports encodings details)a)
 
   def collection_header(%{collection: nil} = assigns) do
@@ -23,9 +21,6 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   end
 
   def collection_header(assigns) do
-    assigns =
-      assign(assigns, :encoding_state, get_encoding_state(assigns.collection))
-
     ~H"""
     <.header>
       <:navbar>
@@ -40,7 +35,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             label={~t"Imports"m}
             active={@current == :imports}
           />
-          <.secondary_navigation_item
+          <%!-- <.secondary_navigation_item
             href={~p"/collections/#{@collection}/encodings"}
             label={~t"Encodings"m}
             active={@current == :encodings}
@@ -49,7 +44,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             href={~p"/collections/#{@collection}/details"}
             label={~t"Details"m}
             active={@current == :details}
-          />
+          /> --%>
         </.secondary_navigation>
       </:navbar>
       <:breadcrumbs>
@@ -71,27 +66,20 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
       <span class="sm:hidden"><%= @collection.name %></span>
       <:subtitle>
         <div class="flex items-center gap-x-2 max-sm:pt-2">
-          <span class="max-sm:hidden"><.encoding_state_badge state={@encoding_state} /></span>
+          <span class="max-sm:hidden">
+            <.encoding_state_badge state={@collection.encoding_state} />
+          </span>
           <%= @collection.description %>
         </div>
       </:subtitle>
-      <:actions>
+      <:actions :if={@current in [:records, :imports]}>
         <.link
-          :if={@current in [:records, :imports]}
           patch={~p"/collections/#{@collection}/imports/new"}
           class="btn btn-neutral max-sm:btn-sm"
         >
           <.icon name="hero-plus-mini" class="max-sm:hidden" />
           <span class="max-sm:hidden"><%= ~t"Import dataset"m %></span>
           <span class="sm:hidden"><%= ~t"Add"m %></span>
-        </.link>
-        <.link
-          :if={@current in [:encodings]}
-          phx-click="encode_collection"
-          class="btn btn-neutral max-sm:btn-sm"
-        >
-          <.icon name="hero-puzzle-piece" class="max-sm:hidden" />
-          <%= ~t"Encode"m %>
         </.link>
       </:actions>
     </.header>

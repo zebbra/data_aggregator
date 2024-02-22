@@ -3,10 +3,31 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Helpers do
   This module contains helper functions for the collection > import live view.
   """
 
-  alias DataAggregator.Records.Import
+  alias DataAggregator.PubSub
+  alias DataAggregator.Records.Collection
+  alias Phoenix.LiveView.Socket
 
-  def collection_scope(params) do
-    Import |> Ash.Query.filter_input(%{"collection" => %{"id" => params["id"]}})
+  require Logger
+
+  def subscribe_for_import_updates(socket, connected) do
+    with true <- connected,
+         %Socket{assigns: %{collection: collection}} <- socket,
+         %Collection{id: id} <- collection,
+         topic <- [
+           "import:#{id}:created",
+           "import:#{id}:updated",
+           "import:#{id}:destroyed"
+         ] do
+      PubSub.subscribe(topic)
+      socket
+    else
+      false ->
+        socket
+
+      other ->
+        Logger.warning("Unable to subscribe for collection -> import updates: #{other}")
+        socket
+    end
   end
 
   def can_run?(import) do

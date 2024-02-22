@@ -4,25 +4,25 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_indicator: 1]
 
+  alias DataAggregator.PubSub
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
 
   import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
-  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_encoding_state: 1]
 
   @load [
     :records_count,
     :digitizing_progress,
     :records_count_not_encoded,
-    :records_count_imported,
-    :records_count_encoding_queued,
-    :records_count_encoding,
-    :records_count_encoded,
-    :records_count_failed
+    :encoding_state
   ]
+
+  @topics ["collection:created", "collection:updated", "collection:destroyed"]
 
   @impl true
   def mount(_params, _session, socket) do
+    if connected?(socket), do: PubSub.subscribe(@topics)
+
     results = Collection.read!(load: @load)
     socket = stream(socket, :results, results)
 
@@ -84,7 +84,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             <%= inspect(collection.records_count) %> / <%= collection.items_to_digitize %>
           </:col>
           <:col :let={{_id, collection}} label={~t"State"m} class="text-center">
-            <.encoding_state_badge state={get_encoding_state(collection)} />
+            <.encoding_state_badge state={collection.encoding_state} />
           </:col>
           <:col :let={{_id, collection}} label={~t"Updated At"m} class="text-right">
             <%= format_datetime(collection.updated_at, format: :short) %>
@@ -110,7 +110,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
               </li>
               <li>
                 <.link
-                  phx-click={JS.push("delete", value: %{id: collection.id})}
+                  phx-click={JS.push("collection:delete", value: %{id: collection.id})}
                   class="hover:bg-primary hover:text-primary-content"
                   data-confirm={~t"Are you sure?"m}
                 >
@@ -176,20 +176,20 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   end
 
   @impl true
-  def handle_info(
-        {DataAggregatorWeb.CollectionLive.FormComponent, {:saved, collection}},
-        socket
-      ) do
-    {:noreply,
-     stream_insert(
-       socket,
-       :results,
-       Collection.get_by_id!(collection.id, load: @load)
-     )}
+  def handle_info({topic, _event, notification}, socket)
+      when topic in ["collection:created", "collection:updated"] do
+    %Ash.Notifier.Notification{data: collection} = notification
+    {:noreply, stream_insert(socket, :results, Collection.get_by_id!(collection.id, load: @load))}
   end
 
   @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
+  def handle_info({"collection:destroyed", _event, notification}, socket) do
+    %Ash.Notifier.Notification{data: collection} = notification
+    {:noreply, stream_delete(socket, :results, collection)}
+  end
+
+  @impl true
+  def handle_event("collection:delete", %{"id" => id}, socket) do
     collection = Collection.get_by_id!(id)
     :ok = Collection.destroy(collection)
 

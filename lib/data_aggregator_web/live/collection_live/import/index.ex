@@ -3,7 +3,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Import.Components, only: [import_state_badge: 1]
 
-  alias DataAggregator.PubSub
   alias DataAggregator.Records
   alias DataAggregator.Records.Import
   alias DataAggregatorWeb.Components.DataTable
@@ -24,18 +23,12 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     attachment: [:filename, :url, :byte_size]
   ]
 
-  @topics ["import:created", "import:updated", "import:destroyed"]
-
   @impl true
   def mount(%{"id" => id} = _params, _session, socket) do
-    connected = connected?(socket)
-
-    # Replace with? https://hexdocs.pm/ash_phoenix/AshPhoenix.LiveView.html#keep_live/4
-    # socket = socket |> assign_live(:imports, &list_imports/1, subscribe: @topics)
-    if connected, do: PubSub.subscribe(@topics)
-
     socket =
-      assign(socket, :collection, get_collection(id))
+      socket
+      |> assign(:collection, get_collection(id))
+      |> subscribe_for_import_updates(connected?(socket))
 
     {:ok, socket}
   end
@@ -158,20 +151,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   end
 
   @impl true
-  def handle_info({topic, _event, notification}, socket)
-      when topic in ["import:created", "import:updated"] do
-    %Ash.Notifier.Notification{data: import} = notification
-    import = Records.load!(import, @load, lazy?: true)
-    {:noreply, stream_insert(socket, :results, import)}
-  end
-
-  @impl true
-  def handle_info({"import:destroyed", _event, notification}, socket) do
-    %Ash.Notifier.Notification{data: import} = notification
-    {:noreply, stream_delete(socket, :results, import)}
-  end
-
-  @impl true
   def handle_event("import:run", %{"id" => id}, socket) do
     id |> Import.get_by_id!() |> Import.enqueue_import!()
     {:noreply, socket}
@@ -186,6 +165,33 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
      socket
      |> put_flash(:info, ~t"Import deleted successfully"m)
      |> stream_delete(:results, import)}
+  end
+
+  @impl true
+  def handle_info({topic, _event, notification}, socket) do
+    id = socket.assigns.collection.id
+
+    cond do
+      topic == "import:#{id}:created" -> handle_import_created(notification, socket)
+      topic == "import:#{id}:updated" -> handle_import_updated(notification, socket)
+      topic == "import:#{id}:destroyed" -> handle_import_destroyed(notification, socket)
+      true -> {:noreply, socket}
+    end
+  end
+
+  defp handle_import_created(notification, socket) do
+    %Ash.Notifier.Notification{data: import} = notification
+    import = Records.load!(import, @load, lazy?: true)
+    {:noreply, stream_insert(socket, :results, import)}
+  end
+
+  defp handle_import_updated(notification, socket) do
+    handle_import_created(notification, socket)
+  end
+
+  defp handle_import_destroyed(notification, socket) do
+    %Ash.Notifier.Notification{data: import} = notification
+    {:noreply, stream_delete(socket, :results, import)}
   end
 
   defp apply_action(socket, :index, _params) do
@@ -236,5 +242,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
       %Ash.Page.Offset{results: imports} -> imports
       imports -> imports
     end
+  end
+
+  defp collection_scope(params) do
+    Import |> Ash.Query.filter_input(%{"collection" => %{"id" => params["id"]}})
   end
 end

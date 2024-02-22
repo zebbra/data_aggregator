@@ -123,11 +123,11 @@ defmodule Storybook.Components.Modal do
       </.fieldset>
 
       <:actions>
+        <button type="submit" class="btn btn-neutral">Save user</button>
+        <button type="reset" class="btn btn-ghost">Reset</button>
         <button type="button" class="btn btn-ghost" onclick="document.getElementById('#{id}').close()">
           Cancel
         </button>
-        <button type="reset" class="btn btn-ghost">Reset</button>
-        <button type="submit" class="btn btn-neutral">Save user</button>
       </:actions>
     </.simple_form>
     """

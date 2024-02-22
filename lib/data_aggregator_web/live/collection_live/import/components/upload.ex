@@ -48,8 +48,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
           id="import_upload_form"
           class="space-y-8"
           phx-target={@myself}
-          phx-change="validate"
-          phx-submit="save"
+          phx-change="upload:validate"
+          phx-submit="upload:save"
         >
           <.fieldset>
             <.fieldgroup>
@@ -95,7 +95,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
                       <.progress value={entry.progress} class="progress-primary" />
                       <button
                         type="button"
-                        phx-click="cancel-upload"
+                        phx-click="upload:cancel"
                         phx-target={@myself}
                         phx-value-ref={entry.ref}
                         class="btn btn-sm btn-circle btn-ghost"
@@ -117,14 +117,14 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
           </.fieldset>
 
           <:actions>
-            <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
-              <%= ~t"Cancel"m %>
-            </button>
             <button
               type="submit"
               class={["btn btn-neutral", Enum.any?(@uploads.file.errors) && "btn-disabled"]}
             >
               <%= ~t"Upload file"m %>
+            </button>
+            <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
+              <%= ~t"Cancel"m %>
             </button>
           </:actions>
         </.simple_form>
@@ -144,17 +144,17 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
   end
 
   @impl true
-  def handle_event("validate", _params, socket) do
+  def handle_event("upload:validate", _params, socket) do
     {:noreply, validate_max_entries(socket)}
   end
 
   @impl true
-  def handle_event("cancel-upload", %{"ref" => ref}, socket) do
+  def handle_event("upload:cancel", %{"ref" => ref}, socket) do
     {:noreply, cancel_upload(socket, :file, ref) |> validate_max_entries()}
   end
 
   @impl true
-  def handle_event("save", _params, socket) do
+  def handle_event("upload:save", _params, socket) do
     if Enum.empty?(socket.assigns.uploads.file.entries) do
       {:noreply, assign(socket, :error_message, error_to_string(:required))}
     else

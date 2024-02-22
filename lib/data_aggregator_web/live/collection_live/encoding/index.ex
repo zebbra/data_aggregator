@@ -2,8 +2,6 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Index do
   @moduledoc false
   use DataAggregatorWeb, :live_view
 
-  alias DataAggregator.Records.Record
-
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
 
@@ -34,27 +32,6 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Index do
       <.collection_header collection={@collection} current={:encodings} />
     </.page>
     """
-  end
-
-  @impl true
-  def handle_event("encode_collection", _params, socket) do
-    Task.start(fn ->
-      collection = socket.assigns.collection
-
-      collection.records
-      |> Task.async_stream(&Record.enqueue_encoder!(&1))
-      |> Stream.run()
-
-      # we update the encoding state after the encoding has been queued
-      send(self(), {:encoding_state, :encoding})
-    end)
-
-    {:noreply, socket}
-  end
-
-  @impl true
-  def handle_info({:encoding_state, state}, socket) do
-    {:noreply, assign(socket, encoding_state: state)}
   end
 
   defp apply_action(socket, :index, _params) do

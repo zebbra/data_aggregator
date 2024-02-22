@@ -30,7 +30,11 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Components do
 
   def encoding_state_badge(assigns) do
     {icon, icon_class} = state_badge_icon(assigns.state)
-    assigns = %{assigns | icon: icon, icon_class: icon_class}
+
+    assigns =
+      assigns
+      |> assign(:icon, icon)
+      |> assign(:icon_class, icon_class)
 
     ~H"""
     <.badge

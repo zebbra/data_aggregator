@@ -64,6 +64,28 @@ defmodule DataAggregator.Records.Collection do
                   else: 0
                 )
               )
+
+    calculate :encoding_state,
+              :atom,
+              expr(
+                cond do
+                  records_count_encoded == records_count ->
+                    :encoded
+
+                  records_count_encoding > 0 or
+                      records_count_encoding_queued > 0 ->
+                    :encoding
+
+                  records_count_failed > 0 ->
+                    :failed
+
+                  records_count > records_count_encoded ->
+                    :incomplete
+
+                  true ->
+                    :unknown
+                end
+              )
   end
 
   aggregates do
@@ -116,13 +138,19 @@ defmodule DataAggregator.Records.Collection do
     update :update_import_mapping do
       accept [:import_mapping]
     end
+
+    update :touch do
+      change set_attribute(:updated_at, &DateTime.utc_now/0)
+    end
   end
 
   pub_sub do
     module DataAggregator.PubSub
     prefix "collection"
 
+    publish_all :create, ["created", [:id, nil]]
     publish_all :update, ["updated", [:id, nil]]
+    publish_all :destroy, ["destroyed", [:id, nil]]
   end
 
   code_interface do
@@ -134,6 +162,7 @@ defmodule DataAggregator.Records.Collection do
     define :update_import_mapping, args: [:import_mapping]
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
+    define :touch
   end
 
   postgres do

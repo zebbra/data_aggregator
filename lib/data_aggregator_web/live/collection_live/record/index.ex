@@ -4,22 +4,32 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   use DataAggregatorWeb.CollectionLive.Components, only: [scope_stat: 1]
   use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
 
+  alias DataAggregator.Records
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
   alias DataAggregatorWeb.Components.DataTable
 
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
-  import DataAggregatorWeb.RecordLive.Helpers, only: [attrs_by_category_in_layers: 1]
+
+  import DataAggregatorWeb.RecordLive.Helpers,
+    only: [attrs_by_category_in_layers: 1, encoded_attribute: 2]
+
+  import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [subscribe_for_record_updates: 2]
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
 
-  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
+  import DataAggregatorWeb.CollectionLive.Helpers,
+    only: [get_collection: 1, subscribe_for_collection_updates: 2]
 
   @load [:collection, :encoded_record]
 
   @impl true
   def mount(%{"id" => id} = _params, _session, socket) do
     socket =
-      assign(socket, :collection, get_collection(id))
+      socket
+      |> assign(:collection, get_collection(id))
+      |> subscribe_for_record_updates(connected?(socket))
+      |> subscribe_for_collection_updates(connected?(socket))
 
     {:ok, socket}
   end
@@ -33,6 +43,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       |> assign(:collection, collection)
       |> assign_records(params)
       |> assign(selected_record: nil)
+      |> assign(:busy, collection.encoding_state in [:queued, :encoding])
       |> apply_action(socket.assigns.live_action, params)
 
     {:noreply, socket}
@@ -43,7 +54,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     ~H"""
     <.page current="collections" open={@selected_record != nil}>
       <.collection_header collection={@collection} current={:records} />
-      <div :if={length(@collection.records) > 0} class="p-6 lg:px-8">
+      <div :if={length(@collection.records) > 0} class="space-y-6 p-6 lg:px-8">
         <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
           <.scope_stat
             href="#"
@@ -73,6 +84,32 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             }
             desc={@collection.records_count_failed}
           />
+        </div>
+        <div class="flex min-w-0 flex-1 justify-end gap-x-2">
+          <.link
+            phx-click="collection:export"
+            class="btn btn-primary text-primary-content max-sm:btn-sm"
+            disabled={@busy}
+          >
+            <.icon name="hero-arrow-down-tray" class="max-sm:size-4" />
+            <%= ~t"Export"m %>
+          </.link>
+          <.link
+            :if={@busy == false}
+            phx-click="collection:encode"
+            class="btn btn-primary text-primary-content max-sm:btn-sm"
+          >
+            <.icon name="hero-puzzle-piece" class="max-sm:size-4" />
+            <%= ~t"Encode"m %>
+          </.link>
+          <.link
+            :if={@busy}
+            patch={~p"/collections/#{@collection}/records"}
+            class="btn btn-error text-error-content max-sm:btn-sm"
+          >
+            <.icon name="hero-arrow-path" class="max-sm:size-4" />
+            <%= ~t"Refresh"m %>
+          </.link>
         </div>
       </div>
 
@@ -118,7 +155,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           rows={@streams.results}
           row_click={
             fn {_id, record} ->
-              JS.push("select_record", value: %{id: record.id})
+              JS.push("record:select", value: %{id: record.id})
             end
           }
         >
@@ -166,7 +203,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           title={@selected_record != nil && encoded_attribute(@selected_record, :tax_scientific_name)}
           subtitle={~t"Characteristics according to the darwin core standard"m}
           open={@selected_record != nil}
-          on_cancel={JS.push("select_record", value: %{id: nil})}
+          on_cancel={JS.push("record:select", value: %{id: nil})}
           size="xl"
         >
           <%= for category <- @attrs_in_categories do %>
@@ -223,7 +260,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
-  def handle_event("select_record", %{"id" => nil}, socket) do
+  def handle_event("record:select", %{"id" => nil}, socket) do
     socket =
       socket
       |> assign(:selected_record, nil)
@@ -234,7 +271,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
-  def handle_event("select_record", %{"id" => id}, socket) do
+  def handle_event("record:select", %{"id" => id}, socket) do
     record = get_record(id)
 
     socket =
@@ -244,6 +281,65 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       |> assign(:attrs_in_categories, attrs_by_category_in_layers(record))
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("collection:encode", _params, socket) do
+    Task.start(fn ->
+      collection = socket.assigns.collection
+
+      collection.records
+      |> Task.async_stream(&Record.enqueue_encoder!(&1))
+      |> Stream.run()
+
+      Collection.touch(collection)
+    end)
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({topic, _event, notification}, socket) do
+    id = socket.assigns.collection.id
+
+    cond do
+      topic == "record:#{id}:created" -> handle_record_created(notification, socket)
+      topic == "record:#{id}:updated" -> handle_record_updated(notification, socket)
+      topic == "record:#{id}:destroyed" -> handle_record_destroyed(notification, socket)
+      topic == "import:#{id}:updated" -> handle_import_updated(notification, socket)
+      topic == "collection:updated:#{id}" -> handle_collection_update(notification, socket)
+      true -> {:noreply, socket}
+    end
+  end
+
+  defp handle_record_created(notification, socket) do
+    %Ash.Notifier.Notification{data: record} = notification
+    record = Records.load!(record, @load, lazy?: true)
+    {:noreply, stream_insert(socket, :results, record)}
+  end
+
+  defp handle_record_updated(notification, socket) do
+    handle_record_created(notification, socket)
+  end
+
+  defp handle_record_destroyed(notification, socket) do
+    %Ash.Notifier.Notification{data: record} = notification
+    {:noreply, stream_delete(socket, :results, record)}
+  end
+
+  defp handle_import_updated(notification, socket) do
+    %Ash.Notifier.Notification{data: import} = notification
+    {:noreply, assign(socket, :collection, get_collection(import.collection_id))}
+  end
+
+  defp handle_collection_update(notification, socket) do
+    %Ash.Notifier.Notification{data: collection} = notification
+    collection = get_collection(collection.id)
+
+    {:noreply,
+     socket
+     |> assign(:collection, collection)
+     |> assign(:busy, collection.encoding_state in [:queued, :encoding])}
   end
 
   defp apply_action(socket, :index, _params) do

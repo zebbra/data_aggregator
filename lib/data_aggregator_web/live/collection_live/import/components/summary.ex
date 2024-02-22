@@ -39,7 +39,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
           phx-value-id={@import.id}
           phx-target={@myself}
         >
-          <%= ~t"Run Import"m %>
+          <%= ~t"Run import"m %>
         </button>
       </div>
     </div>

@@ -115,7 +115,7 @@ config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/dev/cach
 config :logger, :console, format: "[$level] $message\n"
 
 # Disable debug logs
-config :logger, level: :info
+config :logger, level: :debug
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
