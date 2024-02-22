@@ -1,0 +1,56 @@
+defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
+  @moduledoc """
+  Form component for the collection import live view.
+  """
+  use DataAggregatorWeb, :live_component
+
+  alias DataAggregatorWeb.CollectionLive.Import.Components
+
+  @impl true
+  def render(assigns) do
+    ~H"""
+    <div>
+      <div :if={@import.state in [nil, :pending]}>
+        <.live_component
+          :if={@action == :new}
+          module={Components.Upload}
+          id={@id}
+          action={@action}
+          import={@import}
+          collection={@collection}
+        />
+        <.live_component
+          :if={@action == :edit}
+          module={Components.Mapping}
+          id={@id}
+          action={@action}
+          import={@import}
+          collection={@collection.id}
+          show_validation={@show_validation}
+        />
+        <.live_component
+          :if={@action == :summary}
+          module={Components.Summary}
+          id={@id}
+          action={@action}
+          import={@import}
+          collection={@collection.id}
+        />
+      </div>
+      <div :if={@import.state not in [nil, :pending]}>
+        <.heading
+          title={~t"Import was already processed"m}
+          subtitle={
+            ~t"You are not allowed to process an import twice. Please start again by uploading a new import dataset."m
+          }
+        />
+        <div class="modal-action">
+          <button type="button" class="btn btn-neutral" onclick="import_modal.close()">
+            <%= ~t"Back to imports"m %>
+          </button>
+        </div>
+      </div>
+    </div>
+    """
+  end
+end

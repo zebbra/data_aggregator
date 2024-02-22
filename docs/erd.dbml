@@ -19,8 +19,20 @@ Table institutions {
   mail varchar
   tel varchar
   contact_person varchar
+  grscicoll_reference varchar
   inserted_at timestamp
   updated_at timestamp
+}
+
+Table change_events {
+  id uuid [pk]
+  dwc_attribute varchar
+  value varchar
+  previous_value varchar
+  category varchar
+  inserted_at timestamp
+  updated_at timestamp
+  record_id uuid
 }
 
 Table collections {
@@ -29,15 +41,95 @@ Table collections {
   owner varchar
   name varchar
   code varchar
+  grscicoll_reference varchar
   description varchar
-  mapping jsonb
+  import_mapping array
+  type varchar
   inserted_at timestamp
   updated_at timestamp
   institution_id uuid
 }
 
-Table imports {
+Table encoded_records {
+  mts_material_sample_type varchar
+  mte_material_entity_id varchar
+  occ_occurrence_remarks varchar
+  occ_associated_occurrences varchar
+  occ_sex varchar
+  occ_recorded_by varchar
+  loc_municipality varchar
+  loc_county varchar
+  loc_city varchar
+  loc_swiss_coordinates_y float
+  loc_swiss_coordinates_x float
+  loc_country_code varchar
+  loc_georeference_remarks varchar
+  loc_decimal_latitude float
+  loc_decimal_longitude float
+  loc_state_province varchar
+  loc_verbatim_locality varchar
+  loc_locality varchar
+  loc_country varchar
+  loc_continent varchar
+  spp_life_stage varchar
+  tax_taxon_rank varchar
+  tax_accepted_name_usage_id varchar
+  tax_accepted_name_usage varchar
+  tax_taxon_id_ch integer
+  tax_taxon_id integer
+  tax_specific_epithet varchar
+  tax_infraspecific_epithet varchar
+  tax_scientific_name_authorship varchar
+  tax_scientific_name varchar
+  tax_genus varchar
+  tax_family varchar
+  tax_order varchar
+  tax_class varchar
+  tax_phylum varchar
+  tax_kingdom varchar
+  rrp_relationship_of_resource_id varchar
+  rrp_relationship_of_resource varchar
+  ref_relationship_established_date date
+  ref_title varchar
+  ref_source varchar
+  ref_rights varchar
+  ref_date date
+  ref_creator varchar
+  ref_bibliographic_citation varchar
+  idf_type_status varchar
+  idf_identified_by varchar
+  idf_date_identified date
+  eve_end_of_period_year integer
+  eve_end_of_period_month integer
+  eve_end_of_period_day integer
+  eve_year integer
+  eve_month integer
+  eve_day integer
+  eve_event_date date
+  prs_date_of_birth date
+  prs_last_name varchar
+  prs_first_name varchar
+  prs_contact_point varchar
+  id uuid [pk]
+  extra_data jsonb
+  inserted_at timestamp
+  updated_at timestamp
+  record_id uuid [pk]
+}
+
+Table record_encoding_results {
+  id uuid [pk]
+  input jsonb
+  output jsonb
+  message varchar
+  catalog varchar
   state varchar
+  inserted_at timestamp
+  updated_at timestamp
+  record_id uuid
+}
+
+Table imports {
   id uuid [pk]
   columns array
   inserted_at timestamp
@@ -51,6 +143,7 @@ Table imports {
   collection_id uuid
   attachment_id uuid
   job_id integer
+  state varchar
 }
 
 Table import_records {
@@ -65,6 +158,12 @@ Table records {
   occ_associated_occurrences varchar
   occ_sex varchar
   occ_recorded_by varchar
+  loc_municipality varchar
+  loc_county varchar
+  loc_city varchar
+  loc_swiss_coordinates_y float
+  loc_swiss_coordinates_x float
+  loc_country_code varchar
   loc_georeference_remarks varchar
   loc_decimal_latitude float
   loc_decimal_longitude float
@@ -74,6 +173,11 @@ Table records {
   loc_country varchar
   loc_continent varchar
   spp_life_stage varchar
+  tax_taxon_rank varchar
+  tax_accepted_name_usage_id varchar
+  tax_accepted_name_usage varchar
+  tax_taxon_id_ch integer
+  tax_taxon_id integer
   tax_specific_epithet varchar
   tax_infraspecific_epithet varchar
   tax_scientific_name_authorship varchar
@@ -81,6 +185,9 @@ Table records {
   tax_genus varchar
   tax_family varchar
   tax_order varchar
+  tax_class varchar
+  tax_phylum varchar
+  tax_kingdom varchar
   rrp_relationship_of_resource_id varchar
   rrp_relationship_of_resource varchar
   ref_relationship_established_date date
@@ -107,9 +214,12 @@ Table records {
   id uuid [pk]
   import_data jsonb
   extra_data jsonb
+  errors jsonb
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid
+  encoder_job_id integer
+  state varchar
 }
 
 Table record_images {
@@ -121,32 +231,26 @@ Table record_images {
   record_id uuid
 }
 
-Table attribute_resolving_strategies {
+Table records_versions {
   id uuid [pk]
-  do_not_encode boolean
-  inserted_at timestamp
-  updated_at timestamp
-  collection_id uuid
-  dwc_attribute_id uuid
-  catalog_id uuid
+  version_action_type varchar
+  version_action_name varchar
+  version_source_id uuid
+  changes jsonb
+  version_inserted_at timestamp
+  version_updated_at timestamp
 }
 
-Table catalogs {
+Table swiss_species {
   id uuid [pk]
-  name varchar
-  description varchar
-  url varchar
-  version integer
+  taxon_id_ch integer [pk]
+  accepted_name varchar
+  usage_key integer [pk]
+  accepted_usage_key integer
+  scientific_name varchar
+  rank varchar
   inserted_at timestamp
   updated_at timestamp
-}
-
-Table dwc_attributes {
-  id uuid [pk]
-  name varchar
-  inserted_at timestamp
-  updated_at timestamp
-  default_catalog_id uuid
 }
 
 Table schema_migrations {
@@ -183,16 +287,17 @@ Table oban_jobs {
   scheduled_at timestamp
 }
 
-Ref: catalogs.id < attribute_resolving_strategies.catalog_id
-Ref: catalogs.id < dwc_attributes.default_catalog_id
-Ref: collections.id < attribute_resolving_strategies.collection_id
 Ref: collections.id < imports.collection_id
 Ref: collections.id < records.collection_id
-Ref: dwc_attributes.id < attribute_resolving_strategies.dwc_attribute_id
 Ref: file_attachments.id < imports.attachment_id
 Ref: file_attachments.id < record_images.attachment_id
 Ref: imports.id < import_records.import_id
 Ref: institutions.id < collections.institution_id
 Ref: oban_jobs.id < imports.job_id
+Ref: oban_jobs.id < records.encoder_job_id
+Ref: records.id < change_events.record_id
+Ref: records.id - encoded_records.record_id
 Ref: records.id < import_records.record_id
+Ref: records.id < record_encoding_results.record_id
 Ref: records.id < record_images.record_id
+Ref: records.id < records_versions.version_source_id

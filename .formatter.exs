@@ -4,6 +4,7 @@
     "*.{heex,ex,exs}",
     "{config,lib,test}/**/*.{heex,ex,exs}",
     "priv/*/seeds.exs",
+    "priv/*/init.exs",
     "storybook/**/*.exs"
   ],
   import_deps: [
@@ -14,8 +15,10 @@
     :ash_phoenix,
     :ash_postgres,
     :ash_graphql,
+    :ash_json_api,
     :ash_uuid,
-    :ash_state_machine
+    :ash_state_machine,
+    :ash_paper_trail
   ],
   plugins: [
     TailwindFormatter,

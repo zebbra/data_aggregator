@@ -1,46 +1,21 @@
 ```mermaid
 classDiagram
-    class DwcAttribute {
+    class SwissSpecies {
         UUID id
-        String name
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-        Catalog default_catalog
-        destroy()
-        update(UUID id, String name, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
-        read()
-        create(UUID id, String name, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
-    }
-    class Catalog {
-        UUID id
-        String name
-        String description
-        String url
-        Integer version
+        Integer taxon_id_ch
+        String accepted_name
+        Integer usage_key
+        Integer accepted_usage_key
+        String scientific_name
+        String rank
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         destroy()
-        update(UUID id, String name, String description, String url, ...)
+        update(UUID id, Integer taxon_id_ch, String accepted_name, Integer usage_key, ...)
         read()
-        create(UUID id, String name, String description, String url, ...)
-    }
-    class AttributeResolvingStrategy {
-        UUID id
-        Boolean do_not_encode
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-        Collection collection
-        DwcAttribute dwc_attribute
-        Catalog catalog
-        destroy()
-        update(UUID id, Boolean do_not_encode, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
-        read()
-        create(UUID id, Boolean do_not_encode, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
+        create(UUID id, Integer taxon_id_ch, String accepted_name, Integer usage_key, ...)
     }
 
-    Collection -- AttributeResolvingStrategy
-    AttributeResolvingStrategy -- Catalog
-    AttributeResolvingStrategy -- DwcAttribute
-    Catalog -- DwcAttribute
+
 
 ```

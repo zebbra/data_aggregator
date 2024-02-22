@@ -71,4 +71,39 @@ defmodule DataAggregatorWeb.Helpers do
     format = &String.pad_leading(Integer.to_string(&1), 2, "0")
     "#{format.(hours)}:#{format.(minutes)}:#{format.(seconds)}"
   end
+
+  @doc ~S"""
+  Returns a string of class names from a list of class names.
+
+  ## Examples
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", "bar"])
+      "foo bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", nil, "bar"])
+      "foo bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", "", "bar"])
+      "foo bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", false, "bar"])
+      "foo bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", true, "bar"])
+      "foo true bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", 1, "bar"])
+      "foo 1 bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", 0, "bar"])
+      "foo 0 bar"
+  """
+  @spec class_names([String.t()]) :: String.t()
+  def class_names(class_names) do
+    class_names
+    |> Enum.filter(& &1)
+    |> Enum.join(" ")
+    |> String.trim()
+    |> String.replace(~r/\s+/, " ")
+  end
 end

@@ -1,0 +1,5 @@
+.modal-action.flex-row-reverse > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-left: calc(0.5rem * var(--tw-space-x-reverse));
+  margin-right: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
+}

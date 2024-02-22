@@ -14,7 +14,9 @@ defmodule DataAggregator.RecordsFixtures do
 
   @collection_defaults %{
     name: "Collection",
-    owner: "Max Powers"
+    owner: "Max Powers",
+    type: :animalia,
+    grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
   }
 
   @doc """

@@ -22,41 +22,6 @@ defmodule DataAggregatorWeb.Gettext do
   """
   use Gettext, otp_app: :data_aggregator
 
-  @doc ~S"""
-  Returns all the locales for which PO files exist for the given `backend`.
-  """
-  def known_locales do
-    Gettext.known_locales(__MODULE__)
-  end
-
-  @doc ~S"""
-  Gets the current Gettext locale for the current process.
-  """
-  def get_locale do
-    Gettext.get_locale(__MODULE__)
-  end
-
-  @doc ~S"""
-   Sets the current Gettext locale for the current process.
-  """
-  def put_locale(locale) do
-    Gettext.put_locale(__MODULE__, locale)
-  end
-
-  def default_locale do
-    :data_aggregator
-    |> Application.get_env(__MODULE__)
-    |> Keyword.get(:default_locale)
-  end
-
-  def with_locale(locale, fun) do
-    Gettext.with_locale(__MODULE__, locale, fun)
-  end
-
-  def with_default_locale(fun) do
-    with_locale(default_locale(), fun)
-  end
-
   defmacro mgettext(text, opts \\ []) do
     context = inspect(__CALLER__.module)
 

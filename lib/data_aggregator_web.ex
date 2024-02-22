@@ -81,15 +81,16 @@ defmodule DataAggregatorWeb do
 
   defp html_helpers do
     quote do
-      # Core UI components
+      # UI components and blocks
       use DataAggregatorWeb.Components
+      use DataAggregatorWeb.Blocks
 
       # Translation
       import DataAggregatorWeb.Gettext
+
       # Formatters
       import DataAggregatorWeb.Helpers
-      # Layouts
-      import DataAggregatorWeb.Page, only: [page: 1]
+
       # HTML escaping functionality
       import Phoenix.HTML
 
@@ -110,7 +111,7 @@ defmodule DataAggregatorWeb do
     end
   end
 
-  @doc ~S"""
+  @doc """
   When used, dispatch to the appropriate controller/view/etc.
   """
   defmacro __using__(which) when is_atom(which) do
