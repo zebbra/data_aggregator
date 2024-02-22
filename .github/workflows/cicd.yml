@@ -104,6 +104,10 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
 
+      - name: Read .tool-versions
+        uses: marocchino/tool-versions-action@v1
+        id: versions
+
       - name: Build image
         uses: docker/build-push-action@v5
         with:
@@ -114,6 +118,9 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            OTP_VERSION=${{ steps.versions.outputs.erlang }}
+            ELIXIR_VERSION=${{ steps.versions.outputs.elixir }}
 
       - name: Push image to quay.io
         if: github.ref == 'refs/heads/main'
