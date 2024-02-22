@@ -1,4 +1,5 @@
 defmodule DataAggregatorWeb.ImportLive.Index do
+  @moduledoc false
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.ImportLive.Components
 
@@ -128,15 +129,11 @@ defmodule DataAggregatorWeb.ImportLive.Index do
   end
 
   @impl true
-  def handle_info(
-        {DataAggregatorWeb.ImportLive.FormComponent, {:saved, import}},
-        socket
-      ) do
+  def handle_info({DataAggregatorWeb.ImportLive.FormComponent, {:saved, import}}, socket) do
     {:noreply, stream_insert(socket, :results, import)}
   end
 
-  def handle_info({topic, _event, notification}, socket)
-      when topic in ["import:created", "import:updated"] do
+  def handle_info({topic, _event, notification}, socket) when topic in ["import:created", "import:updated"] do
     %Ash.Notifier.Notification{data: import} = notification
     import = Records.load!(import, @load, lazy?: true)
     {:noreply, stream_insert(socket, :results, import)}

@@ -1,4 +1,5 @@
 defmodule Storybook.Examples.Table do
+  @moduledoc false
   use PhoenixStorybook.Story, :example
 
   import DataAggregatorWeb.Components.Table, only: [table: 1]

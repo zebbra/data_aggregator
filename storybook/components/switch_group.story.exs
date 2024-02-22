@@ -1,4 +1,5 @@
 defmodule Storybook.Components.SwitchGroup do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
 
   alias DataAggregatorWeb.Components.Switch

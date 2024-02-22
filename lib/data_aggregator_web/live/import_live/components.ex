@@ -1,4 +1,5 @@
 defmodule DataAggregatorWeb.ImportLive.Components do
+  @moduledoc false
   use DataAggregatorWeb, :html
 
   alias DataAggregator.Files.Attachment

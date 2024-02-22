@@ -6,18 +6,17 @@ defmodule DataAggregatorWeb.Page do
   use Phoenix.Component
 
   # Core UI components and translation
-  import DataAggregatorWeb.Gettext
+  use DataAggregatorWeb.Components.ThemeSelect
+  use DataAggregatorWeb, :verified_routes
+
   import DataAggregatorWeb.Components.Backdrop, only: [backdrop: 1]
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Components.Menu
+  import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Headless.Dialog, only: [dialog: 1, dialog_panel: 1]
-
-  use DataAggregatorWeb.Components.ThemeSelect
 
   # Shortcut for generating JS commands
   alias Phoenix.LiveView.JS
-
-  use DataAggregatorWeb, :verified_routes
 
   embed_templates "shared/*"
 

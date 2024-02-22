@@ -4,6 +4,7 @@ defmodule DataAggregatorWeb.Headless.Hidden do
   """
 
   use Phoenix.Component
+
   import Bitwise, only: [&&&: 2, <<<: 2]
 
   @none 1 <<< 0

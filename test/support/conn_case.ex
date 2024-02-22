@@ -19,16 +19,16 @@ defmodule DataAggregatorWeb.ConnCase do
 
   using do
     quote do
-      # The default endpoint for testing
-      @endpoint DataAggregatorWeb.Endpoint
-
       use DataAggregatorWeb, :verified_routes
       use DataAggregator.TestHelpers
 
       # Import conveniences for testing with connections
-      import Plug.Conn
-      import Phoenix.ConnTest
       import DataAggregatorWeb.ConnCase
+      import Phoenix.ConnTest
+      import Plug.Conn
+
+      # The default endpoint for testing
+      @endpoint DataAggregatorWeb.Endpoint
     end
   end
 

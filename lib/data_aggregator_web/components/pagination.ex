@@ -5,10 +5,10 @@ defmodule DataAggregatorWeb.Components.Pagination do
 
   use Phoenix.Component
 
-  import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Components.Button, only: [button: 1]
   import DataAggregatorWeb.Components.Form, only: [label: 1]
   import DataAggregatorWeb.Components.Menu
+  import DataAggregatorWeb.Gettext
 
   @doc ~S"""
   Renders offset pagination with generic styling.

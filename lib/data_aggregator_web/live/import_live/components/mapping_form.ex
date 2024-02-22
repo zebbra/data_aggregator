@@ -7,7 +7,6 @@ defmodule DataAggregatorWeb.ImportLive.Components.MappingForm do
   use DataAggregatorWeb.ImportLive.Components
 
   alias AshPhoenix.Form
-
   alias DataAggregator.DarwinCore
   alias DataAggregator.Records.Import
 

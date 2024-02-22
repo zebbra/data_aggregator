@@ -1,9 +1,10 @@
 defmodule DataAggregatorWeb.RecordLive.Show do
+  @moduledoc false
   use DataAggregatorWeb, :live_view
 
-  alias DataAggregator.Records.Record
-
   import DataAggregatorWeb.Components.Internal.Path, only: [assign_current_path_params: 2]
+
+  alias DataAggregator.Records.Record
 
   @impl true
   def mount(_params, _session, socket) do

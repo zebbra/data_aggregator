@@ -5,12 +5,12 @@ defmodule DataAggregatorWeb.Components.SlideOver do
 
   use Phoenix.Component
 
-  alias Phoenix.LiveView.JS
-
-  import DataAggregatorWeb.Gettext
-  import DataAggregatorWeb.Headless.Dialog
   import DataAggregatorWeb.Components.Backdrop, only: [backdrop: 1]
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
+  import DataAggregatorWeb.Gettext
+  import DataAggregatorWeb.Headless.Dialog
+
+  alias Phoenix.LiveView.JS
 
   @doc ~S"""
   Slideover component for slideovers with tailwindui style.

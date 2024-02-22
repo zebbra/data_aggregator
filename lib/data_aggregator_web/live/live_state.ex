@@ -3,8 +3,8 @@ defmodule DataAggregatorWeb.LiveState do
   LiveView hook to maintain global state for the application.
   """
 
-  import Phoenix.LiveView, only: [attach_hook: 4]
   import Phoenix.Component, only: [assign: 2, update: 3]
+  import Phoenix.LiveView, only: [attach_hook: 4]
 
   def on_mount(:default, _params, _session, socket) do
     {:cont,

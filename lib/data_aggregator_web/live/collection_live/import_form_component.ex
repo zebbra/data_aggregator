@@ -1,4 +1,5 @@
 defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
+  @moduledoc false
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form
@@ -177,7 +178,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImportFormComponent do
   def pretty_accept_list(term) when is_binary(term) do
     term
     |> String.split(",")
-    |> Enum.map_join(", ", &(String.replace(&1, ~r/^\./, "") |> String.upcase()))
+    |> Enum.map_join(", ", &(&1 |> String.replace(~r/^\./, "") |> String.upcase()))
   end
 
   def pretty_accept_list(_), do: nil

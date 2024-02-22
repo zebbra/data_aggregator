@@ -6,9 +6,9 @@ defmodule DataAggregatorWeb.Headless.Menu do
 
   use Phoenix.Component
 
-  alias Phoenix.LiveView.JS
-
   import DataAggregatorWeb.Headless.Helpers
+
+  alias Phoenix.LiveView.JS
 
   @doc ~S"""
   Renders a menu component. Mounts the MenuHook.

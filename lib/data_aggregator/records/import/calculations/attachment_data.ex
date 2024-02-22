@@ -32,12 +32,12 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
 
   use Ash.Calculation
 
-  require Logger
-
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.DataFrame
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.Import.Column
+
+  require Logger
 
   @impl Ash.Calculation
   def calculate(imports, opts, ctx) do
@@ -72,8 +72,7 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
         {:ok, data}
 
       {:error, error} ->
-        "Could not load attachment data for import #{import.id} (#{cached_file}): #{inspect(error)}"
-        |> Logger.warning()
+        Logger.warning("Could not load attachment data for import #{import.id} (#{cached_file}): #{inspect(error)}")
 
         {:error, error}
     end
@@ -107,6 +106,6 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
 
     columns
     |> Enum.flat_map(mapped_columns)
-    |> Enum.into(%{})
+    |> Map.new()
   end
 end

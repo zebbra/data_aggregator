@@ -44,7 +44,8 @@ defmodule DataAggregatorWeb.Gettext do
   end
 
   def default_locale do
-    Application.get_env(:data_aggregator, __MODULE__)
+    :data_aggregator
+    |> Application.get_env(__MODULE__)
     |> Keyword.get(:default_locale)
   end
 
@@ -79,6 +80,7 @@ defmodule DataAggregatorWeb.Gettext do
   defmacro __using__(_) do
     quote do
       import unquote(__MODULE__)
+
       require unquote(__MODULE__)
     end
   end

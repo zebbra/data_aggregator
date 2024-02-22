@@ -1,8 +1,6 @@
-defmodule DataAggregator.Repo do
-  # ensure module is recompiled when the ERD changes
-  @er_diagram Path.expand("../../docs/erd.mmd", __DIR__)
-  @external_resource @er_diagram
+er_diagram = Path.expand("../../docs/erd.mmd", __DIR__)
 
+defmodule DataAggregator.Repo do
   @moduledoc """
   Repository for resources using `AshPostgres` as data layer.
 
@@ -20,11 +18,14 @@ defmodule DataAggregator.Repo do
   ### ERD
 
   ```mermaid
-  #{File.read!(@er_diagram)}
+  #{File.read!(er_diagram)}
   ```
   """
 
   use AshPostgres.Repo, otp_app: :data_aggregator
+
+  # ensure module is recompiled when the ERD changes
+  @external_resource er_diagram
 
   # Installs Postgres extensions that ash commonly uses
   def installed_extensions do

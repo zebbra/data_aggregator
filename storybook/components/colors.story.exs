@@ -1,4 +1,5 @@
 defmodule Storybook.Colors do
+  @moduledoc false
   use PhoenixStorybook.Story, :page
   use Phoenix.Component
 

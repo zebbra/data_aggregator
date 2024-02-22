@@ -52,8 +52,7 @@ defmodule DataAggregatorWeb.Components.Button do
   attr :class, :string, default: "", doc: "CSS class"
   attr :label, :string, default: nil, doc: "labels your button"
 
-  attr :rest, :global,
-    include: ~w(method download hreflang ping referrerpolicy rel target type value name form)
+  attr :rest, :global, include: ~w(method download hreflang ping referrerpolicy rel target type value name form)
 
   slot :inner_block, required: false
 
@@ -118,18 +117,16 @@ defmodule DataAggregatorWeb.Components.Button do
   end
 
   defp render_label(assigns) do
-    case assigns.responsive do
-      true ->
-        ~H"""
-        <span class="hidden sm:inline-block">
-          <%= @label %>
-        </span>
-        """
-
-      false ->
-        ~H"""
+    if assigns.responsive do
+      ~H"""
+      <span class="hidden sm:inline-block">
         <%= @label %>
-        """
+      </span>
+      """
+    else
+      ~H"""
+      <%= @label %>
+      """
     end
   end
 
