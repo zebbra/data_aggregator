@@ -109,7 +109,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
             <button
               type="button"
-              phx-click={JS.push("delete", value: %{id: import.id})}
+              phx-click={JS.push("import:delete", value: %{id: import.id})}
               class={[
                 "link link-error link-hover tooltip tooltip-error rounded-md",
                 import.state != :pending && "hidden"
@@ -172,7 +172,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   end
 
   @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
+  def handle_event("import:run", %{"id" => id}, socket) do
+    id |> Import.get_by_id!() |> Import.enqueue_import!()
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("import:delete", %{"id" => id}, socket) do
     import = Import.get_by_id!(id)
     :ok = Import.destroy(import)
 

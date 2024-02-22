@@ -75,14 +75,23 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <%= @collection.description %>
         </div>
       </:subtitle>
-      <:actions :if={@current in [:records, :imports]}>
+      <:actions>
         <.link
+          :if={@current in [:records, :imports]}
           patch={~p"/collections/#{@collection}/imports/new"}
           class="btn btn-neutral max-sm:btn-sm"
         >
           <.icon name="hero-plus-mini" class="max-sm:hidden" />
           <span class="max-sm:hidden"><%= ~t"Import dataset"m %></span>
           <span class="sm:hidden"><%= ~t"Add"m %></span>
+        </.link>
+        <.link
+          :if={@current in [:encodings]}
+          phx-click="encode_collection"
+          class="btn btn-neutral max-sm:btn-sm"
+        >
+          <.icon name="hero-puzzle-piece" class="max-sm:hidden" />
+          <%= ~t"Encode"m %>
         </.link>
       </:actions>
     </.header>

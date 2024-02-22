@@ -91,7 +91,7 @@ defmodule DataAggregatorWeb.Helpers do
     if record.encoded_record != nil do
       record.encoded_record |> Map.get(attribute) |> value_for_record_attribute()
     else
-      "-"
+      Map.get(record, attribute)
     end
   end
 

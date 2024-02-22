@@ -31,7 +31,10 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+    {:noreply,
+     socket
+     |> assign(count: Records.count!(Collection))
+     |> apply_action(socket.assigns.live_action, params)}
   end
 
   @impl true
@@ -48,8 +51,8 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         </:actions>
       </.header>
 
-      <div class="no-scrollbar overflow-x-auto pb-4">
-        <.table id="collections_table" rows={@streams.results}>
+      <div class="no-scrollbar overflow-x-auto">
+        <.table :if={@count > 0} id="collections_table" rows={@streams.results}>
           <:col :let={{_id, collection}} label={~t"Name"m}>
             <.link
               navigate={~p"/collections/#{collection}/records"}
@@ -119,6 +122,15 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         </.table>
       </div>
 
+      <.empty_state
+        :if={@count == 0}
+        title={~t"No collections"m}
+        description={~t"Get started by adding a new collection."m}
+        label={~t"New collection"m}
+        icon="hero-squares-2x2"
+        href={~p"/collections/new"}
+      />
+
       <:portal>
         <.modal
           id="collection_modal"
@@ -172,7 +184,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
      stream_insert(
        socket,
        :results,
-       Records.load!(collection, @load, lazy?: true)
+       Collection.get_by_id!(collection.id, load: @load)
      )}
   end
 

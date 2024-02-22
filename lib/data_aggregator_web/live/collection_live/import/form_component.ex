@@ -6,8 +6,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
 
   alias DataAggregatorWeb.CollectionLive.Import.Components
 
-  import DataAggregatorWeb.CollectionLive.Import.Components.Summary, only: [summary: 1]
-
   @impl true
   def render(assigns) do
     ~H"""
@@ -29,8 +27,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
         collection={@collection.id}
         show_validation={@show_validation}
       />
-      <.summary
+      <.live_component
         :if={@action == :summary}
+        module={Components.Summary}
         id={@id}
         action={@action}
         import={@import}
