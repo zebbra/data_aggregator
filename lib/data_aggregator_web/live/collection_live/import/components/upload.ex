@@ -5,14 +5,14 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
 
   use DataAggregatorWeb, :live_component
 
+  import DataAggregatorWeb.CollectionLive.Import.Components.Stepper, only: [stepper: 1]
+  import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
+
   alias AshPhoenix.Form
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.DataFrame
   alias DataAggregator.Records.Import
   alias Phoenix.LiveView.UploadEntry
-
-  import DataAggregatorWeb.CollectionLive.Import.Components.Stepper, only: [stepper: 1]
-  import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
 
   require Logger
 
@@ -150,7 +150,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
 
   @impl true
   def handle_event("upload:cancel", %{"ref" => ref}, socket) do
-    {:noreply, cancel_upload(socket, :file, ref) |> validate_max_entries()}
+    {:noreply, socket |> cancel_upload(:file, ref) |> validate_max_entries()}
   end
 
   @impl true
@@ -201,7 +201,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
   defp pretty_accept_list(term) when is_binary(term) do
     term
     |> String.split(",")
-    |> Enum.map_join(", ", &(String.replace(&1, ~r/^\./, "") |> String.upcase()))
+    |> Enum.map_join(", ", &(&1 |> String.replace(~r/^\./, "") |> String.upcase()))
   end
 
   defp pretty_accept_list(_), do: nil

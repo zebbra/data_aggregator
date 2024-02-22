@@ -4,15 +4,15 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Encoding.Components
 
-  alias DataAggregator.Records
-  alias DataAggregator.Records.Encoding.RecordEncodingResult
-  alias DataAggregator.Records.Record
-  alias DataAggregatorWeb.Components.DataTable
-
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   import DataAggregatorWeb.RecordLive.Helpers,
     only: [attrs_by_category_in_layers: 1, encoded_attribute: 2]
+
+  alias DataAggregator.Records
+  alias DataAggregator.Records.Encoding.RecordEncodingResult
+  alias DataAggregator.Records.Record
+  alias DataAggregatorWeb.Components.DataTable
 
   @load [:collection, :encoded_record]
 

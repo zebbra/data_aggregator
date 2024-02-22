@@ -5,11 +5,11 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
 
   use Ash.Resource.Change
 
+  import DataAggregator.Records.Import.Helpers
+
   alias Ash.Changeset
   alias DataAggregator.Records
   alias DataAggregator.Records.Import
-
-  import DataAggregator.Records.Import.Helpers
 
   require Logger
 
@@ -97,9 +97,10 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
   end
 
   defp rows_stream(import) do
-    with {:ok, import} <- DataAggregator.Records.load(import, attachment_data: [mapped: true]),
-         stream <- Explorer.DataFrame.to_rows_stream(import.attachment_data),
-         do: {:ok, stream}
+    with {:ok, import} <- DataAggregator.Records.load(import, attachment_data: [mapped: true]) do
+      stream = Explorer.DataFrame.to_rows_stream(import.attachment_data)
+      {:ok, stream}
+    end
   end
 
   defp add_error(changeset, error) do

@@ -1,5 +1,7 @@
 defmodule Storybook.Blocks.EmptyState do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
+
   alias DataAggregatorWeb.Blocks
 
   def layout, do: :one_column

@@ -12,13 +12,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   def subscribe_for_record_updates(socket, connected) do
     with true <- connected,
          %Socket{assigns: %{collection: collection}} <- socket,
-         %Collection{id: id} <- collection,
-         topic <- [
-           "record:#{id}:created",
-           "record:#{id}:updated",
-           "record:#{id}:destroyed",
-           "import:#{id}:updated"
-         ] do
+         %Collection{id: id} <- collection do
+      topic = [
+        "record:#{id}:created",
+        "record:#{id}:updated",
+        "record:#{id}:destroyed",
+        "import:#{id}:updated"
+      ]
+
       PubSub.subscribe(topic)
       socket
     else

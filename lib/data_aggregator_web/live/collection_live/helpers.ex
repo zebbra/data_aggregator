@@ -12,8 +12,8 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
   def subscribe_for_collection_updates(socket, connected) do
     with true <- connected,
          %Socket{assigns: %{collection: collection}} <- socket,
-         %Collection{id: id} <- collection,
-         topic <- "collection:updated:#{id}" do
+         %Collection{id: id} <- collection do
+      topic = "collection:updated:#{id}"
       PubSub.subscribe(topic)
       socket
     else

@@ -4,10 +4,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
   """
   use DataAggregatorWeb, :html
 
+  import DataAggregatorWeb.Helpers, only: [class_names: 1, format_bytes: 1]
+
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Import
-
-  import DataAggregatorWeb.Helpers, only: [class_names: 1, format_bytes: 1]
 
   @states AshStateMachine.Info.state_machine_all_states(Import)
 

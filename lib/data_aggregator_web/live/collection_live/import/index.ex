@@ -3,15 +3,14 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Import.Components, only: [import_state_badge: 1]
 
-  alias DataAggregator.Records
-  alias DataAggregator.Records.Import
-  alias DataAggregatorWeb.Components.DataTable
-
-  import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
-
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers
+  import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
+
+  alias DataAggregator.Records
+  alias DataAggregator.Records.Import
+  alias DataAggregatorWeb.Components.DataTable
 
   @load [
     :duration,
@@ -245,6 +244,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   end
 
   defp collection_scope(params) do
-    Import |> Ash.Query.filter_input(%{"collection" => %{"id" => params["id"]}})
+    Ash.Query.filter_input(Import, %{"collection" => %{"id" => params["id"]}})
   end
 end

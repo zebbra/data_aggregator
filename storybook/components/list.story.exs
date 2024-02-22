@@ -1,4 +1,5 @@
 defmodule Storybook.Components.List do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
 
   def function, do: &DataAggregatorWeb.Components.List.list/1

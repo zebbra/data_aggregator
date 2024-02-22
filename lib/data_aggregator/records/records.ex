@@ -1,17 +1,18 @@
-defmodule DataAggregator.Records do
-  # ensure module is recompiled when the class diagram changes
-  @class_diagram Path.expand("records-mermaid-class-diagram.md", __DIR__)
-  @external_resource @class_diagram
+class_diagram = Path.expand("records-mermaid-class-diagram.md", __DIR__)
 
+defmodule DataAggregator.Records do
   @moduledoc """
   Data API
 
   ## Resources
 
-  #{File.read!(@class_diagram)}
+  #{File.read!(class_diagram)}
   """
 
   use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api, AshPaperTrail.Api]
+
+  # ensure module is recompiled when the class diagram changes
+  @external_resource class_diagram
 
   @default_env [
     import_timeout: :timer.minutes(60),
@@ -39,7 +40,7 @@ defmodule DataAggregator.Records do
   """
   def get_all_env do
     env = Application.get_env(:data_aggregator, __MODULE__, [])
-    @default_env |> Keyword.merge(env)
+    Keyword.merge(@default_env, env)
   end
 
   def get_env(key, default \\ nil), do: Keyword.get(get_all_env(), key, default)

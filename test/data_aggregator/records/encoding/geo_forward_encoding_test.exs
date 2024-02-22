@@ -5,11 +5,11 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
   use Mimic
   use DataAggregator.DataCase, async: true
 
+  import DataAggregator.EncodingFixtures
+
   alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
-
-  import DataAggregator.EncodingFixtures
 
   describe "forward encoding of records with " do
     setup do
@@ -143,7 +143,8 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
         with_log(fn -> Record.encode(record_fixture, :geo_forward) end)
 
       encoded_record =
-        EncodedRecord.get_by_record!(record_fixture)
+        record_fixture
+        |> EncodedRecord.get_by_record!()
         |> Records.load!([:record])
 
       assert_map_includes(encoded_record, %{

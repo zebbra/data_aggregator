@@ -1,5 +1,7 @@
 defmodule Storybook.Components.Form.FieldHidden do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
+
   alias DataAggregatorWeb.Components
 
   def function, do: &Components.Field.field/1

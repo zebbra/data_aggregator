@@ -1,5 +1,7 @@
 defmodule Storybook.Components.Flash do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
+
   alias DataAggregatorWeb.Components
 
   def function, do: &Components.Flash.flash/1

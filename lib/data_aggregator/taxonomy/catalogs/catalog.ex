@@ -1,10 +1,12 @@
+catalogs = [:gbif_taxonomy, :swiss_species, :geo_reverse, :geo_forward]
+
 defmodule DataAggregator.Taxonomy.Catalog do
   @moduledoc """
   Enum to define all catalogs which we use to encode records
   """
-  @catalogs [:gbif_taxonomy, :swiss_species, :geo_reverse, :geo_forward]
+  use Ash.Type.Enum, values: catalogs
 
-  use Ash.Type.Enum, values: @catalogs
+  @catalogs catalogs
 
   def get_catalogs, do: @catalogs
 
@@ -35,7 +37,7 @@ defmodule DataAggregator.Taxonomy.Catalog do
   end
 
   def get_input_dwc_attributes(catalog) do
-    get_input_attributes(catalog) |> Enum.map(fn {key, _value} -> key end)
+    catalog |> get_input_attributes() |> Enum.map(fn {key, _value} -> key end)
   end
 
   def get_output_attributes(catalog) do
@@ -92,6 +94,6 @@ defmodule DataAggregator.Taxonomy.Catalog do
   end
 
   def get_output_dwc_attributes(catalog) do
-    get_output_attributes(catalog) |> Enum.map(fn {key, _value} -> key end)
+    catalog |> get_output_attributes() |> Enum.map(fn {key, _value} -> key end)
   end
 end

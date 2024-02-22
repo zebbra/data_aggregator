@@ -94,8 +94,7 @@ config :data_aggregator, DataAggregator.Mailer, adapter: Swoosh.Adapters.Local
 config :esbuild,
   version: "0.19.11",
   data_aggregator: [
-    args:
-      ~w(js/app.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    args: ~w(js/app.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]

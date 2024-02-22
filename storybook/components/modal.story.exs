@@ -1,5 +1,7 @@
 defmodule Storybook.Components.Modal do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
+
   alias DataAggregatorWeb.Blocks
   alias DataAggregatorWeb.Components
 

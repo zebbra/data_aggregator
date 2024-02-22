@@ -4,11 +4,11 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_indicator: 1]
 
+  import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
+
   alias DataAggregator.PubSub
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
-
-  import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
 
   @load [
     :records_count,
@@ -176,8 +176,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   end
 
   @impl true
-  def handle_info({topic, _event, notification}, socket)
-      when topic in ["collection:created", "collection:updated"] do
+  def handle_info({topic, _event, notification}, socket) when topic in ["collection:created", "collection:updated"] do
     %Ash.Notifier.Notification{data: collection} = notification
     {:noreply, stream_insert(socket, :results, Collection.get_by_id!(collection.id, load: @load))}
   end

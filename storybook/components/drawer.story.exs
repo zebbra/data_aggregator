@@ -1,5 +1,7 @@
 defmodule Storybook.Components.Drawer do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
+
   alias DataAggregatorWeb.Components
 
   def function, do: &Components.Drawer.drawer/1
@@ -49,7 +51,7 @@ defmodule Storybook.Components.Drawer do
     ]
   end
 
-  def side() do
+  def side do
     """
     <:side>
       <div class="bg-base-100 border-black-white/10 min-h-screen w-80 border-x p-4">

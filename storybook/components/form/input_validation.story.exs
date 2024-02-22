@@ -1,5 +1,7 @@
 defmodule Storybook.Components.Form.InputValidation do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
+
   alias DataAggregatorWeb.Components
 
   def function, do: &Components.Input.input/1

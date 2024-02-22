@@ -1,12 +1,12 @@
 defmodule Storybook.Layouts.Secondary do
+  @moduledoc false
   use PhoenixStorybook.Story, :example
 
-  import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
   import DataAggregatorWeb.Blocks.Header, only: [header: 1]
+  import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   def doc,
-    do:
-      "Sidebar navigation with sticky app-bar and main content area and an dynamic secondary sidebar on the right side."
+    do: "Sidebar navigation with sticky app-bar and main content area and an dynamic secondary sidebar on the right side."
 
   @impl true
   def mount(_params, _session, socket) do

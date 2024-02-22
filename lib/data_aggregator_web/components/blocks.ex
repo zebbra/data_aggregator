@@ -5,12 +5,10 @@ defmodule DataAggregatorWeb.Blocks do
 
   defmacro __using__(_) do
     quote do
-      import DataAggregatorWeb.Blocks.{
-        EmptyState,
-        Header,
-        SecondaryNavigation,
-        Slideover
-      }
+      import DataAggregatorWeb.Blocks.EmptyState
+      import DataAggregatorWeb.Blocks.Header
+      import DataAggregatorWeb.Blocks.SecondaryNavigation
+      import DataAggregatorWeb.Blocks.Slideover
     end
   end
 end

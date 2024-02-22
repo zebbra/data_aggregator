@@ -1,4 +1,5 @@
 defmodule Storybook.Components.Badge do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
 
   alias DataAggregatorWeb.Components

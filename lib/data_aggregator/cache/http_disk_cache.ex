@@ -77,7 +77,8 @@ defmodule DataAggregator.Cache.HttpDiskCache do
         [
           request.url.host,
           Atom.to_string(request.method),
-          :crypto.hash(:sha256, :erlang.term_to_binary(request.url))
+          :sha256
+          |> :crypto.hash(:erlang.term_to_binary(request.url))
           |> Base.encode16(case: :lower)
         ],
         "-"

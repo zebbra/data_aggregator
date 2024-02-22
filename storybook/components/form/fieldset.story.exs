@@ -1,24 +1,15 @@
 defmodule Storybook.Components.Form.Fieldset do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
+
   alias DataAggregatorWeb.Components
 
   def function, do: &Components.Form.fieldset/1
 
   def imports,
     do: [
-      {Components.Form,
-       [
-         simple_form: 1,
-         fieldgroup: 1
-       ]},
-      {Components.Field,
-       [
-         field: 1,
-         label: 1,
-         description: 1,
-         errors: 1,
-         custom_field: 1
-       ]},
+      {Components.Form, [simple_form: 1, fieldgroup: 1]},
+      {Components.Field, [field: 1, label: 1, description: 1, errors: 1, custom_field: 1]},
       {Components.Input, [input: 1]}
     ]
 

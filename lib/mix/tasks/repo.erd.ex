@@ -1,12 +1,15 @@
+task = "ecto.gen.erd"
+exts = ~w(dbml mmd)
+
 defmodule Mix.Tasks.Repo.Erd do
+  @shortdoc "Generates ERDs docs/erd.(#{Enum.join(exts, ",")}) with `#{task}` (if `ecto_erd` is installed)"
+
   @moduledoc false
 
-  @task "ecto.gen.erd"
-  @exts ~w(dbml mmd)
-
-  @shortdoc "Generates ERDs docs/erd.(#{@exts |> Enum.join(",")}) with `#{@task}` (if `ecto_erd` is installed)"
-
   use Mix.Task
+
+  @task task
+  @exts exts
 
   def run(_args) do
     case Mix.Task.get(@task) do

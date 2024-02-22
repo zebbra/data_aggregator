@@ -3,14 +3,14 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     Encode Records with the gbif taxonomy catalog
   """
 
-  require Logger
-
   alias DataAggregator.Cache.HttpDiskCache
   alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
   alias DataAggregator.Taxonomy.Catalog
+
+  require Logger
 
   # the input attributes are the attributes that will be used to build the request body.
   # the first element is the attribute on the encoded record and the second
@@ -57,7 +57,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
   @spec build_request_params(EncodedRecord.t()) :: list()
   defp build_request_params(record) do
-    Enum.map(@input_attributes, fn {record_attribute, request_attribute} ->
+    @input_attributes
+    |> Enum.map(fn {record_attribute, request_attribute} ->
       request_value = Map.get(record, record_attribute)
 
       if request_value != nil do
@@ -92,23 +93,21 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   end
 
   @spec parse_response(Req.Response.t()) :: map()
-  defp parse_response(response)
-       when is_nil(response.status) == false and is_nil(response.body) == false,
-       do: response.body
+  defp parse_response(response) when is_nil(response.status) == false and is_nil(response.body) == false,
+    do: response.body
 
-  defp parse_response(response)
-       when is_nil(response.status) or is_nil(response.body),
-       do: throw("invalid response from gbif taxonomy api: #{inspect(response)}")
+  defp parse_response(response) when is_nil(response.status) or is_nil(response.body),
+    do: throw("invalid response from gbif taxonomy api: #{inspect(response)}")
 
-  defp parse_response(response)
-       when response.status != 200,
-       do: throw("Non 200 response code while fetching gbif taxonomy api: #{inspect(response)}")
+  defp parse_response(response) when response.status != 200,
+    do: throw("Non 200 response code while fetching gbif taxonomy api: #{inspect(response)}")
 
   @spec handle_synonym(map()) :: map()
   defp handle_synonym(body) when body.synonym == false, do: body
 
   defp handle_synonym(body) when body.synonym == true do
-    fetch_species_api(body.acceptedUsageKey)
+    body.acceptedUsageKey
+    |> fetch_species_api()
     |> parse_response()
     |> parse_species_api_body()
   end
@@ -204,9 +203,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
         [kingdom: record.collection.type]
 
       true ->
-        Logger.warning(
-          "No fallback kingdom found for record #{record.id} on the collection #{record.collection.name}"
-        )
+        Logger.warning("No fallback kingdom found for record #{record.id} on the collection #{record.collection.name}")
 
         []
     end

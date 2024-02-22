@@ -4,10 +4,10 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
   use DataAggregator.DataCase, async: true
   use Mimic.DSL
 
+  import DataAggregator.EncodingFixtures
+
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.Record.Workers.Encoder
-
-  import DataAggregator.EncodingFixtures
 
   describe "DataAggregator.Records.Record.Workers.Encoder.perform/1" do
     setup do

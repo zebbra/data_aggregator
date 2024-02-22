@@ -4,10 +4,10 @@ defmodule DataAggregatorWeb.Components.Field do
   """
   use Phoenix.Component
 
-  alias Phoenix.HTML.Form
-
   import DataAggregatorWeb.Components.Input, only: [input: 1]
   import DataAggregatorWeb.Helpers, only: [class_names: 1]
+
+  alias Phoenix.HTML.Form
 
   @valid_inside_types ~w(email number password tel text url search)
 
@@ -49,9 +49,7 @@ defmodule DataAggregatorWeb.Components.Field do
                range radio search select tel text textarea time url week)
   )
 
-  attr(:field, Phoenix.HTML.FormField,
-    doc: "a form field struct retrieved from the form, for example: @form[:email]"
-  )
+  attr(:field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]")
 
   attr(:description, :string, default: nil, doc: "the description for the input")
 
@@ -67,10 +65,8 @@ defmodule DataAggregatorWeb.Components.Field do
   attr(:icon_start, :string, default: nil, doc: "icon name for the start of the input")
   attr(:icon_end, :string, default: nil, doc: "icon name for the end of the input")
 
-  attr(:rest, :global,
-    include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
-                multiple pattern placeholder readonly required rows size step)
-  )
+  attr(:rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
+                multiple pattern placeholder readonly required rows size step))
 
   slot(:inner_block)
   slot(:custom_label, doc: "the slot for the label text (if you need to customize it)")
@@ -398,9 +394,7 @@ defmodule DataAggregatorWeb.Components.Field do
                range radio search select tel text textarea time url week)
   )
 
-  attr(:field, Phoenix.HTML.FormField,
-    doc: "a form field struct retrieved from the form, for example: @form[:email]"
-  )
+  attr(:field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]")
 
   attr(:description, :string, default: nil, doc: "the description for the input")
 
@@ -412,10 +406,8 @@ defmodule DataAggregatorWeb.Components.Field do
   attr(:class, :string, default: nil, doc: "additional css class for input")
   attr(:hidden, :boolean, default: false, doc: "whether the field is hidden")
 
-  attr(:rest, :global,
-    include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
-                multiple pattern placeholder readonly required rows size step)
-  )
+  attr(:rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
+                multiple pattern placeholder readonly required rows size step))
 
   slot(:content)
 

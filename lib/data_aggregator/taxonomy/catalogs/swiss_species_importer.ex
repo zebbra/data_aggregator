@@ -2,8 +2,9 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter do
   @moduledoc """
   Import swiss species catalog from csv file
   """
-  require Logger
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
+
+  require Logger
 
   def import_swiss_species_catalog_from_csv(path) do
     path
@@ -26,9 +27,7 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter do
   end
 
   defp parse_csv_attributes(attrs) do
-    attrs
-    |> Enum.map(&parse_attribute/1)
-    |> Map.new()
+    Map.new(attrs, &parse_attribute/1)
   end
 
   # parses the swiss taxon id (i.e.: infofauna:70710) from the csv file

@@ -1,5 +1,7 @@
 defmodule Storybook.Components.Table do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
+
   alias DataAggregatorWeb.Components
 
   def function, do: &Components.Table.table/1
@@ -97,5 +99,6 @@ defmodule Storybook.Components.Table do
 end
 
 defmodule Storybook.Components.Table.User do
+  @moduledoc false
   defstruct [:id, :username]
 end

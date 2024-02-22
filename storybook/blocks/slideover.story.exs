@@ -1,15 +1,14 @@
 defmodule Storybook.Blocks.Slideover do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
+
   alias DataAggregatorWeb.Blocks
 
   def layout, do: :one_column
 
   def function, do: &Blocks.Slideover.slideover/1
 
-  def imports,
-    do: [
-      {Blocks.Header, [header: 1]}
-    ]
+  def imports, do: [{Blocks.Header, [header: 1]}]
 
   def variations do
     [

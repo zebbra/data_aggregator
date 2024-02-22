@@ -3,10 +3,10 @@ defmodule DataAggregator.RecordTest do
 
   use DataAggregator.DataCase, async: true
 
+  import DataAggregator.RecordsFixtures
+
   alias DataAggregator.Records
   alias DataAggregator.Records.Record
-
-  import DataAggregator.RecordsFixtures
 
   describe "records" do
     @invalid_attrs %{

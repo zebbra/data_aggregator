@@ -5,10 +5,10 @@ defmodule DataAggregatorWeb.Components.Input do
 
   use Phoenix.Component
 
-  alias Phoenix.HTML.Form
-
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Helpers, only: [class_names: 1]
+
+  alias Phoenix.HTML.Form
 
   @valid_inside_types ~w(email number password tel text url search)
 
@@ -48,9 +48,7 @@ defmodule DataAggregatorWeb.Components.Input do
                range radio search select tel text textarea time url week toggle)
   )
 
-  attr(:field, Phoenix.HTML.FormField,
-    doc: "a form field struct retrieved from the form, for example: @form[:email]"
-  )
+  attr(:field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]")
 
   attr(:errors, :list, default: [])
   attr(:checked, :boolean, doc: "the checked flag for checkbox inputs")
@@ -63,10 +61,8 @@ defmodule DataAggregatorWeb.Components.Input do
   attr(:icon_start, :string, default: nil, doc: "icon name for the start of the input")
   attr(:icon_end, :string, default: nil, doc: "icon name for the end of the input")
 
-  attr(:rest, :global,
-    include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
-                multiple pattern placeholder readonly required rows size step)
-  )
+  attr(:rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
+                multiple pattern placeholder readonly required rows size step))
 
   slot(:inner_block)
 

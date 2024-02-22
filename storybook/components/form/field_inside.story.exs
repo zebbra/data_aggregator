@@ -1,11 +1,12 @@
 defmodule Storybook.Components.Form.FieldInside do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
+
   alias DataAggregatorWeb.Components
 
   def function, do: &Components.Field.field/1
 
-  def imports,
-    do: [{Components.Form, [simple_form: 1, fieldgroup: 1]}, {Components.Icon, [icon: 1]}]
+  def imports, do: [{Components.Form, [simple_form: 1, fieldgroup: 1]}, {Components.Icon, [icon: 1]}]
 
   def template do
     """

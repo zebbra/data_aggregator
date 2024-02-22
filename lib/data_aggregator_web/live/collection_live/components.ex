@@ -1,11 +1,12 @@
 defmodule DataAggregatorWeb.CollectionLive.Components do
+  @moduledoc false
   use DataAggregatorWeb, :html
 
-  attr(:href, :string, required: true)
-  attr(:title, :string, required: true)
-  attr(:value, :float, required: true)
-  attr(:desc, :integer, required: true)
-  attr(:active, :boolean, default: false)
+  attr :href, :string, required: true
+  attr :title, :string, required: true
+  attr :value, :float, required: true
+  attr :desc, :integer, required: true
+  attr :active, :boolean, default: false
 
   def scope_stat(assigns) do
     ~H"""

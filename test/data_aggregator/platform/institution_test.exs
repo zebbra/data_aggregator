@@ -3,9 +3,9 @@ defmodule DataAggregator.InstitutionTest do
 
   use DataAggregator.DataCase, async: true
 
-  alias DataAggregator.Platform.Institution
-
   import DataAggregator.PlatformFixtures
+
+  alias DataAggregator.Platform.Institution
 
   describe "institutions" do
     @invalid_attrs %{
@@ -49,13 +49,13 @@ defmodule DataAggregator.InstitutionTest do
     end
 
     test "create/1 with missing :grscicoll_reference data returns error changeset" do
-      attrs = @invalid_attrs |> Map.delete(:grscicoll_reference)
+      attrs = Map.delete(@invalid_attrs, :grscicoll_reference)
 
       assert {:error, %Ash.Error.Invalid{}} = Institution.create(attrs)
     end
 
     test "create/1 with ivalid :grscicoll_reference data returns error changeset" do
-      attrs = @invalid_attrs |> Map.put(:grscicoll_reference, "this-is-super-wrong")
+      attrs = Map.put(@invalid_attrs, :grscicoll_reference, "this-is-super-wrong")
 
       assert {:error, %Ash.Error.Invalid{}} = Institution.create(attrs)
     end

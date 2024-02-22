@@ -12,12 +12,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Helpers do
   def subscribe_for_import_updates(socket, connected) do
     with true <- connected,
          %Socket{assigns: %{collection: collection}} <- socket,
-         %Collection{id: id} <- collection,
-         topic <- [
-           "import:#{id}:created",
-           "import:#{id}:updated",
-           "import:#{id}:destroyed"
-         ] do
+         %Collection{id: id} <- collection do
+      topic = [
+        "import:#{id}:created",
+        "import:#{id}:updated",
+        "import:#{id}:destroyed"
+      ]
+
       PubSub.subscribe(topic)
       socket
     else

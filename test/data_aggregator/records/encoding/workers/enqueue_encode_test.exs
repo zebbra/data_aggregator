@@ -3,9 +3,9 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
 
   use DataAggregator.DataCase, async: true
 
-  alias DataAggregator.Records.Record
-
   import DataAggregator.EncodingFixtures
+
+  alias DataAggregator.Records.Record
 
   describe "DataAggregator.Records.Record.enqueue_encode/2" do
     setup do

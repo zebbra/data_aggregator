@@ -45,6 +45,7 @@ defmodule DataAggregatorWeb.Gettext do
   defmacro __using__(_) do
     quote do
       import unquote(__MODULE__)
+
       require unquote(__MODULE__)
     end
   end

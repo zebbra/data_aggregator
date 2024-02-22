@@ -3,13 +3,13 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
     Encode Records with the gbif swiss species registry catalog
   """
 
-  require Logger
-
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
   alias DataAggregator.Taxonomy.Catalog
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
+
+  require Logger
 
   # the input attributes are the attributes that will be used to query the catalog, so far we only use the tax_taxon_id
   @input_attribute hd(Catalog.get_input_dwc_attributes(:swiss_species))
@@ -61,8 +61,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
 
   @spec handle_error(String.t(), map()) :: :ok
   defp handle_error(record_id, error) do
-    Logger.error(
-      "Error while encoding the record #{record_id} with the swiss species catalog: #{inspect(error)}"
-    )
+    Logger.error("Error while encoding the record #{record_id} with the swiss species catalog: #{inspect(error)}")
   end
 end

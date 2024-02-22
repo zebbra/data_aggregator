@@ -6,11 +6,11 @@ defmodule DataAggregator.EncodingFixtures do
   use ExUnit.Case, async: true
   use Mimic
 
+  import DataAggregator.RecordsFixtures
+
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
-
-  import DataAggregator.RecordsFixtures
 
   require Logger
 

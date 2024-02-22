@@ -1,11 +1,13 @@
+collection_types = [animalia: "Animalia", plantae: "Plantae", other: "Other"]
+
 defmodule DataAggregator.Records.CollectionType do
   @moduledoc """
   Enum to define the type of a `DataAggregator.Records.Collection`.
   """
 
-  @collection_types [animalia: "Animalia", plantae: "Plantae", other: "Other"]
+  use Ash.Type.Enum, values: Enum.map(collection_types, fn {key, _value} -> key end)
 
-  use Ash.Type.Enum, values: @collection_types |> Enum.map(fn {key, _value} -> key end)
+  @collection_types collection_types
 
   @doc """
     Returns all possible collection types.
@@ -15,6 +17,5 @@ defmodule DataAggregator.Records.CollectionType do
   @doc """
     Returns all possible collection type options.
   """
-  def get_collection_type_options,
-    do: @collection_types |> Enum.map(fn {key, value} -> {value, key} end)
+  def get_collection_type_options, do: Enum.map(@collection_types, fn {key, value} -> {value, key} end)
 end

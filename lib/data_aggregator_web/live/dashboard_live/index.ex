@@ -1,6 +1,5 @@
 defmodule DataAggregatorWeb.DashboardLive.Index do
   @moduledoc false
-
   use DataAggregatorWeb, :live_view
 
   import DataAggregatorWeb.Layouts.Primary, only: [page: 1]

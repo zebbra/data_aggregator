@@ -21,8 +21,7 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
     max_concurrency = Records.import_max_concurrency()
     batch_size = ceil(Records.import_batch_size() / max_concurrency)
 
-    "Bulk importing records with batch size #{batch_size} (concurrency: #{max_concurrency}) ..."
-    |> Logger.info()
+    Logger.info("Bulk importing records with batch size #{batch_size} (concurrency: #{max_concurrency}) ...")
 
     result =
       rows

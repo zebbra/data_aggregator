@@ -171,8 +171,7 @@ defmodule DataAggregator.Records.Collection do
   end
 
   validations do
-    validate {Validations.GrSciCollValidator,
-              [attribute: :grscicoll_reference, kind: :collection]} do
+    validate {Validations.GrSciCollValidator, [attribute: :grscicoll_reference, kind: :collection]} do
       on [:create, :update]
     end
   end

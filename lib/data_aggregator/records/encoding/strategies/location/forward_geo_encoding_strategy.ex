@@ -3,14 +3,14 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
     Encode Records with the geo location api (opencagedata) to receive forward encoded geo locations
   """
 
-  require Logger
-
   alias DataAggregator.Cache.HttpDiskCache
   alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
   alias DataAggregator.Taxonomy.Catalog
+
+  require Logger
 
   # the output attributes are the attributes that will be updated on the encoded record.
   # the first element is the attribute on the encoded record and the second
@@ -61,9 +61,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
     # why doesn't it work to get the env via Application.compile_env(...) in module body?
     api_key =
       System.get_env("OPEN_CAGE_DATA_API_KEY") ||
-        throw(
-          "No open cage data api key found in the environment variables. set one under OPEN_CAGE_DATA_API_KEY"
-        )
+        throw("No open cage data api key found in the environment variables. set one under OPEN_CAGE_DATA_API_KEY")
 
     # we want to encode the location if we have at least one of the following fields,
     # otherwise we would get a way too generic response
@@ -80,9 +78,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
         |> Enum.reject(&is_nil/1)
         |> Enum.join(", ")
       else
-        Logger.debug(
-          "no record.loc_locality, record.loc_city or record.loc_municipality found on record #{record.id}"
-        )
+        Logger.debug("no record.loc_locality, record.loc_city or record.loc_municipality found on record #{record.id}")
 
         ""
       end
@@ -113,7 +109,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
   defp fetch_if_params_available(request_params) do
     case request_params do
       {:ok, params} ->
-        fetch_api(params)
+        params
+        |> fetch_api()
         |> parse_response()
         |> add_municipality_and_city()
 
@@ -151,8 +148,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
     do: throw("No valid response (status #{response.status}) from geo api")
 
   defp add_municipality_and_city(update_params) do
-    Map.put(
-      update_params,
+    update_params
+    |> Map.put(
       "town",
       update_params["town"] || update_params["township"] || update_params["village"] ||
         update_params["city"] ||
@@ -167,8 +164,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
 
   @spec handle_error(String.t(), map()) :: :ok
   defp handle_error(record_id, error) do
-    Logger.error(
-      "Error while encoding the record #{record_id} with the geo api: #{inspect(error)}"
-    )
+    Logger.error("Error while encoding the record #{record_id} with the geo api: #{inspect(error)}")
   end
 end

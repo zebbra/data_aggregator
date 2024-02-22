@@ -5,10 +5,10 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
   use Mimic
   use DataAggregator.DataCase, async: true
 
+  import DataAggregator.EncodingFixtures
+
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
-
-  import DataAggregator.EncodingFixtures
 
   describe "reward encoding of records with " do
     setup do

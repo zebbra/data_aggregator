@@ -37,13 +37,11 @@ defmodule DataAggregatorWeb.Components.Badge do
 
   defp badge_color_class("blue"), do: "bg-info/10 text-info ring-info/20 tooltip-info"
 
-  defp badge_color_class("green"),
-    do: "bg-success/10 text-success ring-success/20 tooltip-success"
+  defp badge_color_class("green"), do: "bg-success/10 text-success ring-success/20 tooltip-success"
 
   defp badge_color_class("red"), do: "bg-error/10 text-error ring-error/20 tooltip-error"
 
-  defp badge_color_class("orange"),
-    do: "bg-warning/10 text-warning ring-warning/20 tooltip-warning"
+  defp badge_color_class("orange"), do: "bg-warning/10 text-warning ring-warning/20 tooltip-warning"
 
   defp badge_color_class(_), do: "bg-base-300 text-base-content/60 ring-base-content/30"
 end

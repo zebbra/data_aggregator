@@ -17,10 +17,10 @@ defmodule DataAggregator.Records.EncodedRecord do
       DataAggregator.DarwinCore.Resource
     ]
 
+  alias __MODULE__
   alias DataAggregator.DarwinCore
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Record
-  alias __MODULE__
 
   @type t :: %EncodedRecord{}
 

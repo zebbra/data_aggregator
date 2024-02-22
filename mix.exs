@@ -48,7 +48,7 @@ defmodule DataAggregator.MixProject do
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
-  defp docs() do
+  defp docs do
     [
       main: "DataAggregator",
       extras: extras(),
@@ -90,7 +90,7 @@ defmodule DataAggregator.MixProject do
 
   defp before_closing_body_tag(_), do: ""
 
-  defp extras() do
+  defp extras do
     Path.wildcard("docs/**/*.{md,livemd,cheatmd}")
   end
 
@@ -105,7 +105,7 @@ defmodule DataAggregator.MixProject do
     ]
   end
 
-  def nest_modules_by_prefix() do
+  def nest_modules_by_prefix do
     [
       DataAggregator,
       DataAggregatorWeb,
@@ -113,7 +113,7 @@ defmodule DataAggregator.MixProject do
     ]
   end
 
-  defp groups_for_modules() do
+  defp groups_for_modules do
     [
       "Darwin Core": [
         ~r/^DataAggregator\.DarwinCore/
@@ -211,8 +211,8 @@ defmodule DataAggregator.MixProject do
       {:assertions, "~> 0.19", only: :test},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
-      {:recode, "~> 0.6", only: [:dev, :test]},
       {:mimic, "~> 1.7", only: :test},
+      {:styler, "~> 0.11", only: [:dev, :test], runtime: false},
       {:junit_formatter, "~> 3.3", only: :test},
 
       # Assets

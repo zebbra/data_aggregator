@@ -3,11 +3,11 @@ defmodule DataAggregator.ChangeEventTest do
 
   use DataAggregator.DataCase, async: true
 
-  alias DataAggregator.Records
-  alias DataAggregator.Records.ChangeEvent
-
   import DataAggregator.ChangeEventFixture
   import DataAggregator.RecordsFixtures
+
+  alias DataAggregator.Records
+  alias DataAggregator.Records.ChangeEvent
 
   describe "change_events" do
     @invalid_attrs %{
@@ -93,7 +93,7 @@ defmodule DataAggregator.ChangeEventTest do
     end
 
     test "destroy/1 with invalid id returns error" do
-      assert {:error, %Ash.Error.Unknown{}} = ChangeEvent.destroy(%ChangeEvent{id: "invalid"})
+      assert {:error, %Ash.Error.Invalid{}} = ChangeEvent.destroy(%ChangeEvent{id: "invalid"})
     end
   end
 end

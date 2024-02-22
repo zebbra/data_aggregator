@@ -3,11 +3,11 @@ defmodule DataAggregator.RecordEncodingResultTest do
 
   use DataAggregator.DataCase, async: true
 
-  alias DataAggregator.Records
-  alias DataAggregator.Records.Encoding.RecordEncodingResult
-
   import DataAggregator.RecordEncodingResultFixture
   import DataAggregator.RecordsFixtures
+
+  alias DataAggregator.Records
+  alias DataAggregator.Records.Encoding.RecordEncodingResult
 
   describe "record_encoding_results" do
     @invalid_attrs %{
@@ -129,7 +129,7 @@ defmodule DataAggregator.RecordEncodingResultTest do
     end
 
     test "destroy/1 with invalid id returns error" do
-      assert {:error, %Ash.Error.Unknown{}} =
+      assert {:error, %Ash.Error.Invalid{}} =
                RecordEncodingResult.destroy(%RecordEncodingResult{id: "invalid"})
     end
   end

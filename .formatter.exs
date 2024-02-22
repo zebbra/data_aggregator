@@ -24,6 +24,6 @@
     TailwindFormatter,
     Phoenix.LiveView.HTMLFormatter,
     Spark.Formatter,
-    Recode.FormatterPlugin
+    Styler
   ]
 ]

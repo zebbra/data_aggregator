@@ -21,7 +21,6 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
 
   """
 
-  alias DataAggregator.Records.Record
   use Oban.Worker, queue: :encoders, max_attempts: 1
 
   alias DataAggregator.Records

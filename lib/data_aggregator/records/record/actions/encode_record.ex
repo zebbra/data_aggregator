@@ -2,14 +2,14 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   @moduledoc """
   Encode Record with passed catalog
   """
+  use Ash.Resource.Actions.Implementation
+
   alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingActionResult
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
   alias DataAggregator.Records.Record
-
-  use Ash.Resource.Actions.Implementation
 
   require Logger
 

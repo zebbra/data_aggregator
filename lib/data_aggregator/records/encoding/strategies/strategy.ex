@@ -25,7 +25,8 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   def encode(record, catalog) when catalog == :gbif_taxonomy do
     encoded_record = create_encoded_record(record)
 
-    GbifTaxonomyStrategy.apply_strategy(encoded_record)
+    encoded_record
+    |> GbifTaxonomyStrategy.apply_strategy()
     |> check_for_changes(encoded_record, catalog)
     |> handle_encoding_result(encoded_record, catalog)
   end
@@ -33,7 +34,8 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   def encode(record, catalog) when catalog == :swiss_species do
     encoded_record = create_encoded_record(record)
 
-    SwissSpeciesStrategy.apply_strategy(encoded_record)
+    encoded_record
+    |> SwissSpeciesStrategy.apply_strategy()
     |> check_for_changes(encoded_record, catalog)
     |> handle_encoding_result(encoded_record, catalog)
   end
@@ -41,7 +43,8 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   def encode(record, catalog) when catalog == :geo_reverse do
     encoded_record = create_encoded_record(record)
 
-    ReverseGeoEncodingStrategy.apply_strategy(encoded_record)
+    encoded_record
+    |> ReverseGeoEncodingStrategy.apply_strategy()
     |> check_for_changes(encoded_record, catalog)
     |> handle_encoding_result(encoded_record, catalog)
   end
@@ -49,7 +52,8 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   def encode(record, catalog) when catalog == :geo_forward do
     encoded_record = create_encoded_record(record)
 
-    ForwardGeoEncodingStrategy.apply_strategy(encoded_record)
+    encoded_record
+    |> ForwardGeoEncodingStrategy.apply_strategy()
     |> check_for_changes(encoded_record, catalog)
     |> handle_encoding_result(encoded_record, catalog)
   end
@@ -176,7 +180,8 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     case encoded_record do
       nil ->
         EncodedRecord.create!(
-          Map.from_struct(record)
+          record
+          |> Map.from_struct()
           |> Map.put_new_lazy(:record, fn -> record end)
         )
 
@@ -188,12 +193,13 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   @spec update_encoded_record(map(), EncodedRecord.t(), list()) :: EncodedRecord.t()
   def update_encoded_record(updated_values, record, output_attributes) do
     updated_attributes =
-      Enum.map(output_attributes, fn {record_attribute, catalog_attribute} ->
+      output_attributes
+      |> Enum.map(fn {record_attribute, catalog_attribute} ->
         {record_attribute, Map.get(updated_values, catalog_attribute)}
       end)
       |> Enum.filter(fn {_key, value} -> value != nil end)
       |> Enum.uniq()
-      |> Enum.into(%{})
+      |> Map.new()
 
     EncodedRecord.update!(record, updated_attributes)
   end

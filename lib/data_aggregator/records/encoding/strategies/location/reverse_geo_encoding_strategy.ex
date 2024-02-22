@@ -3,8 +3,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
     Encode Records with the geo location api (opencagedata) to receive reverse encoded geo locations
   """
 
-  require Logger
-
   alias DataAggregator.Cache.HttpDiskCache
   alias DataAggregator.Misc.Coordinates
   alias DataAggregator.Records
@@ -13,6 +11,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
   alias DataAggregator.Records.Encoding.GeoCoordResult
   alias DataAggregator.Records.Encoding.Strategy
   alias DataAggregator.Taxonomy.Catalog
+
+  require Logger
 
   # the output attributes are the attributes that will be updated on the encoded record.
   # the first element is the attribute on the encoded record and the second
@@ -112,9 +112,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
     # why doesn't it work to get the env via Application.compile_env(...) in module body?
     api_key =
       System.get_env("OPEN_CAGE_DATA_API_KEY") ||
-        throw(
-          "No open cage data api key found in the environment variables. set one under OPEN_CAGE_DATA_API_KEY"
-        )
+        throw("No open cage data api key found in the environment variables. set one under OPEN_CAGE_DATA_API_KEY")
 
     request_params = request_params ++ [{:key, api_key}, {:language, "en"}, {:no_annotations, 1}]
 
@@ -141,9 +139,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
         throw("No results found in response from geo api")
 
       true ->
-        throw(
-          "Wrong amount of results found in response from geo api (Expected 1 but got #{length(results)}"
-        )
+        throw("Wrong amount of results found in response from geo api (Expected 1 but got #{length(results)}")
     end
   end
 
@@ -151,8 +147,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
     do: throw("No valid response (status #{response.status}) from geo api")
 
   defp add_municipality_and_city(update_params) do
-    Map.put(
-      update_params,
+    update_params
+    |> Map.put(
       "town",
       update_params["town"] || update_params["township"] || update_params["village"] ||
         update_params["city"] ||
@@ -221,8 +217,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
 
   @spec handle_error(String.t(), map()) :: :ok
   defp handle_error(record_id, error) do
-    Logger.error(
-      "Error while encoding the record #{record_id} with the geo api: #{inspect(error)}"
-    )
+    Logger.error("Error while encoding the record #{record_id} with the geo api: #{inspect(error)}")
   end
 end

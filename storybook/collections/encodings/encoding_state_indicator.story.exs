@@ -1,4 +1,5 @@
 defmodule Storybook.Collections.StateIndicator do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
 
   alias DataAggregatorWeb.CollectionLive.Encoding.Components

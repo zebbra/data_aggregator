@@ -5,10 +5,10 @@ defmodule DataAggregator.Records.Import.Calculations.Mappings do
 
   use Ash.Calculation
 
-  require Logger
-
   alias DataAggregator.DarwinCore.Schema.Category
   alias DataAggregator.Records.Import
+
+  require Logger
 
   @impl Ash.Calculation
   def calculate(imports, opts, ctx) do

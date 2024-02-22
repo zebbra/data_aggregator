@@ -1,173 +1,173 @@
+alias Ash.Resource.Attribute
+alias DataAggregator.DarwinCore.Schema.Category
+
+prs_attributes = [
+  %Attribute{
+    name: :contact_point,
+    type: :string,
+    allow_nil?: true,
+    description: "TODO: Add attribute descriptions"
+  },
+  %Attribute{name: :first_name, type: :string, allow_nil?: true},
+  %Attribute{name: :last_name, type: :string, allow_nil?: true},
+  %Attribute{name: :date_of_birth, type: :date, allow_nil?: true}
+]
+
+eve_attributes = [
+  %Attribute{name: :event_date, type: :date, allow_nil?: true},
+  %Attribute{name: :day, type: :integer, allow_nil?: true},
+  %Attribute{name: :month, type: :integer, allow_nil?: true},
+  %Attribute{name: :year, type: :integer, allow_nil?: true},
+  %Attribute{name: :end_of_period_day, type: :integer, allow_nil?: true},
+  %Attribute{name: :end_of_period_month, type: :integer, allow_nil?: true},
+  %Attribute{name: :end_of_period_year, type: :integer, allow_nil?: true}
+]
+
+idf_attributes = [
+  %Attribute{name: :date_identified, type: :date, allow_nil?: true},
+  %Attribute{name: :identified_by, type: :string, allow_nil?: true},
+  %Attribute{name: :type_status, type: :string, allow_nil?: true}
+]
+
+ref_attributes = [
+  %Attribute{name: :bibliographic_citation, type: :string, allow_nil?: true},
+  %Attribute{name: :creator, type: :string, allow_nil?: true},
+  %Attribute{name: :date, type: :date, allow_nil?: true},
+  %Attribute{name: :rights, type: :string, allow_nil?: true},
+  %Attribute{name: :source, type: :string, allow_nil?: true},
+  %Attribute{name: :title, type: :string, allow_nil?: true},
+  %Attribute{name: :relationship_established_date, type: :date, allow_nil?: true}
+]
+
+rrp_attributes = [
+  %Attribute{name: :relationship_of_resource, type: :string, allow_nil?: true},
+  %Attribute{name: :relationship_of_resource_id, type: :string, allow_nil?: true}
+]
+
+tax_attributes = [
+  %Attribute{name: :kingdom, type: :string, allow_nil?: true},
+  %Attribute{name: :phylum, type: :string, allow_nil?: true},
+  %Attribute{name: :class, type: :string, allow_nil?: true},
+  %Attribute{name: :order, type: :string, allow_nil?: true},
+  %Attribute{name: :family, type: :string, allow_nil?: true},
+  %Attribute{name: :genus, type: :string, allow_nil?: true},
+  %Attribute{name: :scientific_name, type: :string, allow_nil?: false},
+  %Attribute{name: :scientific_name_authorship, type: :string, allow_nil?: true},
+  %Attribute{name: :infraspecific_epithet, type: :string, allow_nil?: true},
+  %Attribute{name: :specific_epithet, type: :string, allow_nil?: true},
+  %Attribute{name: :taxon_id, type: :integer, allow_nil?: true},
+  %Attribute{name: :taxon_id_ch, type: :integer, allow_nil?: true},
+  %Attribute{name: :accepted_name_usage, type: :string, allow_nil?: true},
+  %Attribute{name: :accepted_name_usage_id, type: :string, allow_nil?: true},
+  %Attribute{name: :taxon_rank, type: :string, allow_nil?: true}
+]
+
+spp_attributes = [
+  %Attribute{name: :life_stage, type: :string, allow_nil?: true}
+]
+
+loc_attributes = [
+  %Attribute{name: :continent, type: :string, allow_nil?: true},
+  %Attribute{name: :country, type: :string, allow_nil?: true},
+  %Attribute{name: :locality, type: :string, allow_nil?: true},
+  %Attribute{name: :verbatim_locality, type: :string, allow_nil?: true},
+  %Attribute{name: :state_province, type: :string, allow_nil?: true},
+  %Attribute{name: :decimal_longitude, type: :float, allow_nil?: true},
+  %Attribute{name: :decimal_latitude, type: :float, allow_nil?: true},
+  %Attribute{name: :georeference_remarks, type: :string, allow_nil?: true},
+  %Attribute{name: :country_code, type: :string, allow_nil?: true},
+  %Attribute{name: :swiss_coordinates_x, type: :float, allow_nil?: true},
+  %Attribute{name: :swiss_coordinates_y, type: :float, allow_nil?: true},
+  %Attribute{name: :city, type: :string, allow_nil?: true},
+  %Attribute{name: :county, type: :string, allow_nil?: true},
+  %Attribute{name: :municipality, type: :string, allow_nil?: true}
+]
+
+occ_attributes = [
+  %Attribute{name: :recorded_by, type: :string, allow_nil?: true},
+  %Attribute{name: :sex, type: :string, allow_nil?: true},
+  %Attribute{name: :associated_occurrences, type: :string, allow_nil?: true},
+  %Attribute{name: :occurrence_remarks, type: :string, allow_nil?: true}
+]
+
+mte_attributes = [
+  %Attribute{name: :material_entity_id, type: :string, allow_nil?: false}
+]
+
+mts_attributes = [
+  %Attribute{name: :material_sample_type, type: :string, allow_nil?: true}
+]
+
+categories = [
+  %Category{
+    name: :prs,
+    label: "Person",
+    description: "Attributes related to a person",
+    attributes: prs_attributes
+  },
+  %Category{
+    name: :eve,
+    label: "Event",
+    description: "The circumstances of the extraction",
+    attributes: eve_attributes
+  },
+  %Category{
+    name: :idf,
+    label: "Identification",
+    description: "Characteristics of the item",
+    attributes: idf_attributes
+  },
+  %Category{
+    name: :ref,
+    label: "Reference",
+    description: "Literature and mentions",
+    attributes: ref_attributes
+  },
+  %Category{
+    name: :rrp,
+    label: "Resource Relationship",
+    description: "References to other resources",
+    attributes: rrp_attributes
+  },
+  %Category{
+    name: :tax,
+    label: "Taxon",
+    description: "Classification structure of the item",
+    attributes: tax_attributes
+  },
+  %Category{
+    name: :spp,
+    label: "Species Profile",
+    description: "Life stage and characteristics of the species",
+    attributes: spp_attributes
+  },
+  %Category{
+    name: :loc,
+    label: "Location",
+    description: "Geographical description",
+    attributes: loc_attributes
+  },
+  %Category{
+    name: :occ,
+    label: "Occurence",
+    description: "Properties of the recorded observation",
+    attributes: occ_attributes
+  },
+  %Category{
+    name: :mte,
+    label: "Material Entity",
+    description: "Distinguishing marks of the specimen",
+    attributes: mte_attributes
+  },
+  %Category{
+    name: :mts,
+    label: "Material Sample",
+    description: "Specimens documented (bio)chemical elements",
+    attributes: mts_attributes
+  }
+]
+
 defmodule DataAggregator.DarwinCore.Schema do
-  alias Ash.Resource.Attribute
-  alias DataAggregator.DarwinCore.Schema.Category
-
-  @prs_attributes [
-    %Attribute{
-      name: :contact_point,
-      type: :string,
-      allow_nil?: true,
-      description: "TODO: Add attribute descriptions"
-    },
-    %Attribute{name: :first_name, type: :string, allow_nil?: true},
-    %Attribute{name: :last_name, type: :string, allow_nil?: true},
-    %Attribute{name: :date_of_birth, type: :date, allow_nil?: true}
-  ]
-
-  @eve_attributes [
-    %Attribute{name: :event_date, type: :date, allow_nil?: true},
-    %Attribute{name: :day, type: :integer, allow_nil?: true},
-    %Attribute{name: :month, type: :integer, allow_nil?: true},
-    %Attribute{name: :year, type: :integer, allow_nil?: true},
-    %Attribute{name: :end_of_period_day, type: :integer, allow_nil?: true},
-    %Attribute{name: :end_of_period_month, type: :integer, allow_nil?: true},
-    %Attribute{name: :end_of_period_year, type: :integer, allow_nil?: true}
-  ]
-
-  @idf_attributes [
-    %Attribute{name: :date_identified, type: :date, allow_nil?: true},
-    %Attribute{name: :identified_by, type: :string, allow_nil?: true},
-    %Attribute{name: :type_status, type: :string, allow_nil?: true}
-  ]
-
-  @ref_attributes [
-    %Attribute{name: :bibliographic_citation, type: :string, allow_nil?: true},
-    %Attribute{name: :creator, type: :string, allow_nil?: true},
-    %Attribute{name: :date, type: :date, allow_nil?: true},
-    %Attribute{name: :rights, type: :string, allow_nil?: true},
-    %Attribute{name: :source, type: :string, allow_nil?: true},
-    %Attribute{name: :title, type: :string, allow_nil?: true},
-    %Attribute{name: :relationship_established_date, type: :date, allow_nil?: true}
-  ]
-
-  @rrp_attributes [
-    %Attribute{name: :relationship_of_resource, type: :string, allow_nil?: true},
-    %Attribute{name: :relationship_of_resource_id, type: :string, allow_nil?: true}
-  ]
-
-  @tax_attributes [
-    %Attribute{name: :kingdom, type: :string, allow_nil?: true},
-    %Attribute{name: :phylum, type: :string, allow_nil?: true},
-    %Attribute{name: :class, type: :string, allow_nil?: true},
-    %Attribute{name: :order, type: :string, allow_nil?: true},
-    %Attribute{name: :family, type: :string, allow_nil?: true},
-    %Attribute{name: :genus, type: :string, allow_nil?: true},
-    %Attribute{name: :scientific_name, type: :string, allow_nil?: false},
-    %Attribute{name: :scientific_name_authorship, type: :string, allow_nil?: true},
-    %Attribute{name: :infraspecific_epithet, type: :string, allow_nil?: true},
-    %Attribute{name: :specific_epithet, type: :string, allow_nil?: true},
-    %Attribute{name: :taxon_id, type: :integer, allow_nil?: true},
-    %Attribute{name: :taxon_id_ch, type: :integer, allow_nil?: true},
-    %Attribute{name: :accepted_name_usage, type: :string, allow_nil?: true},
-    %Attribute{name: :accepted_name_usage_id, type: :string, allow_nil?: true},
-    %Attribute{name: :taxon_rank, type: :string, allow_nil?: true}
-  ]
-
-  @spp_attributes [
-    %Attribute{name: :life_stage, type: :string, allow_nil?: true}
-  ]
-
-  @loc_attributes [
-    %Attribute{name: :continent, type: :string, allow_nil?: true},
-    %Attribute{name: :country, type: :string, allow_nil?: true},
-    %Attribute{name: :locality, type: :string, allow_nil?: true},
-    %Attribute{name: :verbatim_locality, type: :string, allow_nil?: true},
-    %Attribute{name: :state_province, type: :string, allow_nil?: true},
-    %Attribute{name: :decimal_longitude, type: :float, allow_nil?: true},
-    %Attribute{name: :decimal_latitude, type: :float, allow_nil?: true},
-    %Attribute{name: :georeference_remarks, type: :string, allow_nil?: true},
-    %Attribute{name: :country_code, type: :string, allow_nil?: true},
-    %Attribute{name: :swiss_coordinates_x, type: :float, allow_nil?: true},
-    %Attribute{name: :swiss_coordinates_y, type: :float, allow_nil?: true},
-    %Attribute{name: :city, type: :string, allow_nil?: true},
-    %Attribute{name: :county, type: :string, allow_nil?: true},
-    %Attribute{name: :municipality, type: :string, allow_nil?: true}
-  ]
-
-  @occ_attributes [
-    %Attribute{name: :recorded_by, type: :string, allow_nil?: true},
-    %Attribute{name: :sex, type: :string, allow_nil?: true},
-    %Attribute{name: :associated_occurrences, type: :string, allow_nil?: true},
-    %Attribute{name: :occurrence_remarks, type: :string, allow_nil?: true}
-  ]
-
-  @mte_attributes [
-    %Attribute{name: :material_entity_id, type: :string, allow_nil?: false}
-  ]
-
-  @mts_attributes [
-    %Attribute{name: :material_sample_type, type: :string, allow_nil?: true}
-  ]
-
-  @categories [
-    %Category{
-      name: :prs,
-      label: "Person",
-      description: "Attributes related to a person",
-      attributes: @prs_attributes
-    },
-    %Category{
-      name: :eve,
-      label: "Event",
-      description: "The circumstances of the extraction",
-      attributes: @eve_attributes
-    },
-    %Category{
-      name: :idf,
-      label: "Identification",
-      description: "Characteristics of the item",
-      attributes: @idf_attributes
-    },
-    %Category{
-      name: :ref,
-      label: "Reference",
-      description: "Literature and mentions",
-      attributes: @ref_attributes
-    },
-    %Category{
-      name: :rrp,
-      label: "Resource Relationship",
-      description: "References to other resources",
-      attributes: @rrp_attributes
-    },
-    %Category{
-      name: :tax,
-      label: "Taxon",
-      description: "Classification structure of the item",
-      attributes: @tax_attributes
-    },
-    %Category{
-      name: :spp,
-      label: "Species Profile",
-      description: "Life stage and characteristics of the species",
-      attributes: @spp_attributes
-    },
-    %Category{
-      name: :loc,
-      label: "Location",
-      description: "Geographical description",
-      attributes: @loc_attributes
-    },
-    %Category{
-      name: :occ,
-      label: "Occurence",
-      description: "Properties of the recorded observation",
-      attributes: @occ_attributes
-    },
-    %Category{
-      name: :mte,
-      label: "Material Entity",
-      description: "Distinguishing marks of the specimen",
-      attributes: @mte_attributes
-    },
-    %Category{
-      name: :mts,
-      label: "Material Sample",
-      description: "Specimens documented (bio)chemical elements",
-      attributes: @mts_attributes
-    }
-  ]
-
   @moduledoc """
   Defines the Darwin Core schema and it's attributes.
 
@@ -176,8 +176,13 @@ defmodule DataAggregator.DarwinCore.Schema do
 
   ## Attributes by Category
 
-  #{DataAggregator.DarwinCore.Schema.Docs.schema_docs(@categories)}
+  #{DataAggregator.DarwinCore.Schema.Docs.schema_docs(categories)}
   """
+
+  alias Ash.Resource.Attribute
+  alias DataAggregator.DarwinCore.Schema.Category
+
+  @categories categories
 
   @doc """
   Returns a map attributes grouped by category.
@@ -251,10 +256,9 @@ defmodule DataAggregator.DarwinCore.Schema do
   """
   @spec category_from_prefixed_attribute_name(String.t()) :: Category.t() | nil
   def category_from_prefixed_attribute_name(name) when is_binary(name) do
-    category_name = String.split(name, "_") |> List.first()
+    category_name = name |> String.split("_") |> List.first()
 
-    @categories
-    |> Enum.find(&(&1.name == String.to_atom(category_name)))
+    Enum.find(@categories, &(&1.name == String.to_atom(category_name)))
   end
 
   @spec category_from_prefixed_attribute_name(atom()) :: Category.t() | nil
@@ -274,6 +278,5 @@ defmodule DataAggregator.DarwinCore.Schema do
   end
 
   @spec attribute_name_without_prefix(atom()) :: atom()
-  def attribute_name_without_prefix(name) when is_atom(name),
-    do: attribute_name_without_prefix(to_string(name))
+  def attribute_name_without_prefix(name) when is_atom(name), do: attribute_name_without_prefix(to_string(name))
 end

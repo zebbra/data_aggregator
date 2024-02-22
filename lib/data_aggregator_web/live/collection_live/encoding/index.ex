@@ -2,10 +2,9 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Index do
   @moduledoc false
   use DataAggregatorWeb, :live_view
 
-  import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
-
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
+  import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   @impl true
   def mount(%{"id" => id} = _params, _session, socket) do

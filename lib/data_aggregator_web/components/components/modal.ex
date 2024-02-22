@@ -5,9 +5,9 @@ defmodule DataAggregatorWeb.Components.Modal do
 
   use Phoenix.Component
 
-  alias Phoenix.LiveView.JS
-
   import DataAggregatorWeb.Gettext
+
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a modal.

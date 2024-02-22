@@ -7,9 +7,9 @@ defmodule DataAggregator.ChangeEventFixture do
   use ExUnit.Case, async: true
   use Mimic
 
-  alias DataAggregator.Records.ChangeEvent
-
   import DataAggregator.RecordsFixtures
+
+  alias DataAggregator.Records.ChangeEvent
 
   @change_event_defaults %{
     value: "new value",

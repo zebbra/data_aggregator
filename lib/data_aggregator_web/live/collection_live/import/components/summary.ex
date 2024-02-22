@@ -5,10 +5,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
 
   use DataAggregatorWeb, :live_component
 
-  alias DataAggregator.Records.Import
-
   import DataAggregatorWeb.CollectionLive.Import.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
+
+  alias DataAggregator.Records.Import
 
   @impl true
   def update(assigns, socket) do

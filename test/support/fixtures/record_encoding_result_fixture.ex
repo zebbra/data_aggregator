@@ -7,9 +7,9 @@ defmodule DataAggregator.RecordEncodingResultFixture do
   use ExUnit.Case, async: true
   use Mimic
 
-  alias DataAggregator.Records.Encoding.RecordEncodingResult
-
   import DataAggregator.RecordsFixtures
+
+  alias DataAggregator.Records.Encoding.RecordEncodingResult
 
   @record_encoding_result_defaults %{
     input: %{

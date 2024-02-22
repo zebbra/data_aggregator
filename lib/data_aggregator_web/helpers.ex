@@ -28,18 +28,14 @@ defmodule DataAggregatorWeb.Helpers do
   def format_datetime(datetime, opts \\ [])
   def format_datetime(nil, _opts), do: @placeholder
 
-  def format_datetime(datetime, opts),
-    do: datetime |> DateTime.shift_zone!(@timezone) |> Cldr.DateTime.to_string!(opts)
+  def format_datetime(datetime, opts), do: datetime |> DateTime.shift_zone!(@timezone) |> Cldr.DateTime.to_string!(opts)
 
-  def format_weeks(weeks, opts \\ []),
-    do: Cldr.Unit.to_string!(weeks, Keyword.merge(opts, unit: "week"))
+  def format_weeks(weeks, opts \\ []), do: Cldr.Unit.to_string!(weeks, Keyword.put(opts, :unit, "week"))
 
-  def format_date_interval(from, to, opts \\ []),
-    do: Cldr.Interval.to_string!(from, to, opts)
+  def format_date_interval(from, to, opts \\ []), do: Cldr.Interval.to_string!(from, to, opts)
 
-  def format_time_ago(value, opts \\ []),
-    # credo:disable-for-next-line Credo.Check.Design.AliasUsage
-    do: Cldr.DateTime.Relative.to_string!(value, opts)
+  # credo:disable-for-next-line Credo.Check.Design.AliasUsage
+  def format_time_ago(value, opts \\ []), do: Cldr.DateTime.Relative.to_string!(value, opts)
 
   def format_bytes(bytes, opts \\ []) do
     kb = 1024

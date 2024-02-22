@@ -1,4 +1,5 @@
 defmodule Storybook.Collections.Imports.Stepper do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
 
   alias DataAggregatorWeb.CollectionLive.Import.Components.Stepper

@@ -1,14 +1,16 @@
+default_count = 100
+
 defmodule Mix.Tasks.DataAggregator.Records.Generate do
-  @default_count 100
+  @shortdoc "Generates records and dumps them to stdout as CSV"
 
   @moduledoc """
   Generates a number of records and dumps them to stdout as CSV.
 
-  By default it will generate #{@default_count} records, but you can pass a number as an argument to generate more.
+  By default it will generate #{default_count} records, but you can pass a number as an argument to generate more.
 
   ## Options
 
-  * `--count` - The number of records to generate (default: #{@default_count})
+  * `--count` - The number of records to generate (default: #{default_count})
 
   ## Examples
 
@@ -20,10 +22,9 @@ defmodule Mix.Tasks.DataAggregator.Records.Generate do
   ```
   """
 
-  @shortdoc "Generates records and dumps them to stdout as CSV"
-
   use Mix.Task
 
+  @default_count default_count
   @switches [count: :integer, invalid: :integer]
 
   def run(args) do

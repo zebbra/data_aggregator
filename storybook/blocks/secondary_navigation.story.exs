@@ -1,5 +1,7 @@
 defmodule Storybook.Blocks.SecondaryNavigation do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
+
   alias DataAggregatorWeb.Blocks
 
   def function, do: &Blocks.SecondaryNavigation.secondary_navigation/1

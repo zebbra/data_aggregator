@@ -6,9 +6,9 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   use DataAggregatorWeb, :html
   use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_indicator: 1]
 
-  alias DataAggregator.Records.Collection
-
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
+
+  alias DataAggregator.Records.Collection
 
   attr(:collection_id, :any, default: nil)
   attr(:collection, Collection, default: nil)

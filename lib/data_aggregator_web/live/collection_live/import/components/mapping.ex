@@ -5,15 +5,14 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   use DataAggregatorWeb, :live_component
 
-  alias AshPhoenix.Form
-
-  alias DataAggregator.DarwinCore
-  alias DataAggregator.Records
-  alias DataAggregator.Records.Import
-
   import DataAggregatorWeb.CollectionLive.Import.Components, only: [import_mapping_validation: 1]
   import DataAggregatorWeb.CollectionLive.Import.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
+
+  alias AshPhoenix.Form
+  alias DataAggregator.DarwinCore
+  alias DataAggregator.Records
+  alias DataAggregator.Records.Import
 
   require Logger
 
@@ -375,9 +374,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         {:ok, import} ->
           socket
           |> put_flash(:info, ~t"Mapping updated"m)
-          |> push_patch(
-            to: ~p"/collections/#{socket.assigns.collection}/imports/#{import}/summary"
-          )
+          |> push_patch(to: ~p"/collections/#{socket.assigns.collection}/imports/#{import}/summary")
 
         {:error, form} ->
           assign(socket, :form, form)
@@ -421,7 +418,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   defp column_name_visible?(name, filter) do
     query = normalize_string(filter[:query].value)
-    normalize_string(name) |> String.contains?(query)
+    name |> normalize_string() |> String.contains?(query)
   end
 
   defp normalize_string(value) do
@@ -542,11 +539,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   defp extract_mapped_to_with_name(_params), do: []
 
   defp available_attribute_options(%Import{} = import) do
-    attributes_in_use(import) |> filter_attribute_options()
+    import |> attributes_in_use() |> filter_attribute_options()
   end
 
   defp available_attribute_options(params) do
-    extract_column_mapped_to(params) |> filter_attribute_options()
+    params |> extract_column_mapped_to() |> filter_attribute_options()
   end
 
   defp attributes_in_use(%Import{} = import) do

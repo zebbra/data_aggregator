@@ -3,17 +3,16 @@ defmodule DataAggregator.DarwinCore.Schema.Category do
   A Darwin Core category.
   """
 
-  defstruct [:name, label: "", attributes: [], description: nil]
-
+  alias __MODULE__
   alias Ash.Resource.Attribute
+
+  defstruct [:name, label: "", attributes: [], description: nil]
 
   @type t :: %__MODULE__{
           name: atom(),
           attributes: [Attribute.t()],
           description: String.t()
         }
-
-  alias __MODULE__
 
   @spec prefixed_attributes(t) :: [Attribute.t()]
   def prefixed_attributes(%Category{attributes: attributes} = category) do
@@ -24,6 +23,6 @@ defmodule DataAggregator.DarwinCore.Schema.Category do
   end
 
   def prefixed_attribute_name(%Category{name: prefix}, %Attribute{name: name}) do
-    "#{prefix}_#{name}" |> String.to_atom()
+    String.to_atom("#{prefix}_#{name}")
   end
 end

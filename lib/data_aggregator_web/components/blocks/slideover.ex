@@ -5,10 +5,10 @@ defmodule DataAggregatorWeb.Blocks.Slideover do
 
   use Phoenix.Component
 
-  alias Phoenix.LiveView.JS
-
-  import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Blocks.Header, only: [header: 1]
+  import DataAggregatorWeb.Gettext
+
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a slideover with a title, subtitle, and actions. The slideover can be

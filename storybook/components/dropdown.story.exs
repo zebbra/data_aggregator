@@ -1,5 +1,7 @@
 defmodule Storybook.Components.Dropdown do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
+
   alias DataAggregatorWeb.Components
 
   def function, do: &Components.Dropdown.dropdown/1

@@ -20,6 +20,7 @@ defmodule DataAggregator.Records.Record do
     ],
     notifiers: [Ash.Notifier.PubSub]
 
+  alias __MODULE__
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Jobs.Job
@@ -27,7 +28,6 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
-  alias __MODULE__
 
   @type t :: %Record{}
 
@@ -35,11 +35,11 @@ defmodule DataAggregator.Records.Record do
   def default_limit, do: @default_limit
 
   attributes do
-    uuid_attribute(:id, prefix: "rec")
+    uuid_attribute :id, prefix: "rec"
     attribute :import_data, :map
     attribute :extra_data, :map
     attribute :errors, :map
-    timestamps(private?: false, writable?: false)
+    timestamps private?: false, writable?: false
   end
 
   relationships do

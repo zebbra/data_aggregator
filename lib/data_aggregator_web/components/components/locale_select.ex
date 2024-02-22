@@ -5,9 +5,9 @@ defmodule DataAggregatorWeb.Components.LocaleSelect do
 
   use Phoenix.Component
 
-  alias Phoenix.LiveView.JS
-
   import DataAggregatorWeb.Components.Dropdown, only: [dropdown: 1]
+
+  alias Phoenix.LiveView.JS
 
   @locales DataAggregatorWeb.Locale.locales()
 

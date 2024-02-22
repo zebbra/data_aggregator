@@ -3,8 +3,8 @@ defmodule DataAggregatorWeb.RecordLiveTest do
 
   use DataAggregatorWeb.ConnCase, async: true
 
-  import Phoenix.LiveViewTest
   import DataAggregator.RecordsFixtures
+  import Phoenix.LiveViewTest
 
   alias DataAggregator.Records
 

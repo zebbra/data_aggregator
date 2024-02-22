@@ -53,8 +53,7 @@ defmodule DataAggregator.Platform.Institution do
   end
 
   validations do
-    validate {Validations.GrSciCollValidator,
-              [attribute: :grscicoll_reference, kind: :institution]} do
+    validate {Validations.GrSciCollValidator, [attribute: :grscicoll_reference, kind: :institution]} do
       on [:create, :update]
     end
   end

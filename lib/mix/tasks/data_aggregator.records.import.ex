@@ -1,4 +1,6 @@
 defmodule Mix.Tasks.DataAggregator.Records.Import do
+  @shortdoc "Import records from a CSV file"
+
   @moduledoc """
   Import records from a CSV file.
 
@@ -13,9 +15,10 @@ defmodule Mix.Tasks.DataAggregator.Records.Import do
   ```
   """
 
-  @shortdoc "Import records from a CSV file"
-
   use Mix.Task
+
+  alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Import
 
   @switches [file: :string]
 
@@ -49,9 +52,6 @@ defmodule Mix.Tasks.DataAggregator.Records.Import do
     %{name: "YEARCOLLECTED", mapped_to: "eve_year"}
   ]
 
-  alias DataAggregator.Records.Collection
-  alias DataAggregator.Records.Import
-
   def run(args) do
     {opts, _, _} = OptionParser.parse(args, switches: @switches)
     file = opts[:file] || raise("Missing required option `--file`")
@@ -67,9 +67,7 @@ defmodule Mix.Tasks.DataAggregator.Records.Import do
         grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
       })
 
-    Mix.shell().info(
-      "Creating import from file #{inspect(file)} for collection #{inspect(collection.name)} ..."
-    )
+    Mix.shell().info("Creating import from file #{inspect(file)} for collection #{inspect(collection.name)} ...")
 
     import =
       collection

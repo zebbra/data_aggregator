@@ -5,8 +5,8 @@ defmodule DataAggregatorWeb.Blocks.EmptyState do
 
   use Phoenix.Component
 
-  import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
+  import DataAggregatorWeb.Gettext
 
   attr :title, :string, default: ~t"No entries"m
   attr :description, :string, default: ~t"Get started by creating a new entry."m

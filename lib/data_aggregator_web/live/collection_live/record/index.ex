@@ -4,22 +4,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   use DataAggregatorWeb.CollectionLive.Components, only: [scope_stat: 1]
   use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
 
-  alias DataAggregator.Records
-  alias DataAggregator.Records.Collection
-  alias DataAggregator.Records.Encoding.RecordEncodingResult
-  alias DataAggregator.Records.Record
-  alias DataAggregatorWeb.Components.DataTable
+  import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
 
+  import DataAggregatorWeb.CollectionLive.Helpers,
+    only: [get_collection: 1, subscribe_for_collection_updates: 2]
+
+  import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [subscribe_for_record_updates: 2]
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   import DataAggregatorWeb.RecordLive.Helpers,
     only: [attrs_by_category_in_layers: 1, encoded_attribute: 2]
 
-  import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [subscribe_for_record_updates: 2]
-  import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
-
-  import DataAggregatorWeb.CollectionLive.Helpers,
-    only: [get_collection: 1, subscribe_for_collection_updates: 2]
+  alias DataAggregator.Records
+  alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Encoding.RecordEncodingResult
+  alias DataAggregator.Records.Record
+  alias DataAggregatorWeb.Components.DataTable
 
   @load [:collection, :encoded_record]
 
@@ -86,22 +86,24 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           />
         </div>
         <div class="flex min-w-0 flex-1 justify-end gap-x-2">
-          <.link
+          <button
             phx-click="collection:export"
             class="btn btn-primary text-primary-content max-sm:btn-sm"
             disabled={@busy}
           >
             <.icon name="hero-arrow-down-tray" class="max-sm:size-4" />
             <%= ~t"Export"m %>
-          </.link>
-          <.link
+          </button>
+
+          <button
             :if={@busy == false}
             phx-click="collection:encode"
             class="btn btn-primary text-primary-content max-sm:btn-sm"
           >
             <.icon name="hero-puzzle-piece" class="max-sm:size-4" />
             <%= ~t"Encode"m %>
-          </.link>
+          </button>
+
           <.link
             :if={@busy}
             patch={~p"/collections/#{@collection}/records"}
@@ -363,7 +365,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   defp collection_scope(params) do
-    Record |> Ash.Query.filter_input(%{"collection" => %{"id" => params["id"]}})
+    Ash.Query.filter_input(Record, %{"collection" => %{"id" => params["id"]}})
   end
 
   defp get_record(id) do
