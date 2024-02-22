@@ -1,33 +1,11 @@
+import DialogHook from "./dialog.hook";
+import LocaleSelect from "./locale_select.hook";
+import MainScrollListener from "./main_scroll_listener.hook";
 import ThemeSelect from "./theme_select.hook";
 
-import LocaleSelect from "./locale_select.hook";
-
-import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-  Description,
-  Label,
-  Menu,
-  MenuButton,
-  MenuItems,
-  MenuItem,
-  Switch,
-  SwitchGroup,
-} from "./headless";
-
 export default {
-  ThemeSelect,
+  DialogHook,
   LocaleSelect,
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-  Description,
-  Label,
-  Menu,
-  MenuButton,
-  MenuItems,
-  MenuItem,
-  Switch,
-  SwitchGroup,
+  MainScrollListener,
+  ThemeSelect,
 };

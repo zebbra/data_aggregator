@@ -162,7 +162,7 @@ defmodule DataAggregator.Records.Import do
       accept [:columns]
       change Import.Changes.UpdateMapping
       change transition_state(:pending)
-      change load([:missing_mappings])
+      change load([:missing_mappings, :mappings])
     end
 
     update :add_validation_progress do
@@ -276,11 +276,11 @@ defmodule DataAggregator.Records.Import do
     type "import"
 
     routes do
-      base("/imports")
+      base "/imports"
 
-      get(:read)
+      get :read
       index :read
-      post(:create_from_path)
+      post :create_from_path
     end
   end
 end

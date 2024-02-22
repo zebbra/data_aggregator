@@ -3,6 +3,7 @@
 // such:
 //
 import Hooks from "./hooks";
+import { onInitialPageLoad } from "./src/utils";
 // import * as Params from "./params";
 // import * as Uploaders from "./uploaders";
 
@@ -15,28 +16,58 @@ declare global {
 }
 
 (function () {
+  // window.storybook = { Hooks, Params, Uploaders };
   window.storybook = { Hooks };
+
+  onInitialPageLoad(() => {
+    const current = currentThemeFromLocation();
+    if (current) applyTheme(current);
+    registerThemeSelect();
+    registerConsoleLoggerListener();
+  });
 })();
 
-// If your components require alpinejs, you'll need to start
-// alpine after the DOM is loaded and pass in an onBeforeElUpdated
-//
-// import Alpine from 'alpinejs'
-// window.Alpine = Alpine
-// document.addEventListener('DOMContentLoaded', () => {
-//   window.Alpine.start();
-// });
+function registerConsoleLoggerListener() {
+  window.addEventListener("storybook:console:log", (info) => {
+    console.log(info);
+  });
+}
 
-// (function () {
-//   window.storybook = {
-//     LiveSocketOptions: {
-//       dom: {
-//         onBeforeElUpdated(from, to) {
-//           if (from._x_dataStack) {
-//             window.Alpine.clone(from, to)
-//           }
-//         }
-//       }
-//     }
-//   };
-// })();
+function currentThemeFromLocation() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("theme");
+}
+
+function registerThemeSelect() {
+  const themes = document.getElementsByClassName("psb-theme");
+
+  for (let i = 0; i < themes.length; i++) {
+    themes[i].addEventListener("click", (e) => {
+      const theme = sanitizeTheme(eventTheme(e));
+      applyTheme(theme);
+    });
+  }
+}
+
+function eventTheme(e: Event) {
+  return (e.target as any)?.text || (e.target as any)?.innerText;
+}
+
+function sanitizeTheme(theme?: string) {
+  switch (theme?.trim().toLowerCase()) {
+    case "light":
+      return "light";
+    case "dark":
+      return "dark";
+    default:
+      return "system";
+  }
+}
+
+function applyTheme(theme: string) {
+  if (theme == "system") {
+    document.documentElement.removeAttribute("data-theme");
+  } else {
+    document.documentElement.setAttribute("data-theme", theme);
+  }
+}

@@ -61,13 +61,13 @@ defmodule DataAggregator.Records.Record.Image do
     type "record_image"
 
     routes do
-      base("/record_images")
+      base "/record_images"
 
-      get(:read)
+      get :read
       index :read
-      post(:create)
-      patch(:update)
-      delete(:destroy)
+      post :create
+      patch :update
+      delete :destroy
     end
   end
 end

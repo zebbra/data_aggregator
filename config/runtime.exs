@@ -44,6 +44,14 @@ if System.get_env("IMPORT_MAX_CONCURRENCY") do
   config :data_aggregator, DataAggregator.Records, import_max_concurrency: max_concurrency
 end
 
+http_cache_path = System.get_env("HTTP_CACHE_PATH") || "priv/cache/#{config_env()}/http"
+
+config :data_aggregator,
+  # API Key for opencagedata api
+  http_cache_path: http_cache_path,
+  # Cache http requests in the a directory on disk
+  open_cage_data_api_key: System.get_env("OPEN_CAGE_DATA_API_KEY")
+
 # Configure Sentry runtime environment
 config :sentry,
   environment_name: System.get_env("SENTRY_ENVIRONMENT", to_string(config_env()))
@@ -176,8 +184,8 @@ if config_env() == :prod do
   # "priv/ssl/server.key". For all supported SSL configuration
   # options, see https://hexdocs.pm/plug/Plug.SSL.html#configure/1
   #
-  # We also recommend setting `force_ssl` in your endpoint, ensuring
-  # no data is ever sent via http, always redirecting to https:
+  # We also recommend setting `force_ssl` in your config/prod.exs,
+  # ensuring no data is ever sent via http, always redirecting to https:
   #
   #     config :data_aggregator, DataAggregatorWeb.Endpoint,
   #       force_ssl: [hsts: true]

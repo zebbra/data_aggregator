@@ -1,4 +1,10 @@
-ExUnit.configure(formatters: [JUnitFormatter, ExUnit.CLIFormatter])
+alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
+
+ExUnit.configure(formatters: [JUnitFormatter, ExUnit.CLIFormatter], exclude: [pending: true])
+
+Mimic.copy(Req)
+Mimic.copy(SwissSpecies)
+
 ExUnit.start()
 Ecto.Adapters.SQL.Sandbox.mode(DataAggregator.Repo, :manual)
 

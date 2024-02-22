@@ -21,4 +21,8 @@ defmodule DataAggregator.Taxonomy do
   graphql do
     authorize? false
   end
+
+  json_api do
+    prefix "/api/json"
+  end
 end

@@ -23,6 +23,6 @@ defmodule DataAggregator.Platform do
   end
 
   json_api do
-    prefix "/api/json/platform"
+    prefix "/api/json"
   end
 end

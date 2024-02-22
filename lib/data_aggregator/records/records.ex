@@ -9,7 +9,7 @@ defmodule DataAggregator.Records do
   #{File.read!(class_diagram)}
   """
 
-  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api]
+  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api, AshPaperTrail.Api]
 
   # ensure module is recompiled when the class diagram changes
   @external_resource class_diagram
@@ -17,7 +17,10 @@ defmodule DataAggregator.Records do
   @default_env [
     import_timeout: :timer.minutes(60),
     import_batch_size: 1000,
-    async_import_progress?: true
+    async_import_progress?: true,
+    encode_timeout: :timer.minutes(60),
+    encode_batch_size: 1000,
+    async_encode_progress?: true
   ]
 
   resources do
@@ -48,5 +51,14 @@ defmodule DataAggregator.Records do
   def import_max_concurrency do
     num_cpus = :erlang.system_info(:logical_processors_available)
     get_env(:import_max_concurrency, num_cpus)
+  end
+
+  def encode_timeout, do: get_env(:import_timeout)
+  def encode_batch_size, do: get_env(:import_batch_size)
+  def async_encode_progress?, do: get_env(:async_import_progress?)
+
+  def encode_max_concurrency do
+    num_cpus = :erlang.system_info(:logical_processors_available)
+    get_env(:encode_max_concurrency, num_cpus)
   end
 end

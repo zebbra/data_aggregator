@@ -6,7 +6,7 @@ defmodule DataAggregator.DarwinCore.Schema.Category do
   alias __MODULE__
   alias Ash.Resource.Attribute
 
-  defstruct [:name, attributes: [], description: nil]
+  defstruct [:name, label: "", attributes: [], description: nil]
 
   @type t :: %__MODULE__{
           name: atom(),

@@ -14,14 +14,22 @@ defmodule DataAggregator.Records.Record do
       AshUUID,
       AshGraphql.Resource,
       AshJsonApi.Resource,
-      DataAggregator.DarwinCore.Resource
-    ]
+      DataAggregator.DarwinCore.Resource,
+      AshStateMachine,
+      AshPaperTrail.Resource
+    ],
+    notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.EncodedRecord
+  alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
+
+  @type t :: %Record{}
 
   @default_limit 15
   def default_limit, do: @default_limit
@@ -30,6 +38,7 @@ defmodule DataAggregator.Records.Record do
     uuid_attribute :id, prefix: "rec"
     attribute :import_data, :map
     attribute :extra_data, :map
+    attribute :errors, :map
     timestamps private?: false, writable?: false
   end
 
@@ -53,6 +62,52 @@ defmodule DataAggregator.Records.Record do
       destination_attribute_on_join_resource :attachment_id
       join_relationship :images
     end
+
+    belongs_to :encoder_job, Job do
+      api DataAggregator.Jobs
+      attribute_type :integer
+      attribute_writable? true
+      allow_nil? true
+    end
+
+    has_one :encoded_record, EncodedRecord do
+      allow_nil? true
+    end
+  end
+
+  paper_trail do
+    # default is :snapshot
+    change_tracking_mode :changes_only
+    # default is false
+    store_action_name? true
+    # the primary keys are always ignored
+    ignore_attributes [:inserted_at, :updated_at]
+    # used to have working destroy actions on the record resource
+    reference_source? false
+
+    # exetending the default paper_trail resource to have more interfaces
+    mixin DataAggregator.Records.RecordVersionMixin
+    version_extensions extensions: [AshJsonApi.Resource]
+  end
+
+  state_machine do
+    initial_states [:imported]
+    default_initial_state :imported
+
+    transitions do
+      transition :set_imported, from: [:encoded, :failed, :encoding, :imported], to: :imported
+
+      transition :enqueue_encoder,
+        from: [:imported, :encoded, :failed, :iencoded, :encoding],
+        to: :queued
+
+      transition :set_encoding,
+        from: [:queued, :imported, :failed, :encoded],
+        to: :encoding
+
+      transition :set_encoded, from: :encoding, to: :encoded
+      transition :set_failed, from: :encoding, to: :failed
+    end
   end
 
   preparations do
@@ -72,6 +127,8 @@ defmodule DataAggregator.Records.Record do
     create :create do
       primary? true
       argument :collection, Collection, allow_nil?: false
+
+      change Record.Changes.SetImportedAfterAction
       change manage_relationship(:collection, :collection, type: :append)
     end
 
@@ -88,9 +145,18 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.RelateImport
       change Record.Changes.RelateCollectionFromImport
       change Record.Changes.ExtractAttributes
+      change Record.Changes.SetImportedAfterAction
+
       upsert? true
       upsert_identity :collection_mte_material_entity_id
       upsert_fields [:import_data, :extra_data | DarwinCore.Schema.prefixed_attribute_names()]
+    end
+
+    update :enqueue_encoder do
+      accept []
+      change transition_state(:queued)
+      change Record.Changes.EnqueueEncoder
+      change load(:encoder_job)
     end
 
     action :bulk_import, :map do
@@ -105,6 +171,38 @@ defmodule DataAggregator.Records.Record do
       argument :rows, :term, allow_nil?: false
       run Record.Actions.BulkImport
     end
+
+    action :encode, :map do
+      argument :record, :term, allow_nil?: false
+      argument :catalog, :atom, allow_nil?: false
+
+      run Encoding.Actions.EncodeRecord
+    end
+
+    update :set_imported do
+      change transition_state(:imported)
+    end
+
+    update :set_encoding do
+      change transition_state(:encoding)
+    end
+
+    update :set_encoded do
+      change transition_state(:encoded)
+    end
+
+    update :set_failed do
+      change transition_state(:failed)
+    end
+  end
+
+  pub_sub do
+    module DataAggregator.PubSub
+    prefix "record"
+
+    publish_all :create, [[:collection_id, nil], "created", [:id, nil]]
+    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
+    publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
   end
 
   identities do
@@ -113,6 +211,7 @@ defmodule DataAggregator.Records.Record do
 
   code_interface do
     define_for DataAggregator.Records
+
     define :read
     define :create
     define :import, args: [:import, :params]
@@ -120,6 +219,12 @@ defmodule DataAggregator.Records.Record do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
+    define :encode, args: [:record, :catalog]
+    define :set_imported
+    define :set_encoding
+    define :set_encoded
+    define :set_failed
+    define :enqueue_encoder
   end
 
   postgres do
@@ -145,12 +250,12 @@ defmodule DataAggregator.Records.Record do
     type "records"
 
     routes do
-      base("/records")
+      base "/records"
 
-      get(:read)
+      get :read
       index :read
-      patch(:update)
-      delete(:destroy)
+      patch :update
+      delete :destroy
     end
   end
 end

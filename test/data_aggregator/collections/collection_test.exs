@@ -1,0 +1,108 @@
+defmodule DataAggregator.CollectionTest do
+  @moduledoc false
+
+  use DataAggregator.DataCase, async: true
+
+  import DataAggregator.RecordsFixtures
+
+  alias DataAggregator.Records.Collection
+
+  describe "collections" do
+    @invalid_attrs %{
+      name: nil,
+      owner: "Max Powers",
+      type: :invalid,
+      grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
+    }
+
+    test "read!/0 returns all collections" do
+      created = [
+        collection_fixture(),
+        collection_fixture()
+      ]
+
+      persisted = Collection.read!(page: false)
+
+      assert_lists_equal(
+        created,
+        persisted,
+        &assert_structs_equal(&1, &2, [:id])
+      )
+    end
+
+    test "get_by_id!/1 returns the collection with given id" do
+      created = collection_fixture()
+      persisted = Collection.get_by_id!(created.id)
+
+      assert_structs_equal(created, persisted, [:id])
+    end
+
+    test "create/1 with valid data creates a collection" do
+      attrs = %{
+        name: "Collection",
+        owner: "Max Powers",
+        type: :animalia,
+        grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
+      }
+
+      assert {:ok, %Collection{} = _collection} = Collection.create(attrs)
+    end
+
+    test "create/1 with invalid data returns error changeset" do
+      assert {:error, %Ash.Error.Invalid{}} = Collection.create(@invalid_attrs)
+    end
+
+    test "create/1 with missing :grscicoll_reference data returns error changeset" do
+      attrs = Map.delete(@invalid_attrs, :grscicoll_reference)
+
+      assert {:error, %Ash.Error.Invalid{}} = Collection.create(attrs)
+    end
+
+    test "create/1 with ivalid :grscicoll_reference data returns error changeset" do
+      attrs = Map.put(@invalid_attrs, :grscicoll_reference, "this-is-super-wrong")
+
+      assert {:error, %Ash.Error.Invalid{}} = Collection.create(attrs)
+    end
+
+    test "update/2 with valid data updates the collection" do
+      collection = collection_fixture()
+
+      update_attrs = %{
+        name: "Collection 2",
+        owner: "Max Powers 2",
+        type: :plantae
+      }
+
+      assert {:ok, %Collection{} = _collection} = Collection.update(collection, update_attrs)
+    end
+
+    test "update_import_mapping/2 with valid column mapping data updates the collection" do
+      collection = collection_fixture()
+
+      updated_import_mapping = [
+        %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
+        %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"}
+      ]
+
+      assert {:ok, %Collection{} = result} =
+               Collection.update_import_mapping(collection, updated_import_mapping)
+
+      assert result.import_mapping == updated_import_mapping
+    end
+
+    test "update/2 with invalid data returns error changeset" do
+      collection = collection_fixture()
+      assert {:error, %Ash.Error.Invalid{}} = Collection.update(collection, @invalid_attrs)
+    end
+
+    test "destroy/1 deletes the collection" do
+      collection = collection_fixture()
+      assert :ok = Collection.destroy(collection)
+      assert_raise Ash.Error.Query.NotFound, fn -> Collection.get_by_id!(collection.id) end
+    end
+
+    test "destroy/1 with invalid id returns error" do
+      assert {:error, %Ash.Error.Unknown{}} = Collection.destroy(%Collection{id: "invalid"})
+    end
+  end
+end

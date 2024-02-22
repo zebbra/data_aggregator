@@ -61,7 +61,11 @@ defmodule Mix.Tasks.DataAggregator.Records.Import do
     timestamp = DateTime.to_iso8601(DateTime.utc_now())
 
     collection =
-      Collection.create!(%{name: "Test Collection #{timestamp}", owner: "Example Import"})
+      Collection.create!(%{
+        name: "Test Collection #{timestamp}",
+        owner: "Example Import",
+        grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
+      })
 
     Mix.shell().info("Creating import from file #{inspect(file)} for collection #{inspect(collection.name)} ...")
 

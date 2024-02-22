@@ -1,0 +1,9 @@
+/* make sure the last dropdown in the table opens up */
+table > tbody > tr:last-of-type > td {
+  details.dropdown.dropdown-left {
+    .dropdown-content {
+      top: auto;
+      bottom: 0px;
+    }
+  }
+}
