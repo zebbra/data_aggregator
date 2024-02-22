@@ -13,13 +13,9 @@ defmodule DataAggregator.Records.Actions.EncodingResultsByCollection do
   def read(ash_query, _ecto_query, _opts, _context) do
     collection_id = ash_query.arguments.collection_id
 
-    case RecordEncodingResult
-         |> Ash.Query.for_read(:read)
-         |> Ash.Query.load([:record])
-         |> Ash.Query.filter(record.collection_id == ^collection_id)
-         |> Records.read() do
-      {:ok, query_results} -> {:ok, query_results}
-      {:error, error} -> {:error, error}
-    end
+    RecordEncodingResult
+    |> Ash.Query.for_read(:read)
+    |> Ash.Query.filter(record.collection_id == ^collection_id)
+    |> Records.read()
   end
 end
