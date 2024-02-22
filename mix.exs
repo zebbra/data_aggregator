@@ -189,7 +189,7 @@ defmodule DataAggregator.MixProject do
 
       # Ash Framework
       {:ash, "~> 2.13"},
-      {:ash_graphql, "~> 0.26.6"},
+      {:ash_graphql, "~> 0.27.0"},
       {:ash_json_api, "~> 0.34.0"},
       {:ash_phoenix, "~> 1.2"},
       {:ash_postgres, "~> 1.3"},
