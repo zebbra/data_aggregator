@@ -7,6 +7,7 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID]
 
+  alias DataAggregator.Records.Actions
   alias DataAggregator.Records.Encoding.EncodingResultState
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalog
@@ -46,6 +47,12 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
       prepare build(sort: [inserted_at: :desc])
     end
 
+    read :filter_by_collection do
+      argument :collection_id, :string, allow_nil?: false
+
+      manual Actions.EncodingResultsByCollection
+    end
+
     create :create do
       primary? true
       argument :record, Record
@@ -69,6 +76,7 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :filter_by_record, args: [:record_id]
+    define :filter_by_collection, args: [:collection_id]
   end
 
   postgres do

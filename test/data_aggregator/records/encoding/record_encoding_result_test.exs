@@ -36,6 +36,43 @@ defmodule DataAggregator.RecordEncodingResultTest do
       assert_structs_equal(created, persisted, [:id])
     end
 
+    test "filter_by_record!/1 returns all record_encoding_results for the given collection" do
+      record_encoding_result_fixture()
+      record_encoding_result_fixture()
+
+      record = record_fixture()
+
+      attrs = Map.put_new_lazy(get_default_attrs(), :record, fn -> record end)
+      created = RecordEncodingResult.create!(attrs)
+
+      encoding_result = hd(RecordEncodingResult.filter_by_record!(record.id))
+
+      assert_structs_equal(created, encoding_result, [:id])
+    end
+
+    test "filter_by_collection!/1 returns all record_encoding_results for the given collection" do
+      record_encoding_result_fixture()
+      record_encoding_result_fixture()
+
+      record = record_fixture()
+
+      attrs = Map.put_new_lazy(get_default_attrs(), :record, fn -> record end)
+
+      created = [
+        RecordEncodingResult.create!(attrs),
+        RecordEncodingResult.create!(attrs),
+        RecordEncodingResult.create!(attrs)
+      ]
+
+      encoding_results = RecordEncodingResult.filter_by_collection!(record.collection_id)
+
+      assert_lists_equal(
+        created,
+        encoding_results,
+        &assert_structs_equal(&1, &2, [:id])
+      )
+    end
+
     test "create/1 with valid data creates a record_encoding_result" do
       record = record_fixture()
 
