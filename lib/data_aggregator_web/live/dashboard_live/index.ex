@@ -1,4 +1,5 @@
 defmodule DataAggregatorWeb.DashboardLive.Index do
+  @moduledoc false
   use DataAggregatorWeb, :live_view
 
   alias DataAggregator.Records
@@ -24,11 +25,11 @@ defmodule DataAggregatorWeb.DashboardLive.Index do
   end
 
   defp collections_count do
-    Collection |> Records.count!()
+    Records.count!(Collection)
   end
 
   defp records_count do
-    Record |> Records.count!()
+    Records.count!(Record)
   end
 
   @impl true

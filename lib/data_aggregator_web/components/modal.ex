@@ -5,13 +5,13 @@ defmodule DataAggregatorWeb.Components.Modal do
 
   use Phoenix.Component
 
-  alias Phoenix.LiveView.JS
-
-  import DataAggregatorWeb.Gettext, only: [gettext: 1]
-  import DataAggregatorWeb.Headless.Dialog
   import DataAggregatorWeb.Components.Backdrop, only: [backdrop: 1]
   import DataAggregatorWeb.Components.Button, only: [button: 1]
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
+  import DataAggregatorWeb.Gettext, only: [gettext: 1]
+  import DataAggregatorWeb.Headless.Dialog
+
+  alias Phoenix.LiveView.JS
 
   @doc ~S"""
   Dialog component for modals with tailwindui style.

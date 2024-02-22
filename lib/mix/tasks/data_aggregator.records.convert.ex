@@ -1,7 +1,7 @@
 defmodule Mix.Tasks.DataAggregator.Records.Convert do
-  @moduledoc false
   @shortdoc "Converts records from a file to various formats."
 
+  @moduledoc false
   use Mix.Task
 
   alias DataAggregator.Records.DataFrame

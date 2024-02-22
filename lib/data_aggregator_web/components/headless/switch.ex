@@ -6,9 +6,9 @@ defmodule DataAggregatorWeb.Headless.Switch do
 
   use Phoenix.Component
 
+  import DataAggregatorWeb.Headless.Description
   import DataAggregatorWeb.Headless.Hidden
   import DataAggregatorWeb.Headless.Label
-  import DataAggregatorWeb.Headless.Description
 
   @doc ~S"""
   Renders a switch group component with label and description. Mounts the SwitchGroupHook.

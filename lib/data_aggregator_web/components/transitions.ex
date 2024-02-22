@@ -9,8 +9,7 @@ defmodule DataAggregatorWeb.Components.Transitions do
     |> JS.show(
       to: selector,
       transition:
-        {"transition-all transform ease-out duration-300",
-         "opacity-0 translate-y-2 sm:translate-y-0 sm:translate-x-2",
+        {"transition-all transform ease-out duration-300", "opacity-0 translate-y-2 sm:translate-y-0 sm:translate-x-2",
          "opacity-100 translate-y-0 sm:translate-x-0"}
     )
     |> JS.remove_attribute("hidden", to: selector)

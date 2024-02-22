@@ -4,9 +4,9 @@ defmodule DataAggregator.PubSub do
   subscribers.
   """
 
-  @name __MODULE__
-
   require Logger
+
+  @name __MODULE__
 
   @doc """
   Allows using this module directly as supervisor child

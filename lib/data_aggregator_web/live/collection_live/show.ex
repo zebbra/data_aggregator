@@ -1,4 +1,5 @@
 defmodule DataAggregatorWeb.CollectionLive.Show do
+  @moduledoc false
   use DataAggregatorWeb, :live_view
 
   alias DataAggregator.Records.Collection
@@ -29,10 +30,7 @@ defmodule DataAggregatorWeb.CollectionLive.Show do
   end
 
   @impl true
-  def handle_info(
-        {DataAggregatorWeb.CollectionLive.ImportFormComponent, {:imported, import}},
-        socket
-      ) do
+  def handle_info({DataAggregatorWeb.CollectionLive.ImportFormComponent, {:imported, import}}, socket) do
     {:noreply,
      socket
      |> assign(:import, import)

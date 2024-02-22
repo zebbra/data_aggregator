@@ -5,8 +5,8 @@ defmodule DataAggregatorWeb.Components.Menu do
 
   use Phoenix.Component
 
-  import DataAggregatorWeb.Headless.Menu
   import DataAggregatorWeb.Components.Button, only: [button: 1]
+  import DataAggregatorWeb.Headless.Menu
 
   @doc ~S"""
   Menu component for dropdowns with tailwindui style.
@@ -53,9 +53,7 @@ defmodule DataAggregatorWeb.Components.Menu do
     doc: "the position of the menu items (see position_class/1)"
 
   attr :hide_transition, :map,
-    default:
-      {"transition ease-in duration-75", "transform opacity-100 scale-100",
-       "transform opacity-0 scale-95"},
+    default: {"transition ease-in duration-75", "transform opacity-100 scale-100", "transform opacity-0 scale-95"},
     doc: "the transition for hiding the menu"
 
   attr :rest, :global
@@ -107,9 +105,7 @@ defmodule DataAggregatorWeb.Components.Menu do
     doc: "the class of the menu button"
 
   attr :show_transition, :map,
-    default:
-      {"transition ease-out duration-100", "transform opacity-0 scale-95",
-       "transform opacity-100 scale-100"},
+    default: {"transition ease-out duration-100", "transform opacity-0 scale-95", "transform opacity-100 scale-100"},
     doc: "the transition for showing the menu"
 
   attr :rest, :global

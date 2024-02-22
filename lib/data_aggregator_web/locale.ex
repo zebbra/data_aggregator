@@ -3,9 +3,9 @@ defmodule DataAggregatorWeb.Locale do
   Helper functions to work with locales.
   """
 
-  require Logger
-
   import Plug.Conn, only: [assign: 3]
+
+  require Logger
 
   def locales, do: ~w(en de-CH fr-CH)
   def current, do: DataAggregatorWeb.Cldr.get_locale()

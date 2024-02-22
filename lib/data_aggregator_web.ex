@@ -24,9 +24,9 @@ defmodule DataAggregatorWeb do
       use Phoenix.Router, helpers: false
 
       # Import common connection and controller functions to use in pipelines
-      import Plug.Conn
       import Phoenix.Controller
       import Phoenix.LiveView.Router
+      import Plug.Conn
     end
   end
 
@@ -42,8 +42,8 @@ defmodule DataAggregatorWeb do
         formats: [:html, :json],
         layouts: [html: DataAggregatorWeb.Layouts]
 
-      import Plug.Conn
       import DataAggregatorWeb.Gettext
+      import Plug.Conn
 
       unquote(verified_routes())
     end
@@ -84,20 +84,17 @@ defmodule DataAggregatorWeb do
       # Core UI components
       use DataAggregatorWeb.Components
 
-      # Shortcut for generating JS commands
-      alias Phoenix.LiveView.JS
-
+      # Translation
+      import DataAggregatorWeb.Gettext
+      # Formatters
+      import DataAggregatorWeb.Helpers
+      # Layouts
+      import DataAggregatorWeb.Page, only: [page: 1]
       # HTML escaping functionality
       import Phoenix.HTML
 
-      # Translation
-      import DataAggregatorWeb.Gettext
-
-      # Layouts
-      import DataAggregatorWeb.Page, only: [page: 1]
-
-      # Formatters
-      import DataAggregatorWeb.Helpers
+      # Shortcut for generating JS commands
+      alias Phoenix.LiveView.JS
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())

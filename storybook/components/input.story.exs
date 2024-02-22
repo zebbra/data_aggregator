@@ -1,4 +1,5 @@
 defmodule Storybook.Components.Input do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
 
   alias DataAggregatorWeb.Components.Form

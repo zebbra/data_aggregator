@@ -1,8 +1,8 @@
 defmodule DataAggregatorWeb.Router do
   use DataAggregatorWeb, :router
 
-  import PhoenixStorybook.Router
   import DataAggregatorWeb.Locale, only: [assign_current_locale: 2]
+  import PhoenixStorybook.Router
 
   # Browser
 

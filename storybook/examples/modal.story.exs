@@ -1,4 +1,5 @@
 defmodule Storybook.Examples.Modal do
+  @moduledoc false
   use PhoenixStorybook.Story, :example
   use DataAggregatorWeb.Components
 

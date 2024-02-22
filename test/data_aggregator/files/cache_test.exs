@@ -35,7 +35,7 @@ defmodule DataAggregator.Files.CacheTest do
     hash = :crypto.hash_init(:md5)
 
     path
-    |> File.stream!([], 2048)
+    |> File.stream!(2048, [])
     |> Enum.reduce(hash, &:crypto.hash_update(&2, &1))
     |> :crypto.hash_final()
     |> Base.encode16()

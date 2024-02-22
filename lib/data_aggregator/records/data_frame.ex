@@ -52,14 +52,14 @@ defmodule DataAggregator.Records.DataFrame do
   end
 
   def from_ipc(file, opts \\ []) do
-    opts = @ipc_read_opts |> Keyword.merge(opts)
+    opts = Keyword.merge(@ipc_read_opts, opts)
     Logger.debug("Reading Arrow file #{inspect(file)} with options: #{inspect(opts)}")
 
     Explorer.DataFrame.from_ipc(file, opts)
   end
 
   def from_pqt(file, opts \\ []) do
-    opts = @pqt_read_opts |> Keyword.merge(opts)
+    opts = Keyword.merge(@pqt_read_opts, opts)
     Logger.debug("Reading Parquet file #{inspect(file)} with options: #{inspect(opts)}")
 
     Explorer.DataFrame.from_parquet(file)
@@ -82,19 +82,19 @@ defmodule DataAggregator.Records.DataFrame do
   end
 
   def to_csv(df, file, opts \\ []) do
-    opts = @csv_write_opts |> Keyword.merge(opts)
+    opts = Keyword.merge(@csv_write_opts, opts)
     Logger.debug("Writing CSV file #{inspect(file)} with options: #{inspect(opts)}")
     Explorer.DataFrame.to_csv(df, file, opts)
   end
 
   def to_ipc(df, file, opts \\ []) do
-    opts = @ipc_write_opts |> Keyword.merge(opts)
+    opts = Keyword.merge(@ipc_write_opts, opts)
     Logger.debug("Writing Arrow file #{inspect(file)} with options: #{inspect(opts)}")
     Explorer.DataFrame.to_ipc(df, file, opts)
   end
 
   def to_pqt(df, file, opts \\ []) do
-    opts = @pqt_write_opts |> Keyword.merge(opts)
+    opts = Keyword.merge(@pqt_write_opts, opts)
     Logger.debug("Writing Parquet file #{inspect(file)} with options: #{inspect(opts)}")
     Explorer.DataFrame.to_parquet(df, file, opts)
   end

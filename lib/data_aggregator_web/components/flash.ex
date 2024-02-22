@@ -5,11 +5,11 @@ defmodule DataAggregatorWeb.Components.Flash do
 
   use Phoenix.Component
 
-  alias Phoenix.LiveView.JS
-
-  import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Components.Transitions
+  import DataAggregatorWeb.Gettext
+
+  alias Phoenix.LiveView.JS
 
   @doc ~S"""
   Renders flash notices.
