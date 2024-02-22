@@ -27,6 +27,7 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Float digitizing_progress
+        Atom encoding_state
         Integer records_count
         Integer imports_count
         Integer records_count_not_encoded
@@ -43,6 +44,7 @@ classDiagram
         create(UUID id, Integer items_to_digitize, String owner, String name, ...)
         read(String sort)
         update_import_mapping(Map[] import_mapping)
+        touch(UUID id, Integer items_to_digitize, String owner, String name, ...)
     }
     class RecordEncodingResult {
         UUID id
@@ -57,6 +59,7 @@ classDiagram
         destroy()
         read()
         filter_by_record(String record_id)
+        filter_by_collection(String collection_id)
         create(Record record, UUID id, Map input, Map output, ...)
         update(Record record, UUID id, Map input, Map output, ...)
     }

@@ -51,7 +51,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         </:actions>
       </.header>
 
-      <div class="no-scrollbar overflow-x-auto">
+      <div class="no-scrollbar overflow-x-auto pb-4">
         <.table :if={@count > 0} id="collections_table" rows={@streams.results}>
           <:col :let={{_id, collection}} label={~t"Name"m}>
             <.link
