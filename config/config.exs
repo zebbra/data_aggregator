@@ -168,12 +168,6 @@ config :data_aggregator, :logger, [
    }}
 ]
 
-# Cache http requests in the a directory on disk
-config :data_aggregator, http_cache_path: System.get_env("HTTP_CACHE_PATH") || "priv/cache/http"
-
-# API Key for opencagedata api
-config :data_aggregator, open_cage_data_api_key: System.get_env("OPEN_CAGE_DATA_API_KEY")
-
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
