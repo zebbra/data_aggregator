@@ -35,10 +35,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       |> assign(:name_opts, available_column_names(import))
       |> assign(:mapped_to_opts, available_attribute_options(import))
       |> assign(:disabled, Enum.any?(import.missing_mappings))
-      |> assign(
-        :reuse_mapping,
-        Enum.any?(import.missing_mappings) && Enum.any?(import.collection.import_mapping)
-      )
+      |> assign(:reuse_mapping, reuse_mapping?(import))
       |> assign_form()
 
     {:ok, socket}
@@ -583,5 +580,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         do: ~p"/collections/#{collection}/imports/#{import}/summary"
 
     [nil, nil, summary]
+  end
+
+  defp reuse_mapping?(import) do
+    Enum.any?(import.missing_mappings) && is_nil(import.collection.import_mapping) == false &&
+      Enum.any?(import.collection.import_mapping)
   end
 end
