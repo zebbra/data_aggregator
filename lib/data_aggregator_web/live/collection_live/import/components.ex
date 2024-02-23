@@ -169,6 +169,42 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
     """
   end
 
+  attr(:name, :string,
+    required: true,
+    doc: "The name of the attribute prefixed with the category"
+  )
+
+  attr(:mapped, :boolean, default: false, doc: "Whether the attribute is mapped to a column")
+
+  def attribute_badge(assigns) do
+    parts = String.split(assigns.name, "_")
+    category = List.first(parts)
+
+    name =
+      parts
+      |> List.delete_at(0)
+      |> Enum.join("_")
+
+    assigns = assign(assigns, category: category, name: name)
+
+    ~H"""
+    <div class="inline-flex text-xs">
+      <div class={[
+        "rounded-l px-2 py-1 uppercase",
+        if(@mapped == true, do: "bg-info text-info-content", else: "bg-error text-white")
+      ]}>
+        <%= @category %>
+      </div>
+      <div class={[
+        "rounded-r px-2 py-1",
+        if(@mapped == true, do: "bg-info/10 text-base-content", else: "bg-error/10 text-error")
+      ]}>
+        <%= @name %>
+      </div>
+    </div>
+    """
+  end
+
   defmacro __using__(_opts) do
     quote do
       import DataAggregatorWeb.CollectionLive.Import.Components

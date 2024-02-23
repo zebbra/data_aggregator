@@ -5,7 +5,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   use DataAggregatorWeb, :live_component
 
-  import DataAggregatorWeb.CollectionLive.Import.Components, only: [import_mapping_validation: 1]
+  import DataAggregatorWeb.CollectionLive.Import.Components,
+    only: [attribute_badge: 1, import_mapping_validation: 1]
+
   import DataAggregatorWeb.CollectionLive.Import.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
 
@@ -35,7 +37,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       |> assign(:disabled, Enum.any?(import.missing_mappings))
       |> assign(
         :reuse_mapping,
-        Enum.any?(import.missing_mappings) && is_nil(import.collection.import_mapping) == false
+        Enum.any?(import.missing_mappings) && Enum.any?(import.collection.import_mapping)
       )
       |> assign_form()
 
@@ -61,14 +63,59 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
               phx-submit="filter"
               phx-window-keydown={JS.focus(to: "#filter_query")}
               phx-key="/"
+              onkeydown="return event.key != 'Enter';"
             />
           </:actions>
         </.heading>
+
         <.import_mapping_validation
           :if={@show_validation && @import}
           import={@import}
           on_hide={JS.push("validation:hide", target: @myself)}
         />
+
+        <div :if={@reuse_mapping} class="collapse text-info-content border-info/20 bg-info/10 border">
+          <input type="checkbox" />
+          <div class="collapse-title text-info pe-4 flex items-center gap-x-2 text-sm">
+            <div class="flex min-w-0 flex-1 items-center gap-x-2">
+              <.icon name="hero-information-circle-solid" />
+              <span><%= ~t"Reuse mapping from previous import"m %></span>
+            </div>
+            <.link
+              type="button"
+              class="z-10 link link-hover link-info font-semibold flex items-center gap-x-1 hover:no-underline rounded-md"
+              phx-click="mapping:apply"
+              phx-target={@myself}
+            >
+              <%= ~t"Load"m %> <.icon name="hero-arrow-right-micro" />
+            </.link>
+          </div>
+          <div class="collapse-content -mx-4">
+            <div class="no-scrollbar overflow-x-auto">
+              <.table
+                id="collection_mapping_table"
+                rows={@import.collection.import_mapping |> Enum.filter(&(&1["mapped_to"] != nil))}
+              >
+                <:col :let={column} label={~t"Column"m}>
+                  <span
+                    :if={column["name"]}
+                    class="bg-info text-info-content inline-flex rounded px-2 py-1 text-xs"
+                  >
+                    <%= column["name"] %>
+                  </span>
+                  <span :if={column["name"] == nil} class="text-error">
+                    <%= ~t"Mapping is invalid"m %>
+                  </span>
+                </:col>
+                <:col :let={column} label={~t"Mapped to"m} class="py-5">
+                  <%= column[:mapped_to] %>
+                  <.attribute_badge name={column["mapped_to"]} mapped={column["mapped_to"] != nil} />
+                </:col>
+              </.table>
+            </div>
+          </div>
+        </div>
+
         <.simple_form
           id="import_mapping_form"
           for={@form}
@@ -78,18 +125,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           phx-change="mapping:validate"
           phx-submit="mapping:save"
         >
-          <div :if={@reuse_mapping} class="alert alert-info bg-info/10 text-info text-sm">
-            <.icon name="hero-information-circle-solid" />
-            <span><%= ~t"Reuse mapping from previous import"m %></span>
-            <.link
-              type="button"
-              class="link link-hover link-info font-semibold flex items-center gap-x-1 hover:no-underline rounded-md"
-              phx-click="mapping:apply"
-              phx-target={@myself}
-            >
-              <%= ~t"Load"m %> <.icon name="hero-arrow-right-micro" />
-            </.link>
-          </div>
           <.fieldset
             legend={~t"Required attributes"m}
             text={~t"Please map all required attributes to one of your columns before continueing."m}
@@ -111,7 +146,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           </.fieldset>
 
           <:actions>
-            <button type="submit" class="btn btn-neutral"><%= ~t"Save"m %></button>
+            <button type="submit" disabled={@disabled} class="btn btn-neutral">
+              <%= ~t"Save"m %>
+            </button>
             <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
             <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
               <%= ~t"Cancel"m %>
@@ -252,7 +289,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     >
       <:content :let={field}>
         <.label for={@form[:mapped_to].id} class="sm:pb-0 sm:block max-sm:truncate max-sm:mr-11">
-          <span class="line-clamp-2">
+          <span class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
             <%= @column_name %>
           </span>
         </.label>
@@ -278,42 +315,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         />
       </:content>
     </.custom_field>
-    """
-  end
-
-  attr(:name, :string,
-    required: true,
-    doc: "The name of the attribute prefixed with the category"
-  )
-
-  attr(:mapped, :boolean, default: false, doc: "Whether the attribute is mapped to a column")
-
-  defp attribute_badge(assigns) do
-    parts = String.split(assigns.name, "_")
-    category = List.first(parts)
-
-    name =
-      parts
-      |> List.delete_at(0)
-      |> Enum.join("_")
-
-    assigns = assign(assigns, category: category, name: name)
-
-    ~H"""
-    <div class="inline-flex text-xs">
-      <div class={[
-        "rounded-l px-2 py-1 uppercase",
-        if(@mapped == true, do: "bg-info text-info-content", else: "bg-error text-white")
-      ]}>
-        <%= @category %>
-      </div>
-      <div class={[
-        "rounded-r px-2 py-1",
-        if(@mapped == true, do: "bg-info/10 text-base-content", else: "bg-error/10 text-error")
-      ]}>
-        <%= @name %>
-      </div>
-    </div>
     """
   end
 
