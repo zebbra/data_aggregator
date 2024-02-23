@@ -47,9 +47,9 @@ end
 http_cache_path = System.get_env("HTTP_CACHE_PATH") || "priv/cache/#{config_env()}/http"
 
 config :data_aggregator,
-  # API Key for opencagedata api
-  http_cache_path: http_cache_path,
   # Cache http requests in the a directory on disk
+  http_cache_path: http_cache_path,
+  # API Key for opencagedata api
   open_cage_data_api_key: System.get_env("OPEN_CAGE_DATA_API_KEY")
 
 # Configure Sentry runtime environment
