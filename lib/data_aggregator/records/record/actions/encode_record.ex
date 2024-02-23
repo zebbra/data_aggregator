@@ -24,7 +24,7 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
     catalog = input.arguments.catalog
 
     try do
-      Logger.info("Encoding record with catalog: #{to_string(catalog)}")
+      Logger.debug("Encoding record with catalog: #{to_string(catalog)} started")
 
       # process the encoding with the passed catalog
       encoding_result =
@@ -32,7 +32,7 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
         |> Strategy.encode(catalog)
         |> update_state()
 
-      Logger.info(
+      Logger.debug(
         "Encoding for record #{record.id} with catalog: #{to_string(catalog)} finished with result: #{inspect(encoding_result)}}"
       )
 

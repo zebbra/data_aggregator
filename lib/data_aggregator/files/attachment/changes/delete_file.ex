@@ -17,7 +17,7 @@ defmodule DataAggregator.Files.Attachment.Changes.DeleteFile do
 
   defp delete_file(%Changeset{}, %Attachment{filename: filename} = attachment) do
     :ok = Store.delete({filename, attachment})
-    Logger.info("Deleted file #{filename} with id #{attachment.id}")
+    Logger.debug("Deleted file #{filename} with id #{attachment.id}")
     {:ok, attachment}
   end
 end

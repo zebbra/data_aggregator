@@ -39,7 +39,7 @@ defmodule DataAggregator.Records.Import.Changes.CountRows do
     with {:ok, df} <- Records.DataFrame.from_file(filename) do
       rows_count = Explorer.DataFrame.n_rows(df)
 
-      Logger.info("Detected #{rows_count} in import file #{inspect(filename)}")
+      Logger.debug("Detected #{rows_count} in import file #{inspect(filename)}")
 
       {:ok, rows_count}
     end
