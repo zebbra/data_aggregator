@@ -29,7 +29,6 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
   def get_collection(id) do
     Collection.get_by_id!(id,
       load: [
-        :records,
         :records_count,
         :digitizing_progress,
         :encoding_state,

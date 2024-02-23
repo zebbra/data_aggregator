@@ -99,6 +99,10 @@ defmodule DataAggregatorWeb do
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())
+
+      # Allows piping the socket
+      defp ok(socket), do: {:ok, socket}
+      defp noreply(socket), do: {:noreply, socket}
     end
   end
 
