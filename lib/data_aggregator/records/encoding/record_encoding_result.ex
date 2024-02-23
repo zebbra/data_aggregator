@@ -82,5 +82,9 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
   postgres do
     table "record_encoding_results"
     repo DataAggregator.Repo
+
+    references do
+      reference :record, on_delete: :delete, on_update: :update
+    end
   end
 end

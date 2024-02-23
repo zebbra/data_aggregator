@@ -40,6 +40,11 @@ defmodule DataAggregator.Records.Record.Image do
   postgres do
     table "record_images"
     repo DataAggregator.Repo
+
+    references do
+      reference :record, on_delete: :delete, on_update: :update
+      reference :attachment, on_delete: :delete, on_update: :update
+    end
   end
 
   graphql do
