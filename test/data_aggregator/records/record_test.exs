@@ -3,9 +3,13 @@ defmodule DataAggregator.RecordTest do
 
   use DataAggregator.DataCase, async: true
 
+  import DataAggregator.EncodingFixtures
+  import DataAggregator.RecordEncodingResultFixture
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.Records
+  alias DataAggregator.Records.EncodedRecord
+  alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
 
   describe "records" do
@@ -78,6 +82,29 @@ defmodule DataAggregator.RecordTest do
       record = record_fixture()
       assert :ok = Record.destroy(record)
       assert_raise Ash.Error.Query.NotFound, fn -> Record.get_by_id!(record.id) end
+    end
+
+    test "destroy/1 deletes the record and it's encoded_record" do
+      encoded_record = Records.load!(encoded_record_fixture(), [:record])
+      record = encoded_record.record
+
+      assert :ok = Record.destroy(record)
+
+      assert_raise Ash.Error.Query.NotFound, fn -> Record.get_by_id!(record.id) end
+      assert_raise Ash.Error.Query.NotFound, fn -> EncodedRecord.get_by_id!(encoded_record.id) end
+    end
+
+    test "destroy/1 deletes the record and it's record_encoding_results" do
+      record_encoding_result = Records.load!(record_encoding_result_fixture(), [:record])
+      record = record_encoding_result.record
+
+      assert :ok = Record.destroy(record)
+
+      assert_raise Ash.Error.Query.NotFound, fn -> Record.get_by_id!(record.id) end
+
+      assert_raise Ash.Error.Query.NotFound, fn ->
+        RecordEncodingResult.get_by_id!(record_encoding_result.id)
+      end
     end
 
     test "destroy/1 with invalid id returns error" do

@@ -230,6 +230,10 @@ defmodule DataAggregator.Records.Record do
   postgres do
     table "records"
     repo DataAggregator.Repo
+
+    references do
+      reference :collection, on_delete: :delete, on_update: :update
+    end
   end
 
   graphql do

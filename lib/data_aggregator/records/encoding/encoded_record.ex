@@ -85,6 +85,10 @@ defmodule DataAggregator.Records.EncodedRecord do
   postgres do
     table "encoded_records"
     repo DataAggregator.Repo
+
+    references do
+      reference :record, on_delete: :delete, on_update: :update
+    end
   end
 
   graphql do
