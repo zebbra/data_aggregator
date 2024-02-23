@@ -26,14 +26,25 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
   def apply_strategy(encoded_record) do
     encoded_record = Records.load!(encoded_record, [:record])
 
-    case process_record(encoded_record) do
-      {:ok, encoded_record} ->
-        {:ok, encoded_record}
+    longitude = encoded_record.loc_decimal_longitude
+    latitude = encoded_record.loc_decimal_latitude
 
-      {:error, error} ->
-        handle_error(encoded_record.id, error)
+    if longitude != nil && latitude != nil do
+      Logger.debug(
+        "The record #{encoded_record.id} already has coordinates, therefore a forward encoding will not provide better data. We will not forward encode towards the geo api."
+      )
 
-        {:error, error}
+      {:ok, encoded_record}
+    else
+      case process_record(encoded_record) do
+        {:ok, encoded_record} ->
+          {:ok, encoded_record}
+
+        {:error, error} ->
+          handle_error(encoded_record.id, error)
+
+          {:error, error}
+      end
     end
   rescue
     error ->

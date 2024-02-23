@@ -101,7 +101,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
         |> parse_response()
 
       {:error, error} ->
-        Logger.info(error)
+        Logger.debug(error)
 
         %{}
     end
@@ -109,7 +109,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
 
   @spec fetch_api(list()) :: Req.Response.t()
   defp fetch_api(request_params) do
-    # why doesn't it work to get the env via Application.compile_env(...) in module body?
     api_key =
       System.get_env("OPEN_CAGE_DATA_API_KEY") ||
         throw("No open cage data api key found in the environment variables. set one under OPEN_CAGE_DATA_API_KEY")
@@ -164,6 +163,12 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
   @spec add_swiss_coordinates(map(), EncodedRecord.t()) :: map()
   defp add_swiss_coordinates(update_params, encoded_record) do
     cond do
+      # if the country is not switzerland we don't need the swiss coordinates
+      switzerland?(update_params, encoded_record) == false ->
+        update_params
+        |> Map.put("loc_swiss_coordinates_x", nil)
+        |> Map.put("loc_swiss_coordinates_y", nil)
+
       encoded_record.loc_decimal_latitude != nil and
           encoded_record.loc_decimal_longitude != nil ->
         swiss_coords =
@@ -186,6 +191,23 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
       true ->
         update_params
     end
+  end
+
+  @spec switzerland?(map(), EncodedRecord.t()) :: boolean()
+  defp switzerland?(update_params, encoded_record) do
+    country =
+      String.downcase(
+        encoded_record.loc_country || encoded_record.record.loc_country ||
+          update_params["country"] || ""
+      )
+
+    country_code =
+      String.downcase(
+        encoded_record.loc_country_code || encoded_record.record.loc_country_code ||
+          update_params["country_code"] || ""
+      )
+
+    country == "switzerland" or country_code == "ch"
   end
 
   @spec add_intl_coords(map(), EncodedRecord.t()) :: map()
