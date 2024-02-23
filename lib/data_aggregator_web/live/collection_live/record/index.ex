@@ -24,13 +24,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @load [:collection, :encoded_record]
 
   @impl true
-  def mount(%{"id" => id} = _params, _session, socket) do
-    socket =
-      socket
-      |> assign(:collection, get_collection(id))
-      |> subscribe_for_record_updates(connected?(socket))
-      |> subscribe_for_collection_updates(connected?(socket))
-
+  def mount(_params, _session, socket) do
     {:ok, socket}
   end
 
@@ -38,15 +32,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   def handle_params(%{"id" => id} = params, _url, socket) do
     collection = get_collection(id)
 
-    socket =
-      socket
-      |> assign(:collection, collection)
-      |> assign_records(params)
-      |> assign(selected_record: nil)
-      |> assign(:busy, collection.encoding_state in [:queued, :encoding])
-      |> apply_action(socket.assigns.live_action, params)
-
-    {:noreply, socket}
+    socket
+    |> assign(:collection, collection)
+    |> subscribe_for_record_updates(connected?(socket))
+    |> subscribe_for_collection_updates(connected?(socket))
+    |> assign_records(params)
+    |> assign(selected_record: nil)
+    |> assign(:busy, collection.encoding_state in [:queued, :encoding])
+    |> apply_action(socket.assigns.live_action, params)
+    |> noreply()
   end
 
   @impl true
@@ -54,7 +48,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     ~H"""
     <.page current="collections" open={@selected_record != nil}>
       <.collection_header collection={@collection} current={:records} />
-      <div :if={length(@collection.records) > 0} class="space-y-6 p-6 lg:px-8">
+      <div :if={@collection.records_count > 0} class="space-y-6 p-6 lg:px-8">
         <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
           <.scope_stat
             href="#"
@@ -151,7 +145,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </div>
       </div> --%>
 
-      <div :if={length(@collection.records) > 0} class="no-scrollbar overflow-x-auto py-4">
+      <div :if={@collection.records_count > 0} class="no-scrollbar overflow-x-auto py-4">
         <.table
           id="records_table"
           rows={@streams.results}
@@ -192,7 +186,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       </div>
 
       <.empty_state
-        :if={length(@collection.records) == 0}
+        :if={@collection.records_count == 0}
         title={~t"No records"m}
         description={~t"Get started by importing a new dataset"m}
         label={~t"Import"m}
