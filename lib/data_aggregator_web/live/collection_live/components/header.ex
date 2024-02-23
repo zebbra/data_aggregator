@@ -65,7 +65,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
       />
       <span class="sm:hidden"><%= @collection.name %></span>
       <:subtitle>
-        <div class="flex items-center gap-x-2 max-sm:pt-2">
+        <div class="mt-2 flex items-center gap-x-2 sm:mt-1">
           <span class="max-sm:hidden">
             <.encoding_state_badge state={@collection.encoding_state} />
           </span>
@@ -77,7 +77,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           patch={~p"/collections/#{@collection}/imports/new"}
           class="btn btn-neutral max-sm:btn-sm"
         >
-          <.icon name="hero-plus-mini" class="max-sm:hidden" />
+          <.icon name="hero-arrow-up-tray" class="max-sm:size-4" />
           <span class="max-sm:hidden"><%= ~t"Import dataset"m %></span>
           <span class="sm:hidden"><%= ~t"Add"m %></span>
         </.link>

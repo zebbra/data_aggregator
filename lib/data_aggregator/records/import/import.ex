@@ -128,7 +128,7 @@ defmodule DataAggregator.Records.Import do
   end
 
   preparations do
-    prepare build(sort: [id: :asc])
+    prepare build(sort: [id: :desc])
     prepare DataAggregator.Preparations.Sort
   end
 

@@ -23,6 +23,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @load [:collection, :encoded_record]
 
+  @encoding_polling_interval 5_000
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket}
@@ -83,6 +85,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           <button
             phx-click="collection:export"
             class="btn btn-primary text-primary-content max-sm:btn-sm"
+            class="btn btn-primary text-primary-content max-sm:btn-sm"
             disabled={@busy}
           >
             <.icon name="hero-arrow-down-tray" class="max-sm:size-4" />
@@ -90,22 +93,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </button>
 
           <button
-            :if={@busy == false}
             phx-click="collection:encode"
             class="btn btn-primary text-primary-content max-sm:btn-sm"
+            disabled={@busy}
           >
-            <.icon name="hero-puzzle-piece" class="max-sm:size-4" />
+            <.icon :if={@busy == false} name="hero-puzzle-piece" class="max-sm:size-4" />
+            <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="max-sm:size-4" />
             <%= ~t"Encode"m %>
           </button>
-
-          <.link
-            :if={@busy}
-            patch={~p"/collections/#{@collection}/records"}
-            class="btn btn-error text-error-content max-sm:btn-sm"
-          >
-            <.icon name="hero-arrow-path" class="max-sm:size-4" />
-            <%= ~t"Refresh"m %>
-          </.link>
         </div>
       </div>
 
@@ -182,6 +177,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           <:col :let={{_id, record}} label={~t"Updated At"m} class="text-end">
             <%= format_datetime(record.updated_at, format: :medium) %>
           </:col>
+
+          <:action :let={{_id, record}} class="flex items-center justify-end gap-x-2">
+            <button
+              type="button"
+              phx-click={JS.push("record:delete", value: %{id: record.id})}
+              disabled={record.state in [:encoding, :queued]}
+              class="link link-error link-hover tooltip tooltip-error rounded-md disabled:pointer-events-none disabled:opacity-50"
+              data-tip={~t"Delete"m}
+              data-confirm={~t"Are you sure?"m}
+              data-confirm_id="confirm_record_alert"
+            >
+              <.icon name="hero-x-circle-mini" class="size-6" />
+            </button>
+          </:action>
         </.table>
       </div>
 
@@ -251,6 +260,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </section>
         </.slideover>
       </:secondary>
+
+      <.alert id="confirm_record_alert" size="sm">
+        <p class="text-sm"><%= ~t"This will also delete the following associations:"m %></p>
+        <ul class="mt-2 list-inside list-disc text-sm">
+          <li class="text-info">
+            <span class="text-base-content"><%= ~t"Record encodings"m %></span>
+          </li>
+          <li class="text-info">
+            <span class="text-base-content"><%= ~t"Record encoding results"m %></span>
+          </li>
+          <li class="text-info"><span class="text-base-content"><%= ~t"Record imports"m %></span></li>
+          <li class="text-info"><span class="text-base-content"><%= ~t"Record images"m %></span></li>
+        </ul>
+      </.alert>
     </.page>
     """
   end
@@ -280,18 +303,45 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
+  def handle_event("record:delete", %{"id" => id}, socket) do
+    record = Record.get_by_id!(id)
+    :ok = Record.destroy(record)
+
+    {:noreply,
+     socket
+     |> put_flash(:info, ~t"Record deleted successfully"m)
+     |> assign(:selected_record, nil)
+     |> stream_delete(:results, record)}
+  end
+
+  @impl true
   def handle_event("collection:encode", _params, socket) do
     Task.start(fn ->
-      collection = socket.assigns.collection
+      %{collection: collection} = socket.assigns
 
-      collection.records
-      |> Task.async_stream(&Record.enqueue_encoder!(&1))
+      %{"id" => collection.id}
+      |> list_records()
+      |> Task.async_stream(&Record.enqueue_encoder!/1)
       |> Stream.run()
 
       Collection.touch(collection)
     end)
 
+    schedule_poller()
+
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info(:poll, socket) do
+    collection = Collection.get_by_id!(socket.assigns.collection.id, load: [:encoding_state])
+
+    if collection.encoding_state in [:queued, :encoding] do
+      schedule_poller()
+      {:noreply, socket}
+    else
+      {:noreply, push_patch(socket, to: ~p"/collections/#{collection.id}/records")}
+    end
   end
 
   @impl true
@@ -364,5 +414,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   defp get_record(id) do
     Record.get_by_id!(id, load: @load)
+  end
+
+  defp schedule_poller do
+    Process.send_after(self(), :poll, @encoding_polling_interval)
   end
 end
