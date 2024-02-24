@@ -19,7 +19,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
       ]
     end
 
-    test "encode/2 for :geo_reverse catalog - reverse geo encoding with intl coordinates - successful",
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with intl coordinates within switzerland - successful",
          %{
            record_fixture: record_fixture
          } do
@@ -40,6 +40,42 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
         loc_state_province: "Bern",
         loc_city: "Bern",
         loc_municipality: "Bern"
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    @tag run: true
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with intl coordinates out of switzerland - successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        Record.update!(record_fixture, %{
+          loc_decimal_latitude: 32.117833,
+          loc_decimal_longitude: 20.082039,
+          loc_swiss_coordinates_x: nil,
+          loc_swiss_coordinates_y: nil
+        })
+
+      {:ok, record} = Record.encode(record_fixture, :geo_reverse)
+
+      assert record !== nil
+
+      encoded_record = EncodedRecord.get_by_record!(record)
+
+      assert_map_includes(encoded_record, %{
+        loc_swiss_coordinates_x: nil,
+        loc_swiss_coordinates_y: nil,
+        loc_city: "Benghazi",
+        loc_continent: "Africa",
+        loc_country: "Libya",
+        loc_country_code: "ly",
+        loc_decimal_latitude: 32.117833,
+        loc_decimal_longitude: 20.082039,
+        loc_municipality: "Benghazi",
+        loc_state_province: nil
       })
 
       assert encoded_record !== nil
