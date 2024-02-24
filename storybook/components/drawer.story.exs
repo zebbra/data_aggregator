@@ -70,7 +70,7 @@ defmodule Storybook.Components.Drawer do
           for="#{id}"
           class="btn btn-square btn-ghost drawer-button"
         >
-          <.icon name="hero-x-mark-mini" class="size-5 md:size-6" />
+          <.icon name="hero-x-mark-mini" class="text-base-content/75" />
         </label>
         Sidebar content
       </div>

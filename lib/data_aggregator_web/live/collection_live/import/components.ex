@@ -163,7 +163,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
         class="btn btn-sm btn-circle btn-ghost absolute top-2 right-2"
         aria-label={~t"close"m}
       >
-        ✕
+        <.icon name="hero-x-mark-mini" />
       </button>
     </div>
     """

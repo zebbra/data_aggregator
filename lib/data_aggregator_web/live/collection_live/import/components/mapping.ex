@@ -143,7 +143,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           </.fieldset>
 
           <:actions>
-            <button type="submit" disabled={@disabled} class="btn btn-neutral">
+            <button type="submit" disabled={@disabled} class="btn btn-primary">
               <%= ~t"Save"m %>
             </button>
             <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
@@ -167,7 +167,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         type="search"
         field={@form[:query]}
         placeholder={~t"Search mapping"}
-        class="input input-bordered input-sm max-sm:text-baseflex items-center rounded-full flex-row gap-2"
+        class="input input-bordered sm:input-sm max-sm:text-baseflex items-center rounded-full flex-row gap-2"
       >
         <:content :let={field}>
           <.icon name="hero-magnifying-glass" class="size-5 text-base-content/50" />

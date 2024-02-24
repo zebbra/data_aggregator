@@ -21,7 +21,7 @@ defmodule Storybook.Layouts.Secondary do
     <.page current="home" open={@show}>
       <.header>Dashboard</.header>
       <div class="px-6 lg:px-8">
-        <button type="button" class="btn btn-neutral" phx-click="toggle">
+        <button type="button" class="btn btn-primary" phx-click="toggle">
           Toggle secondary
         </button>
       </div>

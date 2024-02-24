@@ -44,7 +44,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
       <.header>
         <%= ~t"Collections"m %>
         <:actions>
-          <.link patch={~p"/collections/new"} class="btn btn-neutral max-sm:btn-sm">
+          <.link patch={~p"/collections/new"} class="btn btn-primary max-sm:btn-sm">
             <.icon name="hero-squares-2x2" class="max-sm:size-4" />
             <%= ~t"New collection"m %>
           </.link>

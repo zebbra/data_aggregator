@@ -40,7 +40,7 @@ defmodule Storybook.Blocks.Slideover do
             This is the inner block of the slideover.
           </p>
           <:footer>
-            <button type="button" class="btn btn-neutral max-sm:btn-sm">Link</button>
+            <button type="button" class="btn btn-primary max-sm:btn-sm">Link</button>
           </:footer>
           """
         ]
@@ -63,7 +63,7 @@ defmodule Storybook.Blocks.Slideover do
                   This is the inner block of the slideover.
                 </p>
                 <:footer>
-                  <button type="button" class="btn btn-neutral max-sm:btn-sm">Link</button>
+                  <button type="button" class="btn btn-primary max-sm:btn-sm">Link</button>
                 </:footer>
                 """
               ]

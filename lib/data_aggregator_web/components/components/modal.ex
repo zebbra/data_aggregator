@@ -5,6 +5,7 @@ defmodule DataAggregatorWeb.Components.Modal do
 
   use Phoenix.Component
 
+  import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Gettext
 
   alias Phoenix.LiveView.JS
@@ -56,7 +57,7 @@ defmodule DataAggregatorWeb.Components.Modal do
               Cancel
             </button>
             <button type="reset" class="btn btn-ghost">Reset</button>
-            <button type="submit" class="btn btn-neutral">Save user</button>
+            <button type="submit" class="btn btn-primary">Save user</button>
           </:actions>
         </.simple_form>
       </.modal>
@@ -87,15 +88,15 @@ defmodule DataAggregatorWeb.Components.Modal do
     >
       <div class={["modal-box max-h-[calc(100dvh-5em)]", @class, size(@size)]} {@rest}>
         <.focus_wrap id={"#{@id}_content"}>
+          <%= render_slot(@inner_block) %>
           <form method="dialog">
             <button
               class="btn btn-sm btn-circle btn-ghost absolute top-2 right-2"
               aria-label={~t"close"m}
             >
-              ✕
+              <.icon name="hero-x-mark-mini" class="text-base-content/75" />
             </button>
           </form>
-          <%= render_slot(@inner_block) %>
         </.focus_wrap>
       </div>
       <form :if={@backdrop} method="dialog" class="modal-backdrop">

@@ -161,7 +161,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                     type="button"
                     phx-value-id={@selected_import.id}
                     phx-click="import:run"
-                    class="btn btn-primary"
+                    class="btn btn-primary max-sm:btn-sm"
                   >
                     <.icon name="hero-play-circle-mini" class="size-6" />
                     <%= ~t"Run import"m %>
@@ -262,7 +262,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                 <.link
                   type="button"
                   patch={~p"/collections/#{@collection}/imports/#{@selected_import}/edit"}
-                  class="btn btn-primary"
+                  class="btn btn-primary max-sm:btn-sm"
                 >
                   <.icon name="hero-pencil-square-mini" class="size-6" />
                   <%= ~t"Edit mapping"m %>
@@ -307,7 +307,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             <button
               type="button"
               phx-click={JS.push("import:delete", value: %{id: @selected_import.id})}
-              class="btn btn-error"
+              class="btn btn-error max-sm:btn-sm"
               data-confirm={~t"Are you sure?"m}
             >
               <.icon name="hero-x-circle-mini" class="size-6" />

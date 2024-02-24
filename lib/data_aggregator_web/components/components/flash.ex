@@ -61,8 +61,9 @@ defmodule DataAggregatorWeb.Components.Flash do
           :if={@close}
           type="button"
           class={[
-            @kind == :info && "btn btn-sm btn-square btn-ghost text-success hover:bg-success/20",
-            @kind == :error && "btn btn-sm btn-square btn-ghost text-error hover:bg-error/20"
+            "btn btn-sm btn-square btn-ghost",
+            @kind == :info && "text-success hover:bg-success/20",
+            @kind == :error && "text-error hover:bg-error/20"
           ]}
           aria-label={~t"close"m}
         >

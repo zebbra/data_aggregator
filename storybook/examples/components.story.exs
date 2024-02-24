@@ -55,7 +55,7 @@ defmodule Storybook.Examples.Components do
           List of users
           <:subtitle>Feel free to add any missing user!</:subtitle>
           <:actions>
-            <button type="button" class="btn btn-neutral" onclick="user_modal.showModal()">
+            <button type="button" class="btn btn-primary" onclick="user_modal.showModal()">
               Create user
             </button>
           </:actions>
@@ -144,7 +144,7 @@ defmodule Storybook.Examples.Components do
           <:footer>
             <button
               type="button"
-              class="btn btn-neutral"
+              class="btn btn-primary"
               phx-click={JS.push("select_user", value: %{id: nil})}
             >
               Close
@@ -176,7 +176,7 @@ defmodule Storybook.Examples.Components do
               </.fieldgroup>
             </.fieldset>
             <:actions>
-              <button type="submit" class="btn btn-neutral">Save user</button>
+              <button type="submit" class="btn btn-primary">Save user</button>
               <button type="reset" class="btn btn-ghost">Reset</button>
               <button type="button" class="btn btn-ghost" onclick="user_modal.close()">
                 Cancel

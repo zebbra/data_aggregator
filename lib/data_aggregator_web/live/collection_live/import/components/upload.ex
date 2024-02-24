@@ -101,7 +101,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
                         class="btn btn-sm btn-circle btn-ghost"
                         aria-label={~t"close"m}
                       >
-                        ✕
+                        <.icon name="hero-x-mark-mini" class="text-base-content/75" />
                       </button>
                     </div>
 
@@ -119,7 +119,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
           <:actions>
             <button
               type="submit"
-              class={["btn btn-neutral", Enum.any?(@uploads.file.errors) && "btn-disabled"]}
+              class={["btn btn-primary", Enum.any?(@uploads.file.errors) && "btn-disabled"]}
             >
               <%= ~t"Upload file"m %>
             </button>

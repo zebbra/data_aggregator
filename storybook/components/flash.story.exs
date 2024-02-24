@@ -9,7 +9,7 @@ defmodule Storybook.Components.Flash do
 
   def template do
     """
-    <button type="button" class="btn btn-neutral" phx-click={show("#:variation_id")} psb-code-hidden>
+    <button type="button" class="btn btn-primary" phx-click={show("#:variation_id")} psb-code-hidden>
       Open flash
     </button>
     <.psb-variation/>

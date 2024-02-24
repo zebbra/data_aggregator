@@ -74,7 +74,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         </.fieldset>
 
         <:actions>
-          <button type="submit" class="btn btn-neutral"><%= ~t"Save collection"m %></button>
+          <button type="submit" class="btn btn-primary"><%= ~t"Save collection"m %></button>
           <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
           <button type="button" class="btn btn-ghost" onclick="collection_modal.close()">
             <%= ~t"Cancel"m %>

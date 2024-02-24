@@ -10,7 +10,7 @@ defmodule Storybook.Components.Alert do
 
   def template do
     """
-    <button type="button" class="btn btn-neutral" onclick="document.getElementById(':variation_id').showModal()" psb-code-hidden>
+    <button type="button" class="btn btn-primary" onclick="document.getElementById(':variation_id').showModal()" psb-code-hidden>
       Open alert
     </button>
     <.psb-variation/>
@@ -129,7 +129,7 @@ defmodule Storybook.Components.Alert do
         </.fieldgroup>
       </.fieldset>
       <:actions>
-        <button type="submit" class="btn btn-neutral">Save user</button>
+        <button type="submit" class="btn btn-primary">Save user</button>
         <button type="reset" class="btn btn-ghost">Reset</button>
         <button type="button" class="btn btn-ghost" onclick="document.getElementById('#{id}').close()">
           Cancel

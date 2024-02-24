@@ -39,7 +39,7 @@ defmodule Storybook.Blocks.Header do
           Hello World
           <:subtitle>I'm a header subtitle</:subtitle>
           <:actions>
-            <button type="button" class="btn btn-neutral max-sm:btn-sm">Link</button>
+            <button type="button" class="btn btn-primary max-sm:btn-sm">Link</button>
           </:actions>
           """
         ]
@@ -54,7 +54,7 @@ defmodule Storybook.Blocks.Header do
           Hello World
           <:subtitle>I'm a header subtitle</:subtitle>
           <:actions>
-            <button type="button" class="btn btn-neutral max-sm:btn-sm">Link</button>
+            <button type="button" class="btn btn-primary max-sm:btn-sm">Link</button>
           </:actions>
           """
         ]
@@ -66,7 +66,7 @@ defmodule Storybook.Blocks.Header do
           This is a very very very long title to test what happens on the screen. Let's have a look at it.
           <:subtitle>This is alos a very very very long subtitle to test what happens on the screen. Let's have a look at it as well</:subtitle>
           <:actions>
-            <button type="button" class="btn btn-neutral max-sm:btn-sm">Link</button>
+            <button type="button" class="btn btn-primary max-sm:btn-sm">Link</button>
           </:actions>
           """
         ]
@@ -81,7 +81,7 @@ defmodule Storybook.Blocks.Header do
           This is a very very very long title to test what happens on the screen. Let's have a look at it.
           <:subtitle>This is alos a very very very long subtitle to test what happens on the screen. Let's have a look at it as well</:subtitle>
           <:actions>
-            <button type="button" class="btn btn-neutral max-sm:btn-sm">Link</button>
+            <button type="button" class="btn btn-primary max-sm:btn-sm">Link</button>
           </:actions>
           """
         ]
@@ -100,7 +100,7 @@ defmodule Storybook.Blocks.Header do
           Hello World
           <:subtitle>I'm a header subtitle</:subtitle>
           <:actions>
-            <button type="button" class="btn btn-neutral max-sm:btn-sm">Link</button>
+            <button type="button" class="btn btn-primary max-sm:btn-sm">Link</button>
           </:actions>
           """
         ]
@@ -120,7 +120,7 @@ defmodule Storybook.Blocks.Header do
           Hello World
           <:subtitle>I'm a header subtitle</:subtitle>
           <:actions>
-            <button type="button" class="btn btn-neutral max-sm:btn-sm">Link</button>
+            <button type="button" class="btn btn-primary max-sm:btn-sm">Link</button>
           </:actions>
           """
         ]
@@ -142,7 +142,7 @@ defmodule Storybook.Blocks.Header do
           Hello World
           <:subtitle>I'm a header subtitle</:subtitle>
           <:actions>
-            <button type="button" class="btn btn-neutral max-sm:btn-sm">Link</button>
+            <button type="button" class="btn btn-primary max-sm:btn-sm">Link</button>
           </:actions>
           """
         ]
@@ -164,7 +164,7 @@ defmodule Storybook.Blocks.Header do
           This is a very very very long title to test what happens on the screen. Let's have a look at it.
           <:subtitle>This is alos a very very very long subtitle to test what happens on the screen. Let's have a look at it as well</:subtitle>
           <:actions>
-            <button type="button" class="btn btn-neutral max-sm:btn-sm">Link</button>
+            <button type="button" class="btn btn-primary max-sm:btn-sm">Link</button>
           </:actions>
           """
         ]
@@ -187,7 +187,7 @@ defmodule Storybook.Blocks.Header do
           <span class="sm:hidden">This is a very very very long title to test what happens on the screen. Let's have a look at it.</span>
           <:subtitle>This is alos a very very very long subtitle to test what happens on the screen. Let's have a look at it as well</:subtitle>
           <:actions>
-            <button type="button" class="btn btn-neutral max-sm:btn-sm">
+            <button type="button" class="btn btn-primary max-sm:btn-sm">
               <span class="max-sm:hidden">New Item</span>
               <span class="sm:hidden">Add</span>
             </button>

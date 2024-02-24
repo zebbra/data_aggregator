@@ -157,7 +157,11 @@ defmodule DataAggregatorWeb.Components.Input do
     <textarea
       id={@id}
       name={@name}
-      class={["textarea textarea-bordered", @class, @errors != [] && "phx-feedback:textarea-error"]}
+      class={[
+        "textarea textarea-bordered max-sm:text-base",
+        @class,
+        @errors != [] && "phx-feedback:textarea-error"
+      ]}
       aria-invalid={@errors != []}
       aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}

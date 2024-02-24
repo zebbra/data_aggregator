@@ -75,7 +75,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
       <:actions :if={@current in [:records, :imports]}>
         <.link
           patch={~p"/collections/#{@collection}/imports/new"}
-          class="btn btn-neutral max-sm:btn-sm"
+          class="btn btn-primary max-sm:btn-sm"
         >
           <.icon name="hero-arrow-up-tray" class="max-sm:size-4" />
           <span class="max-sm:hidden"><%= ~t"Import dataset"m %></span>

@@ -6,6 +6,7 @@ defmodule DataAggregatorWeb.Blocks.Slideover do
   use Phoenix.Component
 
   import DataAggregatorWeb.Blocks.Header, only: [header: 1]
+  import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Gettext
 
   alias Phoenix.LiveView.JS
@@ -55,7 +56,7 @@ defmodule DataAggregatorWeb.Blocks.Slideover do
               aria-label={~t"close"m}
               phx-click={@on_cancel}
             >
-              ✕
+              <.icon name="hero-x-mark-mini" class="text-base-content/75" />
             </button>
           </:actions>
         </.header>

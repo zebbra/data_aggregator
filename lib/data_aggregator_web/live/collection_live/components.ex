@@ -14,13 +14,13 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
       patch={@href}
       class={[
         "stat cursor-pointer rounded-md border max-lg:text-sm max-lg:px-3 max-lg:py-1.5",
-        @active && "bg-neutral text-neutral-content border-neutral",
+        @active && "bg-primary/10 text-primary border-primary/20",
         @active == false && "border-black-white/10 hover:bg-base-content/10"
       ]}
     >
-      <div class={["stat-title truncate", @active && "text-neutral-content"]}><%= @title %></div>
+      <div class={["stat-title truncate", @active && "text-primary/75"]}><%= @title %></div>
       <div class={["stat-value max-lg:hidden"]}><%= format_percent(@value) %></div>
-      <div class={["stat-desc max-lg:hidden", @active && "text-neutral-content"]}>
+      <div class={["stat-desc max-lg:hidden", @active && "text-primary/75"]}>
         <%= format_number(@desc) %>
       </div>
     </.link>
