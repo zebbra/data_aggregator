@@ -19,7 +19,7 @@ defmodule DataAggregatorWeb.LiveLogger do
 
   defp log(socket, event, info) do
     info = Enum.map_join(info, "\n", fn {key, val} -> "  #{key}: #{inspect(val)}" end)
-    Logger.info("[#{inspect(socket.view)}] #{event}\n#{info}")
+    Logger.debug("[#{inspect(socket.view)}] #{event}\n#{info}")
   end
 
   defp handle_event(event, params, socket) do

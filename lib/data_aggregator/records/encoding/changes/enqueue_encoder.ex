@@ -18,7 +18,7 @@ defmodule DataAggregator.Records.Record.Changes.EnqueueEncoder do
   defp enqueue_encoder(%Changeset{data: record} = changeset) do
     case insert_job(record) do
       {:ok, job} ->
-        Logger.info("Enqueued record encoding job #{inspect(job.id)}")
+        Logger.debug("Enqueued record encoding job #{inspect(job.id)}")
         Changeset.manage_relationship(changeset, :encoder_job, job)
 
       {:error, error} ->

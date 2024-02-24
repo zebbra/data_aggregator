@@ -37,7 +37,7 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"id" => id}}) do
     with {:ok, record} <- Record.get_by_id(id) do
-      Logger.info("Encoding for Record #{record.id} in progress...")
+      Logger.debug("Encoding for Record #{record.id} in progress...")
 
       Enum.reduce_while(
         Catalog.get_catalogs(),

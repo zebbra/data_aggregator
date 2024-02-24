@@ -21,7 +21,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
 
   defp import_records(%Changeset{data: import} = changeset) do
     if changeset.valid? do
-      Logger.info("Importing records for #{inspect(import.id)} ...")
+      Logger.debug("Importing records for #{inspect(import.id)} ...")
 
       case rows_stream(import) do
         {:ok, rows} -> import_in_chunks(changeset, rows)
@@ -35,7 +35,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
 
   defp import_in_chunks(%Changeset{data: import} = changeset, rows) do
     chunk_size = Records.import_batch_size()
-    Logger.info("Importing records in chunks of #{chunk_size} rows ...")
+    Logger.debug("Importing records in chunks of #{chunk_size} rows ...")
 
     # make sure collection is loaded to avoid N+1 queries
     import = Records.load!(import, [:collection], lazy?: true)

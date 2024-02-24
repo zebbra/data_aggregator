@@ -16,7 +16,7 @@ defmodule DataAggregator.Cache.HttpDiskCache do
   @default_http_cache_dir Application.compile_env(
                             :data_aggregator,
                             :http_cache_path,
-                            :filename.basedir(:user_cache, ~c"http")
+                            "#{DataAggregator.priv_dir()}/cache/#{Application.compile_env(:data_aggregator, :env)}/http"
                           )
 
   def attach(%Req.Request{} = request, options \\ []) do

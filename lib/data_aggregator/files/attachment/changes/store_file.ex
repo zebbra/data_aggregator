@@ -66,7 +66,7 @@ defmodule DataAggregator.Files.Attachment.Changes.StoreFile do
 
     case Store.store({file, attachment}) do
       {:ok, filename} ->
-        Logger.info("[#{attachment.id}] Successfully uploaded file as #{inspect(filename)}")
+        Logger.debug("[#{attachment.id}] Successfully uploaded file as #{inspect(filename)}")
         {:ok, attachment}
 
       {:error, error} ->

@@ -18,7 +18,7 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
   end
 
   defp validate_rows(%Changeset{data: import} = changeset) do
-    Logger.info("Validating rows for #{inspect(import.id)} ...")
+    Logger.debug("Validating rows for #{inspect(import.id)} ...")
 
     case rows_stream(import) do
       {:ok, rows} -> validate_in_chunks(changeset, rows)
@@ -28,7 +28,7 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
 
   defp validate_in_chunks(%Changeset{data: import} = changeset, rows) do
     chunk_size = Records.import_batch_size()
-    Logger.info("Validating rows in chunks of #{chunk_size} rows ...")
+    Logger.debug("Validating rows in chunks of #{chunk_size} rows ...")
 
     # make sure collection is loaded to avoid N+1 queries
     import = Records.load!(import, [:collection], lazy?: true)
@@ -70,7 +70,7 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
 
     case {valid, invalid} do
       {_, 0} ->
-        Logger.info("All #{valid} rows are valid. Marking import as valid...")
+        Logger.debug("All #{valid} rows are valid. Marking import as valid...")
         changeset
 
       {_, _} ->

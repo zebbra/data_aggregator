@@ -18,7 +18,7 @@ defmodule DataAggregator.Records.Import.Changes.EnqueueImporter do
   defp enqueue_importer(%Changeset{data: import} = changeset) do
     case insert_job(import) do
       {:ok, job} ->
-        Logger.info("Enqueued import job #{inspect(job.id)}")
+        Logger.debug("Enqueued import job #{inspect(job.id)}")
         Changeset.change_attribute(changeset, :job_id, job.id)
 
       {:error, error} ->

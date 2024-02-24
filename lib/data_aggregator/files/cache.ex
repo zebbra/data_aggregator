@@ -59,7 +59,7 @@ defmodule DataAggregator.Files.Cache do
   end
 
   defp download_to(url, path) do
-    Logger.info("Downloading #{url} to #{path}")
+    Logger.debug("Downloading #{url} to #{path}")
 
     with :ok <- create_cache_dir(path) do
       case Req.get(url: url, into: File.stream!(path)) do
