@@ -44,7 +44,18 @@ defmodule Storybook.Examples.Components do
     ~H"""
     <.page current="records" open={@selected_user != nil}>
       <div class="grid gap-y-4">
-        <.header>
+        <.page_header title_class="px-6 pb-4 md:pt-6 lg:px-8">
+          List of users
+          <:subtitle>Feel free to add any missing user!</:subtitle>
+          <:actions>
+            <button
+              type="button"
+              class="btn btn-primary max-sm:btn-sm"
+              onclick="user_modal.showModal()"
+            >
+              Create user
+            </button>
+          </:actions>
           <:navbar>
             <.secondary_navigation>
               <.secondary_navigation_item label="Overview" href="#" active />
@@ -52,14 +63,7 @@ defmodule Storybook.Examples.Components do
               <.secondary_navigation_item label="Settings" href="#" />
             </.secondary_navigation>
           </:navbar>
-          List of users
-          <:subtitle>Feel free to add any missing user!</:subtitle>
-          <:actions>
-            <button type="button" class="btn btn-primary" onclick="user_modal.showModal()">
-              Create user
-            </button>
-          </:actions>
-        </.header>
+        </.page_header>
         <div class="overflow-x-auto pb-4">
           <.table
             id="user_table"

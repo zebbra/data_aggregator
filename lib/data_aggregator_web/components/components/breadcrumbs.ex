@@ -17,7 +17,7 @@ defmodule DataAggregatorWeb.Components.Breadcrumbs do
     assigns = assign(assigns, length: length(assigns[:items]))
 
     ~H"""
-    <nav aria-label="Breadcrumb" class={["breadcrumbs no-scrollbar pt-0 sm:snap-x", @class]}>
+    <nav aria-label="Breadcrumb" class={["breadcrumbs no-scrollbar py-0 sm:snap-x", @class]}>
       <ol role="list">
         <%= for {item, index} <- Enum.with_index(@items) do %>
           <li class={["sm:snap-start", li_class(index, @length)]}>
@@ -46,6 +46,6 @@ defmodule DataAggregatorWeb.Components.Breadcrumbs do
   defp li_class(index, length) do
     if index != length - 2,
       do: "!hidden sm:!flex",
-      else: "max-sm:text-primary max-sm:before:!content-[]"
+      else: "max-sm:text-primary max-sm:before:!content-[] max-sm:font-bold"
   end
 end

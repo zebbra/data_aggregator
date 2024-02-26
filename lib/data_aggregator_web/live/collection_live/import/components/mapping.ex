@@ -47,10 +47,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     <div>
       <.stepper current={current_step(@action)} links={valid_links(@collection, @import)} class="" />
       <div class="space-y-8">
-        <.heading
-          title={~t"Mappings"m}
-          subtitle={~t"Map columns to record attributes"m}
+        <.section_heading
+          text={~t"Mappings"m}
+          description={~t"Map columns to record attributes"m}
           class="border-b border-black-white/10 py-4"
+          break_at="sm"
         >
           <:actions>
             <.filter_form
@@ -63,7 +64,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
               onkeydown="return event.key != 'Enter';"
             />
           </:actions>
-        </.heading>
+        </.section_heading>
 
         <.import_mapping_validation
           :if={@show_validation && @import}

@@ -5,7 +5,7 @@ defmodule DataAggregatorWeb.Blocks.Slideover do
 
   use Phoenix.Component
 
-  import DataAggregatorWeb.Blocks.Header, only: [header: 1]
+  import DataAggregatorWeb.Blocks.Header, only: [section_heading: 1]
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Gettext
 
@@ -44,22 +44,17 @@ defmodule DataAggregatorWeb.Blocks.Slideover do
       slideover_size_class(@size)
     ]}>
       <div :if={@open} class="flex min-h-0 flex-1 flex-col overflow-y-scroll pb-6">
-        <.header
-          dense
-          class="sticky top-0 pt-5 pb-6 bg-base-100 z-10 px-6 lg:px-8 border-b border-black-white/10"
-        >
+        <.section_heading class="sticky top-0 pt-5 pb-6 bg-base-100 z-10 px-6 lg:px-8 border-b border-black-white/10">
           <%= @title %>
           <:subtitle :if={@subtitle}><%= @subtitle %></:subtitle>
-          <:actions>
-            <button
-              class="btn btn-sm btn-circle btn-ghost"
-              aria-label={~t"close"m}
-              phx-click={@on_cancel}
-            >
-              <.icon name="hero-x-mark-mini" class="text-base-content/75" />
-            </button>
-          </:actions>
-        </.header>
+          <button
+            class="btn btn-sm btn-circle btn-ghost absolute top-2 right-2"
+            aria-label={~t"close"m}
+            phx-click={@on_cancel}
+          >
+            <.icon name="hero-x-mark-mini" class="text-base-content/75" />
+          </button>
+        </.section_heading>
 
         <div class="relative flex-1 space-y-8 pt-8" phx-window-keydown={@on_cancel} phx-key="Escape">
           <%= render_slot(@inner_block) %>

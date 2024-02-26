@@ -213,10 +213,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         >
           <%= for category <- @attrs_in_categories do %>
             <section>
-              <.heading
-                title={category.label}
-                subtitle={category.description}
-                size="sm"
+              <.section_heading
+                text={category.label}
+                description={category.description}
+                size="md"
                 class="px-6 sm:px-8"
               />
               <div class="no-scrollbar overflow-x-auto pt-4">
@@ -238,10 +238,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             </section>
           <% end %>
           <section>
-            <.heading
-              title={~t"Record encodings"m}
-              subtitle={~t"Results by catalog"m}
-              size="sm"
+            <.section_heading
+              text={~t"Record encodings"m}
+              description={~t"Results by catalog"m}
+              size="md"
               class="px-6 sm:px-8"
             />
             <div class="no-scrollbar overflow-x-auto pt-4">

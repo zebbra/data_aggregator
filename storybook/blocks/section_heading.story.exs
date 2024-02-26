@@ -1,4 +1,4 @@
-defmodule Storybook.Blocks.Headings do
+defmodule Storybook.Blocks.SectionHeading do
   @moduledoc false
   use PhoenixStorybook.Story, :component
 
@@ -7,7 +7,7 @@ defmodule Storybook.Blocks.Headings do
 
   def layout, do: :one_column
 
-  def function, do: &Blocks.Header.heading/1
+  def function, do: &Blocks.Header.section_heading/1
 
   def imports, do: [{Components.Input, [input: 1]}]
 
@@ -15,26 +15,38 @@ defmodule Storybook.Blocks.Headings do
     [
       %Variation{
         id: :default,
-        attributes: %{
-          title: "Hello World",
-          subtitle: "I'm a header subtitle"
-        }
+        slots: [
+          """
+          Hello World
+          """
+        ]
       },
       %Variation{
         id: :with_a_subtitle,
+        slots: [
+          """
+          Hello World
+          <:subtitle>
+            I'm a header subtitle
+          </:subtitle>
+          """
+        ]
+      },
+      %Variation{
+        id: :with_attributes,
         attributes: %{
-          title: "Hello World",
-          subtitle: "I'm a header subtitle"
+          text: "Hello World",
+          description: "I'm a header subtitle"
         }
       },
       %Variation{
         id: :with_actions,
-        attributes: %{
-          title: "Hello World",
-          subtitle: "I'm a header subtitle"
-        },
         slots: [
           """
+          Hello World
+          <:subtitle>
+            I'm a header subtitle
+          </:subtitle>
           <:actions>
             <.input type="search" name="search" value="" placeholder="Search entries" icon_start="hero-magnifying-glass" class="input-sm rounded-full" />
           </:actions>
@@ -44,14 +56,20 @@ defmodule Storybook.Blocks.Headings do
       %VariationGroup{
         id: :size,
         variations:
-          for size <- ~w[xs sm lg xl]a do
+          for size <- ~w[sm md lg xl]a do
             %Variation{
               id: size,
               attributes: %{
-                title: "Hello World",
-                subtitle: "I'm a header subtitle",
                 size: to_string(size)
-              }
+              },
+              slots: [
+                """
+                Hello World
+                <:subtitle>
+                  I'm a header subtitle
+                </:subtitle>
+                """
+              ]
             }
           end
       }

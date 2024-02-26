@@ -36,7 +36,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   def render(assigns) do
     ~H"""
     <.page current="records" open={@selected_record != nil}>
-      <.header><%= ~t"Records"m %></.header>
+      <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6"><%= ~t"Records"m %></.page_header>
 
       <div :if={@count > 0} class="no-scrollbar overflow-x-auto pb-4">
         <.table
@@ -105,10 +105,10 @@ defmodule DataAggregatorWeb.RecordLive.Index do
         >
           <%= for category <- @attrs_in_categories do %>
             <section>
-              <.heading
-                title={category.label}
-                subtitle={category.description}
-                size="sm"
+              <.section_heading
+                text={category.label}
+                description={category.description}
+                size="md"
                 class="px-6 sm:px-8"
               />
               <div class="no-scrollbar overflow-x-auto pt-4">
@@ -130,10 +130,10 @@ defmodule DataAggregatorWeb.RecordLive.Index do
             </section>
           <% end %>
           <section>
-            <.heading
-              title={~t"Record encodings"m}
-              subtitle={~t"Results by catalog"m}
-              size="sm"
+            <.section_heading
+              text={~t"Record encodings"m}
+              description={~t"Results by catalog"m}
+              size="md"
               class="px-6 sm:px-8"
             />
             <div class="no-scrollbar overflow-x-auto pt-4">

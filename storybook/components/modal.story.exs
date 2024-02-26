@@ -9,7 +9,7 @@ defmodule Storybook.Components.Modal do
 
   def imports,
     do: [
-      {Blocks.Header, [header: 1]},
+      {Blocks.Header, [section_heading: 1]},
       {Components.Form, [simple_form: 1, fieldset: 1, fieldgroup: 1]},
       {Components.Field, [field: 1]}
     ]
@@ -80,19 +80,19 @@ defmodule Storybook.Components.Modal do
 
   def content do
     """
-    <.header>
+    <.section_heading size="lg">
       Title
       <:subtitle>With a subtitle</:subtitle>
-    </.header>
+    </.section_heading>
     """
   end
 
   def content_with_close(id) do
     """
-    <.header>
+    <.section_heading size="lg">
       Title
       <:subtitle>With a subtitle</:subtitle>
-    </.header>
+    </.section_heading>
     <div class="modal-action">
       <button type="button" class="btn btn-ghost" onclick="getElementById('#{id}').close()">
         Close

@@ -83,7 +83,7 @@ defmodule DataAggregatorWeb.Components.Form do
       <legend
         :if={@legend}
         class={[
-          "label-text text-base/6 font-semibold sm:text-sm/6",
+          "label-text text-base/6 max-w-4xl font-semibold max-sm:line-clamp-2 sm:truncate",
           @disabled && "text-base-content/50"
         ]}
       >
@@ -92,7 +92,7 @@ defmodule DataAggregatorWeb.Components.Form do
       <p
         :if={@text}
         class={[
-          "text-base/6 mt-1 sm:text-sm/6",
+          "text-sm/6 line-clamp-2 mt-1 max-w-4xl",
           if(@disabled, do: "text-base-content/50", else: "text-base-content/60")
         ]}
       >

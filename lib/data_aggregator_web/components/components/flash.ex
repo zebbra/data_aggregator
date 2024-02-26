@@ -37,7 +37,7 @@ defmodule DataAggregatorWeb.Components.Flash do
       id={@id}
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
-      class="bg-base-100 pointer-events-auto w-full max-w-sm rounded-xl"
+      class="bg-base-100 pointer-events-auto relative w-full max-w-sm rounded-xl"
       {@rest}
     >
       <div class={[
@@ -61,7 +61,7 @@ defmodule DataAggregatorWeb.Components.Flash do
           :if={@close}
           type="button"
           class={[
-            "btn btn-sm btn-square btn-ghost",
+            "btn btn-sm btn-square btn-ghost absolute top-2 right-2",
             @kind == :info && "text-success hover:bg-success/20",
             @kind == :error && "text-error hover:bg-error/20"
           ]}

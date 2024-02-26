@@ -8,75 +8,135 @@ defmodule DataAggregatorWeb.Blocks.Header do
   @doc """
   Renders a header with title, subtitle, breadcrumbs, secondary navigation, and actions.
   """
-  attr(:class, :string, default: nil, doc: "the header class")
-  attr(:action_class, :string, default: nil)
-  attr(:dense, :boolean, default: false, doc: "whether to use a dense layout")
+  attr :as, :string, default: "h2", doc: "the tag of the title"
+  attr :class, :string, default: nil, doc: "the page header class"
+  attr :title_class, :string, default: nil, doc: "the title class"
 
-  attr(:break, :boolean,
-    default: false,
-    doc: "whether to break the header actions into a new line on small screens"
-  )
+  attr :size, :string,
+    default: "xl",
+    values: ~w(sm md lg xl),
+    doc: "the size of the title"
 
-  slot(:navbar, doc: "the optional navbar displayed above the title")
-  slot(:breadcrumbs, doc: "the optional breadcrumbs displayed above the title")
-  slot(:inner_block, required: true, doc: "the title of the header")
-  slot(:subtitle, doc: "the optional subtitle displayed below the title")
-  slot(:actions, doc: "the optional actions displayed on the right side of the header")
+  attr :break_at, :string,
+    default: "none",
+    values: ~w(none sm md lg),
+    doc: "the breakpoint at which the section heading actions should break"
 
-  def header(assigns) do
+  slot :breadcrumbs, doc: "the optional breadcrumbs displayed above the page header" do
+    attr :class, :string, doc: "the optinal class for the breadcrumbs"
+  end
+
+  slot :inner_block, doc: "the optional default and wrapped title of the page header"
+
+  slot :title, doc: "the optional custom_title of the page header" do
+    attr :class, :string, doc: "the optinal class for the title"
+  end
+
+  slot :subtitle, doc: "the optional subtitle displayed below the title of the page header" do
+    attr :class, :string, doc: "the optional class for the subtitle"
+  end
+
+  slot :actions, doc: "the optional actions displayed on the right side of the page header" do
+    attr :class, :string, doc: "the optinal class for the action"
+  end
+
+  slot :navbar, doc: "the optional secondary navbar displayed below the page header"
+
+  def page_header(assigns) do
     ~H"""
     <header class={["w-full", @class]}>
-      <div class={!@dense && "p-6 lg:px-8"}>
-        <div class={[
-          @break && "sm:flex sm:items-start sm:justify-between sm:gap-8",
-          @break == false && "flex items-start justify-between gap-6 sm:gap-8"
-        ]}>
-          <div class="min-w-0 flex-1">
-            <%= render_slot(@breadcrumbs) %>
-            <div class="min-h-12">
-              <h1 class="text-base-content text-lg/6 truncate font-semibold">
-                <%= render_slot(@inner_block) %>
-              </h1>
-              <p :if={@subtitle != []} class="text-base-content/50 text-sm/6 line-clamp-3">
-                <%= render_slot(@subtitle) %>
-              </p>
-            </div>
-          </div>
-          <div class={["flex gap-x-3", @break && "max-sm:mt-4", @action_class]}>
-            <%= render_slot(@actions) %>
-          </div>
-        </div>
+      <div :for={breadcrumbs <- @breadcrumbs} class={breadcrumbs[:class]}>
+        <%= render_slot(breadcrumbs) %>
       </div>
+
+      <.section_heading as={@as} class={@title_class} size={@size} break_at={@break_at}>
+        <%= render_slot(@inner_block) %>
+
+        <:title :for={title <- @title} class={title[:class]}>
+          <%= render_slot(title) %>
+        </:title>
+
+        <:subtitle :for={subtitle <- @subtitle} class={subtitle[:class]}>
+          <%= render_slot(subtitle) %>
+        </:subtitle>
+
+        <:actions :for={action <- @actions} class={action[:class]}>
+          <%= render_slot(action) %>
+        </:actions>
+      </.section_heading>
       <%= render_slot(@navbar) %>
     </header>
     """
   end
 
-  attr :class, :string, default: nil, doc: "the header class"
-  attr :title, :string, required: true, doc: "the title of the header"
-  attr :subtitle, :string, default: nil, doc: "the optional subtitle of the header"
+  attr :as, :string, default: "h4", doc: "the tag of the title"
+  attr :text, :string, default: nil, doc: "the optional text (title) of the section heading"
+
+  attr :description, :string,
+    default: nil,
+    doc: "the optional description (subtitle) of the section heading"
+
+  attr :class, :string, default: nil, doc: "the section heading class"
 
   attr :size, :string,
-    values: ["xs", "sm", "lg", "xl"],
     default: "lg",
+    values: ~w(sm md lg xl),
     doc: "the size of the title"
 
-  slot :actions, doc: "the optional actions displayed on the right side of the header"
+  attr :break_at, :string,
+    default: "none",
+    values: ~w(none sm md lg),
+    doc: "the breakpoint at which the section heading actions should break"
 
-  def heading(assigns) do
+  slot :inner_block, doc: "the optional default and wrapped title of the section header"
+
+  slot :title, doc: "the optional custom_title of the section header" do
+    attr :class, :string, doc: "the optinal class for the title"
+  end
+
+  slot :subtitle, doc: "the optional subtitle displayed below the title of the section header" do
+    attr :class, :string, doc: "the optional class for the subtitle"
+  end
+
+  slot :actions, doc: "the optional actions displayed on the right side of the section header" do
+    attr :class, :string, doc: "the optinal class for the action"
+  end
+
+  def section_heading(assigns) do
     ~H"""
-    <div class={["w-full sm:flex sm:items-baseline sm:justify-between", @class]}>
-      <div class="sm:w-0 sm:flex-1">
-        <h4 class={["text-base-content font-bold", heading_title_size_class(@size)]}>
-          <%= @title %>
-        </h4>
-        <p :if={@subtitle} class={["text-base-content/50", heading_subtitle_size_class(@size)]}>
-          <%= @subtitle %>
+    <div class={["w-full", break_size_class(@break_at), @class]}>
+      <div class="min-w-0 flex-1">
+        <.dynamic_tag
+          :if={@title == []}
+          name={@as}
+          class={[
+            "text-base-content max-sm:line-clamp-2 sm:truncate max-w-4xl",
+            heading_title_size_class(@size)
+          ]}
+        >
+          <%= if @text != nil do %>
+            <%= @text %>
+          <% else %>
+            <%= render_slot(@inner_block) %>
+          <% end %>
+        </.dynamic_tag>
+        <%= if @title != [] do %>
+          <%= render_slot(@title) %>
+        <% end %>
+        <p
+          :if={@subtitle != [] || @description != nil}
+          class={["text-base-content/60 max-w-4xl", heading_subtitle_size_class(@size)]}
+        >
+          <%= if @description != nil do %>
+            <%= @description %>
+          <% else %>
+            <%= render_slot(@subtitle) %>
+          <% end %>
         </p>
       </div>
       <div
-        :if={@actions != []}
-        class="mt-4 flex items-center justify-between gap-x-3 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex-row-reverse sm:justify-start"
+        :for={action <- @actions}
+        class={["flex", break_size_action_class(@break_at), action[:class]]}
       >
         <%= render_slot(@actions) %>
       </div>
@@ -84,21 +144,39 @@ defmodule DataAggregatorWeb.Blocks.Header do
     """
   end
 
+  defp break_size_class(size) do
+    cond do
+      size == "none" -> "flex items-baseline justify-between"
+      size == "sm" -> "sm:flex sm:items-baseline sm:justify-between"
+      size == "md" -> "md:flex md:items-baseline md:justify-between"
+      true -> "lg:flex lg:items-baseline lg:justify-between"
+    end
+  end
+
+  defp break_size_action_class(size) do
+    cond do
+      size == "none" -> "ml-4 flex-shrink-0 justify-start"
+      size == "sm" -> "mt-5 sm:mt-0 sm:ml-4 sm:flex-shrink-0 sm:justify-start"
+      size == "md" -> "mt-5 md:mt-0 md:ml-4 md:flex-shrink-0 md:justify-start"
+      true -> "mt-5 lg:mt-0 lg:ml-4 lg:flex-shrink-0 lg:justify-start"
+    end
+  end
+
   defp heading_title_size_class(size) do
     case size do
-      "xs" -> "text-xs"
-      "sm" -> "text-sm"
-      "lg" -> "text-lg"
-      "xl" -> "text-xl"
+      "sm" -> "text-sm/6 font-medium"
+      "md" -> "text-base/6 font-semibold"
+      "lg" -> "text-lg/6 font-bold"
+      "xl" -> "text-2xl font-bold sm:text-3xl sm:tracking-tight"
     end
   end
 
   defp heading_subtitle_size_class(size) do
     case size do
-      "xs" -> "text-xs"
-      "sm" -> "text-sm"
-      "lg" -> "text-sm"
-      "xl" -> "text-sm"
+      "sm" -> "text-sm/6 line-clamp-2"
+      "md" -> "text-sm/6 mt-1 line-clamp-2"
+      "lg" -> "text-sm/6 mt-1 line-clamp-2"
+      "xl" -> "text-sm/6 mt-1 line-clamp-3"
     end
   end
 end

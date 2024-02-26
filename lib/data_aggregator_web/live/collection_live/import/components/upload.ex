@@ -38,9 +38,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
     <div>
       <.stepper current={current_step(@action)} steps={3} />
       <div class="space-y-8">
-        <.heading
-          title={~t"Import records"m}
-          subtitle={~t"Please provide your collection file holding your records."m}
+        <.section_heading
+          text={~t"Import records"m}
+          description={~t"Please provide your collection file holding your records."m}
           class="border-b border-black-white/10 py-4"
         />
         <.simple_form
@@ -78,10 +78,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
                       </label>
                       <p class="pl-1"><%= ~t"or drag and drop"m %></p>
                     </div>
-                    <p class="text-xs/5 text-base-content/50">
+                    <p class="text-xs/5 text-base-content/60">
                       <%= pretty_accept_list(@uploads.file.accept) %>
                     </p>
-                    <p class="text-xs/5 text-base-content/50">
+                    <p class="text-xs/5 text-base-content/60">
                       <%= pretty_max_file_size(@uploads.file.max_file_size) %>
                     </p>
                   </div>
