@@ -151,13 +151,13 @@ defmodule DataAggregator.Records.Export do
     type "export"
 
     routes do
-      base("/exports")
+      base "/exports"
 
-      get(:read)
+      get :read
       index :read
-      post(:create)
-      patch(:update)
-      delete(:destroy)
+      post :create
+      patch :update
+      delete :destroy
     end
   end
 end

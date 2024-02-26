@@ -4,11 +4,11 @@ defmodule DataAggregator.ExportFixtures do
   Publication entities via the `DataAggregator.Records` context.
   """
 
+  import DataAggregator.RecordsFixtures
+
   alias DataAggregator.Records
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
-
-  import DataAggregator.RecordsFixtures
 
   @export_defaults %{
     name: "gbif.org - Export"
@@ -48,7 +48,7 @@ defmodule DataAggregator.ExportFixtures do
       tax_family: "Bradypodidae",
       tax_genus: "Bradypus",
       tax_kingdom: "Animalia",
-      tax_taxon_id: "taxon-id-1"
+      tax_taxon_id: 1_012_187
     }
   end
 

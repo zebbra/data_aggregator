@@ -3,13 +3,13 @@ defmodule DataAggregator.Records.Export.RunnerTest do
 
   use DataAggregator.DataCase, async: true
 
+  import DataAggregator.ExportFixtures
+  import DataAggregator.RecordsFixtures
+
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Export.Runner
-
-  import DataAggregator.ExportFixtures
-  import DataAggregator.RecordsFixtures
 
   describe "DataAggregator.Records.Export.Runner.perform/1" do
     @valid_custom_mapping %{
@@ -26,12 +26,13 @@ defmodule DataAggregator.Records.Export.RunnerTest do
       get_unpublishable_record(collection)
 
       export =
-        Export.create!(%{
+        %{
           name: "export-#{collection.name}-#{Ecto.UUID.generate()}",
           collection: collection,
           mapping: @valid_custom_mapping,
           records_query: collection.records_to_publish_query
-        })
+        }
+        |> Export.create!()
         |> Collection.export!()
 
       [export: export]

@@ -2,14 +2,14 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   @moduledoc """
   Custom action to export records
   """
-  require Logger
-
   use Ash.Resource.Actions.Implementation
 
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records
   alias DataAggregator.Records.Export
+
+  require Logger
 
   @impl true
   def run(input, _opts, _context) do
@@ -22,7 +22,8 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
       path = "#{Path.join([System.tmp_dir!(), "export"])}#{Ecto.UUID.generate()}.csv"
 
       attachment =
-        Records.stream!(records_query)
+        records_query
+        |> Records.stream!()
         |> Stream.map(&map_records(&1, mapping))
         |> export_to_s3(path, mapping)
 
@@ -46,7 +47,8 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   end
 
   defp export_to_s3(records, path, mapping) do
-    File.open!(path, [:write, :utf8])
+    path
+    |> File.open!([:write, :utf8])
     |> store_local_file(records, mapping)
     |> File.close()
 
@@ -78,18 +80,14 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   end
 
   defp get_default_mapping do
-    Schema.prefixed_attribute_names()
-    |> Enum.map(fn name -> {name, Atom.to_string(name)} end)
-    |> Enum.into(%{})
+    Map.new(Schema.prefixed_attribute_names(), fn name -> {name, Atom.to_string(name)} end)
   end
 
   defp get_headers(mapping) do
-    get_mapping(mapping) |> Map.values()
+    mapping |> get_mapping() |> Map.values()
   end
 
   defp handle_error(export_id, error) do
-    Logger.error(
-      "Error in export with ID #{export_id} while exporting records. error was: #{inspect(error)}"
-    )
+    Logger.error("Error in export with ID #{export_id} while exporting records. error was: #{inspect(error)}")
   end
 end

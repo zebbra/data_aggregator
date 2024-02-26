@@ -3,13 +3,13 @@ defmodule DataAggregator.ExportTest do
 
   use DataAggregator.DataCase, async: true
 
+  import DataAggregator.ExportFixtures
+  import DataAggregator.RecordsFixtures
+
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Export
-
-  import DataAggregator.ExportFixtures
-  import DataAggregator.RecordsFixtures
 
   describe "export crud tests" do
     @invalid_attrs %{
@@ -78,7 +78,7 @@ defmodule DataAggregator.ExportTest do
     end
 
     test "destroy/1 with invalid id fails and returns an error changeset" do
-      assert {:error, %Ash.Error.Unknown{}} = Export.destroy(%Export{id: "invalid"})
+      assert {:error, %Ash.Error.Invalid{}} = Export.destroy(%Export{id: "invalid"})
     end
   end
 
@@ -87,9 +87,9 @@ defmodule DataAggregator.ExportTest do
       "mte_material_entity_id" => "Numéro scientifique GBIF",
       "tax_family" => "Famille"
     }
-    @default_mapping Schema.prefixed_attribute_names()
-                     |> Enum.map(fn name -> {name, Atom.to_string(name)} end)
-                     |> Enum.into(%{})
+    @default_mapping Map.new(Schema.prefixed_attribute_names(), fn name ->
+                       {name, Atom.to_string(name)}
+                     end)
 
     setup %{mapping: mapping} do
       collection = Records.load!(collection_fixture(), [:records_to_publish_query])
@@ -124,7 +124,7 @@ defmodule DataAggregator.ExportTest do
 
       assert Explorer.DataFrame.n_columns(df) == Enum.count(Map.keys(@default_mapping))
 
-      assert Explorer.DataFrame.n_rows(df) == 2
+      assert Explorer.DataFrame.n_rows(df) == 3
     end
 
     @tag mapping: @valid_custom_mapping
@@ -137,7 +137,7 @@ defmodule DataAggregator.ExportTest do
 
       assert Explorer.DataFrame.n_columns(df) == 2
 
-      assert Explorer.DataFrame.n_rows(df) == 2
+      assert Explorer.DataFrame.n_rows(df) == 3
     end
   end
 end

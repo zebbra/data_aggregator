@@ -1,17 +1,7 @@
 {
   "attributes": [
     {
-      "default": "\"pending\"",
-      "size": null,
-      "type": "text",
-      "source": "state",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
+      "default": "fragment(\"uuid_generate_v7()\")",
       "size": null,
       "type": "uuid",
       "source": "id",
@@ -67,6 +57,16 @@
       "source": "mapping",
       "references": null,
       "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "binary",
+      "source": "records_query",
+      "references": null,
+      "allow_nil?": false,
       "generated?": false,
       "primary_key?": false
     },
@@ -155,10 +155,20 @@
       "allow_nil?": true,
       "generated?": false,
       "primary_key?": false
+    },
+    {
+      "default": "\"pending\"",
+      "size": null,
+      "type": "text",
+      "source": "state",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
     }
   ],
   "table": "exports",
-  "hash": "98B335450F53D032AB16CE105A53C3137A93FEDEA850C28F4FD3AF7E79BE2F16",
+  "hash": "7ECC1B788D562918D6E7138FE7DB89C08E972777667A704A2F1EC570E62C4B2E",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,
