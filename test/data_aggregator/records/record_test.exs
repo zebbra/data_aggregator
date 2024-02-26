@@ -123,10 +123,10 @@ defmodule DataAggregator.RecordTest do
       assert_raise Ash.Error.Query.NotFound, fn -> Record.get_by_id!(record.id) end
 
       # ensure only one Version is left
-      assert Records.count!(Record.Version) == 1
+      assert length(Record.Version.read!(%{version_source_id: record.id})) == 1
 
       # ensure the last version is created from the destroy action, so we keep track of deletions
-      assert_map_includes(hd(Record.Version.read!()), %{
+      assert_map_includes(hd(Record.Version.read!(%{version_source_id: record.id})), %{
         version_source_id: record.id,
         tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc042",
         mte_material_entity_id: "record42",
