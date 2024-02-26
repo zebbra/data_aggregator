@@ -1,7 +1,7 @@
 defmodule DataAggregator.ExportFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  Publication entities via the `DataAggregator.Records` context.
+  Export entities via the `DataAggregator.Records` context.
   """
 
   import DataAggregator.RecordsFixtures

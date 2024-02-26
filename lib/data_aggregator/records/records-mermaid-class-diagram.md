@@ -28,6 +28,7 @@ classDiagram
         UtcDatetimeUsec updated_at
         Float digitizing_progress
         Atom encoding_state
+        Map records_to_publish_query
         Integer records_count
         Integer imports_count
         Integer records_count_not_encoded
@@ -45,6 +46,34 @@ classDiagram
         read(String sort)
         update_import_mapping(Map[] import_mapping)
         touch(UUID id, Integer items_to_digitize, String owner, String name, ...)
+        publish(Struct export)
+        export(Struct export)
+    }
+    class Export {
+        UUID id
+        String name
+        UtcDatetime exported_at
+        UtcDatetime started_at
+        UtcDatetime finished_at
+        Map mapping
+        Term records_query
+        Integer exported_count
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        Atom state
+        Collection collection
+        Attachment attachment
+        destroy()
+        read()
+        create(Collection collection, UUID id, String name, UtcDatetime exported_at, ...)
+        update_mapping(Map mapping, UUID id, String name, UtcDatetime exported_at, ...)
+        update(Struct[] records, UUID id, String name, UtcDatetime exported_at, ...)
+        enqueue()
+        set_running()
+        set_failed(UUID id, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
+        run()
+        set_exported()
+        update_attachment(Attachment attachment)
     }
     class RecordEncodingResult {
         UUID id
@@ -145,9 +174,6 @@ classDiagram
         String tax_infraspecific_epithet
         String tax_scientific_name_authorship
         String tax_scientific_name
-        String tax_kingdom
-        String tax_class
-        String tax_phylum
         String tax_genus
         String tax_family
         String tax_order
@@ -307,6 +333,7 @@ classDiagram
     Job -- Record
     Institution -- Collection
     ChangeEvent -- Record
+    Collection -- Export
     Collection -- Import
     Collection -- Record
     EncodedRecord -- Record
