@@ -107,6 +107,35 @@ defmodule DataAggregator.RecordTest do
       end
     end
 
+    test "destroy/1 deletes the record and it's versions" do
+      update_attrs = %{
+        tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc042",
+        mte_material_entity_id: "record42"
+      }
+
+      record =
+        record_fixture()
+        |> Record.update!(update_attrs)
+        |> Records.load!([:paper_trail_versions])
+
+      assert :ok = Record.destroy(record)
+
+      assert_raise Ash.Error.Query.NotFound, fn -> Record.get_by_id!(record.id) end
+
+      # ensure only one Version is left
+      assert Records.count!(Record.Version) == 1
+
+      # ensure the last version is created from the destroy action, so we keep track of deletions
+      assert_map_includes(hd(Record.Version.read!()), %{
+        version_source_id: record.id,
+        tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc042",
+        mte_material_entity_id: "record42",
+        version_action_type: :destroy,
+        version_action_name: :destroy,
+        changes: %{}
+      })
+    end
+
     test "destroy/1 with invalid id returns error" do
       assert {:error, %Ash.Error.Unknown{}} = Record.destroy(%Record{id: "invalid"})
     end
