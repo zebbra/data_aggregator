@@ -36,7 +36,6 @@
 .github
 .drone.yml
 .formatter.exs
-.recode.exs
 .DS_Store
 
 # Mix artifacts

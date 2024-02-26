@@ -10,8 +10,6 @@ defmodule DataAggregator.Taxonomy.Registry do
     ]
 
   entries do
-    entry DataAggregator.Taxonomy.DwcAttribute
-    entry DataAggregator.Taxonomy.Catalog
-    entry DataAggregator.Taxonomy.AttributeResolvingStrategy
+    entry DataAggregator.Taxonomy.Catalogs.SwissSpecies
   end
 end

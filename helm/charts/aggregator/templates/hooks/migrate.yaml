@@ -8,7 +8,7 @@ metadata:
     helm.sh/hook: post-install,pre-upgrade
     helm.sh/hook-delete-policy: before-hook-creation
 spec:
-  activeDeadlineSeconds: 300
+  activeDeadlineSeconds: 600
   template:
     metadata:
       name: {{ include "aggregator.fullname" . }}-migrate
@@ -35,3 +35,16 @@ spec:
           args:
             - -c
             - "/app/bin/migrate"
+        - name: catalog-init
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.envSecret }}
+            - configMapRef:
+                name: {{ include "aggregator.fullname" . }}
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - "/app/bin/catalog_init"

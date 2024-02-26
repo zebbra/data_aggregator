@@ -5,7 +5,7 @@ defmodule DataAggregator.MixProject do
     [
       app: :data_aggregator,
       version: "0.1.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.16",
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [ignore_module_conflict: true],
       start_permanent: Mix.env() == :prod,
@@ -48,7 +48,7 @@ defmodule DataAggregator.MixProject do
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
-  defp docs() do
+  defp docs do
     [
       main: "DataAggregator",
       extras: extras(),
@@ -90,7 +90,7 @@ defmodule DataAggregator.MixProject do
 
   defp before_closing_body_tag(_), do: ""
 
-  defp extras() do
+  defp extras do
     Path.wildcard("docs/**/*.{md,livemd,cheatmd}")
   end
 
@@ -105,7 +105,7 @@ defmodule DataAggregator.MixProject do
     ]
   end
 
-  def nest_modules_by_prefix() do
+  def nest_modules_by_prefix do
     [
       DataAggregator,
       DataAggregatorWeb,
@@ -113,7 +113,7 @@ defmodule DataAggregator.MixProject do
     ]
   end
 
-  defp groups_for_modules() do
+  defp groups_for_modules do
     [
       "Darwin Core": [
         ~r/^DataAggregator\.DarwinCore/
@@ -151,15 +151,14 @@ defmodule DataAggregator.MixProject do
         ~r/^DataAggregatorWeb\.\w+Live/
       ],
       Components: [
-        DataAggregatorWeb.ColorMode,
+        ~r/^DataAggregatorWeb\.Blocks/,
         ~r/^DataAggregatorWeb\.Components/,
-        ~r/^DataAggregatorWeb\.Headless/
+        ~r/^DataAggregatorWeb\.LiveComponents/,
+        ~r/^DataAggregatorWeb\.Layouts/
       ],
       "Live Hooks": [
         DataAggregatorWeb.LiveLocale,
-        DataAggregatorWeb.LiveLogger,
-        DataAggregatorWeb.LiveState,
-        DataAggregatorWeb.LiveNavigator
+        DataAggregatorWeb.LiveLogger
       ],
       Localisation: [
         DataAggregatorWeb.Locale,
@@ -179,22 +178,23 @@ defmodule DataAggregator.MixProject do
   defp deps do
     [
       # Phoenix Framework
-      {:bandit, "~> 1.2.0"},
-      {:phoenix, "~> 1.7.7"},
+      {:bandit, "~> 1.2.1"},
+      {:phoenix, "~> 1.7.11"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 4.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.20.1"},
+      {:phoenix_live_view, "~> 0.20.9"},
       {:phoenix_storybook, "~> 0.6.0"},
 
       # Ash Framework
       {:ash, "~> 2.13"},
-      {:ash_graphql, "~> 0.26.6"},
+      {:ash_graphql, "~> 0.27.0"},
       {:ash_json_api, "~> 0.34.0"},
       {:ash_phoenix, "~> 1.2"},
       {:ash_postgres, "~> 1.3"},
       {:ash_state_machine, "~> 0.2.2"},
-      {:ash_uuid, "~> 0.4"},
+      {:ash_uuid, "~> 0.7"},
+      {:ash_paper_trail, github: "ash-project/ash_paper_trail", branch: "main"},
 
       # Database and Ecto
       {:ecto, "~> 3.11.0"},
@@ -211,12 +211,21 @@ defmodule DataAggregator.MixProject do
       {:assertions, "~> 0.19", only: :test},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
-      {:recode, "~> 0.6", only: [:dev, :test]},
+      {:mimic, "~> 1.7", only: :test},
+      {:styler, "~> 0.11", only: [:dev, :test], runtime: false},
       {:junit_formatter, "~> 3.3", only: :test},
 
       # Assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
+      {:heroicons,
+       github: "tailwindlabs/heroicons",
+       tag: "v2.1.1",
+       sparse: "optimized",
+       app: false,
+       compile: false,
+       depth: 1,
+       override: true},
 
       # Internationalization and Localization
       {:gettext, "~> 0.20"},
@@ -233,7 +242,7 @@ defmodule DataAggregator.MixProject do
       {:jason, "~> 1.2"},
       {:open_api_spex, "~> 3.18"},
       {:redoc_ui_plug, "~> 0.2.1"},
-      {:req, "~> 0.4.5"},
+      {:req, "~> 0.4.8"},
 
       # Mailing
       {:swoosh, "~> 1.3"},
@@ -303,7 +312,8 @@ defmodule DataAggregator.MixProject do
       "repo.setup": [
         "repo.create",
         "repo.migrate",
-        "run priv/repo/seeds.exs"
+        "run priv/repo/seeds.exs",
+        "run priv/repo/catalogs/init.exs"
       ],
       "repo.reset": [
         "repo.drop",
@@ -311,6 +321,9 @@ defmodule DataAggregator.MixProject do
       ],
       "repo.lint": [
         "ash_postgres.generate_migrations --check"
+      ],
+      "catalogs.import": [
+        "run priv/repo/catalogs/init.exs"
       ],
 
       # Run tests
@@ -335,12 +348,12 @@ defmodule DataAggregator.MixProject do
         "cmd cd assets && npm install"
       ],
       "assets.build": [
-        "tailwind default",
-        "esbuild default"
+        "tailwind data_aggregator",
+        "esbuild data_aggregator"
       ],
       "assets.deploy": [
-        "tailwind default --minify",
-        "esbuild default --minify",
+        "tailwind data_aggregator --minify",
+        "esbuild data_aggregator --minify",
         "phx.digest"
       ],
 

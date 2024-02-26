@@ -24,9 +24,9 @@ defmodule DataAggregatorWeb do
       use Phoenix.Router, helpers: false
 
       # Import common connection and controller functions to use in pipelines
-      import Plug.Conn
       import Phoenix.Controller
       import Phoenix.LiveView.Router
+      import Plug.Conn
     end
   end
 
@@ -42,8 +42,8 @@ defmodule DataAggregatorWeb do
         formats: [:html, :json],
         layouts: [html: DataAggregatorWeb.Layouts]
 
-      import Plug.Conn
       import DataAggregatorWeb.Gettext
+      import Plug.Conn
 
       unquote(verified_routes())
     end
@@ -81,26 +81,28 @@ defmodule DataAggregatorWeb do
 
   defp html_helpers do
     quote do
-      # Core UI components
+      # UI components and blocks
       use DataAggregatorWeb.Components
-
-      # Shortcut for generating JS commands
-      alias Phoenix.LiveView.JS
-
-      # HTML escaping functionality
-      import Phoenix.HTML
+      use DataAggregatorWeb.Blocks
 
       # Translation
       import DataAggregatorWeb.Gettext
 
-      # Layouts
-      import DataAggregatorWeb.Page, only: [page: 1]
-
       # Formatters
       import DataAggregatorWeb.Helpers
 
+      # HTML escaping functionality
+      import Phoenix.HTML
+
+      # Shortcut for generating JS commands
+      alias Phoenix.LiveView.JS
+
       # Routes generation with the ~p sigil
       unquote(verified_routes())
+
+      # Allows piping the socket
+      defp ok(socket), do: {:ok, socket}
+      defp noreply(socket), do: {:noreply, socket}
     end
   end
 
@@ -113,7 +115,7 @@ defmodule DataAggregatorWeb do
     end
   end
 
-  @doc ~S"""
+  @doc """
   When used, dispatch to the appropriate controller/view/etc.
   """
   defmacro __using__(which) when is_atom(which) do

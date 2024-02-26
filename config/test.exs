@@ -6,7 +6,7 @@ database_url = "ecto://postgres:postgres@localhost:5432/data_aggregator_test"
 
 config :data_aggregator, DataAggregator.Repo,
   url: System.get_env("DATABASE_URL") || database_url,
-  pool_size: 20,
+  pool_size: System.schedulers_online() * 2,
   pool: Ecto.Adapters.SQL.Sandbox,
   queue_target: 100,
   log: false

@@ -14,6 +14,18 @@ defmodule DataAggregator.Release do
     end
   end
 
+  def catalog_init do
+    load_app()
+
+    for repo <- repos() do
+      {:ok, _, _} = Ecto.Migrator.with_repo(repo, &eval_catalogs_file(&1))
+    end
+  end
+
+  defp eval_catalogs_file(_repo) do
+    Code.eval_file("repo/catalogs/init.exs", "#{DataAggregator.priv_dir()}")
+  end
+
   def rollback(repo, version) do
     load_app()
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))

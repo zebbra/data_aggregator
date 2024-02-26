@@ -28,18 +28,14 @@ defmodule DataAggregatorWeb.Helpers do
   def format_datetime(datetime, opts \\ [])
   def format_datetime(nil, _opts), do: @placeholder
 
-  def format_datetime(datetime, opts),
-    do: datetime |> DateTime.shift_zone!(@timezone) |> Cldr.DateTime.to_string!(opts)
+  def format_datetime(datetime, opts), do: datetime |> DateTime.shift_zone!(@timezone) |> Cldr.DateTime.to_string!(opts)
 
-  def format_weeks(weeks, opts \\ []),
-    do: Cldr.Unit.to_string!(weeks, Keyword.merge(opts, unit: "week"))
+  def format_weeks(weeks, opts \\ []), do: Cldr.Unit.to_string!(weeks, Keyword.put(opts, :unit, "week"))
 
-  def format_date_interval(from, to, opts \\ []),
-    do: Cldr.Interval.to_string!(from, to, opts)
+  def format_date_interval(from, to, opts \\ []), do: Cldr.Interval.to_string!(from, to, opts)
 
-  def format_time_ago(value, opts \\ []),
-    # credo:disable-for-next-line Credo.Check.Design.AliasUsage
-    do: Cldr.DateTime.Relative.to_string!(value, opts)
+  # credo:disable-for-next-line Credo.Check.Design.AliasUsage
+  def format_time_ago(value, opts \\ []), do: Cldr.DateTime.Relative.to_string!(value, opts)
 
   def format_bytes(bytes, opts \\ []) do
     kb = 1024
@@ -74,5 +70,40 @@ defmodule DataAggregatorWeb.Helpers do
 
     format = &String.pad_leading(Integer.to_string(&1), 2, "0")
     "#{format.(hours)}:#{format.(minutes)}:#{format.(seconds)}"
+  end
+
+  @doc ~S"""
+  Returns a string of class names from a list of class names.
+
+  ## Examples
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", "bar"])
+      "foo bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", nil, "bar"])
+      "foo bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", "", "bar"])
+      "foo bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", false, "bar"])
+      "foo bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", true, "bar"])
+      "foo true bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", 1, "bar"])
+      "foo 1 bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", 0, "bar"])
+      "foo 0 bar"
+  """
+  @spec class_names([String.t()]) :: String.t()
+  def class_names(class_names) do
+    class_names
+    |> Enum.filter(& &1)
+    |> Enum.join(" ")
+    |> String.trim()
+    |> String.replace(~r/\s+/, " ")
   end
 end

@@ -1,14 +1,99 @@
 /* This is your custom storybook stylesheet. */
-@config "../tailwind.storybook.config.js";
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-/* This file is for your main application CSS */
-@import "./components/forms.css";
+@import "./components/drawer.css";
+@import "./components/modal.css";
+@import "./components/scrollbar.css";
+@import "./components/table.css";
+
+/*
+ * Put your component styling within the Tailwind utilities layer.
+ * See the https://hexdocs.pm/phoenix_storybook/sandboxing.html guide for more info.
+ */
 
 @layer utilities {
-    * {
-        font-family: ui-sans-serif, system-ui;
-    }
+  * {
+    font-family: ui-sans-serif, system-ui;
+  }
+}
+
+/* Background */
+.psb.psb-bg-white {
+  @apply bg-base-100 text-base-content;
+}
+
+.psb.psb-bg-gray-50,
+.psb.psb-bg-slate-50 {
+  @apply bg-base-200/50 text-base-content;
+}
+
+.psb.psb-bg-slate-100 {
+  @apply bg-base-200 text-base-content;
+}
+
+.hover\:psb-bg-gray-100:hover {
+  @apply hover:bg-base-200;
+}
+
+.psb-sandbox .psb-welcome-page code.inline,
+.psb-sandbox .psb-welcome-page pre {
+  @apply bg-base-200 text-base-content;
+}
+
+/* Text */
+.psb.psb-text-gray-700,
+.psb.psb-text-gray-800,
+.psb.psb-text-gray-900 {
+  @apply text-base-content;
+}
+
+.psb.psb-text-slate-700 {
+  @apply text-base-content/60;
+}
+
+.psb-sandbox .psb-welcome-page h3,
+.psb-sandbox .psb-welcome-page p {
+  @apply text-base-content/50;
+}
+
+.psb-sandbox .psb-welcome-page ul li {
+  @apply text-base-content/30;
+}
+
+/* Divider */
+.psb.psb-divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+  @apply divide-base-content/10;
+}
+
+.psb.psb-divide-gray-300 > :not([hidden]) ~ :not([hidden]) {
+  @apply divide-base-content/25;
+}
+
+.psb.psb-divide-gray-100,
+.psb.psb-divide-gray-300 {
+  @apply divide-base-content/25;
+}
+
+/* Border */
+.psb.psb-border {
+  @apply border-base-content/10;
+}
+
+.psb.psb-border-slate-100 {
+  @apply border-base-content/10;
+}
+
+.psb.psb-border-gray-200 {
+  @apply border-base-content/20;
+}
+
+.psb.psb-border-gray-300 {
+  @apply border-base-content/20;
+}
+
+.psb-form-input,
+.psb-form-select {
+  @apply bg-base-100 text-base-content;
 }

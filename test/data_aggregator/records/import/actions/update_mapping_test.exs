@@ -7,13 +7,7 @@ defmodule DataAggregator.Records.Import.Actions.UpdateMappingTest do
   alias DataAggregator.Records.Import
 
   setup do
-    collection =
-      Collection.create!(%{
-        name: "Test Collection",
-        owner: "Max Powers",
-        reviewer: :swiss_bryophytes
-      })
-
+    collection = Collection.create!(%{name: "Test Collection", owner: "Max Powers"})
     [collection: collection]
   end
 

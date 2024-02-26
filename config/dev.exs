@@ -1,16 +1,15 @@
 import Config
 
 # Configure your database
+database_url = "ecto://postgres:postgres@localhost:5432/data_aggregator_dev"
+
 config :data_aggregator, DataAggregator.Repo,
-  # username: "postgres",
-  # password: "postgres",
-  port: 5432,
-  hostname: "localhost",
-  database: "data_aggregator_dev",
+  url: System.get_env("DATABASE_URL") || database_url,
+  pool_size: 20,
+  queue_target: 100,
+  log: false,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
-  pool_size: 20,
-  log: false,
   timeout: 10 * 60 * 1000
 
 # backoff_max: 120_000,
@@ -31,8 +30,8 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "rs4+NR9FM90SkkrmYTJDIn0wK0Cac6qKzU82uKfNirNVIvYjdulbQ7lIUvIx2S4m",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]},
+    esbuild: {Esbuild, :install_and_run, [:data_aggregator, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:data_aggregator, ~w(--watch)]},
     storybook: {Tailwind, :install_and_run, [:storybook, ~w(--watch)]}
   ]
 
@@ -63,11 +62,41 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
 config :data_aggregator, DataAggregatorWeb.Endpoint,
   live_reload: [
     patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
       ~r"lib/data_aggregator_web/(controllers|live|components)/.*(ex|heex)$",
       ~r"storybook/.*(exs)$"
     ]
+  ]
+
+# Configure esbuild (the version is required)
+config :esbuild,
+  version: "0.19.11",
+  data_aggregator: [
+    args:
+      ~w(js/app.ts js/storybook.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+  ]
+
+# Configure tailwind (the version is required)
+config :tailwind,
+  version: "3.4.1",
+  data_aggregator: [
+    args: ~w(
+      --config=tailwind.config.js
+      --input=css/app.css
+      --output=../priv/static/assets/app.css
+    ),
+    cd: Path.expand("../assets", __DIR__)
+  ],
+  storybook: [
+    args: ~w(
+          --config=tailwind.storybook.config.js
+          --input=css/storybook.css
+          --output=../priv/static/assets/storybook.css
+        ),
+    cd: Path.expand("../assets", __DIR__)
   ]
 
 # Enable dev routes for dashboard and mailbox
@@ -86,7 +115,7 @@ config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/dev/cach
 config :logger, :console, format: "[$level] $message\n"
 
 # Disable debug logs
-config :logger, level: :info
+config :logger, level: :debug
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

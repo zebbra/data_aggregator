@@ -5,13 +5,12 @@ defmodule DataAggregatorApi.GraphQL.Schema do
 
   use Absinthe.Schema
 
-  @apis [
-    DataAggregator.Platform,
-    DataAggregator.Taxonomy,
-    DataAggregator.Records
-  ]
-
-  use AshGraphql, apis: @apis
+  use AshGraphql,
+    apis: [
+      DataAggregator.Platform,
+      DataAggregator.Taxonomy,
+      DataAggregator.Records
+    ]
 
   # The query and mutation blocks is where you can add custom absinthe code
   query do

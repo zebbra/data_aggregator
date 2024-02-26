@@ -29,5 +29,13 @@ config :data_aggregator, DataAggregator.Repo,
 # remove the line below before going live
 config :data_aggregator, dev_routes: true
 
+http_cache_path = System.get_env("HTTP_CACHE_PATH") || "priv/cache/prod/http"
+
+config :data_aggregator,
+  # Cache http requests in the a directory on disk (this will be overwritten in runtime.exs)
+  # But we need to define it here as otherwise the application will complain about
+  # different value set for key :http_cache_path during runtime compared to compile time.
+  http_cache_path: "priv/cache/prod/http"
+
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.

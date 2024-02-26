@@ -40,6 +40,11 @@ defmodule DataAggregator.Records.Record.Image do
   postgres do
     table "record_images"
     repo DataAggregator.Repo
+
+    references do
+      reference :record, on_delete: :delete, on_update: :update
+      reference :attachment, on_delete: :delete, on_update: :update
+    end
   end
 
   graphql do
@@ -61,13 +66,13 @@ defmodule DataAggregator.Records.Record.Image do
     type "record_image"
 
     routes do
-      base("/record_images")
+      base "/record_images"
 
-      get(:read)
+      get :read
       index :read
-      post(:create)
-      patch(:update)
-      delete(:destroy)
+      post :create
+      patch :update
+      delete :destroy
     end
   end
 end

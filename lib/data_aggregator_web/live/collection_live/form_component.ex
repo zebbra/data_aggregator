@@ -1,8 +1,10 @@
 defmodule DataAggregatorWeb.CollectionLive.FormComponent do
+  @moduledoc false
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.CollectionType
 
   @impl true
   def update(assigns, socket) do
@@ -14,43 +16,69 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
 
   @impl true
   def render(assigns) do
+    assigns =
+      assign(
+        assigns,
+        :collection_types,
+        CollectionType.get_collection_type_options()
+      )
+
     ~H"""
     <div>
-      <.modal_header
-        modal_id="collection-modal"
-        icon={assigns[:icon]}
-        title={@title}
-        description={~t"Use this form to manage collections in your database."m}
-      />
-
       <.simple_form
         for={@form}
-        id="collection-form"
+        id="collection_form"
+        novalidate
         phx-target={@myself}
-        phx-change="validate"
-        phx-submit="save"
+        phx-change="collection:validate"
+        phx-submit="collection:save"
       >
-        <.input field={@form[:name]} label={~t"Name"m} placeholder={~t"My Collection"m} />
-        <.input field={@form[:owner]} label={~t"Owner"m} placeholder="Brigit Hansson" />
         <.input
-          field={@form[:items_to_digitize]}
-          label={~t"Total items to digitize"m}
-          placeholder="42042"
+          type="hidden"
+          field={@form[:grscicoll_reference]}
+          value="322ce107-3156-4420-8a2b-7f17efeaa472"
         />
+        <.fieldset legend={@title} text={~t"Use this form to manage collections in your database."m}>
+          <.fieldgroup>
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
+              <.field
+                field={@form[:name]}
+                label={~t"Name"m}
+                placeholder={~t"My Collection"m}
+                required
+              />
+              <.field field={@form[:owner]} label={~t"Owner"m} placeholder="Brigit Hansson" required />
+            </div>
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
+              <.field
+                type="select"
+                field={@form[:type]}
+                label={~t"Type"m}
+                options={@collection_types}
+                prompt={~t"Select a type"m}
+              />
+              <.field
+                type="number"
+                field={@form[:items_to_digitize]}
+                label={~t"Total items to digitize"m}
+                placeholder="42042"
+              />
+            </div>
+            <.field
+              type="textarea"
+              field={@form[:description]}
+              label={~t"Description"m}
+              placeholder={~t"Description"m}
+            />
+          </.fieldgroup>
+        </.fieldset>
 
         <:actions>
-          <.button
-            type="submit"
-            class="sm:ml-3 sm:w-auto inline-flex justify-center w-full"
-            label={~t"Save Collection"m}
-          />
-          <.button
-            color="secondary"
-            class="sm:mt-0 sm:w-auto inline-flex justify-center w-full mt-3"
-            label={~t"Cancel"m}
-            phx-click={JS.exec("data-cancel", to: "#collection-modal")}
-            phx-disable-with
-          />
+          <button type="submit" class="btn btn-primary"><%= ~t"Save collection"m %></button>
+          <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
+          <button type="button" class="btn btn-ghost" onclick="collection_modal.close()">
+            <%= ~t"Cancel"m %>
+          </button>
         </:actions>
       </.simple_form>
     </div>
@@ -74,24 +102,15 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   end
 
   @impl true
-  def handle_event("validate", %{"collection" => params}, socket) do
+  def handle_event("collection:validate", %{"collection" => params}, socket) do
     form = Form.validate(socket.assigns.form, params)
     {:noreply, assign(socket, form: form)}
   end
 
-  def handle_event("save", %{"collection" => params}, socket) do
+  def handle_event("collection:save", %{"collection" => params}, socket) do
     socket =
       case Form.submit(socket.assigns.form, params: params) do
-        {:ok, collection} ->
-          collection =
-            DataAggregator.Records.load!(collection, [
-              :records_count,
-              :imports_count,
-              :digitizing_progress
-            ])
-
-          notify_parent({:saved, collection})
-
+        {:ok, _} ->
           message =
             case socket.assigns.action do
               :new -> ~t"Collection created successfully"m
@@ -99,6 +118,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
             end
 
           socket
+          |> push_event("submit:close", %{})
           |> push_patch(to: socket.assigns.patch)
           |> put_flash(:info, message)
 
@@ -108,6 +128,4 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
 
     {:noreply, socket}
   end
-
-  defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 end

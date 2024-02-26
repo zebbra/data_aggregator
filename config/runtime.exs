@@ -9,12 +9,8 @@ import Config
 
 require Logger
 
-if config_env() in [:dev, :test] do
+if config_env() in [:test] do
   Envy.load(["config/.env.#{config_env()}"])
-end
-
-if config_env() in [:dev] do
-  Envy.load([".env"])
 end
 
 get_env! = fn
@@ -35,14 +31,22 @@ if System.get_env("PHX_SERVER") do
 end
 
 if System.get_env("LOG_LEVEL") do
-  level = System.get_env("LOG_LEVEL") |> String.to_atom()
+  level = "LOG_LEVEL" |> System.get_env() |> String.to_atom()
   config :logger, level: level
 end
 
 if System.get_env("IMPORT_MAX_CONCURRENCY") do
-  max_concurrency = System.get_env("IMPORT_MAX_CONCURRENCY") |> String.to_integer()
+  max_concurrency = "IMPORT_MAX_CONCURRENCY" |> System.get_env() |> String.to_integer()
   config :data_aggregator, DataAggregator.Records, import_max_concurrency: max_concurrency
 end
+
+http_cache_path = System.get_env("HTTP_CACHE_PATH") || "priv/cache/#{config_env()}/http"
+
+config :data_aggregator,
+  # Cache http requests in the a directory on disk
+  http_cache_path: http_cache_path,
+  # API Key for opencagedata api
+  open_cage_data_api_key: System.get_env("OPEN_CAGE_DATA_API_KEY")
 
 # Configure Sentry runtime environment
 config :sentry,
@@ -62,7 +66,7 @@ case System.get_env("WAFFLE_STORAGE") do
 
     aws_s3_scheme = System.get_env("AWS_S3_SCHEME", "https://")
     aws_s3_host = System.get_env("AWS_S3_HOST", "s3.amazonaws.com")
-    aws_s3_port = System.get_env("AWS_S3_PORT", "443") |> String.to_integer()
+    aws_s3_port = "AWS_S3_PORT" |> System.get_env("443") |> String.to_integer()
 
     config :ex_aws,
       debug_requests: System.get_env("AWS_DEBUG_REQUESTS") in ~w(true 1),
@@ -111,19 +115,22 @@ if config_env() == :prod do
 
   # Listen IP supports IPv4 and IPv6 addresses.
   {:ok, listen_ip} =
-    System.get_env("LISTEN_IP", "127.0.0.1")
+    "LISTEN_IP"
+    |> System.get_env("127.0.0.1")
     |> String.to_charlist()
     |> :inet.parse_address()
 
   port =
-    System.get_env("PORT", "4000")
+    "PORT"
+    |> System.get_env("4000")
     |> String.to_integer()
 
   base_url =
-    System.get_env("BASE_URL", "http://localhost:4000")
+    "BASE_URL"
+    |> System.get_env("http://localhost:4000")
     |> URI.parse()
 
-  if base_url.scheme not in ["http", "https"] do
+  unless base_url.scheme in ["http", "https"] do
     raise "BASE_URL must start with `http` or `https`. Currently configured as `#{System.get_env("BASE_URL")}`"
   end
 
@@ -173,8 +180,8 @@ if config_env() == :prod do
   # "priv/ssl/server.key". For all supported SSL configuration
   # options, see https://hexdocs.pm/plug/Plug.SSL.html#configure/1
   #
-  # We also recommend setting `force_ssl` in your endpoint, ensuring
-  # no data is ever sent via http, always redirecting to https:
+  # We also recommend setting `force_ssl` in your config/prod.exs,
+  # ensuring no data is ever sent via http, always redirecting to https:
   #
   #     config :data_aggregator, DataAggregatorWeb.Endpoint,
   #       force_ssl: [hsts: true]

@@ -5,13 +5,13 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
 
   use Ash.Resource.Change
 
+  import DataAggregator.Records.Import.Helpers
+
   alias Ash.BulkResult
   alias Ash.Changeset
   alias DataAggregator.Records
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.Record
-
-  import DataAggregator.Records.Import.Helpers
 
   require Logger
 
@@ -21,7 +21,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
 
   defp import_records(%Changeset{data: import} = changeset) do
     if changeset.valid? do
-      Logger.info("Importing records for #{inspect(import.id)} ...")
+      Logger.debug("Importing records for #{inspect(import.id)} ...")
 
       case rows_stream(import) do
         {:ok, rows} -> import_in_chunks(changeset, rows)
@@ -35,7 +35,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
 
   defp import_in_chunks(%Changeset{data: import} = changeset, rows) do
     chunk_size = Records.import_batch_size()
-    Logger.info("Importing records in chunks of #{chunk_size} rows ...")
+    Logger.debug("Importing records in chunks of #{chunk_size} rows ...")
 
     # make sure collection is loaded to avoid N+1 queries
     import = Records.load!(import, [:collection], lazy?: true)
@@ -111,9 +111,10 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
   end
 
   defp rows_stream(import) do
-    with {:ok, import} <- DataAggregator.Records.load(import, attachment_data: [mapped: true]),
-         stream <- Explorer.DataFrame.to_rows_stream(import.attachment_data),
-         do: {:ok, stream}
+    with {:ok, import} <- DataAggregator.Records.load(import, attachment_data: [mapped: true]) do
+      stream = Explorer.DataFrame.to_rows_stream(import.attachment_data)
+      {:ok, stream}
+    end
   end
 
   defp add_error(changeset, error) do

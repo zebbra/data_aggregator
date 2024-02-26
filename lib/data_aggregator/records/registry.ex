@@ -9,11 +9,15 @@ defmodule DataAggregator.Records.Registry do
     ]
 
   entries do
+    entry DataAggregator.Records.ChangeEvent
     entry DataAggregator.Records.Collection
     entry DataAggregator.Records.Export
+    entry DataAggregator.Records.Encoding.RecordEncodingResult
     entry DataAggregator.Records.Import
     entry DataAggregator.Records.Import.Record
     entry DataAggregator.Records.Record
     entry DataAggregator.Records.Record.Image
+    entry DataAggregator.Records.Record.Version
+    entry DataAggregator.Records.EncodedRecord
   end
 end

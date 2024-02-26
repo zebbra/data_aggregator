@@ -1,7 +1,7 @@
 defmodule Mix.Tasks.Repo.Dump.Staging do
-  @moduledoc false
   @shortdoc "Dumps the database from a Kubernetes pod"
 
+  @moduledoc false
   use Mix.Task
 
   @namespace "scnat"

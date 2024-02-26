@@ -43,7 +43,7 @@ defmodule DataAggregator.Records.Import.Changes.DetectColumns do
         |> Explorer.DataFrame.dtypes()
         |> Enum.map(&build_column/1)
 
-      Logger.info("Detected #{length(columns)} in import file #{inspect(filename)}")
+      Logger.debug("Detected #{length(columns)} in import file #{inspect(filename)}")
 
       {:ok, columns}
     end

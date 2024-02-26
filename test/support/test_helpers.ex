@@ -5,16 +5,6 @@ defmodule DataAggregator.TestHelpers do
 
   using do
     quote do
-      import DataAggregator.TestHelpers
-
-      # Common assertions provided by
-      # https://github.com/devonestes/assertions
-      import Assertions
-
-      # Provides `with_log/1` and `assert_log/1`
-      # https://hexdocs.pm/ex_unit/ExUnit.CaptureLog.html
-      import ExUnit.CaptureLog
-
       import Ash.Test,
         only: [
           assert_has_error: 2,
@@ -22,6 +12,15 @@ defmodule DataAggregator.TestHelpers do
           refute_has_error: 2,
           refute_has_error: 3
         ]
+
+      # Common assertions provided by
+      # https://github.com/devonestes/assertions
+      import Assertions
+      import DataAggregator.TestHelpers
+
+      # Provides `with_log/1` and `assert_log/1`
+      # https://hexdocs.pm/ex_unit/ExUnit.CaptureLog.html
+      import ExUnit.CaptureLog
     end
   end
 

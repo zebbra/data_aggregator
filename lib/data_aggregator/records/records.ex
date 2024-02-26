@@ -1,23 +1,27 @@
-defmodule DataAggregator.Records do
-  # ensure module is recompiled when the class diagram changes
-  @class_diagram Path.expand("records-mermaid-class-diagram.md", __DIR__)
-  @external_resource @class_diagram
+class_diagram = Path.expand("records-mermaid-class-diagram.md", __DIR__)
 
+defmodule DataAggregator.Records do
   @moduledoc """
   Data API
 
   ## Resources
 
-  #{File.read!(@class_diagram)}
+  #{File.read!(class_diagram)}
   """
 
-  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api]
+  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api, AshPaperTrail.Api]
+
+  # ensure module is recompiled when the class diagram changes
+  @external_resource class_diagram
 
   @default_env [
     import_timeout: :timer.minutes(60),
     import_batch_size: 1000,
     async_import_progress?: true,
-    export_timeout: :timer.minutes(60)
+    export_timeout: :timer.minutes(60),
+    encode_timeout: :timer.minutes(60),
+    encode_batch_size: 1000,
+    async_encode_progress?: true
   ]
 
   resources do
@@ -37,7 +41,7 @@ defmodule DataAggregator.Records do
   """
   def get_all_env do
     env = Application.get_env(:data_aggregator, __MODULE__, [])
-    @default_env |> Keyword.merge(env)
+    Keyword.merge(@default_env, env)
   end
 
   def get_env(key, default \\ nil), do: Keyword.get(get_all_env(), key, default)
@@ -48,6 +52,15 @@ defmodule DataAggregator.Records do
   def import_max_concurrency do
     num_cpus = :erlang.system_info(:logical_processors_available)
     get_env(:import_max_concurrency, num_cpus)
+  end
+
+  def encode_timeout, do: get_env(:import_timeout)
+  def encode_batch_size, do: get_env(:import_batch_size)
+  def async_encode_progress?, do: get_env(:async_import_progress?)
+
+  def encode_max_concurrency do
+    num_cpus = :erlang.system_info(:logical_processors_available)
+    get_env(:encode_max_concurrency, num_cpus)
   end
 
   def export_timeout, do: get_env(:export_timeout)

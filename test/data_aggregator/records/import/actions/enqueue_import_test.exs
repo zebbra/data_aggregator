@@ -12,7 +12,7 @@ defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
         Collection.create!(%{
           name: "Test Collection",
           owner: "Max Powers",
-          reviewer: :swiss_bryophytes
+          grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
         })
 
       [collection: collection]

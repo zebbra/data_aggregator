@@ -3,9 +3,14 @@ defmodule DataAggregator.RecordTest do
 
   use DataAggregator.DataCase, async: true
 
-  alias DataAggregator.Records.Record
-
+  import DataAggregator.EncodingFixtures
+  import DataAggregator.RecordEncodingResultFixture
   import DataAggregator.RecordsFixtures
+
+  alias DataAggregator.Records
+  alias DataAggregator.Records.EncodedRecord
+  alias DataAggregator.Records.Encoding.RecordEncodingResult
+  alias DataAggregator.Records.Record
 
   describe "records" do
     @invalid_attrs %{
@@ -42,7 +47,11 @@ defmodule DataAggregator.RecordTest do
         collection: collection_fixture()
       }
 
-      assert {:ok, %Record{} = _record} = Record.create(attrs)
+      assert {:ok, %Record{} = record} = Record.create(attrs)
+
+      record = Records.load!(record, [:paper_trail_versions])
+
+      assert length(record.paper_trail_versions) == 1
     end
 
     test "create/1 with invalid data returns error changeset" do
@@ -58,6 +67,10 @@ defmodule DataAggregator.RecordTest do
       }
 
       assert {:ok, %Record{} = _record} = Record.update(record, update_attrs)
+
+      record = Records.load!(record, [:paper_trail_versions])
+
+      assert length(record.paper_trail_versions) == 2
     end
 
     test "update/2 with invalid data returns error changeset" do
@@ -69,6 +82,29 @@ defmodule DataAggregator.RecordTest do
       record = record_fixture()
       assert :ok = Record.destroy(record)
       assert_raise Ash.Error.Query.NotFound, fn -> Record.get_by_id!(record.id) end
+    end
+
+    test "destroy/1 deletes the record and it's encoded_record" do
+      encoded_record = Records.load!(encoded_record_fixture(), [:record])
+      record = encoded_record.record
+
+      assert :ok = Record.destroy(record)
+
+      assert_raise Ash.Error.Query.NotFound, fn -> Record.get_by_id!(record.id) end
+      assert_raise Ash.Error.Query.NotFound, fn -> EncodedRecord.get_by_id!(encoded_record.id) end
+    end
+
+    test "destroy/1 deletes the record and it's record_encoding_results" do
+      record_encoding_result = Records.load!(record_encoding_result_fixture(), [:record])
+      record = record_encoding_result.record
+
+      assert :ok = Record.destroy(record)
+
+      assert_raise Ash.Error.Query.NotFound, fn -> Record.get_by_id!(record.id) end
+
+      assert_raise Ash.Error.Query.NotFound, fn ->
+        RecordEncodingResult.get_by_id!(record_encoding_result.id)
+      end
     end
 
     test "destroy/1 with invalid id returns error" do
@@ -85,7 +121,7 @@ defmodule DataAggregator.RecordTest do
         Collection.create!(%{
           name: "My Collection",
           owner: "Max Powers",
-          reviewer: :swiss_bryophytes
+          grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
         })
 
       [collection: collection]
@@ -96,7 +132,6 @@ defmodule DataAggregator.RecordTest do
       [import: import]
     end
 
-    @tag :focus
     test "importing a record", %{import: import} do
       params = %{
         mte_material_entity_id: "ex-123",
@@ -126,6 +161,10 @@ defmodule DataAggregator.RecordTest do
           "some_extra_data" => "Extra"
         }
       })
+
+      record = Records.load!(record, [:paper_trail_versions])
+
+      assert length(record.paper_trail_versions) == 1
     end
 
     test "updating a record for the same import", %{import: import} do
@@ -161,6 +200,10 @@ defmodule DataAggregator.RecordTest do
           "some_other_extra_data" => "Other Extra"
         }
       })
+
+      record = Records.load!(record, [:paper_trail_versions])
+
+      assert length(record.paper_trail_versions) == 2
     end
 
     test "updating a record from another import", %{import: import} do
@@ -194,6 +237,10 @@ defmodule DataAggregator.RecordTest do
         "tax_scientific_name" => "Updated Example",
         "some_other_extra_data" => "Other Extra"
       })
+
+      record = Records.load!(record, [:paper_trail_versions])
+
+      assert length(record.paper_trail_versions) == 2
     end
 
     test "importing a record for another collection", %{import: import} do
@@ -208,7 +255,7 @@ defmodule DataAggregator.RecordTest do
         Collection.create!(%{
           name: "Another Collection",
           owner: "Max Powers",
-          reviewer: :swiss_bryophytes
+          grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
         })
 
       other_import = Import.create!(other_collection)

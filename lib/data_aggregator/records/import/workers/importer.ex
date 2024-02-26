@@ -31,7 +31,7 @@ defmodule DataAggregator.Records.Import.Workers.Importer do
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"id" => id}}) do
     with {:ok, import} <- Import.get_by_id(id) do
-      Logger.info("Importing #{inspect(import.id)} ...")
+      Logger.debug("Importing #{inspect(import.id)} ...")
       Import.import(import)
     end
   end

@@ -1,19 +1,18 @@
 defmodule Storybook.Components.Flash do
+  @moduledoc false
   use PhoenixStorybook.Story, :component
 
-  alias DataAggregatorWeb.Components.Button
-  alias DataAggregatorWeb.Components.Flash
-  alias DataAggregatorWeb.Components.Transitions
+  alias DataAggregatorWeb.Components
 
-  def function, do: &Flash.flash/1
-  def imports, do: [{Transitions, [show: 1]}, {Button, [button: 1]}]
+  def function, do: &Components.Flash.flash/1
+  def imports, do: [{Components.Transitions, [show: 1]}]
 
   def template do
     """
-    <div class="bg-base-100 rounded p-6" data-theme={@theme}>
-      <.button phx-click={show("#:variation_id")} psb-code-hidden label="Open flash" />
-      <.psb-variation />
-    </div>
+    <button type="button" class="btn btn-primary" phx-click={show("#:variation_id")} psb-code-hidden>
+      Open flash
+    </button>
+    <.psb-variation/>
     """
   end
 
@@ -22,7 +21,8 @@ defmodule Storybook.Components.Flash do
       %Variation{
         id: :info_no_title,
         attributes: %{
-          kind: :info
+          kind: :info,
+          hidden: true
         },
         slots: ["Info message"]
       },
@@ -30,9 +30,19 @@ defmodule Storybook.Components.Flash do
         id: :error_with_title,
         attributes: %{
           kind: :error,
+          hidden: true,
           title: "Flash title"
         },
         slots: ["Error message"]
+      },
+      %Variation{
+        id: :no_close_button,
+        attributes: %{
+          kind: :info,
+          hidden: true,
+          close: false
+        },
+        slots: ["Info message"]
       }
     ]
   end
