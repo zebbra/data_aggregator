@@ -138,7 +138,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Helm deployment
-        uses: WyriHaximus/github-action-helm3@v3
+        uses: WyriHaximus/github-action-helm3@v4
         with:
           exec: helm upgrade aggregator ./helm/charts/aggregator --install --wait --atomic --namespace scnat -f ./helm/staging.yaml --set image.tag=sha-${GITHUB_SHA::7}
           kubeconfig: "${{ secrets.KUBECONFIG }}"
