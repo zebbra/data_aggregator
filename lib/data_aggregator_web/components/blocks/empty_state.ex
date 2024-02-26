@@ -20,9 +20,9 @@ defmodule DataAggregatorWeb.Blocks.EmptyState do
       <div class="text-center">
         <.icon name={@icon} class="text-base-content/50" />
         <h3 class="text-base-content mt-2 text-sm font-semibold"><%= @title %></h3>
-        <p class="text-base-content/50 mt-1 text-sm"><%= @description %></p>
+        <p class="text-base-content/60 mt-1 text-sm"><%= @description %></p>
         <div class="mt-6">
-          <.link navigate={@href} type="button" class="btn btn-primary btn-sm">
+          <.link navigate={@href} type="button" class="btn btn-primary max-sm:btn-sm">
             <.icon name="hero-plus-mini" />
             <%= @label %>
           </.link>

@@ -75,7 +75,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           </:col>
           <:col :let={{_id, import}} label={~t"File"m}>
             <div class="font-mono"><%= import.attachment.filename %></div>
-            <div class="text-base-content/50 text-xs">
+            <div class="text-base-content/60 text-xs">
               <%= format_number(import.rows_count) %> rows
             </div>
           </:col>
@@ -84,7 +84,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           </:col>
           <:col :let={{_id, import}} label={~t"Started at"m}>
             <%= format_datetime(import.started_at, format: :short) %>
-            <div :if={import.duration} class="text-base-content/50 text-xs">
+            <div :if={import.duration} class="text-base-content/60 text-xs">
               <%= import.duration %>
             </div>
           </:col>
@@ -148,49 +148,49 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           size="xl"
         >
           <div>
-            <div class="border-black-white/10 border-b px-6 pb-8 sm:px-8">
-              <div class="flex w-full items-center">
-                <div class="min-w-0 flex-1">
-                  <h4 class="text-base-content font-bold">
-                    <%= ~t"Import"m %>
-                  </h4>
+            <.section_heading
+              text={~t"Import"m}
+              class="border-b border-black-white/10 px-6 sm:px-8 pb-8"
+              size="md"
+            >
+              <:subtitle>
+                <div :if={@selected_import.state == :pending} class="flex items-center gap-x-2">
+                  <span class="text-sm"><%= ~t"State:"m %></span>
+                  <.import_state_badge import={@selected_import} />
                 </div>
-                <div class="shrink-0">
-                  <button
-                    :if={can_run?(@selected_import)}
-                    type="button"
-                    phx-value-id={@selected_import.id}
-                    phx-click="import:run"
-                    class="btn btn-primary max-sm:btn-sm"
-                  >
-                    <.icon name="hero-play-circle-mini" class="size-6" />
-                    <%= ~t"Run import"m %>
-                  </button>
-                  <div
-                    :if={can_run?(@selected_import) == false && @selected_import.state == :pending}
-                    class="text-error flex h-8 items-center gap-x-2"
-                  >
-                    <.icon name="hero-exclamation-triangle-mini" class="size-6 mt-0.5" />
-                    <span class="text-sm"><%= ~t"Mapping is invalid"m %></span>
-                  </div>
-                  <div
-                    :if={can_run?(@selected_import) == false && @selected_import.state != :pending}
-                    class="flex items-center gap-x-2"
-                  >
-                    <span class="text-sm"><%= ~t"State:"m %></span>
-                    <.import_state_badge import={@selected_import} />
-                  </div>
+              </:subtitle>
+              <:actions>
+                <button
+                  :if={can_run?(@selected_import)}
+                  type="button"
+                  phx-value-id={@selected_import.id}
+                  phx-click="import:run"
+                  class="btn btn-primary max-sm:btn-sm"
+                >
+                  <.icon name="hero-play-circle-mini" class="size-6" />
+                  <%= ~t"Run"m %>
+                </button>
+                <div
+                  :if={can_run?(@selected_import) == false && @selected_import.state == :pending}
+                  class="text-error flex h-8 items-center gap-x-2"
+                >
+                  <.icon name="hero-exclamation-triangle-mini" class="size-6 mt-0.5" />
+                  <span class="text-sm"><%= ~t"Mapping is invalid"m %></span>
                 </div>
-              </div>
-              <div :if={@selected_import.state == :pending} class="flex items-center gap-x-2">
-                <span class="text-sm"><%= ~t"State:"m %></span>
-                <.import_state_badge import={@selected_import} />
-              </div>
-            </div>
+                <div
+                  :if={can_run?(@selected_import) == false && @selected_import.state != :pending}
+                  class="flex items-center gap-x-2"
+                >
+                  <span class="text-sm"><%= ~t"State:"m %></span>
+                  <.import_state_badge import={@selected_import} />
+                </div>
+              </:actions>
+            </.section_heading>
+
             <.list>
               <:item title={~t"File"m}>
                 <div class="font-mono"><%= @selected_import.attachment.filename %></div>
-                <div class="text-base-content/50 mt-1 flex items-center gap-x-2 text-xs">
+                <div class="text-base-content/60 mt-1 flex items-center gap-x-2 text-xs">
                   <.attachment_download_badge attachment={@selected_import.attachment} />
                   <%= format_number(@selected_import.rows_count) %> rows
                 </div>
@@ -252,23 +252,22 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           </div>
 
           <div>
-            <div class="border-black-white/10 flex w-full items-center border-b px-6 pb-8 sm:px-8">
-              <div class="min-w-0 flex-1">
-                <h4 class="text-base-content font-bold">
-                  <%= ~t"Mapping"m %>
-                </h4>
-              </div>
-              <div :if={@selected_import.state == :pending} class="flex shrink-0 items-center gap-x-2">
+            <.section_heading
+              text={~t"Mapping"m}
+              class="border-b border-black-white/10 px-6 pb-8 sm:px-8"
+              size="md"
+            >
+              <:actions :if={@selected_import.state == :pending}>
                 <.link
                   type="button"
                   patch={~p"/collections/#{@collection}/imports/#{@selected_import}/edit"}
                   class="btn btn-primary max-sm:btn-sm"
                 >
                   <.icon name="hero-pencil-square-mini" class="size-6" />
-                  <%= ~t"Edit mapping"m %>
+                  <%= ~t"Edit"m %>
                 </.link>
-              </div>
-            </div>
+              </:actions>
+            </.section_heading>
 
             <div class="no-scrollbar overflow-x-auto">
               <.table id="import_mapping_table" rows={@selected_import.mappings}>
@@ -286,9 +285,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               </.table>
             </div>
 
-            <div class="px-6 lg:px-8">
-              <.heading title={~t"Unmapped columns"m} size="sm" class="py-6 " />
-
+            <div class="px-6 py-4 lg:px-8">
+              <.section_heading text={~t"Unmapped columns"m} class="pb-4" size="md" />
               <span
                 :for={
                   col <-

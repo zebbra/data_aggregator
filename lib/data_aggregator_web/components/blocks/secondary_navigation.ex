@@ -9,15 +9,19 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
   Renders a secondary, horizontal navigation which will scroll on small screens.
   """
 
-  attr(:id, :string, default: "secondary_navigation", doc: "ID of the navigation")
+  attr :id, :string, default: "secondary_navigation", doc: "ID of the navigation"
+  attr :class, :string, default: nil, doc: "Class of the navigation"
 
-  slot(:inner_block, required: true, doc: "The navigation items")
+  slot :inner_block, required: true, doc: "The navigation items"
 
   def secondary_navigation(assigns) do
     ~H"""
     <nav
       aria-labelledby={@id}
-      class="border-black-white/10 bg-base-200/80 no-scrollbar flex snap-x scroll-px-6 overflow-x-auto border-y py-4 lg:scroll-px-8"
+      class={[
+        "border-black-white/10 bg-base-200/80 no-scrollbar flex snap-x scroll-px-6 overflow-x-auto border-y py-4 lg:scroll-px-8",
+        @class
+      ]}
     >
       <h2 id={@id} class="sr-only">Secondary navigation</h2>
       <ul

@@ -22,7 +22,46 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   def collection_header(assigns) do
     ~H"""
-    <.header>
+    <.page_header title_class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
+      <:breadcrumbs class="sm:hidden flex items-center justify-between px-6 mt-1">
+        <.breadcrumbs
+          class="text-sm"
+          items={[
+            %{label: ~t"Collections"m, link: ~p"/collections"},
+            %{label: ~t"Current"m, link: "#"}
+          ]}
+        />
+        <.link patch={~p"/collections/#{@collection}/imports/new"} class="btn btn-primary btn-sm">
+          <.icon name="hero-arrow-up-tray" class="size-4" />
+          <%= ~t"Add"m %>
+        </.link>
+      </:breadcrumbs>
+      <:title>
+        <.breadcrumbs
+          class="max-sm:hidden text-base-content font-bold text-3xl tracking-tight"
+          items={[
+            %{label: ~t"Collections"m, link: ~p"/collections"},
+            %{label: @collection.name, link: "#"}
+          ]}
+        />
+        <h2 class="text-base-content text-2xl font-bold max-sm:line-clamp-2 sm:hidden sm:truncate sm:text-3xl sm:tracking-tight">
+          <%= @collection.name %>
+        </h2>
+      </:title>
+      <:subtitle>
+        <div class="text-base-content/60 text-sm/6 line-clamp-3 flex max-w-4xl items-center gap-x-2 sm:mt-2">
+          <span class="max-sm:hidden">
+            <.encoding_state_badge state={@collection.encoding_state} />
+          </span>
+          <%= @collection.description %>
+        </div>
+      </:subtitle>
+      <:actions :if={@current in [:records, :imports]} class="max-sm:hidden">
+        <.link patch={~p"/collections/#{@collection}/imports/new"} class="btn btn-primary">
+          <.icon name="hero-arrow-up-tray" />
+          <%= ~t"Import dataset"m %>
+        </.link>
+      </:actions>
       <:navbar>
         <.secondary_navigation>
           <.secondary_navigation_item
@@ -47,42 +86,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           /> --%>
         </.secondary_navigation>
       </:navbar>
-      <:breadcrumbs>
-        <.breadcrumbs
-          class="sm:hidden text-sm"
-          items={[
-            %{label: ~t"Collections"m, link: ~p"/collections"},
-            %{label: ~t"Current"m, link: "#"}
-          ]}
-        />
-      </:breadcrumbs>
-      <.breadcrumbs
-        class="max-sm:hidden text-lg/6"
-        items={[
-          %{label: ~t"Collections"m, link: ~p"/collections"},
-          %{label: @collection.name, link: "#"}
-        ]}
-      />
-      <span class="sm:hidden"><%= @collection.name %></span>
-      <:subtitle>
-        <div class="mt-2 flex items-center gap-x-2 sm:mt-1">
-          <span class="max-sm:hidden">
-            <.encoding_state_badge state={@collection.encoding_state} />
-          </span>
-          <%= @collection.description %>
-        </div>
-      </:subtitle>
-      <:actions :if={@current in [:records, :imports]}>
-        <.link
-          patch={~p"/collections/#{@collection}/imports/new"}
-          class="btn btn-primary max-sm:btn-sm"
-        >
-          <.icon name="hero-arrow-up-tray" class="max-sm:size-4" />
-          <span class="max-sm:hidden"><%= ~t"Import dataset"m %></span>
-          <span class="sm:hidden"><%= ~t"Add"m %></span>
-        </.link>
-      </:actions>
-    </.header>
+    </.page_header>
     """
   end
 end

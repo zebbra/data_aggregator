@@ -66,11 +66,19 @@
         <.icon name="hero-queue-list" />
         <span class="md:hidden lg:inline">
           <%= ~t"Tasks"m %>
-          <span class="badge badge-primary hidden lg:inline-flex">
+          <span class={[
+            "badge badge-base-text hidden lg:inline-flex",
+            @current != "tasks" && "badge-primary",
+            @current == "tasks" && "bade-base-text"
+          ]}>
             9
           </span>
         </span>
-        <span class="badge badge-primary indicator-item ml-auto md:hidden">
+        <span class={[
+          "badge badge-base-text indicator-item ml-auto md:hidden",
+          @current != "tasks" && "badge-primary",
+          @current == "tasks" && "bade-base-text"
+        ]}>
           9
         </span>
       </.link>

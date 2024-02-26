@@ -24,78 +24,68 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
         current={current_step(@action)}
         links={[nil, ~p"/collections/#{@collection}/imports/#{@import}/edit", nil]}
       />
-      <div class="space-y-8">
-        <.heading
-          title={~t"Summary"m}
-          subtitle={~t"Please review the summary of your import."m}
-          class="border-b border-black-white/10 py-4"
-        >
-          <:actions>
-            <div class="flex items-center gap-x-2">
-              <span class="text-sm"><%= ~t"State:"m %></span>
-              <.import_state_badge import={@import} />
+      <.section_heading
+        text={~t"Summary"m}
+        description={~t"Please review the summary of your import."m}
+        class="border-b border-black-white/10 py-4"
+      >
+        <:actions>
+          <div class="flex items-center gap-x-2">
+            <span class="text-sm"><%= ~t"State:"m %></span>
+            <.import_state_badge import={@import} />
+          </div>
+        </:actions>
+      </.section_heading>
+      <div class="-mx-6 pb-4">
+        <.list>
+          <:item title={~t"File"m}>
+            <div class="font-mono"><%= @import.attachment.filename %></div>
+            <div class="text-base-content/60 mt-1 flex items-center gap-x-2 text-xs">
+              <.attachment_download_badge attachment={@import.attachment} />
+              <%= format_number(@import.rows_count) %> rows
             </div>
-          </:actions>
-        </.heading>
+          </:item>
+          <:item title={~t"Created at"m}>
+            <%= format_datetime(@import.inserted_at) %>
+          </:item>
+          <:item title={~t"Rows"m}><%= format_number(@import.rows_count) %></:item>
+        </.list>
+      </div>
 
-        <div class="-mx-6">
-          <.list>
-            <:item title={~t"File"m}>
-              <div class="font-mono"><%= @import.attachment.filename %></div>
-              <div class="text-base-content/50 mt-1 flex items-center gap-x-2 text-xs">
-                <.attachment_download_badge attachment={@import.attachment} />
-                <%= format_number(@import.rows_count) %> rows
-              </div>
-            </:item>
-            <:item title={~t"Created at"m}>
-              <%= format_datetime(@import.inserted_at) %>
-            </:item>
-            <:item title={~t"Rows"m}><%= format_number(@import.rows_count) %></:item>
-          </.list>
-        </div>
-
-        <div class="-mx-6">
-          <div class="border-black-white/10 flex w-full items-center border-b px-6 pb-8 sm:px-8">
-            <div class="min-w-0 flex-1">
-              <h4 class="text-base-content font-bold">
-                <%= ~t"Mapping"m %>
-              </h4>
-            </div>
-          </div>
-
-          <div class="no-scrollbar overflow-x-auto">
-            <.table id="import_mapping_table" rows={@import.mappings}>
-              <:col :let={column} label={~t"Column"m}>
-                <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
-                  <%= column.name %>
-                </span>
-                <span :if={column.name == nil} class="text-error">
-                  <%= ~t"Mapping is invalid"m %>
-                </span>
-              </:col>
-              <:col :let={column} label={~t"Mapped to"m} class="py-5">
-                <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
-              </:col>
-            </.table>
-          </div>
-
-          <div class="px-6 lg:px-8">
-            <.heading title={~t"Unmapped columns"m} size="sm" class="py-6 " />
-
-            <span
-              :for={
-                col <-
-                  @import.columns
-                  |> Enum.filter(&(&1.mapped? == false))
-                  |> Enum.map(& &1.name)
-              }
-              class="bg-base-200 mr-1 mb-1 inline-flex rounded px-2 py-1 text-xs"
-            >
-              <%= col %>
-            </span>
-          </div>
+      <.section_heading text={~t"Mapping"m} size="md" />
+      <div class="-mx-6 py-4">
+        <div class="no-scrollbar overflow-x-auto">
+          <.table id="import_mapping_table" rows={@import.mappings}>
+            <:col :let={column} label={~t"Column"m}>
+              <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
+                <%= column.name %>
+              </span>
+              <span :if={column.name == nil} class="text-error">
+                <%= ~t"Mapping is invalid"m %>
+              </span>
+            </:col>
+            <:col :let={column} label={~t"Mapped to"m}>
+              <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
+            </:col>
+          </.table>
         </div>
       </div>
+
+      <.section_heading text={~t"Unmapped columns"m} size="md" />
+      <div class="py-4">
+        <span
+          :for={
+            col <-
+              @import.columns
+              |> Enum.filter(&(&1.mapped? == false))
+              |> Enum.map(& &1.name)
+          }
+          class="bg-base-200 mr-1 mb-1 inline-flex rounded px-2 py-1 text-xs"
+        >
+          <%= col %>
+        </span>
+      </div>
+
       <div class="modal-action">
         <.link
           patch={~p"/collections/#{@collection}/imports/#{@import}/edit"}

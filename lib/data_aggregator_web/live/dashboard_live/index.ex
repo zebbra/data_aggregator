@@ -19,7 +19,7 @@ defmodule DataAggregatorWeb.DashboardLive.Index do
   def render(assigns) do
     ~H"""
     <.page current="home">
-      <.header><%= ~t"Dashboard"m %></.header>
+      <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6"><%= ~t"Dashboard"m %></.page_header>
     </.page>
     """
   end

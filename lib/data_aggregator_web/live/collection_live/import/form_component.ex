@@ -38,11 +38,12 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
         />
       </div>
       <div :if={@import.state not in [nil, :pending]}>
-        <.heading
-          title={~t"Import was already processed"m}
-          subtitle={
+        <.section_heading
+          text={~t"Import was already processed"m}
+          description={
             ~t"You are not allowed to process an import twice. Please start again by uploading a new import dataset."m
           }
+          size="md"
         />
         <div class="modal-action">
           <button type="button" class="btn btn-primary" onclick="import_modal.close()">

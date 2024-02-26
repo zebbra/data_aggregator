@@ -41,7 +41,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   def render(assigns) do
     ~H"""
     <.page current="collections">
-      <.header>
+      <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
         <%= ~t"Collections"m %>
         <:actions>
           <.link patch={~p"/collections/new"} class="btn btn-primary max-sm:btn-sm">
@@ -49,7 +49,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             <%= ~t"New collection"m %>
           </.link>
         </:actions>
-      </.header>
+      </.page_header>
 
       <div class="no-scrollbar overflow-x-auto pb-4">
         <.table :if={@count > 0} id="collections_table" rows={@streams.results}>
