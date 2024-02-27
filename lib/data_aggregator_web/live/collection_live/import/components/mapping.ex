@@ -50,7 +50,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         <.section_heading
           text={~t"Mappings"m}
           description={~t"Map columns to record attributes"m}
-          class="border-b border-black-white/10 py-4"
+          class="border-b border-black-white/10 py-4 sm:!items-start"
           break_at="sm"
         >
           <:actions>
@@ -168,7 +168,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         type="search"
         field={@form[:query]}
         placeholder={~t"Search mapping"}
-        class="input input-bordered sm:input-sm max-sm:text-baseflex items-center rounded-full flex-row gap-2"
+        class="input input-bordered sm:input-sm max-sm:text-base inline-flex items-center rounded-full flex-row gap-2"
       >
         <:content :let={field}>
           <.icon name="hero-magnifying-glass" class="size-5 text-base-content/50" />
