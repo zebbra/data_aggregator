@@ -12,7 +12,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   attr(:collection_id, :any, default: nil)
   attr(:collection, Collection, default: nil)
-  attr(:current, :atom, default: :records, values: ~w(records imports encodings details)a)
+  attr(:current, :atom, default: :records, values: ~w(records imports encodings exports details)a)
 
   def collection_header(%{collection: nil} = assigns) do
     assigns
@@ -73,6 +73,11 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             href={~p"/collections/#{@collection}/imports"}
             label={~t"Imports"m}
             active={@current == :imports}
+          />
+          <.secondary_navigation_item
+            href={~p"/collections/#{@collection}/exports"}
+            label={~t"Exports"m}
+            active={@current == :exports}
           />
           <%!-- <.secondary_navigation_item
             href={~p"/collections/#{@collection}/encodings"}

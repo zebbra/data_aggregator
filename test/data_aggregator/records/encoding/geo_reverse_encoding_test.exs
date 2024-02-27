@@ -46,7 +46,6 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
       assert record.state === :encoded
     end
 
-    @tag run: true
     test "encode/2 for :geo_reverse catalog - reverse geo encoding with intl coordinates out of switzerland - successful",
          %{
            record_fixture: record_fixture

@@ -8,6 +8,7 @@ defmodule DataAggregator.Records.Export do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine]
 
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Changes
   alias DataAggregator.Records.Collection
 
@@ -21,6 +22,7 @@ defmodule DataAggregator.Records.Export do
     attribute :mapping, :map, allow_nil?: true
     attribute :records_query, :term, allow_nil?: false
     attribute :exported_count, :integer, allow_nil?: false, default: 0
+    attribute :rows_count, :integer, allow_nil?: false, default: 0
 
     timestamps private?: false, writable?: false
   end
@@ -31,6 +33,28 @@ defmodule DataAggregator.Records.Export do
     belongs_to :attachment, Attachment do
       api DataAggregator.Files
     end
+
+    belongs_to :job, Job do
+      api DataAggregator.Jobs
+      attribute_type :integer
+      attribute_writable? true
+      allow_nil? true
+    end
+  end
+
+  calculations do
+    calculate :export_progress, :float, expr(exported_count / rows_count)
+    calculate :duration, :time, expr((finished_at || now()) - started_at)
+
+    calculate :collection_name, :string, expr(collection.name)
+
+    calculate :attachment_url, :string do
+      calculation fn import, _opts -> import.attachment.url end
+      load attachment: :url
+    end
+
+    calculate :attachment_byte_size, :integer, expr(attachment.byte_size)
+    calculate :attachment_filename, :string, expr(attachment.filename)
   end
 
   state_machine do
@@ -70,7 +94,14 @@ defmodule DataAggregator.Records.Export do
     update :enqueue do
       accept []
       change transition_state(:queued)
-      change Changes.EnqueueRunner
+      change Changes.EnqueueExporter
+    end
+
+    update :add_export_progress do
+      accept []
+      argument :exported, :integer, allow_nil?: false
+      change atomic_update(:exported_count, expr(exported_count + ^arg(:exported)))
+      change ensure_selected(:exported_count)
     end
 
     update :set_running do
@@ -125,11 +156,18 @@ defmodule DataAggregator.Records.Export do
     define :set_running
     define :set_failed
     define :update_attachment, action: :update_attachment, args: [:attachment]
+    define :add_export_progress, args: [:exported]
   end
 
   postgres do
     table "exports"
     repo DataAggregator.Repo
+
+    references do
+      reference :collection, on_delete: :delete, on_update: :update
+      reference :attachment, on_delete: :delete, on_update: :update
+      reference :job, on_delete: :nilify, on_update: :update
+    end
   end
 
   graphql do

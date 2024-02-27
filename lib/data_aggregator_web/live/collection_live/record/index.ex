@@ -18,12 +18,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Encoding.RecordEncodingResult
+  alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
   alias DataAggregatorWeb.Components.DataTable
 
   @load [:collection, :encoded_record]
 
-  @encoding_polling_interval 5_000
+  @polling_interval 5_000
 
   @impl true
   def mount(_params, _session, socket) do
@@ -327,17 +328,39 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       Collection.touch(collection)
     end)
 
-    schedule_poller()
+    schedule_encoding_poller()
 
     {:noreply, socket}
   end
 
   @impl true
-  def handle_info(:poll, socket) do
+  def handle_event("collection:export", _params, socket) do
+    %{collection: collection} = socket.assigns
+    collection = Records.load!(collection, [:records_to_publish_query], lazy?: true)
+
+    export =
+      %{
+        name: "export-#{collection.name}-#{:os.system_time()}",
+        collection: collection,
+        mapping: nil,
+        records_query: collection.records_to_publish_query,
+        rows_count: Records.count!(collection.records_to_publish_query)
+      }
+      |> Export.create!()
+      |> Export.enqueue!()
+
+    {:noreply,
+     socket
+     |> assign(:export, export)
+     |> push_navigate(to: ~p"/collections/#{collection.id}/exports")}
+  end
+
+  @impl true
+  def handle_info(:poll_encoding, socket) do
     collection = Collection.get_by_id!(socket.assigns.collection.id, load: [:encoding_state])
 
     if collection.encoding_state in [:queued, :encoding] do
-      schedule_poller()
+      schedule_encoding_poller()
       {:noreply, socket}
     else
       {:noreply, push_patch(socket, to: ~p"/collections/#{collection.id}/records")}
@@ -416,7 +439,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     Record.get_by_id!(id, load: @load)
   end
 
-  defp schedule_poller do
-    Process.send_after(self(), :poll, @encoding_polling_interval)
+  defp schedule_encoding_poller do
+    Process.send_after(self(), :poll_encoding, @polling_interval)
   end
 end

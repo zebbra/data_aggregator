@@ -27,13 +27,13 @@ defmodule DataAggregator.ExportFixtures do
     |> Export.create!()
   end
 
-  def get_publishable_record(collection) do
+  def publishable_record(collection) do
     publishable_record_attrs()
     |> Map.put_new_lazy(:collection, fn -> collection end)
     |> Record.create!()
   end
 
-  def get_unpublishable_record(collection) do
+  def unpublishable_record(collection) do
     publishable_record_attrs()
     |> Map.put_new_lazy(:collection, fn -> collection end)
     |> Map.delete(:tax_kingdom)

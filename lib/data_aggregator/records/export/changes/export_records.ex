@@ -13,7 +13,7 @@ defmodule DataAggregator.Records.Changes.ExportRecords do
   require Logger
 
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_action(changeset, &export_records/1)
+    Changeset.before_action(changeset, &export_records/1, append?: true)
   end
 
   defp export_records(%Changeset{data: original_export} = changeset) do

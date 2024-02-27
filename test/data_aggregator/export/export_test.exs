@@ -95,10 +95,10 @@ defmodule DataAggregator.ExportTest do
       collection = Records.load!(collection_fixture(), [:records_to_publish_query])
 
       # those two should be published
-      get_publishable_record(collection)
-      get_publishable_record(collection)
+      publishable_record(collection)
+      publishable_record(collection)
       # this one should not be published
-      get_unpublishable_record(collection)
+      unpublishable_record(collection)
 
       export =
         Export.create!(%{

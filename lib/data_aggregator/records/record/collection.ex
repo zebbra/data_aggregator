@@ -51,6 +51,10 @@ defmodule DataAggregator.Records.Collection do
       api DataAggregator.Records
     end
 
+    has_many :exports, DataAggregator.Records.Export do
+      api DataAggregator.Records
+    end
+
     has_many :records, DataAggregator.Records.Record do
       api DataAggregator.Records
     end

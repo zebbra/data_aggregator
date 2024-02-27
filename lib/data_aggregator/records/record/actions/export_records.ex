@@ -24,12 +24,10 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
       attachment =
         records_query
         |> Records.stream!()
-        |> Stream.map(&map_records(&1, mapping))
+        |> Stream.map(&map_record(&1, mapping, export))
         |> export_to_s3(path, mapping)
 
-      with {:ok, export} <-
-             Export.update(export, %{exported_count: Records.count!(records_query)}),
-           {:ok, export} <- Export.update_mapping(export, mapping),
+      with {:ok, export} <- Export.update_mapping(export, mapping),
            {:ok, export} <- Export.update_attachment(export, attachment) do
         {:ok, export}
       else
@@ -64,11 +62,9 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
     file
   end
 
-  defp map_records(records, mapping) do
-    Stream.map(records, &map_record(&1, mapping))
-  end
+  defp map_record(record, mapping, export) do
+    Export.add_export_progress(export, 1)
 
-  defp map_record(record, mapping) do
     record |> Map.from_struct() |> Map.take(get_headers(mapping))
   end
 
