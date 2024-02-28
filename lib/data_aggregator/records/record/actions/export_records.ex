@@ -76,7 +76,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   end
 
   defp get_default_mapping do
-    Map.new(Schema.prefixed_attribute_names(), fn name -> {name, Atom.to_string(name)} end)
+    Map.new(Schema.prefixed_attribute_names(), fn name -> {name, name} end)
   end
 
   defp get_headers(mapping) do

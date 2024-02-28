@@ -5,7 +5,7 @@ import Config
 database_url = "ecto://postgres:postgres@localhost:5432/data-aggregator-test"
 
 config :data_aggregator, DataAggregator.Repo,
-  url: System.get_env("DATABASE_URL") || database_url,
+  url: database_url,
   pool_size: System.schedulers_online() * 2,
   pool: Ecto.Adapters.SQL.Sandbox,
   queue_target: 100,

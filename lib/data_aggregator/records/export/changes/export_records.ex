@@ -32,6 +32,7 @@ defmodule DataAggregator.Records.Changes.ExportRecords do
   end
 
   defp add_success(changeset, export) do
+    export = Export.get_by_id!(export.id)
     Logger.info("Successfully exported #{export.exported_count} records")
 
     changeset

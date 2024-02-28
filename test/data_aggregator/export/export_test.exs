@@ -88,7 +88,7 @@ defmodule DataAggregator.ExportTest do
       "tax_family" => "Famille"
     }
     @default_mapping Map.new(Schema.prefixed_attribute_names(), fn name ->
-                       {name, Atom.to_string(name)}
+                       {name, name}
                      end)
 
     setup %{mapping: mapping} do

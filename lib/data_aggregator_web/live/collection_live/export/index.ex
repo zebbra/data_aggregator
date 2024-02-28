@@ -123,8 +123,8 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
 
       <:secondary>
         <.slideover
-          title={~t"Show export"m}
-          subtitle={~t"Export status"m}
+          title={if @selected_export != nil, do: @selected_export.name, else: ~t"Export"m}
+          subtitle=""
           open={@selected_export != nil}
           on_cancel={JS.push("export:select", value: %{id: nil})}
           size="xl"
@@ -137,7 +137,6 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
             >
               <:subtitle>
                 <div :if={@selected_export.state == :pending} class="flex items-center gap-x-2">
-                  <span class="text-sm"><%= ~t"State:"m %></span>
                   <.export_state_badge export={@selected_export} />
                 </div>
               </:subtitle>
@@ -156,7 +155,6 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
                   :if={can_run?(@selected_export) == false && @selected_export.state != :pending}
                   class="flex items-center gap-x-2"
                 >
-                  <span class="text-sm"><%= ~t"State:"m %></span>
                   <.export_state_badge export={@selected_export} />
                 </div>
               </:actions>

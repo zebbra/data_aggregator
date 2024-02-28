@@ -84,10 +84,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </div>
         <div class="flex min-w-0 flex-1 justify-end gap-x-2">
           <button
-            phx-click="collection:export"
+            phx-click={JS.push("collection:export")}
             class="btn btn-primary text-primary-content max-sm:btn-sm"
             class="btn btn-primary text-primary-content max-sm:btn-sm"
             disabled={@busy}
+            data-confirm={~t"Are you sure?"m}
+            data-confirm_id="confirm_export_alert"
           >
             <.icon name="hero-arrow-down-tray" class="max-sm:size-4" />
             <%= ~t"Export"m %>
@@ -274,6 +276,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           <li class="text-info"><span class="text-base-content"><%= ~t"Record imports"m %></span></li>
           <li class="text-info"><span class="text-base-content"><%= ~t"Record images"m %></span></li>
         </ul>
+      </.alert>
+
+      <.alert
+        id="confirm_export_alert"
+        size="sm"
+        title={~t"Are you sure?"m}
+        text={~t"You're about to export this collection."m}
+      >
       </.alert>
     </.page>
     """
