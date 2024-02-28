@@ -41,7 +41,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
         <.section_heading
           text={~t"Import records"m}
           description={~t"Please provide your collection file holding your records."m}
-          class="border-b border-black-white/10 py-4"
+          class="border-b border-black-white/10 py-4 sm:!items-start"
         />
         <.simple_form
           for={@form}

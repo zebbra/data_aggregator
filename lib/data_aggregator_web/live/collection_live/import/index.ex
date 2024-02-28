@@ -150,7 +150,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           <div>
             <.section_heading
               text={~t"Import"m}
-              class="border-b border-black-white/10 px-6 sm:px-8 pb-8"
+              class="border-b border-black-white/10 px-6 lg:px-8 pb-8"
               size="md"
             >
               <:subtitle>
@@ -254,7 +254,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           <div>
             <.section_heading
               text={~t"Mapping"m}
-              class="border-b border-black-white/10 px-6 pb-8 sm:px-8"
+              class="border-b border-black-white/10 px-6 pb-8 lg:px-8"
               size="md"
             >
               <:actions :if={@selected_import.state == :pending}>
