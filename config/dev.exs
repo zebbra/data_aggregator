@@ -1,7 +1,7 @@
 import Config
 
 # Configure your database
-database_url = "ecto://postgres:postgres@localhost:5432/data_aggregator_dev"
+database_url = "ecto://postgres:postgres@localhost:5432/data-aggregator-dev"
 
 config :data_aggregator, DataAggregator.Repo,
   url: System.get_env("DATABASE_URL") || database_url,
