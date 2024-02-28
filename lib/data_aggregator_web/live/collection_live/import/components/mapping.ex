@@ -168,7 +168,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         type="search"
         field={@form[:query]}
         placeholder={~t"Search mapping"}
-        class="input input-bordered sm:input-sm max-sm:text-base inline-flex items-center rounded-full flex-row gap-2"
+        class="input input-bordered max-sm:text-base sm:inline-flex items-center rounded-full flex-row gap-2"
       >
         <:content :let={field}>
           <.icon name="hero-magnifying-glass" class="size-5 text-base-content/50" />

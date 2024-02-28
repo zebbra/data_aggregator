@@ -30,6 +30,7 @@ defmodule Storybook.Components.Form.InputValidation do
               attributes: %{
                 type: to_string(type),
                 label: String.capitalize("#{type} input"),
+                placeholder: "Enter #{type} input",
                 autocomplete: to_string(type)
               }
             }
