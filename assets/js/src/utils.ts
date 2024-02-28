@@ -1,3 +1,7 @@
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(" ");
+}
+
 function onInitialPageLoad(fn: Function) {
   window.addEventListener("phx:page-loading-stop", (info) => {
     const event = info as CustomEvent;
@@ -6,4 +10,4 @@ function onInitialPageLoad(fn: Function) {
   });
 }
 
-export { onInitialPageLoad };
+export { classNames, onInitialPageLoad };

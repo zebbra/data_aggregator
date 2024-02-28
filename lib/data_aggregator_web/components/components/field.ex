@@ -46,7 +46,7 @@ defmodule DataAggregatorWeb.Components.Field do
   attr(:type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week)
+               range radio search select tel text textarea time url week combobox)
   )
 
   attr(:field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]")
@@ -233,11 +233,7 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <div
       phx-feedback-for={@name}
-      class={[
-        "form-control grid-cols-[subgrid] grid sm:col-span-3",
-        @errors != [] && "[&_select]:phx-feedback:select-error",
-        @hidden && "hidden"
-      ]}
+      class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @hidden && "hidden"]}
     >
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
@@ -261,14 +257,7 @@ defmodule DataAggregatorWeb.Components.Field do
 
   def field(%{type: "select"} = assigns) do
     ~H"""
-    <div
-      phx-feedback-for={@name}
-      class={[
-        "form-control w-full",
-        @errors != [] && "[&_select]:phx-feedback:select-error",
-        @hidden && "hidden"
-      ]}
-    >
+    <div phx-feedback-for={@name} class={["form-control w-full", @hidden && "hidden"]}>
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
       <% else %>
@@ -391,7 +380,7 @@ defmodule DataAggregatorWeb.Components.Field do
   attr(:type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week)
+               range radio search select tel text textarea time url week combobox)
   )
 
   attr(:field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]")

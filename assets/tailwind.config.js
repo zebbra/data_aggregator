@@ -11,6 +11,7 @@ module.exports = {
   content: [
     "./js/**/*.js",
     "./js/**/*.ts",
+    "./js/**/*.jsx",
     "../lib/data_aggregator_web.ex",
     "../lib/data_aggregator_web/**/*.*ex",
   ],

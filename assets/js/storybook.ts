@@ -3,6 +3,7 @@
 // such:
 //
 import Hooks from "./hooks";
+import "./components";
 import { onInitialPageLoad } from "./src/utils";
 // import * as Params from "./params";
 // import * as Uploaders from "./uploaders";

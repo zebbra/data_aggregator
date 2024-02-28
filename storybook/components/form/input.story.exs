@@ -118,6 +118,34 @@ defmodule Storybook.Components.Form.Input do
           multiple: true,
           disabled: true
         }
+      },
+      %Variation{
+        id: :combobox,
+        attributes: %{
+          label: "Combobox input",
+          type: "combobox",
+          options: ["Option 1", "Option 2", "Option 3"]
+        }
+      },
+      %Variation{
+        id: :combobox_with_groups,
+        attributes: %{
+          label: "Combobox input",
+          type: "combobox",
+          options: %{
+            "Group 1" => ["Option 1", "Option 2"],
+            "Group 2" => ["Option 3", "Option 4"]
+          }
+        }
+      },
+      %Variation{
+        id: :combobox_disabled,
+        attributes: %{
+          label: "Combobox input",
+          type: "combobox",
+          options: ["Option 1", "Option 2", "Option 3"],
+          disabled: true
+        }
       }
     ]
   end

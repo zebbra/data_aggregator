@@ -45,7 +45,7 @@ defmodule DataAggregatorWeb.Components.Input do
   attr(:type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week toggle)
+               range radio search select tel text textarea time url week toggle combobox)
   )
 
   attr(:field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]")
@@ -149,6 +149,25 @@ defmodule DataAggregatorWeb.Components.Input do
       <option :if={@prompt} value=""><%= @prompt %></option>
       <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
     </select>
+    """
+  end
+
+  def input(%{type: "combobox"} = assigns) do
+    ~H"""
+    <input type="hidden" input-id={@id} value="false" />
+    <x-combobox
+      id={@id}
+      name={@name}
+      class={[@class, @errors != [] && "[&_.input]:phx-feedback:input-error"]}
+      phx-update="ignore"
+      multiple={@multiple}
+      aria-invalid={@errors != []}
+      aria-describedby={@errors != [] && "#{@id}_error"}
+      data-placeholder={@rest[:placeholder]}
+      data-options={Jason.encode!(@options)}
+      data-value={@value}
+      {@rest}
+    />
     """
   end
 
