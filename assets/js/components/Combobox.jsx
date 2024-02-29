@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Combobox } from "@headlessui/react";
 
-import { classNames } from "../src/utils";
+import { classNames, stringToId } from "../src/utils";
 
 export default function ({ options, value, onSelect, placeholder, disabled }) {
   const [query, setQuery] = useState("");
@@ -163,33 +163,38 @@ export default function ({ options, value, onSelect, placeholder, disabled }) {
 
   function renderGroup(label, options) {
     return (
-      <div key={label}>
-        <div className="sticky top-1 bg-base-100 z-10 px-3 text-sm/6 py-1.5 font-bold text-base-content/60 border-b border-black-white/10 tracking-tighter">
-          <h3>{label}</h3>
-        </div>
-        {renderOptions(options)}
-      </div>
+      <ul key={label} role="group" aria-labelledby={stringToId(label)}>
+        <li
+          role="presentation"
+          id={stringToId(label)}
+          className="sticky top-1 bg-base-100 z-10 px-3 text-sm/6 py-1.5 font-bold text-base-content/60 border-b border-black-white/10 tracking-tighter pointer-events-none"
+        >
+          {label}
+        </li>
+        {renderOptions(options, true)}
+      </ul>
     );
   }
 
-  function renderOptions(options) {
+  function renderOptions(options, indent = false) {
     return options.map((option) => {
       if (Object.prototype.hasOwnProperty.call(option, "options")) {
         return renderGroup(coalesceLabel(option), option.options);
       }
-      return renderOption(option);
+      return renderOption(option, indent);
     });
   }
 
-  function renderOption(option) {
+  function renderOption(option, indent = false) {
     return (
       <Combobox.Option
         key={coalesceValue(option)}
         value={option}
         className={({ active }) =>
           classNames(
-            "relative cursor-default select-none py-2 pl-3 pr-9",
-            active ? "bg-primary text-primary-content" : "text-base-content"
+            "relative cursor-default select-none py-2 pr-9",
+            active ? "bg-primary text-primary-content" : "text-base-content",
+            indent ? "pl-6" : "pl-3"
           )
         }
       >

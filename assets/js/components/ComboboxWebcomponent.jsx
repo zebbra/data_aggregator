@@ -5,15 +5,6 @@ import Combobox from "./Combobox";
 // https://reactjs.org/docs/web-components.html#using-react-in-your-web-components
 export default class ComboboxWebcomponent extends HTMLElement {
   connectedCallback() {
-    const mountPoint = document.createElement("div");
-    // not sure why there is a need to remove the first child
-    // but sometimes the input element is rendered twice otherwise
-    if (this.firstChild !== null) {
-      this.removeChild(this.firstChild);
-    }
-    this.appendChild(mountPoint);
-    this.__reactRoot = ReactDOM.createRoot(mountPoint);
-
     // form based webcomponent, sync the hidden input value with the react component
     // we do not use the name attribute of the headless combobox component itself
     // as it adds nested input elements in case the options are not a string array
@@ -25,6 +16,12 @@ export default class ComboboxWebcomponent extends HTMLElement {
     // allow to define the event to trigger when the value changes
     this.event = this.dataset.event || "select";
 
+    // early return if the component is already mounted / rendered
+    if (this.__reactRoot) return;
+
+    const mountPoint = document.createElement("div");
+    this.appendChild(mountPoint);
+    this.__reactRoot = ReactDOM.createRoot(mountPoint);
     this.render();
   }
 
@@ -57,18 +54,22 @@ export default class ComboboxWebcomponent extends HTMLElement {
       return option;
     }
 
-    const onSelect = (value) => {
+    const onSelect = (option) => {
+      if (coalesceValue(option) === value) {
+        return;
+      }
+
       // update the hidden input value if it exists
       // this is triggered if we use form component and the hidden input value changes
       if (this.inputEl) {
-        this.inputEl.value = coalesceValue(value);
+        this.inputEl.value = coalesceValue(option);
         // https://hexdocs.pm/phoenix_live_view/js-interop.html#triggering-phx-form-events-with-javascript
         this.inputEl.dispatchEvent(new Event("input", { bubbles: true }));
       }
 
       // trigger the select event if the EventBridge hook is available
       if (this.__pushEvent) {
-        this.__pushEvent?.(this.event, { value: coalesceValue(value) });
+        this.__pushEvent?.(this.event, { value: coalesceValue(option) });
       }
     };
 
@@ -92,7 +93,7 @@ export default class ComboboxWebcomponent extends HTMLElement {
   }
 
   // https://andyogo.github.io/custom-element-reactions-diagram/
-  attributeChangedCallback(attr, value) {
+  attributeChangedCallback(_attr, _value) {
     this.render();
   }
 

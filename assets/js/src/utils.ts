@@ -10,4 +10,8 @@ function onInitialPageLoad(fn: Function) {
   });
 }
 
-export { classNames, onInitialPageLoad };
+function stringToId(str: string) {
+  return str.toLowerCase().replace(/ /g, "_");
+}
+
+export { classNames, onInitialPageLoad, stringToId };
