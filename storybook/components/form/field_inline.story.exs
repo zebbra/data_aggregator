@@ -84,7 +84,7 @@ defmodule Storybook.Components.Form.FieldInline do
           label: "Combobox input",
           type: "combobox",
           options: ["Option 1", "Option 2", "Option 3"],
-          description: "Select input description"
+          description: "Combobox input description"
         }
       }
     ]

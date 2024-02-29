@@ -80,7 +80,7 @@ defmodule DataAggregatorWeb.Components.Input do
       assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", assigns[:value]) end)
 
     ~H"""
-    <input type="hidden" name={@name} value="false" />
+    <.input type="hidden" name={@name} value="false" />
     <input
       type="checkbox"
       id={@id}
@@ -100,7 +100,7 @@ defmodule DataAggregatorWeb.Components.Input do
       assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", assigns[:value]) end)
 
     ~H"""
-    <input type="hidden" name={@name} value="false" />
+    <.input type="hidden" name={@name} value="false" />
     <input
       type="checkbox"
       id={@id}
@@ -120,7 +120,7 @@ defmodule DataAggregatorWeb.Components.Input do
       assign_new(assigns, :checked, fn -> Form.normalize_value("radio", assigns[:value]) end)
 
     ~H"""
-    <input type="hidden" name={@name} value="false" />
+    <.input type="hidden" name={@name} value="false" />
     <input
       type="radio"
       id={@id}
@@ -154,7 +154,7 @@ defmodule DataAggregatorWeb.Components.Input do
 
   def input(%{type: "combobox"} = assigns) do
     ~H"""
-    <input type="hidden" input-id={@id} value="false" />
+    <.input type="hidden" name={@name} value={@value} />
     <x-combobox
       id={@id}
       name={@name}
@@ -163,9 +163,10 @@ defmodule DataAggregatorWeb.Components.Input do
       multiple={@multiple}
       aria-invalid={@errors != []}
       aria-describedby={@errors != [] && "#{@id}_error"}
-      data-placeholder={@rest[:placeholder]}
-      data-options={Jason.encode!(@options)}
+      data-options={normalize_options(@options)}
       data-value={@value}
+      data-placeholder={@rest[:placeholder]}
+      data-prompt={@prompt}
       {@rest}
     />
     """
@@ -260,6 +261,21 @@ defmodule DataAggregatorWeb.Components.Input do
     """
   end
 
+  def input(%{type: "hidden"} = assigns) do
+    ~H"""
+    <input
+      type={@type}
+      id={@id}
+      name={@name}
+      value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+      readonly
+      hidden
+      style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+      {@rest}
+    />
+    """
+  end
+
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(%{icon_start: nil, icon_end: nil} = assigns) do
     ~H"""
@@ -336,4 +352,20 @@ defmodule DataAggregatorWeb.Components.Input do
     </div>
     """
   end
+
+  defp normalize_options(options) do
+    options
+    |> Enum.map(&normalize_option/1)
+    |> Jason.encode!()
+  end
+
+  defp normalize_option({group_name, group_options}) when is_list(group_options) do
+    %{label: group_name, options: Enum.map(group_options, &normalize_option/1)}
+  end
+
+  defp normalize_option({label, value}) do
+    %{label: label, value: value}
+  end
+
+  defp normalize_option(option), do: option
 end

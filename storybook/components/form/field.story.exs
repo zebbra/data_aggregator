@@ -186,7 +186,7 @@ defmodule Storybook.Components.Form.Field do
           label: "Combobox input",
           type: "combobox",
           options: ["Option 1", "Option 2", "Option 3"],
-          description: "Multielect input description"
+          description: "Combobox input description"
         }
       },
       %Variation{
@@ -196,7 +196,7 @@ defmodule Storybook.Components.Form.Field do
           type: "combobox",
           options: ["Option 1", "Option 2", "Option 3"],
           placeholder: "Select an option",
-          description: "Multielect input description"
+          description: "Combobox input description"
         }
       }
     ]

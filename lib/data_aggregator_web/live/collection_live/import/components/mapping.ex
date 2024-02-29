@@ -206,7 +206,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     ~H"""
     <.input type="hidden" field={@form[:mapped_to]} />
     <.field
-      type="select"
+      type="combobox"
       field={@form[:name]}
       options={@options}
       prompt={~t"Select column"m}
@@ -279,7 +279,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     <.input type="hidden" field={@form[:name]} />
     <.custom_field
       field={@form[:mapped_to]}
-      type="select"
+      type="combobox"
       class="grid-cols-[subgrid] grid sm:col-span-3"
       options={@mapped_to_opts}
       prompt={~t"Select attribute"m}

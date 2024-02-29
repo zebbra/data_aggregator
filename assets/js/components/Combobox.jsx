@@ -7,34 +7,95 @@ export default function ({ options, value, onSelect, placeholder, disabled }) {
   const [query, setQuery] = useState("");
   const grouped = Array.isArray(options) === false;
 
+  // option is either a %{label, value} or a string
   function coalesceLabel(option) {
-    return option.label || option;
+    if (Object.prototype.hasOwnProperty.call(option, "label")) {
+      return option.label;
+    }
+    return option;
   }
 
+  // option is either a %{label, value} or a string
   function coalesceValue(option) {
-    return option.value || option;
+    if (Object.prototype.hasOwnProperty.call(option, "value")) {
+      return option.value;
+    }
+    return option;
+  }
+
+  // clear the query when a new value is selected
+  function onChange(event) {
+    setQuery("");
+    onSelect(event);
+  }
+
+  function findOption(option) {
+    let result;
+
+    function search(group_or_option) {
+      if (Array.isArray(group_or_option)) {
+        group_or_option.find(search);
+      } else if (
+        Object.prototype.hasOwnProperty.call(group_or_option, "options")
+      ) {
+        group_or_option.options.find(search);
+      } else if (coalesceValue(group_or_option) === value) {
+        result = group_or_option;
+      }
+    }
+
+    search(option);
+    return result;
   }
 
   const selected = grouped
-    ? Object.values(options)
-        .flat()
-        .find((option) => coalesceValue(option) === value)
-    : options.find((option) => coalesceValue(option) === value);
+    ? Object.values(options).flat().find(findOption)
+    : findOption(options);
 
   function filter(option) {
-    return coalesceLabel(option).toLowerCase().includes(query.toLowerCase());
+    const result = [];
+
+    function search(group_or_option, group_name) {
+      if (Array.isArray(group_or_option)) {
+        group_or_option.find((o) => search(o));
+      } else if (
+        Object.prototype.hasOwnProperty.call(group_or_option, "options")
+      ) {
+        group_or_option.options.find((o) =>
+          search(o, coalesceLabel(group_or_option))
+        );
+      } else if (
+        coalesceLabel(group_or_option)
+          .toLowerCase()
+          .includes(query.toLowerCase())
+      ) {
+        if (group_name) {
+          const group = result.find((g) => g.label === group_name);
+          if (group) {
+            group.options.push(group_or_option);
+          } else {
+            result.push({ label: group_name, options: [group_or_option] });
+          }
+        } else {
+          result.push(group_or_option);
+        }
+      }
+    }
+
+    search(option);
+    return result;
   }
 
   function filterOptions() {
     if (grouped) {
       const result = {};
 
-      // Iterate over each group
+      // iterate over each group
       for (const group in options) {
-        // Filter out entries in the current group
-        result[group] = options[group].filter(filter);
+        // filter out entries in the current group
+        result[group] = filter(options[group]);
 
-        // If the group is empty after filtering, remove it from result
+        // if the group is empty after filtering, remove it from result
         if (result[group].length === 0) {
           delete result[group];
         }
@@ -43,17 +104,87 @@ export default function ({ options, value, onSelect, placeholder, disabled }) {
       return result;
     }
 
-    return options.filter(filter);
+    return filter(options);
   }
 
   const filteredOptions = query === "" ? options : filterOptions();
 
+  return (
+    <Combobox
+      as="div"
+      className="form-control w-full"
+      value={selected}
+      onChange={onChange}
+      disabled={disabled}
+    >
+      <div className="relative">
+        <div
+          className="flex items-center gap-x-2 input input-bordered relative pr-9"
+          disabled={disabled}
+        >
+          <Combobox.Input
+            className="grow"
+            onChange={(event) => setQuery(event.target.value)}
+            displayValue={(option) => coalesceLabel(option)}
+            placeholder={placeholder}
+          />
+          <Combobox.Button
+            as="span"
+            className="hero-chevron-up-down-micro size-4 text-black-white shrink-0 absolute top-4 right-3 cursor-pointer"
+            aria-hidden="true"
+          />
+        </div>
+
+        {hasResults() && (
+          <Combobox.Options className="absolute z-10 mt-1.5 max-h-60 w-full overflow-auto rounded-lg bg-base-100 pb-1 text-base-content shadow-lg border-black-white/10 border sm:text-sm no-scrollbar">
+            <div className="h-1 w-full sticky top-0 bg-base-100 z-10" />
+            {grouped
+              ? renderGroups(filteredOptions)
+              : renderOptions(filteredOptions)}
+          </Combobox.Options>
+        )}
+      </div>
+    </Combobox>
+  );
+
+  function hasResults() {
+    if (grouped) {
+      return Object.keys(filteredOptions).length > 0;
+    }
+
+    return filteredOptions.length > 0;
+  }
+
+  function renderGroups(groups) {
+    return Object.keys(groups).map((group) =>
+      renderGroup(group, groups[group])
+    );
+  }
+
+  function renderGroup(label, options) {
+    return (
+      <div key={label}>
+        <div className="sticky top-1 bg-base-100 z-10 px-3 text-sm/6 py-1.5 font-bold text-base-content/60 border-b border-black-white/10 tracking-tighter">
+          <h3>{label}</h3>
+        </div>
+        {renderOptions(options)}
+      </div>
+    );
+  }
+
+  function renderOptions(options) {
+    return options.map((option) => {
+      if (Object.prototype.hasOwnProperty.call(option, "options")) {
+        return renderGroup(coalesceLabel(option), option.options);
+      }
+      return renderOption(option);
+    });
+  }
+
   function renderOption(option) {
-    const key = coalesceValue(option);
-    const label = coalesceLabel(option);
     return (
       <Combobox.Option
-        key={key}
+        key={coalesceValue(option)}
         value={option}
         className={({ active }) =>
           classNames(
@@ -70,7 +201,7 @@ export default function ({ options, value, onSelect, placeholder, disabled }) {
                 selected && "font-semibold"
               )}
             >
-              {label}
+              {coalesceLabel(option)}
             </span>
 
             {selected && (
@@ -88,70 +219,4 @@ export default function ({ options, value, onSelect, placeholder, disabled }) {
       </Combobox.Option>
     );
   }
-
-  function renderOptions(options) {
-    return options.map((option) => renderOption(option));
-  }
-
-  function renderGroup(label, options) {
-    return (
-      <div key={label}>
-        <div className="sticky top-[-4px] mt-[-4px] bg-base-100 z-10 px-3 py-1.5 text-sm/6 font-semibold text-base-content/60 border-b border-black-white/10">
-          <h3>{label}</h3>
-        </div>
-        {renderOptions(options)}
-      </div>
-    );
-  }
-
-  function renderGroups(groups) {
-    return Object.keys(groups).map((group) =>
-      renderGroup(group, groups[group])
-    );
-  }
-
-  function hasResults() {
-    if (grouped) {
-      return Object.keys(filteredOptions).length > 0;
-    }
-
-    return filteredOptions.length > 0;
-  }
-
-  return (
-    <Combobox
-      as="div"
-      className="form-control w-full"
-      value={selected}
-      onChange={onSelect}
-      disabled={disabled}
-    >
-      <div className="relative">
-        <div
-          className="flex items-center gap-x-2 input input-bordered"
-          disabled={disabled}
-        >
-          <Combobox.Input
-            className="grow"
-            onChange={(event) => setQuery(event.target.value)}
-            displayValue={(option) => coalesceLabel(option)}
-            placeholder={placeholder}
-          />
-          <Combobox.Button
-            as="span"
-            className="hero-chevron-up-down-mini size-5 text-base-content/50"
-            aria-hidden="true"
-          />
-        </div>
-
-        {hasResults() && (
-          <Combobox.Options className="absolute z-10 mt-1.5 max-h-60 w-full overflow-auto rounded-md bg-base-100 py-1 text-base-content shadow-lg border-black-white/10 border sm:text-sm no-scrollbar">
-            {grouped
-              ? renderGroups(filteredOptions)
-              : renderOptions(filteredOptions)}
-          </Combobox.Options>
-        )}
-      </div>
-    </Combobox>
-  );
 }
