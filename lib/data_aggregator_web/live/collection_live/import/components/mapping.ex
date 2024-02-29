@@ -147,7 +147,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
             <button type="submit" disabled={@disabled} class="btn btn-primary">
               <%= ~t"Save"m %>
             </button>
-            <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
             <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
               <%= ~t"Cancel"m %>
             </button>

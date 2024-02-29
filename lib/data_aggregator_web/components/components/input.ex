@@ -158,11 +158,12 @@ defmodule DataAggregatorWeb.Components.Input do
     <x-combobox
       id={@id}
       name={@name}
-      class={[@class, @errors != [] && "[&_.input]:phx-feedback:input-error"]}
+      class={@class}
       phx-update="ignore"
       multiple={@multiple}
       aria-invalid={@errors != []}
       aria-describedby={@errors != [] && "#{@id}_error"}
+      data-errors={@errors != [] && "true"}
       data-options={normalize_options(@options)}
       data-value={@value}
       data-placeholder={@rest[:placeholder]}

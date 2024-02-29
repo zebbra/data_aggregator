@@ -3,7 +3,14 @@ import { Combobox } from "@headlessui/react";
 
 import { classNames, stringToId } from "../src/utils";
 
-export default function ({ options, value, onSelect, placeholder, disabled }) {
+export default function ({
+  options,
+  value,
+  onSelect,
+  placeholder,
+  disabled,
+  errors,
+}) {
   const [query, setQuery] = useState("");
   const grouped = Array.isArray(options) === false;
 
@@ -119,15 +126,23 @@ export default function ({ options, value, onSelect, placeholder, disabled }) {
     >
       <div className="relative">
         <div
-          className="flex items-center gap-x-2 input input-bordered relative pr-9"
+          className={classNames(
+            "flex items-center gap-x-2 input input-bordered relative pr-9",
+            errors && "phx-feedback:input-error"
+          )}
           disabled={disabled}
         >
-          <Combobox.Input
-            className="grow"
-            onChange={(event) => setQuery(event.target.value)}
-            displayValue={(option) => coalesceLabel(option)}
-            placeholder={placeholder}
-          />
+          <Combobox.Button className="flex min-w-0 flex-1 justify-start">
+            {({ open }) => (
+              <Combobox.Input
+                className="grow"
+                onChange={(event) => setQuery(event.target.value)}
+                displayValue={(option) => coalesceLabel(option)}
+                placeholder={placeholder}
+                onClick={(e) => open && e.stopPropagation()}
+              />
+            )}
+          </Combobox.Button>
           <Combobox.Button
             as="span"
             className="hero-chevron-up-down-micro size-4 text-black-white shrink-0 absolute top-4 right-3 cursor-pointer"

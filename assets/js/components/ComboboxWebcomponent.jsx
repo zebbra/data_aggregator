@@ -80,6 +80,7 @@ export default class ComboboxWebcomponent extends HTMLElement {
         onSelect={onSelect}
         placeholder={this.dataset.placeholder}
         disabled={this.hasAttribute("disabled")}
+        errors={this.dataset.errors}
       />
     );
   }
@@ -89,7 +90,13 @@ export default class ComboboxWebcomponent extends HTMLElement {
   // but we still want to update the prompt and placeholder in case we change the
   // language or the data from the server
   static get observedAttributes() {
-    return ["data-options", "data-value", "data-prompt", "data-placeholder"];
+    return [
+      "data-options",
+      "data-value",
+      "data-prompt",
+      "data-placeholder",
+      "data-errors",
+    ];
   }
 
   // https://andyogo.github.io/custom-element-reactions-diagram/
