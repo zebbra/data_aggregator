@@ -158,8 +158,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     """
   end
 
-  attr(:form, Phoenix.HTML.Form, required: true)
-  attr(:rest, :global)
+  attr :form, Phoenix.HTML.Form, required: true
+  attr :rest, :global
 
   defp filter_form(assigns) do
     ~H"""
@@ -180,14 +180,14 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     """
   end
 
-  attr(:form, Phoenix.HTML.Form, required: true)
-  attr(:filter, Phoenix.HTML.Form, required: true)
-  attr(:mandatory, :boolean, default: false)
-  attr(:name_opts, :list, required: true)
-  attr(:mapped_to_opts, :list, required: true)
-  attr(:target, :string, required: true)
-  attr(:path, :string, required: true)
-  attr(:disabled, :boolean, default: false)
+  attr :form, Phoenix.HTML.Form, required: true
+  attr :filter, Phoenix.HTML.Form, required: true
+  attr :mandatory, :boolean, default: false
+  attr :name_opts, :list, required: true
+  attr :mapped_to_opts, :list, required: true
+  attr :target, :string, required: true
+  attr :path, :string, required: true
+  attr :disabled, :boolean, default: false
 
   defp column_input(%{mandatory: true} = assigns) do
     %{form: form, filter: filter, name_opts: name_opts} = assigns

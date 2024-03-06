@@ -38,9 +38,9 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
   Renders a secondary navigation item.
   """
 
-  attr(:label, :string, required: true, doc: "Label of the item")
-  attr(:href, :string, required: true, doc: "URL of the item")
-  attr(:active, :boolean, default: false, doc: "Whether the item is active")
+  attr :label, :string, required: true, doc: "Label of the item"
+  attr :href, :string, required: true, doc: "URL of the item"
+  attr :active, :boolean, default: false, doc: "Whether the item is active"
 
   def secondary_navigation_item(assigns) do
     ~H"""

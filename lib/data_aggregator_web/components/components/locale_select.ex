@@ -11,7 +11,7 @@ defmodule DataAggregatorWeb.Components.LocaleSelect do
 
   @locales DataAggregatorWeb.Locale.locales()
 
-  attr(:id, :string, default: "locale_selector")
+  attr :id, :string, default: "locale_selector"
 
   def locale_select(assigns) do
     ~H"""

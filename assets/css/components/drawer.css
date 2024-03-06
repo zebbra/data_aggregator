@@ -1,9 +1,11 @@
-.fix-drawer-pointer-events {
-  .drawer-side {
-    pointer-events: none !important;
+@layer components {
+  .fix-drawer-pointer-events {
+    .drawer-side {
+      pointer-events: none !important;
 
-    > * {
-      pointer-events: auto;
+      > * {
+        pointer-events: auto;
+      }
     }
   }
 }

@@ -67,17 +67,17 @@
         <span class="md:hidden lg:inline">
           <%= ~t"Tasks"m %>
           <span class={[
-            "badge badge-base-text hidden lg:inline-flex",
+            "badge hidden lg:inline-flex",
             @current != "tasks" && "badge-primary",
-            @current == "tasks" && "bade-base-text"
+            @current == "tasks" && "bade-base-content"
           ]}>
             9
           </span>
         </span>
         <span class={[
-          "badge badge-base-text indicator-item ml-auto md:hidden",
+          "badge indicator-item ml-auto md:hidden",
           @current != "tasks" && "badge-primary",
-          @current == "tasks" && "bade-base-text"
+          @current == "tasks" && "bade-base-content"
         ]}>
           9
         </span>

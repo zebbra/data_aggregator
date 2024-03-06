@@ -5,10 +5,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Stepper do
 
   use DataAggregatorWeb, :html
 
-  attr(:class, :string, default: nil)
-  attr(:steps, :integer, default: 0, doc: "The total number of steps in the stepper.")
-  attr(:links, :list, default: nil, doc: "The links for each step in the stepper.")
-  attr(:current, :integer, required: true, doc: "The current step in the stepper.")
+  attr :class, :string, default: nil
+  attr :steps, :integer, default: 0, doc: "The total number of steps in the stepper."
+  attr :links, :list, default: nil, doc: "The links for each step in the stepper."
+  attr :current, :integer, required: true, doc: "The current step in the stepper."
 
   def stepper(assigns) do
     ~H"""
