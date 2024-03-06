@@ -119,7 +119,7 @@ export default function ({
   return (
     <Combobox
       as="div"
-      className="form-control w-full"
+      className="w-full"
       value={selected}
       onChange={onChange}
       disabled={disabled}

@@ -255,21 +255,6 @@ defmodule DataAggregatorWeb.Components.Field do
     """
   end
 
-  def field(%{type: "select"} = assigns) do
-    ~H"""
-    <div phx-feedback-for={@name} class={["form-control w-full", @hidden && "hidden"]}>
-      <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
-      <% else %>
-        <.label :if={@label} for={@id} label={@label} {@rest} />
-      <% end %>
-      <.input {assigns} />
-      <.description :if={@description} description={@description} class="mt-3" />
-      <.errors errors={@errors} id={@id} class={is_nil(@description) && "mt-2"} />
-    </div>
-    """
-  end
-
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def field(%{inline: true} = assigns) do
     ~H"""
@@ -315,9 +300,7 @@ defmodule DataAggregatorWeb.Components.Field do
         <.input {assigns} />
         <%= render_slot(@after_input) %>
       </label>
-      <.description :if={@description} class="mt-3">
-        <%= @description %>
-      </.description>
+      <.description :if={@description} description={@description} class="mt-3" />
       <.errors errors={@errors} id={@id} class={is_nil(@description) && "mt-2"} />
     </div>
     """
@@ -332,9 +315,7 @@ defmodule DataAggregatorWeb.Components.Field do
         <.label :if={@label} for={@id} label={@label} {@rest} />
       <% end %>
       <.input {assigns} />
-      <.description :if={@description} class="mt-3">
-        <%= @description %>
-      </.description>
+      <.description :if={@description} description={@description} class="mt-3" />
       <.errors errors={@errors} id={@id} class={is_nil(@description) && "mt-2"} />
     </div>
     """
