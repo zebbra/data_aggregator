@@ -4,6 +4,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Encoding.Components
 
+  import DataAggregatorWeb.Components.DataTable, only: [data_table: 1]
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   import DataAggregatorWeb.RecordLive.Helpers,
@@ -25,6 +26,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   def handle_params(params, _url, socket) do
     socket =
       socket
+      |> assign(params: params)
       |> assign_records(params)
       |> assign(selected_record: nil)
       |> apply_action(socket.assigns.live_action, params)
@@ -37,11 +39,13 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     ~H"""
     <.page current="records" open={@selected_record != nil}>
       <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6"><%= ~t"Records"m %></.page_header>
-
       <div :if={@count > 0} class="no-scrollbar overflow-x-auto pb-4">
-        <.table
-          id="records_table"
+        <.data_table
+          id="records_data_table"
           rows={@streams.results}
+          meta={@meta}
+          path="/records"
+          params={@params}
           row_click={
             fn {_id, record} ->
               JS.push("record:select", value: %{id: record.id})
@@ -83,7 +87,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           <:col :let={{_id, record}} label={~t"Updated At"m} class="text-end">
             <%= format_datetime(record.updated_at, format: :medium) %>
           </:col>
-        </.table>
+        </.data_table>
       </div>
 
       <.empty_state
@@ -185,19 +189,51 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   end
 
   defp assign_records(socket, params) do
-    stream(socket, :results, list_records(params))
+    case list_records(params) do
+      {:ok,
+       %Ash.Page.Offset{
+         results: records,
+         limit: limit,
+         offset: offset,
+         count: count,
+         rerun: rerun
+       }} ->
+        meta =
+          %{
+            limit: limit,
+            offset: offset,
+            count: count,
+            rerun: elem(rerun, 0)
+          }
+
+        socket
+        |> assign(:meta, meta)
+        |> stream(:results, records)
+
+      {:ok, records} ->
+        socket
+        |> assign(:meta, %{limit: nil, offset: nil})
+        |> stream(:results, records)
+    end
+
+    # stream(socket, :results, list_records(params))
   end
 
   defp list_records(params) do
     opts = DataTable.read_opts(Record, params)
     opts = Keyword.put(opts, :load, @load)
 
-    {:ok, result} = Record.read(opts)
+    opts =
+      Keyword.update(opts, :page, {:count, true}, fn value ->
+        Keyword.put(value, :count, true)
+      end)
 
-    case result do
-      %Ash.Page.Offset{results: records} -> records
-      records -> records
-    end
+    {:ok, _result} = Record.read(opts)
+
+    # case result do
+    #   %Ash.Page.Offset{results: records} -> records
+    #   records -> records
+    # end
   end
 
   defp get_record(id) do
