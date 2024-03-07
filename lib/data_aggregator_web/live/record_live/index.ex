@@ -24,14 +24,20 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    socket =
-      socket
-      |> assign(params: params)
-      |> assign_records(params)
-      |> assign(selected_record: nil)
-      |> apply_action(socket.assigns.live_action, params)
+    case sanitize_params(socket, params) do
+      {:noreply, socket} ->
+        {:noreply, socket}
 
-    {:noreply, socket}
+      params ->
+        socket =
+          socket
+          |> assign(params: params)
+          |> assign_records(params)
+          |> assign(selected_record: nil)
+          |> apply_action(socket.assigns.live_action, params)
+
+        {:noreply, socket}
+    end
   end
 
   @impl true
@@ -188,6 +194,50 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     assign(socket, :page_title, ~t"Records"m)
   end
 
+  defp sanitize_params(socket, params) do
+    update_params = %{}
+
+    update_params =
+      update_params
+      |> sanitize_limit(params)
+      |> sanitize_offset(params)
+
+    case map_size(update_params) do
+      0 ->
+        params
+
+      _ ->
+        params = Map.merge(params, update_params)
+        {:noreply, push_patch(socket, to: ~p"/records?#{params}")}
+    end
+  end
+
+  defp sanitize_limit(update_params, params) do
+    cond do
+      is_nil(params["limit"]) ->
+        update_params
+
+      String.to_integer(params["limit"]) <= 0 ->
+        Map.put(update_params, "limit", DataAggregator.Records.Record.default_limit())
+
+      true ->
+        update_params
+    end
+  end
+
+  defp sanitize_offset(update_params, params) do
+    cond do
+      is_nil(params["offset"]) ->
+        update_params
+
+      String.to_integer(params["offset"]) < 0 ->
+        Map.put(update_params, "offset", 0)
+
+      true ->
+        update_params
+    end
+  end
+
   defp assign_records(socket, params) do
     case list_records(params) do
       {:ok,
@@ -196,24 +246,26 @@ defmodule DataAggregatorWeb.RecordLive.Index do
          limit: limit,
          offset: offset,
          count: count,
-         rerun: rerun
+         rerun: rerun,
+         more?: more?
        }} ->
         meta =
           %{
             limit: limit,
             offset: offset,
             count: count,
-            rerun: elem(rerun, 0)
+            rerun: elem(rerun, 0),
+            more?: more?
           }
 
         socket
         |> assign(:meta, meta)
-        |> stream(:results, records)
+        |> stream(:results, records, reset: true)
 
       {:ok, records} ->
         socket
         |> assign(:meta, %{limit: nil, offset: nil})
-        |> stream(:results, records)
+        |> stream(:results, records, reset: true)
     end
 
     # stream(socket, :results, list_records(params))

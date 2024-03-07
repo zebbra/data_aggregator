@@ -27,35 +27,11 @@ defmodule DataAggregatorWeb.Components.Pagination do
       </div>
       <div>
         <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-          <a
-            href={pagination_path_helper(:prev, @params, @path)}
-            class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-          >
-            <span class="sr-only">Previous</span>
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path
-                fill-rule="evenodd"
-                d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </a>
+          <%= pagination_prev(assigns) %>
           <div :for={position <- 1..min(total_pages(@meta), 7)}>
             <%= pagination_navigation_element(assigns, position) %>
           </div>
-          <a
-            href={pagination_path_helper(:next, @params, @path)}
-            class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-          >
-            <span class="sr-only">Next</span>
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path
-                fill-rule="evenodd"
-                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </a>
+          <%= pagination_next(assigns) %>
         </nav>
       </div>
     </div>
@@ -113,20 +89,6 @@ defmodule DataAggregatorWeb.Components.Pagination do
     end
   end
 
-  def pagination_path_helper(:next, params, path) do
-    query = query_from_params(params)
-    query = Map.update(query, :offset, limit(params), &(&1 + limit(params)))
-
-    "#{path}?#{URI.encode_query(query)}"
-  end
-
-  def pagination_path_helper(:prev, params, path) do
-    query = query_from_params(params)
-    query = Map.update(query, :offset, 1, &(&1 - limit(params)))
-
-    "#{path}?#{URI.encode_query(query)}"
-  end
-
   def pagination_path_helper(number, params, path) when is_integer(number) do
     query = query_from_params(params)
     query = Map.put(query, :offset, limit(params) * (number - 1))
@@ -147,15 +109,15 @@ defmodule DataAggregatorWeb.Components.Pagination do
     assigns = assign(assigns, page_number: page_number)
 
     ~H"""
-    <a
-      href={pagination_path_helper(@page_number, @params, @path)}
+    <.link
+      patch={pagination_path_helper(@page_number, @params, @path)}
       class={[
         "text-base-content relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0",
         active_page(assigns)
       ]}
     >
       <%= @page_number %>
-    </a>
+    </.link>
     """
   end
 
@@ -239,5 +201,71 @@ defmodule DataAggregatorWeb.Components.Pagination do
 
   def pagination_navigation_element(assigns, 7) do
     render_element(assigns, total_pages(assigns.meta), false)
+  end
+
+  def pagination_prev(%{meta: %{offset: offset}} = assigns) when offset > 0 do
+    ~H"""
+    <.link
+      patch={pagination_path_helper(current_page(@meta) - 1, @params, @path)}
+      class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+    >
+      <span class="sr-only">Previous</span>
+      <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path
+          fill-rule="evenodd"
+          d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </.link>
+    """
+  end
+
+  def pagination_prev(assigns) do
+    ~H"""
+    <div class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 text-gray-700 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0">
+      <span class="sr-only">Previous</span>
+      <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path
+          fill-rule="evenodd"
+          d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </div>
+    """
+  end
+
+  def pagination_next(%{meta: %{more?: true}} = assigns) do
+    ~H"""
+    <.link
+      patch={pagination_path_helper(current_page(@meta) + 1, @params, @path)}
+      class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+    >
+      <span class="sr-only">Next</span>
+      <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path
+          fill-rule="evenodd"
+          d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </.link>
+    """
+  end
+
+  def pagination_next(assigns) do
+    ~H"""
+    <div class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 text-gray-700 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0">
+      <span class="sr-only">Next</span>
+      <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path
+          fill-rule="evenodd"
+          d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </div>
+    """
   end
 end
