@@ -206,7 +206,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     ~H"""
     <.input type="hidden" field={@form[:mapped_to]} />
     <.field
-      type="select"
+      type="combobox"
       field={@form[:name]}
       options={@options}
       prompt={~t"Select column"m}
@@ -279,7 +279,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     <.input type="hidden" field={@form[:name]} />
     <.custom_field
       field={@form[:mapped_to]}
-      type="select"
+      type="combobox"
       class="grid-cols-[subgrid] grid sm:col-span-3"
       options={@mapped_to_opts}
       prompt={~t"Select attribute"m}
@@ -354,16 +354,24 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   @impl true
   def handle_event("mapping:validate", %{"import" => params}, socket) do
-    disabled = Enum.any?(@mandatory_attributes -- extract_mapped_to_with_name(params))
+    if mapping_changed?(socket.assigns.form, params) do
+      disabled = Enum.any?(@mandatory_attributes -- extract_mapped_to_with_name(params))
+      form = Form.validate(socket.assigns.form, params)
 
-    socket =
-      socket
-      |> assign(:name_opts, available_column_names(socket.assigns.import, params))
-      |> assign(:mapped_to_opts, available_attribute_options(params))
-      |> assign(:form, Form.validate(socket.assigns.form, params))
-      |> assign(:disabled, disabled)
+      socket =
+        socket
+        |> assign(:name_opts, available_column_names(socket.assigns.import, params))
+        |> assign(:mapped_to_opts, available_attribute_options(params))
+        |> assign(:form, form)
+        |> assign(:disabled, disabled)
 
-    {:noreply, socket}
+      {:noreply, socket}
+    else
+      # we do not want to run validation in case the mapping did not change
+      # e.g. when the user selects the same mapping again or interacts with the
+      # combobox (search, navigate, etc.)
+      {:noreply, socket}
+    end
   end
 
   @impl true
@@ -586,5 +594,30 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   defp reuse_mapping?(import) do
     Enum.any?(import.missing_mappings) && is_nil(import.collection.import_mapping) == false &&
       Enum.any?(import.collection.import_mapping)
+  end
+
+  defp mapping_changed?(form, params) do
+    source =
+      if Enum.empty?(form.params),
+        do: build_mappings_lookup(form.data.mappings),
+        else: build_columns_lookup(form.params)
+
+    target = build_columns_lookup(params)
+
+    Enum.all?(source, fn source_col ->
+      Enum.any?(target, fn target_col ->
+        source_col == target_col
+      end)
+    end) == false
+  end
+
+  defp build_mappings_lookup(mappings) do
+    Enum.map(mappings, fn mapping -> %{mapped_to: mapping.mapped_to, name: mapping.name} end)
+  end
+
+  defp build_columns_lookup(params) do
+    Enum.map(params["columns"], fn {_, %{"mapped_to" => mapped_to, "name" => name}} ->
+      %{mapped_to: mapped_to, name: name}
+    end)
   end
 end

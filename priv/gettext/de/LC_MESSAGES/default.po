@@ -986,7 +986,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Click on columns to add additional column to attribute mappings."
 msgstr "Klicke auf Spalten, um zusätzliche Spalten zu Attributzuordnungen hinzuzufügen."
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:375
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:383
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Mapping updated"
@@ -1051,7 +1051,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Load"
 msgstr "Laden"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:398
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:406
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Mapping from collection could not be used"
@@ -1341,3 +1341,18 @@ msgstr "Dies wird auch die folgenden Verknüpfungen löschen:"
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Add"
 msgstr "Neu"
+
+#: lib/data_aggregator_web/components/components/combobox.ex:245
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Add"
+msgstr "Neu"
+
+#: lib/data_aggregator_web/components/components/combobox.ex:246
+#, elixir-autogen, elixir-format
+msgid "No results found for"
+msgstr "Keine Ergebnisse gefunden für"
+
+#: lib/data_aggregator_web/components/components/combobox.ex:259
+#, elixir-autogen, elixir-format
+msgid "Remove this item"
+msgstr "Diesen Eintrag entfernen"

@@ -1,0 +1,203 @@
+/* ======= Generic styles ======= */
+.combobox-wrapper {
+  @apply transition-opacity duration-200 min-h-[38px];
+}
+
+.ts-hidden-accessible {
+  border: 0;
+  clip: rect(0 0 0 0);
+  -webkit-clip-path: inset(50%);
+  clip-path: inset(50%);
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  white-space: nowrap;
+}
+
+.ts-wrapper {
+  @apply relative;
+}
+
+.ts-dropdown,
+.ts-control,
+.ts-control input {
+  @apply !text-sm/5;
+}
+
+.ts-wrapper:not(.disabled).single .ts-control,
+.ts-wrapper:not(.disabled).single .ts-control div,
+.ts-wrapper:not(.disabled).single .ts-control input {
+  @apply cursor-pointer;
+}
+
+/* ======= Input field (select field) ======= */
+.ts-control {
+  @apply select select-bordered !h-auto !pr-9 w-full rounded-lg px-4 py-2 flex flex-wrap;
+}
+
+.dropdown-active .ts-control {
+  @apply rounded-b-none;
+}
+
+.ts-wrapper.multi.has-items .ts-control {
+  padding: 8px 8px 2px;
+}
+
+.disabled .ts-control,
+.disabled .ts-control * {
+  @apply bg-base-200 border-base-200 text-base-content/40 cursor-default;
+}
+
+.ts-control > input {
+  background: none;
+}
+
+/* Hide search input field if it is not active */
+.input-hidden .ts-control > input {
+  @apply opacity-0 left-[-10000px] ts-hidden-accessible;
+}
+
+/* ======= Selected entries ======= */
+.ts-control > * {
+  @apply inline-block align-baseline;
+}
+
+.ts-wrapper.multi .ts-control > div {
+  @apply cursor-pointer h-8 rounded m-0 mr-[3px] mb-[3px] py-[2px] px-[6px] bg-base-300/50 text-base-content/60 ring-1 ring-inset ring-base-content/20 inline-flex items-center space-x-1.5 px-1.5 py-1 text-sm font-medium;
+}
+
+.ts-wrapper.multi .ts-control > div.active {
+  @apply bg-primary/10 text-primary ring-primary/20;
+}
+
+.ts-wrapper.multi.disabled .ts-control > div,
+.ts-wrapper.multi.disabled .ts-control > div.active {
+  @apply text-base-content/40 bg-base-200 border-base-200 cursor-default font-normal;
+}
+
+/* ======= Plugins ======= */
+
+/* Checkboxes */
+
+.plugin-checkbox_options .option input {
+  @apply checkbox no-animation size-5 mr-2;
+}
+
+/* Remove button */
+.ts-wrapper.plugin-remove_button .item {
+  @apply !pr-0 inline-flex items-center;
+}
+
+.ts-wrapper.plugin-remove_button .item .remove {
+  @apply box-border inline-block rounded-r-sm px-1.5 align-middle text-inherit no-underline;
+  @apply text-base-content/50 border-base-content/50 mr-1 ml-2 border-l hover:text-base-content;
+}
+
+.ts-wrapper.multi.plugin-remove_button .item.active .remove {
+  @apply border-primary text-primary;
+}
+.ts-wrapper.plugin-remove_button.disabled .item .remove {
+  @apply text-base-content/40 border-base-content/40 pointer-events-none;
+}
+
+/* Dropdown Input */
+.plugin-dropdown_input.focus.dropdown-active .ts-control {
+  @apply shadow-none;
+}
+
+.plugin-dropdown_input .dropdown-input {
+  @apply bg-base-100 border-base-content/20 min-h-12 block w-full rounded-none border-b px-4 py-2 shadow-none max-sm:text-base/5 focus-visible:outline-none;
+}
+
+.plugin-dropdown_input .items-placeholder {
+  @apply w-full cursor-pointer border-none shadow-none;
+}
+
+.plugin-dropdown_input.has-items .items-placeholder,
+.plugin-dropdown_input.dropdown-active .items-placeholder {
+  @apply hidden;
+}
+
+/* ======= Dropdown ======= */
+.ts-dropdown {
+  @apply bg-base-100 border-base-content/20 absolute top-full z-10 w-full rounded-b-lg border border-t-0 px-0 pb-2 shadow-2xl;
+}
+
+.ts-dropdown-content {
+  @apply max-h-[200px] space-y-1 overflow-y-auto overflow-x-hidden scroll-smooth pt-2 sm:text-sm;
+}
+
+.ts-dropdown [data-selectable] {
+  @apply cursor-pointer overflow-hidden rounded-md;
+}
+
+.ts-dropdown [data-selectable] .highlight {
+  @apply bg-primary/20 rounded-[2px];
+}
+
+.ts-dropdown .option,
+.ts-dropdown .no-results,
+.ts-dropdown .create {
+  @apply py-[5px] mx-2 px-2;
+}
+
+.ts-dropdown .option,
+.ts-dropdown [data-disabled],
+.ts-dropdown [data-disabled] [data-selectable].option {
+  @apply flex items-center opacity-50;
+  cursor: inherit;
+}
+
+.ts-dropdown [data-selectable].option {
+  @apply cursor-pointer opacity-100;
+}
+
+.ts-dropdown .option .option-text {
+  @apply grow justify-start truncate;
+}
+
+.ts-dropdown .optgroup:first-child .optgroup-header {
+  @apply border-t-0;
+}
+
+.ts-dropdown .optgroup-header {
+  @apply text-base-content/75 border-base-content/5 pb-[5px] px-[14px] mt-3 mb-1 cursor-default border-b text-xs font-semibold;
+}
+
+.single .ts-dropdown .selected {
+  @apply font-semibold;
+}
+
+.ts-dropdown .active {
+  @apply bg-base-content/10;
+}
+
+.ts-dropdown div[aria-disabled="true"] {
+  @apply pointer-events-none;
+}
+
+.ts-dropdown .spinner {
+  @apply size-[7.5] my-[5px] mx-2 inline-block;
+}
+
+.ts-dropdown .spinner:after {
+  content: " ";
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 3px;
+  border-radius: 50%;
+  border: 5px solid #d0d0d0;
+  border-color: #d0d0d0 transparent #d0d0d0 transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
