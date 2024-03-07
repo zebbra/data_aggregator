@@ -1087,7 +1087,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "No collections"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/summary.ex:105
+#: lib/data_aggregator_web/live/collection_live/import/components/summary.ex:98
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Summary"
 msgid "Run import"
@@ -1216,7 +1216,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Unmapped columns"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/summary.ex:95
+#: lib/data_aggregator_web/live/collection_live/import/components/summary.ex:105
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Summary"
 msgid "Back"

@@ -616,8 +616,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   end
 
   defp build_columns_lookup(params) do
-    Enum.map(params["columns"], fn {_, %{"mapped_to" => mapped_to, "name" => name}} ->
-      %{mapped_to: mapped_to, name: name}
+    Enum.map(params["columns"], fn {_, column} ->
+      %{mapped_to: column["mapped_to"], name: column["name"]}
     end)
   end
 end
