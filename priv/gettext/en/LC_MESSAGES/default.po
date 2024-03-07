@@ -986,7 +986,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Click on columns to add additional column to attribute mappings."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:375
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:383
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Mapping updated"
@@ -1051,7 +1051,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Load"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:398
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:406
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Mapping from collection could not be used"
@@ -1087,7 +1087,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "No collections"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/summary.ex:105
+#: lib/data_aggregator_web/live/collection_live/import/components/summary.ex:98
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Summary"
 msgid "Run import"
@@ -1216,7 +1216,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Unmapped columns"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/summary.ex:95
+#: lib/data_aggregator_web/live/collection_live/import/components/summary.ex:105
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Summary"
 msgid "Back"
@@ -1340,4 +1340,19 @@ msgstr ""
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Add"
+msgstr ""
+
+#: lib/data_aggregator_web/components/components/combobox.ex:245
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Add"
+msgstr ""
+
+#: lib/data_aggregator_web/components/components/combobox.ex:246
+#, elixir-autogen, elixir-format
+msgid "No results found for"
+msgstr ""
+
+#: lib/data_aggregator_web/components/components/combobox.ex:259
+#, elixir-autogen, elixir-format
+msgid "Remove this item"
 msgstr ""

@@ -46,7 +46,7 @@ defmodule DataAggregatorWeb.Components.Field do
   attr :type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week)
+               range radio search select tel text textarea time url week combobox)
 
   attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
@@ -65,7 +65,8 @@ defmodule DataAggregatorWeb.Components.Field do
   attr :icon_end, :string, default: nil, doc: "icon name for the end of the input"
 
   attr :rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
-                multiple pattern placeholder readonly required rows size step)
+                multiple pattern placeholder readonly required rows size step
+                create max_items max_options tom_select_plugins tom_select_options remote_options_event_name)
 
   slot :inner_block
   slot :custom_label, doc: "the slot for the label text (if you need to customize it)"
@@ -360,7 +361,7 @@ defmodule DataAggregatorWeb.Components.Field do
   attr :type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week)
+               range radio search select tel text textarea time url week combobox)
 
   attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
@@ -375,7 +376,8 @@ defmodule DataAggregatorWeb.Components.Field do
   attr :hidden, :boolean, default: false, doc: "whether the field is hidden"
 
   attr :rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
-                multiple pattern placeholder readonly required rows size step)
+                multiple pattern placeholder readonly required rows size step
+                create max_items max_options tom_select_plugins tom_select_options remote_options_event_name)
 
   slot :content
 
