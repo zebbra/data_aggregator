@@ -55,7 +55,8 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
                 field={@form[:type]}
                 label={~t"Type"m}
                 options={@collection_types}
-                prompt={~t"Select a type"m}
+                placeholder={~t"Filter types"m}
+                prompt={~t"None"m}
               />
               <.field
                 type="number"

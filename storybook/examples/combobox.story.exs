@@ -107,6 +107,24 @@ defmodule Storybook.Examples.Combobox do
           />
         </div>
         <div>
+          <.section_heading text="Single select with remove button" size="md" class="mb-2" />
+          <.combobox id="single_with_remove_button" options={@options} remove_button />
+        </div>
+        <div>
+          <.section_heading text="Single select allow empty" size="md" class="mb-2" />
+          <.combobox
+            id="single_select_nullable"
+            options={@options}
+            tom_select_options={%{allowEmptyOption: true}}
+            prompt="Select an option..."
+            placeholder="Filter users..."
+          />
+        </div>
+        <div>
+          <.section_heading text="Single select dropup" size="md" class="mb-2" />
+          <.combobox id="single_dropup" options={@options} dropup />
+        </div>
+        <div>
           <.section_heading text="Single select with counter badge" size="md" class="mb-2" />
           <.combobox
             id="single_counter_badge"
@@ -208,6 +226,25 @@ defmodule Storybook.Examples.Combobox do
           <.combobox id="prompt_multiple" options={@options} prompt="Select an option..." multiple />
         </div>
         <div>
+          <.section_heading text="Prompt with placeholder" size="md" class="mb-2" />
+          <.combobox
+            id="prompt_with_placeholder"
+            options={@options}
+            placeholder="Filter users..."
+            prompt="Select an option..."
+          />
+        </div>
+        <div>
+          <.section_heading text="Prompt multiple with placeholder" size="md" class="mb-2" />
+          <.combobox
+            id="prompt_with_placeholder_multiple"
+            options={@options}
+            placeholder="Filter users..."
+            prompt="Select an option..."
+            multiple
+          />
+        </div>
+        <div>
           <.section_heading text="Option groups" size="md" class="mb-2" />
           <.combobox
             id="option_groups"
@@ -224,7 +261,7 @@ defmodule Storybook.Examples.Combobox do
                   type="combobox"
                   id="combobox_with_form"
                   label="Assignee"
-                  prompt="Select a name"
+                  placeholder="Select a name"
                   options={[Birds: ["Eagle", "Seagull"], Animals: ["Dog", "Rhino"]]}
                 />
                 <.field
@@ -232,7 +269,7 @@ defmodule Storybook.Examples.Combobox do
                   type="combobox"
                   id="combobox_with_form_with_multiple"
                   label="Users"
-                  prompt="Select some users"
+                  placeholder="Select some users"
                   options={@options}
                   multiple
                 />

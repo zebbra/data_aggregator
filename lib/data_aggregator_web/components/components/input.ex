@@ -63,7 +63,7 @@ defmodule DataAggregatorWeb.Components.Input do
 
   attr :rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
                 multiple pattern placeholder readonly required rows size step
-                create max_items max_options tom_select_plugins tom_select_options remote_options_event_name)
+                create max_items max_options tom_select_plugins tom_select_options remote_options_event_name dropup)
 
   slot :inner_block
 

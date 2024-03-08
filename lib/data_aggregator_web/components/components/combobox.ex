@@ -120,6 +120,14 @@ defmodule DataAggregatorWeb.Components.Combobox do
   attr :remove_button_title, :string, default: nil, doc: "The title for the remove item button"
   attr :add_text, :string, default: nil, doc: "The text for the add item action"
 
+  attr :remove_button, :boolean,
+    default: false,
+    doc: "Show the remove button for signle select comboboxes"
+
+  attr :dropup, :boolean,
+    default: false,
+    doc: "Show the dropdown above the input"
+
   attr :no_results_text, :string,
     default: nil,
     doc: "The text for when there are no results found"
@@ -153,7 +161,6 @@ defmodule DataAggregatorWeb.Components.Combobox do
     assigns =
       assigns
       |> handle_multiple_name()
-      |> coerce_placeholder_and_prompt()
       |> assign(:tom_select_options_json, Jason.encode!(tom_select_options))
       |> assign(:tom_select_plugins_json, Jason.encode!(tom_select_plugins))
 
@@ -170,7 +177,6 @@ defmodule DataAggregatorWeb.Components.Combobox do
     >
       <select class="combobox-latest hidden" multiple={@multiple}>
         <option :if={@prompt} value=""><%= @prompt %></option>
-        <option :if={@placeholder} value=""><%= @placeholder %></option>
         <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
       </select>
 
@@ -183,7 +189,7 @@ defmodule DataAggregatorWeb.Components.Combobox do
         style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
       />
 
-      <div phx-update="ignore" id={"#{@id}_wrapper"}>
+      <div phx-update="ignore" id={"#{@id}_wrapper"} data-ts_dropup={to_string(@dropup)}>
         <div class="combobox-wrapper opacity-0">
           <select
             id={"#{@id}_select"}
@@ -194,7 +200,6 @@ defmodule DataAggregatorWeb.Components.Combobox do
             placeholder={@placeholder}
           >
             <option :if={@prompt} value=""><%= @prompt %></option>
-            <option :if={@placeholder} value=""><%= @placeholder %></option>
             <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
           </select>
         </div>
@@ -228,22 +233,14 @@ defmodule DataAggregatorWeb.Components.Combobox do
     |> assign(:maybe_multiple_name, maybe_multiple_name)
   end
 
-  # If we have a prompt and a placeholder, then remove the placeholder
-  defp coerce_placeholder_and_prompt(assigns) do
-    if assigns.prompt && assigns.placeholder do
-      assign(assigns, :placeholder, nil)
-    else
-      assigns
-    end
-  end
-
   defp merge_tom_select_options(assigns) do
     %{
       create: assigns.create,
       maxItems: assigns.max_items,
       maxOptions: assigns.max_options,
       addText: assigns.add_text || ~t"Add",
-      noResultsText: assigns.no_results_text || ~t"No results found for"
+      noResultsText: assigns.no_results_text || ~t"No results found for",
+      allowEmptyOption: is_nil(assigns.prompt) == false
     }
     |> Map.merge(assigns.tom_select_options)
     |> remove_nil_keys()
@@ -258,7 +255,7 @@ defmodule DataAggregatorWeb.Components.Combobox do
       %{
         title: assigns.remove_button_title || ~t"Remove this item"
       },
-      true
+      !!assigns.multiple || !!assigns.remove_button
     )
     |> maybe_add_plugin(:dropdown_input, %{}, true)
     |> remove_falsy_keys()

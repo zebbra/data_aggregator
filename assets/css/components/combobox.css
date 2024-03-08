@@ -36,8 +36,12 @@
   @apply select select-bordered !h-auto !pr-9 w-full rounded-lg px-4 py-2 flex flex-wrap;
 }
 
-.dropdown-active .ts-control {
+[data-ts_dropup="false"] .dropdown-active .ts-control {
   @apply rounded-b-none;
+}
+
+[data-ts_dropup="true"] .dropdown-active .ts-control {
+  @apply rounded-t-none;
 }
 
 .ts-wrapper.multi.has-items .ts-control {
@@ -63,6 +67,10 @@
   @apply inline-block align-baseline;
 }
 
+.ts-wrapper .item {
+  @apply !pr-0 inline-flex items-center;
+}
+
 .ts-wrapper.multi .ts-control > div {
   @apply cursor-pointer h-8 rounded m-0 mr-[3px] mb-[3px] py-[2px] px-[6px] bg-base-300/50 text-base-content/60 ring-1 ring-inset ring-base-content/20 inline-flex items-center space-x-1.5 px-1.5 py-1 text-sm font-medium;
 }
@@ -79,16 +87,11 @@
 /* ======= Plugins ======= */
 
 /* Checkboxes */
-
 .plugin-checkbox_options .option input {
   @apply checkbox no-animation size-5 mr-2;
 }
 
 /* Remove button */
-.ts-wrapper.plugin-remove_button .item {
-  @apply !pr-0 inline-flex items-center;
-}
-
 .ts-wrapper.plugin-remove_button .item .remove {
   @apply box-border inline-block rounded-r-sm px-1.5 align-middle text-inherit no-underline;
   @apply text-base-content/50 border-base-content/50 mr-1 ml-2 border-l hover:text-base-content;
@@ -125,7 +128,14 @@
 
 /* ======= Dropdown ======= */
 .ts-dropdown {
-  @apply bg-base-100 border-base-content/20 absolute top-full z-10 w-full rounded-b-lg border border-t-0 px-0 pb-2 shadow-2xl;
+  @apply bg-base-100 border-base-content/20 absolute z-10 w-full border px-0 pb-2;
+}
+
+[data-ts_dropup="false"] .ts-dropdown {
+  @apply top-full rounded-b-lg border-t-0 shadow-2xl;
+}
+[data-ts_dropup="true"] .ts-dropdown {
+  @apply bottom-full rounded-t-lg border-b-0;
 }
 
 .ts-dropdown-content {

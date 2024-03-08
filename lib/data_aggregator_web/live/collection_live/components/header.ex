@@ -62,30 +62,6 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <%= ~t"Import dataset"m %>
         </.link>
       </:actions>
-      <:navbar>
-        <.secondary_navigation>
-          <.secondary_navigation_item
-            href={~p"/collections/#{@collection}/records"}
-            label={~t"Records"m}
-            active={@current == :records}
-          />
-          <.secondary_navigation_item
-            href={~p"/collections/#{@collection}/imports"}
-            label={~t"Imports"m}
-            active={@current == :imports}
-          />
-          <%!-- <.secondary_navigation_item
-            href={~p"/collections/#{@collection}/encodings"}
-            label={~t"Encodings"m}
-            active={@current == :encodings}
-          />
-          <.secondary_navigation_item
-            href={~p"/collections/#{@collection}/details"}
-            label={~t"Details"m}
-            active={@current == :details}
-          /> --%>
-        </.secondary_navigation>
-      </:navbar>
     </.page_header>
     """
   end
