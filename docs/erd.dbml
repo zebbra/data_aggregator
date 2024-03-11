@@ -129,6 +129,22 @@ Table record_encoding_results {
   record_id uuid
 }
 
+Table exports {
+  id uuid [pk]
+  name varchar
+  exported_at timestamp
+  started_at timestamp
+  finished_at timestamp
+  mapping jsonb
+  records_query bytea
+  exported_count integer
+  inserted_at timestamp
+  updated_at timestamp
+  collection_id uuid
+  attachment_id uuid
+  state varchar
+}
+
 Table imports {
   id uuid [pk]
   columns array
@@ -287,8 +303,10 @@ Table oban_jobs {
   scheduled_at timestamp
 }
 
+Ref: collections.id < exports.collection_id
 Ref: collections.id < imports.collection_id
 Ref: collections.id < records.collection_id
+Ref: file_attachments.id < exports.attachment_id
 Ref: file_attachments.id < imports.attachment_id
 Ref: file_attachments.id < record_images.attachment_id
 Ref: imports.id < import_records.import_id

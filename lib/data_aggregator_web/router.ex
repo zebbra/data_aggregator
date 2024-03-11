@@ -57,6 +57,7 @@ defmodule DataAggregatorWeb.Router do
         live("/collections/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary)
         live("/collections/:id/encodings", CollectionLive.Encoding.Index, :index)
         live("/collections/:id/details", CollectionLive.Details.Index, :index)
+        live("/collections/:id/exports", CollectionLive.Export.Index, :index)
 
         live("/records", RecordLive.Index, :index)
 

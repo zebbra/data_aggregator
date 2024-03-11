@@ -45,6 +45,8 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
       assert encoded_record.state === :encoded
     end
 
+    # at the moment there is no failing matchType, we accept all results
+    @tag :pending
     test "encode/2 for :gbif_taxonomy catalog which returns the failed_record and the error",
          %{invalid_record: invalid_record} do
       {{:error, error}, logs} =

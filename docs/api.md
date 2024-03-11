@@ -117,6 +117,7 @@ classDiagram
         UtcDatetimeUsec updated_at
         Float digitizing_progress
         Atom encoding_state
+        Map records_to_publish_query
         Integer records_count
         Integer imports_count
         Integer records_count_not_encoded
@@ -134,6 +135,34 @@ classDiagram
         read(String sort)
         update_import_mapping(Map[] import_mapping)
         touch(UUID id, Integer items_to_digitize, String owner, String name, ...)
+        publish(Struct export)
+        export(Struct export)
+    }
+    class Export {
+        UUID id
+        String name
+        UtcDatetime exported_at
+        UtcDatetime started_at
+        UtcDatetime finished_at
+        Map mapping
+        Term records_query
+        Integer exported_count
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        Atom state
+        Collection collection
+        Attachment attachment
+        destroy()
+        read()
+        create(Collection collection, UUID id, String name, UtcDatetime exported_at, ...)
+        update_mapping(Map mapping, UUID id, String name, UtcDatetime exported_at, ...)
+        update(Struct[] records, UUID id, String name, UtcDatetime exported_at, ...)
+        enqueue()
+        set_running()
+        set_failed(UUID id, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
+        run()
+        set_exported()
+        update_attachment(Attachment attachment)
     }
     class RecordEncodingResult {
         UUID id
@@ -385,6 +414,7 @@ classDiagram
         create(Record record, String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, ...)
     }
 
+    Attachment -- Export
     Attachment -- Import
     Attachment -- Record
     Attachment -- Image
@@ -392,6 +422,7 @@ classDiagram
     Job -- Record
     Institution -- Collection
     ChangeEvent -- Record
+    Collection -- Export
     Collection -- Import
     Collection -- Record
     EncodedRecord -- Record
@@ -430,6 +461,7 @@ erDiagram
         UtcDatetimeUsec updated_at
         Float digitizing_progress
         Atom encoding_state
+        Map records_to_publish_query
         Integer records_count
         Integer imports_count
         Integer records_count_not_encoded
@@ -438,6 +470,19 @@ erDiagram
         Integer records_count_encoding
         Integer records_count_encoded
         Integer records_count_failed
+    }
+    Export {
+        UUID id
+        String name
+        UtcDatetime exported_at
+        UtcDatetime started_at
+        UtcDatetime finished_at
+        Map mapping
+        Term records_query
+        Integer exported_count
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        Atom state
     }
     RecordEncodingResult {
         UUID id
@@ -627,6 +672,7 @@ erDiagram
         UtcDatetimeUsec updated_at
     }
 
+    Attachment ||--|| Export : ""
     Attachment ||--|| Import : ""
     Attachment ||--|| Record : ""
     Attachment ||--|| Image : ""
@@ -634,6 +680,7 @@ erDiagram
     Job ||--|| Record : ""
     Institution ||--|| Collection : ""
     ChangeEvent ||--|| Record : ""
+    Collection ||--|| Export : ""
     Collection ||--|| Import : ""
     Collection ||--|| Record : ""
     EncodedRecord ||--|| Record : ""
@@ -649,6 +696,7 @@ erDiagram
 
 - [ChangeEvent](#changeevent)
 - [Collection](#collection)
+- [Export](#export)
 - [RecordEncodingResult](#recordencodingresult)
 - [Import](#import)
 - [Record](#record)
@@ -714,6 +762,46 @@ erDiagram
 | **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
 | **update_import_mapping** | _update_ | <ul><li><b>import_mapping</b> <i>Map[]</i> attribute</li></ul> |  |
 | **touch** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **publish** | _action_ | <ul><li><b>export</b> <i>Struct</i> </li></ul> |  |
+| **export** | _action_ | <ul><li><b>export</b> <i>Struct</i> </li></ul> |  |
+
+### Export
+
+
+
+#### Attributes
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **id** | UUID |  |
+| **name** | String |  |
+| **exported_at** | UtcDatetime |  |
+| **started_at** | UtcDatetime |  |
+| **finished_at** | UtcDatetime |  |
+| **mapping** | Map |  |
+| **records_query** | Term |  |
+| **exported_count** | Integer |  |
+| **inserted_at** | UtcDatetimeUsec |  |
+| **updated_at** | UtcDatetimeUsec |  |
+| **collection_id** | UUID |  |
+| **attachment_id** | UUID |  |
+| **state** | Atom |  |
+
+#### Actions
+
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **destroy** | _destroy_ | <ul></ul> |  |
+| **read** | _read_ | <ul></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Collection</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>records_query</b> <i>Term</i> attribute</li><li><b>exported_count</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **update_mapping** | _update_ | <ul><li><b>mapping</b> <i>Map</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Term</i> attribute</li><li><b>exported_count</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>records</b> <i>Struct[]</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>records_query</b> <i>Term</i> attribute</li><li><b>exported_count</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **enqueue** | _update_ | <ul></ul> |  |
+| **set_running** | _update_ | <ul></ul> |  |
+| **set_failed** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>records_query</b> <i>Term</i> attribute</li><li><b>exported_count</b> <i>Integer</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **run** | _update_ | <ul></ul> |  |
+| **set_exported** | _update_ | <ul></ul> |  |
+| **update_attachment** | _update_ | <ul><li><b>attachment</b> <i>Attachment</i> </li></ul> |  |
 
 ### RecordEncodingResult
 

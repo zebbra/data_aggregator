@@ -30,6 +30,8 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
       assert record.state == :encoded
     end
 
+    # at the moment there is no failing matchType, we accept all results
+    @tag :pending
     test "fails an invalid record to encode", %{invalid_record: invalid_record} do
       {_result, logs} = with_log(fn -> perform_job(Encoder, %{id: invalid_record.id}) end)
 
