@@ -5,6 +5,7 @@ defmodule DataAggregatorWeb.Components.Input do
 
   use Phoenix.Component
 
+  import DataAggregatorWeb.Components.Combobox, only: [combobox: 1]
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
@@ -37,34 +38,34 @@ defmodule DataAggregatorWeb.Components.Input do
       <.input field={@form[:email]} type="email" />
       <.input name="my-input" errors={["oh no!"]} />
   """
-  attr(:id, :any, default: nil)
-  attr(:name, :any)
-  attr(:label, :string, default: nil)
-  attr(:value, :any)
+  attr :id, :any, default: nil
+  attr :name, :any
+  attr :label, :string, default: nil
+  attr :value, :any
 
-  attr(:type, :string,
+  attr :type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week toggle)
-  )
+               range radio search select tel text textarea time url week toggle combobox)
 
-  attr(:field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]")
+  attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
-  attr(:errors, :list, default: [])
-  attr(:checked, :boolean, doc: "the checked flag for checkbox inputs")
-  attr(:prompt, :string, default: nil, doc: "the prompt for select inputs")
-  attr(:options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2")
-  attr(:multiple, :boolean, default: false, doc: "the multiple flag for select inputs")
-  attr(:class, :string, default: nil, doc: "additional css class for input")
-  attr(:inline, :boolean, default: false, doc: "whether the fieldgroup is inline")
-  attr(:inside, :boolean, default: false, doc: "whether the field is inside")
-  attr(:icon_start, :string, default: nil, doc: "icon name for the start of the input")
-  attr(:icon_end, :string, default: nil, doc: "icon name for the end of the input")
+  attr :errors, :list, default: []
+  attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
+  attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
+  attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
+  attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
+  attr :class, :string, default: nil, doc: "additional css class for input"
+  attr :inline, :boolean, default: false, doc: "whether the fieldgroup is inline"
+  attr :inside, :boolean, default: false, doc: "whether the field is inside"
+  attr :icon_start, :string, default: nil, doc: "icon name for the start of the input"
+  attr :icon_end, :string, default: nil, doc: "icon name for the end of the input"
 
-  attr(:rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
-                multiple pattern placeholder readonly required rows size step))
+  attr :rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
+                multiple pattern placeholder readonly required rows size step
+                create max_items max_options tom_select_plugins tom_select_options remote_options_event_name dropup)
 
-  slot(:inner_block)
+  slot :inner_block
 
   def input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     assigns
@@ -80,7 +81,7 @@ defmodule DataAggregatorWeb.Components.Input do
       assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", assigns[:value]) end)
 
     ~H"""
-    <input type="hidden" name={@name} value="false" />
+    <.input type="hidden" name={@name} value="false" />
     <input
       type="checkbox"
       id={@id}
@@ -100,7 +101,7 @@ defmodule DataAggregatorWeb.Components.Input do
       assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", assigns[:value]) end)
 
     ~H"""
-    <input type="hidden" name={@name} value="false" />
+    <.input type="hidden" name={@name} value="false" />
     <input
       type="checkbox"
       id={@id}
@@ -120,7 +121,7 @@ defmodule DataAggregatorWeb.Components.Input do
       assign_new(assigns, :checked, fn -> Form.normalize_value("radio", assigns[:value]) end)
 
     ~H"""
-    <input type="hidden" name={@name} value="false" />
+    <.input type="hidden" name={@name} value="false" />
     <input
       type="radio"
       id={@id}
@@ -149,6 +150,24 @@ defmodule DataAggregatorWeb.Components.Input do
       <option :if={@prompt} value=""><%= @prompt %></option>
       <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
     </select>
+    """
+  end
+
+  def input(%{type: "combobox"} = assigns) do
+    ~H"""
+    <.combobox
+      id={@id}
+      name={@name}
+      class={class_names([@class, @errors != [] && "[&_.ts-control]:phx-feedback:select-error"])}
+      multiple={@multiple}
+      aria-invalid={@errors != []}
+      aria-describedby={@errors != [] && "#{@id}_error"}
+      options={@options}
+      value={@value}
+      placeholder={@rest[:placeholder]}
+      prompt={@prompt}
+      {@rest}
+    />
     """
   end
 
@@ -236,6 +255,21 @@ defmodule DataAggregatorWeb.Components.Input do
       class={["input input-bordered", @class, @errors != [] && "phx-feedback:input-error"]}
       aria-invalid={@errors != []}
       aria-describedby={@errors != [] && "#{@id}_error"}
+      {@rest}
+    />
+    """
+  end
+
+  def input(%{type: "hidden"} = assigns) do
+    ~H"""
+    <input
+      type={@type}
+      id={@id}
+      name={@name}
+      value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+      readonly
+      hidden
+      style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
       {@rest}
     />
     """

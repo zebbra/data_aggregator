@@ -77,6 +77,25 @@ defmodule Storybook.Components.Form.FieldInline do
           options: ["Option 1", "Option 2", "Option 3"],
           description: "Select input description"
         }
+      },
+      %Variation{
+        id: :combobox,
+        attributes: %{
+          label: "Combobox input",
+          type: "combobox",
+          options: ["Option 1", "Option 2", "Option 3"],
+          description: "Combobox input description"
+        }
+      },
+      %Variation{
+        id: :combobox_multiple,
+        attributes: %{
+          label: "Combobox input",
+          type: "combobox",
+          options: ["Option 1", "Option 2", "Option 3"],
+          description: "Combobox input description",
+          multiple: true
+        }
       }
     ]
   end

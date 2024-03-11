@@ -17,18 +17,17 @@ defmodule DataAggregatorWeb.Components.Form do
         </:actions>
       </.simple_form>
   """
-  attr(:for, :any, required: true, doc: "the datastructure for the form")
-  attr(:as, :any, default: nil, doc: "the server side parameter to collect all input under")
+  attr :for, :any, required: true, doc: "the datastructure for the form"
+  attr :as, :any, default: nil, doc: "the server side parameter to collect all input under"
 
-  attr(:rest, :global,
+  attr :rest, :global,
     include: ~w(autocomplete name rel action enctype method novalidate target multipart),
     doc: "the arbitrary HTML attributes to apply to the form tag"
-  )
 
-  slot(:inner_block, required: true)
+  slot :inner_block, required: true
 
   slot :actions, doc: "the slot for form actions, such as a submit button" do
-    attr(:class, :string, doc: "the class to apply to the actions container")
+    attr :class, :string, doc: "the class to apply to the actions container"
   end
 
   def simple_form(assigns) do
@@ -69,13 +68,13 @@ defmodule DataAggregatorWeb.Components.Form do
         </:actions>
       </.simple_form>
   """
-  attr(:legend, :string, default: nil, doc: "the legend for the fieldset")
-  attr(:text, :string, default: nil, doc: "the text for the fieldset")
-  attr(:class, :string, default: nil, doc: "the class to apply to the fieldset")
-  attr(:disabled, :boolean, default: false, doc: "whether the fieldset is disabled")
-  attr(:rest, :global, doc: "the arbitrary HTML attributes to apply to the fieldset tag")
+  attr :legend, :string, default: nil, doc: "the legend for the fieldset"
+  attr :text, :string, default: nil, doc: "the text for the fieldset"
+  attr :class, :string, default: nil, doc: "the class to apply to the fieldset"
+  attr :disabled, :boolean, default: false, doc: "whether the fieldset is disabled"
+  attr :rest, :global, doc: "the arbitrary HTML attributes to apply to the fieldset tag"
 
-  slot(:inner_block, required: true)
+  slot :inner_block, required: true
 
   def fieldset(assigns) do
     ~H"""
@@ -103,9 +102,9 @@ defmodule DataAggregatorWeb.Components.Form do
     """
   end
 
-  attr(:class, :string, default: "space-y-8", doc: "the class to apply to the fieldgroup")
-  attr(:inline, :boolean, default: false, doc: "whether the fieldgroup is inline")
-  slot(:inner_block, required: true)
+  attr :class, :string, default: "space-y-8", doc: "the class to apply to the fieldgroup"
+  attr :inline, :boolean, default: false, doc: "whether the fieldgroup is inline"
+  slot :inner_block, required: true
 
   def fieldgroup(assigns) do
     ~H"""

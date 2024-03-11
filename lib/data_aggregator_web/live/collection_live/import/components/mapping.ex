@@ -43,6 +43,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   @impl true
   def render(assigns) do
+    count =
+      if Enum.empty?(assigns.form.params),
+        do: length(assigns.form.data.mappings),
+        else: Enum.count(assigns.form.params["columns"])
+
+    assigns = assign(assigns, :count, count)
+
     ~H"""
     <div>
       <.stepper current={current_step(@action)} links={valid_links(@collection, @import)} class="" />
@@ -50,7 +57,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         <.section_heading
           text={~t"Mappings"m}
           description={~t"Map columns to record attributes"m}
-          class="border-b border-black-white/10 py-4"
+          class="border-b border-black-white/10 py-4 sm:!items-start"
           break_at="sm"
         >
           <:actions>
@@ -138,6 +145,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                   target={@myself}
                   path={@form[:columns].name}
                   disabled={@disabled}
+                  count={@count}
                 />
               </.inputs_for>
             </.fieldgroup>
@@ -158,8 +166,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     """
   end
 
-  attr(:form, Phoenix.HTML.Form, required: true)
-  attr(:rest, :global)
+  attr :form, Phoenix.HTML.Form, required: true
+  attr :rest, :global
 
   defp filter_form(assigns) do
     ~H"""
@@ -168,7 +176,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         type="search"
         field={@form[:query]}
         placeholder={~t"Search mapping"}
-        class="input input-bordered sm:input-sm max-sm:text-baseflex items-center rounded-full flex-row gap-2"
+        class="input input-bordered max-sm:text-base sm:inline-flex items-center rounded-full flex-row gap-2"
       >
         <:content :let={field}>
           <.icon name="hero-magnifying-glass" class="size-5 text-base-content/50" />
@@ -180,14 +188,15 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     """
   end
 
-  attr(:form, Phoenix.HTML.Form, required: true)
-  attr(:filter, Phoenix.HTML.Form, required: true)
-  attr(:mandatory, :boolean, default: false)
-  attr(:name_opts, :list, required: true)
-  attr(:mapped_to_opts, :list, required: true)
-  attr(:target, :string, required: true)
-  attr(:path, :string, required: true)
-  attr(:disabled, :boolean, default: false)
+  attr :form, Phoenix.HTML.Form, required: true
+  attr :filter, Phoenix.HTML.Form, required: true
+  attr :mandatory, :boolean, default: false
+  attr :name_opts, :list, required: true
+  attr :mapped_to_opts, :list, required: true
+  attr :target, :string, required: true
+  attr :path, :string, required: true
+  attr :disabled, :boolean, default: false
+  attr :count, :integer, required: true
 
   defp column_input(%{mandatory: true} = assigns) do
     %{form: form, filter: filter, name_opts: name_opts} = assigns
@@ -206,10 +215,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     ~H"""
     <.input type="hidden" field={@form[:mapped_to]} />
     <.field
-      type="select"
+      type="combobox"
       field={@form[:name]}
       options={@options}
-      prompt={~t"Select column"m}
+      placeholder={~t"Filter columns..."m}
       hidden={@visible == false}
       inline
       required
@@ -274,16 +283,18 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       |> assign(:mapped_to_opts, mapped_to_opts)
       |> assign(:visible, visible)
       |> assign(:column_name, coalesce_name(form))
+      |> assign(:dropup, assigns.count - assigns.form.index <= 3)
 
     ~H"""
     <.input type="hidden" field={@form[:name]} />
     <.custom_field
       field={@form[:mapped_to]}
-      type="select"
+      type="combobox"
       class="grid-cols-[subgrid] grid sm:col-span-3"
       options={@mapped_to_opts}
-      prompt={~t"Select attribute"m}
+      placeholder={~t"Filter attributes..."m}
       hidden={@visible == false}
+      dropup={@dropup}
     >
       <:content :let={field}>
         <.label for={@form[:mapped_to].id} class="sm:pb-0 sm:block max-sm:truncate max-sm:mr-11">
@@ -354,16 +365,24 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   @impl true
   def handle_event("mapping:validate", %{"import" => params}, socket) do
-    disabled = Enum.any?(@mandatory_attributes -- extract_mapped_to_with_name(params))
+    if mapping_changed?(socket.assigns.form, params) do
+      disabled = Enum.any?(@mandatory_attributes -- extract_mapped_to_with_name(params))
+      form = Form.validate(socket.assigns.form, params)
 
-    socket =
-      socket
-      |> assign(:name_opts, available_column_names(socket.assigns.import, params))
-      |> assign(:mapped_to_opts, available_attribute_options(params))
-      |> assign(:form, Form.validate(socket.assigns.form, params))
-      |> assign(:disabled, disabled)
+      socket =
+        socket
+        |> assign(:name_opts, available_column_names(socket.assigns.import, params))
+        |> assign(:mapped_to_opts, available_attribute_options(params))
+        |> assign(:form, form)
+        |> assign(:disabled, disabled)
 
-    {:noreply, socket}
+      {:noreply, socket}
+    else
+      # we do not want to run validation in case the mapping did not change
+      # e.g. when the user selects the same mapping again or interacts with the
+      # combobox (search, navigate, etc.)
+      {:noreply, socket}
+    end
   end
 
   @impl true
@@ -532,7 +551,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     |> Enum.filter(fn {_index, column} ->
       column["mapped_to"] not in ["", nil] && column["name"] not in ["", nil]
     end)
-    |> Enum.map(fn {_idnex, column} -> String.to_atom(column["mapped_to"]) end)
+    |> Enum.map(fn {_index, column} -> String.to_atom(column["mapped_to"]) end)
   end
 
   defp extract_mapped_to_with_name(_params), do: []
@@ -586,5 +605,30 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   defp reuse_mapping?(import) do
     Enum.any?(import.missing_mappings) && is_nil(import.collection.import_mapping) == false &&
       Enum.any?(import.collection.import_mapping)
+  end
+
+  defp mapping_changed?(form, params) do
+    source =
+      if Enum.empty?(form.params),
+        do: build_mappings_lookup(form.data.mappings),
+        else: build_columns_lookup(form.params)
+
+    target = build_columns_lookup(params)
+
+    Enum.all?(source, fn source_col ->
+      Enum.any?(target, fn target_col ->
+        source_col == target_col
+      end)
+    end) == false
+  end
+
+  defp build_mappings_lookup(mappings) do
+    Enum.map(mappings, fn mapping -> %{mapped_to: mapping.mapped_to, name: mapping.name} end)
+  end
+
+  defp build_columns_lookup(params) do
+    Enum.map(params["columns"], fn {_, column} ->
+      %{mapped_to: column["mapped_to"], name: column["name"]}
+    end)
   end
 end

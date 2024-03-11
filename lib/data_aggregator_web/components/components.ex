@@ -10,6 +10,7 @@ defmodule DataAggregatorWeb.Components do
       import DataAggregatorWeb.Components.Alert
       import DataAggregatorWeb.Components.Badge
       import DataAggregatorWeb.Components.Breadcrumbs
+      import DataAggregatorWeb.Components.Combobox
       import DataAggregatorWeb.Components.Drawer
       import DataAggregatorWeb.Components.Dropdown
       import DataAggregatorWeb.Components.Field

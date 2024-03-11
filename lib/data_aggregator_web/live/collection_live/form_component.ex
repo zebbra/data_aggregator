@@ -51,11 +51,12 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
             </div>
             <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
               <.field
-                type="select"
+                type="combobox"
                 field={@form[:type]}
                 label={~t"Type"m}
                 options={@collection_types}
-                prompt={~t"Select a type"m}
+                placeholder={~t"Filter types"m}
+                prompt={~t"None"m}
               />
               <.field
                 type="number"

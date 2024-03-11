@@ -69,6 +69,14 @@ defmodule Storybook.Components.Form.FieldHidden do
           description: "Multielect input description",
           multiple: true
         }
+      },
+      %Variation{
+        id: :combobox_hidden,
+        attributes: %{
+          label: "Combobox input",
+          type: "combobox",
+          options: ["Option 1", "Option 2", "Option 3"]
+        }
       }
     ]
   end

@@ -30,6 +30,7 @@ defmodule Storybook.Components.Form.InputValidation do
               attributes: %{
                 type: to_string(type),
                 label: String.capitalize("#{type} input"),
+                placeholder: "Enter #{type} input",
                 autocomplete: to_string(type)
               }
             }
@@ -64,6 +65,14 @@ defmodule Storybook.Components.Form.InputValidation do
           type: "select",
           options: ["Option 1", "Option 2", "Option 3"],
           multiple: true
+        }
+      },
+      %Variation{
+        id: :combobox,
+        attributes: %{
+          label: "Combobox input",
+          type: "combobox",
+          options: ["Option 1", "Option 2", "Option 3"]
         }
       }
     ]

@@ -19,7 +19,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
   @impl true
   def render(assigns) do
     ~H"""
-    <div>
+    <div class="overflow-x-hidden">
       <.stepper
         current={current_step(@action)}
         links={[nil, ~p"/collections/#{@collection}/imports/#{@import}/edit", nil]}
@@ -27,7 +27,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
       <.section_heading
         text={~t"Summary"m}
         description={~t"Please review the summary of your import."m}
-        class="border-b border-black-white/10 py-4"
+        class="border-b border-black-white/10 py-4 sm:!items-start"
       >
         <:actions>
           <div class="flex items-center gap-x-2">
@@ -36,7 +36,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
           </div>
         </:actions>
       </.section_heading>
-      <div class="-mx-6 pb-4">
+      <div class="-mx-6 pb-4 lg:-mx-8">
         <.list>
           <:item title={~t"File"m}>
             <div class="font-mono"><%= @import.attachment.filename %></div>
@@ -53,7 +53,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
       </div>
 
       <.section_heading text={~t"Mapping"m} size="md" />
-      <div class="-mx-6 py-4">
+      <div class="-mx-6 py-4 lg:-mx-8">
         <div class="no-scrollbar overflow-x-auto">
           <.table id="import_mapping_table" rows={@import.mappings}>
             <:col :let={column} label={~t"Column"m}>
@@ -86,14 +86,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
         </span>
       </div>
 
-      <div class="modal-action">
-        <.link
-          patch={~p"/collections/#{@collection}/imports/#{@import}/edit"}
-          type="button"
-          class="btn btn-ghost"
-        >
-          <%= ~t"Back"m %>
-        </.link>
+      <div class="modal-action flex-row-reverse justify-start pr-1 pb-1">
         <button
           :if={@import.state == :pending}
           type="button"
@@ -104,6 +97,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
         >
           <%= ~t"Run import"m %>
         </button>
+        <.link
+          patch={~p"/collections/#{@collection}/imports/#{@import}/edit"}
+          type="button"
+          class="btn btn-ghost"
+        >
+          <%= ~t"Back"m %>
+        </.link>
       </div>
     </div>
     """
