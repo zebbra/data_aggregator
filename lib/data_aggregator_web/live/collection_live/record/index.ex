@@ -399,15 +399,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_event("collection:export", _params, socket) do
     %{collection: collection} = socket.assigns
-    collection = Records.load!(collection, [:records_to_publish_query], lazy?: true)
+    collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
 
     export =
       %{
         name: "export-#{collection.name}-#{:os.system_time()}",
         collection: collection,
         mapping: nil,
-        records_query: collection.records_to_publish_query,
-        rows_count: Records.count!(collection.records_to_publish_query)
+        records_query: collection.records_to_export_query,
+        rows_count: Records.count!(collection.records_to_export_query)
       }
       |> Export.create!()
       |> Export.enqueue!()

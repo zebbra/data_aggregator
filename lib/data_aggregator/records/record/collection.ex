@@ -93,7 +93,7 @@ defmodule DataAggregator.Records.Collection do
                 end
               )
 
-    calculate :records_to_publish_query, :map, Calculations.RecordsToPublish
+    calculate :records_to_export_query, :map, Calculations.RecordsToExport
   end
 
   aggregates do
@@ -183,7 +183,7 @@ defmodule DataAggregator.Records.Collection do
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :touch
-    define :publish, action: :publish, args: [:export]
+    define :publish, action: :publish, args: [:publish]
     define :export, action: :export, args: [:export]
   end
 

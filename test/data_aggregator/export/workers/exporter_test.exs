@@ -13,15 +13,15 @@ defmodule DataAggregator.Records.Export.Workers.ExportTest do
     setup do
       collection = collection_fixture()
 
-      publishable_record(collection)
-      publishable_record(collection)
+      exportable_record(collection)
+      exportable_record(collection)
 
       export =
         Export.create!(%{
           name: "export-#{collection.name}-#{Ecto.UUID.generate()}",
           collection: collection,
           mapping: nil,
-          records_query: collection.records_to_publish_query
+          records_query: collection.records_to_export_query
         })
 
       [export: export]

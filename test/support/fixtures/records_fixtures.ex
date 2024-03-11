@@ -36,6 +36,6 @@ defmodule DataAggregator.RecordsFixtures do
       |> Map.merge(attrs)
       |> Collection.create!()
 
-    Records.load!(collection, [:records_to_publish_query])
+    Records.load!(collection, [:records_to_export_query])
   end
 end

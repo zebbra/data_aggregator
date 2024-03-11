@@ -92,20 +92,20 @@ defmodule DataAggregator.ExportTest do
                      end)
 
     setup %{mapping: mapping} do
-      collection = Records.load!(collection_fixture(), [:records_to_publish_query])
+      collection = Records.load!(collection_fixture(), [:records_to_export_query])
 
-      # those two should be published
-      publishable_record(collection)
-      publishable_record(collection)
-      # this one should not be published
-      unpublishable_record(collection)
+      # those two should be exported
+      exportable_record(collection)
+      exportable_record(collection)
+      # this one should not be exported
+      unexportable_record(collection)
 
       export =
         Export.create!(%{
           name: "export-#{collection.name}-#{Ecto.UUID.generate()}",
           collection: collection,
           mapping: mapping,
-          records_query: collection.records_to_publish_query
+          records_query: collection.records_to_export_query
         })
 
       case Collection.export(export) do

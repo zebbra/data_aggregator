@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.Export.Calculations.RecordsToPublish do
+defmodule DataAggregator.Records.Export.Calculations.RecordsToExport do
   @moduledoc """
-  This `Ash.Calculation` calculates the records for publishing the collection and returns an `Ash.Query`.
+  This `Ash.Calculation` calculates the records for exporting the collection and returns an `Ash.Query`.
   """
 
   use Ash.Calculation

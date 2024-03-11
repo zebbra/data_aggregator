@@ -16,35 +16,22 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
     export = input.arguments.export
     records_query = export.records_query
 
-    try do
-      mapping = get_mapping(export.mapping)
+    mapping = get_mapping_or_default(export.mapping)
 
-      path = "#{Path.join([System.tmp_dir!(), "export"])}#{Ecto.UUID.generate()}.csv"
+    path = "#{Path.join([System.tmp_dir!(), "export"])}#{Ecto.UUID.generate()}.csv"
 
-      attachment =
-        records_query
-        |> Records.stream!()
-        |> Stream.map(&map_record(&1, mapping, export))
-        |> export_to_s3(path, mapping)
+    attachment =
+      records_query
+      |> Records.stream!()
+      |> Stream.map(&map_record(&1, mapping, export))
+      |> export_to_s3!(path, mapping)
 
-      with {:ok, export} <- Export.update_mapping(export, mapping),
-           {:ok, export} <- Export.update_attachment(export, attachment) do
-        {:ok, export}
-      else
-        {:error, error} ->
-          handle_error(export.id, error)
-
-          {:error, error}
-      end
-    catch
-      error ->
-        handle_error(export.id, error)
-
-        {:error, error}
+    with {:ok, export} <- Export.update_mapping(export, mapping) do
+      Export.update_attachment(export, attachment)
     end
   end
 
-  defp export_to_s3(records, path, mapping) do
+  defp export_to_s3!(records, path, mapping) do
     path
     |> File.open!([:write, :utf8])
     |> store_local_file(records, mapping)
@@ -68,22 +55,15 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
     record |> Map.from_struct() |> Map.take(get_headers(mapping))
   end
 
-  defp get_mapping(mapping) do
-    case mapping do
-      nil -> get_default_mapping()
-      _ -> mapping
-    end
-  end
+  defp get_mapping_or_default(nil), do: get_default_mapping()
+
+  defp get_mapping_or_default(mapping), do: mapping
 
   defp get_default_mapping do
     Map.new(Schema.prefixed_attribute_names(), fn name -> {name, name} end)
   end
 
   defp get_headers(mapping) do
-    mapping |> get_mapping() |> Map.values()
-  end
-
-  defp handle_error(export_id, error) do
-    Logger.error("Error in export with ID #{export_id} while exporting records. error was: #{inspect(error)}")
+    mapping |> get_mapping_or_default() |> Map.values()
   end
 end

@@ -17,19 +17,19 @@ defmodule DataAggregator.Records.Export.ExporterTest do
     }
 
     setup do
-      collection = Records.load!(collection_fixture(), [:records_to_publish_query])
+      collection = Records.load!(collection_fixture(), [:records_to_export_query])
 
-      publishable_record(collection)
-      publishable_record(collection)
-      # this one should not be published if certain conditions are met
-      unpublishable_record(collection)
+      exportable_record(collection)
+      exportable_record(collection)
+      # this one should not be exported if certain conditions are met
+      unexportable_record(collection)
 
       export =
         %{
           name: "export-#{collection.name}-#{Ecto.UUID.generate()}",
           collection: collection,
           mapping: @valid_custom_mapping,
-          records_query: collection.records_to_publish_query
+          records_query: collection.records_to_export_query
         }
         |> Export.create!()
         |> Collection.export!()

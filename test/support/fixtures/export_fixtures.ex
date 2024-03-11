@@ -18,29 +18,29 @@ defmodule DataAggregator.ExportFixtures do
   Generate an export.
   """
   def export_fixture(attrs \\ %{}) do
-    collection = Records.load!(collection_fixture(), [:records_to_publish_query])
+    collection = Records.load!(collection_fixture(), [:records_to_export_query])
 
     @export_defaults
     |> Map.merge(attrs)
     |> Map.put_new_lazy(:collection, fn -> collection end)
-    |> Map.put(:records_query, collection.records_to_publish_query)
+    |> Map.put(:records_query, collection.records_to_export_query)
     |> Export.create!()
   end
 
-  def publishable_record(collection) do
-    publishable_record_attrs()
+  def exportable_record(collection) do
+    exportable_record_attrs()
     |> Map.put_new_lazy(:collection, fn -> collection end)
     |> Record.create!()
   end
 
-  def unpublishable_record(collection) do
-    publishable_record_attrs()
+  def unexportable_record(collection) do
+    exportable_record_attrs()
     |> Map.put_new_lazy(:collection, fn -> collection end)
     |> Map.delete(:tax_kingdom)
     |> Record.create!()
   end
 
-  def publishable_record_attrs do
+  def exportable_record_attrs do
     %{
       mte_material_entity_id: "MHNG-MAM-8.085-#{Ecto.UUID.generate()}",
       tax_scientific_name: "Bradyphus Burmeister, 1866",
@@ -58,7 +58,7 @@ defmodule DataAggregator.ExportFixtures do
       collection: collection,
       records: records
     }
-    |> Map.put(:records_query, collection.records_to_publish_query)
+    |> Map.put(:records_query, collection.records_to_export_query)
     |> Export.create!()
     |> Export.update_mapping(mapping)
   end
