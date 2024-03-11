@@ -53,6 +53,21 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
     ~H"""
     <.page current="collections" open={@selected_export != nil}>
       <.collection_header collection={@collection} current={:exports} />
+      <.secondary_navigation class="sticky top-[calc(4rem-1px)]" gradient>
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/records"}
+          label={~t"Records"m}
+        />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/imports"}
+          label={~t"Imports"m}
+        />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/exports"}
+          label={~t"Exports"m}
+          active
+        />
+      </.secondary_navigation>
       <div :if={@count > 0} class="no-scrollbar overflow-x-auto py-4">
         <.table
           id="exports_table"
