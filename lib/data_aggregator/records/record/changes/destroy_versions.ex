@@ -12,7 +12,7 @@ defmodule DataAggregator.Records.Record.Changes.DestroyVersions do
   require Logger
 
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.after_action(changeset, &delete_versions/2, append: true)
+    Changeset.after_action(changeset, &delete_versions/2)
   end
 
   defp delete_versions(%Changeset{}, %Record{} = record) do
