@@ -8,7 +8,9 @@ defmodule DataAggregator.Records.Collection do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     notifiers: [Ash.Notifier.PubSub]
 
+  alias DataAggregator.Records
   alias DataAggregator.Records.CollectionType
+  alias DataAggregator.Records.Export.Calculations
   alias DataAggregator.Records.Validations
 
   attributes do
@@ -49,6 +51,10 @@ defmodule DataAggregator.Records.Collection do
       api DataAggregator.Records
     end
 
+    has_many :exports, DataAggregator.Records.Export do
+      api DataAggregator.Records
+    end
+
     has_many :records, DataAggregator.Records.Record do
       api DataAggregator.Records
     end
@@ -86,6 +92,8 @@ defmodule DataAggregator.Records.Collection do
                     :unknown
                 end
               )
+
+    calculate :records_to_export_query, :map, Calculations.RecordsToExport
   end
 
   aggregates do
@@ -142,6 +150,18 @@ defmodule DataAggregator.Records.Collection do
     update :touch do
       change set_attribute(:updated_at, &DateTime.utc_now/0)
     end
+
+    action :publish, :map do
+      argument :export, :struct, allow_nil?: false
+
+      run Records.Actions.PublishRecords
+    end
+
+    action :export, :map do
+      argument :export, :struct, allow_nil?: false
+
+      run Records.Actions.ExportRecords
+    end
   end
 
   pub_sub do
@@ -163,6 +183,8 @@ defmodule DataAggregator.Records.Collection do
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :touch
+    define :publish, action: :publish, args: [:publish]
+    define :export, action: :export, args: [:export]
   end
 
   postgres do

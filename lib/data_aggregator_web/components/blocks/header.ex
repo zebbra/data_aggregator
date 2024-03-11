@@ -11,6 +11,7 @@ defmodule DataAggregatorWeb.Blocks.Header do
   attr :as, :string, default: "h2", doc: "the tag of the title"
   attr :class, :string, default: nil, doc: "the page header class"
   attr :title_class, :string, default: nil, doc: "the title class"
+  attr :align_actions, :boolean, default: true, doc: "force the alignment of the actions"
 
   attr :size, :string,
     default: "xl",
@@ -49,7 +50,13 @@ defmodule DataAggregatorWeb.Blocks.Header do
         <%= render_slot(breadcrumbs) %>
       </div>
 
-      <.section_heading as={@as} class={@title_class} size={@size} break_at={@break_at}>
+      <.section_heading
+        as={@as}
+        class={@title_class}
+        align_actions={@align_actions}
+        size={@size}
+        break_at={@break_at}
+      >
         <%= render_slot(@inner_block) %>
 
         <:title :for={title <- @title} class={title[:class]}>
@@ -77,6 +84,7 @@ defmodule DataAggregatorWeb.Blocks.Header do
     doc: "the optional description (subtitle) of the section heading"
 
   attr :class, :string, default: nil, doc: "the section heading class"
+  attr :align_actions, :boolean, default: false, doc: "force the alignment of the actions"
 
   attr :size, :string,
     default: "lg",
@@ -105,7 +113,7 @@ defmodule DataAggregatorWeb.Blocks.Header do
   def section_heading(assigns) do
     ~H"""
     <div class={["w-full", break_size_class(@break_at), @class]}>
-      <div class="min-w-0 flex-1">
+      <div class={["min-w-0 flex-1", @align_actions && "sm:mt-2"]}>
         <.dynamic_tag
           :if={@title == []}
           name={@as}

@@ -18,6 +18,7 @@ defmodule DataAggregator.Records do
     import_timeout: :timer.minutes(60),
     import_batch_size: 1000,
     async_import_progress?: true,
+    export_timeout: :timer.minutes(60),
     encode_timeout: :timer.minutes(60),
     encode_batch_size: 1000,
     async_encode_progress?: true
@@ -61,4 +62,6 @@ defmodule DataAggregator.Records do
     num_cpus = :erlang.system_info(:logical_processors_available)
     get_env(:encode_max_concurrency, num_cpus)
   end
+
+  def export_timeout, do: get_env(:export_timeout)
 end

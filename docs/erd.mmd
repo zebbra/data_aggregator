@@ -122,6 +122,21 @@ erDiagram
     timestamp updated_at
     uuid record_id
   }
+  exports {
+    uuid id PK
+    varchar name
+    timestamp exported_at
+    timestamp started_at
+    timestamp finished_at
+    jsonb mapping
+    bytea records_query
+    integer exported_count
+    timestamp inserted_at
+    timestamp updated_at
+    uuid collection_id
+    uuid attachment_id
+    varchar state
+  }
   imports {
     uuid id PK
     array columns
@@ -264,8 +279,10 @@ erDiagram
     timestamp inserted_at
     timestamp scheduled_at
   }
+  collections ||--|{ exports : ""
   collections ||--|{ imports : ""
   collections ||--|{ records : ""
+  file_attachments ||--|{ exports : ""
   file_attachments ||--|{ imports : ""
   file_attachments ||--|{ record_images : ""
   imports ||--|{ import_records : ""
