@@ -109,7 +109,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
                 text={category.label}
                 description={category.description}
                 size="md"
-                class="px-6 sm:px-8"
+                class="px-6 lg:px-8"
               />
               <div class="no-scrollbar overflow-x-auto pt-4">
                 <.table
@@ -134,7 +134,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
               text={~t"Record encodings"m}
               description={~t"Results by catalog"m}
               size="md"
-              class="px-6 sm:px-8"
+              class="px-6 lg:px-8"
             />
             <div class="no-scrollbar overflow-x-auto pt-4">
               <.table id="encoding_result_table" rows={@record_encoding_results}>

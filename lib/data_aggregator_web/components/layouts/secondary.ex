@@ -10,14 +10,14 @@ defmodule DataAggregatorWeb.Layouts.Secondary do
   import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
-  embed_templates("shared/*")
+  embed_templates "shared/*"
 
-  attr(:current, :string, required: true, doc: "Current page")
-  attr(:open, :boolean, default: false, doc: "Whether the secondary column is open or not")
+  attr :current, :string, required: true, doc: "Current page"
+  attr :open, :boolean, default: false, doc: "Whether the secondary column is open or not"
 
-  slot(:inner_block, required: true)
-  slot(:portal, doc: "Portal slot for modal, dialog, etc.")
-  slot(:secondary, doc: "Aside slot for secondary column")
+  slot :inner_block, required: true
+  slot :portal, doc: "Portal slot for modal, dialog, etc."
+  slot :secondary, doc: "Aside slot for secondary column"
 
   def page(assigns) do
     ~H"""

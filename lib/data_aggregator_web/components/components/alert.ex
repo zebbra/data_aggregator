@@ -18,19 +18,18 @@ defmodule DataAggregatorWeb.Components.Alert do
           This is an alert.
         </.alert>
   """
-  attr(:id, :string, required: true)
-  attr(:title, :string, default: nil)
-  attr(:text, :string, default: nil)
-  attr(:on_cancel, JS, default: %JS{}, doc: "JS commands to run when the modal is cancelled.")
-  attr(:on_confirm, JS, default: %JS{}, doc: "JS commands to run when the modal is closed.")
-  attr(:form, :boolean, default: false, doc: "Whether the alert provides a form.")
+  attr :id, :string, required: true
+  attr :title, :string, default: nil
+  attr :text, :string, default: nil
+  attr :on_cancel, JS, default: %JS{}, doc: "JS commands to run when the modal is cancelled."
+  attr :on_confirm, JS, default: %JS{}, doc: "JS commands to run when the modal is closed."
+  attr :form, :boolean, default: false, doc: "Whether the alert provides a form."
 
-  attr(:size, :string,
+  attr :size, :string,
     values: ["xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl"],
     default: "md"
-  )
 
-  slot(:inner_block, required: false)
+  slot :inner_block, required: false
 
   def alert(assigns) do
     ~H"""

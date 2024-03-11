@@ -21,7 +21,7 @@ defmodule DataAggregator.Records.Record.Changes.RelateImport do
 
   @impl Ash.Resource.Change
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.after_action(changeset, &create_import_record/2, append: true)
+    Changeset.after_action(changeset, &create_import_record/2)
   end
 
   @impl Ash.Resource.Change

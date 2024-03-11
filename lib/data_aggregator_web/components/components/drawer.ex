@@ -32,15 +32,15 @@ defmodule DataAggregatorWeb.Components.Drawer do
         </:side>
       </.drawer>
   """
-  attr(:id, :string, required: true, doc: "ID of the drawer")
-  attr(:class, :string, default: nil, doc: "Class to add to the drawer")
-  attr(:content_class, :string, default: nil, doc: "Class to add to the drawer content")
-  attr(:side_class, :string, default: nil, doc: "Class to add to the side content")
-  attr(:overlay, :boolean, default: false, doc: "Whether to show an overlay or not")
-  attr(:checked, :boolean, default: nil, doc: "Manually set the drawer to be open or not")
+  attr :id, :string, required: true, doc: "ID of the drawer"
+  attr :class, :string, default: nil, doc: "Class to add to the drawer"
+  attr :content_class, :string, default: nil, doc: "Class to add to the drawer content"
+  attr :side_class, :string, default: nil, doc: "Class to add to the side content"
+  attr :overlay, :boolean, default: false, doc: "Whether to show an overlay or not"
+  attr :checked, :boolean, default: nil, doc: "Manually set the drawer to be open or not"
 
-  slot(:inner_block, required: true, doc: "Actual content of the drawer")
-  slot(:side, required: true, doc: "Sidebar wrapper")
+  slot :inner_block, required: true, doc: "Actual content of the drawer"
+  slot :side, required: true, doc: "Sidebar wrapper"
 
   def drawer(assigns) do
     ~H"""

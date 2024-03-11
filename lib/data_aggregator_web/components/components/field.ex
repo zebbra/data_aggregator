@@ -38,40 +38,40 @@ defmodule DataAggregatorWeb.Components.Field do
       <.field field={@form[:email]} type="email" />
       <.field name="my-input" errors={["oh no!"]} />
   """
-  attr(:id, :any, default: nil)
-  attr(:name, :any)
-  attr(:label, :string, default: nil)
-  attr(:value, :any)
+  attr :id, :any, default: nil
+  attr :name, :any
+  attr :label, :string, default: nil
+  attr :value, :any
 
-  attr(:type, :string,
+  attr :type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week)
-  )
+               range radio search select tel text textarea time url week combobox)
 
-  attr(:field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]")
+  attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
-  attr(:description, :string, default: nil, doc: "the description for the input")
+  attr :description, :string, default: nil, doc: "the description for the input"
 
-  attr(:errors, :list, default: [])
-  attr(:checked, :boolean, doc: "the checked flag for checkbox inputs")
-  attr(:prompt, :string, default: nil, doc: "the prompt for select inputs")
-  attr(:options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2")
-  attr(:multiple, :boolean, default: false, doc: "the multiple flag for select inputs")
-  attr(:class, :string, default: nil, doc: "additional css class for input")
-  attr(:inline, :boolean, default: false, doc: "whether the field is inline")
-  attr(:inside, :boolean, default: false, doc: "whether the field is inside")
-  attr(:hidden, :boolean, default: false, doc: "whether the field is hidden")
-  attr(:icon_start, :string, default: nil, doc: "icon name for the start of the input")
-  attr(:icon_end, :string, default: nil, doc: "icon name for the end of the input")
+  attr :errors, :list, default: []
+  attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
+  attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
+  attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
+  attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
+  attr :class, :string, default: nil, doc: "additional css class for input"
+  attr :inline, :boolean, default: false, doc: "whether the field is inline"
+  attr :inside, :boolean, default: false, doc: "whether the field is inside"
+  attr :hidden, :boolean, default: false, doc: "whether the field is hidden"
+  attr :icon_start, :string, default: nil, doc: "icon name for the start of the input"
+  attr :icon_end, :string, default: nil, doc: "icon name for the end of the input"
 
-  attr(:rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
-                multiple pattern placeholder readonly required rows size step))
+  attr :rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
+                multiple pattern placeholder readonly required rows size step
+                create max_items max_options tom_select_plugins tom_select_options remote_options_event_name dropup)
 
-  slot(:inner_block)
-  slot(:custom_label, doc: "the slot for the label text (if you need to customize it)")
-  slot(:before_input, doc: "the slot for the region before the input (only for inside)")
-  slot(:after_input, doc: "the slot for the region after the input (only for inside)")
+  slot :inner_block
+  slot :custom_label, doc: "the slot for the label text (if you need to customize it)"
+  slot :before_input, doc: "the slot for the region before the input (only for inside)"
+  slot :after_input, doc: "the slot for the region after the input (only for inside)"
 
   def field(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     assigns
@@ -233,11 +233,7 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <div
       phx-feedback-for={@name}
-      class={[
-        "form-control grid-cols-[subgrid] grid sm:col-span-3",
-        @errors != [] && "[&_select]:phx-feedback:select-error",
-        @hidden && "hidden"
-      ]}
+      class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @hidden && "hidden"]}
     >
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
@@ -255,28 +251,6 @@ defmodule DataAggregatorWeb.Components.Field do
         id={@id}
         class={class_names(["sm:col-span-3 sm:justify-self-end", is_nil(@description) && "mt-2"])}
       />
-    </div>
-    """
-  end
-
-  def field(%{type: "select"} = assigns) do
-    ~H"""
-    <div
-      phx-feedback-for={@name}
-      class={[
-        "form-control w-full",
-        @errors != [] && "[&_select]:phx-feedback:select-error",
-        @hidden && "hidden"
-      ]}
-    >
-      <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
-      <% else %>
-        <.label :if={@label} for={@id} label={@label} {@rest} />
-      <% end %>
-      <.input {assigns} />
-      <.description :if={@description} description={@description} class="mt-3" />
-      <.errors errors={@errors} id={@id} class={is_nil(@description) && "mt-2"} />
     </div>
     """
   end
@@ -326,9 +300,7 @@ defmodule DataAggregatorWeb.Components.Field do
         <.input {assigns} />
         <%= render_slot(@after_input) %>
       </label>
-      <.description :if={@description} class="mt-3">
-        <%= @description %>
-      </.description>
+      <.description :if={@description} description={@description} class="mt-3" />
       <.errors errors={@errors} id={@id} class={is_nil(@description) && "mt-2"} />
     </div>
     """
@@ -343,9 +315,7 @@ defmodule DataAggregatorWeb.Components.Field do
         <.label :if={@label} for={@id} label={@label} {@rest} />
       <% end %>
       <.input {assigns} />
-      <.description :if={@description} class="mt-3">
-        <%= @description %>
-      </.description>
+      <.description :if={@description} description={@description} class="mt-3" />
       <.errors errors={@errors} id={@id} class={is_nil(@description) && "mt-2"} />
     </div>
     """
@@ -383,33 +353,33 @@ defmodule DataAggregatorWeb.Components.Field do
         </:content>
       </.custom_field>
   """
-  attr(:id, :any, default: nil)
-  attr(:name, :any)
-  attr(:label, :string, default: nil)
-  attr(:value, :any)
+  attr :id, :any, default: nil
+  attr :name, :any
+  attr :label, :string, default: nil
+  attr :value, :any
 
-  attr(:type, :string,
+  attr :type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week)
-  )
+               range radio search select tel text textarea time url week combobox)
 
-  attr(:field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]")
+  attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
-  attr(:description, :string, default: nil, doc: "the description for the input")
+  attr :description, :string, default: nil, doc: "the description for the input"
 
-  attr(:errors, :list, default: [])
-  attr(:checked, :boolean, doc: "the checked flag for checkbox inputs")
-  attr(:prompt, :string, default: nil, doc: "the prompt for select inputs")
-  attr(:options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2")
-  attr(:multiple, :boolean, default: false, doc: "the multiple flag for select inputs")
-  attr(:class, :string, default: nil, doc: "additional css class for input")
-  attr(:hidden, :boolean, default: false, doc: "whether the field is hidden")
+  attr :errors, :list, default: []
+  attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
+  attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
+  attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
+  attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
+  attr :class, :string, default: nil, doc: "additional css class for input"
+  attr :hidden, :boolean, default: false, doc: "whether the field is hidden"
 
-  attr(:rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
-                multiple pattern placeholder readonly required rows size step))
+  attr :rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
+                multiple pattern placeholder readonly required rows size step
+                create max_items max_options tom_select_plugins tom_select_options remote_options_event_name dropup)
 
-  slot(:content)
+  slot :content
 
   def custom_field(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     assigns
@@ -431,13 +401,13 @@ defmodule DataAggregatorWeb.Components.Field do
   @doc """
   Renders a label.
   """
-  attr(:for, :string, default: nil)
-  attr(:label, :string, default: nil, doc: "the label text")
-  attr(:class, :string, default: nil, doc: "additional css class for description")
-  attr(:required, :boolean, default: false)
-  attr(:disabled, :boolean, default: false)
+  attr :for, :string, default: nil
+  attr :label, :string, default: nil, doc: "the label text"
+  attr :class, :string, default: nil, doc: "additional css class for description"
+  attr :required, :boolean, default: false
+  attr :disabled, :boolean, default: false
 
-  slot(:inner_block, doc: "the slot for the label text if no label is given")
+  slot :inner_block, doc: "the slot for the label text if no label is given"
 
   def label(assigns) do
     ~H"""
@@ -460,10 +430,10 @@ defmodule DataAggregatorWeb.Components.Field do
   @doc """
   Renders a description.
   """
-  attr(:description, :string, default: nil, doc: "the description text")
-  attr(:class, :string, default: nil, doc: "additional css class for description")
+  attr :description, :string, default: nil, doc: "the description text"
+  attr :class, :string, default: nil, doc: "additional css class for description"
 
-  slot(:inner_block, doc: "the slot for the description text if no description is given")
+  slot :inner_block, doc: "the slot for the description text if no description is given"
 
   def description(assigns) do
     ~H"""
@@ -480,9 +450,9 @@ defmodule DataAggregatorWeb.Components.Field do
   @doc """
   Generates a generic error message.
   """
-  attr(:id, :string, required: true)
-  attr(:class, :string, default: nil)
-  attr(:errors, :list, required: true)
+  attr :id, :string, required: true
+  attr :class, :string, default: nil
+  attr :errors, :list, required: true
 
   def errors(assigns) do
     ~H"""

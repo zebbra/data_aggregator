@@ -30,6 +30,7 @@ defmodule Storybook.Components.Form.Input do
               attributes: %{
                 type: to_string(type),
                 label: String.capitalize("#{type} input"),
+                placeholder: "Enter #{type} input",
                 autocomplete: to_string(type)
               }
             }
@@ -46,6 +47,7 @@ defmodule Storybook.Components.Form.Input do
               attributes: %{
                 type: to_string(type),
                 label: String.capitalize("#{type} input"),
+                placeholder: "Enter #{type} input",
                 autocomplete: to_string(type),
                 disabled: true
               }
@@ -114,6 +116,34 @@ defmodule Storybook.Components.Form.Input do
           type: "select",
           options: ["Option 1", "Option 2", "Option 3"],
           multiple: true,
+          disabled: true
+        }
+      },
+      %Variation{
+        id: :combobox,
+        attributes: %{
+          label: "Combobox input",
+          type: "combobox",
+          options: ["Option 1", "Option 2", "Option 3"]
+        }
+      },
+      %Variation{
+        id: :combobox_with_groups,
+        attributes: %{
+          label: "Combobox input",
+          type: "combobox",
+          options: %{
+            "Group 1" => ["Option 1", "Option 2"],
+            "Group 2" => ["Option 3", "Option 4"]
+          }
+        }
+      },
+      %Variation{
+        id: :combobox_disabled,
+        attributes: %{
+          label: "Combobox input",
+          type: "combobox",
+          options: ["Option 1", "Option 2", "Option 3"],
           disabled: true
         }
       }

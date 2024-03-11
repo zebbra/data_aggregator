@@ -19,15 +19,16 @@ defmodule DataAggregator.Records.Import.Changes.UpdateMapping do
       {:ok, mappings} ->
         columns = changeset |> Changeset.get_data(:columns) |> merge_mappings(mappings)
 
-        save_mappings_to_collection(changeset, columns)
-
-        Changeset.change_attribute(changeset, :columns, columns)
+        changeset
+        |> Changeset.change_attribute(:columns, columns)
+        |> Changeset.after_action(&save_mappings_to_collection/2)
     end
   end
 
-  defp save_mappings_to_collection(changeset, columns) do
+  defp save_mappings_to_collection(changeset, import) do
     # update mapping on collection as well, so we can reuse it on future imports
     collection = Changeset.get_data(changeset, :collection)
+    columns = import.columns
 
     Collection.update_import_mapping!(
       collection,
@@ -35,6 +36,8 @@ defmodule DataAggregator.Records.Import.Changes.UpdateMapping do
         %{name: column.name, mapped_to: column.mapped_to, type: column.type}
       end)
     )
+
+    {:ok, import}
   end
 
   defp merge_mappings(columns, mappings) do
