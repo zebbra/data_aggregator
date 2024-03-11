@@ -61,6 +61,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           href={~p"/collections/#{@collection}/imports"}
           label={~t"Imports"m}
         />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/exports"}
+          label={~t"Exports"m}
+        />
         <li
           id="dynamic_export_button"
           class="pointer-events-none -my-2 ml-auto w-0 snap-start overflow-hidden opacity-0 transition-opacity duration-150 ease-in-out"
