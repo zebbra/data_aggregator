@@ -9,7 +9,7 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Components do
 
   @states ~w(encoded success failed encoding queued unchanged incomplete imported)a
 
-  attr(:state, :atom, required: false, values: @states)
+  attr :state, :atom, required: false, values: @states
 
   def encoding_state_indicator(assigns) do
     ~H"""
@@ -22,11 +22,11 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Components do
     """
   end
 
-  attr(:state, :atom, required: false, values: @states)
-  attr(:small, :boolean, default: false)
-  attr(:reason, :string, default: nil)
-  attr(:icon, :string, default: nil)
-  attr(:icon_class, :string, default: nil)
+  attr :state, :atom, required: false, values: @states
+  attr :small, :boolean, default: false
+  attr :reason, :string, default: nil
+  attr :icon, :string, default: nil
+  attr :icon_class, :string, default: nil
 
   def encoding_state_badge(assigns) do
     {icon, icon_class} = state_badge_icon(assigns.state)

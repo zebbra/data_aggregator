@@ -51,6 +51,60 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     ~H"""
     <.page current="collections" open={@selected_record != nil}>
       <.collection_header collection={@collection} current={:records} />
+      <.secondary_navigation class="sticky top-[calc(4rem-1px)]" gradient>
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/records"}
+          label={~t"Records"m}
+          active
+        />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/imports"}
+          label={~t"Imports"m}
+        />
+        <li
+          id="dynamic_export_button"
+          class="pointer-events-none -my-2 ml-auto w-0 snap-start overflow-hidden opacity-0 transition-opacity duration-150 ease-in-out"
+          data-show_y="280,lg:340"
+          data-class_list="pointer-events-none w-0 overflow-hidden"
+          phx-hook="ShowHideOnScroll"
+        >
+          <button
+            phx-click="collection:export"
+            class="btn btn-primary text-primary-content btn-sm"
+            disabled={@busy}
+          >
+            <.icon name="hero-arrow-down-tray" class="size-4" />
+            <span class="max-sm:hidden"><%= ~t"Export"m %></span>
+          </button>
+        </li>
+        <li
+          id="dynamic_encode_button"
+          class="-my-2 hidden snap-start opacity-0 transition-opacity duration-150 ease-in-out"
+          data-show_y="280,lg:340"
+          phx-hook="ShowHideOnScroll"
+        >
+          <button
+            phx-click="collection:encode"
+            class="btn btn-primary text-primary-content btn-sm"
+            disabled={@busy}
+          >
+            <.icon :if={@busy == false} name="hero-puzzle-piece" class="size-4" />
+            <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
+            <span class="max-sm:hidden"><%= ~t"Encode"m %></span>
+          </button>
+        </li>
+        <li
+          id="dynamic_add_button"
+          class="-my-2 hidden snap-start opacity-0 transition-opacity duration-150 ease-in-out"
+          data-show_y="40,sm:60,lg:76"
+          phx-hook="ShowHideOnScroll"
+        >
+          <.link patch={~p"/collections/#{@collection}/imports/new"} class="btn btn-primary btn-sm">
+            <.icon name="hero-arrow-up-tray" class="size-4" />
+            <span class="max-sm:hidden"><%= ~t"Add"m %></span>
+          </.link>
+        </li>
+      </.secondary_navigation>
       <div :if={@collection.records_count > 0} class="space-y-6 p-6 lg:px-8">
         <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
           <.scope_stat
@@ -85,7 +139,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <div class="flex min-w-0 flex-1 justify-end gap-x-2">
           <button
             phx-click={JS.push("collection:export")}
-            class="btn btn-primary text-primary-content max-sm:btn-sm"
             class="btn btn-primary text-primary-content max-sm:btn-sm"
             disabled={@busy}
             data-confirm={~t"Are you sure?"m}

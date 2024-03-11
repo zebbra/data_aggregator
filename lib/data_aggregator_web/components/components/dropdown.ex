@@ -33,14 +33,14 @@ defmodule DataAggregatorWeb.Components.Dropdown do
         </ul>
       </.dropdown>
   """
-  attr(:id, :string, required: true, doc: "ID of the dropdown")
-  attr(:class, :string, default: nil, doc: "Class to add to the dropdown")
-  attr(:tooltip, :string, default: nil, doc: "Tooltip to add to the dropdown")
-  attr(:icon, :string, default: nil, doc: "Icon to add to the dropdown")
-  attr(:label, :string, default: nil, doc: "Label to add to the dropdown")
+  attr :id, :string, required: true, doc: "ID of the dropdown"
+  attr :class, :string, default: nil, doc: "Class to add to the dropdown"
+  attr :tooltip, :string, default: nil, doc: "Tooltip to add to the dropdown"
+  attr :icon, :string, default: nil, doc: "Icon to add to the dropdown"
+  attr :label, :string, default: nil, doc: "Label to add to the dropdown"
 
-  slot(:inner_block, required: true, doc: "Actual content of the dropdown")
-  slot(:summary, required: false, doc: "Custom summary of the dropdown")
+  slot :inner_block, required: true, doc: "Actual content of the dropdown"
+  slot :summary, required: false, doc: "Custom summary of the dropdown"
 
   def dropdown(assigns) do
     ~H"""
@@ -69,8 +69,8 @@ defmodule DataAggregatorWeb.Components.Dropdown do
     """
   end
 
-  attr(:id, :string, required: true, doc: "ID of the dropdown")
-  slot(:inner_block, required: true, doc: "Actual content of the dropdown")
+  attr :id, :string, required: true, doc: "ID of the dropdown"
+  slot :inner_block, required: true, doc: "Actual content of the dropdown"
 
   def table_actions(assigns) do
     ~H"""

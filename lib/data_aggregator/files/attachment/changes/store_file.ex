@@ -16,7 +16,7 @@ defmodule DataAggregator.Files.Attachment.Changes.StoreFile do
     |> validate_path()
     |> change_filename()
     |> change_byte_size()
-    |> Changeset.after_action(&store_file/2, append: true)
+    |> Changeset.after_action(&store_file/2)
     |> Changeset.load([:url])
   end
 

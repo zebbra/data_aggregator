@@ -15,11 +15,11 @@ defmodule DataAggregatorWeb.Components.List do
         <:item title="Views"><%= @post.views %></:item>
       </.list>
   """
-  attr(:class, :string, default: nil)
-  attr(:rest, :global)
+  attr :class, :string, default: nil
+  attr :rest, :global
 
   slot :item, required: true do
-    attr(:title, :string, required: true)
+    attr :title, :string, required: true
   end
 
   def list(assigns) do

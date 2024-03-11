@@ -10,8 +10,8 @@ defmodule DataAggregatorWeb.Components.Breadcrumbs do
   @doc """
   Renders a list of breadcrumbs.
   """
-  attr(:class, :string, default: "text-sm", doc: "the breadcrumbs class")
-  attr(:items, :list, default: [], doc: "the list of breadcrumbs items")
+  attr :class, :string, default: "text-sm", doc: "the breadcrumbs class"
+  attr :items, :list, default: [], doc: "the list of breadcrumbs items"
 
   def breadcrumbs(assigns) do
     assigns = assign(assigns, length: length(assigns[:items]))

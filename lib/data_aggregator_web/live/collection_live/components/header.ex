@@ -10,9 +10,9 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   alias DataAggregator.Records.Collection
 
-  attr(:collection_id, :any, default: nil)
-  attr(:collection, Collection, default: nil)
-  attr(:current, :atom, default: :records, values: ~w(records imports encodings exports details)a)
+  attr :collection_id, :any, default: nil
+  attr :collection, Collection, default: nil
+  attr :current, :atom, default: :records, values: ~w(records imports encodings exports details)a
 
   def collection_header(%{collection: nil} = assigns) do
     assigns

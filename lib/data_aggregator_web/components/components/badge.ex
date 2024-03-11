@@ -8,17 +8,16 @@ defmodule DataAggregatorWeb.Components.Badge do
   @doc """
   Renders a badge with different colors.
   """
-  attr(:class, :string, default: nil, doc: "the badge class")
+  attr :class, :string, default: nil, doc: "the badge class"
 
-  attr(:color, :string,
+  attr :color, :string,
     default: "gray",
     values: ~w(gray blue green red orange),
     doc: "the badge color"
-  )
 
-  attr(:rest, :global, include: ~w(data-tip))
+  attr :rest, :global, include: ~w(data-tip)
 
-  slot(:inner_block, required: true, doc: "the inner block of the badge")
+  slot :inner_block, required: true, doc: "the inner block of the badge"
 
   def badge(assigns) do
     ~H"""

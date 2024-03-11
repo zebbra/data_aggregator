@@ -93,7 +93,7 @@ config :data_aggregator, DataAggregator.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.19.11",
+  version: "0.20.1",
   data_aggregator: [
     args: ~w(js/app.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),

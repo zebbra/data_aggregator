@@ -79,7 +79,7 @@ defmodule DataAggregatorWeb.LiveComponents.ThemeSelect do
   Helper method to render the theme selector live component
   """
 
-  attr(:id, :string, default: "theme_selector")
+  attr :id, :string, default: "theme_selector"
 
   def theme_select(assigns) do
     ~H"""

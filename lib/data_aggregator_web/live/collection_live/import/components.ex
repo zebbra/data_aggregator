@@ -11,8 +11,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
 
   @states AshStateMachine.Info.state_machine_all_states(Import)
 
-  attr(:attachment, Attachment, required: true)
-  attr(:class, :string, default: nil)
+  attr :attachment, Attachment, required: true
+  attr :class, :string, default: nil
 
   def attachment_download_badge(assigns) do
     ~H"""
@@ -29,9 +29,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
     """
   end
 
-  attr(:import, Import, required: false)
-  attr(:state, :atom, required: false, values: @states)
-  attr(:progress, :float, required: false, default: nil)
+  attr :import, Import, required: false
+  attr :state, :atom, required: false, values: @states
+  attr :progress, :float, required: false, default: nil
 
   def import_state_badge(%{import: import} = assigns) when is_struct(import) do
     progress =
@@ -57,8 +57,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
     """
   end
 
-  attr(:state, :atom, required: true, values: @states)
-  attr(:progress, :float, required: false, default: nil)
+  attr :state, :atom, required: true, values: @states
+  attr :progress, :float, required: false, default: nil
 
   def import_state_badge_label(%{state: :importing} = assigns) do
     ~H"""
@@ -87,7 +87,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
     end
   end
 
-  attr(:state, :atom, required: true, values: @states)
+  attr :state, :atom, required: true, values: @states
 
   def import_state_icon(%{state: state} = assigns) do
     {icon, class} = import_state_icon_class(state)
@@ -169,12 +169,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
     """
   end
 
-  attr(:name, :string,
+  attr :name, :string,
     required: true,
     doc: "The name of the attribute prefixed with the category"
-  )
 
-  attr(:mapped, :boolean, default: false, doc: "Whether the attribute is mapped to a column")
+  attr :mapped, :boolean, default: false, doc: "Whether the attribute is mapped to a column"
 
   def attribute_badge(assigns) do
     parts = String.split(assigns.name, "_")
