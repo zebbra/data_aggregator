@@ -2,9 +2,9 @@ defmodule DataAggregatorWeb.Components.DataTable do
   @moduledoc """
   This component is used to render a table of data.
   """
-
   use Phoenix.Component
 
+  import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Components.Pagination, only: [pagination: 1]
   import DataAggregatorWeb.Gettext
 
@@ -35,6 +35,7 @@ defmodule DataAggregatorWeb.Components.DataTable do
   slot :col, required: true do
     attr(:label, :string, doc: "the label for the column")
     attr(:class, :string, doc: "the class for the column")
+    attr(:key, :atom, doc: "the key for the column")
   end
 
   slot :action, doc: "the slot for showing user actions in the last table column" do
@@ -57,7 +58,9 @@ defmodule DataAggregatorWeb.Components.DataTable do
             scope="col"
             class={["first:pl-6 last:pr-6 lg:first:pl-8 lg:last:pr-8", col[:class]]}
           >
-            <%= col[:label] %>
+            <%!-- <%= col[:label] %>
+            <.icon name="hero-arrow-path" class="text-base-content/50" /> --%>
+            <%= render_column_header(assigns, col) %>
           </th>
           <th :if={@action != []} role="columnheader" scope="col" class="pr-8 lg:pr-10">
             <span class="sr-only"><%= ~t"Actions"m %></span>
@@ -93,6 +96,94 @@ defmodule DataAggregatorWeb.Components.DataTable do
     </table>
     <.pagination meta={@meta} path={@path} params={@params} class="mt-4 my-8" />
     """
+  end
+
+  def render_column_header(assigns, col) do
+    assigns = assign(assigns, :col, col)
+    assigns = assign(assigns, :current_sort, List.first(assigns.meta.rerun.sort))
+
+    maybe_render_link(assigns)
+
+    # 2 cases: either the column is the current sort, or it's not
+  end
+
+  def maybe_render_link(%{col: %{key: col_key}, current_sort: {current_sort_key, _}} = assigns)
+      when col_key == current_sort_key do
+    ~H"""
+    <.link
+      patch={sort_path_helper(@col[:key], @current_sort, @path, @params)}
+      class="grow inline-flex"
+    >
+      <div class="my-auto mr-2">
+        <%= @col[:label] %>
+      </div>
+      <.icon name={sort_icon(@col[:key], @meta)} class="text-base-content/50" />
+    </.link>
+    """
+  end
+
+  def maybe_render_link(assigns) do
+    ~H"""
+    <.link
+      patch={sort_path_helper(@col[:key], @current_sort, @path, @params)}
+      class="grow inline-flex group"
+    >
+      <div class="my-auto mr-2">
+        <%= @col[:label] %>
+      </div>
+      <.icon
+        name={sort_icon(@col[:key], @meta)}
+        class="text-base-content/50 opacity-0 group-hover:opacity-100"
+      />
+    </.link>
+    """
+  end
+
+  def sort_icon(key, meta) do
+    case List.first(meta.rerun.sort) do
+      nil -> "hero-"
+      {^key, :asc} -> "hero-chevron-up"
+      {^key, :desc} -> "hero-chevron-down"
+      {_, _} -> "hero-chevron-up"
+    end
+  end
+
+  def sort_path_helper(col_key, current_sort, path, params) do
+    query_params =
+      params
+      |> page_params()
+      |> filter_params(params)
+      |> sort_params(current_sort, col_key)
+
+    "/#{path}?#{Plug.Conn.Query.encode(query_params)}"
+  end
+
+  def page_params(%{"limit" => limit}) do
+    %{"limit" => limit}
+  end
+
+  def page_params(_params), do: %{}
+
+  def filter_params(query_params, %{"filter" => filter}) do
+    Map.merge(%{"filter" => filter}, query_params)
+  end
+
+  def filter_params(query_params, _params), do: query_params
+
+  def sort_params(query_params, current_sort, col_key) when elem(current_sort, 0) == col_key do
+    sort_value =
+      case elem(current_sort, 1) do
+        :asc -> "-#{elem(current_sort, 0)}"
+        :desc -> "#{elem(current_sort, 0)}"
+        # default to asc
+        _ -> "#{elem(current_sort, 0)}"
+      end
+
+    Map.put(query_params, "sort", sort_value)
+  end
+
+  def sort_params(query_params, _current_sort, col_key) do
+    Map.put(query_params, "sort", col_key)
   end
 
   def read_opts(starting_query, params) do

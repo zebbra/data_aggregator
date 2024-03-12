@@ -50,7 +50,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           id="records_data_table"
           rows={@streams.results}
           meta={@meta}
-          path="/records"
+          path="records"
           params={@params}
           row_click={
             fn {_id, record} ->
@@ -58,31 +58,36 @@ defmodule DataAggregatorWeb.RecordLive.Index do
             end
           }
         >
-          <:col :let={{_id, record}} label={~t"MaterialEntityID"m} class="font-semibold">
+          <:col
+            :let={{_id, record}}
+            label={~t"MaterialEntityID"m}
+            key={:mte_material_entity_id}
+            class="font-semibold"
+          >
             <%= record.mte_material_entity_id %>
           </:col>
-          <:col :let={{_id, record}} label={~t"Scientific Name"m}>
+          <:col :let={{_id, record}} label={~t"Scientific Name"m} key={:tax_scientific_name}>
             <%= encoded_attribute(record, :tax_scientific_name) %>
           </:col>
-          <:col :let={{_id, record}} label={~t"Genus"m}>
+          <:col :let={{_id, record}} label={~t"Genus"m} key={:tax_genus}>
             <%= encoded_attribute(record, :tax_genus) %>
           </:col>
-          <:col :let={{_id, record}} label={~t"Family"m}>
+          <:col :let={{_id, record}} label={~t"Family"m} key={:tax_family}>
             <%= encoded_attribute(record, :tax_family) %>
           </:col>
-          <:col :let={{_id, record}} label={~t"Order"m}>
+          <:col :let={{_id, record}} label={~t"Order"m} key={:tax_order}>
             <%= encoded_attribute(record, :tax_order) %>
           </:col>
-          <:col :let={{_id, record}} label={~t"Class"m}>
+          <:col :let={{_id, record}} label={~t"Class"m} key={:tax_class}>
             <%= encoded_attribute(record, :tax_class) %>
           </:col>
-          <:col :let={{_id, record}} label={~t"Phylum"m}>
+          <:col :let={{_id, record}} label={~t"Phylum"m} key={:tax_phylum}>
             <%= encoded_attribute(record, :tax_phylum) %>
           </:col>
-          <:col :let={{_id, record}} label={~t"Encoding"m} class="text-center">
+          <:col :let={{_id, record}} label={~t"Encoding"m} key={:state} class="text-center">
             <.encoding_state_badge state={record.state} />
           </:col>
-          <:col :let={{_id, record}} label={~t"Collection"m}>
+          <:col :let={{_id, record}} label={~t"Collection"m} key={:"collection.name"}>
             <.link
               navigate={~p"/collections/#{record.collection}/records"}
               class="link link-primary link-hover font-semibold rounded-md"
@@ -90,7 +95,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
               <%= record.collection.name %>
             </.link>
           </:col>
-          <:col :let={{_id, record}} label={~t"Updated At"m} class="text-end">
+          <:col :let={{_id, record}} label={~t"Updated At"m} key={:updated_at} class="text-end">
             <%= format_datetime(record.updated_at, format: :medium) %>
           </:col>
         </.data_table>
@@ -240,15 +245,14 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   defp assign_records(socket, params) do
     case list_records(params) do
-      {:ok,
-       %Ash.Page.Offset{
-         results: records,
-         limit: limit,
-         offset: offset,
-         count: count,
-         rerun: rerun,
-         more?: more?
-       }} ->
+      %Ash.Page.Offset{
+        results: records,
+        limit: limit,
+        offset: offset,
+        count: count,
+        rerun: rerun,
+        more?: more?
+      } ->
         meta =
           %{
             limit: limit,
@@ -262,7 +266,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
         |> assign(:meta, meta)
         |> stream(:results, records, reset: true)
 
-      {:ok, records} ->
+      records ->
         socket
         |> assign(:meta, %{limit: nil, offset: nil})
         |> stream(:results, records, reset: true)
@@ -280,8 +284,8 @@ defmodule DataAggregatorWeb.RecordLive.Index do
         Keyword.put(value, :count, true)
       end)
 
-    {:ok, _result} = Record.read(opts)
-
+    {:ok, result} = Record.read(opts)
+    result
     # case result do
     #   %Ash.Page.Offset{results: records} -> records
     #   records -> records

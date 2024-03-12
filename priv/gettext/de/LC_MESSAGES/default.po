@@ -310,7 +310,7 @@ msgid "Tasks"
 msgstr "Aufgaben"
 
 #: lib/data_aggregator_web/live/record_live/index.ex:47
-#: lib/data_aggregator_web/live/record_live/index.ex:194
+#: lib/data_aggregator_web/live/record_live/index.ex:199
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Records"
@@ -462,114 +462,114 @@ msgid "Description"
 msgstr "Beschreibung"
 
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:249
-#: lib/data_aggregator_web/live/record_live/index.ex:151
+#: lib/data_aggregator_web/live/record_live/index.ex:156
 #, elixir-autogen, elixir-format
 msgid "Catalog"
 msgstr "Katalog"
 
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:255
-#: lib/data_aggregator_web/live/record_live/index.ex:157
+#: lib/data_aggregator_web/live/record_live/index.ex:162
 #, elixir-autogen, elixir-format
 msgid "Created"
 msgstr "Erstellt"
 
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:233
-#: lib/data_aggregator_web/live/record_live/index.ex:135
+#: lib/data_aggregator_web/live/record_live/index.ex:140
 #, elixir-autogen, elixir-format
 msgid "Encoded"
 msgstr "Enkodiert"
 
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:230
-#: lib/data_aggregator_web/live/record_live/index.ex:132
+#: lib/data_aggregator_web/live/record_live/index.ex:137
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Imported"
 msgstr "Importe"
 
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:227
-#: lib/data_aggregator_web/live/record_live/index.ex:129
+#: lib/data_aggregator_web/live/record_live/index.ex:134
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Name"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:252
-#: lib/data_aggregator_web/live/record_live/index.ex:154
+#: lib/data_aggregator_web/live/record_live/index.ex:159
 #, elixir-autogen, elixir-format
 msgid "State"
 msgstr "Status"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:111
+#: lib/data_aggregator_web/live/record_live/index.ex:116
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Characteristics according to the darwin core standard"
 msgstr "Charakteristika gemäß dem Darwin Core Standard"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:76
+#: lib/data_aggregator_web/live/record_live/index.ex:81
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Class"
 msgstr "Klasse"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:85
+#: lib/data_aggregator_web/live/record_live/index.ex:90
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Collection"
 msgstr "Sammlungen"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:82
+#: lib/data_aggregator_web/live/record_live/index.ex:87
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Encoding"
 msgstr "Enkodierungen"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:70
+#: lib/data_aggregator_web/live/record_live/index.ex:75
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Family"
 msgstr "Familie"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:67
+#: lib/data_aggregator_web/live/record_live/index.ex:72
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Genus"
 msgstr "Gattung"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:61
+#: lib/data_aggregator_web/live/record_live/index.ex:63
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "MaterialEntityID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.ex:73
+#: lib/data_aggregator_web/live/record_live/index.ex:78
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Order"
 msgstr "Ordnung"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:79
+#: lib/data_aggregator_web/live/record_live/index.ex:84
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Phylum"
 msgstr "Stamm"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:144
+#: lib/data_aggregator_web/live/record_live/index.ex:149
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Record encodings"
 msgstr "Enkodierungen"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:145
+#: lib/data_aggregator_web/live/record_live/index.ex:150
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Results by catalog"
 msgstr "Resultate nach Katalog"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:64
+#: lib/data_aggregator_web/live/record_live/index.ex:69
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Scientific Name"
 msgstr "Wissenschaftlicher Name"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:93
+#: lib/data_aggregator_web/live/record_live/index.ex:98
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Updated At"
@@ -858,19 +858,19 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "No imports"
 msgstr "Keine Importe"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:102
+#: lib/data_aggregator_web/live/record_live/index.ex:107
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Get started by importing a new dataset."
 msgstr "Beginne, indem du einen neuen Datensatz importierst"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:103
+#: lib/data_aggregator_web/live/record_live/index.ex:108
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Import"
 msgstr "Import"
 
-#: lib/data_aggregator_web/live/record_live/index.ex:101
+#: lib/data_aggregator_web/live/record_live/index.ex:106
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "No records"
@@ -1342,7 +1342,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Add"
 msgstr "Neu"
 
-#: lib/data_aggregator_web/components/components/data_table/data_table.ex:65
+#: lib/data_aggregator_web/components/components/data_table/data_table.ex:66
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Components.DataTable"
 msgid "Actions"

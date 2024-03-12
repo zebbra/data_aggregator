@@ -2,7 +2,6 @@ defmodule DataAggregatorWeb.Components.Pagination do
   @moduledoc """
   This component is used to render a pagination component.
   """
-
   use Phoenix.Component
 
   @doc ~S"""
@@ -38,42 +37,7 @@ defmodule DataAggregatorWeb.Components.Pagination do
     """
   end
 
-  def filters_map_from_params(%{"filter" => filter} = _params) do
-    filter
-    |> Enum.flat_map(fn {outer_key, inner_map} ->
-      Enum.map(inner_map, fn {inner_key, value} ->
-        {"filter[#{outer_key}][#{inner_key}]", value}
-      end)
-    end)
-    |> Map.new()
-  end
-
-  def filters_map_from_params(_params), do: %{}
-
   def default_limit, do: DataAggregator.Records.Record.default_limit()
-
-  def page_query_from_params(%{"limit" => limit, "offset" => offset}) do
-    %{limit: String.to_integer(limit), offset: String.to_integer(offset)}
-  end
-
-  def page_query_from_params(%{"limit" => limit}) do
-    %{limit: String.to_integer(limit), offset: 0}
-  end
-
-  def page_query_from_params(%{"offset" => offset}) do
-    %{offset: String.to_integer(offset)}
-  end
-
-  def page_query_from_params(_params) do
-    %{offset: 0}
-  end
-
-  def query_from_params(params) do
-    params
-    |> page_query_from_params()
-    |> Map.merge(filters_map_from_params(params))
-    |> Map.put(:sort, params["sort"])
-  end
 
   def limit(params) do
     case params["limit"] do
@@ -90,15 +54,44 @@ defmodule DataAggregatorWeb.Components.Pagination do
   end
 
   def pagination_path_helper(number, params, path) when is_integer(number) do
-    query = query_from_params(params)
-    query = Map.put(query, :offset, limit(params) * (number - 1))
+    query_params =
+      params
+      |> page_params()
+      |> filter_params(params)
+      |> sort_params(params)
+      |> Map.put("offset", limit(params) * (number - 1))
 
-    "#{path}?#{URI.encode_query(query)}"
+    "/#{path}?#{Plug.Conn.Query.encode(query_params)}"
   end
+
+  def sort_params(query_params, %{"sort" => sort}) do
+    Map.put(query_params, "sort", sort)
+  end
+
+  def sort_params(query_params, _params), do: query_params
+
+  def filter_params(query_params, %{"filter" => filter}) do
+    Map.put(query_params, "filter", filter)
+  end
+
+  def filter_params(query_params, _params), do: query_params
+
+  def page_params(%{"limit" => limit, "offset" => offset}) do
+    %{"limit" => limit, "offset" => offset}
+  end
+
+  def page_params(%{"limit" => limit}) do
+    %{"limit" => limit}
+  end
+
+  def page_params(%{"offset" => offset}) do
+    %{"offset" => offset}
+  end
+
+  def page_params(_params), do: %{}
 
   def total_pages(meta) do
     ceil(meta.count / meta.limit)
-    # div(meta.count, meta.limit)
   end
 
   def current_page(meta) do
