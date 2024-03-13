@@ -24,11 +24,10 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    case sanitize_params(socket, params) do
-      {:noreply, socket} ->
-        {:noreply, socket}
+    sanitized_params = sanitized_params(params)
 
-      params ->
+    case map_size(sanitized_params) do
+      0 ->
         socket =
           socket
           |> assign(params: params)
@@ -37,6 +36,10 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           |> apply_action(socket.assigns.live_action, params)
 
         {:noreply, socket}
+
+      _ ->
+        params = Map.merge(params, sanitized_params)
+        {:noreply, push_patch(socket, to: ~p"/records?#{params}")}
     end
   end
 
@@ -199,22 +202,10 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     assign(socket, :page_title, ~t"Records"m)
   end
 
-  defp sanitize_params(socket, params) do
-    update_params = %{}
-
-    update_params =
-      update_params
-      |> sanitize_limit(params)
-      |> sanitize_offset(params)
-
-    case map_size(update_params) do
-      0 ->
-        params
-
-      _ ->
-        params = Map.merge(params, update_params)
-        {:noreply, push_patch(socket, to: ~p"/records?#{params}")}
-    end
+  defp sanitized_params(params) do
+    %{}
+    |> sanitize_limit(params)
+    |> sanitize_offset(params)
   end
 
   defp sanitize_limit(update_params, params) do
