@@ -25,7 +25,6 @@ defmodule DataAggregatorWeb.Components.DataTable do
   attr(:row_id, :any, default: nil, doc: "the function for generating the row id")
   attr(:row_click, :any, default: nil, doc: "the function for handling phx-click on each row")
   attr(:path, :string, required: true, doc: "the base path of the current view")
-  attr(:params, :map, default: %{}, doc: "the query params for the current view")
 
   attr(:row_item, :any,
     default: &Function.identity/1,
@@ -94,30 +93,26 @@ defmodule DataAggregatorWeb.Components.DataTable do
         </tr>
       </tbody>
     </table>
-    <.pagination meta={@meta} path={@path} params={@params} class="mt-4 my-8" />
+    <.pagination meta={@meta} path={@path} class="mt-4 my-8" />
     """
   end
 
   def render_column_header(assigns, col) do
     assigns = assign(assigns, :col, col)
-    assigns = assign(assigns, :current_sort, List.first(assigns.meta.rerun.sort))
 
     maybe_render_link(assigns)
 
     # 2 cases: either the column is the current sort, or it's not
   end
 
-  def maybe_render_link(%{col: %{key: col_key}, current_sort: {current_sort_key, _}} = assigns)
+  def maybe_render_link(%{col: %{key: col_key}, meta: %{sort: {current_sort_key, _}}} = assigns)
       when col_key == current_sort_key do
     ~H"""
-    <.link
-      patch={sort_path_helper(@col[:key], @current_sort, @path, @params)}
-      class="grow inline-flex"
-    >
+    <.link patch={sort_path_helper(@col[:key], @meta.sort, @path, @meta)} class="grow inline-flex">
       <div class="my-auto mr-2">
         <%= @col[:label] %>
       </div>
-      <.icon name={sort_icon(@col[:key], @meta)} class="text-base-content/50" />
+      <.icon name={sort_icon(@col[:key], @meta.sort)} class="text-base-content/50" />
     </.link>
     """
   end
@@ -125,22 +120,22 @@ defmodule DataAggregatorWeb.Components.DataTable do
   def maybe_render_link(assigns) do
     ~H"""
     <.link
-      patch={sort_path_helper(@col[:key], @current_sort, @path, @params)}
+      patch={sort_path_helper(@col[:key], @meta.sort, @path, @meta)}
       class="grow inline-flex group"
     >
       <div class="my-auto mr-2">
         <%= @col[:label] %>
       </div>
       <.icon
-        name={sort_icon(@col[:key], @meta)}
+        name={sort_icon(@col[:key], @meta.sort)}
         class="text-base-content/50 opacity-0 group-hover:opacity-100"
       />
     </.link>
     """
   end
 
-  def sort_icon(key, meta) do
-    case List.first(meta.rerun.sort) do
+  def sort_icon(key, sort) do
+    case sort do
       nil -> "hero-"
       {^key, :asc} -> "hero-chevron-up"
       {^key, :desc} -> "hero-chevron-down"
@@ -148,27 +143,27 @@ defmodule DataAggregatorWeb.Components.DataTable do
     end
   end
 
-  def sort_path_helper(col_key, current_sort, path, params) do
+  def sort_path_helper(col_key, current_sort, path, meta) do
     query_params =
-      params
+      meta
       |> page_params()
-      |> filter_params(params)
+      |> filter_params(meta)
       |> sort_params(current_sort, col_key)
 
     "/#{path}?#{Plug.Conn.Query.encode(query_params)}"
   end
 
-  def page_params(%{"limit" => limit}) do
-    %{"limit" => limit}
+  def page_params(%{limit: limit}) do
+    %{limit: limit}
   end
 
-  def page_params(_params), do: %{}
+  def page_params(_meta), do: %{}
 
-  def filter_params(query_params, %{"filter" => filter}) do
-    Map.merge(%{"filter" => filter}, query_params)
+  def filter_params(query_params, %{filter: filter}) do
+    Map.put(query_params, :filter, filter)
   end
 
-  def filter_params(query_params, _params), do: query_params
+  def filter_params(query_params, _meta), do: query_params
 
   def sort_params(query_params, current_sort, col_key) when elem(current_sort, 0) == col_key do
     sort_value =
@@ -184,6 +179,44 @@ defmodule DataAggregatorWeb.Components.DataTable do
 
   def sort_params(query_params, _current_sort, col_key) do
     Map.put(query_params, "sort", col_key)
+  end
+
+  def sanitized_params(params) do
+    %{}
+    |> sanitize_limit(params)
+    |> sanitize_offset(params)
+  end
+
+  def sanitize_limit(update_params, params) do
+    cond do
+      is_nil(params["limit"]) ->
+        update_params
+
+      Integer.parse(params["limit"]) == :error ->
+        Map.put(update_params, "limit", DataAggregator.Records.Record.default_limit())
+
+      String.to_integer(params["limit"]) <= 0 ->
+        Map.put(update_params, "limit", DataAggregator.Records.Record.default_limit())
+
+      true ->
+        update_params
+    end
+  end
+
+  def sanitize_offset(update_params, params) do
+    cond do
+      is_nil(params["offset"]) ->
+        update_params
+
+      Integer.parse(params["offset"]) == :error ->
+        Map.put(update_params, "offset", 0)
+
+      String.to_integer(params["offset"]) < 0 ->
+        Map.put(update_params, "offset", 0)
+
+      true ->
+        update_params
+    end
   end
 
   def read_opts(starting_query, params) do

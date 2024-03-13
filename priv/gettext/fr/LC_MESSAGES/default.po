@@ -303,7 +303,7 @@ msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Tasks"
 msgstr ""
 
-#: lib/data_aggregator_web/live/record_live/index.ex:50
+#: lib/data_aggregator_web/live/record_live/index.ex:51
 #: lib/data_aggregator_web/live/record_live/index.ex:202
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.RecordLive.Index"
@@ -1568,7 +1568,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Exports"
 msgstr ""
 
-#: lib/data_aggregator_web/components/components/data_table/data_table.ex:66
+#: lib/data_aggregator_web/components/components/data_table/data_table.ex:65
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Components.DataTable"
 msgid "Actions"

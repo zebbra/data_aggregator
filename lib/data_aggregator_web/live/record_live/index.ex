@@ -14,6 +14,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
   alias DataAggregatorWeb.Components.DataTable
+  alias DataAggregatorWeb.Components.DataTable.Meta
 
   @load [:collection, :encoded_record]
 
@@ -24,7 +25,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    sanitized_params = sanitized_params(params)
+    sanitized_params = DataTable.sanitized_params(params)
 
     case map_size(sanitized_params) do
       0 ->
@@ -54,7 +55,6 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           rows={@streams.results}
           meta={@meta}
           path="records"
-          params={@params}
           row_click={
             fn {_id, record} ->
               JS.push("record:select", value: %{id: record.id})
@@ -90,7 +90,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           <:col :let={{_id, record}} label={~t"Encoding"m} key={:state} class="text-center">
             <.encoding_state_badge state={record.state} />
           </:col>
-          <:col :let={{_id, record}} label={~t"Collection"m} key={:"collection.name"}>
+          <:col :let={{_id, record}} label={~t"Collection"m} key={:collection}>
             <.link
               navigate={~p"/collections/#{record.collection}/records"}
               class="link link-primary link-hover font-semibold rounded-md"
@@ -202,59 +202,16 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     assign(socket, :page_title, ~t"Records"m)
   end
 
-  defp sanitized_params(params) do
-    %{}
-    |> sanitize_limit(params)
-    |> sanitize_offset(params)
-  end
-
-  defp sanitize_limit(update_params, params) do
-    cond do
-      is_nil(params["limit"]) ->
-        update_params
-
-      String.to_integer(params["limit"]) <= 0 ->
-        Map.put(update_params, "limit", DataAggregator.Records.Record.default_limit())
-
-      true ->
-        update_params
-    end
-  end
-
-  defp sanitize_offset(update_params, params) do
-    cond do
-      is_nil(params["offset"]) ->
-        update_params
-
-      String.to_integer(params["offset"]) < 0 ->
-        Map.put(update_params, "offset", 0)
-
-      true ->
-        update_params
-    end
-  end
-
   defp assign_records(socket, params) do
     case list_records(params) do
-      %Ash.Page.Offset{
-        results: records,
-        limit: limit,
-        offset: offset,
-        count: count,
-        rerun: rerun,
-        more?: more?
-      } ->
+      %Ash.Page.Offset{results: records} = data ->
         meta =
-          %{
-            limit: limit,
-            offset: offset,
-            count: count,
-            rerun: elem(rerun, 0),
-            more?: more?
-          }
+          data
+          |> Meta.create_meta_from_data()
+          |> Meta.add_filters_from_params(params)
 
         socket
-        |> assign(:meta, meta)
+        |> assign(meta: meta)
         |> stream(:results, records, reset: true)
 
       records ->
@@ -262,8 +219,6 @@ defmodule DataAggregatorWeb.RecordLive.Index do
         |> assign(:meta, %{limit: nil, offset: nil})
         |> stream(:results, records, reset: true)
     end
-
-    # stream(socket, :results, list_records(params))
   end
 
   defp list_records(params) do
@@ -277,10 +232,6 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
     {:ok, result} = Record.read(opts)
     result
-    # case result do
-    #   %Ash.Page.Offset{results: records} -> records
-    #   records -> records
-    # end
   end
 
   defp get_record(id) do

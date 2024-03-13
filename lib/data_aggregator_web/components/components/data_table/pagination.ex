@@ -10,16 +10,14 @@ defmodule DataAggregatorWeb.Components.Pagination do
   attr(:meta, :map, default: %{}, doc: "the metadata for the pagination")
   attr(:class, :string, default: nil, doc: "the classe for the pagination")
   attr(:path, :string, required: true, doc: "the base path of the current view")
-  attr(:params, :map, default: %{}, doc: "the query params for the current view")
 
   def pagination(assigns) do
     ~H"""
     <div class="mx-8 mt-3 hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
       <div>
         <p class="text-base-content text-sm">
-          Showing <span class="font-medium"><%= offset(@params) + 1 %></span>
-          to
-          <span class="font-medium"><%= min(offset(@params) + limit(@params), @meta.count) %></span>
+          Showing <span class="font-medium"><%= offset(@meta) + 1 %></span>
+          to <span class="font-medium"><%= min(offset(@meta) + limit(@meta), @meta.count) %></span>
           of <span class="font-medium"><%= @meta.count %></span>
           results
         </p>
@@ -39,56 +37,62 @@ defmodule DataAggregatorWeb.Components.Pagination do
 
   def default_limit, do: DataAggregator.Records.Record.default_limit()
 
-  def limit(params) do
-    case params["limit"] do
-      nil -> default_limit()
-      limit -> String.to_integer(limit)
-    end
-  end
+  def limit(%{limit: limit}), do: limit
 
-  def offset(params) do
-    case params["offset"] do
-      nil -> 0
-      offset -> String.to_integer(offset)
-    end
-  end
+  def limit(_meta), do: default_limit()
 
-  def pagination_path_helper(number, params, path) when is_integer(number) do
+  def offset(%{offset: offset}), do: offset
+
+  def offset(_meta), do: 0
+
+  def pagination_path_helper(number, meta, path) when is_integer(number) do
     query_params =
-      params
+      meta
       |> page_params()
-      |> filter_params(params)
-      |> sort_params(params)
-      |> Map.put("offset", limit(params) * (number - 1))
+      |> filter_params(meta)
+      |> sort_params(meta)
+      |> Map.put(:offset, limit(meta) * (number - 1))
 
     "/#{path}?#{Plug.Conn.Query.encode(query_params)}"
   end
 
-  def sort_params(query_params, %{"sort" => sort}) do
-    Map.put(query_params, "sort", sort)
+  def sort_params(query_params, %{sort: nil}), do: query_params
+
+  def sort_params(query_params, %{sort: {:id, _}}), do: query_params
+
+  def sort_params(query_params, %{sort: {key, :asc}}) do
+    Map.put(query_params, :sort, "#{key}")
   end
 
-  def sort_params(query_params, _params), do: query_params
-
-  def filter_params(query_params, %{"filter" => filter}) do
-    Map.put(query_params, "filter", filter)
+  def sort_params(query_params, %{sort: {key, :desc}}) do
+    Map.put(query_params, :sort, "-#{key}")
   end
 
-  def filter_params(query_params, _params), do: query_params
-
-  def page_params(%{"limit" => limit, "offset" => offset}) do
-    %{"limit" => limit, "offset" => offset}
+  def sort_params(query_params, %{sort: {key, _}}) do
+    Map.put(query_params, :sort, "#{key}")
   end
 
-  def page_params(%{"limit" => limit}) do
-    %{"limit" => limit}
+  def sort_params(query_params, _meta), do: query_params
+
+  def filter_params(query_params, %{filter: nil}), do: query_params
+
+  def filter_params(query_params, %{filter: filter}) do
+    Map.put(query_params, :filter, filter)
   end
 
-  def page_params(%{"offset" => offset}) do
-    %{"offset" => offset}
+  def page_params(%{limit: limit, offset: offset}) do
+    %{limit: limit, offset: offset}
   end
 
-  def page_params(_params), do: %{}
+  def page_params(%{limit: limit}) do
+    %{limit: limit}
+  end
+
+  def page_params(%{offset: offset}) do
+    %{offset: offset}
+  end
+
+  def page_params(_meta), do: %{}
 
   def total_pages(meta) do
     ceil(meta.count / meta.limit)
@@ -103,7 +107,7 @@ defmodule DataAggregatorWeb.Components.Pagination do
 
     ~H"""
     <.link
-      patch={pagination_path_helper(@page_number, @params, @path)}
+      patch={pagination_path_helper(@page_number, @meta, @path)}
       class={[
         "text-base-content relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0",
         active_page(assigns)
@@ -199,7 +203,7 @@ defmodule DataAggregatorWeb.Components.Pagination do
   def pagination_prev(%{meta: %{offset: offset}} = assigns) when offset > 0 do
     ~H"""
     <.link
-      patch={pagination_path_helper(current_page(@meta) - 1, @params, @path)}
+      patch={pagination_path_helper(current_page(@meta) - 1, @meta, @path)}
       class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
     >
       <span class="sr-only">Previous</span>
@@ -232,7 +236,7 @@ defmodule DataAggregatorWeb.Components.Pagination do
   def pagination_next(%{meta: %{more?: true}} = assigns) do
     ~H"""
     <.link
-      patch={pagination_path_helper(current_page(@meta) + 1, @params, @path)}
+      patch={pagination_path_helper(current_page(@meta) + 1, @meta, @path)}
       class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
     >
       <span class="sr-only">Next</span>
