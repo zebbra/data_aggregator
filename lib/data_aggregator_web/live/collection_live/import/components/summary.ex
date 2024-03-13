@@ -86,14 +86,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
         </span>
       </div>
 
-      <div class="modal-action">
-        <.link
-          patch={~p"/collections/#{@collection}/imports/#{@import}/edit"}
-          type="button"
-          class="btn btn-ghost"
-        >
-          <%= ~t"Back"m %>
-        </.link>
+      <div class="modal-action flex-row-reverse justify-start pr-1 pb-1">
         <button
           :if={@import.state == :pending}
           type="button"
@@ -104,6 +97,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
         >
           <%= ~t"Run import"m %>
         </button>
+        <.link
+          patch={~p"/collections/#{@collection}/imports/#{@import}/edit"}
+          type="button"
+          class="btn btn-ghost"
+        >
+          <%= ~t"Back"m %>
+        </.link>
       </div>
     </div>
     """

@@ -76,16 +76,12 @@ defmodule DataAggregator.Records.Record do
   end
 
   paper_trail do
-    # default is :snapshot
     change_tracking_mode :changes_only
-    # default is false
     store_action_name? true
-    # the primary keys are always ignored
     ignore_attributes [:inserted_at, :updated_at]
-    # used to have working destroy actions on the record resource
+    attributes_as_attributes [:mte_material_entity_id, :tax_scientific_name]
     reference_source? false
 
-    # exetending the default paper_trail resource to have more interfaces
     mixin DataAggregator.Records.RecordVersionMixin
     version_extensions extensions: [AshJsonApi.Resource]
   end
@@ -116,12 +112,17 @@ defmodule DataAggregator.Records.Record do
   end
 
   actions do
-    defaults [:update, :destroy]
+    defaults [:update]
 
     read :read do
       primary? true
       argument :sort, :string, allow_nil?: true
-      pagination offset?: true, default_limit: @default_limit, countable: true, required?: false
+
+      pagination offset?: true,
+                 default_limit: @default_limit,
+                 countable: true,
+                 required?: false,
+                 keyset?: true
     end
 
     create :create do
@@ -193,6 +194,11 @@ defmodule DataAggregator.Records.Record do
 
     update :set_failed do
       change transition_state(:failed)
+    end
+
+    destroy :destroy do
+      primary? true
+      change Record.Changes.DestroyVersions
     end
   end
 

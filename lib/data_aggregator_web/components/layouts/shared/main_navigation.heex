@@ -22,7 +22,7 @@
       <.link
         navigate={~p"/"}
         class={[
-          "flex md:flex-col md:p-3",
+          "flex md:flex-col md:p-3 active:!bg-primary",
           @current == "home" && "bg-primary text-primary-content hover:bg-primary"
         ]}
       >
@@ -34,7 +34,7 @@
       <.link
         navigate={~p"/collections"}
         class={[
-          "flex md:flex-col md:p-3",
+          "flex md:flex-col md:p-3 active:!bg-primary",
           @current == "collections" && "bg-primary text-primary-content hover:bg-primary"
         ]}
       >
@@ -46,7 +46,7 @@
       <.link
         navigate={~p"/records"}
         class={[
-          "flex md:flex-col md:p-3",
+          "flex md:flex-col md:p-3 active:!bg-primary",
           @current == "records" && "bg-primary text-primary-content hover:bg-primary"
         ]}
       >
@@ -58,7 +58,7 @@
       <.link
         navigate={~p"/tasks"}
         class={[
-          "flex md:flex-col md:p-3",
+          "flex md:flex-col md:p-3 active:!bg-primary",
           @current == "tasks" && "bg-primary text-primary-content hover:bg-primary",
           "md:max-lg:indicator"
         ]}

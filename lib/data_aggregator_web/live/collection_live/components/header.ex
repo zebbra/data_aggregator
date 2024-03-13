@@ -12,7 +12,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   attr :collection_id, :any, default: nil
   attr :collection, Collection, default: nil
-  attr :current, :atom, default: :records, values: ~w(records imports encodings details)a
+  attr :current, :atom, default: :records, values: ~w(records imports encodings exports details)a
 
   def collection_header(%{collection: nil} = assigns) do
     assigns
@@ -23,7 +23,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   def collection_header(assigns) do
     ~H"""
     <.page_header title_class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
-      <:breadcrumbs class="sm:hidden flex items-center justify-between px-6 mt-1">
+      <:breadcrumbs class="sm:hidden flex items-center justify-between px-6 mt-1 min-h-8">
         <.breadcrumbs
           class="text-sm"
           items={[
@@ -31,7 +31,11 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             %{label: ~t"Current"m, link: "#"}
           ]}
         />
-        <.link patch={~p"/collections/#{@collection}/imports/new"} class="btn btn-primary btn-sm">
+        <.link
+          :if={@current in [:records, :imports]}
+          patch={~p"/collections/#{@collection}/imports/new"}
+          class="btn btn-primary btn-sm"
+        >
           <.icon name="hero-arrow-up-tray" class="size-4" />
           <%= ~t"Add"m %>
         </.link>
@@ -62,30 +66,6 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <%= ~t"Import dataset"m %>
         </.link>
       </:actions>
-      <:navbar>
-        <.secondary_navigation>
-          <.secondary_navigation_item
-            href={~p"/collections/#{@collection}/records"}
-            label={~t"Records"m}
-            active={@current == :records}
-          />
-          <.secondary_navigation_item
-            href={~p"/collections/#{@collection}/imports"}
-            label={~t"Imports"m}
-            active={@current == :imports}
-          />
-          <%!-- <.secondary_navigation_item
-            href={~p"/collections/#{@collection}/encodings"}
-            label={~t"Encodings"m}
-            active={@current == :encodings}
-          />
-          <.secondary_navigation_item
-            href={~p"/collections/#{@collection}/details"}
-            label={~t"Details"m}
-            active={@current == :details}
-          /> --%>
-        </.secondary_navigation>
-      </:navbar>
     </.page_header>
     """
   end

@@ -1,0 +1,65 @@
+defmodule DataAggregator.ExportFixtures do
+  @moduledoc """
+  This module defines test helpers for creating
+  Export entities via the `DataAggregator.Records` context.
+  """
+
+  import DataAggregator.RecordsFixtures
+
+  alias DataAggregator.Records
+  alias DataAggregator.Records.Export
+  alias DataAggregator.Records.Record
+
+  @export_defaults %{
+    name: "gbif.org - Export"
+  }
+
+  @doc """
+  Generate an export.
+  """
+  def export_fixture(attrs \\ %{}) do
+    collection = Records.load!(collection_fixture(), [:records_to_export_query])
+
+    @export_defaults
+    |> Map.merge(attrs)
+    |> Map.put_new_lazy(:collection, fn -> collection end)
+    |> Map.put(:records_query, collection.records_to_export_query)
+    |> Export.create!()
+  end
+
+  def exportable_record(collection) do
+    exportable_record_attrs()
+    |> Map.put_new_lazy(:collection, fn -> collection end)
+    |> Record.create!()
+  end
+
+  def unexportable_record(collection) do
+    exportable_record_attrs()
+    |> Map.put_new_lazy(:collection, fn -> collection end)
+    |> Map.delete(:tax_kingdom)
+    |> Record.create!()
+  end
+
+  def exportable_record_attrs do
+    %{
+      mte_material_entity_id: "MHNG-MAM-8.085-#{Ecto.UUID.generate()}",
+      tax_scientific_name: "Bradyphus Burmeister, 1866",
+      tax_order: "Pilosa",
+      tax_family: "Bradypodidae",
+      tax_genus: "Bradypus",
+      tax_kingdom: "Animalia",
+      tax_taxon_id: 1_012_187
+    }
+  end
+
+  def create_export_with_mapping(collection, records, mapping) do
+    %{
+      name: "gbif.org - Export",
+      collection: collection,
+      records: records
+    }
+    |> Map.put(:records_query, collection.records_to_export_query)
+    |> Export.create!()
+    |> Export.update_mapping(mapping)
+  end
+end

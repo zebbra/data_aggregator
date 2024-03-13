@@ -66,6 +66,14 @@ defmodule Storybook.Components.Form.InputValidation do
           options: ["Option 1", "Option 2", "Option 3"],
           multiple: true
         }
+      },
+      %Variation{
+        id: :combobox,
+        attributes: %{
+          label: "Combobox input",
+          type: "combobox",
+          options: ["Option 1", "Option 2", "Option 3"]
+        }
       }
     ]
   end

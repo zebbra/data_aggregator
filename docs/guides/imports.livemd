@@ -22,13 +22,13 @@ Then select `Runtime settings` on in the Livebook sidebar to change to `Attached
 
 Imports are used to create records from a file. Currenty only CSV is supported. The main functions are:
 
-* `create_from_path(collection, file_path)` - Creates an import from a file for the given collection
+- `create_from_path(collection, file_path)` - Creates an import from a file for the given collection
 
 ### States
 
 The import implements a state machine and has the following states:
 
-* `pending` - ...
+- `pending` - ...
 
 The following flow chart visualizes each state and transition:
 
@@ -52,7 +52,7 @@ alias DataAggregator.Records.Record
 # Disable the logger
 Logger.configure(level: :info)
 
-{:ok, collection} = Collection.create(%{name: "My Collection", owner: "John Doe"})
+{:ok, collection} = Collection.create(%{name: "My Collection", owner: "John Doe", grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"})
 
 collection
 |> Records.load!([:records_count])
@@ -98,9 +98,9 @@ import.state
 
 When creating the import, the column names and types are extracted from the import and stored as `:columns` attribute on the import, where each column has the following fields:
 
-* `name` - Name of the column in the original file
-* `type` - Detected type of the column
-* `mapped_to` - Target record attribute when importing the file. When `nil`, the original `name` is used.
+- `name` - Name of the column in the original file
+- `type` - Detected type of the column
+- `mapped_to` - Target record attribute when importing the file. When `nil`, the original `name` is used.
 
 This is used to store information how the columns are mapped when creating the records.
 
@@ -137,8 +137,6 @@ import |> render_struct(keys: [:id, :state, :imported_at, :records_count])
 ```
 
 ## Asynchronously importing records
-
-
 
 ```elixir
 # enqueue the job

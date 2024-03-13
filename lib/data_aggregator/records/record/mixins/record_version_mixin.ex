@@ -14,10 +14,15 @@ defmodule DataAggregator.Records.RecordVersionMixin do
         end
       end
 
+      actions do
+        defaults [:create, :read, :update, :destroy]
+      end
+
       code_interface do
         define_for DataAggregator.Records
 
         define :read
+        define :destroy
       end
     end
   end

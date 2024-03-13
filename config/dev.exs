@@ -1,7 +1,7 @@
 import Config
 
 # Configure your database
-database_url = "ecto://postgres:postgres@localhost:5432/data_aggregator_dev"
+database_url = "ecto://postgres:postgres@localhost:5432/data-aggregator-dev"
 
 config :data_aggregator, DataAggregator.Repo,
   url: System.get_env("DATABASE_URL") || database_url,
@@ -71,7 +71,7 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.19.11",
+  version: "0.20.1",
   data_aggregator: [
     args:
       ~w(js/app.ts js/storybook.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),

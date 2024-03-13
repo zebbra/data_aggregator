@@ -129,7 +129,7 @@ defmodule DataAggregator.RecordEncodingResultTest do
     end
 
     test "destroy/1 with invalid id returns error" do
-      assert {:error, %Ash.Error.Invalid{}} =
+      assert {:error, %Ash.Error.Unknown{}} =
                RecordEncodingResult.destroy(%RecordEncodingResult{id: "invalid"})
     end
   end
