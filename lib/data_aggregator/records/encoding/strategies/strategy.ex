@@ -167,15 +167,27 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   end
 
   @doc """
-    upsert an encoded record if it does not exist yet
+    create an encoded record if it does not exist yet
   """
   @spec create_encoded_record(Record.t()) :: EncodedRecord.t()
   def create_encoded_record(record) do
-    EncodedRecord.create!(
-      record
-      |> Map.from_struct()
-      |> Map.put_new_lazy(:record, fn -> record end)
-    )
+    encoded_record =
+      case EncodedRecord.get_by_record(record) do
+        {:ok, result} -> result
+        {:error, %Ash.Error.Query.NotFound{}} -> nil
+      end
+
+    case encoded_record do
+      nil ->
+        EncodedRecord.create!(
+          record
+          |> Map.from_struct()
+          |> Map.put_new_lazy(:record, fn -> record end)
+        )
+
+      _ ->
+        encoded_record
+    end
   end
 
   @spec update_encoded_record(map(), EncodedRecord.t(), list()) :: EncodedRecord.t()
@@ -183,7 +195,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     updated_attributes =
       output_attributes
       |> Enum.map(fn {record_attribute, catalog_attribute} ->
-        {record_attribute, Map.get(updated_values, catalog_attribute)}
+        {record_attribute, updated_values[catalog_attribute]}
       end)
       |> Enum.filter(fn {_key, value} -> value != nil end)
       |> Enum.uniq()
