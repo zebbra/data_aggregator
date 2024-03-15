@@ -210,8 +210,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             end
           }
         >
-          <:col :let={{_id, record}} label={~t"MaterialEntityID"m} class="font-semibold">
-            <%= record.mte_material_entity_id %>
+          <:col :let={{_id, record}} label={~t"Catalog Number"m} class="font-semibold">
+            <%= record.mte_catalog_number %>
           </:col>
           <:col :let={{_id, record}} label={~t"Scientific Name"m}>
             <%= encoded_attribute(record, :tax_scientific_name) %>

@@ -8,7 +8,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
   @valid_mapping [
     %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
-    %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"}
+    %{name: "Numéro scientifique GBIF", mapped_to: "mte_catalog_number"}
   ]
 
   setup do

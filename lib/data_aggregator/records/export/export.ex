@@ -49,7 +49,7 @@ defmodule DataAggregator.Records.Export do
     calculate :collection_name, :string, expr(collection.name)
 
     calculate :attachment_url, :string do
-      calculation fn import, _opts -> import.attachment.url end
+      calculation fn export, _opts -> export.attachment.url end
       load attachment: :url
     end
 

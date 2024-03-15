@@ -27,7 +27,7 @@ defmodule DataAggregator.Records.Export.Calculations.RecordsToExport do
     #     not is_nil(tax_kingdom) and
     #     not is_nil(tax_taxon_id) and
     #     not is_nil(tax_scientific_name) and
-    #     not is_nil(mte_material_entity_id)
+    #     not is_nil(mte_catalog_number)
     # )
 
     all_records_query(id)

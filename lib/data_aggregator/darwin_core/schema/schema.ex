@@ -91,11 +91,70 @@ occ_attributes = [
 ]
 
 mte_attributes = [
-  %Attribute{name: :material_entity_id, type: :string, allow_nil?: false}
+  %Attribute{name: :material_entity_id, type: :string, allow_nil?: true},
+  %Attribute{name: :associated_media, type: :string, allow_nil?: true},
+  %Attribute{name: :geological_context_id, type: :string, allow_nil?: true},
+  %Attribute{name: :material_sample_id, type: :string, allow_nil?: true},
+  %Attribute{name: :method_id, type: :string, allow_nil?: true},
+  %Attribute{name: :organism_id, type: :string, allow_nil?: true},
+  %Attribute{name: :parent_material_entity_id, type: :string, allow_nil?: true},
+  %Attribute{name: :permit_id, type: :string, allow_nil?: true},
+  %Attribute{name: :preservation_id, type: :string, allow_nil?: true},
+  %Attribute{name: :references, type: :string, allow_nil?: true},
+  %Attribute{name: :anatomical_description, type: :string, allow_nil?: true},
+  %Attribute{name: :articulation, type: :string, allow_nil?: true},
+  %Attribute{name: :assemblage_origin, type: :string, allow_nil?: true},
+  %Attribute{name: :barcode_label, type: :string, allow_nil?: true},
+  %Attribute{name: :behavior, type: :string, allow_nil?: true},
+  %Attribute{name: :bioerosion, type: :string, allow_nil?: true},
+  %Attribute{name: :catalog_number, type: :string, allow_nil?: false},
+  %Attribute{name: :completeness, type: :string, allow_nil?: true},
+  %Attribute{name: :depositional_environment_text, type: :string, allow_nil?: true},
+  %Attribute{name: :depositional_environment_type, type: :string, allow_nil?: true},
+  %Attribute{name: :digital_entity_type, type: :string, allow_nil?: true},
+  %Attribute{name: :dna_bank_id, type: :string, allow_nil?: true},
+  %Attribute{name: :dna_stable_id, type: :string, allow_nil?: true},
+  %Attribute{name: :encrustation, type: :string, allow_nil?: true},
+  %Attribute{name: :extraction_temporary_id, type: :string, allow_nil?: true},
+  %Attribute{name: :feeding_predation_traces, type: :string, allow_nil?: true},
+  %Attribute{name: :form, type: :string, allow_nil?: true},
+  %Attribute{name: :gbif_doi, type: :string, allow_nil?: true},
+  %Attribute{name: :life_stage, type: :string, allow_nil?: true},
+  %Attribute{name: :material_entity_remarks, type: :string, allow_nil?: true},
+  %Attribute{name: :material_entity_type, type: :string, allow_nil?: true},
+  %Attribute{name: :matrix, type: :string, allow_nil?: true},
+  %Attribute{name: :mineralization, type: :string, allow_nil?: true},
+  %Attribute{name: :occurrence_status, type: :string, allow_nil?: true},
+  %Attribute{name: :organism_quantity, type: :string, allow_nil?: true},
+  %Attribute{name: :organism_quantity_method, type: :string, allow_nil?: true},
+  %Attribute{name: :organism_quantity_type, type: :string, allow_nil?: true},
+  %Attribute{name: :orientation, type: :string, allow_nil?: true},
+  %Attribute{name: :orig_col_author, type: :string, allow_nil?: true},
+  %Attribute{name: :original_biominerals, type: :string, allow_nil?: true},
+  %Attribute{name: :other_catalog_numbers, type: :string, allow_nil?: true},
+  %Attribute{name: :paleo_completeness, type: :string, allow_nil?: true},
+  %Attribute{name: :part_of_organism, type: :string, allow_nil?: true},
+  %Attribute{name: :post_burial_transportation, type: :string, allow_nil?: true},
+  %Attribute{name: :record_number, type: :string, allow_nil?: true},
+  %Attribute{name: :replacement_minerals, type: :string, allow_nil?: true},
+  %Attribute{name: :reproductive_condition, type: :string, allow_nil?: true},
+  %Attribute{name: :sample_designation, type: :string, allow_nil?: true},
+  %Attribute{name: :taphonomy, type: :string, allow_nil?: true},
+  %Attribute{name: :tissue_bank_id, type: :string, allow_nil?: true},
+  %Attribute{name: :verbatim_label, type: :string, allow_nil?: true},
+  %Attribute{name: :year_collection_entrance, type: :string, allow_nil?: true}
 ]
 
 mts_attributes = [
-  %Attribute{name: :material_sample_type, type: :string, allow_nil?: true}
+  %Attribute{name: :material_sample_type, type: :string, allow_nil?: true},
+  %Attribute{name: :material_sample_id, type: :string, allow_nil?: true},
+  %Attribute{name: :event_id, type: :string, allow_nil?: true},
+  %Attribute{name: :geological_context_id, type: :string, allow_nil?: true},
+  %Attribute{name: :method_id, type: :string, allow_nil?: true},
+  %Attribute{name: :permit_id, type: :string, allow_nil?: true},
+  %Attribute{name: :preservation_id, type: :string, allow_nil?: true},
+  %Attribute{name: :references, type: :string, allow_nil?: true},
+  %Attribute{name: :verbatim_label, type: :string, allow_nil?: true}
 ]
 
 categories = [

@@ -138,10 +138,12 @@ Table exports {
   mapping jsonb
   records_query bytea
   exported_count integer
+  rows_count integer
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid
   attachment_id uuid
+  job_id integer
   state varchar
 }
 
@@ -251,6 +253,8 @@ Table records_versions {
   id uuid [pk]
   version_action_type varchar
   version_action_name varchar
+  mte_material_entity_id varchar
+  tax_scientific_name varchar
   version_source_id uuid
   changes jsonb
   version_inserted_at timestamp
@@ -311,6 +315,7 @@ Ref: file_attachments.id < imports.attachment_id
 Ref: file_attachments.id < record_images.attachment_id
 Ref: imports.id < import_records.import_id
 Ref: institutions.id < collections.institution_id
+Ref: oban_jobs.id < exports.job_id
 Ref: oban_jobs.id < imports.job_id
 Ref: oban_jobs.id < records.encoder_job_id
 Ref: records.id < change_events.record_id

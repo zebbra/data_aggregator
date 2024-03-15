@@ -84,7 +84,7 @@ defmodule DataAggregator.ExportTest do
 
   describe "export" do
     @valid_custom_mapping %{
-      "mte_material_entity_id" => "Numéro scientifique GBIF",
+      "mte_catalog_number" => "Numéro scientifique GBIF",
       "tax_family" => "Famille"
     }
     @default_mapping Map.new(Schema.prefixed_attribute_names(), fn name ->

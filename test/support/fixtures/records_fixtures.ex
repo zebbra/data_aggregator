@@ -9,7 +9,7 @@ defmodule DataAggregator.RecordsFixtures do
   alias DataAggregator.Records.Record
 
   @record_defaults %{
-    mte_material_entity_id: "record1",
+    mte_catalog_number: "record1",
     tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
   }
 

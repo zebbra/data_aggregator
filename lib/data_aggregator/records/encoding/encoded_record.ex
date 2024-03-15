@@ -60,7 +60,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
       upsert? true
       upsert_fields [:extra_data | DarwinCore.Schema.prefixed_attribute_names()]
-      upsert_identity :record_mte_material_entity_id
+      upsert_identity :record_mte_catalog_number
 
       change Encoding.Changes.SetMandatoryAttributes
       change Encoding.Changes.SetOptionalAttributes
@@ -69,7 +69,7 @@ defmodule DataAggregator.Records.EncodedRecord do
   end
 
   identities do
-    identity :record_mte_material_entity_id, [:record_id, :mte_material_entity_id]
+    identity :record_mte_catalog_number, [:record_id, :mte_catalog_number]
   end
 
   code_interface do

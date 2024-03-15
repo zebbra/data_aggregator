@@ -21,7 +21,7 @@ defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
     setup %{collection: collection, path: path} do
       mapping = [
         %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
-        %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"}
+        %{name: "Numéro scientifique GBIF", mapped_to: "mte_catalog_number"}
       ]
 
       import =

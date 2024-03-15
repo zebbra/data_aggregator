@@ -81,7 +81,7 @@ defmodule DataAggregator.CollectionTest do
 
       updated_import_mapping = [
         %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
-        %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"}
+        %{name: "Numéro scientifique GBIF", mapped_to: "mte_catalog_number"}
       ]
 
       assert {:ok, %Collection{} = result} =

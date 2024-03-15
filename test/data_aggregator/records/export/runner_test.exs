@@ -12,7 +12,7 @@ defmodule DataAggregator.Records.Export.ExporterTest do
 
   describe "DataAggregator.Records.Export.Exporter.perform/1" do
     @valid_custom_mapping %{
-      :mte_material_entity_id => "Numéro scientifique GBIF",
+      :mte_catalog_number => "Numéro scientifique GBIF",
       :tax_family => "Famille"
     }
 

@@ -43,7 +43,6 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
           "Encoding for record #{record.id} with catalog: #{to_string(catalog)} failed, due to: #{inspect(error)}"
         )
 
-        # store_error(record.id, catalog, error) |>
         set_failed_state(record)
 
         {:error, error}
@@ -69,16 +68,6 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
     with_record = Records.load!(encoded_record, [:record], lazy?: true)
     with_record.record
   end
-
-  # store error to record
-  # @spec store_error(String.t(), atom(), any()) :: Record.t()
-  # defp store_error(record_id, catalog, error) do
-  #   record = Record.get_by_id!(record_id)
-  #   encoding_error = Map.put_new(%{}, catalog, error)
-  #   errors = Map.put_new(record.errors || %{}, :encoding, encoding_error)
-
-  #   Record.update!(record, %{errors: errors})
-  # end
 
   # update state of records to `:encoding`
   @spec set_encoding_state(Record.t()) :: Record.t()

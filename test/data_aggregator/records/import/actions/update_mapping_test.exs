@@ -38,7 +38,7 @@ defmodule DataAggregator.Records.Import.Actions.UpdateMappingTest do
           {cat.name, Enum.map(cat.attributes, & &1.name)}
         end)
 
-      assert missing_attributes == [{:tax, [:scientific_name]}, {:mte, [:material_entity_id]}]
+      assert missing_attributes == [{:tax, [:scientific_name]}, {:mte, [:catalog_number]}]
 
       assert import.state == :pending
 

@@ -15,7 +15,7 @@ defmodule DataAggregator.EncodingFixtures do
   require Logger
 
   @encoded_record_defaults %{
-    mte_material_entity_id: "encoded_record1",
+    mte_catalog_number: "encoded_record1",
     tax_scientific_name: "Oenanthea Pallas",
     tax_kingdom: "Animalia",
     tax_taxon_id: 1_012_187

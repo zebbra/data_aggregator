@@ -14,7 +14,7 @@ defmodule DataAggregator.RecordTest do
 
   describe "records" do
     @invalid_attrs %{
-      mte_material_entity_id: nil,
+      mte_catalog_number: nil,
       tax_scientific_name: nil
     }
 
@@ -42,7 +42,7 @@ defmodule DataAggregator.RecordTest do
 
     test "create/1 with valid data creates a record" do
       attrs = %{
-        mte_material_entity_id: "record1",
+        mte_catalog_number: "record1",
         tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083",
         collection: collection_fixture()
       }
@@ -62,7 +62,7 @@ defmodule DataAggregator.RecordTest do
       record = record_fixture()
 
       update_attrs = %{
-        mte_material_entity_id: "record2",
+        mte_catalog_number: "record2",
         tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
       }
 
@@ -110,7 +110,7 @@ defmodule DataAggregator.RecordTest do
     test "destroy/1 deletes the record and it's versions" do
       update_attrs = %{
         tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc042",
-        mte_material_entity_id: "record42"
+        mte_catalog_number: "record42"
       }
 
       record =
@@ -129,7 +129,7 @@ defmodule DataAggregator.RecordTest do
       assert_map_includes(hd(Record.Version.read!(%{version_source_id: record.id})), %{
         version_source_id: record.id,
         tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc042",
-        mte_material_entity_id: "record42",
+        mte_catalog_number: "record42",
         version_action_type: :destroy,
         version_action_name: :destroy,
         changes: %{}
@@ -163,7 +163,7 @@ defmodule DataAggregator.RecordTest do
 
     test "importing a record", %{import: import} do
       params = %{
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         tax_scientific_name: "Example",
         some_extra_data: "Extra"
       }
@@ -180,12 +180,12 @@ defmodule DataAggregator.RecordTest do
       assert_map_includes(record, %{
         collection_id: import.collection_id,
         tax_scientific_name: "Example",
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         extra_data: %{
           "some_extra_data" => "Extra"
         },
         import_data: %{
-          "mte_material_entity_id" => "ex-123",
+          "mte_catalog_number" => "ex-123",
           "tax_scientific_name" => "Example",
           "some_extra_data" => "Extra"
         }
@@ -198,7 +198,7 @@ defmodule DataAggregator.RecordTest do
 
     test "updating a record for the same import", %{import: import} do
       params = %{
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         tax_scientific_name: "Example",
         some_extra_data: "Extra"
       }
@@ -206,7 +206,7 @@ defmodule DataAggregator.RecordTest do
       assert {:ok, record} = Record.import(import, params)
 
       updated_params = %{
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         tax_scientific_name: "Updated Example",
         some_other_extra_data: "Other Extra"
       }
@@ -224,7 +224,7 @@ defmodule DataAggregator.RecordTest do
         id: record.id,
         collection_id: import.collection_id,
         tax_scientific_name: "Updated Example",
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         extra_data: %{
           "some_other_extra_data" => "Other Extra"
         }
@@ -237,7 +237,7 @@ defmodule DataAggregator.RecordTest do
 
     test "updating a record from another import", %{import: import} do
       params = %{
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         tax_scientific_name: "Example",
         some_extra_data: "Extra"
       }
@@ -245,7 +245,7 @@ defmodule DataAggregator.RecordTest do
       assert {:ok, record} = Record.import(import, params)
 
       updated_params = %{
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         tax_scientific_name: "Updated Example",
         some_other_extra_data: "Other Extra"
       }
@@ -262,7 +262,7 @@ defmodule DataAggregator.RecordTest do
       )
 
       assert_map_includes(updated_record.import_data, %{
-        "mte_material_entity_id" => "ex-123",
+        "mte_catalog_number" => "ex-123",
         "tax_scientific_name" => "Updated Example",
         "some_other_extra_data" => "Other Extra"
       })
@@ -274,7 +274,7 @@ defmodule DataAggregator.RecordTest do
 
     test "importing a record for another collection", %{import: import} do
       params = %{
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         tax_scientific_name: "Example"
       }
 
@@ -295,7 +295,7 @@ defmodule DataAggregator.RecordTest do
 
       assert_map_includes(other_record, %{
         collection_id: other_collection.id,
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         tax_scientific_name: "Example"
       })
     end

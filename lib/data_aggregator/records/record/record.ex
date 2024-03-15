@@ -79,7 +79,7 @@ defmodule DataAggregator.Records.Record do
     change_tracking_mode :changes_only
     store_action_name? true
     ignore_attributes [:inserted_at, :updated_at]
-    attributes_as_attributes [:mte_material_entity_id, :tax_scientific_name]
+    attributes_as_attributes [:mte_catalog_number, :tax_scientific_name]
     reference_source? false
 
     mixin DataAggregator.Records.RecordVersionMixin
@@ -149,7 +149,7 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.SetImportedAfterAction
 
       upsert? true
-      upsert_identity :collection_mte_material_entity_id
+      upsert_identity :collection_mte_catalog_number
       upsert_fields [:import_data, :extra_data | DarwinCore.Schema.prefixed_attribute_names()]
     end
 
@@ -212,7 +212,7 @@ defmodule DataAggregator.Records.Record do
   end
 
   identities do
-    identity :collection_mte_material_entity_id, [:collection_id, :mte_material_entity_id]
+    identity :collection_mte_catalog_number, [:collection_id, :mte_catalog_number]
   end
 
   code_interface do
