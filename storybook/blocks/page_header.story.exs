@@ -63,7 +63,7 @@ defmodule Storybook.Blocks.PageHeader do
         },
         slots: [
           """
-          <:breadcrumbs class="px-6 lg:px-8 text-sm text-base-content/60 font-medium">
+          <:breadcrumbs class="px-6 lg:px-8 text-sm text-base-content/60 font-medium sm:-mb-1">
             <.breadcrumbs items={#{inspect(breadcrumbs())}} />
           </:breadcrumbs>
           Hello World
@@ -101,7 +101,7 @@ defmodule Storybook.Blocks.PageHeader do
         },
         slots: [
           """
-          <:breadcrumbs class="px-6 lg:px-8 text-sm text-base-content/60 font-medium">
+          <:breadcrumbs class="px-6 lg:px-8 text-sm text-base-content/60 font-medium sm:-mb-1">
             <.breadcrumbs items={#{inspect(breadcrumbs())}} />
           </:breadcrumbs>
           This is a very very very long title to test what happens on the screen. Let's have a look at it.
@@ -145,7 +145,7 @@ defmodule Storybook.Blocks.PageHeader do
         },
         slots: [
           """
-          <:breadcrumbs class="px-6 lg:px-8 text-sm text-base-content/60 font-medium">
+          <:breadcrumbs class="px-6 lg:px-8 text-sm text-base-content/60 font-medium sm:-mb-1">
             <.breadcrumbs items={#{inspect(breadcrumbs())}} />
           </:breadcrumbs>
           Hello World
@@ -173,7 +173,7 @@ defmodule Storybook.Blocks.PageHeader do
         },
         slots: [
           """
-          <:breadcrumbs class="px-6 lg:px-8 text-sm text-base-content/60 font-medium">
+          <:breadcrumbs class="px-6 lg:px-8 text-sm text-base-content/60 font-medium sm:-mb-1">
             <.breadcrumbs items={#{inspect(breadcrumbs())}} />
           </:breadcrumbs>
           This is a very very very long title to test what happens on the screen. Let's have a look at it.
