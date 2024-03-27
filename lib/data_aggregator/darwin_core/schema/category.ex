@@ -5,12 +5,14 @@ defmodule DataAggregator.DarwinCore.Schema.Category do
 
   alias __MODULE__
   alias Ash.Resource.Attribute
+  alias DataAggregator.DarwinCore.Schema.DwcAttribute
 
-  defstruct [:name, label: "", attributes: [], description: nil]
+  defstruct [:name, label: "", attributes: [], dwc_attributes: [], description: nil]
 
   @type t :: %__MODULE__{
           name: atom(),
           attributes: [Attribute.t()],
+          dwc_attributes: [DwcAttribute.t()],
           description: String.t()
         }
 

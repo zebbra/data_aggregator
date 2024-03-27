@@ -1,27 +1,30 @@
-defmodule DataAggregator.Records.Export do
+defmodule DataAggregator.Records.Publication do
   @moduledoc """
-  An export represents an exported set of records
+  An publication represents an published set of records
   """
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine]
 
+  alias __MODULE__
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Collection
-  alias DataAggregator.Records.Export.Changes
+  alias DataAggregator.Records.Publication.Changes
+
+  @type t :: %Publication{}
 
   attributes do
-    uuid_attribute :id, prefix: "exp"
+    uuid_attribute :id, prefix: "pub"
 
     attribute :name, :string, allow_nil?: false
-    attribute :exported_at, :utc_datetime, allow_nil?: true
+    attribute :channel, :atom, allow_nil?: false
+    attribute :published_at, :utc_datetime, allow_nil?: true
     attribute :started_at, :utc_datetime, allow_nil?: true
     attribute :finished_at, :utc_datetime, allow_nil?: true
-    attribute :mapping, :map, allow_nil?: true
     attribute :records_query, :term, allow_nil?: false
-    attribute :exported_count, :integer, allow_nil?: false, default: 0
+    attribute :published_count, :integer, allow_nil?: false, default: 0
     attribute :rows_count, :integer, allow_nil?: false, default: 0
 
     timestamps private?: false, writable?: false
@@ -43,13 +46,13 @@ defmodule DataAggregator.Records.Export do
   end
 
   calculations do
-    calculate :export_progress, :float, expr(exported_count / rows_count)
+    calculate :publication_progress, :float, expr(published_count / rows_count)
     calculate :duration, :time, expr((finished_at || now()) - started_at)
 
     calculate :collection_name, :string, expr(collection.name)
 
     calculate :attachment_url, :string do
-      calculation fn export, _opts -> export.attachment.url end
+      calculation fn publication, _opts -> publication.attachment.url end
       load attachment: :url
     end
 
@@ -62,15 +65,15 @@ defmodule DataAggregator.Records.Export do
     default_initial_state :pending
 
     transitions do
-      transition :enqueue, from: [:pending, :exported, :failed], to: :queued
-      transition :run, from: [:pending, :exported, :failed, :queued], to: :running
-      transition :set_exported, from: :running, to: :exported
+      transition :enqueue, from: [:pending, :published, :failed], to: :queued
+      transition :run, from: [:pending, :published, :failed, :queued], to: :running
+      transition :set_published, from: :running, to: :published
       transition :set_failed, from: :running, to: :failed
     end
   end
 
   actions do
-    defaults [:read, :destroy]
+    defaults [:read, :destroy, :update]
 
     create :create do
       primary? true
@@ -79,29 +82,18 @@ defmodule DataAggregator.Records.Export do
       change manage_relationship(:collection, :collection, type: :append)
     end
 
-    update :update_mapping do
-      argument :mapping, :map, allow_nil?: true
-
-      change Changes.UpdateMapping
-      change load(:attachment)
-    end
-
-    update :update do
-      primary? true
-      argument :records, {:array, :struct}, allow_nil?: true
-    end
-
     update :enqueue do
       accept []
       change transition_state(:queued)
-      change Changes.EnqueueExporter
+      change Changes.EnqueuePublisher
     end
 
-    update :add_export_progress do
+    update :add_publication_progress do
       accept []
-      argument :exported, :integer, allow_nil?: false
-      change atomic_update(:exported_count, expr(exported_count + ^arg(:exported)))
-      change ensure_selected(:exported_count)
+      argument :published, :integer, allow_nil?: false
+
+      change atomic_update(:published_count, expr(published_count + ^arg(:published)))
+      change ensure_selected(:published_count)
     end
 
     update :set_running do
@@ -122,16 +114,16 @@ defmodule DataAggregator.Records.Export do
       change Changes.SetRunningBeforeTransaction
       change transition_state(:running)
       change set_attribute(:started_at, &DateTime.utc_now/0)
-      change Changes.ExportRecords
-      change Changes.SetExportedAfterAction
+      change Changes.PublishRecords
+      change Changes.SetPublishedAfterAction
       change load(:attachment)
     end
 
-    update :set_exported do
+    update :set_published do
       accept []
-      change transition_state(:exported)
+      change transition_state(:published)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
-      change set_attribute(:exported_at, &DateTime.utc_now/0)
+      change set_attribute(:published_at, &DateTime.utc_now/0)
     end
 
     update :update_attachment do
@@ -149,18 +141,17 @@ defmodule DataAggregator.Records.Export do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
-    define :update_mapping, action: :update_mapping, args: [:mapping]
     define :run
     define :enqueue
-    define :set_exported
+    define :set_published
     define :set_running
     define :set_failed
     define :update_attachment, action: :update_attachment, args: [:attachment]
-    define :add_export_progress, args: [:exported]
+    define :add_publication_progress, args: [:published]
   end
 
   postgres do
-    table "exports"
+    table "publications"
     repo DataAggregator.Repo
 
     references do
@@ -171,25 +162,25 @@ defmodule DataAggregator.Records.Export do
   end
 
   graphql do
-    type :export
+    type :publication
 
     queries do
-      get :get_export, :read
-      list :list_exports, :read
+      get :get_publication, :read
+      list :list_publications, :read
     end
 
     mutations do
-      create :create_export, :create
-      update :update_export, :update
-      destroy :destroy_export, :destroy
+      create :create_publication, :create
+      update :update_publication, :update
+      destroy :destroy_publication, :destroy
     end
   end
 
   json_api do
-    type "export"
+    type "publication"
 
     routes do
-      base "/exports"
+      base "/publications"
 
       get :read
       index :read

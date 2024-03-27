@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Export.ExporterTest do
+defmodule DataAggregator.Records.Export.RunnerTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true

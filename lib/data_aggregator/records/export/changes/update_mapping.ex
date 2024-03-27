@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Changes.UpdateMapping do
+defmodule DataAggregator.Records.Export.Changes.UpdateMapping do
   @moduledoc """
   Changeset hook to update the mapping of the export, to export the records with the given column headers
   """

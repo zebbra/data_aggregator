@@ -92,14 +92,14 @@
     }
   ],
   "table": "records_versions",
-  "hash": "8B33AFA4B35A183EDC4CD0D58770B9674A6B7665F1063A48A8FC4ACC4803BE66",
+  "hash": "0E4591B67386E649C8959EE6A6F3DAC24AD28F9F80853D27E65DEB9F39E0CE22",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "check_constraints": [],

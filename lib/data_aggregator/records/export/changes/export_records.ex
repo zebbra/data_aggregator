@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Changes.ExportRecords do
+defmodule DataAggregator.Records.Export.Changes.ExportRecords do
   @moduledoc """
   Changeset hook to export records
   """

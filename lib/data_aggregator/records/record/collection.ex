@@ -8,10 +8,13 @@ defmodule DataAggregator.Records.Collection do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     notifiers: [Ash.Notifier.PubSub]
 
+  alias __MODULE__
   alias DataAggregator.Records
   alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.Export.Calculations
   alias DataAggregator.Records.Validations
+
+  @type t :: %Collection{}
 
   attributes do
     uuid_attribute :id, prefix: "col"
@@ -151,16 +154,16 @@ defmodule DataAggregator.Records.Collection do
       change set_attribute(:updated_at, &DateTime.utc_now/0)
     end
 
-    action :publish, :map do
-      argument :export, :struct, allow_nil?: false
-
-      run Records.Actions.PublishRecords
-    end
-
     action :export, :map do
       argument :export, :struct, allow_nil?: false
 
       run Records.Actions.ExportRecords
+    end
+
+    action :publish, :map do
+      argument :publication, :struct, allow_nil?: false
+
+      run Records.Actions.Publish
     end
   end
 
@@ -183,8 +186,8 @@ defmodule DataAggregator.Records.Collection do
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :touch
-    define :publish, action: :publish, args: [:publish]
     define :export, action: :export, args: [:export]
+    define :publish, action: :publish, args: [:publication]
   end
 
   postgres do

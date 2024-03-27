@@ -66,8 +66,7 @@ defmodule DataAggregator.Taxonomy.Catalog do
 
       :geo_reverse ->
         [
-          {:loc_city, "city"},
-          {:loc_municipality, "town"},
+          {:loc_municipality, "city"},
           {:loc_continent, "continent"},
           {:loc_country, "country"},
           {:loc_country_code, "country_code"},
@@ -80,8 +79,7 @@ defmodule DataAggregator.Taxonomy.Catalog do
 
       :geo_forward ->
         [
-          {:loc_city, "city"},
-          {:loc_municipality, "town"},
+          {:loc_municipality, "city"},
           {:loc_continent, "continent"},
           {:loc_country, "country"},
           {:loc_country_code, "country_code"},
