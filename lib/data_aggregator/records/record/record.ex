@@ -28,7 +28,6 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
-  alias DataAggregator.Records.Publication
 
   @type t :: %Record{}
 
@@ -40,8 +39,8 @@ defmodule DataAggregator.Records.Record do
     attribute :import_data, :map
     attribute :extra_data, :map
     attribute :errors, :map
-    attribute :fast_track_status, :struct
-    attribute :approval_status, :struct
+    attribute :fast_track_status, :atom
+    attribute :approval_status, :atom
 
     timestamps private?: false, writable?: false
   end
@@ -200,10 +199,16 @@ defmodule DataAggregator.Records.Record do
       change transition_state(:failed)
     end
 
-    update :update_publication_status do
-      argument :status, :struct, allow_nil?: false
+    update :update_fast_track_status do
+      argument :status, :atom, allow_nil?: false
 
-      change Publication.Changes.UpdatePublicationStatus
+      change set_attribute(:fast_track_status, expr(^arg(:status)))
+    end
+
+    update :update_approval_status do
+      argument :status, :atom, allow_nil?: false
+
+      change set_attribute(:approval_status, expr(^arg(:status)))
     end
 
     destroy :destroy do
@@ -241,7 +246,8 @@ defmodule DataAggregator.Records.Record do
     define :set_encoded
     define :set_failed
     define :enqueue_encoder
-    define :update_publication_status, action: :update_publication_status, args: [:status]
+    define :update_fast_track_status, action: :update_fast_track_status, args: [:status]
+    define :update_approval_status, action: :update_approval_status, args: [:status]
   end
 
   postgres do

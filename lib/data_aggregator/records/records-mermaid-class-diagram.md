@@ -15,6 +15,7 @@ classDiagram
         Float digitizing_progress
         Atom encoding_state
         Map records_to_export_query
+        Map fast_track_query
         Integer records_count
         Integer imports_count
         Integer records_count_not_encoded
@@ -23,6 +24,7 @@ classDiagram
         Integer records_count_encoding
         Integer records_count_encoded
         Integer records_count_failed
+        Integer records_publishing
         Institution institution
         Import[] imports
         Export[] exports
@@ -747,8 +749,8 @@ classDiagram
         Map import_data
         Map extra_data
         Map errors
-        Struct fast_track_status
-        Struct approval_status
+        Atom fast_track_status
+        Atom approval_status
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Integer encoder_job_id
@@ -771,7 +773,8 @@ classDiagram
         set_encoding(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         set_encoded(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         set_failed(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
-        update_publication_status(Struct status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        update_fast_track_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        update_approval_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         destroy()
     }
     class Image {

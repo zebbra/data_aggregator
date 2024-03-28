@@ -5,7 +5,8 @@ defmodule DataAggregator.Records.Publication do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
+    notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
   alias DataAggregator.Files.Attachment
@@ -132,6 +133,15 @@ defmodule DataAggregator.Records.Publication do
       change manage_relationship(:attachment, :attachment, type: :append)
       change load(:attachment)
     end
+  end
+
+  pub_sub do
+    module DataAggregator.PubSub
+    prefix "publication"
+
+    publish_all :create, [[:collection_id, nil], "created"]
+    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
+    publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
   end
 
   code_interface do

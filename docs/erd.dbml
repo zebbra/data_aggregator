@@ -678,8 +678,8 @@ Table records {
   import_data jsonb
   extra_data jsonb
   errors jsonb
-  fast_track_status jsonb
-  approval_status jsonb
+  fast_track_status varchar
+  approval_status varchar
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid

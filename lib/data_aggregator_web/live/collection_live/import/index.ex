@@ -74,6 +74,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           href={~p"/collections/#{@collection}/exports"}
           label={~t"Exports"m}
         />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/publications"}
+          label={~t"Publications"m}
+        />
         <li
           id="dynamic_add_button"
           class="-my-2 ml-auto snap-start opacity-0 transition-opacity duration-150 ease-in-out"

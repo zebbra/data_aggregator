@@ -10,7 +10,6 @@ defmodule DataAggregator.Records.Actions.Publish do
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records
   alias DataAggregator.Records.Publication
-  alias DataAggregator.Records.Publication.PublicationStatus
   alias DataAggregator.Records.Record
 
   require Logger
@@ -25,7 +24,6 @@ defmodule DataAggregator.Records.Actions.Publish do
       query,
       channel,
       :publishing,
-      "collecting data for publication",
       publication
     )
 
@@ -34,34 +32,25 @@ defmodule DataAggregator.Records.Actions.Publish do
     CoreFile.create(query, path)
     # AnyExtensionFile.create(query, path)
 
-    attachment = path |> create_zip_file!() |> store_on_s3!()
+    attachment = path |> create_zip!() |> store_on_s3!()
 
     set_publication_status(
       query,
       channel,
       :in_publication,
-      "data collected successful, publication process started",
       publication
     )
 
     Publication.update_attachment(publication, attachment)
-    # rescue
-    #   e ->
-    #     Logger.error("Error publishing records on the fast track: #{inspect(e)}")
+  rescue
+    e ->
+      Logger.error("Error publishing records on the #{input.arguments.publication.channel} channel: #{inspect(e)}")
 
-    #     set_publication_status(
-    #       input.arguments.publication.records_query,
-    #       input.arguments.publication.channel,
-    #       :publication_failed,
-    #       inspect(e),
-    #       input.arguments.publication
-    #     )
-
-    #     {:error, e}
+      {:error, e}
   end
 
-  @spec create_zip_file!(String.t()) :: String.t()
-  defp create_zip_file!(path) do
+  @spec create_zip!(String.t()) :: String.t()
+  defp create_zip!(path) do
     zip_path = ~c"#{path}/#{Ecto.UUID.generate()}.zip"
     files = get_files(path)
     directory_path = ~c"#{path}/"
@@ -91,24 +80,24 @@ defmodule DataAggregator.Records.Actions.Publish do
           Ash.Query.t(),
           atom(),
           atom(),
-          String.t(),
           Publication.t()
         ) :: :ok
-  defp set_publication_status(query, channel, status, message, publication) do
-    publication_status =
-      Map.from_struct(%PublicationStatus{channel: channel, status: status, message: message})
-
+  defp set_publication_status(query, channel, status, publication) do
     query
     |> Records.stream!()
-    |> Stream.map(&update_record!(&1, publication_status, publication))
+    |> Stream.map(&update_record!(&1, channel, status, publication))
     |> Stream.run()
   end
 
-  @spec update_record!(Record.t(), map(), Publication.t()) :: :ok
-  defp update_record!(record, status, publication) do
+  @spec update_record!(Record.t(), atom(), atom(), Publication.t()) :: :ok
+  defp update_record!(record, channel, status, publication) do
     Publication.add_publication_progress(publication, 1)
 
-    Record.update_publication_status(record, status)
+    update_status(channel, status, record)
     :ok
   end
+
+  defp update_status(:fast_track, status, record), do: Record.update_fast_track_status(record, status)
+
+  defp update_status(:approval, status, record), do: Record.update_approval_status(record, status)
 end

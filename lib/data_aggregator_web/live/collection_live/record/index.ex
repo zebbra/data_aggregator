@@ -19,6 +19,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Export
+  alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
   alias DataAggregatorWeb.Components.DataTable
 
@@ -41,9 +42,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     |> subscribe_for_collection_updates(connected?(socket))
     |> assign_records(params)
     |> assign(selected_record: nil)
-    |> assign(:busy, collection.encoding_state in [:queued, :encoding])
+    |> assign(:busy, busy?(collection))
     |> apply_action(socket.assigns.live_action, params)
     |> noreply()
+  end
+
+  defp busy?(collection) do
+    collection.encoding_state in [:queued, :encoding] or
+      collection.records_publishing > 0
   end
 
   @impl true
@@ -64,6 +70,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/exports"}
           label={~t"Exports"m}
+        />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/publications"}
+          label={~t"Publications"m}
         />
         <li
           id="dynamic_export_button"
@@ -160,6 +170,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <.icon :if={@busy == false} name="hero-puzzle-piece" class="max-sm:size-4" />
             <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="max-sm:size-4" />
             <%= ~t"Encode"m %>
+          </button>
+          <button
+            phx-click="collection:fast_track_pub"
+            class="btn btn-primary text-primary-content max-sm:btn-sm"
+            disabled={@busy}
+          >
+            <.icon :if={@busy == false} name="hero-fire-mini" class="max-sm:size-4" />
+            <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="max-sm:size-4" />
+            <%= ~t"Fast Track Pub."m %>
           </button>
         </div>
       </div>
@@ -401,6 +420,28 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
+  def handle_event("collection:fast_track_pub", _params, socket) do
+    %{collection: collection} = socket.assigns
+    collection = Records.load!(collection, [:fast_track_query], lazy?: true)
+
+    publication =
+      %{
+        name: "pub-#{collection.name}-#{:os.system_time()}",
+        channel: :fast_track,
+        records_query: collection.fast_track_query,
+        collection: collection,
+        rows_count: Records.count!(collection.fast_track_query)
+      }
+      |> Publication.create!()
+      |> Publication.enqueue!()
+
+    {:noreply,
+     socket
+     |> assign(:publication, publication)
+     |> push_navigate(to: ~p"/collections/#{collection.id}/publications")}
+  end
+
+  @impl true
   def handle_event("collection:export", _params, socket) do
     %{collection: collection} = socket.assigns
     collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
@@ -426,7 +467,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   def handle_info(:poll_encoding, socket) do
     collection = Collection.get_by_id!(socket.assigns.collection.id, load: [:encoding_state])
 
-    if collection.encoding_state in [:queued, :encoding] do
+    if busy?(collection) do
       schedule_encoding_poller()
       {:noreply, socket}
     else
@@ -475,7 +516,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     {:noreply,
      socket
      |> assign(:collection, collection)
-     |> assign(:busy, collection.encoding_state in [:queued, :encoding])}
+     |> assign(:busy, busy?(collection))}
   end
 
   defp apply_action(socket, :index, _params) do

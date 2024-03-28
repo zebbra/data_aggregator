@@ -97,6 +97,7 @@ defmodule DataAggregator.Records.Collection do
               )
 
     calculate :records_to_export_query, :map, Calculations.RecordsToExport
+    calculate :fast_track_query, :map, Calculations.FastTrackQuery
   end
 
   aggregates do
@@ -130,6 +131,10 @@ defmodule DataAggregator.Records.Collection do
 
     count :records_count_failed, :records do
       filter expr(state == :failed)
+    end
+
+    count :records_publishing, :records do
+      filter expr(fast_track_status == :publishing or approval_status == :publishing)
     end
   end
 
