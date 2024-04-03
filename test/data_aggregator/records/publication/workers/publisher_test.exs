@@ -63,12 +63,24 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
       [publication: publication, query: query, records: records]
     end
 
-    test "publication success", %{publication: publication} do
+    test "publication :fast_track success", %{publication: publication} do
       perform_job(Publication.Workers.Publisher, %{id: publication.id})
 
       publication = Publication.get_by_id!(publication.id)
 
       assert publication.state == :done
+      assert publication.channel == :fast_track
+      assert publication.published_count == 10
+    end
+
+    test "publication :approval success", %{publication: publication} do
+      perform_job(Publication.Workers.Publisher, %{id: publication.id})
+
+      publication = Publication.get_by_id!(publication.id)
+      publication = Publication.update!(publication, %{channel: :approval})
+
+      assert publication.state == :done
+      assert publication.channel == :approval
       assert publication.published_count == 10
     end
   end

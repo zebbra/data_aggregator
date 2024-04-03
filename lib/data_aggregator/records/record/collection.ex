@@ -10,8 +10,8 @@ defmodule DataAggregator.Records.Collection do
 
   alias __MODULE__
   alias DataAggregator.Records
+  alias DataAggregator.Records.Calculations
   alias DataAggregator.Records.CollectionType
-  alias DataAggregator.Records.Export.Calculations
   alias DataAggregator.Records.Validations
 
   @type t :: %Collection{}
@@ -98,6 +98,7 @@ defmodule DataAggregator.Records.Collection do
 
     calculate :records_to_export_query, :map, Calculations.RecordsToExport
     calculate :fast_track_query, :map, Calculations.FastTrackQuery
+    calculate :approval_query, :map, Calculations.ApprovalQuery
   end
 
   aggregates do

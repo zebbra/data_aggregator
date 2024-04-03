@@ -167,6 +167,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             phx-click="collection:encode"
             class="btn btn-primary text-primary-content max-sm:btn-sm"
             disabled={@busy}
+            data-confirm={~t"Are you sure?"m}
+            data-confirm_id="confirm_encoding_alert"
           >
             <.icon :if={@busy == false} name="hero-puzzle-piece" class="max-sm:size-4" />
             <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="max-sm:size-4" />
@@ -176,49 +178,26 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             phx-click="collection:fast_track_pub"
             class="btn btn-primary text-primary-content max-sm:btn-sm"
             disabled={@busy}
+            data-confirm={~t"Are you sure?"m}
+            data-confirm_id="confirm_fast_track_pub_alert"
           >
             <.icon :if={@busy == false} name="hero-fire-mini" class="max-sm:size-4" />
             <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="max-sm:size-4" />
             <%= ~t"Fast Track Pub."m %>
           </button>
+          <button
+            phx-click="collection:approval_pub"
+            class="btn btn-primary text-primary-content max-sm:btn-sm"
+            disabled={@busy}
+            data-confirm={~t"Are you sure?"m}
+            data-confirm_id="confirm_approval_pub_alert"
+          >
+            <.icon :if={@busy == false} name="hero-shield-check" class="max-sm:size-4" />
+            <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="max-sm:size-4" />
+            <%= ~t"Approval Pub."m %>
+          </button>
         </div>
       </div>
-
-      <%!-- <div class="bg-base-100 top-[104px] sticky z-10 flex flex-wrap justify-between p-6 lg:px-8">
-        <div class="join flex flex-wrap items-center">
-          <input
-            type="text"
-            placeholder={~t"Search...."m}
-            class="input input-bordered border-black-white/10 join-item "
-          />
-          <button class="btn btn-outline border-black-white/10 join-item">
-            <.icon name="hero-adjustments-vertical" />
-            <span class="hidden font-normal lg:inline"><%= ~t"Filter"m %></span>
-          </button>
-          <button class="btn btn-outline border-black-white/10 join-item">
-            <.icon name="hero-view-columns" />
-            <span class="hidden font-normal lg:inline"><%= ~t"Columns"m %></span>
-          </button>
-          <button class="btn btn-outline border-black-white/10 join-item">
-            <.icon name="hero-square-3-stack-3d" />
-            <span class="hidden font-normal lg:inline"><%= ~t"Layers"m %></span>
-          </button>
-        </div>
-        <div id="table_actions" class="join flex lg:justify-end">
-          <button class="btn btn-outline border-black-white/10 join-item rounded-full">
-            <.icon name="hero-puzzle-piece" />
-            <span class="font-normal"><%= ~t"Encode"m %></span>
-          </button>
-          <button class="btn btn-outline border-black-white/10 join-item rounded-full">
-            <.icon name="hero-globe-alt" />
-            <span class="font-normal"><%= ~t"Publish"m %></span>
-          </button>
-          <button class="btn btn-outline border-black-white/10 join-item rounded-full">
-            <.icon name="hero-arrow-down-tray" />
-            <span class="font-normal"><%= ~t"Export"m %></span>
-          </button>
-        </div>
-      </div> --%>
 
       <div :if={@collection.records_count > 0} class="no-scrollbar overflow-x-auto py-4">
         <.table
@@ -365,7 +344,31 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         id="confirm_export_alert"
         size="sm"
         title={~t"Are you sure?"m}
-        text={~t"You're about to export this collection."m}
+        text={~t"You're about to export this collection"m}
+      >
+      </.alert>
+
+      <.alert
+        id="confirm_encoding_alert"
+        size="sm"
+        title={~t"Are you sure?"m}
+        text={~t"You're about to encode this collection"m}
+      >
+      </.alert>
+
+      <.alert
+        id="confirm_fast_track_pub_alert"
+        size="sm"
+        title={~t"Are you sure?"m}
+        text={~t"You're about to publish this collection directly to the Gbif.ch Portal"m}
+      >
+      </.alert>
+
+      <.alert
+        id="confirm_approval_pub_alert"
+        size="sm"
+        title={~t"Are you sure?"m}
+        text={~t"You're about to publish this collection to Infospecies for approval"m}
       >
       </.alert>
     </.page>
@@ -438,6 +441,28 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         records_query: collection.fast_track_query,
         collection: collection,
         rows_count: Records.count!(collection.fast_track_query)
+      }
+      |> Publication.create!()
+      |> Publication.enqueue!()
+
+    {:noreply,
+     socket
+     |> assign(:publication, publication)
+     |> push_navigate(to: ~p"/collections/#{collection.id}/publications")}
+  end
+
+  @impl true
+  def handle_event("collection:approval_pub", _params, socket) do
+    %{collection: collection} = socket.assigns
+    collection = Records.load!(collection, [:approval_query], lazy?: true)
+
+    publication =
+      %{
+        name: "pub-#{collection.name}-#{:os.system_time()}",
+        channel: :approval,
+        records_query: collection.approval_query,
+        collection: collection,
+        rows_count: Records.count!(collection.approval_query)
       }
       |> Publication.create!()
       |> Publication.enqueue!()
