@@ -208,7 +208,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
               </:item>
               <:item title={~t"Rows"m}><%= format_number(@selected_publication.rows_count) %></:item>
 
-              <:item title={~t"Published"m}>
+              <:item title={~t"Done"m}>
                 <div class="flex flex-col">
                   <.progress
                     value={@selected_publication.publication_progress || 0}

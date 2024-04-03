@@ -29,7 +29,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                    :rows_validated_count,
                    :rows_invalid_count,
                    :validation_progress,
-                   :mappings
+                   :mappings,
+                   :collection
                  ]
 
   @impl true
@@ -245,6 +246,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                   <div :if={@selected_import.rows_invalid_count not in [0, nil]} class="text-error">
                     <%= ~t"invalid rows:"m %> <%= format_number(@selected_import.rows_invalid_count) %>
                   </div>
+                  <div :if={length(@selected_import.errors) != 0} class="text-error">
+                    <%= ~t"Errors:"m %> <%= @selected_import.errors %>
+                  </div>
                 </div>
               </:item>
 
@@ -452,7 +456,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   end
 
   defp apply_action(socket, :edit, %{"import_id" => id}) do
-    import = Import.get_by_id!(id, load: [:collection, :missing_mappings, :mappings])
+    import = Import.get_by_id!(id, load: @load_import)
 
     socket
     |> assign(:page_title, ~t"Edit Import"m)

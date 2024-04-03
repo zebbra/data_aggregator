@@ -44,7 +44,18 @@ defmodule DataAggregator.Records.Actions.Publish do
     Publication.update_attachment(publication, attachment)
   rescue
     e ->
-      Logger.error("Error publishing records on the #{input.arguments.publication.channel} channel: #{inspect(e)}")
+      publication = input.arguments.publication
+      query = publication.records_query
+      channel = publication.channel
+
+      Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(e)}")
+
+      set_publication_status(
+        query,
+        channel,
+        :publication_failed,
+        publication
+      )
 
       {:error, e}
   end

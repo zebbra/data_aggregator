@@ -9,6 +9,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   import DataAggregatorWeb.CollectionLive.Helpers,
     only: [get_collection: 1, subscribe_for_collection_updates: 2]
 
+  import DataAggregatorWeb.CollectionLive.Record.Components
   import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [subscribe_for_record_updates: 2]
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
@@ -252,6 +253,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </:col>
           <:col :let={{_id, record}} label={~t"Encoding"m} class="text-center">
             <.encoding_state_badge state={record.state} />
+          </:col>
+          <:col :let={{_id, record}} label={~t"Fast Track Pub."m} class="text-center">
+            <.publication_status_badge state={record.fast_track_status} />
+          </:col>
+          <:col :let={{_id, record}} label={~t"Approval Pub."m} class="text-center">
+            <.publication_status_badge state={record.approval_status} />
           </:col>
           <:col :let={{_id, record}} label={~t"Updated At"m} class="text-end">
             <%= format_datetime(record.updated_at, format: :medium) %>

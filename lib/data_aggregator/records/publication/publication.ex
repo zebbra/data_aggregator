@@ -66,9 +66,9 @@ defmodule DataAggregator.Records.Publication do
     default_initial_state :pending
 
     transitions do
-      transition :enqueue, from: [:pending, :published, :failed], to: :queued
-      transition :run, from: [:pending, :published, :failed, :queued], to: :running
-      transition :set_published, from: :running, to: :published
+      transition :enqueue, from: [:pending, :done, :failed], to: :queued
+      transition :run, from: [:pending, :done, :failed, :queued], to: :running
+      transition :set_done, from: :running, to: :done
       transition :set_failed, from: :running, to: :failed
     end
   end
@@ -116,13 +116,13 @@ defmodule DataAggregator.Records.Publication do
       change transition_state(:running)
       change set_attribute(:started_at, &DateTime.utc_now/0)
       change Changes.PublishRecords
-      change Changes.SetPublishedAfterAction
+      change Changes.SetDoneAfterAction
       change load(:attachment)
     end
 
-    update :set_published do
+    update :set_done do
       accept []
-      change transition_state(:published)
+      change transition_state(:done)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:published_at, &DateTime.utc_now/0)
     end
@@ -153,7 +153,7 @@ defmodule DataAggregator.Records.Publication do
     define :get_by_id, action: :read, get_by: [:id]
     define :run
     define :enqueue
-    define :set_published
+    define :set_done
     define :set_running
     define :set_failed
     define :update_attachment, action: :update_attachment, args: [:attachment]

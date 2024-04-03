@@ -77,7 +77,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
     cond do
       state in [:pending] -> "gray"
       state in [:queued, :publishing, :running] -> "blue"
-      state in [:published] -> "green"
+      state in [:done] -> "green"
       state in [:failed] -> "red"
       true -> "gray"
     end
@@ -102,7 +102,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
       state in [:publishing, :queued, :running] ->
         {"hero-cog-6-tooth-solid", "text-info animate-spin"}
 
-      state in [:published] ->
+      state in [:done] ->
         {"hero-check-circle-solid", "text-success"}
 
       state in [:failed] ->
@@ -117,8 +117,8 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
     cond do
       state in [:pending] -> ~t"Pending"m
       state in [:queued] -> ~t"Queued"m
-      state in [:publishing, :running] -> ~t"Publishing"m
-      state in [:published] -> ~t"Published"m
+      state in [:publishing, :running] -> ~t"Processing"m
+      state in [:done] -> ~t"Done"m
       state in [:failed] -> ~t"Failed"m
       true -> ~t"Unknown"m
     end

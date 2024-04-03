@@ -159,16 +159,39 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
       {:noreply, assign(socket, :error_message, error_to_string(:required))}
     else
       collection = socket.assigns.collection
-      imports = consume(socket, collection)
+      results = consume(socket, collection)
 
-      import = Enum.at(imports, 0)
+      handle_upload_result(socket, results, collection)
+    end
+  end
 
-      {
-        :noreply,
-        socket
-        |> handle_flash(import)
-        |> push_patch(to: ~p"/collections/#{collection}/imports/#{import}/edit")
-      }
+  defp handle_upload_result(socket, results, collection) do
+    case Enum.at(results, 0) do
+      {:error, error} ->
+        error_message = "File upload failed with error #{inspect(error)}"
+
+        {
+          :noreply,
+          socket
+          |> assign(error_message: error_message)
+          |> push_patch(to: ~p"/collections/#{collection}/imports/new")
+        }
+
+      %Import{} = import ->
+        {
+          :noreply,
+          socket
+          |> handle_flash(import)
+          |> push_patch(to: ~p"/collections/#{collection}/imports/#{import}/edit")
+        }
+
+      _ ->
+        {
+          :noreply,
+          socket
+          |> handle_flash(nil)
+          |> push_patch(to: ~p"/collections/#{collection}/imports")
+        }
     end
   end
 
@@ -180,9 +203,19 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
 
         {:error, error} ->
           Logger.error(error)
-          {:postpone, ~t"Could not create import file"m}
+          handle_upload_error(error)
       end
     end)
+  end
+
+  defp handle_upload_error(error) do
+    case error do
+      %Ash.Error.Invalid{} = error ->
+        {:postpone, {:error, Enum.map_join(error.errors, ", ", & &1.message)}}
+
+      error ->
+        {:postpone, {:error, "Could not create import file: #{inspect(error)}"}}
+    end
   end
 
   defp handle_upload(collection, path, %UploadEntry{} = entry) do

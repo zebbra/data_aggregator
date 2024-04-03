@@ -68,7 +68,7 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
 
       publication = Publication.get_by_id!(publication.id)
 
-      assert publication.state == :published
+      assert publication.state == :done
       assert publication.published_count == 10
     end
   end

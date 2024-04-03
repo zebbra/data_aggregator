@@ -149,6 +149,7 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.RelateImport
       change Record.Changes.RelateCollectionFromImport
       change Record.Changes.ExtractAttributes
+      change Record.Changes.SetPublicationStale
       change Record.Changes.SetImportedAfterAction
 
       upsert? true

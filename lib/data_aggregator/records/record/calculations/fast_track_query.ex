@@ -21,10 +21,10 @@ defmodule DataAggregator.Records.Export.Calculations.FastTrackQuery do
   defp restriction(id) do
     # customize to restrict the records to be published
     Record
-    |> Ash.Query.load(collection: [:id])
+    |> Ash.Query.load(collection: [:id], encoded_record: [:id])
     |> Ash.Query.filter(
       collection.id == ^id and
-        not is_nil(tax_kingdom)
+        not is_nil(encoded_record.tax_kingdom)
     )
   end
 end
