@@ -847,67 +847,67 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "No records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:76
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:86
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Choose a file"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:231
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:241
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "File upload failed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:270
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:295
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Too large"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:272
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:297
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "You have selected an unacceptable file type"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:271
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:296
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "You have selected too many files"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:79
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:89
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "or drag and drop"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:246
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:256
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "up to %{max_file_size}"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:127
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:137
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:269
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:294
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Please select a file"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:124
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:134
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Upload file"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:102
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:112
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "close"
@@ -1823,13 +1823,6 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Record was successful published"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:50
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:62
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
-msgid "Record was changed after publishing it and has to be published again"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/record/components.ex:53
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
@@ -1864,4 +1857,24 @@ msgstr ""
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Errors:"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:64
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:298
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
+msgid "An error has occurred"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:66
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
+msgid "Show"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:50
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:62
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Record was changed after publishing it and has to be republished"
 msgstr ""

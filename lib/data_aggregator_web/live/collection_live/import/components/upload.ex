@@ -55,11 +55,21 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
             <.fieldgroup>
               <div
                 :if={@error_message}
-                role="alert"
-                class="alert alert-error bg-error/10 text-error text-sm/6 items-center"
+                class="collapse text-error-content border-error/20 bg-error/10 border"
               >
-                <.icon name="hero-exclamation-triangle" />
-                <%= @error_message %>
+                <input type="checkbox" />
+                <div class="collapse-title text-error pe-4 flex items-center gap-x-2 text-sm">
+                  <div class="flex min-w-0 flex-1 items-center gap-x-2">
+                    <.icon name="hero-exclamation-triangle" />
+                    <span><%= ~t"An error has occurred"m %></span>
+                  </div>
+                  <%= ~t"Show"m %> <.icon name="hero-arrow-right-micro" />
+                </div>
+                <div class="collapse-content">
+                  <div class="text-error text-sm/6">
+                    <%= @error_message %>
+                  </div>
+                </div>
               </div>
               <section
                 phx-drop-target={@uploads.file.ref}
@@ -145,7 +155,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
 
   @impl true
   def handle_event("upload:validate", _params, socket) do
-    {:noreply, validate_max_entries(socket)}
+    {:noreply, check_for_errors(socket)}
   end
 
   @impl true
@@ -259,6 +269,21 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
     end
   end
 
+  defp check_for_errors(socket) do
+    cond do
+      has_too_many_files?(socket) ->
+        assign(socket, :error_message, error_to_string(:too_many_files))
+
+      other_error_message?(socket) ->
+        assign(socket, :error_message, socket.assigns.error_message)
+
+      true ->
+        assign(socket, :error_message, nil)
+    end
+  end
+
+  defp other_error_message?(socket), do: socket.assigns.error_message != nil
+
   defp has_too_many_files?(socket) do
     Enum.any?(socket.assigns.uploads.file.errors, fn
       {_id, :too_many_files} -> true
@@ -270,4 +295,5 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
   defp error_to_string(:too_large), do: ~t"Too large"m
   defp error_to_string(:too_many_files), do: ~t"You have selected too many files"m
   defp error_to_string(:not_accepted), do: ~t"You have selected an unacceptable file type"m
+  defp error_to_string(_), do: ~t"An error has occurred"m
 end

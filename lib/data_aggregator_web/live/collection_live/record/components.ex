@@ -47,7 +47,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         <.badge
           class="px-2 tooltip tooltip-warning"
           color="orange"
-          data-tip={~t"Record was changed after publishing it and has to be published again"m}
+          data-tip={~t"Record was changed after publishing it and has to be republished"m}
         >
           <.icon name="hero-exclamation-triangle-solid" class="size-5 shrink-0" />
           <span class="px-1.5"><%= ~t"Stale"m %></span>
@@ -59,7 +59,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         <.badge
           class="px-2 tooltip tooltip-error"
           color="red"
-          data-tip={~t"Record was changed after publishing it and has to be published again"m}
+          data-tip={~t"Record was changed after publishing it and has to be republished"m}
         >
           <.icon name="hero-x-circle-solid" class="size-5 shrink-0" />
           <span class="px-1.5"><%= ~t"Failed"m %></span>
