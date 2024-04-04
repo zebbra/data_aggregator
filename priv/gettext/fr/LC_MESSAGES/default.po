@@ -1909,3 +1909,33 @@ msgstr ""
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Quality"
 msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:132
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Add all of the following fields to reach level two: taxon_id, part_of_organism"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:138
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Add one of the follwing fields to reach level four: verbatim_event_date, identified_by, identification_qualifier, identification_verification_status, last_verified_by, verbatim_identification, georeferenced_by, georeference_verification_status, verbatim_coordinates, verbatim_latitude, verbatim_longitude, verbatim_locality, associated_media, completeness, other_catalog_numbers, verbatim_label"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:135
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Add the following fields to reach level three: event_date, ecorded_by, type_status, original_name_usage, continent, country, county, decimal_latitude, decimal_longitude, higher_geography, locality, state_province, verbatim_depth, verbatim_elevation, year_collection_entrance, occurrence_id"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:129
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Please submit at least the institution code with your data, to reach the lowest quality level"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:141
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Record has a top quality. Add more data fields to improve your collections relevance"
+msgstr ""
