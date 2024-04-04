@@ -24,7 +24,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records.Record
   alias DataAggregatorWeb.Components.DataTable
 
-  @load [:collection, :encoded_record]
+  @load [:collection, :encoded_record, :mids_level]
 
   @polling_interval 5_000
 
@@ -238,6 +238,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </:col>
           <:col :let={{_id, record}} label={~t"Approval Pub."m} class="text-center">
             <.publication_status_badge state={record.approval_status} />
+          </:col>
+          <:col :let={{_id, record}} label={~t"Quality"m} class="text-center">
+            <%= record.mids_level %>
           </:col>
           <:col :let={{_id, record}} label={~t"Updated At"m} class="text-end">
             <%= format_datetime(record.updated_at, format: :medium) %>

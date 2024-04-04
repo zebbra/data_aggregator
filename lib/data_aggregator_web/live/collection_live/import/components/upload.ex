@@ -63,7 +63,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
                     <.icon name="hero-exclamation-triangle" />
                     <span><%= ~t"An error has occurred"m %></span>
                   </div>
-                  <%= ~t"Show"m %> <.icon name="hero-arrow-right-micro" />
+                  <%= ~t"Show more"m %>
                 </div>
                 <div class="collapse-content">
                   <div class="text-error text-sm/6">

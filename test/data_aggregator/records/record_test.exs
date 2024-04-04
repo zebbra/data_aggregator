@@ -303,4 +303,111 @@ defmodule DataAggregator.RecordTest do
       })
     end
   end
+
+  describe "mids levels" do
+    setup do
+      record = record_fixture()
+
+      [record: record]
+    end
+
+    test "mids level nil", %{record: record} do
+      params = %{
+        mte_catalog_number: "ex-123",
+        tax_scientific_name: "Example",
+        oth_institution_code: nil
+      }
+
+      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+
+      assert record.mids_level == nil
+    end
+
+    test "mids level 0", %{record: record} do
+      params = %{
+        mte_catalog_number: "ex-123",
+        tax_scientific_name: "Example",
+        oth_institution_code: "Baaa"
+      }
+
+      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+
+      assert record.mids_level == 0
+    end
+
+    test "mids level 1", %{record: record} do
+      params = %{
+        mte_catalog_number: "ex-123",
+        tax_scientific_name: "Example",
+        oth_institution_code: "Baaa",
+        mte_part_of_organism: "bla",
+        tax_taxon_id: 42
+      }
+
+      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+
+      assert record.mids_level == 1
+    end
+
+    test "mids level 2", %{record: record} do
+      params = %{
+        mte_catalog_number: "ex-123",
+        tax_scientific_name: "Example",
+        oth_institution_code: "Baaa",
+        mte_part_of_organism: "bla",
+        tax_taxon_id: 42,
+        eve_event_date: Cldr.Calendar.date_from_tuple({2001, 1, 1}),
+        mte_recorded_by: "bla",
+        idf_type_status: "bla",
+        tax_original_name_usage: "bla",
+        loc_continent: "bla",
+        loc_country: "bla",
+        loc_county: "bla",
+        loc_decimal_latitude: 42.42,
+        loc_decimal_longitude: 42.42,
+        loc_higher_geography: "bla",
+        loc_locality: "bla",
+        loc_state_province: "bla",
+        loc_verbatim_depth: 42,
+        loc_verbatim_elevation: "42",
+        mte_year_collection_entrance: 2001,
+        occ_occurrence_id: "bla"
+      }
+
+      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+
+      assert record.mids_level == 2
+    end
+
+    test "mids level 3", %{record: record} do
+      params = %{
+        mte_catalog_number: "ex-123",
+        tax_scientific_name: "Example",
+        oth_institution_code: "Baaa",
+        mte_part_of_organism: "bla",
+        tax_taxon_id: 42,
+        eve_event_date: Cldr.Calendar.date_from_tuple({2001, 1, 1}),
+        mte_recorded_by: "bla",
+        idf_type_status: "bla",
+        tax_original_name_usage: "bla",
+        loc_continent: "bla",
+        loc_country: "bla",
+        loc_county: "bla",
+        loc_decimal_latitude: 42.42,
+        loc_decimal_longitude: 42.42,
+        loc_higher_geography: "bla",
+        loc_locality: "bla",
+        loc_state_province: "bla",
+        loc_verbatim_depth: 42,
+        loc_verbatim_elevation: "42",
+        mte_year_collection_entrance: 2001,
+        occ_occurrence_id: "bla",
+        mte_verbatim_label: "bla"
+      }
+
+      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+
+      assert record.mids_level == 3
+    end
+  end
 end
