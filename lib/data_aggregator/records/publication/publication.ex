@@ -73,6 +73,11 @@ defmodule DataAggregator.Records.Publication do
     end
   end
 
+  preparations do
+    prepare build(sort: [id: :desc])
+    prepare DataAggregator.Preparations.Sort
+  end
+
   actions do
     defaults [:read, :destroy, :update]
 

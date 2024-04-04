@@ -345,7 +345,8 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   end
 
   defp list_publications(params) do
-    opts = DataTable.read_opts(collection_scope(params), params)
+    opts = params |> collection_scope() |> DataTable.read_opts(params)
+
     opts = Keyword.put(opts, :load, @load)
 
     {:ok, result} = Publication.read(opts)

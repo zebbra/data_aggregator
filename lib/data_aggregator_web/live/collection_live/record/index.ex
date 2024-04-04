@@ -164,7 +164,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </button>
 
           <button
-            phx-click="collection:encode"
+            phx-click={JS.push("collection:encode")}
             class="btn btn-primary text-primary-content max-sm:btn-sm"
             disabled={@busy}
             data-confirm={~t"Are you sure?"m}
@@ -175,7 +175,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <%= ~t"Encode"m %>
           </button>
           <button
-            phx-click="collection:fast_track_pub"
+            phx-click={JS.push("collection:fast_track_pub")}
             class="btn btn-primary text-primary-content max-sm:btn-sm"
             disabled={@busy}
             data-confirm={~t"Are you sure?"m}
@@ -186,7 +186,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <%= ~t"Fast Track Pub."m %>
           </button>
           <button
-            phx-click="collection:approval_pub"
+            phx-click={JS.push("collection:approval_pub")}
             class="btn btn-primary text-primary-content max-sm:btn-sm"
             disabled={@busy}
             data-confirm={~t"Are you sure?"m}
