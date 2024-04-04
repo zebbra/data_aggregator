@@ -83,17 +83,17 @@ defmodule DataAggregator.Records.Record do
               :integer,
               expr(
                 cond do
+                  mids_level_four -> 4
                   mids_level_three -> 3
                   mids_level_two -> 2
                   mids_level_one -> 1
-                  mids_level_zero -> 0
-                  true -> nil
+                  true -> 0
                 end
               )
 
     # load [:mids_level_three, :mids_level_two, :mids_level_one, :mids_level_zero]
 
-    calculate :mids_level_zero,
+    calculate :mids_level_one,
               :boolean,
               expr(
                 not is_nil(mte_catalog_number) and
@@ -101,19 +101,19 @@ defmodule DataAggregator.Records.Record do
                   not is_nil(oth_institution_code)
               )
 
-    calculate :mids_level_one,
+    calculate :mids_level_two,
               :boolean,
               expr(
-                mids_level_zero and
+                mids_level_one and
                   ((not is_nil(mte_part_of_organism) or
                       not is_nil(encoded_record.mte_part_of_organism)) and
                      (not is_nil(tax_taxon_id) or not is_nil(encoded_record.tax_taxon_id)))
               )
 
-    calculate :mids_level_two,
+    calculate :mids_level_three,
               :boolean,
               expr(
-                mids_level_one and
+                mids_level_two and
                   (not is_nil(collection.code) and
                      (not is_nil(eve_event_date) or not is_nil(encoded_record.eve_event_date)) and
                      (not is_nil(mte_recorded_by) or not is_nil(encoded_record.mte_recorded_by)) and
@@ -142,10 +142,10 @@ defmodule DataAggregator.Records.Record do
                         not is_nil(encoded_record.occ_occurrence_id)))
               )
 
-    calculate :mids_level_three,
+    calculate :mids_level_four,
               :boolean,
               expr(
-                mids_level_two and
+                mids_level_three and
                   (not is_nil(eve_verbatim_event_date) or
                      not is_nil(encoded_record.eve_verbatim_event_date) or
                      (not is_nil(idf_identified_by) or

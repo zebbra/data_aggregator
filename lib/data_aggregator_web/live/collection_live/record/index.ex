@@ -240,7 +240,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <.publication_status_badge state={record.approval_status} />
           </:col>
           <:col :let={{_id, record}} label={~t"Quality"m} class="text-center">
-            <%= record.mids_level %>
+            <.mids_level_indicator level={record.mids_level} />
           </:col>
           <:col :let={{_id, record}} label={~t"Updated At"m} class="text-end">
             <%= format_datetime(record.updated_at, format: :medium) %>
