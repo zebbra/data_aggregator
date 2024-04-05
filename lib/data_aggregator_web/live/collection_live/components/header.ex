@@ -52,7 +52,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           ]}
         />
         <h2 class="text-base-content text-2xl font-bold max-sm:line-clamp-2 sm:hidden sm:truncate sm:text-3xl sm:tracking-tight">
-          <%= @collection.name %>
+          <%= @collection.code %> - <%= @collection.name %>
         </h2>
       </:title>
       <:subtitle>
@@ -60,7 +60,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <span class="max-sm:hidden">
             <.encoding_state_badge state={@collection.encoding_state} />
           </span>
-          <%= @collection.description %>
+          <%= @collection.code %>
         </div>
       </:subtitle>
       <:actions :if={@current in [:records, :imports]} class="max-sm:hidden">

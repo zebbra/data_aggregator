@@ -11,6 +11,7 @@ defmodule DataAggregator.Records.Collection do
   alias __MODULE__
   alias DataAggregator.Records
   alias DataAggregator.Records.Calculations
+  alias DataAggregator.Records.Collection.Changes
   alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.Validations
 
@@ -145,11 +146,17 @@ defmodule DataAggregator.Records.Collection do
   end
 
   actions do
-    defaults [:create, :update, :destroy]
+    defaults [:update, :destroy]
 
     read :read do
       primary? true
       argument :sort, :string, allow_nil?: true
+    end
+
+    create :create do
+      primary? true
+
+      change Changes.SetGrsciCollAttributes
     end
 
     update :update_import_mapping do

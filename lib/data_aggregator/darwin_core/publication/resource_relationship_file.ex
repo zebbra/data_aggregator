@@ -12,6 +12,7 @@ defmodule DataAggregator.DarwinCore.Publication.ResourceRelationshipFile do
   def create(query, path) do
     path = "#{path}/resource_relationship.csv"
 
+    # TODO: this is an extension file coming from json data, so it should be created differently
     file = DwcaFile.create_file!(:resource_relationship, query, path)
 
     {:ok, file}

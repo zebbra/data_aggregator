@@ -134,7 +134,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
       data-tip={~t"Publication to Gbif Swiss Portal"m}
     >
       <.icon name="hero-fire-mini" class="size-4 shrink-0" />
-      <span class="px-1.5"><%= ~t"Fast Track"m %></span>
+      <span class="text-nowrap px-1.5"><%= ~t"Fast Track"m %></span>
     </.badge>
     """
   end
@@ -147,7 +147,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
       data-tip={~t"Publication to Gbif.org via Infospecies Approval"m}
     >
       <.icon name="hero-shield-check" class="size-4 shrink-0" />
-      <span class="px-1.5"><%= ~t"Approval"m %></span>
+      <span class="text-nowrap px-1.5"><%= ~t"Approval"m %></span>
     </.badge>
     """
   end

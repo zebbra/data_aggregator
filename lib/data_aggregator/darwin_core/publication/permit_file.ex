@@ -12,6 +12,7 @@ defmodule DataAggregator.DarwinCore.Publication.PermitFile do
   def create(query, path) do
     path = "#{path}/permit.csv"
 
+    # TODO: this is an extension file coming from json data, so it should be created differently
     file = DwcaFile.create_file!(:permit, query, path)
 
     {:ok, file}

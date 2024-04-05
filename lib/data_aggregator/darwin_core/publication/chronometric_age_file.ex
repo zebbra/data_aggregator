@@ -12,6 +12,7 @@ defmodule DataAggregator.DarwinCore.Publication.ChronometricAgeFile do
   def create(query, path) do
     path = "#{path}/chronometric_age.csv"
 
+    # TODO: this is an extension file coming from json data, so it should be created differently
     file = DwcaFile.create_file!(:chronometric_age, query, path)
 
     {:ok, file}

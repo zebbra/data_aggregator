@@ -11,67 +11,67 @@ msgstr ""
 "Language: en\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:81
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:94
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:117
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:130
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Collection created successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:118
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:131
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Collection updated successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:47
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:50
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "My Collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:46
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:49
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:50
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:53
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Owner"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:79
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:92
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Reset"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:78
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:91
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Save collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:64
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:67
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Total items to digitize"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:56
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:59
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Type"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:41
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:44
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Use this form to manage collections in your database."
@@ -436,8 +436,8 @@ msgctxt "DataAggregatorWeb.CollectionLive.Details.Index"
 msgid "Collection Details"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:71
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:72
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:84
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:85
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Description"
@@ -1350,13 +1350,14 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:58
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:61
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Filter types"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:59
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:62
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:78
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "None"
@@ -1938,4 +1939,16 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Record has a top quality. Add more data fields to improve your collections relevance"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:77
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "Filter Collections"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:75
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
+msgid "GrSciColl Collection"
 msgstr ""

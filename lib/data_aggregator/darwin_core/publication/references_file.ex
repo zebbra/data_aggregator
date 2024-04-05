@@ -12,6 +12,7 @@ defmodule DataAggregator.DarwinCore.Publication.ReferencesFile do
   def create(query, path) do
     path = "#{path}/references.csv"
 
+    # TODO: this is an extension file coming from json data, so it should be created differently
     file = DwcaFile.create_file!(:references, query, path)
 
     {:ok, file}

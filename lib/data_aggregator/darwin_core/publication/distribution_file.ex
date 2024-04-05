@@ -12,6 +12,7 @@ defmodule DataAggregator.DarwinCore.Publication.DistributionFile do
   def create(query, path) do
     path = "#{path}/distribution.csv"
 
+    # TODO: this is an extension file coming from json data, so it should be created differently
     file = DwcaFile.create_file!(:distribution, query, path)
 
     {:ok, file}

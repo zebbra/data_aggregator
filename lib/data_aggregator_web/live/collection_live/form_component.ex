@@ -5,6 +5,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   alias AshPhoenix.Form
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.CollectionType
+  alias DataAggregator.Records.Grscicoll.Lookup
 
   @impl true
   def update(assigns, socket) do
@@ -23,6 +24,13 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         CollectionType.get_collection_type_options()
       )
 
+    assigns =
+      assign(
+        assigns,
+        :grscicoll_collections,
+        Lookup.get_collection_options()
+      )
+
     ~H"""
     <div>
       <.simple_form
@@ -33,11 +41,6 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         phx-change="collection:validate"
         phx-submit="collection:save"
       >
-        <.input
-          type="hidden"
-          field={@form[:grscicoll_reference]}
-          value="322ce107-3156-4420-8a2b-7f17efeaa472"
-        />
         <.fieldset legend={@title} text={~t"Use this form to manage collections in your database."m}>
           <.fieldgroup>
             <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
@@ -63,6 +66,16 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
                 field={@form[:items_to_digitize]}
                 label={~t"Total items to digitize"m}
                 placeholder="42042"
+              />
+            </div>
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-1 sm:gap-4">
+              <.field
+                type="combobox"
+                field={@form[:grscicoll_reference]}
+                label={~t"GrSciColl Collection"m}
+                options={@grscicoll_collections}
+                placeholder={~t"Filter Collections"m}
+                prompt={~t"None"m}
               />
             </div>
             <.field

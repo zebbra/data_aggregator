@@ -39,8 +39,8 @@ defmodule DataAggregator.Records.Record do
     attribute :import_data, :map
     attribute :extra_data, :map
     attribute :errors, :map
-    attribute :fast_track_status, :atom
-    attribute :approval_status, :atom
+    attribute :fast_track_status, :atom, allow_nil?: false, default: :not_published
+    attribute :approval_status, :atom, allow_nil?: false, default: :not_published
 
     timestamps private?: false, writable?: false
   end
