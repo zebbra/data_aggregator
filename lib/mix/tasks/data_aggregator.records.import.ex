@@ -62,6 +62,7 @@ defmodule Mix.Tasks.DataAggregator.Records.Import do
 
     collection =
       Collection.create!(%{
+        type: :zoology,
         name: "Test Collection #{timestamp}",
         owner: "Example Import",
         grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"

@@ -407,7 +407,7 @@ tax_attributes = [
   %{
     dwc_field: "identifier",
     dwc_link: "http://purl.org/dc/terms/identifier",
-    dwca_file: :identifier,
+    dwca_file: :core,
     attribute: %Attribute{name: :identifier, type: :integer, allow_nil?: true}
   },
   %{
@@ -1499,7 +1499,7 @@ occ_attributes = [
   %{
     dwc_field: "occurrenceID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/occurrenceID",
-    dwca_file: :core_scan,
+    dwca_file: :core,
     attribute: %Attribute{name: :occurrence_id, type: :string, allow_nil?: true}
   }
 ]
@@ -1523,7 +1523,7 @@ pvn_attributes = [
   %{
     dwc_field: "preservationDateBegin",
     dwc_link: "http://data.ggbn.org/schemas/ggbn/terms/preservationDateBegin",
-    dwca_file: :core,
+    dwca_file: :preservation,
     attribute: %Attribute{name: :preservation_date_begin, type: :string, allow_nil?: true}
   },
   %{

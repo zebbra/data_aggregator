@@ -4,6 +4,7 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   """
 
   alias DataAggregator.DarwinCore.Schema
+  alias DataAggregator.Records
   alias DataAggregator.Records.Record
 
   @callback create(query :: Ash.Query.t(), path :: String.t()) ::
@@ -48,6 +49,18 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   @spec map_data_to_headers(map(), list()) :: map()
   def map_data_to_headers(record_data, header_fields) do
     Map.new(header_fields, fn {k, v} -> {v, Map.get(record_data, k)} end)
+  end
+
+  @spec create_file!(atom(), Ash.Query.t(), String.t()) :: any()
+  def create_file!(extension, query, path) do
+    header_fields = file_mapping(extension)
+    record_attributes = record_attributes(extension)
+
+    query
+    |> Records.stream!()
+    |> Stream.map(&map_record(&1, record_attributes))
+    |> Stream.map(&map_data_to_headers(&1, header_fields))
+    |> store_on_disk!(path)
   end
 
   def store_on_disk!(records_data, path) do

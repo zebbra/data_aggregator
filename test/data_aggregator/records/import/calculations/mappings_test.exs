@@ -12,6 +12,7 @@ defmodule DataAggregator.Records.Import.Calculations.MappingsTest do
   setup do
     {:ok, collection} =
       Collection.create(%{
+        type: :zoology,
         name: "Test Collection",
         owner: "Max Powers",
         grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"

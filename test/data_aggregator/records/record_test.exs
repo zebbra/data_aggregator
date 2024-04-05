@@ -148,6 +148,7 @@ defmodule DataAggregator.RecordTest do
     setup do
       collection =
         Collection.create!(%{
+          type: :zoology,
           name: "My Collection",
           owner: "Max Powers",
           grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
@@ -285,6 +286,7 @@ defmodule DataAggregator.RecordTest do
 
       other_collection =
         Collection.create!(%{
+          type: :zoology,
           name: "Another Collection",
           owner: "Max Powers",
           grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"

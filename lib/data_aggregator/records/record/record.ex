@@ -91,8 +91,6 @@ defmodule DataAggregator.Records.Record do
                 end
               )
 
-    # load [:mids_level_three, :mids_level_two, :mids_level_one, :mids_level_zero]
-
     calculate :mids_level_one,
               :boolean,
               expr(

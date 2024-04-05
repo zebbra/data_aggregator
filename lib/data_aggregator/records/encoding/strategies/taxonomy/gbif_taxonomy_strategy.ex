@@ -201,8 +201,11 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
       params !== [] ->
         params
 
-      record.collection.type !== nil ->
-        [kingdom: record.collection.type]
+      record.collection.type === :zoology ->
+        [kingdom: "Animalia"]
+
+      record.collection.type === :botany ->
+        [kingdom: "Plantae"]
 
       true ->
         Logger.warning("No fallback kingdom found for record #{record.id} on the collection #{record.collection.name}")

@@ -39,7 +39,7 @@ defmodule DataAggregator.Records.Collection do
 
     attribute :import_mapping, {:array, :map}
 
-    attribute :type, CollectionType, default: :other
+    attribute :type, CollectionType, allow_nil?: false
 
     # allow sorting by inserted_at/updated_at
     timestamps private?: false, writable?: false

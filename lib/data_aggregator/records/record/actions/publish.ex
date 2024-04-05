@@ -5,8 +5,19 @@ defmodule DataAggregator.Records.Actions.Publish do
 
   use Ash.Resource.Actions.Implementation
 
+  alias DataAggregator.DarwinCore.Publication.ChronometricAgeFile
   alias DataAggregator.DarwinCore.Publication.CoreFile
+  alias DataAggregator.DarwinCore.Publication.DistributionFile
   alias DataAggregator.DarwinCore.Publication.DwcaFile
+  alias DataAggregator.DarwinCore.Publication.MaterialSampleFile
+  alias DataAggregator.DarwinCore.Publication.MultimediaFile
+  alias DataAggregator.DarwinCore.Publication.PermitFile
+  alias DataAggregator.DarwinCore.Publication.PreservationFile
+  alias DataAggregator.DarwinCore.Publication.ReferencesFile
+  alias DataAggregator.DarwinCore.Publication.ReleveFile
+  alias DataAggregator.DarwinCore.Publication.ResourceRelationshipFile
+  alias DataAggregator.DarwinCore.Publication.SpeciesProfileFile
+  alias DataAggregator.DarwinCore.Publication.VernacularNamesFile
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records
   alias DataAggregator.Records.Publication
@@ -30,7 +41,17 @@ defmodule DataAggregator.Records.Actions.Publish do
     path = DwcaFile.create_directory!("publication_#{channel}")
 
     CoreFile.create(query, path)
-    # AnyExtensionFile.create(query, path)
+    ChronometricAgeFile.create(query, path)
+    DistributionFile.create(query, path)
+    MaterialSampleFile.create(query, path)
+    PermitFile.create(query, path)
+    PreservationFile.create(query, path)
+    ReferencesFile.create(query, path)
+    ReleveFile.create(query, path)
+    ResourceRelationshipFile.create(query, path)
+    SpeciesProfileFile.create(query, path)
+    VernacularNamesFile.create(query, path)
+    MultimediaFile.create(query, path)
 
     attachment = path |> create_zip!() |> store_on_s3!()
 
