@@ -4,6 +4,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   """
   use Ash.Resource.Actions.Implementation
 
+  alias DataAggregator.DarwinCore.Publication.DwcaFile
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records
@@ -27,26 +28,29 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
         header_source
       )
 
-    path = "#{Path.join([System.tmp_dir!(), "export"])}#{Ecto.UUID.generate()}.csv"
-
     attachment =
       records_query
       |> Records.stream!()
       |> Stream.map(&map_record(&1, mapping, export, data_layer))
-      |> export_to_s3!(path, mapping)
+      |> export_to_s3!(mapping)
 
     with {:ok, export} <- Export.update_mapping(export, mapping) do
       Export.update_attachment(export, attachment)
     end
   end
 
-  defp export_to_s3!(records, path, mapping) do
-    path
+  defp export_to_s3!(records, mapping) do
+    directory = DwcaFile.create_directory!("export")
+    file_path = "#{directory}/#{Ecto.UUID.generate()}.csv"
+
+    file_path
     |> File.open!([:write, :utf8])
     |> store_local_file(records, mapping)
     |> File.close()
 
-    Attachment.import_from_path!(path)
+    zip_path = DwcaFile.create_zip!(directory)
+
+    Attachment.import_from_path!(zip_path)
   end
 
   defp store_local_file(file, records, mapping) do

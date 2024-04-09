@@ -97,6 +97,28 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
     |> Enum.flat_map(fn {_category, attributes} -> attributes end)
   end
 
+  @spec create_zip!(String.t()) :: String.t()
+  def create_zip!(directory) do
+    zip_path = ~c"#{directory}/#{Ecto.UUID.generate()}.zip"
+    files = get_files(directory)
+    directory_path = ~c"#{directory}/"
+
+    case :zip.create(zip_path, files, [{:cwd, directory_path}]) do
+      {:ok, _} ->
+        to_string(zip_path)
+
+      {:error, reason} ->
+        raise "Error creating zip file: #{inspect(reason)}"
+    end
+  end
+
+  @spec get_files(String.t()) :: list(charlist())
+  def get_files(path) do
+    path
+    |> File.ls!()
+    |> Enum.map(&String.to_charlist/1)
+  end
+
   # returns a tuple with the attribute name prefixed with the category name and
   #  the header field of the dwc core file
   @spec prefix(String.t(), String.t(), String.t()) :: {atom(), String.t()}
