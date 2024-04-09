@@ -2136,6 +2136,14 @@ defmodule DataAggregator.DarwinCore.Schema do
   end
 
   @doc """
+  Returns a list of tuples containging the internal, prefixed attribute name and the dwc_field name
+  """
+  @spec prefixed_attribute_names_and_dwc_fields() :: [atom()]
+  def prefixed_attribute_names_and_dwc_fields do
+    Enum.flat_map(@categories, &Category.prefixed_attribute_names_and_dwc_fields/1)
+  end
+
+  @doc """
   Returns the attributes as options for a select input grouped by category.
   """
   def attribute_options do

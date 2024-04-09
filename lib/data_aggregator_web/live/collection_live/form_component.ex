@@ -44,12 +44,6 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         <.fieldset legend={@title} text={~t"Use this form to manage collections in your database."m}>
           <.fieldgroup>
             <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
-              <.field
-                field={@form[:name]}
-                label={~t"Name"m}
-                placeholder={~t"My Collection"m}
-                required
-              />
               <.field field={@form[:owner]} label={~t"Owner"m} placeholder="Brigit Hansson" required />
             </div>
             <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
@@ -60,12 +54,14 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
                 options={@collection_types}
                 placeholder={~t"Filter types"m}
                 prompt={~t"None"m}
+                required
               />
               <.field
                 type="number"
                 field={@form[:items_to_digitize]}
                 label={~t"Total items to digitize"m}
                 placeholder="42042"
+                required
               />
             </div>
             <div class="grid grid-cols-1 gap-8 sm:grid-cols-1 sm:gap-4">
@@ -76,6 +72,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
                 options={@grscicoll_collections}
                 placeholder={~t"Filter Collections"m}
                 prompt={~t"None"m}
+                required
               />
             </div>
             <.field

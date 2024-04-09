@@ -11,7 +11,9 @@ defmodule DataAggregator.Records.Export do
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.DataLayerType
   alias DataAggregator.Records.Export.Changes
+  alias DataAggregator.Records.HeaderSourceType
 
   attributes do
     uuid_attribute :id, prefix: "exp"
@@ -24,6 +26,8 @@ defmodule DataAggregator.Records.Export do
     attribute :records_query, :term, allow_nil?: false
     attribute :exported_count, :integer, allow_nil?: false, default: 0
     attribute :rows_count, :integer, allow_nil?: false, default: 0
+    attribute :header_source, HeaderSourceType, allow_nil?: false, default: :collection_mapping
+    attribute :data_layer, DataLayerType, allow_nil?: false, default: :raw
 
     timestamps private?: false, writable?: false
   end

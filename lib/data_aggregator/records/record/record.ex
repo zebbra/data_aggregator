@@ -28,6 +28,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
+  alias DataAggregator.Records.PublicationStatusType
 
   @type t :: %Record{}
 
@@ -39,8 +40,12 @@ defmodule DataAggregator.Records.Record do
     attribute :import_data, :map
     attribute :extra_data, :map
     attribute :errors, :map
-    attribute :fast_track_status, :atom, allow_nil?: false, default: :not_published
-    attribute :approval_status, :atom, allow_nil?: false, default: :not_published
+
+    attribute :fast_track_status, PublicationStatusType,
+      allow_nil?: false,
+      default: :not_published
+
+    attribute :approval_status, PublicationStatusType, allow_nil?: false, default: :not_published
 
     timestamps private?: false, writable?: false
   end

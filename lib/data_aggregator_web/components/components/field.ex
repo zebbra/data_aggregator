@@ -197,7 +197,7 @@ defmodule DataAggregatorWeb.Components.Field do
 
   def field(%{type: "radio"} = assigns) do
     assigns =
-      assign_new(assigns, :checked, fn -> Form.normalize_value("radio", assigns[:value]) end)
+      assign_new(assigns, :checked, fn -> Form.normalize_value("radio", assigns[:checked]) end)
 
     ~H"""
     <div

@@ -24,6 +24,22 @@ defmodule DataAggregator.DarwinCore.Schema.Category do
     end
   end
 
+  @spec prefixed_attribute_names_and_dwc_fields(t) :: [{atom(), String.t()}]
+  def prefixed_attribute_names_and_dwc_fields(%Category{dwc_attributes: dwc_attributes} = category) do
+    for dwc_attribute <- dwc_attributes do
+      prefixed_name = prefixed_attribute_name(category, dwc_attribute.attribute)
+
+      dwc_field = Map.get(dwc_attribute, :dwc_field)
+
+      dwc_field =
+        if dwc_field != nil,
+          do: dwc_field,
+          else: dwc_attribute.attribute.name
+
+      {prefixed_name, dwc_field}
+    end
+  end
+
   def prefixed_attribute_name(%Category{name: prefix}, %Attribute{name: name}) do
     String.to_atom("#{prefix}_#{name}")
   end

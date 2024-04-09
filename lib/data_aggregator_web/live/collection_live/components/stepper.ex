@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.CollectionLive.Import.Components.Stepper do
+defmodule DataAggregatorWeb.CollectionLive.Collection.Components.Stepper do
   @moduledoc """
   This module contains components for the collection > import live view.
   """

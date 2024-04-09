@@ -9,6 +9,11 @@ defmodule DataAggregator.Records.Export.Workers.ExportTest do
 
   alias DataAggregator.Records.Export
 
+  @mapping %{
+    "mte_catalog_number" => "Numéro scientifique GBIF",
+    "tax_family" => "Famille"
+  }
+
   describe "DataAggregator.Records.Export.Workers.Exporter.perform/1" do
     setup do
       collection = collection_fixture()
@@ -20,8 +25,10 @@ defmodule DataAggregator.Records.Export.Workers.ExportTest do
         Export.create!(%{
           name: "export-#{collection.name}-#{Ecto.UUID.generate()}",
           collection: collection,
-          mapping: nil,
-          records_query: collection.records_to_export_query
+          mapping: @mapping,
+          records_query: collection.records_to_export_query,
+          data_layer: :raw,
+          header_source: :custom_selection
         })
 
       [export: export]

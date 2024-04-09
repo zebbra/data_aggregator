@@ -19,7 +19,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Encoding.RecordEncodingResult
-  alias DataAggregator.Records.Export
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
   alias DataAggregatorWeb.Components.DataTable
@@ -153,11 +152,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </div>
         <div class="flex min-w-0 flex-1 justify-end gap-x-2">
           <button
-            phx-click={JS.push("collection:export")}
+            phx-click="collection:export"
             class="btn btn-primary text-primary-content max-sm:btn-sm"
             disabled={@busy}
-            data-confirm={~t"Are you sure?"m}
-            data-confirm_id="confirm_export_alert"
           >
             <.icon name="hero-arrow-down-tray" class="max-sm:size-4" />
             <%= ~t"Export"m %>
@@ -181,9 +178,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             data-confirm={~t"Are you sure?"m}
             data-confirm_id="confirm_fast_track_pub_alert"
           >
-            <.icon :if={@busy == false} name="hero-fire-mini" class="max-sm:size-4" />
+            <.icon :if={@busy == false} name="hero-globe-alt" class="max-sm:size-4" />
             <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="max-sm:size-4" />
-            <%= ~t"Fast Track Pub."m %>
+            <%= ~t"Publish"m %>
           </button>
           <button
             phx-click={JS.push("collection:approval_pub")}
@@ -192,9 +189,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             data-confirm={~t"Are you sure?"m}
             data-confirm_id="confirm_approval_pub_alert"
           >
-            <.icon :if={@busy == false} name="hero-shield-check" class="max-sm:size-4" />
+            <.icon :if={@busy == false} name="hero-check-badge" class="max-sm:size-4" />
             <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="max-sm:size-4" />
-            <%= ~t"Approval Pub."m %>
+            <%= ~t"Approve"m %>
           </button>
         </div>
       </div>
@@ -329,6 +326,26 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </.slideover>
       </:secondary>
 
+      <:portal>
+        <.modal
+          id="export_modal"
+          class="no-scrollbar"
+          show={@live_action == :export}
+          size="2xl"
+          responsive
+          backdrop={false}
+          on_cancel={JS.patch(~p"/collections/#{@collection}/records")}
+        >
+          <.live_component
+            :if={@live_action == :export}
+            module={DataAggregatorWeb.CollectionLive.Export.Modal}
+            id={:new}
+            action={@live_action}
+            collection={@collection}
+          />
+        </.modal>
+      </:portal>
+
       <.alert id="confirm_record_alert" size="sm">
         <p class="text-sm"><%= ~t"This will also delete the following associations:"m %></p>
         <ul class="mt-2 list-inside list-disc text-sm">
@@ -341,14 +358,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           <li class="text-info"><span class="text-base-content"><%= ~t"Record imports"m %></span></li>
           <li class="text-info"><span class="text-base-content"><%= ~t"Record images"m %></span></li>
         </ul>
-      </.alert>
-
-      <.alert
-        id="confirm_export_alert"
-        size="sm"
-        title={~t"Are you sure?"m}
-        text={~t"You're about to export this collection"m}
-      >
       </.alert>
 
       <.alert
@@ -478,24 +487,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("collection:export", _params, socket) do
-    %{collection: collection} = socket.assigns
-    collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
-
-    export =
-      %{
-        name: "export-#{collection.name}-#{:os.system_time()}",
-        collection: collection,
-        mapping: nil,
-        records_query: collection.records_to_export_query,
-        rows_count: Records.count!(collection.records_to_export_query)
-      }
-      |> Export.create!()
-      |> Export.enqueue!()
-
-    {:noreply,
-     socket
-     |> assign(:export, export)
-     |> push_navigate(to: ~p"/collections/#{collection.id}/exports")}
+    {:noreply, assign(socket, :live_action, :export)}
   end
 
   @impl true

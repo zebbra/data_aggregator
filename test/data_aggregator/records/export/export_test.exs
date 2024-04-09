@@ -91,8 +91,16 @@ defmodule DataAggregator.ExportTest do
                        {name, name}
                      end)
 
-    setup %{mapping: mapping} do
-      collection = Records.load!(collection_fixture(), [:records_to_export_query])
+    @collection_mapping [
+      %{name: "Scientific Name - collection", mapped_to: "tax_scientific_name"},
+      %{name: "Numéro scientifique GBIF - collection", mapped_to: "mte_catalog_number"}
+    ]
+
+    setup %{mapping: mapping, data_layer: data_layer, header_source: header_source} do
+      collection =
+        Records.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
+          :records_to_export_query
+        ])
 
       # those two should be exported
       exportable_record(collection)
@@ -105,7 +113,9 @@ defmodule DataAggregator.ExportTest do
           name: "export-#{collection.name}-#{Ecto.UUID.generate()}",
           collection: collection,
           mapping: mapping,
-          records_query: collection.records_to_export_query
+          records_query: collection.records_to_export_query,
+          data_layer: data_layer,
+          header_source: header_source
         })
 
       case Collection.export(export) do
@@ -115,28 +125,109 @@ defmodule DataAggregator.ExportTest do
     end
 
     @tag mapping: nil
+    @tag data_layer: :raw
+    @tag header_source: :custom_selection
     test "export records with no mapping, so default mapping should be used", %{
       export: export
     } do
       df = Explorer.DataFrame.from_csv!(export.attachment.url)
 
       assert export.mapping == @default_mapping
-
       assert Explorer.DataFrame.n_columns(df) == Enum.count(Map.keys(@default_mapping))
-
       assert Explorer.DataFrame.n_rows(df) == 3
     end
 
     @tag mapping: @valid_custom_mapping
+    @tag data_layer: :raw
+    @tag header_source: :custom_selection
     test "export records with valid custom mapping", %{
       export: export
     } do
       df = Explorer.DataFrame.from_csv!(export.attachment.url)
 
       assert export.mapping == @valid_custom_mapping
+      assert Explorer.DataFrame.n_columns(df) == 2
+      assert Explorer.DataFrame.n_rows(df) == 3
+
+      assert Explorer.DataFrame.names(df) == [
+               "Numéro scientifique GBIF",
+               "Famille"
+             ]
+    end
+
+    @tag mapping: nil
+    @tag data_layer: :raw
+    @tag header_source: :collection_mapping
+    test "export records with datalayer :raw, header_source :collection_mapping", %{
+      export: export
+    } do
+      df = Explorer.DataFrame.from_csv!(export.attachment.url)
+
+      assert export.mapping == %{
+               mte_catalog_number: "Numéro scientifique GBIF - collection",
+               tax_scientific_name: "Scientific Name - collection"
+             }
+
+      assert Explorer.DataFrame.names(df) == [
+               "Numéro scientifique GBIF - collection",
+               "Scientific Name - collection"
+             ]
 
       assert Explorer.DataFrame.n_columns(df) == 2
+      assert Explorer.DataFrame.n_rows(df) == 3
+    end
 
+    @tag mapping: nil
+    @tag data_layer: :encoded
+    @tag header_source: :collection_mapping
+    test "export records with datalayer :encoded, header_source :collection_mapping", %{
+      export: export
+    } do
+      df = Explorer.DataFrame.from_csv!(export.attachment.url)
+
+      assert export.mapping == %{
+               mte_catalog_number: "Numéro scientifique GBIF - collection",
+               tax_scientific_name: "Scientific Name - collection"
+             }
+
+      assert Explorer.DataFrame.names(df) == [
+               "Numéro scientifique GBIF - collection",
+               "Scientific Name - collection"
+             ]
+
+      assert Explorer.DataFrame.n_columns(df) == 2
+      assert Explorer.DataFrame.n_rows(df) == 3
+    end
+
+    @tag mapping: nil
+    @tag data_layer: :raw
+    @tag header_source: :dwc_attributes
+    test "export records with datalayer :raw, header_source :dwc_attributes", %{
+      export: export
+    } do
+      df = Explorer.DataFrame.from_csv!(export.attachment.url)
+
+      assert export.mapping == expected_dwc_attribute_mapping()
+
+      assert_lists_equal(Explorer.DataFrame.names(df), expected_dwc_column_headers())
+
+      assert Explorer.DataFrame.n_columns(df) == 278
+      assert Explorer.DataFrame.n_rows(df) == 3
+    end
+
+    @tag mapping: nil
+    @tag data_layer: :encoded
+    @tag header_source: :dwc_attributes
+    test "export records with datalayer :encoded, header_source :dwc_attributes", %{
+      export: export
+    } do
+      df = Explorer.DataFrame.from_csv!(export.attachment.url)
+
+      assert export.mapping == expected_dwc_attribute_mapping()
+
+      assert_lists_equal(Explorer.DataFrame.names(df), expected_dwc_column_headers())
+
+      assert Explorer.DataFrame.n_columns(df) == 278
       assert Explorer.DataFrame.n_rows(df) == 3
     end
   end

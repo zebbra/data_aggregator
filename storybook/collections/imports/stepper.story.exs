@@ -2,7 +2,7 @@ defmodule Storybook.Collections.Imports.Stepper do
   @moduledoc false
   use PhoenixStorybook.Story, :component
 
-  alias DataAggregatorWeb.CollectionLive.Import.Components.Stepper
+  alias DataAggregatorWeb.CollectionLive.Collection.Components.Stepper
 
   def function, do: &Stepper.stepper/1
 
