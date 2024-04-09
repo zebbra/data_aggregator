@@ -347,6 +347,8 @@ Table exports {
   records_query bytea
   exported_count integer
   rows_count integer
+  header_source varchar
+  data_layer varchar
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid

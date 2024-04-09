@@ -16,6 +16,7 @@ classDiagram
         Atom encoding_state
         Map records_to_export_query
         Map fast_track_query
+        Map approval_query
         Integer records_count
         Integer imports_count
         Integer records_count_not_encoded
@@ -31,8 +32,8 @@ classDiagram
         Record[] records
         destroy()
         update(UUID id, Integer items_to_digitize, String owner, String name, ...)
-        create(UUID id, Integer items_to_digitize, String owner, String name, ...)
         read(String sort)
+        create(UUID id, Integer items_to_digitize, String owner, String name, ...)
         update_import_mapping(Map[] import_mapping)
         touch(UUID id, Integer items_to_digitize, String owner, String name, ...)
         export(Struct export)
@@ -354,6 +355,8 @@ classDiagram
         Term records_query
         Integer exported_count
         Integer rows_count
+        HeaderSourceType header_source
+        DataLayerType data_layer
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Integer job_id
@@ -463,7 +466,7 @@ classDiagram
         set_running()
         set_failed(UUID id, String name, Atom channel, UtcDatetime published_at, ...)
         run()
-        set_published()
+        set_done()
         update_attachment(Attachment attachment)
     }
     class Record {
@@ -749,12 +752,17 @@ classDiagram
         Map import_data
         Map extra_data
         Map errors
-        Atom fast_track_status
-        Atom approval_status
+        PublicationStatusType fast_track_status
+        PublicationStatusType approval_status
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Integer encoder_job_id
         Atom state
+        Integer mids_level
+        Boolean mids_level_one
+        Boolean mids_level_two
+        Boolean mids_level_three
+        Boolean mids_level_four
         Version[] paper_trail_versions
         Collection collection
         Import[] imports
