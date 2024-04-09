@@ -8,12 +8,15 @@ defmodule DataAggregator.Records.Export do
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub]
 
+  alias __MODULE__
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.DataLayerType
   alias DataAggregator.Records.Export.Changes
   alias DataAggregator.Records.HeaderSourceType
+
+  @type t :: %Export{}
 
   attributes do
     uuid_attribute :id, prefix: "exp"

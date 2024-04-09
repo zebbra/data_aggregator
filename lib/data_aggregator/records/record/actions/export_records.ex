@@ -8,6 +8,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records
   alias DataAggregator.Records.Export
+  alias DataAggregator.Records.Record
 
   require Logger
 
