@@ -32,20 +32,21 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
       records_query
       |> Records.stream!()
       |> Stream.map(&map_record(&1, mapping, export, data_layer))
-      |> export_to_s3!(mapping)
+      |> Stream.map(&DwcaFile.map_data_to_headers(&1, get_header_labels(mapping)))
+      |> export_to_s3!()
 
     with {:ok, export} <- Export.update_mapping(export, mapping) do
       Export.update_attachment(export, attachment)
     end
   end
 
-  defp export_to_s3!(records, mapping) do
+  defp export_to_s3!(records) do
     directory = DwcaFile.create_directory!("export")
     file_path = "#{directory}/#{Ecto.UUID.generate()}.csv"
 
     file_path
     |> File.open!([:write, :utf8])
-    |> store_local_file(records, mapping)
+    |> store_local_file(records)
     |> File.close()
 
     zip_path = DwcaFile.create_zip!(directory)
@@ -53,9 +54,9 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
     Attachment.import_from_path!(zip_path)
   end
 
-  defp store_local_file(file, records, mapping) do
+  defp store_local_file(file, records) do
     records
-    |> CSV.encode(headers: get_headers(mapping))
+    |> CSV.encode(separator: ?,, headers: true)
     |> Stream.each(&IO.write(file, &1))
     |> Stream.run()
 
@@ -66,7 +67,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   defp map_record(record, mapping, export, :raw) do
     Export.add_export_progress(export, 1)
 
-    record |> Map.from_struct() |> Map.take(get_headers(mapping))
+    record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
   end
 
   defp map_record(record, mapping, export, :encoded) do
@@ -79,9 +80,14 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
         "Record with id #{record.id} has no encoded record. Raw Data will be used. Encode the record first to have encoded Data to publish"
       )
 
-      record |> Map.from_struct() |> Map.take(get_headers(mapping))
+      record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
     else
-      record.encoded_record |> Map.from_struct() |> Map.take(get_headers(mapping))
+      raw_layer = record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
+
+      encoded_layer =
+        record.encoded_record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
+
+      DwcaFile.update_map_with_non_nil_values(raw_layer, encoded_layer)
     end
   end
 
@@ -95,13 +101,19 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
 
   defp get_mapping(_export_mapping, _collection_mapping, _header_source), do: get_default_mapping()
 
-  defp get_headers(mapping) do
-    Map.values(mapping)
+  defp get_data_attributes(mapping) do
+    Map.keys(mapping)
+  end
+
+  defp get_header_labels(mapping) do
+    Map.to_list(mapping)
   end
 
   @spec convert_mapping_format(list()) :: map()
   defp convert_mapping_format(collection_mapping) do
-    Map.new(collection_mapping, fn entry ->
+    collection_mapping
+    |> Enum.filter(fn entry -> entry["mapped_to"] !== nil end)
+    |> Map.new(fn entry ->
       {String.to_atom(entry["mapped_to"]), entry["name"]}
     end)
   end

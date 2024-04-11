@@ -158,10 +158,7 @@ defmodule DataAggregator.ExportTest do
       assert Explorer.DataFrame.n_columns(data_frame) == 2
       assert Explorer.DataFrame.n_rows(data_frame) == 3
 
-      assert Explorer.DataFrame.names(data_frame) == [
-               "Numéro scientifique GBIF",
-               "Famille"
-             ]
+      assert Explorer.DataFrame.names(data_frame) == ["Famille", "Numéro scientifique GBIF"]
     end
 
     @tag mapping: nil

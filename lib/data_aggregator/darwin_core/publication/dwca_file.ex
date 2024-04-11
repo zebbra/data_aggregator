@@ -5,6 +5,7 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
 
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records
+  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
   @callback create(query :: Ash.Query.t(), path :: String.t()) ::
@@ -41,7 +42,22 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   # gives you a map of all relevant record attributes and its values
   @spec map_record(Record.t(), list()) :: map()
   def map_record(record, record_attributes) do
+    raw_layer = get_raw_layer(record, record_attributes)
+
+    encoded_layer = get_encoded_layer(record, record_attributes)
+
+    update_map_with_non_nil_values(raw_layer, encoded_layer)
+  end
+
+  defp get_raw_layer(record, record_attributes) do
     record |> Map.from_struct() |> Map.take(record_attributes)
+  end
+
+  defp get_encoded_layer(record, record_attributes) do
+    case EncodedRecord.get_by_record(record) do
+      {:ok, encoded_record} -> encoded_record |> Map.from_struct() |> Map.take(record_attributes)
+      {:error, _} -> Map.new()
+    end
   end
 
   # gives you a map of all relevant dwc header fields and the record values
@@ -139,5 +155,20 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
     |> Stream.run()
 
     file
+  end
+
+  def update_map_with_non_nil_values(map1, map2) do
+    Enum.reduce(map2, map1, fn {key, value}, acc_map ->
+      # If value in map2 is not nil, update the corresponding value in acc_map (map1)
+      case value do
+        nil ->
+          # If value is nil, do not update acc_map
+          acc_map
+
+        _ ->
+          # Update acc_map with non-nil value
+          %{acc_map | key => value}
+      end
+    end)
   end
 end
