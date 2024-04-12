@@ -4,9 +4,8 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   """
   use Ash.Resource.Actions.Implementation
 
-  alias DataAggregator.DarwinCore.Publication.DwcaFile
   alias DataAggregator.DarwinCore.Schema
-  alias DataAggregator.Files.Attachment
+  alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
@@ -32,37 +31,28 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
       records_query
       |> Records.stream!()
       |> Stream.map(&map_record(&1, mapping, export, data_layer))
-      |> Stream.map(&DwcaFile.map_data_to_headers(&1, get_header_labels(mapping)))
-      |> export_to_s3!()
+      |> Stream.map(&FlatFileUtils.map_data_to_headers(&1, get_header_labels(mapping)))
+      |> create_file!()
+      |> FlatFileUtils.create_zip!()
+      |> FlatFileUtils.store_on_s3!()
 
     with {:ok, export} <- Export.update_mapping(export, mapping) do
       Export.update_attachment(export, attachment)
     end
   end
 
-  defp export_to_s3!(records) do
-    directory = DwcaFile.create_directory!("export")
+  # create a file from the given records.
+  @spec create_file!(any()) :: any()
+  defp create_file!(records) do
+    directory = FlatFileUtils.create_directory!("export")
     file_path = "#{directory}/#{Ecto.UUID.generate()}.csv"
 
-    file_path
-    |> File.open!([:write, :utf8])
-    |> store_local_file(records)
-    |> File.close()
+    FlatFileUtils.store_on_disk!(records, file_path)
 
-    zip_path = DwcaFile.create_zip!(directory)
-
-    Attachment.import_from_path!(zip_path)
+    directory
   end
 
-  defp store_local_file(file, records) do
-    records
-    |> CSV.encode(separator: ?,, headers: true)
-    |> Stream.each(&IO.write(file, &1))
-    |> Stream.run()
-
-    file
-  end
-
+  # map the record to the given mapping and report progress on the export.
   @spec map_record(Record.t(), map(), Export.t(), atom()) :: map()
   defp map_record(record, mapping, export, :raw) do
     Export.add_export_progress(export, 1)
@@ -75,22 +65,29 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
 
     record = Records.load!(record, [:encoded_record])
 
-    if record.encoded_record == nil do
-      Logger.info(
-        "Record with id #{record.id} has no encoded record. Raw Data will be used. Encode the record first to have encoded Data to publish"
-      )
-
-      record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
-    else
-      raw_layer = record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
-
-      encoded_layer =
-        record.encoded_record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
-
-      DwcaFile.update_map_with_non_nil_values(raw_layer, encoded_layer)
-    end
+    map_layers(record, mapping)
   end
 
+  # map all layers of the record to a single map for exporting the record consoliated.
+  @spec map_layers(Record.t(), map()) :: map()
+  defp map_layers(record, mapping) when record.encoded_record != nil do
+    raw_layer = record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
+
+    encoded_layer =
+      record.encoded_record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
+
+    Map.merge(raw_layer, encoded_layer)
+  end
+
+  defp map_layers(record, mapping) when record.encoded_record == nil do
+    Logger.info(
+      "Record with id #{record.id} has no encoded record. Raw Data will be used. Encode the record first to have encoded Data to publish"
+    )
+
+    record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
+  end
+
+  # returns the mapping according to the given header source and if a collection- or export-mapping is given.
   @spec get_mapping(map(), list(), atom()) :: map()
   defp get_mapping(export_mapping, _collection_mapping, :custom_selection) when export_mapping != nil, do: export_mapping
 
@@ -100,14 +97,6 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   defp get_mapping(_export_mapping, _collection_mapping, :dwc_attributes), do: dwc_attribute_mapping()
 
   defp get_mapping(_export_mapping, _collection_mapping, _header_source), do: get_default_mapping()
-
-  defp get_data_attributes(mapping) do
-    Map.keys(mapping)
-  end
-
-  defp get_header_labels(mapping) do
-    Map.to_list(mapping)
-  end
 
   @spec convert_mapping_format(list()) :: map()
   defp convert_mapping_format(collection_mapping) do
@@ -124,5 +113,13 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
 
   defp get_default_mapping do
     Map.new(Schema.prefixed_attribute_names(), fn name -> {name, name} end)
+  end
+
+  defp get_data_attributes(mapping) do
+    Map.keys(mapping)
+  end
+
+  defp get_header_labels(mapping) do
+    Map.to_list(mapping)
   end
 end

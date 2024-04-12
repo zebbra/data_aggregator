@@ -6,12 +6,11 @@ defmodule DataAggregator.Records.Actions.Publish do
   use Ash.Resource.Actions.Implementation
 
   alias DataAggregator.DarwinCore.Publication.CoreFile
-  alias DataAggregator.DarwinCore.Publication.DwcaFile
   alias DataAggregator.DarwinCore.Publication.MaterialSampleFile
   alias DataAggregator.DarwinCore.Publication.MultimediaFile
   alias DataAggregator.DarwinCore.Publication.PreservationFile
   alias DataAggregator.DarwinCore.Publication.ReleveFile
-  alias DataAggregator.Files.Attachment
+  alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
@@ -31,7 +30,7 @@ defmodule DataAggregator.Records.Actions.Publish do
       publication
     )
 
-    path = DwcaFile.create_directory!("publication_#{channel}")
+    path = FlatFileUtils.create_directory!("publication_#{channel}")
 
     CoreFile.create(query, path)
     MaterialSampleFile.create(query, path)
@@ -50,7 +49,7 @@ defmodule DataAggregator.Records.Actions.Publish do
     # SpeciesProfileFile.create(query, path)
     # VernacularNamesFile.create(query, path)
 
-    attachment = path |> create_zip!() |> store_on_s3!()
+    attachment = path |> FlatFileUtils.create_zip!() |> FlatFileUtils.store_on_s3!()
 
     set_publication_status(
       query,
@@ -76,33 +75,6 @@ defmodule DataAggregator.Records.Actions.Publish do
       )
 
       {:error, e}
-  end
-
-  @spec create_zip!(String.t()) :: String.t()
-  defp create_zip!(path) do
-    zip_path = ~c"#{path}/#{Ecto.UUID.generate()}.zip"
-    files = get_files(path)
-    directory_path = ~c"#{path}/"
-
-    case :zip.create(zip_path, files, [{:cwd, directory_path}]) do
-      {:ok, _} ->
-        to_string(zip_path)
-
-      {:error, reason} ->
-        raise "Error creating zip file: #{inspect(reason)}"
-    end
-  end
-
-  @spec get_files(String.t()) :: list(charlist())
-  defp get_files(path) do
-    path
-    |> File.ls!()
-    |> Enum.map(&String.to_charlist/1)
-  end
-
-  @spec store_on_s3!(String.t()) :: Attachment.t()
-  defp store_on_s3!(path) do
-    Attachment.import_from_path!(path)
   end
 
   @spec set_publication_status(
