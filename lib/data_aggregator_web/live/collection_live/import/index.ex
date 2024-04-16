@@ -246,9 +246,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                   <div :if={@selected_import.rows_invalid_count not in [0, nil]} class="text-error">
                     <%= ~t"invalid rows:"m %> <%= format_number(@selected_import.rows_invalid_count) %>
                   </div>
-                  <div :if={length(@selected_import.errors) != 0} class="text-error">
-                    <%= ~t"Errors:"m %> <%= @selected_import.errors %>
-                  </div>
                 </div>
               </:item>
 

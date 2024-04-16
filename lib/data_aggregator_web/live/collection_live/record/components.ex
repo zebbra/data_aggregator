@@ -4,9 +4,21 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   """
   use DataAggregatorWeb, :html
 
+  alias DataAggregator.Records.Activity
+  alias DataAggregator.Records.Record
+
+  require Ash.Query
+
   attr :state, :atom,
     required: true,
-    values: [:not_published, :publishing, :in_publication, :published, :stale, :failed]
+    values: [
+      :not_published,
+      :publishing,
+      :in_publication,
+      :published,
+      :stale,
+      :publication_failed
+    ]
 
   def publication_status_badge(assigns) do
     case assigns.state do
@@ -54,7 +66,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         </.badge>
         """
 
-      :failed ->
+      :publication_failed ->
         ~H"""
         <.badge
           class="px-2 tooltip tooltip-error"
@@ -82,7 +94,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
 
   @level [0, 1, 2, 3, 4]
 
-  attr :level, :integer, required: false, required: true, values: @level
+  attr :level, :integer, required: true, values: @level
 
   def mids_level_indicator(assigns) do
     color_dot_range = Range.new(1, assigns.level)
@@ -113,33 +125,378 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     red = "bg-error/10 text-error tooltip-error border border-error/30"
     orange = "bg-warning/10 text-warning tooltip-warning border border-warning/30"
 
-    cond do
-      level == 4 -> green
-      level == 3 -> blue
-      level == 2 -> orange
-      level == 1 -> red
-      level == 0 -> gray
+    case level do
+      4 -> green
+      3 -> blue
+      2 -> orange
+      1 -> red
+      0 -> gray
     end
   end
 
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   defp level_translation(level) do
-    cond do
-      level == 0 ->
+    case level do
+      0 ->
         ~t"Please submit at least the institution code with your data, to reach the lowest quality level"m
 
-      level == 1 ->
+      1 ->
         ~t"Add all of the following fields to reach level two: taxon_id, part_of_organism"m
 
-      level == 2 ->
+      2 ->
         ~t"Add the following fields to reach level three: event_date, ecorded_by, type_status, original_name_usage, continent, country, county, decimal_latitude, decimal_longitude, higher_geography, locality, state_province, verbatim_depth, verbatim_elevation, year_collection_entrance, occurrence_id"m
 
-      level == 3 ->
+      3 ->
         ~t"Add one of the follwing fields to reach level four: verbatim_event_date, identified_by, identification_qualifier, identification_verification_status, last_verified_by, verbatim_identification, georeferenced_by, georeference_verification_status, verbatim_coordinates, verbatim_latitude, verbatim_longitude, verbatim_locality, associated_media, completeness, other_catalog_numbers, verbatim_label"m
 
-      level == 4 ->
+      4 ->
         ~t"Record has a top quality. Add more data fields to improve your collections relevance"m
     end
+  end
+
+  attr :record, Record, required: true
+
+  def activity_feed(assigns) do
+    assigns = assign_activities(assigns)
+
+    ~H"""
+    <ul role="list" class="space-y-12 px-6">
+      <li :for={activity <- @activities} class="relative flex gap-x-4">
+        <div class="absolute top-0 -bottom-12 left-0 flex w-6 justify-center">
+          <div class="bg-gray-100/50 w-px"></div>
+        </div>
+        <.activity_feed_element activity={activity} />
+      </li>
+    </ul>
+    """
+  end
+
+  defp assign_activities(assigns) do
+    record_versions =
+      Record.Version
+      |> Ash.Query.for_read(:read)
+      |> Ash.Query.load(:version_source)
+      |> Ash.Query.filter(version_source_id == ^assigns.record.id)
+      |> Ash.Query.filter(
+        version_action_name in [
+          :set_encoded,
+          :set_encoding_failed,
+          :update_approval_status,
+          :update_fast_track_status,
+          :import
+        ]
+      )
+      |> DataAggregator.Records.read!()
+
+    activities = Enum.map(record_versions, &version_to_activity/1)
+
+    assign(assigns, :activities, activities)
+  end
+
+  defp version_to_activity(version) do
+    %Activity{
+      name: version.version_action_name,
+      actor: "Owner",
+      date_time: version.version_inserted_at,
+      content: version.changes
+    }
+  end
+
+  attr :activity, Activity, required: true
+
+  def activity_feed_element(%{activity: activity} = assigns) when activity.name in [:import] do
+    ~H"""
+    <div class="grid w-full grid-cols-9 gap-y-2 ">
+      <div class="bg-base-100 relative flex h-6 w-6 items-center justify-center">
+        <div class="bg-base-100">
+          <.badge color="blue">
+            <.icon name="hero-arrow-up-tray" class="size-5 shrink-0" />
+          </.badge>
+        </div>
+      </div>
+      <div class="col-span-6 py-0.5 text-sm leading-5 text-gray-500">
+        <span class="font-medium text-gray-600"><%= @activity.actor %></span>
+        - <%= ~t"a data import was updating the record"m %>
+      </div>
+      <div class="col-span-2 text-right">
+        <time datetime={@activity.date_time} class="py-0.5 text-xs leading-5 text-gray-500">
+          <%= format_datetime(@activity.date_time, format: :short) %>
+        </time>
+      </div>
+      <div class="ring-gray-100/30 col-start-2 col-end-10 gap-2 rounded-md p-3 ring-1 ring-inset">
+        <.changed_value :for={change <- map_to_string(@activity.content)} value={change} />
+      </div>
+    </div>
+    """
+  end
+
+  def activity_feed_element(%{activity: activity} = assigns)
+      when activity.name in [:set_encoded, :set_encoding_failed, :update_approval_status, :update_fast_track_status] do
+    ~H"""
+    <div class="grid w-full grid-cols-9 gap-y-2 ">
+      <div class="bg-base-100 relative flex h-6 w-6 items-center justify-center">
+        <div class="bg-base-100">
+          <.activity_icon activity={@activity} />
+        </div>
+      </div>
+      <div class="col-span-6 py-0.5 text-sm leading-5 text-gray-500">
+        <span class="font-medium text-gray-600"><%= @activity.actor %></span>
+        - <.activity_text activity={@activity} />
+      </div>
+      <div class="col-span-2 text-right">
+        <time datetime={@activity.date_time} class="py-0.5 text-xs leading-5 text-gray-500">
+          <%= format_datetime(@activity.date_time, format: :short) %>
+        </time>
+      </div>
+    </div>
+    """
+  end
+
+  # this is just the fallback for unwanted activities, which we do not want to render
+  def activity_feed_element(assigns) do
+    ~H"""
+    <span>unknown change: <%= @activity.name %></span>
+    """
+  end
+
+  defp activity_icon(%{activity: activity} = assigns) when activity.name == :set_encoded do
+    ~H"""
+    <.badge class="tooltip tooltip-success" data-tip={~t"Encoding Successful"m} color="green">
+      <.icon name="hero-check" class="size-5 shrink-0" />
+    </.badge>
+    """
+  end
+
+  defp activity_icon(%{activity: activity} = assigns) when activity.name == :set_encoding_failed do
+    ~H"""
+    <.badge class="tooltip tooltip-error" data-tip={~t"Encoding Successful"m} color="red">
+      <.icon name="hero-x-mark" class="size-5 shrink-0" />
+    </.badge>
+    """
+  end
+
+  defp activity_icon(%{activity: activity} = assigns)
+       when activity.name in [:update_approval_status, :update_fast_track_status] do
+    cond do
+      published?(activity) ->
+        ~H"""
+        <.badge color="green">
+          <.icon name="hero-check" class="size-5 shrink-0" />
+        </.badge>
+        """
+
+      publishing?(activity) ->
+        ~H"""
+        <.badge color="blue">
+          <.icon name="hero-information-circle" class="size-5 shrink-0" />
+        </.badge>
+        """
+
+      publication_failed?(activity) ->
+        ~H"""
+        <.badge color="red">
+          <.icon name="hero-x-mark" class="size-5 shrink-0" />
+        </.badge>
+        """
+
+      publication_stale?(activity) or not_published?(activity) ->
+        ~H"""
+        <.badge color="gray">
+          <.icon name="hero-information-circle" class="size-5 shrink-0" />
+        </.badge>
+        """
+    end
+  end
+
+  defp activity_icon(assigns) do
+    ~H"""
+    <span>
+      <%= @activity.name %> - <%= inspect(@activity.content) %>
+    </span>
+    """
+  end
+
+  defp activity_text(%{activity: activity} = assigns) when activity.name == :set_encoded do
+    ~H"""
+    <span class="font-medium">
+      <%= ~t"the record encoding was"m %>
+    </span>
+    <.badge color="green">
+      <%= ~t"Successful"m %>
+    </.badge>
+    """
+  end
+
+  defp activity_text(%{activity: activity} = assigns) when activity.name == :set_encoding_failed do
+    ~H"""
+    <span class="font-medium">
+      <%= ~t"the record encoding has"m %>
+    </span>
+    <.badge color="red">
+      <%= ~t"Failed"m %>
+    </.badge>
+    """
+  end
+
+  defp activity_text(%{activity: activity} = assigns)
+       when activity.name in [:update_approval_status, :update_fast_track_status] do
+    cond do
+      published?(activity) ->
+        ~H"""
+        <span class="font-medium">
+          <%= ~t"record was successful"m %>
+        </span>
+        <.badge color="green">
+          <%= ~t"Published"m %>
+        </.badge>
+        """
+
+      publishing?(activity) ->
+        ~H"""
+        <span class="font-medium">
+          <%= ~t"record is currently"m %>
+        </span>
+        <.badge color="blue">
+          <%= ~t"Publishing"m %>
+        </.badge>
+        """
+
+      in_publication?(activity) ->
+        ~H"""
+        <span class="font-medium">
+          <%= ~t"record is currently"m %>
+        </span>
+        <.badge color="blue">
+          <%= ~t"In Publication"m %>
+        </.badge>
+        """
+
+      publication_failed?(activity) ->
+        ~H"""
+        <span class="font-medium">
+          <%= ~t"record publication"m %>
+        </span>
+        <.badge color="blue">
+          <%= ~t"Failed"m %>
+        </.badge>
+        """
+
+      publication_stale?(activity) ->
+        ~H"""
+        <span class="font-medium">
+          <%= ~t"due to data changes, the publication is"m %>
+        </span>
+        <.badge color="gray">
+          <%= ~t"Stale"m %>
+        </.badge>
+        """
+
+      not_published?(activity) ->
+        ~H"""
+        <span class="font-medium">
+          <%= ~t"record is"m %>
+        </span>
+        <.badge color="blue">
+          <%= ~t"Not yet Published"m %>
+        </.badge>
+        """
+    end
+  end
+
+  defp activity_text(assigns) do
+    ~H"""
+    <span>
+      <%= @activity.name %> - <%= inspect(@activity.content) %>
+    </span>
+    """
+  end
+
+  defp published?(activity) do
+    activity.content["approval_status"] == "published" or
+      activity.content["fast_track_status"] == "published"
+  end
+
+  defp publishing?(activity) do
+    activity.content["approval_status"] == "publishing" or
+      activity.content["fast_track_status"] == "publishing"
+  end
+
+  defp in_publication?(activity) do
+    activity.content["approval_status"] == "in_publication" or
+      activity.content["fast_track_status"] == "in_publication"
+  end
+
+  defp publication_failed?(activity) do
+    activity.content["approval_status"] == "publication_failed" or
+      activity.content["fast_track_status"] == "publication_failed"
+  end
+
+  defp publication_stale?(activity) do
+    activity.content["approval_status"] == "stale" or
+      activity.content["fast_track_status"] == "stale"
+  end
+
+  defp not_published?(activity) do
+    activity.content["approval_status"] == "not_published" or
+      activity.content["fast_track_status"] == "not_published"
+  end
+
+  defp map_to_string(map) when is_map(map) do
+    map
+    |> stringify_values()
+    |> Map.to_list()
+    |> Enum.map(fn {k, v} -> {k, value_to_list(v)} end)
+  end
+
+  defp map_to_string(map) do
+    inspect(map)
+  end
+
+  defp value_to_list(value) when is_map(value) do
+    Map.to_list(value)
+  end
+
+  defp value_to_list(value), do: value
+
+  defp changed_value(%{value: value} = assigns) when is_tuple(value) and tuple_size(value) == 2 do
+    {key, value} = value
+
+    assigns = assign(assigns, :key, key)
+    assigns = assign(assigns, :value, value)
+
+    cond do
+      is_list(value) ->
+        ~H"""
+        <.changed_value :for={{k, v} <- @value} value={{k, v}} />
+        """
+
+      value == nil ->
+        ~H"""
+        <.badge class="tooltip tooltip-ghost" data-tip={@key} color="gray">
+          <span class="italic">empty</span>
+        </.badge>
+        """
+
+      true ->
+        ~H"""
+        <.badge class="tooltip tooltip-ghost" data-tip={@key} color="gray">
+          <%= @value %>
+        </.badge>
+        """
+    end
+  end
+
+  defp stringify_values(map) do
+    Enum.reduce(map, %{}, fn {key, value}, acc ->
+      updated_value =
+        case value do
+          v when v == %{} -> nil
+          v when is_map(v) -> stringify_values(v)
+          v -> v
+        end
+
+      Map.put(acc, key, updated_value)
+    end)
   end
 
   defmacro __using__(_opts) do

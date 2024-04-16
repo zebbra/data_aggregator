@@ -9,7 +9,8 @@ defmodule DataAggregator.Records.PublicationStatusType do
       :publishing,
       :in_publication,
       :published,
-      :publication_failed
+      :publication_failed,
+      :stale
     ]
 
   alias __MODULE__

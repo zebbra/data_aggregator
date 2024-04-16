@@ -210,7 +210,7 @@ defmodule DataAggregator.Records.Record do
         to: :encoding
 
       transition :set_encoded, from: :encoding, to: :encoded
-      transition :set_failed, from: :encoding, to: :failed
+      transition :set_encoding_failed, from: :encoding, to: :failed
     end
   end
 
@@ -301,7 +301,7 @@ defmodule DataAggregator.Records.Record do
       change transition_state(:encoded)
     end
 
-    update :set_failed do
+    update :set_encoding_failed do
       change transition_state(:failed)
     end
 
@@ -350,7 +350,7 @@ defmodule DataAggregator.Records.Record do
     define :set_imported
     define :set_encoding
     define :set_encoded
-    define :set_failed
+    define :set_encoding_failed
     define :enqueue_encoder
     define :update_fast_track_status, action: :update_fast_track_status, args: [:status]
     define :update_approval_status, action: :update_approval_status, args: [:status]

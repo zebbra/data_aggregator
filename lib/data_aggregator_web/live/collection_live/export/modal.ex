@@ -96,12 +96,12 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
           </.fieldset>
 
           <:actions>
-            <button type="button" class="btn btn-ghost" onclick="export_modal.close()">
-              <%= ~t"Cancel"m %>
-            </button>
             <button type="submit" class="btn btn-primary text-primary-content" disabled={false}>
               <.icon name="hero-arrow-down-tray" />
               <span class="max-sm:hidden"><%= ~t"Export"m %></span>
+            </button>
+            <button type="button" class="btn btn-ghost" onclick="export_modal.close()">
+              <%= ~t"Cancel"m %>
             </button>
           </:actions>
         </.simple_form>

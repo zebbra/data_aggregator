@@ -84,6 +84,6 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   # update state of record to `:failed`
   @spec set_failed_state(Record.t()) :: Record.t()
   defp set_failed_state(record) do
-    Record.set_failed!(record)
+    Record.set_encoding_failed!(record)
   end
 end

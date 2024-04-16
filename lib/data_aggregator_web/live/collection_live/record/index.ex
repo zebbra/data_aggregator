@@ -23,7 +23,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records.Record
   alias DataAggregatorWeb.Components.DataTable
 
-  @load [:collection, :encoded_record, :mids_level]
+  @load [:collection, :encoded_record, :mids_level, :paper_trail_versions]
 
   @polling_interval 5_000
 
@@ -247,7 +247,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <button
               type="button"
               phx-click={JS.push("record:delete", value: %{id: record.id})}
-              disabled={record.state in [:encoding, :queued]}
               class="link link-error link-hover tooltip tooltip-error rounded-md disabled:pointer-events-none disabled:opacity-50"
               data-tip={~t"Delete"m}
               data-confirm={~t"Are you sure?"m}
@@ -276,53 +275,79 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           on_cancel={JS.push("record:select", value: %{id: nil})}
           size="xl"
         >
-          <%= for category <- @attrs_in_categories do %>
-            <section>
-              <.section_heading
-                text={category.label}
-                description={category.description}
-                size="md"
-                class="px-6 lg:px-8"
-              />
-              <div class="no-scrollbar overflow-x-auto pt-4">
-                <.table
-                  id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
-                  rows={category.attributes}
-                >
-                  <:col :let={attribute} label={~t"Name"} class="font-semibold">
-                    <%= attribute.name %>
-                  </:col>
-                  <:col :let={attribute} label={~t"Imported"}>
-                    <%= attribute.imported %>
-                  </:col>
-                  <:col :let={attribute} label={~t"Encoded"}>
-                    <%= attribute.encoded %>
-                  </:col>
-                </.table>
-              </div>
-            </section>
-          <% end %>
-          <section>
-            <.section_heading
-              text={~t"Record encodings"m}
-              description={~t"Results by catalog"m}
-              size="md"
-              class="px-6 lg:px-8"
+          <div role="tablist" class="tabs tabs-bordered">
+            <input
+              type="radio"
+              name="sideover_content_tabs"
+              role="tab"
+              class="tab"
+              aria-label="Data"
+              checked
+              style="width: 17rem"
             />
-            <div class="no-scrollbar overflow-x-auto pt-4">
-              <.table id="encoding_result_table" rows={@record_encoding_results}>
-                <:col :let={result} label={~t"Catalog"} class="font-semibold">
-                  <%= result.catalog %>
-                </:col>
-                <:col :let={result} label={~t"State"} class="text-center">
-                  <.encoding_state_badge reason={result.message} state={result.state} />
-                </:col>
-                <:col :let={result} label={~t"Created"} class="text-right">
-                  <%= format_datetime(result.inserted_at, format: :short) %>
-                </:col>
-              </.table>
+            <div role="tabpanel" class="tab-content pt-10">
+              <%= for category <- @attrs_in_categories do %>
+                <section>
+                  <.section_heading
+                    text={category.label}
+                    description={category.description}
+                    size="md"
+                    class="px-6 lg:px-8"
+                  />
+                  <div class="no-scrollbar overflow-x-auto pt-4">
+                    <.table
+                      id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
+                      rows={category.attributes}
+                    >
+                      <:col :let={attribute} label={~t"Name"} class="font-semibold">
+                        <%= attribute.name %>
+                      </:col>
+                      <:col :let={attribute} label={~t"Imported"}>
+                        <%= attribute.imported %>
+                      </:col>
+                      <:col :let={attribute} label={~t"Encoded"}>
+                        <%= attribute.encoded %>
+                      </:col>
+                    </.table>
+                  </div>
+                </section>
+              <% end %>
+              <section>
+                <.section_heading
+                  text={~t"Record encodings"m}
+                  description={~t"Results by catalog"m}
+                  size="md"
+                  class="px-6 lg:px-8"
+                />
+                <div class="no-scrollbar overflow-x-auto pt-4">
+                  <.table id="encoding_result_table" rows={@record_encoding_results}>
+                    <:col :let={result} label={~t"Catalog"} class="font-semibold">
+                      <%= result.catalog %>
+                    </:col>
+                    <:col :let={result} label={~t"State"} class="text-center">
+                      <.encoding_state_badge reason={result.message} state={result.state} />
+                    </:col>
+                    <:col :let={result} label={~t"Created"} class="text-right">
+                      <%= format_datetime(result.inserted_at, format: :short) %>
+                    </:col>
+                  </.table>
+                </div>
+              </section>
             </div>
-          </section>
+
+            <input
+              type="radio"
+              name="sideover_content_tabs"
+              role="tab"
+              class="tab"
+              aria-label="Activity"
+              style="width: 17rem"
+            />
+
+            <div role="tabpanel" class="tab-content pt-10">
+              <.activity_feed record={@selected_record} />
+            </div>
+          </div>
         </.slideover>
       </:secondary>
 

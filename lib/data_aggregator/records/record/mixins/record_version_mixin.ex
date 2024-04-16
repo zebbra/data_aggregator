@@ -1,6 +1,5 @@
 defmodule DataAggregator.Records.RecordVersionMixin do
   @moduledoc false
-
   defmacro __using__(_) do
     quote do
       json_api do
@@ -12,6 +11,11 @@ defmodule DataAggregator.Records.RecordVersionMixin do
           get :read
           index :read
         end
+      end
+
+      preparations do
+        prepare build(sort: [id: :desc])
+        prepare DataAggregator.Preparations.Sort
       end
 
       actions do
