@@ -1750,15 +1750,15 @@ msgid "Publication to Gbif.org via Infospecies Approval"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/components.ex:77
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:336
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:380
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:361
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:405
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Failed"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/components.ex:41
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:370
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:395
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "In Publication"
@@ -1783,14 +1783,14 @@ msgid "Publication in progress"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/components.ex:53
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:350
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:375
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Published"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/components.ex:29
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:360
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:385
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Publishing"
@@ -1809,7 +1809,7 @@ msgid "Record was successful published"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/components.ex:65
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:390
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:415
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Stale"
@@ -1986,62 +1986,55 @@ msgid "Publish"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/components.ex:264
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:272
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Encoding Successful"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:400
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:425
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Not yet Published"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:325
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:350
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Successful"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:387
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
-msgid "due to data changes, the publication is"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:397
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:422
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "record is"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:357
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:367
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:382
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:392
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "record is currently"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:377
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:402
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "record publication"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:347
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:372
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "record was successful"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:333
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:358
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "the record encoding has"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:322
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:347
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "the record encoding was"
@@ -2051,4 +2044,83 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "a data import was updating the record"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:212
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Dataset imported"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:272
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Encoding failed"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:308
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Publication failed"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:290
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:322
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Publishing in progress"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:315
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Record data changed"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:299
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Record is now in the publication pipeline"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:283
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Successful published"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:432
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "record is in"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:412
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "the publication is now"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:343
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Changes"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:435
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Unknown"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:329
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "Record is in an unknown state"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:438
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
+msgid "state. Please re-import or encode your collection"
 msgstr ""

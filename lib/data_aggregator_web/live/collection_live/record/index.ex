@@ -340,7 +340,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               name="sideover_content_tabs"
               role="tab"
               class="tab"
-              aria-label="Activity"
+              aria-label={~t"Changes"m}
               style="width: 17rem"
             />
 
