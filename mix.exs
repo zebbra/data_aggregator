@@ -194,7 +194,7 @@ defmodule DataAggregator.MixProject do
       {:ash_postgres, "~> 1.3"},
       {:ash_state_machine, "~> 0.2.2"},
       {:ash_uuid, "~> 0.7"},
-      {:ash_paper_trail, github: "ash-project/ash_paper_trail", branch: "main"},
+      {:ash_paper_trail, "~> 0.1"},
 
       # Database and Ecto
       {:ecto, "~> 3.11.0"},

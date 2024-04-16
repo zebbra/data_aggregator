@@ -19,5 +19,6 @@ defmodule DataAggregator.Records.Registry do
     entry DataAggregator.Records.Record
     entry DataAggregator.Records.Record.Image
     entry DataAggregator.Records.Record.Version
+    entry DataAggregator.Records.EncodedRecord.Version
   end
 end

@@ -4,7 +4,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   """
   use DataAggregatorWeb, :html
 
+  alias DataAggregator.Records
   alias DataAggregator.Records.Activity
+  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
   require Ash.Query
@@ -71,7 +73,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         <.badge
           class="px-2 tooltip tooltip-error"
           color="red"
-          data-tip={~t"Record was changed after publishing it and has to be republished"m}
+          data-tip={~t"Publication failed. Process should be started again"m}
         >
           <.icon name="hero-x-circle-solid" class="size-5 shrink-0" />
           <span class="text-nowrap px-1.5"><%= ~t"Failed"m %></span>
@@ -172,25 +174,25 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   end
 
   defp assign_activities(assigns) do
-    record_versions =
-      Record.Version
-      |> Ash.Query.for_read(:read)
-      |> Ash.Query.load(:version_source)
-      |> Ash.Query.filter(version_source_id == ^assigns.record.id)
-      |> Ash.Query.filter(
-        version_action_name in [
-          :set_encoded,
-          :set_encoding_failed,
-          :update_approval_status,
-          :update_fast_track_status,
-          :import
-        ]
-      )
-      |> DataAggregator.Records.read!()
+    assign(assigns, :record, Records.load!(assigns.record, :encoded_record, lazy?: true))
 
-    activities = Enum.map(record_versions, &version_to_activity/1)
+    record_versions = record_versions(assigns)
+    encoded_record_versions = encoded_record_versions(assigns)
 
-    assign(assigns, :activities, activities)
+    sorted_activities =
+      (record_versions ++ encoded_record_versions)
+      |> activites_from_versions()
+      |> sort_activities()
+
+    assign(assigns, :activities, sorted_activities)
+  end
+
+  defp sort_activities(activities) do
+    Enum.sort_by(activities, & &1.date_time, {:desc, DateTime})
+  end
+
+  defp activites_from_versions(versions) do
+    Enum.map(versions, &version_to_activity/1)
   end
 
   defp version_to_activity(version) do
@@ -202,21 +204,52 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     }
   end
 
+  defp record_versions(assigns) do
+    Record.Version
+    |> Ash.Query.for_read(:read)
+    |> Ash.Query.load(:version_source)
+    |> Ash.Query.filter(version_source_id == ^assigns.record.id)
+    |> Ash.Query.filter(
+      version_action_name in [
+        :set_encoded,
+        :set_encoding_failed,
+        :update_approval_status,
+        :update_fast_track_status,
+        :import
+      ]
+    )
+    |> DataAggregator.Records.read!()
+  end
+
+  defp encoded_record_versions(assigns) do
+    encoded_record_id =
+      if assigns.record.encoded_record != nil, do: assigns.record.encoded_record.id
+
+    EncodedRecord.Version
+    |> Ash.Query.for_read(:read)
+    |> Ash.Query.load(:version_source)
+    |> Ash.Query.filter(version_source_id == ^encoded_record_id)
+    |> Ash.Query.filter(
+      version_action_name in [
+        :update
+      ]
+    )
+    |> DataAggregator.Records.read!()
+  end
+
   attr :activity, Activity, required: true
 
-  def activity_feed_element(%{activity: activity} = assigns) when activity.name in [:import] do
+  def activity_feed_element(%{activity: activity} = assigns) when activity.name in [:import, :update] do
     ~H"""
     <div class="grid w-full grid-cols-9 gap-y-2">
       <div class="bg-base-100 relative flex h-6 w-6 items-center justify-center">
         <div class="bg-base-100">
-          <.badge class="tooltip tooltip-info" data-tip={~t"Dataset imported"m} color="blue">
-            <.icon name="hero-arrow-up-tray" class="size-5 shrink-0" />
-          </.badge>
+          <.activity_icon activity={@activity} />
         </div>
       </div>
       <div class="col-span-6 py-0.5 text-sm leading-5 text-gray-500">
         <span class="font-medium text-gray-600"><%= @activity.actor %></span>
-        - <%= ~t"a data import was updating the record"m %>
+        - <.activity_text activity={@activity} />
       </div>
       <div class="col-span-2 text-right">
         <time datetime={@activity.date_time} class="py-0.5 text-xs leading-5 text-gray-500">
@@ -256,6 +289,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   def activity_feed_element(assigns) do
     ~H"""
     <span>unknown change: <%= @activity.name %></span>
+    """
+  end
+
+  defp activity_icon(%{activity: activity} = assigns) when activity.name == :import do
+    ~H"""
+    <.badge class="tooltip tooltip-info" data-tip={~t"Dataset imported"m} color="blue">
+      <.icon name="hero-arrow-up-tray" class="size-5 shrink-0" />
+    </.badge>
+    """
+  end
+
+  defp activity_icon(%{activity: activity} = assigns) when activity.name == :update do
+    ~H"""
+    <.badge class="tooltip tooltip-success" data-tip={~t"Encoded data updated"m} color="green">
+      <.icon name="hero-puzzle-piece" class="size-5 shrink-0" />
+    </.badge>
     """
   end
 
@@ -312,8 +361,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
 
       publication_stale?(activity) ->
         ~H"""
-        <.badge class="tooltip tooltip-ghost" data-tip={~t"Record data changed"m} color="gray">
-          <.icon name="hero-arrow-path" class="size-5 shrink-0" />
+        <.badge class="tooltip tooltip-ghost" data-tip={~t"Record data changed"m} color="orange">
+          <.icon name="hero-exclamation-triangle-solid" class="size-5 shrink-0" />
         </.badge>
         """
 
@@ -337,6 +386,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     ~H"""
     <span>
       <%= @activity.name %> - <%= inspect(@activity.content) %>
+    </span>
+    """
+  end
+
+  defp activity_text(%{activity: activity} = assigns) when activity.name == :import do
+    ~H"""
+    <span class="font-medium">
+      <%= ~t"A data import was updating the record"m %>
+    </span>
+    """
+  end
+
+  defp activity_text(%{activity: activity} = assigns) when activity.name == :update do
+    ~H"""
+    <span class="font-medium">
+      <%= ~t"The record was updated by encoding"m %>
     </span>
     """
   end
@@ -411,7 +476,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         <span class="font-medium">
           <%= ~t"the publication is now"m %>
         </span>
-        <.badge color="gray">
+        <.badge color="orange">
           <%= ~t"Stale"m %>
         </.badge>
         """
@@ -483,11 +548,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     map
     |> stringify_values()
     |> Map.to_list()
+    |> filter_nil_values()
     |> Enum.map(fn {k, v} -> {k, value_to_list(v)} end)
   end
 
   defp map_to_string(map) do
     inspect(map)
+  end
+
+  defp filter_nil_values(list) do
+    Enum.filter(list, fn {_, v} -> v != nil end)
   end
 
   defp value_to_list(value) when is_map(value) do

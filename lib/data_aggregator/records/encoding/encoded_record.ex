@@ -14,7 +14,8 @@ defmodule DataAggregator.Records.EncodedRecord do
       AshUUID,
       AshGraphql.Resource,
       AshJsonApi.Resource,
-      DataAggregator.DarwinCore.Resource
+      DataAggregator.DarwinCore.Resource,
+      AshPaperTrail.Resource
     ]
 
   alias __MODULE__
@@ -36,8 +37,17 @@ defmodule DataAggregator.Records.EncodedRecord do
   relationships do
     belongs_to :record, Record do
       allow_nil? false
-      primary_key? true
     end
+  end
+
+  paper_trail do
+    change_tracking_mode :changes_only
+    store_action_name? true
+    ignore_attributes [:inserted_at, :updated_at]
+    reference_source? false
+
+    mixin DataAggregator.Records.EncodedRecordVersionMixin
+    version_extensions extensions: [AshJsonApi.Resource]
   end
 
   preparations do
