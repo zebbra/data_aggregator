@@ -179,7 +179,7 @@ defmodule DataAggregator.MixProject do
     [
       # Phoenix Framework
       {:bandit, "~> 1.4.2"},
-      {:phoenix, "~> 1.7.11"},
+      {:phoenix, "~> 1.7.12"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 4.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
