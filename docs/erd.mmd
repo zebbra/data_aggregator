@@ -131,10 +131,12 @@ erDiagram
     jsonb mapping
     bytea records_query
     integer exported_count
+    integer rows_count
     timestamp inserted_at
     timestamp updated_at
     uuid collection_id
     uuid attachment_id
+    integer job_id
     varchar state
   }
   imports {
@@ -239,6 +241,8 @@ erDiagram
     uuid id PK
     varchar version_action_type
     varchar version_action_name
+    varchar mte_material_entity_id
+    varchar tax_scientific_name
     uuid version_source_id
     jsonb changes
     timestamp version_inserted_at
@@ -287,6 +291,7 @@ erDiagram
   file_attachments ||--|{ record_images : ""
   imports ||--|{ import_records : ""
   institutions ||--|{ collections : ""
+  oban_jobs ||--|{ exports : ""
   oban_jobs ||--|{ imports : ""
   oban_jobs ||--|{ records : ""
   records ||--|{ change_events : ""

@@ -45,6 +45,10 @@ config :logger, level: :warning
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 
+config :phoenix_live_view,
+  # Enable helpful, but potentially expensive runtime checks
+  enable_expensive_runtime_checks: true
+
 # Disable warnings for dummy resources
 config :ash, :validate_api_config_inclusion?, false
 config :ash, :validate_api_resource_inclusion?, false

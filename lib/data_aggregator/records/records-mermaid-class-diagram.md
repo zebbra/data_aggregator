@@ -28,7 +28,7 @@ classDiagram
         UtcDatetimeUsec updated_at
         Float digitizing_progress
         Atom encoding_state
-        Map records_to_publish_query
+        Map records_to_export_query
         Integer records_count
         Integer imports_count
         Integer records_count_not_encoded
@@ -39,6 +39,7 @@ classDiagram
         Integer records_count_failed
         Institution institution
         Import[] imports
+        Export[] exports
         Record[] records
         destroy()
         update(UUID id, Integer items_to_digitize, String owner, String name, ...)
@@ -58,17 +59,27 @@ classDiagram
         Map mapping
         Term records_query
         Integer exported_count
+        Integer rows_count
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Integer job_id
         Atom state
+        Float export_progress
+        Time duration
+        String collection_name
+        String attachment_url
+        Integer attachment_byte_size
+        String attachment_filename
         Collection collection
         Attachment attachment
+        Job job
         destroy()
         read()
         create(Collection collection, UUID id, String name, UtcDatetime exported_at, ...)
         update_mapping(Map mapping, UUID id, String name, UtcDatetime exported_at, ...)
         update(Struct[] records, UUID id, String name, UtcDatetime exported_at, ...)
         enqueue()
+        add_export_progress(Integer exported)
         set_running()
         set_failed(UUID id, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
         run()
@@ -218,7 +229,6 @@ classDiagram
         Attachment[] image_attachments
         Job encoder_job
         EncodedRecord encoded_record
-        destroy()
         update(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
         read(String sort)
         create(Collection collection, String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, ...)
@@ -230,6 +240,7 @@ classDiagram
         set_encoding(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
         set_encoded(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
         set_failed(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
+        destroy()
     }
     class Image {
         UUID id
@@ -247,12 +258,15 @@ classDiagram
         UUID id
         Atom version_action_type
         Atom version_action_name
+        String mte_material_entity_id
+        String tax_scientific_name
         UUID version_source_id
         Map changes
         Record version_source
-        update(UUID id, Atom version_action_type, Atom version_action_name, UUID version_source_id, ...)
+        destroy()
+        update(UUID id, Atom version_action_type, Atom version_action_name, String mte_material_entity_id, ...)
         read()
-        create(UUID id, Atom version_action_type, Atom version_action_name, UUID version_source_id, ...)
+        create(UUID id, Atom version_action_type, Atom version_action_name, String mte_material_entity_id, ...)
     }
     class EncodedRecord {
         String mts_material_sample_type
@@ -329,6 +343,7 @@ classDiagram
     Attachment -- Import
     Attachment -- Record
     Attachment -- Image
+    Job -- Export
     Job -- Import
     Job -- Record
     Institution -- Collection
