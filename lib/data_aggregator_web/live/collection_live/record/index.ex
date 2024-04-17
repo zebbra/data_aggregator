@@ -9,6 +9,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   import DataAggregatorWeb.CollectionLive.Helpers,
     only: [get_collection: 1, subscribe_for_collection_updates: 2]
 
+  import DataAggregatorWeb.CollectionLive.Record.ActivityFeed
   import DataAggregatorWeb.CollectionLive.Record.Components
   import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [subscribe_for_record_updates: 2]
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
