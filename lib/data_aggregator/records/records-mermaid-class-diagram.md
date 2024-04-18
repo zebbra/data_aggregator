@@ -322,6 +322,7 @@ classDiagram
         Map extra_data
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Version[] paper_trail_versions
         Record record
         destroy()
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
@@ -780,7 +781,7 @@ classDiagram
         set_imported(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         set_encoding(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         set_encoded(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
-        set_failed(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
+        set_encoding_failed(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         update_fast_track_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         update_approval_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         destroy()
@@ -811,6 +812,18 @@ classDiagram
         read()
         create(UUID id, Atom version_action_type, Atom version_action_name, String mte_catalog_number, ...)
     }
+    class Version {
+        UUID id
+        Atom version_action_type
+        Atom version_action_name
+        UUID version_source_id
+        Map changes
+        EncodedRecord version_source
+        destroy()
+        update(UUID id, Atom version_action_type, Atom version_action_name, UUID version_source_id, ...)
+        read()
+        create(UUID id, Atom version_action_type, Atom version_action_name, UUID version_source_id, ...)
+    }
 
     Attachment -- Export
     Attachment -- Import
@@ -826,6 +839,7 @@ classDiagram
     Collection -- Import
     Collection -- Publication
     Collection -- Record
+    EncodedRecord -- Version
     EncodedRecord -- Record
     RecordEncodingResult -- Record
     Import -- Record

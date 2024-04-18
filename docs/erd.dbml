@@ -322,7 +322,17 @@ Table encoded_records {
   extra_data jsonb
   inserted_at timestamp
   updated_at timestamp
-  record_id uuid [pk]
+  record_id uuid
+}
+
+Table encoded_records_versions {
+  id uuid [pk]
+  version_action_type varchar
+  version_action_name varchar
+  version_source_id uuid
+  changes jsonb
+  version_inserted_at timestamp
+  version_updated_at timestamp
 }
 
 Table record_encoding_results {
@@ -760,6 +770,7 @@ Ref: collections.id < exports.collection_id
 Ref: collections.id < imports.collection_id
 Ref: collections.id < publications.collection_id
 Ref: collections.id < records.collection_id
+Ref: encoded_records.id < encoded_records_versions.version_source_id
 Ref: file_attachments.id < exports.attachment_id
 Ref: file_attachments.id < imports.attachment_id
 Ref: file_attachments.id < publications.attachment_id

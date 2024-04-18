@@ -318,7 +318,16 @@ erDiagram
     jsonb extra_data
     timestamp inserted_at
     timestamp updated_at
-    uuid record_id PK
+    uuid record_id
+  }
+  encoded_records_versions {
+    uuid id PK
+    varchar version_action_type
+    varchar version_action_name
+    uuid version_source_id
+    jsonb changes
+    timestamp version_inserted_at
+    timestamp version_updated_at
   }
   record_encoding_results {
     uuid id PK
@@ -736,6 +745,7 @@ erDiagram
   collections ||--|{ imports : ""
   collections ||--|{ publications : ""
   collections ||--|{ records : ""
+  encoded_records ||--|{ encoded_records_versions : ""
   file_attachments ||--|{ exports : ""
   file_attachments ||--|{ imports : ""
   file_attachments ||--|{ publications : ""

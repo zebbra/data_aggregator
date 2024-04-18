@@ -127,8 +127,11 @@ config :phoenix, :plug_init_mode, :runtime
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
-# Add heex debug annotations via
-config :phoenix_live_view, debug_heex_annotations: true
+config :phoenix_live_view,
+  # Include HEEx debug annotations as HTML comments in rendered markup
+  debug_heex_annotations: true,
+  # Enable helpful, but potentially expensive runtime checks
+  enable_expensive_runtime_checks: true
 
 # Configure git hooks. They can be installed manuallu by running `mix git_hooks.install`
 config :git_hooks,
