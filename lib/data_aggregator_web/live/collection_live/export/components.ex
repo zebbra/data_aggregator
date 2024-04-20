@@ -11,8 +11,8 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Components do
 
   @states AshStateMachine.Info.state_machine_all_states(Export)
 
-  attr(:attachment, Attachment, required: true)
-  attr(:class, :string, default: nil)
+  attr :attachment, Attachment, required: true
+  attr :class, :string, default: nil
 
   def attachment_download_badge(assigns) do
     ~H"""
@@ -29,9 +29,9 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Components do
     """
   end
 
-  attr(:export, Export, required: false)
-  attr(:state, :atom, required: false, values: @states)
-  attr(:progress, :float, required: false, default: nil)
+  attr :export, Export, required: false
+  attr :state, :atom, required: false, values: @states
+  attr :progress, :float, required: false, default: nil
 
   def export_state_badge(%{export: export} = assigns) when is_struct(export) do
     progress = if export.state == :exporting, do: export.export_progress
@@ -52,8 +52,8 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Components do
     """
   end
 
-  attr(:state, :atom, required: true, values: @states)
-  attr(:progress, :float, required: false, default: nil)
+  attr :state, :atom, required: true, values: @states
+  attr :progress, :float, required: false, default: nil
 
   def export_state_badge_label(%{state: :exporting} = assigns) do
     ~H"""
@@ -83,7 +83,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Components do
     end
   end
 
-  attr(:state, :atom, required: true, values: @states)
+  attr :state, :atom, required: true, values: @states
 
   def export_state_icon(%{state: state} = assigns) do
     {icon, class} = export_state_icon_class(state)

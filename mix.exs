@@ -109,7 +109,8 @@ defmodule DataAggregator.MixProject do
     [
       DataAggregator,
       DataAggregatorWeb,
-      DataAggregatorApi
+      DataAggregatorApi,
+      Pagify
     ]
   end
 
@@ -168,6 +169,10 @@ defmodule DataAggregator.MixProject do
       ],
       Plugs: [
         ~r/^DataAggregatorWeb\.Plug/
+      ],
+      Pagify: [
+        Pagify,
+        ~r/^Pagify\./
       ]
     ]
   end
@@ -271,6 +276,7 @@ defmodule DataAggregator.MixProject do
 
       # Utilities and Helpers
       {:envy, "~> 1.1.1"},
+      {:splode, "~> 0.2.2"},
 
       # Documentation
       {:ecto_erd, "~> 0.5", only: :dev},

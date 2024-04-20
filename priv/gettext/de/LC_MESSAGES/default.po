@@ -1568,7 +1568,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Exports"
 msgstr "Exporte"
 
-#: lib/data_aggregator_web/components/components/data_table/data_table.ex:65
+#: lib/data_aggregator_web/components/components/data_table/data_table.ex:62
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Components.DataTable"
 msgid "Actions"

@@ -4,12 +4,14 @@ defmodule DataAggregatorWeb.Components.Pagination do
   """
   use Phoenix.Component
 
+  alias DataAggregatorWeb.Components.DataTable.Meta
+
   @doc ~S"""
     Renders a pagination component.
   """
-  attr(:meta, :map, default: %{}, doc: "the metadata for the pagination")
-  attr(:class, :string, default: nil, doc: "the classe for the pagination")
-  attr(:path, :string, required: true, doc: "the base path of the current view")
+  attr :class, :string, default: nil, doc: "the classe for the pagination"
+  attr :meta, Meta, default: %Meta{}, doc: "the metadata for the pagination"
+  attr :path, :string, required: true, doc: "the base path of the current view"
 
   def pagination(assigns) do
     ~H"""

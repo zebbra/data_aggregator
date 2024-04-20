@@ -1,0 +1,647 @@
+defmodule PagifyTest do
+  @moduledoc false
+  use DataAggregator.DataCase, async: false
+
+  alias Pagify.Factory.Api
+  alias Pagify.Factory.Comment
+  alias Pagify.Factory.Post
+  alias Pagify.Meta
+
+  doctest Pagify, import: true
+
+  setup do
+    posts = [
+      %{name: "Post 2", comments: ["Second", "Third", "Fourth", "Another"]},
+      %{name: "Post 1", author: "John", comments: ["First", "Second"]},
+      %{name: "Post 3", author: "Doe", comments: ["Second", "Third", "Another"]}
+    ]
+
+    Api.bulk_create(posts, Post, :create)
+    :ok
+  end
+
+  describe "ordering" do
+    test "orders by name :asc" do
+      pagify = %Pagify{order_by: :name}
+      assert_post_names(pagify, ["Post 1", "Post 2", "Post 3"])
+    end
+
+    test "orders by name :desc" do
+      pagify = %Pagify{order_by: {:name, :desc}}
+      assert_post_names(pagify, ["Post 3", "Post 2", "Post 1"])
+    end
+
+    test "orders by author :asc_nils_first" do
+      pagify = %Pagify{order_by: {:author, :asc_nils_first}}
+      assert_post_names(pagify, ["Post 2", "Post 3", "Post 1"])
+    end
+
+    test "orders by author :desc_nils_last" do
+      pagify = %Pagify{order_by: {:author, :desc_nils_last}}
+      assert_post_names(pagify, ["Post 1", "Post 3", "Post 2"])
+    end
+
+    test "orders by calculation" do
+      pagify = %Pagify{order_by: :comments_count}
+      assert_post_names(pagify, ["Post 1", "Post 3", "Post 2"])
+    end
+
+    test "orders by calculation :desc" do
+      pagify = %Pagify{order_by: {:comments_count, :desc}}
+      assert_post_names(pagify, ["Post 2", "Post 3", "Post 1"])
+    end
+
+    test "orders by multiple fields" do
+      pagify = %Pagify{order_by: [{:name, :asc}, {:comments_count, :desc}]}
+      assert_post_names(pagify, ["Post 1", "Post 2", "Post 3"])
+    end
+  end
+
+  describe "filtering" do
+    test "applies 'is_nil' filter" do
+      pagify = %Pagify{filters: %{"author" => %{"is_nil" => true}}, order_by: :name}
+      assert_post_names(pagify, ["Post 2"])
+    end
+
+    test "applies `equals` filter" do
+      pagify = %Pagify{filters: %{"name" => %{"equals" => "Post 1"}}, order_by: :name}
+      assert_post_names(pagify, ["Post 1"])
+    end
+
+    test "applies equality '==' filter" do
+      pagify = %Pagify{filters: %{"name" => %{"==" => "Post 1"}}, order_by: :name}
+      assert_post_names(pagify, ["Post 1"])
+    end
+
+    test "applies inherit equality filter" do
+      pagify = %Pagify{filters: %{"author" => "John"}, order_by: :name}
+      assert_post_names(pagify, ["Post 1"])
+    end
+
+    test "applies inequality 'not_equals' filter" do
+      pagify = %Pagify{filters: %{"author" => %{"not_equals" => "John"}}, order_by: :name}
+      assert_post_names(pagify, ["Post 3"])
+    end
+
+    test "applies inequality '!=' filter" do
+      pagify = %Pagify{filters: %{"author" => %{"!=" => "John"}}, order_by: :name}
+      assert_post_names(pagify, ["Post 3"])
+    end
+
+    test "applies greater than 'gt' filter" do
+      pagify = %Pagify{filters: %{"comments_count" => %{"gt" => 2}}, order_by: :name}
+      assert_post_names(pagify, ["Post 2", "Post 3"])
+    end
+
+    test "applies greater than '>' filter" do
+      pagify = %Pagify{filters: %{"comments_count" => %{">" => 2}}, order_by: :name}
+      assert_post_names(pagify, ["Post 2", "Post 3"])
+    end
+
+    test "applies greater than or equal 'gte' filter" do
+      pagify = %Pagify{filters: %{"comments_count" => %{"gte" => 2}}, order_by: :name}
+      assert_post_names(pagify, ["Post 1", "Post 2", "Post 3"])
+    end
+
+    test "applies greater than or equal '>=' filter" do
+      pagify = %Pagify{filters: %{"comments_count" => %{">=" => 2}}, order_by: :name}
+      assert_post_names(pagify, ["Post 1", "Post 2", "Post 3"])
+    end
+
+    test "applies less than 'lt' filter" do
+      pagify = %Pagify{filters: %{"comments_count" => %{"lt" => 3}}, order_by: :name}
+      assert_post_names(pagify, ["Post 1"])
+    end
+
+    test "applies less than '<' filter" do
+      pagify = %Pagify{filters: %{"comments_count" => %{"<" => 3}}, order_by: :name}
+      assert_post_names(pagify, ["Post 1"])
+    end
+
+    test "applies less than or equal 'lte' filter" do
+      pagify = %Pagify{filters: %{"comments_count" => %{"lte" => 3}}, order_by: :name}
+      assert_post_names(pagify, ["Post 1", "Post 3"])
+    end
+
+    test "applies less than or equal '<=' filter" do
+      pagify = %Pagify{filters: %{"comments_count" => %{"<=" => 3}}, order_by: :name}
+      assert_post_names(pagify, ["Post 1", "Post 3"])
+    end
+
+    test "applies and filter" do
+      pagify = %Pagify{
+        filters: %{"and" => [%{"author" => "John"}, %{"comments_count" => %{"gt" => 1}}]},
+        order_by: :name
+      }
+
+      assert_post_names(pagify, ["Post 1"])
+    end
+
+    test "applies inherit and filter" do
+      pagify = %Pagify{
+        filters: %{
+          "author" => "John",
+          "comments_count" => %{"gt" => 1}
+        },
+        order_by: :name
+      }
+
+      assert_post_names(pagify, ["Post 1"])
+    end
+
+    test "applies or filter" do
+      pagify = %Pagify{
+        filters: %{"or" => [%{"author" => "John"}, %{"comments_count" => %{"gt" => 3}}]},
+        order_by: :name
+      }
+
+      assert_post_names(pagify, ["Post 1", "Post 2"])
+    end
+
+    test "applies nested 'or' and 'and' filter" do
+      pagify = %Pagify{
+        filters: %{
+          "or" => [
+            %{"author" => "John"},
+            %{
+              "and" => [
+                %{"comments_count" => %{"gt" => 2}},
+                %{"name" => %{"in" => ["Post 2", "Post 3"]}}
+              ]
+            }
+          ]
+        },
+        order_by: :name
+      }
+
+      assert_post_names(pagify, ["Post 1", "Post 2", "Post 3"])
+    end
+
+    test "filters by relation attribute" do
+      pagify = %Pagify{
+        filters: %{"comments" => %{"body" => "First"}},
+        order_by: :name
+      }
+
+      assert_post_names(pagify, ["Post 1"])
+    end
+  end
+
+  describe "offset pagination" do
+    test "pagination with limit" do
+      pagify = %Pagify{limit: 10, order_by: :name}
+      assert_post_names(pagify, ["Post 1", "Post 2", "Post 3"])
+      assert_page_opts(pagify, [limit: 10, offset: 0, count: true], [])
+    end
+
+    test "pagination with limit and offset" do
+      pagify = %Pagify{limit: 2, offset: 1, order_by: :name}
+      assert_post_names(pagify, ["Post 2", "Post 3"])
+      assert_page_opts(pagify, [limit: 2, offset: 1, count: true], [])
+    end
+
+    test "pagination with disabled count" do
+      pagify = %Pagify{limit: 2, offset: 1, order_by: :name}
+      assert_post_names(pagify, ["Post 2", "Post 3"], page: [count: false])
+      assert_page_opts(pagify, [limit: 2, offset: 1, count: false], page: [count: false])
+    end
+
+    test "pagination with default limit from resource" do
+      pagify = %Pagify{order_by: :name}
+      assert_post_names(pagify, ["Post 1", "Post 2", "Post 3"])
+      assert_page_opts(pagify, [limit: 15, offset: 0, count: true], [])
+    end
+
+    test "pagination with default limit from resource and offset" do
+      pagify = %Pagify{offset: 1, order_by: :name}
+      assert_post_names(pagify, ["Post 2", "Post 3"])
+      assert_page_opts(pagify, [limit: 15, offset: 1, count: true], [])
+    end
+
+    test "pagination with default limit from resource and disabled count" do
+      pagify = %Pagify{order_by: :name}
+      assert_post_names(pagify, ["Post 1", "Post 2", "Post 3"], page: [count: false])
+      assert_page_opts(pagify, [limit: 15, offset: 0, count: false], page: [count: false])
+    end
+
+    test "pagination with default limit from resource and offset and disabled count" do
+      pagify = %Pagify{offset: 1, order_by: :name}
+      assert_post_names(pagify, ["Post 2", "Post 3"], page: [count: false])
+      assert_page_opts(pagify, [limit: 15, offset: 1, count: false], page: [count: false])
+    end
+
+    test "pagination with default limit from pagify" do
+      pagify = %Pagify{order_by: :body}
+
+      assert_comment_names(pagify, [
+        "Another",
+        "Another",
+        "First",
+        "Fourth",
+        "Second",
+        "Second",
+        "Second",
+        "Third",
+        "Third"
+      ])
+
+      assert_comment_page_opts(pagify, [limit: 25, offset: 0, count: true], [])
+    end
+  end
+
+  describe "all/3" do
+    test "returns all matching posts" do
+      pagify = %Pagify{
+        limit: 2,
+        offset: 2,
+        order_by: :name,
+        filters: %{"name" => %{"in" => ["Post 1", "Post 2", "Post 3"]}}
+      }
+
+      assert_post_names(pagify, ["Post 3"])
+    end
+  end
+
+  describe "meta/3" do
+    test "returns the meta information for a query with limit/offset" do
+      pagify = %Pagify{limit: 3, offset: 0, order_by: :name}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta == %Meta{
+               current_limit: 3,
+               current_offset: 0,
+               current_order_by: ["name"],
+               current_page: 1,
+               errors: [],
+               has_next_page?: false,
+               has_previous_page?: false,
+               next_offset: nil,
+               opts: [],
+               pagify: %Pagify{filters: nil, limit: 3, offset: 0, order_by: :name},
+               params: %{},
+               previous_offset: nil,
+               total_count: 3,
+               total_pages: 1
+             }
+    end
+
+    test "returns the meta information for a query without limit" do
+      pagify = %Pagify{}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta == %Meta{
+               current_limit: 15,
+               current_offset: 0,
+               current_order_by: nil,
+               current_page: 1,
+               errors: [],
+               has_next_page?: false,
+               has_previous_page?: false,
+               next_offset: nil,
+               opts: [],
+               pagify: %Pagify{},
+               params: %{},
+               previous_offset: nil,
+               total_count: 3,
+               total_pages: 1
+             }
+    end
+
+    test "rounds current page if offset is between pages" do
+      pagify = %Pagify{limit: 2, offset: 1, order_by: :name}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta == %Meta{
+               current_limit: 2,
+               current_offset: 1,
+               current_order_by: ["name"],
+               current_page: 2,
+               errors: [],
+               has_next_page?: false,
+               has_previous_page?: true,
+               next_offset: nil,
+               opts: [],
+               pagify: %Pagify{limit: 2, offset: 1, order_by: :name},
+               params: %{},
+               previous_offset: 0,
+               total_count: 3,
+               total_pages: 2
+             }
+    end
+
+    test "current page shouldn't be greate than total page numbers" do
+      pagify = %Pagify{limit: 2, offset: 3, order_by: :name}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta == %Meta{
+               current_limit: 2,
+               current_offset: 3,
+               current_order_by: ["name"],
+               current_page: 2,
+               errors: [],
+               has_next_page?: false,
+               has_previous_page?: true,
+               next_offset: nil,
+               opts: [],
+               pagify: %Pagify{limit: 2, offset: 3, order_by: :name},
+               params: %{},
+               previous_offset: 1,
+               total_count: 3,
+               total_pages: 2
+             }
+    end
+
+    test "sets has_previous_page? and has_next_page?" do
+      pagify = %Pagify{limit: 1, offset: 0, order_by: :name}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta.has_previous_page? == false
+      assert meta.has_next_page? == true
+
+      pagify = %Pagify{limit: 1, offset: 1, order_by: :name}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta.has_previous_page? == true
+      assert meta.has_next_page? == true
+
+      pagify = %Pagify{limit: 1, offset: 2, order_by: :name}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta.has_previous_page? == true
+      assert meta.has_next_page? == false
+
+      pagify = %Pagify{limit: 1, offset: 3, order_by: :name}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta.has_previous_page? == true
+      assert meta.has_next_page? == false
+
+      pagify = %Pagify{limit: 1, offset: 4, order_by: :name}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta.has_previous_page? == true
+      assert meta.has_next_page? == false
+    end
+
+    test "adds current_order_by for desc order" do
+      pagify = %Pagify{limit: 1, offset: 0, order_by: {:name, :desc}}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta.current_order_by == ["-name"]
+    end
+
+    test "adds current_order_by for desc_nils_last order" do
+      pagify = %Pagify{limit: 1, offset: 0, order_by: {:name, :desc_nils_last}}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta.current_order_by == ["--name"]
+    end
+
+    test "adds current_order_by for asc_nils_last order" do
+      pagify = %Pagify{limit: 1, offset: 0, order_by: {:name, :asc_nils_last}}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta.current_order_by == ["++name"]
+    end
+
+    test "adds current_order_by for multiple fields" do
+      pagify = %Pagify{limit: 1, offset: 0, order_by: [{:name, :asc}, {:comments_count, :desc}]}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta.current_order_by == ["name", "-comments_count"]
+    end
+
+    test "sets options" do
+      pagify = %Pagify{limit: 1, offset: 0, order_by: :name}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta.opts == []
+
+      opts = [page: [count: false]]
+      pagify = %Pagify{limit: 1, offset: 0, order_by: :name}
+      page = Pagify.all(Post, pagify, opts)
+      meta = Pagify.meta(page, pagify, opts)
+
+      assert meta.opts == opts
+    end
+  end
+
+  describe "run/3" do
+    test "returns data and meta data" do
+      pagify = %Pagify{limit: 2, offset: 1, order_by: :name}
+      {data, meta} = Pagify.run(Post, pagify)
+
+      assert Enum.map(data, & &1.name) == ["Post 2", "Post 3"]
+
+      assert meta == %Meta{
+               current_limit: 2,
+               current_offset: 1,
+               current_order_by: ["name"],
+               current_page: 2,
+               errors: [],
+               has_next_page?: false,
+               has_previous_page?: true,
+               next_offset: nil,
+               opts: [],
+               pagify: %Pagify{limit: 2, offset: 1, order_by: :name},
+               params: %{},
+               previous_offset: 0,
+               total_count: 3,
+               total_pages: 2
+             }
+    end
+  end
+
+  describe "validate_and_run/3" do
+    test "returns error if pagify is invalid" do
+      pagify = %Pagify{limit: -1, filters: %{name: "Post 1", other: "John"}}
+      {:error, %Meta{} = meta} = Pagify.validate_and_run(Post, pagify)
+
+      assert meta.pagify == %Pagify{}
+
+      assert inspect(meta.params) ==
+               ~s"%{offset: 0, filters: #Ash.Filter<name == \"Post 1\">, limit: 15}"
+
+      assert [%Ash.Error.Query.InvalidLimit{limit: -1}] = Keyword.get(meta.errors, :limit)
+
+      assert [%Ash.Error.Query.NoSuchAttributeOrRelationship{attribute_or_relationship: :other}] =
+               Keyword.get(meta.errors, :filters)
+    end
+
+    test "returns error and original params if pagify is invalid" do
+      pagify = %Pagify{limit: -1, filters: %{name: "Post 1", other: "John"}}
+
+      {:error, %Meta{} = meta} =
+        Pagify.validate_and_run(Post, pagify, replace_invalid_params?: false)
+
+      assert meta.pagify == %Pagify{}
+
+      assert %{limit: -1, filters: %{name: "Post 1", other: "John"}, offset: 0} == meta.params
+
+      assert [%Ash.Error.Query.InvalidLimit{limit: -1}] = Keyword.get(meta.errors, :limit)
+
+      assert [%Ash.Error.Query.NoSuchAttributeOrRelationship{attribute_or_relationship: :other}] =
+               Keyword.get(meta.errors, :filters)
+    end
+
+    test "returns data and meta data" do
+      pagify = %Pagify{limit: 2, offset: 1, order_by: :name}
+      {:ok, {data, meta}} = Pagify.validate_and_run(Post, pagify)
+
+      assert Enum.map(data, & &1.name) == ["Post 2", "Post 3"]
+
+      assert meta == %Meta{
+               current_limit: 2,
+               current_offset: 1,
+               current_order_by: ["name"],
+               current_page: 2,
+               errors: [],
+               has_next_page?: false,
+               has_previous_page?: true,
+               next_offset: nil,
+               opts: [],
+               pagify: %Pagify{limit: 2, offset: 1, order_by: [name: :asc]},
+               params: %{},
+               previous_offset: 0,
+               total_count: 3,
+               total_pages: 2
+             }
+    end
+  end
+
+  describe "validate_and_run!/3" do
+    test "raises if pagify is invalid" do
+      assert_raise Pagify.Error.InvalidParamsError, fn ->
+        Pagify.validate_and_run!(Post, %Pagify{
+          limit: -1,
+          filters: %{name: "Post 1", other: "John"}
+        })
+      end
+    end
+
+    test "returns data and meta data" do
+      pagify = %{limit: 1, offset: 0, order_by: :name, filters: %{"name" => "Post 2"}}
+
+      assert {[%Post{}],
+              %Pagify.Meta{
+                current_limit: 1,
+                current_offset: 0,
+                current_order_by: ["name"],
+                current_page: 1,
+                errors: [],
+                has_next_page?: false,
+                has_previous_page?: false,
+                next_offset: nil,
+                opts: [],
+                pagify: %Pagify{},
+                params: %{},
+                previous_offset: nil,
+                total_count: 1,
+                total_pages: 1
+              }} = Pagify.validate_and_run!(Post, pagify)
+    end
+  end
+
+  describe "validate/1" do
+    test "returns Pagify struct" do
+      assert Pagify.validate(Post, %Pagify{}) == {:ok, %Pagify{limit: 15, offset: 0}}
+      assert Pagify.validate(Post, %{}) == {:ok, %Pagify{limit: 15, offset: 0}}
+    end
+
+    test "returns error and replaced params if parameters are invalid" do
+      assert {:error, %Meta{} = meta} =
+               Pagify.validate(Post, %{limit: -1, filters: %{name: "Post 1", other: "John"}})
+
+      assert meta.pagify == %Pagify{}
+
+      %{limit: limit, offset: offset, filters: filters} = meta.params
+      assert limit == 15
+      assert offset == 0
+      assert inspect(filters) == ~s"#Ash.Filter<name == \"Post 1\">"
+
+      assert [%Ash.Error.Query.InvalidLimit{limit: -1}] = Keyword.get(meta.errors, :limit)
+
+      assert [%Ash.Error.Query.NoSuchAttributeOrRelationship{attribute_or_relationship: :other}] =
+               Keyword.get(meta.errors, :filters)
+    end
+
+    test "returns error and original params if parameters are invalid" do
+      assert {:error, %Meta{} = meta} =
+               Pagify.validate(
+                 Post,
+                 %Pagify{limit: -1, filters: %{name: "Post 1", other: "John"}},
+                 replace_invalid_params?: false
+               )
+
+      assert meta.pagify == %Pagify{}
+
+      assert %{limit: -1, filters: %{name: "Post 1", other: "John"}, offset: 0} == meta.params
+
+      assert [%Ash.Error.Query.InvalidLimit{limit: -1}] = Keyword.get(meta.errors, :limit)
+
+      assert [%Ash.Error.Query.NoSuchAttributeOrRelationship{attribute_or_relationship: :other}] =
+               Keyword.get(meta.errors, :filters)
+    end
+  end
+
+  describe "validate!/1" do
+    test "returns Pagify struct" do
+      assert Pagify.validate!(Post, %Pagify{}) == %Pagify{limit: 15, offset: 0}
+      assert Pagify.validate!(Post, %{}) == %Pagify{limit: 15, offset: 0}
+    end
+
+    test "raises if params are invalid" do
+      error =
+        assert_raise Pagify.Error.InvalidParamsError, fn ->
+          Pagify.validate!(Post, %{limit: -1, filters: %{name: "Post 1", other: "John"}})
+        end
+
+      assert %{limit: -1, filters: %{name: "Post 1", other: "John"}} == error.params
+
+      assert [%Ash.Error.Query.InvalidLimit{limit: -1}] = Keyword.get(error.errors, :limit)
+
+      assert [%Ash.Error.Query.NoSuchAttributeOrRelationship{attribute_or_relationship: :other}] =
+               Keyword.get(error.errors, :filters)
+    end
+  end
+
+  def assert_post_names(pagify, names, opts \\ []) do
+    %Ash.Page.Offset{results: posts} = Pagify.all(Post, pagify, opts)
+
+    assert Enum.map(posts, & &1.name) == names
+  end
+
+  def assert_page_opts(pagify, expected, opts) do
+    %Ash.Page.Offset{rerun: {_, opts}} = Pagify.all(Post, pagify, opts)
+
+    page = Keyword.get(opts, :page, [])
+    assert_lists_equal(expected, page)
+  end
+
+  def assert_comment_names(pagify, names, opts \\ []) do
+    %Ash.Page.Offset{results: comments} = Pagify.all(Comment, pagify, opts)
+
+    assert Enum.map(comments, & &1.body) == names
+  end
+
+  def assert_comment_page_opts(pagify, expected, opts) do
+    %Ash.Page.Offset{rerun: {_, opts}} = Pagify.all(Comment, pagify, opts)
+
+    page = Keyword.get(opts, :page, [])
+    assert_lists_equal(expected, page)
+  end
+end
