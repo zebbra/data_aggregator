@@ -408,8 +408,8 @@ defmodule PagifyTest do
       assert meta.current_order_by == ["--name"]
     end
 
-    test "adds current_order_by for asc_nils_last order" do
-      pagify = %Pagify{limit: 1, offset: 0, order_by: {:name, :asc_nils_last}}
+    test "adds current_order_by for asc_nils_first order" do
+      pagify = %Pagify{limit: 1, offset: 0, order_by: {:name, :asc_nils_first}}
       page = Pagify.all(Post, pagify)
       meta = Pagify.meta(page, pagify)
 

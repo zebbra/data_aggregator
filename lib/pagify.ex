@@ -457,7 +457,7 @@ defmodule Pagify do
     end
   end
 
-  defp order_to_prefix(:asc_nils_last), do: "++"
+  defp order_to_prefix(:asc_nils_first), do: "++"
   defp order_to_prefix(:desc), do: "-"
   defp order_to_prefix(:desc_nils_last), do: "--"
   defp order_to_prefix(_), do: ""
