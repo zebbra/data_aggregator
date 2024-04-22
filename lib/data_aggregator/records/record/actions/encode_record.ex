@@ -23,22 +23,20 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
     record = set_encoding_state(input.arguments.record)
     catalog = input.arguments.catalog
 
-    try do
-      Logger.debug("Encoding record with catalog: #{to_string(catalog)} started")
+    Logger.debug("Encoding record with catalog: #{to_string(catalog)} started")
 
-      # process the encoding with the passed catalog
-      encoding_result =
-        record
-        |> Strategy.encode(catalog)
-        |> update_state()
+    # process the encoding with the passed catalog
+    case record
+         |> Strategy.encode(catalog)
+         |> update_state() do
+      {:ok, encoded_record} ->
+        Logger.debug(
+          "Encoding for record #{record.id} with catalog: #{to_string(catalog)} finished with result: #{inspect(encoded_record)}"
+        )
 
-      Logger.debug(
-        "Encoding for record #{record.id} with catalog: #{to_string(catalog)} finished with result: #{inspect(encoding_result)}}"
-      )
+        {:ok, encoded_record}
 
-      encoding_result
-    catch
-      error ->
+      {:error, error} ->
         Logger.error(
           "Encoding for record #{record.id} with catalog: #{to_string(catalog)} failed, due to: #{inspect(error)}"
         )
@@ -58,7 +56,7 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
         {:ok, set_encoded_state(record)}
 
       {:error, error} ->
-        throw(error)
+        {:error, error}
     end
   end
 
