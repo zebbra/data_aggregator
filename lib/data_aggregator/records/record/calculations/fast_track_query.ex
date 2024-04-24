@@ -22,6 +22,7 @@ defmodule DataAggregator.Records.Calculations.FastTrackQuery do
     # TODO: customize to restrict the records to be published
     Record
     |> Ash.Query.load(collection: [:id], encoded_record: [:id])
+    |> Ash.Query.limit(999_999)
     |> Ash.Query.filter(
       collection.id == ^id and
         not is_nil(encoded_record.tax_kingdom)

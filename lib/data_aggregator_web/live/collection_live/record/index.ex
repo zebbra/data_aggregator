@@ -24,6 +24,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records.Record
   alias DataAggregatorWeb.Components.DataTable
 
+  require Ash.Query
+
   @load [:collection, :encoded_record, :mids_level, :paper_trail_versions]
 
   @polling_interval 5_000
@@ -454,9 +456,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     Task.start(fn ->
       %{collection: collection} = socket.assigns
 
-      %{"id" => collection.id}
-      |> list_records()
-      |> Task.async_stream(&Record.enqueue_encoder!/1)
+      collection_id = collection.id
+
+      Record
+      |> Ash.Query.load(collection: [:id])
+      |> Ash.Query.limit(999_999)
+      |> Ash.Query.filter(collection.id == ^collection_id)
+      |> Records.stream!()
+      |> Stream.map(&Record.enqueue_encoder!/1)
       |> Stream.run()
 
       Collection.touch(collection)
