@@ -85,7 +85,7 @@ defmodule DataAggregator.Records.Actions.Publish do
         ) :: :ok
   defp set_publication_status(query, channel, status, publication) do
     query
-    |> Records.stream!()
+    |> Records.stream!(page: false)
     |> Stream.map(&update_record!(&1, channel, status, publication))
     |> Stream.run()
   end

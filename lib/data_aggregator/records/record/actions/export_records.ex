@@ -29,7 +29,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
 
     attachment =
       records_query
-      |> Records.stream!()
+      |> Records.stream!(page: false)
       |> Stream.map(&map_record(&1, mapping, export, data_layer))
       |> Stream.map(&FlatFileUtils.map_data_to_headers(&1, get_header_labels(mapping)))
       |> create_file!()

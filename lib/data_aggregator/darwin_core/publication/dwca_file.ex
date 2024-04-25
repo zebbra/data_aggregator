@@ -23,7 +23,7 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
     record_attributes = record_attributes(extension_type)
 
     query
-    |> Records.stream!()
+    |> Records.stream!(page: false)
     |> Stream.map(&map_record(&1, record_attributes))
     |> Stream.map(&FlatFileUtils.map_data_to_headers(&1, header_fields))
     |> FlatFileUtils.store_on_disk!(path)

@@ -460,9 +460,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
       Record
       |> Ash.Query.load(collection: [:id])
-      |> Ash.Query.limit(999_999)
       |> Ash.Query.filter(collection.id == ^collection_id)
-      |> Records.stream!()
+      |> Records.stream!(page: false)
       |> Stream.map(&Record.enqueue_encoder!/1)
       |> Stream.run()
 
