@@ -16,7 +16,7 @@ defmodule Pagify.Validation do
   end
 
   def validate_params(resource, %{} = params, opts) do
-    replace_invalid_params? = Keyword.get(opts, :replace_invalid_params?, true)
+    replace_invalid_params? = Keyword.get(opts, :replace_invalid_params?, false)
 
     maybe_valid_params =
       params
@@ -55,7 +55,7 @@ defmodule Pagify.Validation do
       iex> filters
       #Ash.Filter<name == "Post 1">
 
-      iex> %{filters: filters, errors: errors} = Pagify.Validation.validate_filters(%{filters: 1}, Post)
+      iex> %{filters: filters, errors: errors} = Pagify.Validation.validate_filters(%{filters: 1}, Post, true)
       iex> filters
       nil
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -65,7 +65,7 @@ defmodule Pagify.Validation do
         ]
       ]
 
-      iex> %{filters: filters, errors: errors} = Pagify.Validation.validate_filters(%{filters: 1}, Post, false)
+      iex> %{filters: filters, errors: errors} = Pagify.Validation.validate_filters(%{filters: 1}, Post)
       iex> filters
       1
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -76,7 +76,7 @@ defmodule Pagify.Validation do
       ]
   """
   @spec validate_filters(map(), Ash.Resource.t(), boolean()) :: map()
-  def validate_filters(params, resource, replace_invalid_params? \\ true)
+  def validate_filters(params, resource, replace_invalid_params? \\ false)
   def validate_filters(%{filters: nil} = params, _, _), do: params
 
   def validate_filters(%{filters: filters} = params, resource, false) when is_map(filters) or is_list(filters) do
@@ -183,7 +183,7 @@ defmodule Pagify.Validation do
       iex> order_by
       [name: :asc, comments_count: :desc_nils_last]
 
-      iex> %{order_by: order_by, errors: errors} = Pagify.Validation.validate_order_by(%{order_by: "--name,non_existent"}, Post)
+      iex> %{order_by: order_by, errors: errors} = Pagify.Validation.validate_order_by(%{order_by: "--name,non_existent"}, Post, true)
       iex> order_by
       [name: :desc_nils_last]
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -194,7 +194,7 @@ defmodule Pagify.Validation do
       ]
   """
   @spec validate_order_by(map(), Ash.Resource.t(), boolean()) :: map()
-  def validate_order_by(params, resource, replace_invalid_params? \\ true)
+  def validate_order_by(params, resource, replace_invalid_params? \\ false)
   def validate_order_by(%{order_by: nil} = params, _, _), do: params
 
   def validate_order_by(%{order_by: order_by} = params, resource, replace_invalid_params?) when is_atom(order_by) do
@@ -306,7 +306,7 @@ defmodule Pagify.Validation do
       iex> limit
       10
 
-      iex> %{limit: limit, errors: errors} = Pagify.Validation.validate_pagination(%{limit: 0}, Post)
+      iex> %{limit: limit, errors: errors} = Pagify.Validation.validate_pagination(%{limit: 0}, Post, true)
       iex> limit
       15
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -320,7 +320,7 @@ defmodule Pagify.Validation do
       iex> limit
       100
 
-      iex> %{limit: limit, errors: errors} = Pagify.Validation.validate_pagination(%{limit: -1}, Post)
+      iex> %{limit: limit, errors: errors} = Pagify.Validation.validate_pagination(%{limit: -1}, Post, true)
       iex> limit
       15
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -334,7 +334,7 @@ defmodule Pagify.Validation do
       iex> offset
       10
 
-      iex> %{offset: offset, errors: errors} = Pagify.Validation.validate_pagination(%{offset: -1}, Post)
+      iex> %{offset: offset, errors: errors} = Pagify.Validation.validate_pagination(%{offset: -1}, Post, true)
       iex> offset
       0
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -344,7 +344,7 @@ defmodule Pagify.Validation do
         ]
       ]
 
-      iex> %{offset: offset, errors: errors} = Pagify.Validation.validate_pagination(%{offset: -1}, Post, false)
+      iex> %{offset: offset, errors: errors} = Pagify.Validation.validate_pagination(%{offset: -1}, Post)
       iex> offset
       -1
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -355,7 +355,7 @@ defmodule Pagify.Validation do
       ]
   """
   @spec validate_pagination(map(), Ash.Resource.t(), boolean(), Keyword.t()) :: map()
-  def validate_pagination(params, resource, replace_invalid_params? \\ true, opts \\ []) do
+  def validate_pagination(params, resource, replace_invalid_params? \\ false, opts \\ []) do
     params
     |> validate_and_maybe_delete(:limit, &validate_limit/2, opts, replace_invalid_params?)
     |> put_default_limit(resource, opts)

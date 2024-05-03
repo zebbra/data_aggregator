@@ -24,7 +24,7 @@ defmodule Pagify.ValidationTest do
 
   test "detects all errors and validates params" do
     {:error, errors, validated_params} =
-      Validation.validate_params(Post, %{limit: -1, offset: -1, filters: 1, order_by: 1})
+      Validation.validate_params(Post, %{limit: -1, offset: -1, filters: 1, order_by: 1}, replace_invalid_params?: true)
 
     assert [
              offset: [%Ash.Error.Query.InvalidOffset{offset: -1}],
@@ -40,7 +40,7 @@ defmodule Pagify.ValidationTest do
     params = %{limit: -1, offset: -1, filters: 1, order_by: 1}
 
     {:error, errors, original_params} =
-      Validation.validate_params(Post, params, replace_invalid_params?: false)
+      Validation.validate_params(Post, params)
 
     assert [
              offset: [%Ash.Error.Query.InvalidOffset{offset: -1}],
@@ -91,12 +91,12 @@ defmodule Pagify.ValidationTest do
 
     test "replaces simple invalid filters and adds errors" do
       assert %{:filters => nil, :errors => [filters: [%Ash.Error.Query.InvalidFilterValue{}]]} =
-               Validation.validate_filters(%{filters: 1}, Post)
+               Validation.validate_filters(%{filters: 1}, Post, replace_invalid_params?: true)
     end
 
     test "does not replace simple invalid filters and adds errors" do
       assert %{:filters => 1, :errors => [filters: [%Ash.Error.Query.InvalidFilterValue{}]]} =
-               Validation.validate_filters(%{filters: 1}, Post, false)
+               Validation.validate_filters(%{filters: 1}, Post)
     end
 
     test "replaces complex invalid filters and adds errors" do
@@ -111,7 +111,8 @@ defmodule Pagify.ValidationTest do
              } =
                Validation.validate_filters(
                  %{filters: %{and: [%{invalid_attribute_1: 1, invalid_attribute_2: 2}]}},
-                 Post
+                 Post,
+                 true
                )
     end
 
@@ -127,7 +128,8 @@ defmodule Pagify.ValidationTest do
              } =
                Validation.validate_filters(
                  %{filters: %{name: "Post 1", invalid_attribute_1: 1, invalid_attribute_2: 2}},
-                 Post
+                 Post,
+                 true
                )
     end
   end
@@ -179,7 +181,7 @@ defmodule Pagify.ValidationTest do
                  ]
                ]
              } =
-               Validation.validate_order_by(%{order_by: %{name: :asc}}, Post, false)
+               Validation.validate_order_by(%{order_by: %{name: :asc}}, Post)
     end
 
     test "replaces map order_by and adds errors" do
@@ -189,7 +191,7 @@ defmodule Pagify.ValidationTest do
                  order_by: [%Pagify.Error.Query.InvalidOrderByParameter{}]
                ]
              } =
-               Validation.validate_order_by(%{order_by: %{name: :asc}}, Post)
+               Validation.validate_order_by(%{order_by: %{name: :asc}}, Post, true)
     end
 
     test "passes with calculated order_by" do
@@ -206,7 +208,7 @@ defmodule Pagify.ValidationTest do
                  ]
                ]
              } =
-               Validation.validate_order_by(%{order_by: "--name,non_existent"}, Post)
+               Validation.validate_order_by(%{order_by: "--name,non_existent"}, Post, true)
     end
   end
 
@@ -217,19 +219,19 @@ defmodule Pagify.ValidationTest do
       assert %{
                limit: 0,
                errors: [limit: [%Ash.Error.Query.InvalidLimit{limit: 0}]]
-             } = Validation.validate_pagination(params, Post, false)
+             } = Validation.validate_pagination(params, Post)
     end
 
-    test "resets invalid limit to resource default_limit with replace_invalid_params" do
+    test "resets invalid limit to resource default_limit with replace_invalid_params?" do
       params = %{limit: 0}
 
       assert %{
                limit: 15,
                errors: [limit: [%Ash.Error.Query.InvalidLimit{limit: 0}]]
-             } = Validation.validate_pagination(params, Post)
+             } = Validation.validate_pagination(params, Post, true)
     end
 
-    test "resets invalid limit to opts :default_limit with replace_invalid_params" do
+    test "resets invalid limit to opts :default_limit with replace_invalid_params?" do
       params = %{limit: 0}
 
       assert %{
@@ -238,7 +240,7 @@ defmodule Pagify.ValidationTest do
              } = Validation.validate_pagination(params, Comment, true, default_limit: 10)
     end
 
-    test "resets invalid limit to Pagify.default_limit() with replace_invalid_params" do
+    test "resets invalid limit to Pagify.default_limit() with replace_invalid_params?" do
       params = %{limit: 0}
 
       assert %{
@@ -253,16 +255,16 @@ defmodule Pagify.ValidationTest do
       assert %{
                offset: -1,
                errors: [offset: [%Ash.Error.Query.InvalidOffset{offset: -1}]]
-             } = Validation.validate_pagination(params, Post, false)
+             } = Validation.validate_pagination(params, Post)
     end
 
-    test "replaces invalid offset with replace_invalid_params" do
+    test "replaces invalid offset with replace_invalid_params?" do
       params = %{offset: -1}
 
       assert %{
                offset: 0,
                errors: [offset: [%Ash.Error.Query.InvalidOffset{offset: -1}]]
-             } = Validation.validate_pagination(params, Post)
+             } = Validation.validate_pagination(params, Post, true)
     end
 
     test "validates max limit" do
@@ -271,19 +273,19 @@ defmodule Pagify.ValidationTest do
       assert %{
                limit: 101,
                errors: [limit: [%Ash.Error.Query.InvalidLimit{limit: 101}]]
-             } = Validation.validate_pagination(params, Post, false)
+             } = Validation.validate_pagination(params, Post)
     end
 
-    test "replaces invalid max limit with replace_invalid_params" do
+    test "replaces invalid max limit with replace_invalid_params?" do
       params = %{limit: 101}
 
       assert %{
                limit: 15,
                errors: [limit: [%Ash.Error.Query.InvalidLimit{limit: 101}]]
-             } = Validation.validate_pagination(params, Post)
+             } = Validation.validate_pagination(params, Post, true)
     end
 
-    test "replaces invalid max limit with opts :default_limit with replace_invalid_params" do
+    test "replaces invalid max limit with opts :default_limit with replace_invalid_params?" do
       params = %{limit: 101}
 
       assert %{
@@ -292,7 +294,7 @@ defmodule Pagify.ValidationTest do
              } = Validation.validate_pagination(params, Comment, true, default_limit: 10)
     end
 
-    test "replaces invalid max limit with Pagify.default_limit() with replace_invalid_params" do
+    test "replaces invalid max limit with Pagify.default_limit() with replace_invalid_params?" do
       params = %{limit: 101}
 
       assert %{

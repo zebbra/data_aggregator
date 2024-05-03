@@ -469,7 +469,9 @@ defmodule PagifyTest do
   describe "validate_and_run/3" do
     test "returns error if pagify is invalid" do
       pagify = %Pagify{limit: -1, filters: %{name: "Post 1", other: "John"}}
-      {:error, %Meta{} = meta} = Pagify.validate_and_run(Post, pagify)
+
+      {:error, %Meta{} = meta} =
+        Pagify.validate_and_run(Post, pagify, replace_invalid_params?: true)
 
       assert meta.pagify == %Pagify{}
 
@@ -486,7 +488,7 @@ defmodule PagifyTest do
       pagify = %Pagify{limit: -1, filters: %{name: "Post 1", other: "John"}}
 
       {:error, %Meta{} = meta} =
-        Pagify.validate_and_run(Post, pagify, replace_invalid_params?: false)
+        Pagify.validate_and_run(Post, pagify)
 
       assert meta.pagify == %Pagify{}
 
@@ -564,7 +566,9 @@ defmodule PagifyTest do
 
     test "returns error and replaced params if parameters are invalid" do
       assert {:error, %Meta{} = meta} =
-               Pagify.validate(Post, %{limit: -1, filters: %{name: "Post 1", other: "John"}})
+               Pagify.validate(Post, %{limit: -1, filters: %{name: "Post 1", other: "John"}},
+                 replace_invalid_params?: true
+               )
 
       assert meta.pagify == %Pagify{}
 
@@ -583,8 +587,7 @@ defmodule PagifyTest do
       assert {:error, %Meta{} = meta} =
                Pagify.validate(
                  Post,
-                 %Pagify{limit: -1, filters: %{name: "Post 1", other: "John"}},
-                 replace_invalid_params?: false
+                 %Pagify{limit: -1, filters: %{name: "Post 1", other: "John"}}
                )
 
       assert meta.pagify == %Pagify{}

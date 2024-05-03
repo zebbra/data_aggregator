@@ -1,56 +1,124 @@
 defmodule Pagify do
   @moduledoc """
-  Pagify is a helper library for filtering, ordering and pagination with `Ash`.
+  Pagify is an Elixir library designed to easily apply filtering, ordering, and pagination to
+  your `Ash` queries.
+
+  ## Features
+
+  - **Offset-based pagination**: Pagify uses `OFFSET` and `LIMIT` to paginate your queries.
+  - **Sorting**: Sort your queries by multiple fields and any directions.
+  - **Filtering**: Apply filters to your queries using a simple map syntax. Allows complex data
+  filtering using multiple conditions, operators, and fields.
+  - **UI helpers and URL builders**: Pagify provides a `Pagify.Meta` struct with information about
+  the current page, total pages, and more. This information can be used to build pagination links
+  in your UI.
+
+  ## Installation
+
+  Add `Ash` to your project's dependencies in `mix.exs`:
+
+  ```elixir
+  def deps do
+    [
+      {:ash, "~> 2.13"},
+      {:ash_phoenix, "~> 1.2"},
+      {:ash_postgres, "~> 1.3"},
+      {:ash_uuid, "~> 0.7"}
+    ]
+  end
+  ```
+
+  Then simply copy the `Pagify` module into your project. No additional dependencies are required.
+  If you want to include the tests, you can copy the `test` directory as well.
 
   ## Usage
 
-  The simplest way of using this library is just to use
-  `Pagify.validate_and_run/3` and `Pagify.validate_and_run!/3`. Both functions
-  take an `t:Ash.Query.t/0` or `t:Ash.Resource.t/0` and a parameter map, validate
-  the parameters, run the query and return the query results and the meta information.
-
-      iex> alias Pagify.Factory.Post
-      iex> params = %{order_by: ["name", "author"], offset: 0, limit: 2}
-      iex> {:ok, {results, meta}} =
-      ...>   Pagify.validate_and_run(
-      ...>     Post,
-      ...>     params
-      ...>   )
-      iex> Enum.map(results, & &1.name)
-      ["Post 1", "Post 2"]
-      iex> meta.total_count
-      3
-      iex> meta.total_pages
-      2
-      iex> meta.has_next_page?
-      true
-
-  Under the hood, these functions just call `Pagify.validate/2` and `Pagify.run/3`,
-  which in turn calls `Pagify.all/3` and `Pagify.meta/3`. If you need finer control
-  about if and when to execute each step, you can call those functions directly.
-
-  See `Pagify.Meta` for descriptions of the meta fields.
-
-  ## Resource configuration
-
+  First, define a function that utilizes Pagify.validate_and_run/3 to query your desired list.
+  For example in your Ash resource module, you can define a function that queries a list of posts.
   You need to add the pagination macro call to the action of the resource that you
   want to be paginated. The macro call is used to set the default limit, offset and
   other options for the pagination.
 
-      defmodule Your.Ash.Resource
-        @default_limit 15
-        def default_limit, do: @default_limit
+  ```elixir
+  defmodule YourApp.Resource.Post
+    @default_limit 15
+    def default_limit, do: @default_limit
 
-        actions do
-          read :read do
-            ...
-            pagination offset?: true,
-                      default_limit: @default_limit,
-                      countable: true,
-                      required?: false
-          end
-        end
+    actions do
+      read :read do
+        #...
+        pagination offset?: true,
+                  default_limit: @default_limit,
+                  countable: true,
+                  required?: false
       end
+    end
+    #...
+  end
+  ```
+
+  ### LiveView
+
+  In the LiveView, fetch the data and assign it alongside the meta data to the socket.
+
+  ```elixir
+  defmodule YourAppWeb.PostLive.IndexLive do
+    use YourAppWeb, :live_view
+
+    alias YourApp.Resource.Post
+
+    @impl true
+    def handle_params(params, _, socket) do
+      case Post.list_posts(params) do
+        {:ok, {posts, meta}} ->
+          {:noreply, assign(socket, %{posts: posts, meta: meta})}
+        {:error, _meta} ->
+          # This will reset invalid parameters. Alternatively, you can assign
+          # only the meta and render the errors, or assign the validated params,
+          # or you can ignore the error case entirely.
+          {:noreply, push_navigate(socket, to: ~p"/posts")}
+      end
+    end
+
+    defp list_posts(params, opts \\\\ []) do
+      Pagify.validate_and_run(Post, params, opts)
+    end
+  end
+  ```
+
+  ### LiveView streams
+
+  To use LiveView streams, you can change your `handle_params/3` function as follows:
+
+  ```elixir
+  def handle_params(params, _, socket) do
+    case Post.list_posts(params) do
+      {:noreply,
+         socket
+         |> assign(:meta, meta)
+         |> stream(:posts, posts, reset: true)}
+    # ...
+    end
+  end
+  ```
+
+  ## Parameter format
+
+  The Pagify library requires parameters to be provided in a specific format as a map.
+  This map can be translated into a URL query parameter string, typically for use in a
+  web framework like Phoenix.
+
+  ## Pagination
+
+  You can specify an offset to start from and a limit to the number of results.
+
+      %{offset: 100, limit: 20}
+
+  This translates to the following query parameter string:
+
+  ```URL
+  ?offset=100&limit=20
+  ```
 
   ## Ordering
 
@@ -71,12 +139,11 @@ defmodule Pagify do
       iex> pagify.order_by
       [{:name, :asc}, {:author, :desc_nils_last}]
 
-  ## Pagination
+  This translates to the following query parameter string:
 
-  We use queries using `OFFSET` and `LIMIT`, with offset-based pagination
-  parameters:
-
-      %{offset: 100, limit: 20}
+  ```URL
+  ?order_by=name,--author
+  ```
 
   ## Filters
 
@@ -90,7 +157,92 @@ defmodule Pagify do
       iex> post.name
       "Post 1"
 
+  This translates to the following query parameter string:
+
+  ```URL
+  ?filters[name]=Post%201
+  ```
+
   See `Ash.Query.filter_input/2` for a list of all available filter operators.
+
+  ## Internal parameters
+
+  Pagify is designed to manage parameters that come from the user side. While it is
+  possible to alter those parameters and append extra filters upon receiving them,
+  it is advisable to clearly differentiate parameters coming from outside and the
+  parameters that your application adds internally.
+
+  Consider the scenario where you need to scope a query based on the current user.
+  In this case, it is better to create a separate function that introduces the
+  necessary filter clauses:
+
+  ```elixir
+  def list_posts(%{} = params, %User{} = current_user) do
+    Post
+    |> scope(current_user)
+    |> Pagify.validate_and_run(params)
+  end
+
+  defp scope(query, %User{role: :admin}), do: query
+  defp scope(query, %User{id: user_id}), do: Ash.Query.filter_input(query, %{user_id: ^user_id})
+  ```
+
+  If you need to add extra filters that are only used internally and aren't exposed to the user,
+  you can pass them as a separate argument. This same argument can be used to override certain
+  options depending on the context in which the function is called.
+
+  ```elixir
+  def list_posts(%{} = params, opts \\ [], %User{} = current_user) do
+    pagify_opts =
+      opts
+      |> Keyword.put(:max_limit, 10)
+      |> Keyword.put(:default_limit, 10)
+      |> Keyword.put(:replace_invalid_params?, true)
+
+    Post
+    |> scope(current_user)
+    |> apply_filters(opts)
+    |> Pagify.validate_and_run(params, pagify_opts)
+  end
+
+  defp scope(query, %User{role: :admin}), do: query
+  defp scope(query, %User{id: user_id}), do: Ash.Query.filter_input(query, %{user_id: ^user_id})
+
+  defp apply_filters(query, opts) do
+    Enum.reduce(opts, query, fn
+      {:updated_at, dt}, query -> Ash.Query.filter_input(query, %{updated_at: dt})
+      _, query -> query
+    end)
+  end
+  ```
+
+  With this approach, you maintain a clean separation between user-driven parameters and
+  system-driven parameters, leading to more maintainable and less error-prone code. Please be
+  aware that in most cases it is better to use `Ash.Policy` to manage access control. This
+  example is just to illustrate the concept.
+
+  Under the hood, the `Pagify.validate_and_run/3` or `Pagify.validate_and_run!/3` functions
+  just call `Pagify.validate/2` and `Pagify.run/3`, which in turn calls `Pagify.all/3` and
+  `Pagify.meta/3`.
+
+  See `Pagify.Meta` for descriptions of the meta fields.
+
+  Alternatively, you may separate parameter validation and data fetching into different
+  steps using the `Pagify.validate/2`, `Pagify.validate!/2`, and `Pagify.run/3` functions.
+  This allows you to manipulate the validated parameters, to modify the query depending on
+  the parameters, or to move the parameter validation to a different layer of your application.
+
+  ```elixir
+  with {:ok, pagify} <- Pagify.validate(Post, params) do
+    {:ok, {results, meta}} = Pagify.run(Post, pagify)
+  end
+  ```
+
+  The aforementioned functions internally call the lower-level functions `Pagify.all/3` and
+  `Pagify.meta/3`. If you have advanced requirements, you might prefer to use these functions
+  directly. However, it's important to note that these lower-level functions do not validate
+  the parameters. If parameters are generated based on user input, they should always be
+  validated first using `Pagify.validate/2` or `Pagify.validate!/2` to ensure safe execution.
   """
   alias Pagify.Meta
   alias Pagify.Validation
@@ -322,7 +474,7 @@ defmodule Pagify do
     to 100.
   - `:replace_invalid_params?` - If set to `true`, invalid parameters will be
     replaced with the default value. If set to `false`, invalid parameters
-    will result in an error. Defaults to `true`.
+    will result in an error. Defaults to `false`.
   """
   @spec validate_and_run(Ash.Query.t() | Ash.Resource.t(), map() | Pagify.t(), Keyword.t()) ::
           {:ok, {[Ash.Resource.record()], Meta.t()}} | {:error, Meta.t()}
