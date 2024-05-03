@@ -3,9 +3,9 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form
+  alias DataAggregator.Gbif.GrSciColl
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.CollectionType
-  alias DataAggregator.Records.Grscicoll.Lookup
 
   @impl true
   def update(assigns, socket) do
@@ -28,7 +28,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
       assign(
         assigns,
         :grscicoll_collections,
-        Lookup.get_collection_options()
+        GrSciColl.get_collection_options()
       )
 
     ~H"""

@@ -3,12 +3,13 @@ defmodule DataAggregator.PublicationTest do
 
   use DataAggregator.DataCase, async: true
 
+  import DataAggregator.EncodingFixtures
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.DarwinCore.Publication.DwcaFile
+  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
-  alias DataAggregator.Records.Record
   alias Explorer.DataFrame
 
   require Ash.Query
@@ -17,45 +18,64 @@ defmodule DataAggregator.PublicationTest do
     setup do
       collection = collection_fixture(%{name: "Collection NumberO!+ne"})
 
-      records = [
+      record1 =
         record_fixture(%{
           collection: collection,
           mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
           tax_kingdom: "Animalia"
-        }),
+        })
+
+      record2 =
         record_fixture(%{
           collection: collection,
           mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
           tax_kingdom: "Animalia"
-        }),
+        })
+
+      record3 =
         record_fixture(%{
           collection: collection,
           mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
           tax_kingdom: "Animalia"
-        }),
+        })
+
+      record4 =
         record_fixture(%{
           collection: collection,
           mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
           tax_kingdom: "Animalia"
-        }),
+        })
+
+      record5 =
         record_fixture(%{
           collection: collection,
           mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
           tax_kingdom: "My Kingdom"
         })
+
+      encoded_record_fixture(%{record: record1})
+      encoded_record_fixture(%{record: record2})
+      encoded_record_fixture(%{record: record3})
+      encoded_record_fixture(%{record: record4})
+      encoded_record_fixture(%{record: record5})
+
+      records = [
+        Records.load!(record1, [:encoded_record]),
+        Records.load!(record2, [:encoded_record]),
+        Records.load!(record3, [:encoded_record]),
+        Records.load!(record4, [:encoded_record]),
+        Records.load!(record5, [:encoded_record])
       ]
 
       [collection: collection, records: records]
     end
 
+    @tag run: true
     test "publish/1", %{collection: collection, records: _records} do
-      query =
-        Record
-        |> Ash.Query.load(collection: [:id])
-        |> Ash.Query.filter(
-          collection.id == collection.id and
-            not is_nil(tax_kingdom)
-        )
+      query = %{
+        collection: %{id: %{eq: collection.id}},
+        encoded_record: %{tax_kingdom: %{is_nil: false}}
+      }
 
       publication =
         Publication.create!(%{

@@ -6,7 +6,6 @@ defmodule DataAggregator.Records.Calculations.FastTrackQuery do
   use Ash.Calculation
 
   alias DataAggregator.Records.Collection
-  alias DataAggregator.Records.Record
 
   require Ash.Query
   require Logger
@@ -20,11 +19,10 @@ defmodule DataAggregator.Records.Calculations.FastTrackQuery do
 
   defp restriction(id) do
     # TODO: customize to restrict the records to be published
-    Record
-    |> Ash.Query.load(collection: [:id], encoded_record: [:id])
-    |> Ash.Query.filter(
-      collection.id == ^id and
-        not is_nil(encoded_record.tax_kingdom)
-    )
+
+    %{
+      collection: %{id: %{eq: id}},
+      encoded_record: %{tax_kingdom: %{is_nil: false}}
+    }
   end
 end

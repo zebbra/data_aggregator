@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Grscicoll.Lookup do
+defmodule DataAggregator.Gbif.GrSciColl do
   @moduledoc false
 
   alias DataAggregator.Cache.HttpDiskCache

@@ -20,7 +20,7 @@ defmodule DataAggregator.Repo.Migrations.PublicationWorkerExtensions do
       add :published_at, :utc_datetime
       add :started_at, :utc_datetime
       add :finished_at, :utc_datetime
-      add :records_query, :binary, null: false
+      add :records_query, :map, null: false
       add :published_count, :bigint, null: false, default: 0
       add :rows_count, :bigint, null: false, default: 0
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")

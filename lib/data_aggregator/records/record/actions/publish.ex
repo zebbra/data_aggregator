@@ -15,12 +15,15 @@ defmodule DataAggregator.Records.Actions.Publish do
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
 
+  require Ash.Query
   require Logger
 
   @impl true
   def run(input, _opts, _context) do
     publication = input.arguments.publication
-    query = publication.records_query
+
+    query = Ash.Query.filter_input(Record, publication.records_query)
+
     channel = publication.channel
 
     set_publication_status(
@@ -62,7 +65,7 @@ defmodule DataAggregator.Records.Actions.Publish do
   rescue
     e ->
       publication = input.arguments.publication
-      query = publication.records_query
+      query = Ash.Query.filter_input(Record, publication.records_query)
       channel = publication.channel
 
       Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(e)}")

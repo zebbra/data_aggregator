@@ -7,7 +7,6 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.Records.Publication
-  alias DataAggregator.Records.Record
 
   require Ash.Query
 
@@ -43,13 +42,10 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
         })
       ]
 
-      query =
-        Record
-        |> Ash.Query.load(collection: [:id])
-        |> Ash.Query.filter(
-          collection.id == collection.id and
-            not is_nil(tax_kingdom)
-        )
+      query = %{
+        collection: %{id: %{eq: collection.id}},
+        tax_kingdom: %{is_nil: false}
+      }
 
       publication =
         Publication.create!(%{

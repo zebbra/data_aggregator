@@ -24,7 +24,7 @@ defmodule DataAggregator.Records.Publication do
     attribute :published_at, :utc_datetime, allow_nil?: true
     attribute :started_at, :utc_datetime, allow_nil?: true
     attribute :finished_at, :utc_datetime, allow_nil?: true
-    attribute :records_query, :term, allow_nil?: false
+    attribute :records_query, :map, allow_nil?: false
     attribute :published_count, :integer, allow_nil?: false, default: 0
     attribute :rows_count, :integer, allow_nil?: false, default: 0
 
