@@ -28,6 +28,19 @@ defmodule Pagify do
   end
   ```
 
+  Configure Tailwind CSS in your project by adding the pagify folder to the contents array in your
+  tailwind.config.js file.
+
+  ```javascript
+  module.exports = {
+    content: [
+      // ...
+      "../lib/pagify/components/**/*.*ex",
+    ],
+    // ...
+  }
+  ```
+
   Then simply copy the `Pagify` module into your project. No additional dependencies are required.
   If you want to include the tests, you can copy the `test` directory as well.
 
@@ -244,6 +257,7 @@ defmodule Pagify do
   the parameters. If parameters are generated based on user input, they should always be
   validated first using `Pagify.validate/2` or `Pagify.validate!/2` to ensure safe execution.
   """
+  alias Ash.Resource.Info
   alias Pagify.Meta
   alias Pagify.Validation
 
@@ -357,7 +371,7 @@ defmodule Pagify do
     paginate(q, pagify, opts)
   end
 
-  def parse(r, %Pagify{} = pagify, opts) when is_atom(r) do
+  def parse(r, %Pagify{} = pagify, opts) when is_atom(r) and r != nil do
     parse(Ash.Query.to_query(r), pagify, opts)
   end
 
@@ -403,7 +417,7 @@ defmodule Pagify do
     r.read!(opts)
   end
 
-  def all(r, %Pagify{} = pagify, opts) when is_atom(r) do
+  def all(r, %Pagify{} = pagify, opts) when is_atom(r) and r != nil do
     all(Ash.Query.to_query(r), pagify, opts)
   end
 
@@ -441,7 +455,7 @@ defmodule Pagify do
     {page.results, meta}
   end
 
-  def run(r, %Pagify{} = pagify, opts) when is_atom(r) do
+  def run(r, %Pagify{} = pagify, opts) when is_atom(r) and r != nil do
     run(Ash.Query.to_query(r), pagify, opts)
   end
 
@@ -595,16 +609,33 @@ defmodule Pagify do
 
   defp get_current_order_by(%Ash.Page.Offset{rerun: {%Ash.Query{} = q, _}}) do
     case q do
-      %Ash.Query{sort: sort} -> concat_sort(sort)
-      _ -> nil
+      %Ash.Query{sort: sort} ->
+        sort |> remove_default_order_by(q.resource) |> concat_sort()
+
+      _ ->
+        nil
     end
   end
 
-  defp concat_sort(list, acc \\ [])
-  defp concat_sort([], []), do: nil
-  defp concat_sort([], acc), do: Enum.reverse(acc)
+  defp remove_default_order_by(sort, resource) when is_atom(resource) and resource != nil do
+    case get_option(:default_order, for: resource) do
+      nil ->
+        sort
 
-  defp concat_sort([field | rest], acc) do
+      default_order ->
+        default_order_keys = Enum.map(default_order, &elem(&1, 0))
+        Enum.filter(sort, fn {key, _} -> not Enum.member?(default_order_keys, key) end)
+    end
+  end
+
+  defp remove_default_order_by(sort, _), do: sort
+
+  def concat_sort(list, acc \\ [])
+  def concat_sort(nil, _), do: nil
+  def concat_sort([], []), do: nil
+  def concat_sort([], acc), do: Enum.reverse(acc)
+
+  def concat_sort([field | rest], acc) do
     case field do
       {field, order} ->
         concat_sort(rest, ["#{order_to_prefix(order)}#{Atom.to_string(field)}" | acc])
@@ -821,14 +852,14 @@ defmodule Pagify do
     Keyword.put(opts, :page, page)
   end
 
-  def paginate(r, pagify, opts) when is_atom(r) do
+  def paginate(r, pagify, opts) when is_atom(r) and r != nil do
     paginate(Ash.Query.to_query(r), pagify, opts)
   end
 
   @spec put_default_limit(Ash.Query.t(), Pagify.t()) :: Pagify.t()
   defp put_default_limit(q, pagify)
 
-  defp put_default_limit(%Ash.Query{resource: r}, %Pagify{limit: nil} = pagify) when is_atom(r) do
+  defp put_default_limit(%Ash.Query{resource: r}, %Pagify{limit: nil} = pagify) when is_atom(r) and r != nil do
     %{pagify | limit: get_option(:default_limit, for: r)}
   end
 
@@ -1021,7 +1052,23 @@ defmodule Pagify do
     end
   end
 
+  defp resource_option(resource, key) when is_atom(resource) and resource != nil and key == :default_order do
+    resource |> Info.preparations() |> resource_preparation_sort()
+  end
+
   defp resource_option(_, _), do: nil
+
+  def resource_preparation_sort(preparations, default \\ nil)
+  def resource_preparation_sort([], default), do: default
+
+  def resource_preparation_sort([%Ash.Resource.Preparation{preparation: {_, [options: [sort: sort]]}} | _rest], _default)
+      when is_list(sort) do
+    sort
+  end
+
+  def resource_preparation_sort([_ | rest], default) do
+    resource_preparation_sort(rest, default)
+  end
 
   defp pagify_option(key) when key in [:default_limit], do: apply(__MODULE__, key, [])
   defp pagify_option(_), do: nil

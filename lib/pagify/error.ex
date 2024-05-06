@@ -71,3 +71,39 @@ defmodule Pagify.Error.Query.InvalidOrderByParameter do
     "#{inspect(order_by)} is not a valid order_by parameter"
   end
 end
+
+defmodule Pagify.Error.Components.PathOrJSError do
+  @moduledoc """
+  Raised when a neither the `path` nor the `on_*` attribute is set for a
+  pagination or table component.
+  """
+  defexception [:component]
+
+  def message(%{component: component}) do
+    """
+    path or #{on_attribute(component)} attribute is required
+
+    At least one of the mentioned attributes is required for the #{component}
+    component. Combining them will both patch the URL and execute the
+    JS command.
+
+    The :path value can be a path as a string, a {module, function_name, args}
+    tuple, a {function, args} tuple, or an 1-ary function.
+
+    Examples:
+
+        path={~p"/posts"}
+        path={{Routes, :post_path, [@socket, :index]}}
+        path={{&Routes.post_path/3, [@socket, :index]}}
+        path={&build_path/1}
+
+        #{on_examples(component)}
+    """
+  end
+
+  defp on_attribute(:table), do: "on_sort"
+  defp on_attribute(_), do: "on_paginate"
+
+  defp on_examples(:table), do: "on_sort={JS.push(\"sort-table\")}"
+  defp on_examples(_), do: "on_paginate={JS.push(\"paginate\")}"
+end

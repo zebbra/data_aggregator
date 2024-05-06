@@ -6,6 +6,7 @@ defmodule Pagify.Validation do
   alias Ash.Error.Query.InvalidLimit
   alias Ash.Error.Query.InvalidOffset
   alias Pagify.Error.Query.InvalidOrderByParameter
+  alias Pagify.Misc
 
   @spec validate_params(Ash.Query.t() | Ash.Resource.t(), map(), Keyword.t()) ::
           {:ok, Pagify.t()} | {:error, any(), map()}
@@ -20,6 +21,7 @@ defmodule Pagify.Validation do
 
     maybe_valid_params =
       params
+      |> Misc.atomize_keys()
       |> Map.put(:errors, [])
       |> validate_filters(resource, replace_invalid_params?)
       |> validate_order_by(resource, replace_invalid_params?)
@@ -388,6 +390,10 @@ defmodule Pagify.Validation do
     end
   end
 
+  defp validate_limit(%{limit: limit} = params, opts) when is_binary(limit) do
+    validate_limit(Map.put(params, :limit, String.to_integer(limit)), opts)
+  end
+
   defp validate_limit(params, _opts) do
     case Map.get(params, :limit) do
       nil -> {:ok, params}
@@ -430,6 +436,10 @@ defmodule Pagify.Validation do
     else
       {:error, add_error(params, :offset, InvalidOffset.exception(offset: offset))}
     end
+  end
+
+  defp validate_offset(%{offset: offset} = params, opts) when is_binary(offset) do
+    validate_offset(Map.put(params, :offset, String.to_integer(offset)), opts)
   end
 
   defp validate_offset(params, _opts), do: {:ok, params}

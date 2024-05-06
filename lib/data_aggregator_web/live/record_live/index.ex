@@ -4,7 +4,6 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Encoding.Components
 
-  import DataAggregatorWeb.Components.DataTable, only: [data_table: 1]
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   import DataAggregatorWeb.RecordLive.Helpers,
@@ -13,8 +12,6 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   alias DataAggregator.Records
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
-  alias DataAggregatorWeb.Components.DataTable
-  alias DataAggregatorWeb.Components.DataTable.Meta
 
   @load [:collection, :encoded_record]
 
@@ -25,22 +22,19 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    sanitized_params = DataTable.sanitized_params(params)
-
-    case map_size(sanitized_params) do
-      0 ->
+    case list_records(params) do
+      {:ok, {records, meta}} ->
         socket =
           socket
-          |> assign(params: params)
-          |> assign_records(params)
+          |> assign(meta: meta)
+          |> stream(:results, records, reset: true)
           |> assign(selected_record: nil)
           |> apply_action(socket.assigns.live_action, params)
 
         {:noreply, socket}
 
-      _ ->
-        params = Map.merge(params, sanitized_params)
-        {:noreply, push_patch(socket, to: ~p"/records?#{params}")}
+      {:error, _meta} ->
+        {:noreply, push_navigate(socket, to: ~p"/records")}
     end
   end
 
@@ -50,47 +44,40 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     <.page current="records" open={@selected_record != nil}>
       <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6"><%= ~t"Records"m %></.page_header>
       <div :if={@count > 0} class="no-scrollbar overflow-x-auto pb-4">
-        <.data_table
-          id="records_data_table"
+        <.table
+          id="records_table"
           rows={@streams.results}
-          meta={@meta}
-          path="records"
           row_click={
             fn {_id, record} ->
               JS.push("record:select", value: %{id: record.id})
             end
           }
         >
-          <:col
-            :let={{_id, record}}
-            label={~t"MaterialEntityID"m}
-            key={:mte_material_entity_id}
-            class="font-semibold"
-          >
+          <:col :let={{_id, record}} label={~t"MaterialEntityID"m} class="font-semibold">
             <%= record.mte_material_entity_id %>
           </:col>
-          <:col :let={{_id, record}} label={~t"Scientific Name"m} key={:tax_scientific_name}>
+          <:col :let={{_id, record}} label={~t"Scientific Name"m}>
             <%= encoded_attribute(record, :tax_scientific_name) %>
           </:col>
-          <:col :let={{_id, record}} label={~t"Genus"m} key={:tax_genus}>
+          <:col :let={{_id, record}} label={~t"Genus"m}>
             <%= encoded_attribute(record, :tax_genus) %>
           </:col>
-          <:col :let={{_id, record}} label={~t"Family"m} key={:tax_family}>
+          <:col :let={{_id, record}} label={~t"Family"m}>
             <%= encoded_attribute(record, :tax_family) %>
           </:col>
-          <:col :let={{_id, record}} label={~t"Order"m} key={:tax_order}>
+          <:col :let={{_id, record}} label={~t"Order"m}>
             <%= encoded_attribute(record, :tax_order) %>
           </:col>
-          <:col :let={{_id, record}} label={~t"Class"m} key={:tax_class}>
+          <:col :let={{_id, record}} label={~t"Class"m}>
             <%= encoded_attribute(record, :tax_class) %>
           </:col>
-          <:col :let={{_id, record}} label={~t"Phylum"m} key={:tax_phylum}>
+          <:col :let={{_id, record}} label={~t"Phylum"m}>
             <%= encoded_attribute(record, :tax_phylum) %>
           </:col>
-          <:col :let={{_id, record}} label={~t"Encoding"m} key={:state} class="text-center">
+          <:col :let={{_id, record}} label={~t"Encoding"m} class="text-center">
             <.encoding_state_badge state={record.state} />
           </:col>
-          <:col :let={{_id, record}} label={~t"Collection"m} key={:collection}>
+          <:col :let={{_id, record}} label={~t"Collection"m}>
             <.link
               navigate={~p"/collections/#{record.collection}/records"}
               class="link link-primary link-hover font-semibold rounded-md"
@@ -98,10 +85,13 @@ defmodule DataAggregatorWeb.RecordLive.Index do
               <%= record.collection.name %>
             </.link>
           </:col>
-          <:col :let={{_id, record}} label={~t"Updated At"m} key={:updated_at} class="text-end">
+          <:col :let={{_id, record}} label={~t"Updated At"m} class="text-end">
             <%= format_datetime(record.updated_at, format: :medium) %>
           </:col>
-        </.data_table>
+        </.table>
+        <div class="border-black-white/10 flex items-center justify-end border-t px-6 pt-4 lg:px-8">
+          <Pagify.Components.pagination meta={@meta} path="/records" />
+        </div>
       </div>
 
       <.empty_state
@@ -202,36 +192,8 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     assign(socket, :page_title, ~t"Records"m)
   end
 
-  defp assign_records(socket, params) do
-    case list_records(params) do
-      %Ash.Page.Offset{results: records} = data ->
-        meta =
-          data
-          |> Meta.create_meta_from_data()
-          |> Meta.add_filters_from_params(params)
-
-        socket
-        |> assign(meta: meta)
-        |> stream(:results, records, reset: true)
-
-      records ->
-        socket
-        |> assign(:meta, %{limit: nil, offset: nil})
-        |> stream(:results, records, reset: true)
-    end
-  end
-
-  defp list_records(params) do
-    opts = DataTable.read_opts(Record, params)
-    opts = Keyword.put(opts, :load, @load)
-
-    opts =
-      Keyword.update(opts, :page, {:count, true}, fn value ->
-        Keyword.put(value, :count, true)
-      end)
-
-    {:ok, result} = Record.read(opts)
-    result
+  defp list_records(params, opts \\ [load: @load]) do
+    Pagify.validate_and_run(Record, params, opts)
   end
 
   defp get_record(id) do

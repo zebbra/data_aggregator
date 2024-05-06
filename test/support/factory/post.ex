@@ -31,6 +31,11 @@ defmodule Pagify.Factory.Post do
     count :comments_count, :comments
   end
 
+  preparations do
+    prepare build(sort: [id: :asc])
+    prepare DataAggregator.Preparations.Sort
+  end
+
   actions do
     read :read do
       primary? true
