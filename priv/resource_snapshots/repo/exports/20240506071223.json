@@ -23,18 +23,8 @@
     {
       "default": "nil",
       "size": null,
-      "type": "text",
-      "source": "channel",
-      "references": null,
-      "allow_nil?": false,
-      "generated?": false,
-      "primary_key?": false
-    },
-    {
-      "default": "nil",
-      "size": null,
       "type": "utc_datetime",
-      "source": "published_at",
+      "source": "exported_at",
       "references": null,
       "allow_nil?": true,
       "generated?": false,
@@ -64,6 +54,16 @@
       "default": "nil",
       "size": null,
       "type": "map",
+      "source": "mapping",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "map",
       "source": "records_query",
       "references": null,
       "allow_nil?": false,
@@ -74,7 +74,7 @@
       "default": "0",
       "size": null,
       "type": "bigint",
-      "source": "published_count",
+      "source": "exported_count",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -85,6 +85,26 @@
       "size": null,
       "type": "bigint",
       "source": "rows_count",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "\"collection_mapping\"",
+      "size": null,
+      "type": "text",
+      "source": "header_source",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "\"raw\"",
+      "size": null,
+      "type": "text",
+      "source": "data_layer",
       "references": null,
       "allow_nil?": false,
       "generated?": false,
@@ -116,13 +136,13 @@
       "type": "uuid",
       "source": "collection_id",
       "references": {
-        "name": "publications_collection_id_fkey",
+        "name": "exports_collection_id_fkey",
         "table": "collections",
         "schema": "public",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": "delete",
@@ -144,13 +164,13 @@
       "type": "uuid",
       "source": "attachment_id",
       "references": {
-        "name": "publications_attachment_id_fkey",
+        "name": "exports_attachment_id_fkey",
         "table": "file_attachments",
         "schema": "public",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": "delete",
@@ -172,13 +192,13 @@
       "type": "bigint",
       "source": "job_id",
       "references": {
-        "name": "publications_job_id_fkey",
+        "name": "exports_job_id_fkey",
         "table": "oban_jobs",
         "schema": "public",
         "multitenancy": {
           "global": null,
-          "attribute": null,
-          "strategy": null
+          "strategy": null,
+          "attribute": null
         },
         "primary_key?": true,
         "on_delete": "nilify",
@@ -205,15 +225,15 @@
       "primary_key?": false
     }
   ],
-  "table": "publications",
-  "hash": "73CA7BCC54DE6883D6A7A53A4D8B4E3864CEE6A5EAA87AB575EBCC4BA0570657",
+  "table": "exports",
+  "hash": "3A255DB1AC65FD8F1FEE8BAADD6DB6467A89D5929AFBA15109ABF70088CE5416",
   "repo": "Elixir.DataAggregator.Repo",
   "identities": [],
   "schema": null,
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
   "base_filter": null,
   "check_constraints": [],

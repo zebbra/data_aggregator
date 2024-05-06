@@ -1,4 +1,4 @@
-defmodule DataAggregator.Repo.Migrations.MakeQueriesPersistableAsMapsForExport do
+defmodule DataAggregator.Repo.Migrations.MakeQueriesPersistableAsMaps do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
@@ -11,9 +11,17 @@ defmodule DataAggregator.Repo.Migrations.MakeQueriesPersistableAsMapsForExport d
     alter table(:publications) do
       modify :records_query, :map
     end
+
+    alter table(:exports) do
+      modify :records_query, :map
+    end
   end
 
   def down do
+    alter table(:exports) do
+      modify :records_query, :binary
+    end
+
     alter table(:publications) do
       modify :records_query, :binary
     end
