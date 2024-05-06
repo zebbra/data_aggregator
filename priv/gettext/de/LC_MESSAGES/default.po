@@ -1735,7 +1735,7 @@ msgstr "Fast Track Veröff."
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Channel"
-msgstr "Abbrechen"
+msgstr "Kanal"
 
 #: lib/data_aggregator_web/live/collection_live/publication/components.ex:134
 #, elixir-autogen, elixir-format
@@ -1807,7 +1807,7 @@ msgstr "Der Eintrag wurde erfolgreich veröffentlicht"
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Stale"
-msgstr "Status"
+msgstr "Veraltet"
 
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:239
 #, elixir-autogen, elixir-format, fuzzy
@@ -1982,7 +1982,7 @@ msgstr "Veröffentlichen"
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Changes"
-msgstr "Abbrechen"
+msgstr "Änderungen"
 
 #: lib/data_aggregator_web/live/collection_live/record/components.ex:69
 #, elixir-autogen, elixir-format
@@ -2086,7 +2086,7 @@ msgstr "Der Eintrag ist jetzt in der Veröffentlichung"
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Stale"
-msgstr "Status"
+msgstr "Veraltet"
 
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:204
 #, elixir-autogen, elixir-format, fuzzy

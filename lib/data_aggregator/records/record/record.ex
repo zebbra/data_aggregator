@@ -29,6 +29,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.PublicationStatusType
+  alias DataAggregator.Records.Record.Calculations.Mids
 
   @type t :: %Record{}
 
@@ -98,89 +99,19 @@ defmodule DataAggregator.Records.Record do
 
     calculate :mids_level_one,
               :boolean,
-              expr(
-                not is_nil(mte_catalog_number) and
-                  not is_nil(tax_scientific_name) and
-                  not is_nil(oth_institution_code)
-              )
+              Mids.LevelOne
 
     calculate :mids_level_two,
               :boolean,
-              expr(
-                mids_level_one and
-                  ((not is_nil(mte_part_of_organism) or
-                      not is_nil(encoded_record.mte_part_of_organism)) and
-                     (not is_nil(tax_taxon_id) or not is_nil(encoded_record.tax_taxon_id)))
-              )
+              Mids.LevelTwo
 
     calculate :mids_level_three,
               :boolean,
-              expr(
-                mids_level_two and
-                  (not is_nil(collection.code) and
-                     (not is_nil(eve_event_date) or not is_nil(encoded_record.eve_event_date)) and
-                     (not is_nil(mte_recorded_by) or not is_nil(encoded_record.mte_recorded_by)) and
-                     (not is_nil(idf_type_status) or not is_nil(encoded_record.idf_type_status)) and
-                     (not is_nil(tax_original_name_usage) or
-                        not is_nil(encoded_record.tax_original_name_usage)) and
-                     (not is_nil(loc_continent) or not is_nil(encoded_record.loc_continent)) and
-                     (not is_nil(loc_country) or not is_nil(encoded_record.loc_country)) and
-                     (not is_nil(loc_county) or not is_nil(encoded_record.loc_county)) and
-                     (not is_nil(loc_decimal_latitude) or
-                        not is_nil(encoded_record.loc_decimal_latitude)) and
-                     (not is_nil(loc_decimal_longitude) or
-                        not is_nil(encoded_record.loc_decimal_longitude)) and
-                     (not is_nil(loc_higher_geography) or
-                        not is_nil(encoded_record.loc_higher_geography)) and
-                     (not is_nil(loc_locality) or not is_nil(encoded_record.loc_locality)) and
-                     (not is_nil(loc_state_province) or
-                        not is_nil(encoded_record.loc_state_province)) and
-                     (not is_nil(loc_verbatim_depth) or
-                        not is_nil(encoded_record.loc_verbatim_depth)) and
-                     (not is_nil(loc_verbatim_elevation) or
-                        not is_nil(encoded_record.loc_verbatim_elevation)) and
-                     (not is_nil(mte_year_collection_entrance) or
-                        not is_nil(encoded_record.mte_year_collection_entrance)) and
-                     (not is_nil(occ_occurrence_id) or
-                        not is_nil(encoded_record.occ_occurrence_id)))
-              )
+              Mids.LevelThree
 
     calculate :mids_level_four,
               :boolean,
-              expr(
-                mids_level_three and
-                  (not is_nil(eve_verbatim_event_date) or
-                     not is_nil(encoded_record.eve_verbatim_event_date) or
-                     (not is_nil(idf_identified_by) or
-                        not is_nil(encoded_record.idf_identified_by)) or
-                     (not is_nil(idf_identification_qualifier) or
-                        not is_nil(encoded_record.idf_identification_qualifier)) or
-                     (not is_nil(idf_identification_verification_status) or
-                        not is_nil(encoded_record.idf_identification_verification_status)) or
-                     (not is_nil(idf_last_verified_by) or
-                        not is_nil(encoded_record.idf_last_verified_by)) or
-                     (not is_nil(idf_verbatim_identification) or
-                        not is_nil(encoded_record.idf_verbatim_identification)) or
-                     (not is_nil(loc_georeferenced_by) or
-                        not is_nil(encoded_record.loc_georeferenced_by)) or
-                     (not is_nil(loc_georeference_verification_status) or
-                        not is_nil(encoded_record.loc_georeference_verification_status)) or
-                     (not is_nil(loc_verbatim_coordinates) or
-                        not is_nil(encoded_record.loc_verbatim_coordinates)) or
-                     (not is_nil(loc_verbatim_latitude) or
-                        not is_nil(encoded_record.loc_verbatim_latitude)) or
-                     (not is_nil(loc_verbatim_longitude) or
-                        not is_nil(encoded_record.loc_verbatim_longitude)) or
-                     (not is_nil(loc_verbatim_locality) or
-                        not is_nil(encoded_record.loc_verbatim_locality)) or
-                     (not is_nil(mte_associated_media) or
-                        not is_nil(encoded_record.mte_associated_media)) or
-                     (not is_nil(mte_completeness) or not is_nil(encoded_record.mte_completeness)) or
-                     (not is_nil(mte_other_catalog_numbers) or
-                        not is_nil(encoded_record.mte_other_catalog_numbers)) or
-                     (not is_nil(mte_verbatim_label) or
-                        not is_nil(encoded_record.mte_verbatim_label)))
-              )
+              Mids.LevelFour
   end
 
   paper_trail do
