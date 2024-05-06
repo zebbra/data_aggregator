@@ -21,9 +21,9 @@ defmodule DataAggregator.Records.Record.Calculations.Mids.LevelThree do
   def requirements_met do
     expr(
       ^has_a_collection() and
-        ^has_all_other_important_fields() and
         ^has_textual_location() and
-        ^has_coordinates()
+        ^has_coordinates() and
+        ^has_all_other_important_fields()
     )
   end
 
