@@ -515,6 +515,7 @@ defmodule Pagify do
         opts: [],
         pagify: %Pagify{filters: nil, limit: 2, offset: 1, order_by: [name: :asc, comments_count: :desc_nils_last]},
         previous_offset: 0,
+        resource: Post,
         total_count: 3,
         total_pages: 2
       }
@@ -537,6 +538,7 @@ defmodule Pagify do
     {has_next_page?, next_offset} = get_next(current_offset, page_size, total_count)
 
     current_order_by = get_current_order_by(page)
+    resource = get_resource(page)
 
     %Meta{
       current_limit: page_size,
@@ -549,10 +551,13 @@ defmodule Pagify do
       opts: opts,
       pagify: pagify,
       previous_offset: previous_offset,
+      resource: resource,
       total_count: total_count,
       total_pages: total_pages
     }
   end
+
+  defp get_resource(%Ash.Page.Offset{rerun: {original_query, _}}), do: original_query.resource
 
   defp get_previous(offset, limit) do
     has_previous? = offset > 0
@@ -824,11 +829,7 @@ defmodule Pagify do
   defp put_default_limit(q, pagify)
 
   defp put_default_limit(%Ash.Query{resource: r}, %Pagify{limit: nil} = pagify) when is_atom(r) do
-    if Keyword.has_key?(r.__info__(:functions), :default_limit) do
-      %{pagify | limit: r.default_limit()}
-    else
-      %{pagify | limit: @default_limit}
-    end
+    %{pagify | limit: get_option(:default_limit, for: r)}
   end
 
   defp put_default_limit(_, %Pagify{limit: nil} = pagify) do
@@ -994,4 +995,34 @@ defmodule Pagify do
         raise Pagify.Error.InvalidParamsError, errors: errors, params: map_or_pagify
     end
   end
+
+  @doc """
+  Returns the option with the given key.
+
+  The look-up order is:
+
+  1. the keyword list passed as the second argument
+  2. the Ash.Resource resource, if the passed list includes the `:for` option
+  3. the Pagify default value if defined
+  4. the default passed as the last argument
+  """
+  @spec get_option(atom(), Keyword.t(), any()) :: any()
+  def get_option(key, opts, default \\ nil) do
+    with nil <- opts[key],
+         nil <- resource_option(opts[:for], key),
+         nil <- pagify_option(key) do
+      default
+    end
+  end
+
+  defp resource_option(resource, key) when is_atom(resource) and resource != nil and key in [:default_limit] do
+    if Keyword.has_key?(resource.__info__(:functions), key) do
+      apply(resource, key, [])
+    end
+  end
+
+  defp resource_option(_, _), do: nil
+
+  defp pagify_option(key) when key in [:default_limit], do: apply(__MODULE__, key, [])
+  defp pagify_option(_), do: nil
 end

@@ -416,15 +416,11 @@ defmodule Pagify.Validation do
   end
 
   defp default_limit(resource, opts) do
-    cond do
-      Keyword.get(opts, :default_limit) == false ->
-        nil
-
-      Keyword.has_key?(resource.__info__(:functions), :default_limit) ->
-        resource.default_limit()
-
-      true ->
-        Keyword.get(opts, :default_limit, Pagify.default_limit())
+    if Keyword.get(opts, :default_limit) == false do
+      nil
+    else
+      opts = Keyword.put(opts, :for, resource)
+      Pagify.get_option(:default_limit, opts)
     end
   end
 

@@ -281,6 +281,7 @@ defmodule PagifyTest do
                pagify: %Pagify{filters: nil, limit: 3, offset: 0, order_by: :name},
                params: %{},
                previous_offset: nil,
+               resource: Post,
                total_count: 3,
                total_pages: 1
              }
@@ -304,6 +305,7 @@ defmodule PagifyTest do
                pagify: %Pagify{},
                params: %{},
                previous_offset: nil,
+               resource: Post,
                total_count: 3,
                total_pages: 1
              }
@@ -327,6 +329,7 @@ defmodule PagifyTest do
                pagify: %Pagify{limit: 2, offset: 1, order_by: :name},
                params: %{},
                previous_offset: 0,
+               resource: Post,
                total_count: 3,
                total_pages: 2
              }
@@ -350,6 +353,7 @@ defmodule PagifyTest do
                pagify: %Pagify{limit: 2, offset: 3, order_by: :name},
                params: %{},
                previous_offset: 1,
+               resource: Post,
                total_count: 3,
                total_pages: 2
              }
@@ -460,6 +464,7 @@ defmodule PagifyTest do
                pagify: %Pagify{limit: 2, offset: 1, order_by: :name},
                params: %{},
                previous_offset: 0,
+               resource: Post,
                total_count: 3,
                total_pages: 2
              }
@@ -519,6 +524,7 @@ defmodule PagifyTest do
                pagify: %Pagify{limit: 2, offset: 1, order_by: [name: :asc]},
                params: %{},
                previous_offset: 0,
+               resource: Post,
                total_count: 3,
                total_pages: 2
              }
@@ -622,26 +628,63 @@ defmodule PagifyTest do
     end
   end
 
-  def assert_post_names(pagify, names, opts \\ []) do
+  describe "get_option/3" do
+    test "returns value from option list" do
+      # sanity check
+      default_limit = Post.default_limit()
+      assert default_limit && default_limit != 40
+
+      assert Pagify.get_option(
+               :default_limit,
+               [default_limit: 40, for: Post],
+               1
+             ) == 40
+    end
+
+    test "falls back to resource option" do
+      # sanity check
+      assert default_limit = Post.default_limit()
+
+      assert Pagify.get_option(
+               :default_limit,
+               [for: Post],
+               1
+             ) == default_limit
+    end
+
+    test "falls back to default Pagify value" do
+      assert Pagify.get_option(:default_limit, []) == 25
+    end
+
+    test "falls back to default value passed to function" do
+      assert Pagify.get_option(:some_option, [], 2) == 2
+    end
+
+    test "falls back to nil" do
+      assert Pagify.get_option(:some_option, []) == nil
+    end
+  end
+
+  defp assert_post_names(pagify, names, opts \\ []) do
     %Ash.Page.Offset{results: posts} = Pagify.all(Post, pagify, opts)
 
     assert Enum.map(posts, & &1.name) == names
   end
 
-  def assert_page_opts(pagify, expected, opts) do
+  defp assert_page_opts(pagify, expected, opts) do
     %Ash.Page.Offset{rerun: {_, opts}} = Pagify.all(Post, pagify, opts)
 
     page = Keyword.get(opts, :page, [])
     assert_lists_equal(expected, page)
   end
 
-  def assert_comment_names(pagify, names, opts \\ []) do
+  defp assert_comment_names(pagify, names, opts \\ []) do
     %Ash.Page.Offset{results: comments} = Pagify.all(Comment, pagify, opts)
 
     assert Enum.map(comments, & &1.body) == names
   end
 
-  def assert_comment_page_opts(pagify, expected, opts) do
+  defp assert_comment_page_opts(pagify, expected, opts) do
     %Ash.Page.Offset{rerun: {_, opts}} = Pagify.all(Comment, pagify, opts)
 
     page = Keyword.get(opts, :page, [])

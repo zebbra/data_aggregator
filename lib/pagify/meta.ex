@@ -15,6 +15,7 @@ defmodule Pagify.Meta do
             pagify: %Pagify{},
             params: %{},
             previous_offset: nil,
+            resource: nil,
             total_count: nil,
             total_pages: nil
 
@@ -35,6 +36,7 @@ defmodule Pagify.Meta do
   - `:pagify` - The `Pagify` struct used in the query.
   - `:params` - The original, unvalidated params that were passed. Only set
     if validation errors occurred.
+  - `:resource` - The `Ash.Resource` that was queried.
   - `:total_count` - The total count of records for the given query.
   - `:total_pages` - The total page count based on the total record count and the limit.
   """
@@ -51,6 +53,7 @@ defmodule Pagify.Meta do
           pagify: Pagify.t(),
           params: %{optional(String.t()) => term()},
           previous_offset: non_neg_integer() | nil,
+          resource: Ash.Resource.t() | nil,
           total_count: non_neg_integer() | nil,
           total_pages: non_neg_integer() | nil
         }

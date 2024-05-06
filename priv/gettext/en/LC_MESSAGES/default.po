@@ -255,49 +255,49 @@ msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Dashboard"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:42
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:42
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Collections"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:30
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:30
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Home"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:54
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:54
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Records"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:68
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:68
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Tasks"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:42
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:42
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Collections"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:30
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:30
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Home"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:54
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:54
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Records"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.heex:68
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:68
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Tasks"
