@@ -4,10 +4,4 @@ defmodule DataAggregator.Records.HeaderSourceType do
   """
 
   use Ash.Type.Enum, values: [:collection_mapping, :dwc_attributes, :custom_selection]
-
-  alias __MODULE__
-
-  defstruct []
-
-  @type t :: %HeaderSourceType{}
 end

@@ -12,10 +12,4 @@ defmodule DataAggregator.Records.PublicationStatusType do
       :publication_failed,
       :stale
     ]
-
-  alias __MODULE__
-
-  defstruct []
-
-  @type t :: %PublicationStatusType{}
 end
