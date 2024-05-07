@@ -133,7 +133,7 @@ jobs:
 
   deploy:
     name: Deploy to staging
-    if: github.ref == 'refs/heads/main' || github.ref_type == 'tag'
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
 
