@@ -57,9 +57,6 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
       </:title>
       <:subtitle>
         <div class="text-base-content/60 text-sm/6 line-clamp-3 flex max-w-4xl items-center gap-x-2 sm:mt-2">
-          <span class="max-sm:hidden">
-            <.encoding_state_badge state={@collection.encoding_state} />
-          </span>
           <%= @collection.code %>
         </div>
       </:subtitle>

@@ -7,6 +7,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
 
   alias DataAggregator.Records
   alias DataAggregator.Records.Export
+  alias DataAggregator.Records.Record
 
   require Logger
 
@@ -141,13 +142,15 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
     %{collection: collection} = socket.assigns
     collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
 
+    count_query = Ash.Query.filter_input(Record, collection.records_to_export_query)
+
     export =
       Export.create!(%{
         name: "export-#{collection.name}-#{:os.system_time()}",
         collection: collection,
         mapping: nil,
         records_query: collection.records_to_export_query,
-        rows_count: Records.count!(collection.records_to_export_query)
+        rows_count: Records.count!(count_query)
       })
 
     assign(socket, :export, export)

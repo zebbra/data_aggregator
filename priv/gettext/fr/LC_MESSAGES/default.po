@@ -370,7 +370,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Current"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:69
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:66
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Import dataset"
@@ -1924,43 +1924,43 @@ msgctxt "DataAggregatorWeb.CollectionLive.Collection.Components.Stepper"
 msgid "Step %{current} of %{steps}"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/modal.ex:104
+#: lib/data_aggregator_web/live/collection_live/export/modal.ex:105
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Modal"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/modal.ex:101
+#: lib/data_aggregator_web/live/collection_live/export/modal.ex:102
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Modal"
 msgid "Export"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/modal.ex:24
+#: lib/data_aggregator_web/live/collection_live/export/modal.ex:25
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Modal"
 msgid "Export records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/modal.ex:69
+#: lib/data_aggregator_web/live/collection_live/export/modal.ex:70
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Modal"
 msgid "Select the data layer to be exported"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/modal.ex:45
+#: lib/data_aggregator_web/live/collection_live/export/modal.ex:46
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Modal"
 msgid "Select your data headers"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/modal.ex:93
+#: lib/data_aggregator_web/live/collection_live/export/modal.ex:94
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Modal"
 msgid "required to choose an option"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/modal.ex:26
+#: lib/data_aggregator_web/live/collection_live/export/modal.ex:27
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Modal"
 msgid "You are about to export %{row_count} records. Please choose the column headers for your export file and the data layer to be exported."
