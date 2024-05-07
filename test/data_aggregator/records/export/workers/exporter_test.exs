@@ -23,7 +23,7 @@ defmodule DataAggregator.Records.Export.Workers.ExportTest do
 
       export =
         Export.create!(%{
-          name: "export-#{collection.name}-#{Ecto.UUID.generate()}",
+          name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
           collection: collection,
           mapping: @mapping,
           records_query: collection.records_to_export_query,

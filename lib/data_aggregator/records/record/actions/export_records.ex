@@ -45,7 +45,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   @spec create_file!(any()) :: any()
   defp create_file!(records) do
     directory = FlatFileUtils.create_directory!("export")
-    file_path = "#{directory}/#{Ecto.UUID.generate()}.csv"
+    file_path = "#{directory}/#{Uniq.UUID.uuid7(:slug)}.csv"
 
     FlatFileUtils.store_on_disk!(records, file_path)
 

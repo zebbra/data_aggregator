@@ -41,7 +41,7 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
           "Encoding for record #{record.id} with catalog: #{to_string(catalog)} failed, due to: #{inspect(error)}"
         )
 
-        set_failed_state(record)
+        set_failed_state!(record)
 
         {:error, error}
     end
@@ -50,13 +50,10 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   # set the state the processed record to `:encoded` or `:failed` and return it
   @spec update_state(EncodingResult.t()) :: EncodingActionResult.t()
   defp update_state(encoding_result) do
-    case encoding_result do
-      {:ok, encoded_record} ->
-        record = get_record(encoded_record)
-        {:ok, set_encoded_state(record)}
+    with {:ok, encoded_record} <- encoding_result do
+      record = get_record(encoded_record)
 
-      {:error, error} ->
-        {:error, error}
+      {:ok, set_encoded_state(record)}
     end
   end
 
@@ -80,8 +77,8 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   end
 
   # update state of record to `:failed`
-  @spec set_failed_state(Record.t()) :: Record.t()
-  defp set_failed_state(record) do
+  @spec set_failed_state!(Record.t()) :: Record.t()
+  defp set_failed_state!(record) do
     Record.set_encoding_failed!(record)
   end
 end

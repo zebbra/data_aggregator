@@ -18,7 +18,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   """
   @spec create_directory!(String.t()) :: String.t()
   def create_directory!(directory) do
-    path = Path.join([System.tmp_dir!(), directory, Ecto.UUID.generate()])
+    path = Path.join([System.tmp_dir!(), directory, Uniq.UUID.uuid7(:slug)])
 
     File.mkdir_p!(path)
 
@@ -30,7 +30,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   """
   @spec create_zip!(String.t()) :: String.t()
   def create_zip!(directory) do
-    zip_path = ~c"#{directory}/#{Ecto.UUID.generate()}.zip"
+    zip_path = ~c"#{directory}/#{Uniq.UUID.uuid7(:slug)}.zip"
     files = get_files(directory)
     directory_path = ~c"#{directory}/"
 

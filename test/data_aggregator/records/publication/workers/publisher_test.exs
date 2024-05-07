@@ -17,27 +17,27 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
       records = [
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
+          mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia"
         }),
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
+          mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia"
         }),
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
+          mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia"
         }),
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
+          mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia"
         }),
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
+          mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "My Kingdom"
         })
       ]
@@ -49,7 +49,7 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
 
       publication =
         Publication.create!(%{
-          name: "publication-#{collection.name}-#{Ecto.UUID.generate()}",
+          name: "publication-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
           channel: :fast_track,
           collection: collection,
           mapping: nil,

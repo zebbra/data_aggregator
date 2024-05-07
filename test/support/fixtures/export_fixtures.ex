@@ -44,7 +44,7 @@ defmodule DataAggregator.ExportFixtures do
 
   def exportable_record_attrs do
     %{
-      mte_catalog_number: "MHNG-MAM-8.085-#{Ecto.UUID.generate()}",
+      mte_catalog_number: "MHNG-MAM-8.085-#{Uniq.UUID.uuid7(:slug)}",
       tax_scientific_name: "Bradyphus Burmeister, 1866",
       tax_order: "Pilosa",
       tax_family: "Bradypodidae",

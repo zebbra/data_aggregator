@@ -21,35 +21,35 @@ defmodule DataAggregator.PublicationTest do
       record1 =
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
+          mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia"
         })
 
       record2 =
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
+          mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia"
         })
 
       record3 =
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
+          mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia"
         })
 
       record4 =
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
+          mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia"
         })
 
       record5 =
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "catalog-number-#{Ecto.UUID.generate()}",
+          mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "My Kingdom"
         })
 

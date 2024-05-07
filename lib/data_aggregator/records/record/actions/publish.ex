@@ -24,16 +24,13 @@ defmodule DataAggregator.Records.Actions.Publish do
 
     query = Ash.Query.filter_input(Record, publication.records_query)
 
-    channel = publication.channel
-
     set_publication_status(
       query,
-      channel,
       :publishing,
       publication
     )
 
-    path = FlatFileUtils.create_directory!("publication_#{channel}")
+    path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
 
     CoreFile.create(query, path)
     MaterialSampleFile.create(query, path)
@@ -56,7 +53,6 @@ defmodule DataAggregator.Records.Actions.Publish do
 
     set_publication_status(
       query,
-      channel,
       :in_publication,
       publication
     )
@@ -66,13 +62,11 @@ defmodule DataAggregator.Records.Actions.Publish do
     e ->
       publication = input.arguments.publication
       query = Ash.Query.filter_input(Record, publication.records_query)
-      channel = publication.channel
 
       Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(e)}")
 
       set_publication_status(
         query,
-        channel,
         :publication_failed,
         publication
       )
@@ -83,25 +77,23 @@ defmodule DataAggregator.Records.Actions.Publish do
   @spec set_publication_status(
           Ash.Query.t(),
           atom(),
-          atom(),
           Publication.t()
         ) :: :ok
-  defp set_publication_status(query, channel, status, publication) do
+  defp set_publication_status(query, status, publication) do
     query
     |> Records.stream!(page: false)
-    |> Stream.map(&update_record!(&1, channel, status, publication))
+    |> Stream.map(&update_record!(&1, status, publication))
     |> Stream.run()
   end
 
-  @spec update_record!(Record.t(), atom(), atom(), Publication.t()) :: :ok
-  defp update_record!(record, channel, status, publication) do
-    Publication.add_publication_progress(publication, 1)
+  @spec update_record!(Record.t(), atom(), Publication.t()) :: :ok
+  defp update_record!(record, status, publication) do
+    Publication.add_publication_progress!(publication, 1)
 
-    update_status(channel, status, record)
-    :ok
+    update_status!(publication.channel, status, record)
   end
 
-  defp update_status(:fast_track, status, record), do: Record.update_fast_track_status(record, status)
+  defp update_status!(:fast_track, status, record), do: Record.update_fast_track_status!(record, status)
 
-  defp update_status(:approval, status, record), do: Record.update_approval_status(record, status)
+  defp update_status!(:approval, status, record), do: Record.update_approval_status!(record, status)
 end
