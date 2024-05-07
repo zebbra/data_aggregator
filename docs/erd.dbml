@@ -354,7 +354,7 @@ Table exports {
   started_at timestamp
   finished_at timestamp
   mapping jsonb
-  records_query bytea
+  records_query jsonb
   exported_count integer
   rows_count integer
   header_source varchar
@@ -396,7 +396,7 @@ Table publications {
   published_at timestamp
   started_at timestamp
   finished_at timestamp
-  records_query bytea
+  records_query jsonb
   published_count integer
   rows_count integer
   inserted_at timestamp

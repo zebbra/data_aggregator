@@ -36,7 +36,7 @@ defmodule DataAggregator.Records.Import.Actions.UpdateMappingTest do
 
       missing_attributes =
         Enum.map(import.missing_mappings, fn cat ->
-          {cat.name, Enum.map(cat.attributes, & &1.name)}
+          {cat.name, Enum.map(cat.dwc_attributes, & &1.attribute.name)}
         end)
 
       assert missing_attributes == [{:tax, [:scientific_name]}, {:mte, [:catalog_number]}]

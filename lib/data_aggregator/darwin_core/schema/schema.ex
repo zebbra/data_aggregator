@@ -1966,63 +1966,54 @@ categories = [
     name: :eve,
     label: "Event",
     description: "The circumstances of the extraction",
-    attributes: Enum.map(eve_attributes, & &1.attribute),
     dwc_attributes: eve_attributes
   },
   %Category{
     name: :idf,
     label: "Identification",
     description: "Characteristics of the item",
-    attributes: Enum.map(idf_attributes, & &1.attribute),
     dwc_attributes: idf_attributes
   },
   %Category{
     name: :tax,
     label: "Taxon",
     description: "Classification structure of the item",
-    attributes: Enum.map(tax_attributes, & &1.attribute),
     dwc_attributes: tax_attributes
   },
   %Category{
     name: :loc,
     label: "Location",
     description: "Geographical description",
-    attributes: Enum.map(loc_attributes, & &1.attribute),
     dwc_attributes: loc_attributes
   },
   %Category{
     name: :mte,
     label: "Material Entity",
     description: "Distinguishing marks of the specimen",
-    attributes: Enum.map(mte_attributes, & &1.attribute),
     dwc_attributes: mte_attributes
   },
   %Category{
     name: :mts,
     label: "Material Sample",
     description: "Specimens documented (bio)chemical elements",
-    attributes: Enum.map(mts_attributes, & &1.attribute),
     dwc_attributes: mts_attributes
   },
   %Category{
     name: :gec,
     label: "Geological Context",
     description: "Geological information, such as stratigraphy, that qualifies a region or a place",
-    attributes: Enum.map(gec_attributes, & &1.attribute),
     dwc_attributes: gec_attributes
   },
   %Category{
     name: :org,
     label: "Organism",
     description: "A particular organism or defined group of organisms considered to be taxonomically homogeneous",
-    attributes: Enum.map(org_attributes, & &1.attribute),
     dwc_attributes: org_attributes
   },
   %Category{
     name: :occ,
     label: "Occurrence",
     description: "An existence of a organism at a particular place at a particular time",
-    attributes: Enum.map(occ_attributes, & &1.attribute),
     dwc_attributes: occ_attributes
   },
   %Category{
@@ -2030,21 +2021,18 @@ categories = [
     label: "Preservation",
     description:
       "Support for all kinds of preservations as an extension for Material Sample core sample data in Darwin Core. Intended to be a one to many relation to the Material Sample core",
-    attributes: Enum.map(pvn_attributes, & &1.attribute),
     dwc_attributes: pvn_attributes
   },
   %Category{
     name: :oth,
     label: "Others",
     description: "Additional attributes which live outside of all other categories",
-    attributes: Enum.map(oth_attributes, & &1.attribute),
     dwc_attributes: oth_attributes
   },
   %Category{
     name: :ext,
     label: "Extensions",
     description: "DWC Extension Data which belongs to the core data",
-    attributes: Enum.map(ext_attributes, & &1.attribute),
     dwc_attributes: ext_attributes
   }
   # %Category{
@@ -2149,7 +2137,9 @@ defmodule DataAggregator.DarwinCore.Schema do
   def attribute_options do
     for category <- @categories do
       options =
-        for attribute <- category.attributes do
+        for dwc_attribute <- category.dwc_attributes do
+          attribute = dwc_attribute.attribute
+
           name =
             if attribute.allow_nil?,
               do: attribute.name,

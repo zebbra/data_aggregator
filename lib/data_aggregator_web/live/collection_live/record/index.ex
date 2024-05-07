@@ -478,13 +478,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     %{collection: collection} = socket.assigns
     collection = Records.load!(collection, [:fast_track_query], lazy?: true)
 
+    count_query = Ash.Query.filter_input(Record, collection.fast_track_query)
+
     publication =
       %{
         name: "pub-#{collection.name}-#{:os.system_time()}",
         channel: :fast_track,
         records_query: collection.fast_track_query,
         collection: collection,
-        rows_count: Records.count!(collection.fast_track_query)
+        rows_count: Records.count!(count_query)
       }
       |> Publication.create!()
       |> Publication.enqueue!()
@@ -500,13 +502,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     %{collection: collection} = socket.assigns
     collection = Records.load!(collection, [:approval_query], lazy?: true)
 
+    count_query = Ash.Query.filter_input(Record, collection.fast_track_query)
+
     publication =
       %{
         name: "pub-#{collection.name}-#{:os.system_time()}",
         channel: :approval,
         records_query: collection.approval_query,
         collection: collection,
-        rows_count: Records.count!(collection.approval_query)
+        rows_count: Records.count!(count_query)
       }
       |> Publication.create!()
       |> Publication.enqueue!()

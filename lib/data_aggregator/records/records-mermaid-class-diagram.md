@@ -353,7 +353,7 @@ classDiagram
         UtcDatetime started_at
         UtcDatetime finished_at
         Map mapping
-        Term records_query
+        Map records_query
         Integer exported_count
         Integer rows_count
         HeaderSourceType header_source
@@ -442,7 +442,7 @@ classDiagram
         UtcDatetime published_at
         UtcDatetime started_at
         UtcDatetime finished_at
-        Term records_query
+        Map records_query
         Integer published_count
         Integer rows_count
         UtcDatetimeUsec inserted_at

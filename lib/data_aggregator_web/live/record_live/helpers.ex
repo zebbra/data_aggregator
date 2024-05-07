@@ -9,7 +9,9 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
   def attrs_by_category_in_layers(record) do
     for category <- Schema.categories() do
       attributes =
-        for attribute <- category.attributes do
+        for dwc_attribute <- category.dwc_attributes do
+          attribute = dwc_attribute.attribute
+
           %{
             name: attribute.name,
             imported:
