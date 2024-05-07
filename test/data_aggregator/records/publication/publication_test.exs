@@ -70,7 +70,6 @@ defmodule DataAggregator.PublicationTest do
       [collection: collection, records: records]
     end
 
-    @tag run: true
     test "publish/1", %{collection: collection, records: _records} do
       query = %{
         collection: %{id: %{eq: collection.id}},

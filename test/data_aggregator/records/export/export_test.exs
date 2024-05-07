@@ -134,7 +134,6 @@ defmodule DataAggregator.ExportTest do
       end
     end
 
-    @tag run: true
     @tag mapping: nil
     @tag data_layer: :raw
     @tag header_source: :custom_selection
