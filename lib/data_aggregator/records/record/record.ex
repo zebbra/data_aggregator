@@ -28,6 +28,8 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
+  alias DataAggregator.Records.PublicationStatusType
+  alias DataAggregator.Records.Record.Calculations.Mids
 
   @type t :: %Record{}
 
@@ -39,6 +41,13 @@ defmodule DataAggregator.Records.Record do
     attribute :import_data, :map
     attribute :extra_data, :map
     attribute :errors, :map
+
+    attribute :fast_track_status, PublicationStatusType,
+      allow_nil?: false,
+      default: :not_published
+
+    attribute :approval_status, PublicationStatusType, allow_nil?: false, default: :not_published
+
     timestamps private?: false, writable?: false
   end
 
@@ -75,11 +84,41 @@ defmodule DataAggregator.Records.Record do
     end
   end
 
+  calculations do
+    calculate :mids_level,
+              :integer,
+              expr(
+                cond do
+                  mids_level_four -> 4
+                  mids_level_three -> 3
+                  mids_level_two -> 2
+                  mids_level_one -> 1
+                  true -> 0
+                end
+              )
+
+    calculate :mids_level_one,
+              :boolean,
+              Mids.LevelOne
+
+    calculate :mids_level_two,
+              :boolean,
+              Mids.LevelTwo
+
+    calculate :mids_level_three,
+              :boolean,
+              Mids.LevelThree
+
+    calculate :mids_level_four,
+              :boolean,
+              Mids.LevelFour
+  end
+
   paper_trail do
     change_tracking_mode :changes_only
     store_action_name? true
-    ignore_attributes [:inserted_at, :updated_at]
-    attributes_as_attributes [:mte_material_entity_id, :tax_scientific_name]
+    ignore_attributes [:inserted_at, :updated_at, :import_data, :errors]
+    attributes_as_attributes [:mte_catalog_number, :tax_scientific_name]
     reference_source? false
 
     mixin DataAggregator.Records.RecordVersionMixin
@@ -102,7 +141,7 @@ defmodule DataAggregator.Records.Record do
         to: :encoding
 
       transition :set_encoded, from: :encoding, to: :encoded
-      transition :set_failed, from: :encoding, to: :failed
+      transition :set_encoding_failed, from: :encoding, to: :failed
     end
   end
 
@@ -146,10 +185,11 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.RelateImport
       change Record.Changes.RelateCollectionFromImport
       change Record.Changes.ExtractAttributes
+      change Record.Changes.SetPublicationStale
       change Record.Changes.SetImportedAfterAction
 
       upsert? true
-      upsert_identity :collection_mte_material_entity_id
+      upsert_identity :collection_mte_catalog_number
       upsert_fields [:import_data, :extra_data | DarwinCore.Schema.prefixed_attribute_names()]
     end
 
@@ -192,8 +232,20 @@ defmodule DataAggregator.Records.Record do
       change transition_state(:encoded)
     end
 
-    update :set_failed do
+    update :set_encoding_failed do
       change transition_state(:failed)
+    end
+
+    update :update_fast_track_status do
+      argument :status, :atom, allow_nil?: false
+
+      change set_attribute(:fast_track_status, expr(^arg(:status)))
+    end
+
+    update :update_approval_status do
+      argument :status, :atom, allow_nil?: false
+
+      change set_attribute(:approval_status, expr(^arg(:status)))
     end
 
     destroy :destroy do
@@ -212,7 +264,7 @@ defmodule DataAggregator.Records.Record do
   end
 
   identities do
-    identity :collection_mte_material_entity_id, [:collection_id, :mte_material_entity_id]
+    identity :collection_mte_catalog_number, [:collection_id, :mte_catalog_number]
   end
 
   code_interface do
@@ -229,8 +281,10 @@ defmodule DataAggregator.Records.Record do
     define :set_imported
     define :set_encoding
     define :set_encoded
-    define :set_failed
+    define :set_encoding_failed
     define :enqueue_encoder
+    define :update_fast_track_status, action: :update_fast_track_status, args: [:status]
+    define :update_approval_status, action: :update_approval_status, args: [:status]
   end
 
   postgres do

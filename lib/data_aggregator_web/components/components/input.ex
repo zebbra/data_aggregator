@@ -118,15 +118,14 @@ defmodule DataAggregatorWeb.Components.Input do
 
   def input(%{type: "radio"} = assigns) do
     assigns =
-      assign_new(assigns, :checked, fn -> Form.normalize_value("radio", assigns[:value]) end)
+      assign_new(assigns, :checked, fn -> Form.normalize_value("radio", assigns[:checked]) end)
 
     ~H"""
-    <.input type="hidden" name={@name} value="false" />
     <input
       type="radio"
       id={@id}
       name={@name}
-      value="true"
+      value={@value}
       checked={@checked}
       class={["radio", @class, @errors != [] && "phx-feedback:radio-error"]}
       aria-invalid={@errors != []}

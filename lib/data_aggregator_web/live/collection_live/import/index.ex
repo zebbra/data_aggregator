@@ -29,7 +29,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                    :rows_validated_count,
                    :rows_invalid_count,
                    :validation_progress,
-                   :mappings
+                   :mappings,
+                   :collection
                  ]
 
   @impl true
@@ -73,6 +74,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/exports"}
           label={~t"Exports"m}
+        />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/publications"}
+          label={~t"Publications"m}
         />
         <li
           id="dynamic_add_button"
@@ -448,7 +453,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   end
 
   defp apply_action(socket, :edit, %{"import_id" => id}) do
-    import = Import.get_by_id!(id, load: [:collection, :missing_mappings, :mappings])
+    import = Import.get_by_id!(id, load: @load_import)
 
     socket
     |> assign(:page_title, ~t"Edit Import"m)

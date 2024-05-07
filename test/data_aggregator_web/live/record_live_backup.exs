@@ -9,11 +9,11 @@ defmodule DataAggregatorWeb.RecordLiveTest do
   alias DataAggregator.Records
 
   @update_attrs %{
-    mte_material_entity_id: "record2",
+    mte_catalog_number: "record2",
     tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
   }
 
-  @invalid_attrs %{mte_material_entity_id: nil, tax_scientific_name: nil}
+  @invalid_attrs %{mte_catalog_number: nil, tax_scientific_name: nil}
 
   defp create_record(_) do
     record = Records.load!(record_fixture(), [:collection, :encoded_record], lazy?: true)
@@ -38,9 +38,9 @@ defmodule DataAggregatorWeb.RecordLiveTest do
       {:ok, show_live, _html} = live(conn, ~p"/records")
 
       assert show_live
-             |> element("tbody > tr > td", record.mte_material_entity_id)
+             |> element("tbody > tr > td", record.mte_catalog_number)
              |> render_click() =~
-               record.mte_material_entity_id
+               record.mte_catalog_number
     end
   end
 

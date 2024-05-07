@@ -11,6 +11,8 @@ defmodule DataAggregator.Files.Attachment do
 
   alias __MODULE__
 
+  @type t :: %Attachment{}
+
   attributes do
     uuid_attribute :id, prefix: "fat"
     attribute :filename, :string, allow_nil?: false

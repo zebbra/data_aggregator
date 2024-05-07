@@ -39,7 +39,7 @@ defmodule Mix.Tasks.DataAggregator.Records.Import do
     %{name: "Localité", mapped_to: "loc_verbatim_locality"},
     %{name: "LongitudeDecimale", mapped_to: "loc_decimal_longitude"},
     %{name: "MONTHCOLLECTED", mapped_to: "eve_month"},
-    %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"},
+    %{name: "Numéro scientifique GBIF", mapped_to: "mte_catalog_number"},
     %{name: "Ordre", mapped_to: "tax_order"},
     %{name: "Parties", mapped_to: "mts_material_sample_type"},
     %{name: "Pays", mapped_to: "loc_country"},
@@ -62,6 +62,7 @@ defmodule Mix.Tasks.DataAggregator.Records.Import do
 
     collection =
       Collection.create!(%{
+        type: :zoology,
         name: "Test Collection #{timestamp}",
         owner: "Example Import",
         grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
