@@ -115,6 +115,24 @@ defmodule Pagify do
   end
   ```
 
+  ### Replace invalid params
+
+  To replace invalid pagify parameters with their default values, you can use the `replace_invalid_params?`
+  option. You can change your `handle_params/3` function as follows:
+
+  ```elixir
+  def handle_params(params, _, socket) do
+    case Post.list_posts(params, replace_invalid_params?: true) do
+        {:ok, {posts, meta}} ->
+          {:noreply, assign(socket, %{posts: posts, meta: meta})}
+        {:error, meta} ->
+          valid_path = Pagify.Components.build_path(~p"/posts", meta.params)
+          {:noreply, push_navigate(socket, to: valid_path)}
+    # ...
+    end
+  end
+  ```
+
   ## Parameter format
 
   The Pagify library requires parameters to be provided in a specific format as a map.
@@ -269,6 +287,9 @@ defmodule Pagify do
   @default_max_limit 100
   def default_max_limit, do: @default_max_limit
 
+  @pagify_opts [:default_limit, :max_limit, :replace_invalid_params?]
+  def pagify_opts, do: @pagify_opts
+
   defstruct limit: nil, offset: nil, filters: nil, order_by: nil
 
   @typedoc """
@@ -414,11 +435,16 @@ defmodule Pagify do
 
   def all(%Ash.Query{resource: r} = q, %Pagify{} = pagify, opts) do
     opts = parse(q, pagify, opts)
+    opts = remove_pagify_opts(opts)
     r.read!(opts)
   end
 
   def all(r, %Pagify{} = pagify, opts) when is_atom(r) and r != nil do
     all(Ash.Query.to_query(r), pagify, opts)
+  end
+
+  defp remove_pagify_opts(opts) do
+    Enum.filter(opts, fn {k, _} -> !Enum.member?(@pagify_opts, k) end)
   end
 
   @doc """
@@ -551,7 +577,7 @@ defmodule Pagify do
     {has_previous_page?, previous_offset} = get_previous(current_offset, page_size)
     {has_next_page?, next_offset} = get_next(current_offset, page_size, total_count)
 
-    current_order_by = get_current_order_by(page)
+    current_order_by = get_current_order_by(pagify)
     resource = get_resource(page)
 
     %Meta{
@@ -607,33 +633,15 @@ defmodule Pagify do
     min(page, total_pages)
   end
 
-  defp get_current_order_by(%Ash.Page.Offset{rerun: {%Ash.Query{} = q, _}}) do
-    case q do
-      %Ash.Query{sort: sort} ->
-        sort |> remove_default_order_by(q.resource) |> concat_sort()
-
-      _ ->
-        nil
-    end
-  end
-
-  defp remove_default_order_by(sort, resource) when is_atom(resource) and resource != nil do
-    case get_option(:default_order, for: resource) do
-      nil ->
-        sort
-
-      default_order ->
-        default_order_keys = Enum.map(default_order, &elem(&1, 0))
-        Enum.filter(sort, fn {key, _} -> not Enum.member?(default_order_keys, key) end)
-    end
-  end
-
-  defp remove_default_order_by(sort, _), do: sort
+  defp get_current_order_by(%Pagify{order_by: nil}), do: nil
+  defp get_current_order_by(%Pagify{order_by: order_by}), do: concat_sort(order_by)
 
   def concat_sort(list, acc \\ [])
   def concat_sort(nil, _), do: nil
   def concat_sort([], []), do: nil
   def concat_sort([], acc), do: Enum.reverse(acc)
+  def concat_sort(order_by, acc) when is_atom(order_by), do: concat_sort([order_by], acc)
+  def concat_sort(order_by, acc) when is_tuple(order_by), do: concat_sort([order_by], acc)
 
   def concat_sort([field | rest], acc) do
     case field do

@@ -759,12 +759,17 @@ defmodule Pagify.Components do
   end
 
   def build_path(uri, pagify_params, _opts) when is_binary(uri) and is_list(pagify_params) do
+    pagify_params_map = Map.new(pagify_params)
+    build_path(uri, pagify_params_map)
+  end
+
+  def build_path(uri, pagify_params, _opts) when is_binary(uri) and is_map(pagify_params) do
     uri = URI.parse(uri)
 
     query =
       (uri.query || "")
       |> Query.decode()
-      |> Map.merge(Map.new(pagify_params))
+      |> Map.merge(Misc.remove_nil_values(pagify_params))
 
     query = if query != %{}, do: Query.encode(query)
 

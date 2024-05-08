@@ -58,4 +58,30 @@ defmodule Pagify.Components.Misc do
   def maybe_put(keywords, _, map, _) when map == %{}, do: keywords
   def maybe_put(keywords, _, val, val), do: keywords
   def maybe_put(keywords, key, value, _), do: Keyword.put(keywords, key, value)
+
+  @doc """
+  Remove nil values from a map or struct. Does not work with nested maps.
+
+  ## Example
+
+      iex> Pagify.Components.Misc.remove_nil_values(%{a: 1, b: nil, c: 3})
+      %{a: 1, c: 3}
+
+      iex> Pagify.Components.Misc.remove_nil_values(%{a: 1, b: %{c: nil, d: 4}})
+      %{a: 1, b: %{c: nil, d: 4}}
+  """
+  def remove_nil_values(map_or_struct)
+  def remove_nil_values(nil), do: nil
+
+  def remove_nil_values(struct) when is_atom(struct) do
+    struct
+    |> Map.from_struct()
+    |> remove_nil_values()
+  end
+
+  def remove_nil_values(%{} = map) do
+    map
+    |> Enum.reject(fn {_, v} -> is_nil(v) end)
+    |> Map.new()
+  end
 end
