@@ -69,6 +69,10 @@ mix repo.migrate
 
 after you have successfully applied the changes to the database, ensure committing the migration files to the git repository.
 
+## CI/CD
+
+Continuous Integration and Continuous Deployment is setup with Github Actions. The configuration is located in `.github/workflows/` and is triggered on every `push` of a `branch` and `tag`.
+
 ## Editors
 
 ### vscode
