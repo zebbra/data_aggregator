@@ -2150,7 +2150,7 @@ defmodule DataAggregator.DarwinCore.Schema do
           {name, value}
         end
 
-      category_label = category.description
+      category_label = category.label <> " - " <> category.description
       {category_label, options}
     end
   end
