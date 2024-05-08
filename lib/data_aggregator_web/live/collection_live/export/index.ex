@@ -10,7 +10,6 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
 
   alias DataAggregator.Records
   alias DataAggregator.Records.Export
-  alias DataAggregatorWeb.Components.DataTable
 
   @load [
     :duration,
@@ -30,6 +29,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
     socket =
       socket
       |> assign(:collection, get_collection(id))
+      |> assign(selected_export: nil)
       |> subscribe_for_export_updates(connected?(socket))
 
     {:ok, socket}
@@ -37,15 +37,17 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    socket =
-      socket
-      |> assign(selected_export: nil)
-      |> assign(:collection, get_collection(id))
-      |> assign(count: Records.count!(collection_scope(params)))
-      |> assign_exports(params)
-      |> apply_action(socket.assigns.live_action, params)
+    case list_exports(params) do
+      {:ok, {records, meta}} ->
+        socket
+        |> assign(meta: meta)
+        |> stream(:results, records, reset: true)
+        |> apply_action(socket.assigns.live_action, params)
+        |> noreply()
 
-    {:noreply, socket}
+      {:error, _meta} ->
+        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/exports")}
+    end
   end
 
   @impl true
@@ -68,7 +70,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           active
         />
       </.secondary_navigation>
-      <div :if={@count > 0} class="no-scrollbar overflow-x-auto py-4">
+      <div :if={@meta.total_count > 0} class="no-scrollbar overflow-x-auto py-4">
         <.table
           id="exports_table"
           rows={@streams.results}
@@ -125,10 +127,13 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
             </button>
           </:action>
         </.table>
+        <div class="border-black-white/10 flex items-center justify-end border-t px-6 pt-4 lg:px-8">
+          <Pagify.Components.pagination meta={@meta} path={~p"/collections/#{@collection}/exports"} />
+        </div>
       </div>
 
       <.empty_state
-        :if={@count == 0}
+        :if={@meta.total_count == 0}
         title={~t"No exports"m}
         description={~t"Get started by exporting records."m}
         label={~t"Export"m}
@@ -320,23 +325,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
     |> assign(:export, nil)
   end
 
-  defp assign_exports(socket, params) do
-    stream(socket, :results, list_exports(params))
-  end
-
-  defp list_exports(params) do
-    opts = DataTable.read_opts(collection_scope(params), params)
-    opts = Keyword.put(opts, :load, @load)
-
-    {:ok, result} = Export.read(opts)
-
-    case result do
-      %Ash.Page.Offset{results: exports} -> exports
-      exports -> exports
-    end
-  end
-
-  defp collection_scope(params) do
-    Ash.Query.filter_input(Export, %{"collection" => %{"id" => params["id"]}})
+  defp list_exports(params, opts \\ [load: @load, action: :by_collection]) do
+    Pagify.validate_and_run(Export, params, opts, params["id"])
   end
 end

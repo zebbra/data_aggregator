@@ -231,6 +231,7 @@ classDiagram
         EncodedRecord encoded_record
         update(String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, String occ_associated_occurrences, ...)
         read(String sort)
+        by_collection(String collection_id, String sort)
         create(Collection collection, String mts_material_sample_type, String mte_material_entity_id, String occ_occurrence_remarks, ...)
         import(Import import, Map params, String mts_material_sample_type, String mte_material_entity_id, ...)
         enqueue_encoder()

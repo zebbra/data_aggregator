@@ -9,7 +9,6 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   import DataAggregatorWeb.RecordLive.Helpers,
     only: [attrs_by_category_in_layers: 1, encoded_attribute: 2]
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
 
@@ -17,7 +16,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, count: Records.count!(Record))}
+    {:ok, socket}
   end
 
   @impl true
@@ -43,7 +42,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     ~H"""
     <.page current="records" open={@selected_record != nil}>
       <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6"><%= ~t"Records"m %></.page_header>
-      <div :if={@count > 0} class="no-scrollbar overflow-x-auto pb-4">
+      <div :if={@meta.total_count > 0} class="no-scrollbar overflow-x-auto pb-4">
         <.table
           id="records_table"
           rows={@streams.results}
@@ -95,7 +94,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
       </div>
 
       <.empty_state
-        :if={@count == 0}
+        :if={@meta.total_count == 0}
         title={~t"No records"m}
         description={~t"Get started by importing a new dataset."m}
         label={~t"Import"m}

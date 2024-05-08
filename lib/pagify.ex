@@ -46,7 +46,7 @@ defmodule Pagify do
 
   ## Usage
 
-  First, define a function that utilizes Pagify.validate_and_run/3 to query your desired list.
+  First, define a function that utilizes Pagify.validate_and_run/4 to query your desired list.
   For example in your Ash resource module, you can define a function that queries a list of posts.
   You need to add the pagination macro call to the action of the resource that you
   want to be paginated. The macro call is used to set the default limit, offset and
@@ -252,14 +252,14 @@ defmodule Pagify do
   aware that in most cases it is better to use `Ash.Policy` to manage access control. This
   example is just to illustrate the concept.
 
-  Under the hood, the `Pagify.validate_and_run/3` or `Pagify.validate_and_run!/3` functions
-  just call `Pagify.validate/2` and `Pagify.run/3`, which in turn calls `Pagify.all/3` and
+  Under the hood, the `Pagify.validate_and_run/4` or `Pagify.validate_and_run!/4` functions
+  just call `Pagify.validate/2` and `Pagify.run/4`, which in turn calls `Pagify.all/4` and
   `Pagify.meta/3`.
 
   See `Pagify.Meta` for descriptions of the meta fields.
 
   Alternatively, you may separate parameter validation and data fetching into different
-  steps using the `Pagify.validate/2`, `Pagify.validate!/2`, and `Pagify.run/3` functions.
+  steps using the `Pagify.validate/2`, `Pagify.validate!/2`, and `Pagify.run/4` functions.
   This allows you to manipulate the validated parameters, to modify the query depending on
   the parameters, or to move the parameter validation to a different layer of your application.
 
@@ -269,7 +269,7 @@ defmodule Pagify do
   end
   ```
 
-  The aforementioned functions internally call the lower-level functions `Pagify.all/3` and
+  The aforementioned functions internally call the lower-level functions `Pagify.all/4` and
   `Pagify.meta/3`. If you have advanced requirements, you might prefer to use these functions
   directly. However, it's important to note that these lower-level functions do not validate
   the parameters. If parameters are generated based on user input, they should always be
@@ -287,7 +287,11 @@ defmodule Pagify do
   @default_max_limit 100
   def default_max_limit, do: @default_max_limit
 
-  @pagify_opts [:default_limit, :max_limit, :replace_invalid_params?]
+  @pagify_opts [
+    :default_limit,
+    :max_limit,
+    :replace_invalid_params?
+  ]
   def pagify_opts, do: @pagify_opts
 
   defstruct limit: nil, offset: nil, filters: nil, order_by: nil
@@ -409,6 +413,9 @@ defmodule Pagify do
   The user input parameters are represented by the `t:Pagify.t/0` type. Any `nil` values
   will be ignored.
 
+  If the `:action` option is set (to perform a custom read action), the fourth argument
+  `args` will be passed to the action as arguments.
+
   ## Examples
 
       iex> alias Pagify.Factory.Post
@@ -424,23 +431,44 @@ defmodule Pagify do
       iex> r
       []
 
+  Or with a custom read action:
+      iex> alias Pagify.Factory.Post
+      iex> alias Pagify.Factory.Comment
+      iex> Comment.read!() |> Enum.count()
+      iex> 9
+      iex> pagify = %Pagify{limit: 1, filters: %{name: "Post 1"}}
+      iex> %Ash.Page.Offset{results: posts} = Pagify.all(Post, pagify)
+      iex> post = hd(posts)
+      iex> %Ash.Page.Offset{count: count} = Pagify.all(Comment, %Pagify{}, [action: :by_post], post.id)
+      iex> count
+      2
+
   This function does _not_ validate or apply default parameters to the given
   Pagify struct. Be sure to validate any user-generated parameters with
   `validate/2` or `validate!/2` before passing them to this function. Doing so
   will automatically parse user provided input into the correct format for the
   query engine.
   """
-  @spec all(Ash.Query.t() | Ash.Resource.t(), Pagify.t(), Keyword.t()) :: Ash.Page.Offset.t()
-  def all(query_or_resource, pagify, opts \\ [])
+  @spec all(Ash.Query.t() | Ash.Resource.t(), Pagify.t(), Keyword.t(), any()) ::
+          Ash.Page.Offset.t()
+  def all(query_or_resource, pagify, opts \\ [], args \\ nil)
 
-  def all(%Ash.Query{resource: r} = q, %Pagify{} = pagify, opts) do
-    opts = parse(q, pagify, opts)
+  def all(%Ash.Query{resource: r} = q, %Pagify{} = pagify, opts, args) do
     opts = remove_pagify_opts(opts)
-    r.read!(opts)
+    opts = parse(q, pagify, opts)
+
+    case Keyword.get(opts, :action) do
+      nil ->
+        r.read!(opts)
+
+      action ->
+        {:ok, page} = apply(r, action, [args, opts])
+        page
+    end
   end
 
-  def all(r, %Pagify{} = pagify, opts) when is_atom(r) and r != nil do
-    all(Ash.Query.to_query(r), pagify, opts)
+  def all(r, %Pagify{} = pagify, opts, args) when is_atom(r) and r != nil do
+    all(Ash.Query.to_query(r), pagify, opts, args)
   end
 
   defp remove_pagify_opts(opts) do
@@ -455,8 +483,8 @@ defmodule Pagify do
   Pagify struct. Be sure to validate any user-generated parameters with
   `validate/2` or `validate!/2` before passing them to this function. Doing so
   will automatically parse user provided input into the correct format for the
-  query engine. Or you can use `Pagify.validate_and_run/3` or
-  `Pagify.validate_and_run!/3` instead of this function.
+  query engine. Or you can use `Pagify.validate_and_run/4` or
+  `Pagify.validate_and_run!/4` instead of this function.
 
   ## Examples
 
@@ -469,25 +497,27 @@ defmodule Pagify do
       iex> match?(%Pagify.Meta{}, meta)
       true
 
-  See the documentation for `Pagify.validate_and_run/3` for supported options.
+  See the documentation for `Pagify.validate_and_run/4` for supported options.
   """
-  @spec run(Ash.Query.t() | Ash.Resource.t(), Pagify.t(), Keyword.t()) ::
+  @spec run(Ash.Query.t() | Ash.Resource.t(), Pagify.t(), Keyword.t(), any()) ::
           {[Ash.Resource.record()], Meta.t()}
-  def run(query_or_resource, pagify, opts \\ [])
+  def run(query_or_resource, pagify, opts \\ [], args \\ nil)
 
-  def run(%Ash.Query{} = q, %Pagify{} = pagify, opts) do
-    page = all(q, pagify, opts)
+  def run(%Ash.Query{} = q, %Pagify{} = pagify, opts, args) do
+    page = all(q, pagify, opts, args)
     meta = meta(page, pagify, opts)
     {page.results, meta}
   end
 
-  def run(r, %Pagify{} = pagify, opts) when is_atom(r) and r != nil do
-    run(Ash.Query.to_query(r), pagify, opts)
+  def run(r, %Pagify{} = pagify, opts, args) when is_atom(r) and r != nil do
+    run(Ash.Query.to_query(r), pagify, opts, args)
   end
 
   @doc """
   Validates the given pagify parameters and retrieves the data and meta data on
   success.
+
+  ## Examples
 
       iex> alias Pagify.Factory.Post
       iex> {:ok, {[%Post{},%Post{},%Post{}], %Pagify.Meta{}}} =
@@ -501,6 +531,18 @@ defmodule Pagify do
         ]
       ]
 
+  Or with a custom read action:
+
+      iex> alias Pagify.Factory.Post
+      iex> alias Pagify.Factory.Comment
+      iex> Comment.read!() |> Enum.count()
+      iex> 9
+      iex> pagify = %Pagify{limit: 1, filters: %{name: "Post 1"}}
+      iex> {:ok, {posts, meta}} = Pagify.validate_and_run(Post, pagify)
+      iex> post = hd(posts)
+      iex> {:ok, {comments, meta}} = Pagify.validate_and_run(Comment, %Pagify{}, [action: :by_post], post.id)
+      iex> meta.total_count
+      2
 
   ## Options
 
@@ -516,22 +558,27 @@ defmodule Pagify do
     replaced with the default value. If set to `false`, invalid parameters
     will result in an error. Defaults to `false`.
   """
-  @spec validate_and_run(Ash.Query.t() | Ash.Resource.t(), map() | Pagify.t(), Keyword.t()) ::
+  @spec validate_and_run(Ash.Query.t() | Ash.Resource.t(), map() | Pagify.t(), Keyword.t(), any()) ::
           {:ok, {[Ash.Resource.record()], Meta.t()}} | {:error, Meta.t()}
-  def validate_and_run(query_or_resource, map_or_pagify, opts \\ []) do
+  def validate_and_run(query_or_resource, map_or_pagify, opts \\ [], args \\ nil) do
     with {:ok, pagify} <- validate(query_or_resource, map_or_pagify, opts) do
-      {:ok, run(query_or_resource, pagify, opts)}
+      {:ok, run(query_or_resource, pagify, opts, args)}
     end
   end
 
   @doc """
-  Same as `Pagify.validate_and_run/3`, but raises on error.
+  Same as `Pagify.validate_and_run/4`, but raises on error.
   """
-  @spec validate_and_run!(Ash.Query.t() | Ash.Resource.t(), map() | Pagify.t(), Keyword.t()) ::
+  @spec validate_and_run!(
+          Ash.Query.t() | Ash.Resource.t(),
+          map() | Pagify.t(),
+          Keyword.t(),
+          any()
+        ) ::
           {[Ash.Resource.record()], Meta.t()}
-  def validate_and_run!(query_or_resource, map_or_pagify, opts \\ []) do
+  def validate_and_run!(query_or_resource, map_or_pagify, opts \\ [], args \\ nil) do
     pagify = validate!(query_or_resource, map_or_pagify, opts)
-    run(query_or_resource, pagify, opts)
+    run(query_or_resource, pagify, opts, args)
   end
 
   @doc """

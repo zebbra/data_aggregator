@@ -10,7 +10,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   alias DataAggregator.Records
   alias DataAggregator.Records.Import
-  alias DataAggregatorWeb.Components.DataTable
 
   @load [
     :duration,
@@ -37,6 +36,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     socket =
       socket
       |> assign(:collection, get_collection(id))
+      |> assign(selected_import: nil)
       |> subscribe_for_import_updates(connected?(socket))
 
     {:ok, socket}
@@ -44,15 +44,17 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    socket =
-      socket
-      |> assign(selected_import: nil)
-      |> assign(:collection, get_collection(id))
-      |> assign(count: Records.count!(collection_scope(params)))
-      |> assign_imports(params)
-      |> apply_action(socket.assigns.live_action, params)
+    case list_imports(params) do
+      {:ok, {records, meta}} ->
+        socket
+        |> assign(meta: meta)
+        |> stream(:results, records, reset: true)
+        |> apply_action(socket.assigns.live_action, params)
+        |> noreply()
 
-    {:noreply, socket}
+      {:error, _meta} ->
+        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/imports")}
+    end
   end
 
   @impl true
@@ -86,7 +88,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           </.link>
         </li>
       </.secondary_navigation>
-      <div :if={@count > 0} class="no-scrollbar overflow-x-auto py-4">
+      <div :if={@meta.total_count > 0} class="no-scrollbar overflow-x-auto py-4">
         <.table
           id="imports_table"
           rows={@streams.results}
@@ -154,10 +156,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             </button>
           </:action>
         </.table>
+        <div class="border-black-white/10 flex items-center justify-end border-t px-6 pt-4 lg:px-8">
+          <Pagify.Components.pagination meta={@meta} path={~p"/collections/#{@collection}/imports"} />
+        </div>
       </div>
 
       <.empty_state
-        :if={@count == 0}
+        :if={@meta.total_count == 0}
         title={~t"No imports"m}
         description={~t"Get started by importing a new dataset."m}
         label={~t"Import"m}
@@ -469,23 +474,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     end
   end
 
-  defp assign_imports(socket, params) do
-    stream(socket, :results, list_imports(params))
-  end
-
-  defp list_imports(params) do
-    opts = DataTable.read_opts(collection_scope(params), params)
-    opts = Keyword.put(opts, :load, @load)
-
-    {:ok, result} = Import.read(opts)
-
-    case result do
-      %Ash.Page.Offset{results: imports} -> imports
-      imports -> imports
-    end
-  end
-
-  defp collection_scope(params) do
-    Ash.Query.filter_input(Import, %{"collection" => %{"id" => params["id"]}})
+  defp list_imports(params, opts \\ [load: @load, action: :by_collection]) do
+    Pagify.validate_and_run(Import, params, opts, params["id"])
   end
 end

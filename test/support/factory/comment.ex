@@ -34,11 +34,19 @@ defmodule Pagify.Factory.Comment do
       argument :sort, :string, allow_nil?: true
       pagination offset?: true, countable: true, required?: false
     end
+
+    read :by_post do
+      argument :post_id, :string, allow_nil?: false
+      pagination offset?: true, countable: true, required?: false
+
+      filter expr(post_id == ^arg(:post_id))
+    end
   end
 
   code_interface do
     define_for Pagify.Factory.Api
     define :read
+    define :by_post, args: [:post_id]
     define :create
   end
 end

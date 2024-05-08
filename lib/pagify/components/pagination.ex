@@ -22,7 +22,7 @@ defmodule Pagify.Components.Pagination do
         class: "join-item btn btn-sm"
       ],
       next_link_content: "Next",
-      page_links: {:ellipsis, 4},
+      page_links: {:ellipsis, 3},
       pagination_link_aria_label: &"Go to page #{&1}",
       pagination_link_attrs: [class: "join-item btn btn-sm max-sm:hidden"],
       previous_link_attrs: [

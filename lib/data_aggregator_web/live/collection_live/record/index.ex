@@ -20,30 +20,39 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
-  alias DataAggregatorWeb.Components.DataTable
 
   @load [:collection, :encoded_record]
 
   @polling_interval 5_000
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(%{"id" => id} = _params, _session, socket) do
+    collection = get_collection(id)
+
+    socket =
+      socket
+      |> assign(:collection, collection)
+      |> assign(selected_record: nil)
+      |> assign(:busy, collection.encoding_state in [:queued, :encoding])
+      |> subscribe_for_record_updates(connected?(socket))
+      |> subscribe_for_collection_updates(connected?(socket))
+
     {:ok, socket}
   end
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    collection = get_collection(id)
+    case list_records(params) do
+      {:ok, {records, meta}} ->
+        socket
+        |> assign(meta: meta)
+        |> stream(:results, records, reset: true)
+        |> apply_action(socket.assigns.live_action, params)
+        |> noreply()
 
-    socket
-    |> assign(:collection, collection)
-    |> subscribe_for_record_updates(connected?(socket))
-    |> subscribe_for_collection_updates(connected?(socket))
-    |> assign_records(params)
-    |> assign(selected_record: nil)
-    |> assign(:busy, collection.encoding_state in [:queued, :encoding])
-    |> apply_action(socket.assigns.live_action, params)
-    |> noreply()
+      {:error, _meta} ->
+        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/records")}
+    end
   end
 
   @impl true
@@ -109,7 +118,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </.link>
         </li>
       </.secondary_navigation>
-      <div :if={@collection.records_count > 0} class="space-y-6 p-6 lg:px-8">
+      <div :if={@meta.total_count > 0} class="space-y-6 p-6 lg:px-8">
         <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
           <.scope_stat
             href="#"
@@ -200,7 +209,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </div>
       </div> --%>
 
-      <div :if={@collection.records_count > 0} class="no-scrollbar overflow-x-auto py-4">
+      <div :if={@meta.total_count > 0} class="no-scrollbar overflow-x-auto py-4">
         <.table
           id="records_table"
           rows={@streams.results}
@@ -252,10 +261,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             </button>
           </:action>
         </.table>
+        <div class="border-black-white/10 flex items-center justify-end border-t px-6 pt-4 lg:px-8">
+          <Pagify.Components.pagination meta={@meta} path={~p"/collections/#{@collection}/records"} />
+        </div>
       </div>
 
       <.empty_state
-        :if={@collection.records_count == 0}
+        :if={@meta.total_count == 0}
         title={~t"No records"m}
         description={~t"Get started by importing a new dataset"m}
         label={~t"Import"m}
@@ -482,24 +494,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     assign(socket, :page_title, ~t"Collection Records"m)
   end
 
-  defp assign_records(socket, params) do
-    stream(socket, :results, list_records(params))
-  end
-
-  defp list_records(params) do
-    opts = DataTable.read_opts(collection_scope(params), params)
-    opts = Keyword.put(opts, :load, @load)
-
-    {:ok, result} = Record.read(opts)
-
-    case result do
-      %Ash.Page.Offset{results: records} -> records
-      records -> records
-    end
-  end
-
-  defp collection_scope(params) do
-    Ash.Query.filter_input(Record, %{"collection" => %{"id" => params["id"]}})
+  defp list_records(params, opts \\ [load: @load, action: :by_collection]) do
+    Pagify.validate_and_run(Record, params, opts, params["id"])
   end
 
   defp get_record(id) do

@@ -249,7 +249,7 @@ defmodule PagifyTest do
     end
   end
 
-  describe "all/3" do
+  describe "all/4" do
     test "returns all matching posts" do
       pagify = %Pagify{
         limit: 2,
@@ -444,7 +444,7 @@ defmodule PagifyTest do
     end
   end
 
-  describe "run/3" do
+  describe "run/4" do
     test "returns data and meta data" do
       pagify = %Pagify{limit: 2, offset: 1, order_by: :name}
       {data, meta} = Pagify.run(Post, pagify)
@@ -471,7 +471,7 @@ defmodule PagifyTest do
     end
   end
 
-  describe "validate_and_run/3" do
+  describe "validate_and_run/4" do
     test "returns error if pagify is invalid" do
       pagify = %Pagify{limit: -1, filters: %{name: "Post 1", other: "John"}}
 
@@ -531,7 +531,7 @@ defmodule PagifyTest do
     end
   end
 
-  describe "validate_and_run!/3" do
+  describe "validate_and_run!/4" do
     test "raises if pagify is invalid" do
       assert_raise Pagify.Error.InvalidParamsError, fn ->
         Pagify.validate_and_run!(Post, %Pagify{
