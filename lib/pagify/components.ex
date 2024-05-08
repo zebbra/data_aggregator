@@ -321,6 +321,7 @@ defmodule Pagify.Components do
     <nav :if={@meta.errors == [] && @meta.total_pages > 1} {@opts[:wrapper_attrs]}>
       <.pagination_link
         disabled={!@meta.has_previous_page?}
+        disabled_class={@opts[:disabled_class]}
         target={@target}
         offset={@meta.previous_offset}
         path={@page_link_helper.(@meta.previous_offset)}
@@ -339,6 +340,7 @@ defmodule Pagify.Components do
       />
       <.pagination_link
         disabled={!@meta.has_next_page?}
+        disabled_class={@opts[:disabled_class]}
         target={@target}
         offset={@meta.next_offset}
         path={@page_link_helper.(@meta.next_offset)}
@@ -418,18 +420,21 @@ defmodule Pagify.Components do
   attr :target, :string, required: true
   attr :offset, :integer, required: true
   attr :disabled, :boolean, default: false
+  attr :disabled_class, :string
   attr :rest, :global
 
   slot :inner_block
 
-  defp pagination_link(%{disabled: true} = assigns) do
+  defp pagination_link(%{disabled: true, disabled_class: disabled_class} = assigns) do
     rest =
-      Map.update(assigns.rest, :class, "btn-disabled", fn class -> [class, "btn-disabled"] end)
+      Map.update(assigns.rest, :class, disabled_class, fn class ->
+        [class, disabled_class]
+      end)
 
     assigns = assign(assigns, :rest, rest)
 
     ~H"""
-    <span {@rest} class="btn-disabled">
+    <span {@rest} class={@disabled_class}>
       <%= render_slot(@inner_block) %>
     </span>
     """

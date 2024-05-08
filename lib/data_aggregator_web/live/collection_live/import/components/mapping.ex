@@ -473,7 +473,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   end
 
   defp mandatory?(%Phoenix.HTML.Form{} = form), do: mandatory?(coalesce_mapped_to(form))
-  defp mandatory?(mapped_to) when is_binary(mapped_to), do: mandatory?(String.to_atom(mapped_to))
+
+  defp mandatory?(mapped_to) when is_binary(mapped_to), do: mandatory?(String.to_existing_atom(mapped_to))
+
   defp mandatory?(mapped_to) when is_atom(mapped_to), do: mapped_to in @mandatory_attributes
   defp mandatory?(_), do: false
 
@@ -520,7 +522,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   defp insert_attribute(category, attribute, prefixed_attribute, options) do
     Enum.map(options, fn {desc, attrs} ->
       if desc == category do
-        {desc, [{attribute, String.to_atom(prefixed_attribute)} | attrs]}
+        {desc, [{attribute, String.to_existing_atom(prefixed_attribute)} | attrs]}
       else
         {desc, attrs}
       end
@@ -551,7 +553,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     |> Enum.filter(fn {_index, column} ->
       column["mapped_to"] not in ["", nil] && column["name"] not in ["", nil]
     end)
-    |> Enum.map(fn {_index, column} -> String.to_atom(column["mapped_to"]) end)
+    |> Enum.map(fn {_index, column} -> String.to_existing_atom(column["mapped_to"]) end)
   end
 
   defp extract_mapped_to_with_name(_params), do: []
@@ -567,14 +569,14 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   defp attributes_in_use(%Import{} = import) do
     import.columns
     |> Enum.filter(&(&1.mapped? == true))
-    |> Enum.map(&String.to_atom(&1.mapped_to))
+    |> Enum.map(&String.to_existing_atom(&1.mapped_to))
   end
 
   defp extract_column_mapped_to(%{"columns" => columns} = _params) do
     columns
     |> Enum.map(fn {_index, column} -> column["mapped_to"] end)
     |> Enum.reject(&(&1 in ["", nil]))
-    |> Enum.map(&String.to_atom/1)
+    |> Enum.map(&String.to_existing_atom/1)
   end
 
   defp extract_column_mapped_to(_params), do: []

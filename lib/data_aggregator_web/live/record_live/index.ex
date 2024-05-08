@@ -90,7 +90,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           </:col>
         </.table>
         <div class="border-black-white/10 flex items-center justify-end border-t px-6 pt-4 lg:px-8">
-          <Pagify.Components.pagination meta={@meta} path="/records" />
+          <Pagify.Components.pagination meta={@meta} path={~p"/records"} />
         </div>
       </div>
 

@@ -258,7 +258,7 @@ defmodule DataAggregator.DarwinCore.Schema do
   def category_from_prefixed_attribute_name(name) when is_binary(name) do
     category_name = name |> String.split("_") |> List.first()
 
-    Enum.find(@categories, &(&1.name == String.to_atom(category_name)))
+    Enum.find(@categories, &(&1.name == String.to_existing_atom(category_name)))
   end
 
   @spec category_from_prefixed_attribute_name(atom()) :: Category.t() | nil
@@ -274,7 +274,7 @@ defmodule DataAggregator.DarwinCore.Schema do
     |> String.split("_")
     |> List.delete_at(0)
     |> Enum.join("_")
-    |> String.to_atom()
+    |> String.to_existing_atom()
   end
 
   @spec attribute_name_without_prefix(atom()) :: atom()

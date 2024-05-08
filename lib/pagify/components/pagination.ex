@@ -9,23 +9,25 @@ defmodule Pagify.Components.Pagination do
   def default_opts do
     [
       current_link_attrs: [
-        class: "join-item btn btn-active max-sm:hidden",
+        class: "join-item btn btn-sm btn-active max-sm:hidden",
         aria: [current: "page"]
       ],
-      disabled_class: "btn-disabled",
-      ellipsis_attrs: [class: "join-item btn btn-disabled max-sm:hidden"],
+      disabled_class: "text-base-content/20 pointer-events-none",
+      ellipsis_attrs: [
+        class: "join-item btn btn-sm text-base-content/20 pointer-events-none max-sm:hidden"
+      ],
       ellipsis_content: Phoenix.HTML.raw("&hellip;"),
       next_link_attrs: [
         aria: [label: "Go to next page"],
-        class: "join-item btn"
+        class: "join-item btn btn-sm"
       ],
       next_link_content: "Next",
       page_links: {:ellipsis, 4},
       pagination_link_aria_label: &"Go to page #{&1}",
-      pagination_link_attrs: [class: "join-item btn max-sm:hidden"],
+      pagination_link_attrs: [class: "join-item btn btn-sm max-sm:hidden"],
       previous_link_attrs: [
         aria: [label: "Go to previous page"],
-        class: "join-item btn"
+        class: "join-item btn btn-sm"
       ],
       previous_link_content: "Prev",
       wrapper_attrs: [

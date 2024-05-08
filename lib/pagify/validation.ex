@@ -21,7 +21,11 @@ defmodule Pagify.Validation do
 
     maybe_valid_params =
       params
-      |> Misc.atomize_keys()
+      |> Misc.atomize_keys(
+        keys: ["filters", "order_by", "limit", "offset"],
+        depth: 1,
+        existing?: true
+      )
       |> Map.put(:errors, [])
       |> validate_filters(resource, replace_invalid_params?)
       |> validate_order_by(resource, replace_invalid_params?)
@@ -391,7 +395,10 @@ defmodule Pagify.Validation do
   end
 
   defp validate_limit(%{limit: limit} = params, opts) when is_binary(limit) do
-    validate_limit(Map.put(params, :limit, String.to_integer(limit)), opts)
+    case Integer.parse(limit) do
+      {limit_number, ""} -> validate_limit(Map.put(params, :limit, limit_number), opts)
+      _ -> {:error, add_error(params, :limit, InvalidLimit.exception(limit: limit))}
+    end
   end
 
   defp validate_limit(params, _opts) do
@@ -439,7 +446,10 @@ defmodule Pagify.Validation do
   end
 
   defp validate_offset(%{offset: offset} = params, opts) when is_binary(offset) do
-    validate_offset(Map.put(params, :offset, String.to_integer(offset)), opts)
+    case Integer.parse(offset) do
+      {offset_number, ""} -> validate_offset(Map.put(params, :offset, offset_number), opts)
+      _ -> {:error, add_error(params, :offset, InvalidOffset.exception(offset: offset))}
+    end
   end
 
   defp validate_offset(params, _opts), do: {:ok, params}

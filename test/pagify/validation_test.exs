@@ -52,6 +52,16 @@ defmodule Pagify.ValidationTest do
     assert %{limit: -1, offset: -1, filters: 1, order_by: 1} = original_params
   end
 
+  test "passes with string based map params" do
+    assert {:ok, %Pagify{limit: 15, offset: 0, order_by: [name: :asc]}} =
+             Validation.validate_params(Post, %{
+               "limit" => "15",
+               "offset" => "0",
+               "filters" => %{author: "John"},
+               "order_by" => "name"
+             })
+  end
+
   describe "validate_filters/2" do
     test "passes with nil filters" do
       assert %{filters: nil} = Validation.validate_filters(%{filters: nil}, Post)
@@ -222,6 +232,24 @@ defmodule Pagify.ValidationTest do
              } = Validation.validate_pagination(params, Post)
     end
 
+    test "limit must not be an empty string" do
+      params = %{limit: ""}
+
+      assert %{
+               limit: "",
+               errors: [limit: [%Ash.Error.Query.InvalidLimit{limit: ""}]]
+             } = Validation.validate_pagination(params, Post)
+    end
+
+    test "limit must not contain non-number characters" do
+      params = %{limit: "a"}
+
+      assert %{
+               limit: "a",
+               errors: [limit: [%Ash.Error.Query.InvalidLimit{limit: "a"}]]
+             } = Validation.validate_pagination(params, Post)
+    end
+
     test "resets invalid limit to resource default_limit with replace_invalid_params?" do
       params = %{limit: 0}
 
@@ -255,6 +283,24 @@ defmodule Pagify.ValidationTest do
       assert %{
                offset: -1,
                errors: [offset: [%Ash.Error.Query.InvalidOffset{offset: -1}]]
+             } = Validation.validate_pagination(params, Post)
+    end
+
+    test "offset must not be an empty string" do
+      params = %{offset: ""}
+
+      assert %{
+               offset: "",
+               errors: [offset: [%Ash.Error.Query.InvalidOffset{offset: ""}]]
+             } = Validation.validate_pagination(params, Post)
+    end
+
+    test "offset must not contain non-number characters" do
+      params = %{offset: "a"}
+
+      assert %{
+               offset: "a",
+               errors: [offset: [%Ash.Error.Query.InvalidOffset{offset: "a"}]]
              } = Validation.validate_pagination(params, Post)
     end
 
