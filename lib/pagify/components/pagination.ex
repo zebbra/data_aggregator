@@ -14,7 +14,8 @@ defmodule Pagify.Components.Pagination do
       ],
       disabled_class: "text-base-content/20 pointer-events-none",
       ellipsis_attrs: [
-        class: "join-item btn btn-sm text-base-content/20 pointer-events-none max-sm:hidden"
+        class: "join-item btn btn-sm text-base-content/20 pointer-events-none max-sm:hidden",
+        aria: [hidden: "true"]
       ],
       ellipsis_content: Phoenix.HTML.raw("&hellip;"),
       next_link_attrs: [

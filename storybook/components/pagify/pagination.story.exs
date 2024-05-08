@@ -62,7 +62,7 @@ defmodule Storybook.Components.Pagify.Pagination do
               offset: 0,
               order_by: [tax_scientific_name: :desc]
             },
-            previous_offset: nil,
+            previous_offset: 0,
             resource: Post,
             total_count: 40,
             total_pages: 4
@@ -88,7 +88,7 @@ defmodule Storybook.Components.Pagify.Pagination do
               offset: 10,
               order_by: [tax_scientific_name: :desc]
             },
-            previous_offset: nil,
+            previous_offset: 0,
             resource: Post,
             total_count: 40,
             total_pages: 4
@@ -168,7 +168,7 @@ defmodule Storybook.Components.Pagify.Pagination do
               offset: 0,
               order_by: [tax_scientific_name: :desc]
             },
-            previous_offset: nil,
+            previous_offset: 0,
             resource: Post,
             total_count: 40,
             total_pages: 4

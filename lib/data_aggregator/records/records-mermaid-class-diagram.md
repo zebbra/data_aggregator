@@ -75,6 +75,7 @@ classDiagram
         Job job
         destroy()
         read()
+        by_collection(String collection_id, String sort)
         create(Collection collection, UUID id, String name, UtcDatetime exported_at, ...)
         update_mapping(Map mapping, UUID id, String name, UtcDatetime exported_at, ...)
         update(Struct[] records, UUID id, String name, UtcDatetime exported_at, ...)
@@ -135,6 +136,7 @@ classDiagram
         Job job
         destroy()
         read(String sort)
+        by_collection(String collection_id, String sort)
         create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
         create_from_path(Collection collection, String path, String filename)
         update_mapping(Column[] columns)

@@ -280,7 +280,7 @@ defmodule PagifyTest do
                opts: [],
                pagify: %Pagify{filters: nil, limit: 3, offset: 0, order_by: :name},
                params: %{},
-               previous_offset: nil,
+               previous_offset: 0,
                resource: Post,
                total_count: 3,
                total_pages: 1
@@ -304,7 +304,7 @@ defmodule PagifyTest do
                opts: [],
                pagify: %Pagify{},
                params: %{},
-               previous_offset: nil,
+               previous_offset: 0,
                resource: Post,
                total_count: 3,
                total_pages: 1
@@ -557,7 +557,7 @@ defmodule PagifyTest do
                 opts: [],
                 pagify: %Pagify{},
                 params: %{},
-                previous_offset: nil,
+                previous_offset: 0,
                 total_count: 1,
                 total_pages: 1
               }} = Pagify.validate_and_run!(Post, pagify)

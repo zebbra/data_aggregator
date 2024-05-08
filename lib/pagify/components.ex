@@ -543,7 +543,7 @@ defmodule Pagify.Components do
       iex> f |> to_query |> Plug.Conn.Query.encode()
       "filters[comments_count][gt]=2"
   """
-  @spec to_query(Pagify.t()) :: Keyword.t()
+  @spec to_query(Pagify.t(), Keyword.t()) :: Keyword.t()
   def to_query(%Pagify{} = pagify, opts \\ []) do
     default_limit = Pagify.get_option(:default_limit, opts)
 

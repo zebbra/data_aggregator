@@ -42,7 +42,23 @@ defmodule Pagify do
   ```
 
   Then simply copy the `Pagify` module into your project. No additional dependencies are required.
-  If you want to include the tests, you can copy the `test` directory as well.
+
+  If you want to include the tests, you can copy the `test/pagify` directory as well. In this case, you
+  will need to add the `test/pagify/support` folder to `elixir_paths(:test)` in your `mix.exs` file. You
+  will also need to add the `ex_machina` dependency to your `deps` function.
+
+  ```elixir
+  defp elixirc_paths(:test), do: ["lib", "test/support", "test/pagify/support"]
+
+  # ...
+
+  def deps do
+    [
+      # ...
+      {:ex_machina, "~> 2.7.0", only: :test}
+    ]
+  end
+  ```
 
   ## Usage
 
@@ -435,7 +451,7 @@ defmodule Pagify do
       iex> alias Pagify.Factory.Post
       iex> alias Pagify.Factory.Comment
       iex> Comment.read!() |> Enum.count()
-      iex> 9
+      9
       iex> pagify = %Pagify{limit: 1, filters: %{name: "Post 1"}}
       iex> %Ash.Page.Offset{results: posts} = Pagify.all(Post, pagify)
       iex> post = hd(posts)
@@ -536,11 +552,11 @@ defmodule Pagify do
       iex> alias Pagify.Factory.Post
       iex> alias Pagify.Factory.Comment
       iex> Comment.read!() |> Enum.count()
-      iex> 9
+      9
       iex> pagify = %Pagify{limit: 1, filters: %{name: "Post 1"}}
-      iex> {:ok, {posts, meta}} = Pagify.validate_and_run(Post, pagify)
+      iex> {:ok, {posts, _meta}} = Pagify.validate_and_run(Post, pagify)
       iex> post = hd(posts)
-      iex> {:ok, {comments, meta}} = Pagify.validate_and_run(Comment, %Pagify{}, [action: :by_post], post.id)
+      iex> {:ok, {_comments, meta}} = Pagify.validate_and_run(Comment, %Pagify{}, [action: :by_post], post.id)
       iex> meta.total_count
       2
 
@@ -648,7 +664,7 @@ defmodule Pagify do
 
   defp get_previous(offset, limit) do
     has_previous? = offset > 0
-    previous_offset = if has_previous?, do: max(0, offset - limit)
+    previous_offset = if has_previous?, do: max(0, offset - limit), else: 0
 
     {has_previous?, previous_offset}
   end
