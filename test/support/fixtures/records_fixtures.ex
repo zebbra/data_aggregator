@@ -18,7 +18,8 @@ defmodule DataAggregator.RecordsFixtures do
     owner: "Max Powers",
     type: :zoology,
     grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472",
-    code: "322ce107-3156-4420-8a2b-7f17efeaa472"
+    code: "322ce107-3156-4420-8a2b-7f17efeaa472",
+    grscicoll_institution_key: "90070fe3-51ec-4a56-96be-cb6c00dd0ae2"
   }
 
   @doc """

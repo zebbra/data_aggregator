@@ -1,8 +1,7 @@
 collection_types = [
   zoology: "Zoology",
   botany: "Botany",
-  mycology: "Mycology",
-  anthropology: "Anthropology",
+  geology: "Geology",
   paleontology: "Paleontology"
 ]
 

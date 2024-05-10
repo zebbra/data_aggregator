@@ -117,7 +117,17 @@ defmodule DataAggregator.Records.Record do
   paper_trail do
     change_tracking_mode :changes_only
     store_action_name? true
-    ignore_attributes [:inserted_at, :updated_at, :import_data, :errors]
+
+    ignore_attributes [
+      :inserted_at,
+      :updated_at,
+      :import_data,
+      :errors,
+      :approval_status,
+      :fast_track_status,
+      :state
+    ]
+
     attributes_as_attributes [:mte_catalog_number, :tax_scientific_name]
     reference_source? false
 
