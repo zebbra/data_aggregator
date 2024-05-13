@@ -9,6 +9,7 @@ defmodule DataAggregatorWeb.Helpers do
   @placeholder Phoenix.HTML.raw("&mdash;")
 
   def format_number(number, opts \\ [])
+  def format_number(%Ash.NotLoaded{}, _opts), do: @placeholder
   def format_number(nil, _opts), do: @placeholder
   def format_number(number, opts), do: Cldr.Number.to_string!(number, opts)
 

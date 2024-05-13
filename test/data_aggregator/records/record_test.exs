@@ -14,7 +14,7 @@ defmodule DataAggregator.RecordTest do
 
   describe "records" do
     @invalid_attrs %{
-      mte_material_entity_id: nil,
+      mte_catalog_number: nil,
       tax_scientific_name: nil
     }
 
@@ -42,7 +42,7 @@ defmodule DataAggregator.RecordTest do
 
     test "create/1 with valid data creates a record" do
       attrs = %{
-        mte_material_entity_id: "record1",
+        mte_catalog_number: "record1",
         tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083",
         collection: collection_fixture()
       }
@@ -62,7 +62,7 @@ defmodule DataAggregator.RecordTest do
       record = record_fixture()
 
       update_attrs = %{
-        mte_material_entity_id: "record2",
+        mte_catalog_number: "record2",
         tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
       }
 
@@ -110,7 +110,7 @@ defmodule DataAggregator.RecordTest do
     test "destroy/1 deletes the record and it's versions" do
       update_attrs = %{
         tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc042",
-        mte_material_entity_id: "record42"
+        mte_catalog_number: "record42"
       }
 
       record =
@@ -129,7 +129,7 @@ defmodule DataAggregator.RecordTest do
       assert_map_includes(hd(Record.Version.read!(%{version_source_id: record.id})), %{
         version_source_id: record.id,
         tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc042",
-        mte_material_entity_id: "record42",
+        mte_catalog_number: "record42",
         version_action_type: :destroy,
         version_action_name: :destroy,
         changes: %{}
@@ -148,6 +148,7 @@ defmodule DataAggregator.RecordTest do
     setup do
       collection =
         Collection.create!(%{
+          type: :zoology,
           name: "My Collection",
           owner: "Max Powers",
           grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
@@ -163,7 +164,7 @@ defmodule DataAggregator.RecordTest do
 
     test "importing a record", %{import: import} do
       params = %{
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         tax_scientific_name: "Example",
         some_extra_data: "Extra"
       }
@@ -180,12 +181,12 @@ defmodule DataAggregator.RecordTest do
       assert_map_includes(record, %{
         collection_id: import.collection_id,
         tax_scientific_name: "Example",
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         extra_data: %{
           "some_extra_data" => "Extra"
         },
         import_data: %{
-          "mte_material_entity_id" => "ex-123",
+          "mte_catalog_number" => "ex-123",
           "tax_scientific_name" => "Example",
           "some_extra_data" => "Extra"
         }
@@ -193,12 +194,13 @@ defmodule DataAggregator.RecordTest do
 
       record = Records.load!(record, [:paper_trail_versions])
 
-      assert length(record.paper_trail_versions) == 1
+      # changed publication states in after_action hook leads to one additional change per record
+      assert length(record.paper_trail_versions) == 3
     end
 
     test "updating a record for the same import", %{import: import} do
       params = %{
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         tax_scientific_name: "Example",
         some_extra_data: "Extra"
       }
@@ -206,7 +208,7 @@ defmodule DataAggregator.RecordTest do
       assert {:ok, record} = Record.import(import, params)
 
       updated_params = %{
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         tax_scientific_name: "Updated Example",
         some_other_extra_data: "Other Extra"
       }
@@ -224,7 +226,7 @@ defmodule DataAggregator.RecordTest do
         id: record.id,
         collection_id: import.collection_id,
         tax_scientific_name: "Updated Example",
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         extra_data: %{
           "some_other_extra_data" => "Other Extra"
         }
@@ -232,12 +234,12 @@ defmodule DataAggregator.RecordTest do
 
       record = Records.load!(record, [:paper_trail_versions])
 
-      assert length(record.paper_trail_versions) == 2
+      assert length(record.paper_trail_versions) == 4
     end
 
     test "updating a record from another import", %{import: import} do
       params = %{
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         tax_scientific_name: "Example",
         some_extra_data: "Extra"
       }
@@ -245,7 +247,7 @@ defmodule DataAggregator.RecordTest do
       assert {:ok, record} = Record.import(import, params)
 
       updated_params = %{
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         tax_scientific_name: "Updated Example",
         some_other_extra_data: "Other Extra"
       }
@@ -262,19 +264,20 @@ defmodule DataAggregator.RecordTest do
       )
 
       assert_map_includes(updated_record.import_data, %{
-        "mte_material_entity_id" => "ex-123",
+        "mte_catalog_number" => "ex-123",
         "tax_scientific_name" => "Updated Example",
         "some_other_extra_data" => "Other Extra"
       })
 
       record = Records.load!(record, [:paper_trail_versions])
 
-      assert length(record.paper_trail_versions) == 2
+      # changed publication states in after_action hook leads to one additional change per record
+      assert length(record.paper_trail_versions) == 4
     end
 
     test "importing a record for another collection", %{import: import} do
       params = %{
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         tax_scientific_name: "Example"
       }
 
@@ -282,6 +285,7 @@ defmodule DataAggregator.RecordTest do
 
       other_collection =
         Collection.create!(%{
+          type: :zoology,
           name: "Another Collection",
           owner: "Max Powers",
           grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
@@ -295,9 +299,116 @@ defmodule DataAggregator.RecordTest do
 
       assert_map_includes(other_record, %{
         collection_id: other_collection.id,
-        mte_material_entity_id: "ex-123",
+        mte_catalog_number: "ex-123",
         tax_scientific_name: "Example"
       })
+    end
+  end
+
+  describe "mids levels" do
+    setup do
+      record = record_fixture()
+
+      [record: record]
+    end
+
+    test "mids level 0", %{record: record} do
+      params = %{
+        mte_catalog_number: "ex-123",
+        tax_scientific_name: "Example",
+        oth_institution_code: nil
+      }
+
+      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+
+      assert record.mids_level == 0
+    end
+
+    test "mids level 1", %{record: record} do
+      params = %{
+        mte_catalog_number: "ex-123",
+        tax_scientific_name: "Example",
+        oth_institution_code: "Baaa"
+      }
+
+      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+
+      assert record.mids_level == 1
+    end
+
+    test "mids level 2", %{record: record} do
+      params = %{
+        mte_catalog_number: "ex-123",
+        tax_scientific_name: "Example",
+        oth_institution_code: "Baaa",
+        mte_part_of_organism: "bla",
+        tax_taxon_id: 42
+      }
+
+      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+
+      assert record.mids_level == 2
+    end
+
+    test "mids level 3", %{record: record} do
+      params = %{
+        mte_catalog_number: "ex-123",
+        tax_scientific_name: "Example",
+        oth_institution_code: "Baaa",
+        mte_part_of_organism: "bla",
+        tax_taxon_id: 42,
+        eve_event_date: Cldr.Calendar.date_from_tuple({2001, 1, 1}),
+        mte_recorded_by: "bla",
+        idf_type_status: "bla",
+        tax_original_name_usage: "bla",
+        loc_continent: "bla",
+        loc_country: "bla",
+        loc_county: "bla",
+        loc_decimal_latitude: 42.42,
+        loc_decimal_longitude: 42.42,
+        loc_higher_geography: "bla",
+        loc_locality: "bla",
+        loc_state_province: "bla",
+        loc_verbatim_depth: 42,
+        loc_verbatim_elevation: "42",
+        mte_year_collection_entrance: 2001,
+        occ_occurrence_id: "bla"
+      }
+
+      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+
+      assert record.mids_level == 3
+    end
+
+    test "mids level 4", %{record: record} do
+      params = %{
+        mte_catalog_number: "ex-123",
+        tax_scientific_name: "Example",
+        oth_institution_code: "Baaa",
+        mte_part_of_organism: "bla",
+        tax_taxon_id: 42,
+        eve_event_date: Cldr.Calendar.date_from_tuple({2001, 1, 1}),
+        mte_recorded_by: "bla",
+        idf_type_status: "bla",
+        tax_original_name_usage: "bla",
+        loc_continent: "bla",
+        loc_country: "bla",
+        loc_county: "bla",
+        loc_decimal_latitude: 42.42,
+        loc_decimal_longitude: 42.42,
+        loc_higher_geography: "bla",
+        loc_locality: "bla",
+        loc_state_province: "bla",
+        loc_verbatim_depth: 42,
+        loc_verbatim_elevation: "42",
+        mte_year_collection_entrance: 2001,
+        occ_occurrence_id: "bla",
+        mte_verbatim_label: "bla"
+      }
+
+      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+
+      assert record.mids_level == 4
     end
   end
 end

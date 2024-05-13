@@ -257,6 +257,10 @@ defmodule DataAggregator.Records.Import do
   postgres do
     table "imports"
     repo DataAggregator.Repo
+
+    references do
+      reference :collection, on_delete: :delete, on_update: :update
+    end
   end
 
   graphql do

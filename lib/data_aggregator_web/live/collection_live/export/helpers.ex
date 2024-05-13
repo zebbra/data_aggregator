@@ -37,8 +37,8 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Helpers do
 
   def current_step(action) do
     case action do
-      :new -> 1
-      :edit -> 2
+      :columns -> 1
+      :layer -> 2
       :summary -> 3
     end
   end

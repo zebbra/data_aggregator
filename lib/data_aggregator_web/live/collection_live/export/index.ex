@@ -67,6 +67,10 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           label={~t"Exports"m}
           active
         />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/publications"}
+          label={~t"Publications"m}
+        />
       </.secondary_navigation>
       <div :if={@count > 0} class="no-scrollbar overflow-x-auto py-4">
         <.table

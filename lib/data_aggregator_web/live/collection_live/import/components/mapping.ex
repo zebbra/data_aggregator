@@ -5,10 +5,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   use DataAggregatorWeb, :live_component
 
+  import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
+
   import DataAggregatorWeb.CollectionLive.Import.Components,
     only: [attribute_badge: 1, import_mapping_validation: 1]
 
-  import DataAggregatorWeb.CollectionLive.Import.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
 
   alias AshPhoenix.Form

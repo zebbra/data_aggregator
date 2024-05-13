@@ -33,7 +33,8 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
         :digitizing_progress,
         :encoding_state,
         :records_count_not_encoded,
-        :records_count_failed
+        :records_count_failed,
+        :records_publishing
       ]
     )
   end

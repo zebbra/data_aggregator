@@ -15,7 +15,7 @@ defmodule DataAggregator.EncodingFixtures do
   require Logger
 
   @encoded_record_defaults %{
-    mte_material_entity_id: "encoded_record1",
+    mte_catalog_number: "encoded_record1",
     tax_scientific_name: "Oenanthea Pallas",
     tax_kingdom: "Animalia",
     tax_taxon_id: 1_012_187
@@ -37,7 +37,7 @@ defmodule DataAggregator.EncodingFixtures do
   def record_fixture_for_encoding(attrs \\ %{}) do
     @encoded_record_defaults
     |> Map.merge(attrs)
-    |> Map.put(:loc_city, "Bern")
+    |> Map.put(:loc_municipality, "Bern")
     |> Map.put(:loc_country, "Switzerland")
     |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
     |> Record.create!()
@@ -106,8 +106,7 @@ defmodule DataAggregator.EncodingFixtures do
   def record_fixture_for_forward_geo_encoding_correct(attrs \\ %{}) do
     @encoded_record_defaults
     |> Map.merge(attrs)
-    |> Map.put(:loc_city, "Liebefeld")
-    |> Map.put(:loc_municipality, nil)
+    |> Map.put(:loc_municipality, "Liebefeld")
     |> Map.put(:loc_state_province, "Bern")
     |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
     |> Record.create!()

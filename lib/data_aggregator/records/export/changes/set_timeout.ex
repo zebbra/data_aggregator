@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Changes.SetTimeout do
+defmodule DataAggregator.Records.Export.Changes.SetTimeout do
   @moduledoc """
   Timeout for the export action. In `DataAggregator.Records.export_timeout/0` you can see how to change various export configurations.
   """
