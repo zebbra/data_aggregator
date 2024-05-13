@@ -28,8 +28,13 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
     # register collection at gbif --> https://api.gbif-uat.org/v1/dataset
 
     # TODO: check what happens if a collection is already registered...
+    # TODO: mock this for tests
 
-    case Req.post(url: System.get_env("GBIF_DATASET_URL"), json: params) do
+    case Req.post(
+           url: System.get_env("GBIF_DATASET_URL"),
+           auth: gbif_auth(),
+           json: params
+         ) do
       {:ok, response} ->
         if response.status == 201 do
           registration = response.body
@@ -62,6 +67,7 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
 
     case Req.post(
            url: ~c"#{System.get_env("GBIF_DATASET_URL")}/#{registration}/endpoint",
+           auth: gbif_auth(),
            body: params
          ) do
       {:ok, response} ->
@@ -75,4 +81,6 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
         {:error, "Error during endpoint creation with params: #{inspect(params)}, #{inspect(error)}"}
     end
   end
+
+  defp gbif_auth, do: {:basic, "#{System.get_env("GBIF_USER")}:#{System.get_env("GBIF_PASSWORD")}"}
 end

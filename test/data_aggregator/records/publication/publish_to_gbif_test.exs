@@ -95,7 +95,8 @@ defmodule DataAggregator.PublishToGbifTest do
     #   assert publication.channel == :fast_track
     #   assert publication.status == :in_publication
 
-    #   # TODO: go further here!!!
+    #   # TODO: go further here!!! as soon as login with provided user
+    #   #   works currently -->  {:error, "No valid response (status 403) from Gibif api"}
     # end
   end
 end
