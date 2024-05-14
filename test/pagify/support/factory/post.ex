@@ -16,6 +16,7 @@ defmodule Pagify.Factory.Post do
     uuid_attribute :id
     attribute :name, :string, allow_nil?: false
     attribute :author, :string
+    attribute :age, :integer
 
     # allow sorting by inserted_at/updated_at
     timestamps private?: false, writable?: false
@@ -32,7 +33,7 @@ defmodule Pagify.Factory.Post do
   end
 
   preparations do
-    prepare build(sort: [id: :asc])
+    prepare build(sort: [name: :asc])
     prepare DataAggregator.Preparations.Sort
   end
 

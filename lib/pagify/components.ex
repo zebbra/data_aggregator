@@ -9,7 +9,6 @@ defmodule Pagify.Components do
 
   ## Customization
 
-  We use DaisyUI for the default styles.
   The default classes, attributes, texts and symbols can be overridden by
   passing the `opts` assign. Since you probably will use the same `opts` in all
   your templates, you can globally configure an `opts` provider function for
@@ -70,6 +69,15 @@ defmodule Pagify.Components do
 
   Refer to `t:pagination_option/0` and `t:table_option/0` for a list of
   available options and defaults.
+
+  Once you have defined these functions, you can reference them with a
+  module/function tuple in `config/config.exs`.
+
+  ```elixir
+  config :my_app :pagify_phoenix,
+    pagination: [opts: {MyAppWeb.CoreComponents, :pagination_opts}],
+    table: [opts: {MyAppWeb.CoreComponents, :table_opts}]
+  ```
 
   ## Hiding default parameters
 
@@ -140,7 +148,9 @@ defmodule Pagify.Components do
 
   alias Pagify.Components.Misc
   alias Pagify.Components.Pagination
+  alias Pagify.Components.Table
   alias Pagify.Meta
+  alias Phoenix.LiveView.JS
   alias Plug.Conn.Query
 
   @typedoc """
@@ -200,6 +210,66 @@ defmodule Pagify.Components do
           | {module(), atom(), [any()]}
           | {function, [any]}
           | (keyword -> String.t())
+
+  @typedoc """
+  Defines the available options for `Pagify.Components.table/1`.
+
+  - `:container` - Wraps the table in a `<div>` if `true`.
+    Default: `#{inspect(Table.default_opts()[:container])}`.
+  - `:container_attrs` - The attributes for the table container.
+    Default: `#{inspect(Table.default_opts()[:container_attrs])}`.
+  - `:no_results_content` - Any content that should be rendered if there are no
+    results. Default: `<p>No results.</p>`.
+  - `:table_attrs` - The attributes for the `<table>` element.
+    Default: `#{inspect(Table.default_opts()[:table_attrs])}`.
+  - `:th_wrapper_attrs` - The attributes for the `<span>` element that wraps the
+    header link and the order direction symbol.
+    Default: `#{inspect(Table.default_opts()[:th_wrapper_attrs])}`.
+  - `:symbol_asc` - The symbol that is used to indicate that the column is
+    sorted in ascending order.
+    Default: `#{inspect(Table.default_opts()[:symbol_asc])}`.
+  - `:symbol_attrs` - The attributes for the `<span>` element that wraps the
+    order direction indicator in the header columns.
+    Default: `#{inspect(Table.default_opts()[:symbol_attrs])}`.
+  - `:symbol_desc` - The symbol that is used to indicate that the column is
+    sorted in ascending order.
+    Default: `#{inspect(Table.default_opts()[:symbol_desc])}`.
+  - `:symbol_unsorted` - The symbol that is used to indicate that the column is
+    not sorted. Default: `#{inspect(Table.default_opts()[:symbol_unsorted])}`.
+  - `:tbody_attrs`: Attributes to be added to the `<tbody>` tag within the
+    `<table>`. Default: `#{inspect(Table.default_opts()[:tbody_attrs])}`.
+  - `:tbody_td_attrs`: Attributes to be added to each `<td>` tag within the
+    `<tbody>`. Default: `#{inspect(Table.default_opts()[:tbody_td_attrs])}`.
+  - `:thead_attrs`: Attributes to be added to the `<thead>` tag within the
+    `<table>`. Default: `#{inspect(Table.default_opts()[:thead_attrs])}`.
+  - `:tbody_tr_attrs`: Attributes to be added to each `<tr>` tag within the
+    `<tbody>`. A function with arity of 1 may be passed to dynamically generate
+    the attrs based on row data.
+    Default: `#{inspect(Table.default_opts()[:tbody_tr_attrs])}`.
+  - `:thead_th_attrs`: Attributes to be added to each `<th>` tag within the
+    `<thead>`. Default: `#{inspect(Table.default_opts()[:thead_th_attrs])}`.
+  - `:thead_tr_attrs`: Attributes to be added to each `<tr>` tag within the
+    `<thead>`. Default: `#{inspect(Table.default_opts()[:thead_tr_attrs])}`.
+  - `:limit_order_by` - Limit the number of applied order_by fields.
+    Default: `#{inspect(Table.default_opts()[:limit_order_by])}`.
+  """
+  @type table_option ::
+          {:container, boolean}
+          | {:container_attrs, keyword}
+          | {:no_results_content, Phoenix.HTML.safe() | binary}
+          | {:symbol_asc, Phoenix.HTML.safe() | binary}
+          | {:symbol_attrs, keyword}
+          | {:symbol_desc, Phoenix.HTML.safe() | binary}
+          | {:symbol_unsorted, Phoenix.HTML.safe() | binary}
+          | {:table_attrs, keyword}
+          | {:tbody_attrs, keyword}
+          | {:thead_attrs, keyword}
+          | {:tbody_td_attrs, keyword}
+          | {:tbody_tr_attrs, keyword | (any -> keyword)}
+          | {:th_wrapper_attrs, keyword}
+          | {:thead_th_attrs, keyword}
+          | {:thead_tr_attrs, keyword}
+          | {:limit_order_by, pos_integer}
 
   @doc """
   Generates a pagination element.
@@ -303,7 +373,10 @@ defmodule Pagify.Components do
     doc: """
     Options to customize the pagination. See
     `t:Pagify.Components.pagination_option/0`. Note that the options passed to the
-    function are deep merged into the default options.
+    function are deep merged into the default options. Since these options will
+    likely be the same for all the tables in a project, it is recommended to
+    define them once in a function or set them in a wrapper function as
+    described in the `Customization` section of the module documentation.
     """
 
   def pagination(%{path: nil, on_paginate: nil}) do
@@ -318,7 +391,7 @@ defmodule Pagify.Components do
       |> assign(:path, nil)
 
     ~H"""
-    <nav :if={@meta.errors == [] && @meta.total_pages > 1} {@opts[:wrapper_attrs]}>
+    <nav :if={Pagination.show_pagination?(@meta)} {@opts[:wrapper_attrs]}>
       <.pagination_link
         disabled={!@meta.has_previous_page?}
         disabled_class={@opts[:disabled_class]}
@@ -463,6 +536,345 @@ defmodule Pagify.Components do
   end
 
   @doc """
+  Generates a table with sortable columns.
+
+  ## Example
+
+  ```elixir
+  <Pagify.Components.table items={@posts} meta={@meta} path={~p"/posts"}>
+    <:col :let={post} label="Name" field={:name}><%= post.name %></:col>
+    <:col :let={post} label="Author" field={:author}><%= post.author %></:col>
+  </Pagify.Components.table>
+  ```
+  """
+  @spec table(map) :: Phoenix.LiveView.Rendered.t()
+
+  attr :id, :string,
+    doc: """
+    ID used on the table. If not set, an ID is chosen based on the resource
+    module derived from the `Pagify.Meta` struct.
+
+    The ID is necessary in case the table is fed with a LiveView stream.
+    """
+
+  attr :items, :list,
+    required: true,
+    doc: """
+    The list of items to be displayed in rows. This is the result list returned
+    by the query.
+    """
+
+  attr :meta, Meta,
+    default: nil,
+    doc: "The `Pagify.Meta` struct returned by the query function. If omitted
+    the table will be rendered without order_by links."
+
+  attr :path, :any,
+    default: nil,
+    doc: """
+    If set, the current view is patched with updated query parameters when a
+    header link for sorting is clicked. In case the `on_sort` attribute is
+    set as well, the URL is patched _and_ the given JS command is executed.
+
+    The value must be either a URI string (Phoenix verified route), an MFA or FA
+    tuple (Phoenix route helper), or a 1-ary path builder function. See
+    `Pagify.Components.build_path/3` for details.
+    """
+
+  attr :on_sort, JS,
+    default: nil,
+    doc: """
+    A `Phoenix.LiveView.JS` command that is triggered when a header link for
+    sorting is clicked.
+
+    If used without the `path` attribute, you should include a `push` operation
+    to handle the event with the `handle_event` callback.
+
+        <.table
+          items={@items}
+          meta={@meta}
+          on_sort={
+            JS.dispatch("my_app:scroll_to", to: "#post-table") |> JS.push("sort")
+          }
+        />
+
+    If used with the `path` attribute, the URL is patched _and_ the given
+    JS command is executed.
+
+        <.table
+          meta={@meta}
+          path={~"/posts"}
+          on_sort={JS.dispatch("my_app:scroll_to", to: "#post-table")}
+        />
+    """
+
+  attr :target, :string,
+    default: nil,
+    doc: "Sets the `phx-target` attribute for the header links."
+
+  attr :caption, :string,
+    default: nil,
+    doc: "Content for the `<caption>` element."
+
+  attr :opts, :list,
+    default: [],
+    doc: """
+    Keyword list with additional options (see `t:Pagify.Components.table_option/0`).
+    Note that the options passed to the function are deep merged into the
+    default options. Since these options will likely be the same for all
+    the tables in a project, it is recommended to define them once in a
+    function or set them in a wrapper function as described in the `Customization`
+    section of the module documentation.
+    """
+
+  attr :row_id, :any,
+    default: nil,
+    doc: """
+    Overrides the default function that retrieves the row ID from a stream item.
+    """
+
+  attr :row_click, JS,
+    default: nil,
+    doc: """
+    Sets the `phx-click` function attribute for each row `td`. Expects to be a
+    function that receives a row item as an argument. This does not add the
+    `phx-click` attribute to the `action` slot.
+
+    Example:
+
+    ```elixir
+    row_click={&JS.navigate(~p"/users/\#{&1}")}
+    ```
+    """
+
+  attr :row_item, :any,
+    default: &Function.identity/1,
+    doc: """
+    This function is called on the row item before it is passed to the :col
+    and :action slots.
+    """
+
+  slot :col,
+    required: true,
+    doc: """
+    For each column to render, add one `<:col>` element.
+
+    ```elixir
+    <:col :let={post} label="Name" field={:name} col_style="width: 20%;">
+      <%= post.name %>
+    </:col>
+    ```
+
+    Any additional assigns will be added as attributes to the `<td>` elements.
+
+    """ do
+    attr :label, :any, doc: "The content for the header column."
+
+    attr :field, :atom,
+      doc: """
+      The field name for sorting. If set and the field is configured as sortable
+      in the resource, the column header will be clickable, allowing the user to
+      sort by that column. If the field is not marked as sortable or if the
+      `field` attribute is omitted or set to `nil` or `false`, the column header
+      will not be clickable.
+      """
+
+    attr :directions, :any,
+      doc: """
+      An optional 2-element tuple used for custom ascending and descending sort
+      behavior for the column, i.e. `{:asc_nils_last, :desc_nils_first}`
+      """
+
+    attr :col_style, :string,
+      doc: """
+      If set, a `<colgroup>` element is rendered and the value of the
+      `col_style` assign is set as `style` attribute for the `<col>` element of
+      the respective column. You can set the `width`, `background`, `border`,
+      and `visibility` of a column this way.
+      """
+
+    attr :col_class, :string,
+      doc: """
+      If set, a `<colgroup>` element is rendered and the value of the
+      `col_class` assign is set as `class` attribute for the `<col>` element of
+      the respective column. You can set the `width`, `background`, `border`,
+      and `visibility` of a column this way.
+      """
+
+    attr :class, :string,
+      doc: """
+      Additional classes to add to the `<th>` and `<td>` element. Will be merged with the
+      `thead_attr_attrs` and `tbody_td_attrs` attributes.
+      """
+
+    attr :thead_th_attrs, :list,
+      doc: """
+      Additional attributes to pass to the `<th>` element as a static keyword
+      list. Note that these attributes will override any conflicting
+      `thead_th_attrs` that are set at the table level.
+      """
+
+    attr :th_wrapper_attrs, :list,
+      doc: """
+      Additional attributes for the `<span>` element that wraps the
+      header link and the order direction symbol. Note that these attributes
+      will override any conflicting `th_wrapper_attrs` that are set at the table
+      level.
+      """
+
+    attr :tbody_td_attrs, :any,
+      doc: """
+      Additional attributes to pass to the `<td>` element. May be provided as a
+      static keyword list, or as a 1-arity function to dynamically generate the
+      list using row data. Note that these attributes will override any
+      conflicting `tbody_td_attrs` that are set at the table level.
+      """
+  end
+
+  slot :action,
+    doc: """
+    The slot for showing user actions in the last table column. These columns
+    do not receive the `row_click` attribute.
+
+
+    ```elixir
+    <:action :let={user}>
+      <.link navigate={~p"/users/\#{user}"}>Show</.link>
+    </:action>
+    ```
+    """ do
+    attr :label, :string, doc: "The content for the header column."
+
+    attr :show, :boolean, doc: "Boolean value to conditionally show the column. Defaults to `true`."
+
+    attr :hide, :boolean, doc: "Boolean value to conditionally hide the column. Defaults to `false`."
+
+    attr :col_style, :string,
+      doc: """
+      If set, a `<colgroup>` element is rendered and the value of the
+      `col_style` assign is set as `style` attribute for the `<col>` element of
+      the respective column. You can set the `width`, `background`, `border`,
+      and `visibility` of a column this way.
+      """
+
+    attr :col_class, :string,
+      doc: """
+      If set, a `<colgroup>` element is rendered and the value of the
+      `col_class` assign is set as `class` attribute for the `<col>` element of
+      the respective column. You can set the `width`, `background`, `border`,
+      and `visibility` of a column this way.
+      """
+
+    attr :class, :string,
+      doc: """
+      Additional classes to add to the `<th>` and `<td>` element. Will be merged with the
+      `thead_attr_attrs` and `tbody_td_attrs` attributes.
+      """
+
+    attr :thead_th_attrs, :list,
+      doc: """
+      Any additional attributes to pass to the `<th>` as a keyword list.
+      """
+
+    attr :tbody_td_attrs, :any,
+      doc: """
+      Any additional attributes to pass to the `<td>`. Can be a keyword list or
+      a function that takes the current row item as an argument and returns a
+      keyword list.
+      """
+  end
+
+  slot :foot,
+    default: nil,
+    doc: """
+    You can optionally add a `foot`. The inner block will be rendered inside
+    a `tfoot` element.
+
+        <Pagify.Components.table>
+          <:foot>
+            <tr><td>Total: <span class="total"><%= @total %></span></td></tr>
+          </:foot>
+        </Pagify.Components.table>
+    """
+
+  def table(%{meta: %Meta{}, path: nil, on_sort: nil}) do
+    raise Pagify.Error.Components.PathOrJSError, component: :table
+  end
+
+  def table(%{meta: nil} = assigns) do
+    assigns =
+      assigns
+      |> assign(id: Map.get(assigns, :id, "table"))
+      |> assign(meta: %Meta{})
+      |> assign(on_sort: %JS{})
+
+    table(assigns)
+  end
+
+  def table(%{meta: meta, opts: opts} = assigns) do
+    assigns =
+      assigns
+      |> assign(:opts, Table.merge_opts(opts))
+      |> assign_new(:id, fn -> table_id(meta.resource) end)
+
+    ~H"""
+    <%= if empty?(@items) do %>
+      <%= @opts[:no_results_content] %>
+    <% else %>
+      <%= if @opts[:container] do %>
+        <div id={@id <> "_container"} {@opts[:container_attrs]}>
+          <Table.render
+            caption={@caption}
+            col={@col}
+            foot={@foot}
+            on_sort={@on_sort}
+            id={@id}
+            items={@items}
+            meta={@meta}
+            opts={@opts}
+            path={@path}
+            target={@target}
+            row_id={@row_id}
+            row_click={@row_click}
+            row_item={@row_item}
+            action={@action}
+          />
+        </div>
+      <% else %>
+        <Table.render
+          caption={@caption}
+          col={@col}
+          foot={@foot}
+          on_sort={@on_sort}
+          id={@id}
+          items={@items}
+          meta={@meta}
+          opts={@opts}
+          path={@path}
+          target={@target}
+          row_id={@row_id}
+          row_click={@row_click}
+          row_item={@row_item}
+          action={@action}
+        />
+      <% end %>
+    <% end %>
+    """
+  end
+
+  defp empty?(items)
+  defp empty?([]), do: true
+  defp empty?(%Phoenix.LiveView.LiveStream{inserts: [], deletes: []}), do: true
+  defp empty?(_), do: false
+
+  defp table_id(nil), do: "sortable_table"
+
+  defp table_id(resource) do
+    module_name = resource |> Module.split() |> List.last() |> Macro.underscore()
+    module_name <> "_table"
+  end
+
+  @doc """
   Converts a Pagify struct into a keyword list that can be used as a query with
   Phoenix verified routes or route helper functions.
 
@@ -525,7 +937,7 @@ defmodule Pagify.Components do
       iex> to_query(f, default_limit: 20)
       [offset: 40]
 
-      iex> f = %Pagify{order_by: [id: :asc]}
+      iex> f = %Pagify{order_by: [name: :asc]}
       iex> to_query(f, for: Pagify.Factory.Post)
       []
 

@@ -209,45 +209,54 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </div>
       </div> --%>
 
-      <div :if={@meta.total_count > 0} class="no-scrollbar overflow-x-auto py-4">
-        <.table
-          id="records_table"
-          rows={@streams.results}
-          row_click={
-            fn {_id, record} ->
-              JS.push("record:select", value: %{id: record.id})
-            end
-          }
+      <Pagify.Components.table
+        opts={[
+          no_results_content: no_results_content(%{collection: @collection})
+        ]}
+        path={~p"/collections/#{@collection}/records"}
+        items={@streams.results}
+        meta={@meta}
+        row_click={
+          fn {_id, record} ->
+            JS.push("record:select", value: %{id: record.id})
+          end
+        }
+      >
+        <:col
+          :let={{_id, record}}
+          field={:mte_material_entity_id}
+          label={~t"MaterialEntityID"m}
+          class="font-semibold"
         >
-          <:col :let={{_id, record}} label={~t"MaterialEntityID"m} class="font-semibold">
-            <%= record.mte_material_entity_id %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Scientific Name"m}>
-            <%= encoded_attribute(record, :tax_scientific_name) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Genus"m}>
-            <%= encoded_attribute(record, :tax_genus) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Family"m}>
-            <%= encoded_attribute(record, :tax_family) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Order"m}>
-            <%= encoded_attribute(record, :tax_order) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Class"m}>
-            <%= encoded_attribute(record, :tax_class) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Phylum"m}>
-            <%= encoded_attribute(record, :tax_phylum) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Encoding"m} class="text-center">
-            <.encoding_state_badge state={record.state} />
-          </:col>
-          <:col :let={{_id, record}} label={~t"Updated At"m} class="text-end">
-            <%= format_datetime(record.updated_at, format: :medium) %>
-          </:col>
+          <%= record.mte_material_entity_id %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Scientific Name"m}>
+          <%= encoded_attribute(record, :tax_scientific_name) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Genus"m}>
+          <%= encoded_attribute(record, :tax_genus) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Family"m}>
+          <%= encoded_attribute(record, :tax_family) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Order"m}>
+          <%= encoded_attribute(record, :tax_order) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Class"m}>
+          <%= encoded_attribute(record, :tax_class) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Phylum"m}>
+          <%= encoded_attribute(record, :tax_phylum) %>
+        </:col>
+        <:col :let={{_id, record}} field={:state} label={~t"Encoding"m} class="text-center">
+          <.encoding_state_badge state={record.state} />
+        </:col>
+        <:col :let={{_id, record}} field={:updated_at} label={~t"Updated At"m} class="text-end">
+          <%= format_datetime(record.updated_at, format: :medium) %>
+        </:col>
 
-          <:action :let={{_id, record}} class="flex items-center justify-end gap-x-2">
+        <:action :let={{_id, record}} class="whitespace-nowrap text-right">
+          <span class="flex items-center justify-end gap-x-2">
             <button
               type="button"
               phx-click={JS.push("record:delete", value: %{id: record.id})}
@@ -259,21 +268,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             >
               <.icon name="hero-x-circle-mini" class="size-6" />
             </button>
-          </:action>
-        </.table>
-        <div class="border-black-white/10 flex items-center justify-end border-t px-6 pt-4 lg:px-8">
-          <Pagify.Components.pagination meta={@meta} path={~p"/collections/#{@collection}/records"} />
-        </div>
+          </span>
+        </:action>
+      </Pagify.Components.table>
+      <div
+        :if={Pagify.Components.Pagination.show_pagination?(@meta)}
+        class="border-black-white/10 flex items-center justify-end border-t px-6 py-4 lg:px-8"
+      >
+        <Pagify.Components.pagination meta={@meta} path={~p"/collections/#{@collection}/records"} />
       </div>
-
-      <.empty_state
-        :if={@meta.total_count == 0}
-        title={~t"No records"m}
-        description={~t"Get started by importing a new dataset"m}
-        label={~t"Import"m}
-        icon="hero-bug-ant"
-        href={~p"/collections/#{@collection}/imports/new"}
-      />
 
       <:secondary>
         <.slideover
@@ -292,9 +295,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 class="px-6 lg:px-8"
               />
               <div class="no-scrollbar overflow-x-auto pt-4">
-                <.table
+                <Pagify.Components.table
+                  opts={[container: false]}
                   id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
-                  rows={category.attributes}
+                  items={category.attributes}
                 >
                   <:col :let={attribute} label={~t"Name"} class="font-semibold">
                     <%= attribute.name %>
@@ -305,7 +309,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   <:col :let={attribute} label={~t"Encoded"}>
                     <%= attribute.encoded %>
                   </:col>
-                </.table>
+                </Pagify.Components.table>
               </div>
             </section>
           <% end %>
@@ -317,7 +321,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               class="px-6 lg:px-8"
             />
             <div class="no-scrollbar overflow-x-auto pt-4">
-              <.table id="encoding_result_table" rows={@record_encoding_results}>
+              <Pagify.Components.table
+                opts={[container: false, no_results_content: ""]}
+                id="encoding_result_table"
+                items={@record_encoding_results}
+              >
                 <:col :let={result} label={~t"Catalog"} class="font-semibold">
                   <%= result.catalog %>
                 </:col>
@@ -327,7 +335,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 <:col :let={result} label={~t"Created"} class="text-right">
                   <%= format_datetime(result.inserted_at, format: :short) %>
                 </:col>
-              </.table>
+              </Pagify.Components.table>
             </div>
           </section>
         </.slideover>
@@ -504,5 +512,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   defp schedule_encoding_poller do
     Process.send_after(self(), :poll_encoding, @polling_interval)
+  end
+
+  attr :collection, :any
+
+  defp no_results_content(assigns) do
+    ~H"""
+    <.empty_state
+      title={~t"No records"m}
+      description={~t"Get started by importing a new dataset"m}
+      label={~t"Import"m}
+      icon="hero-bug-ant"
+      href={~p"/collections/#{@collection}/imports/new"}
+    />
+    """
   end
 end

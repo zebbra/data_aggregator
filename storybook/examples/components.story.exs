@@ -64,61 +64,59 @@ defmodule Storybook.Examples.Components do
             </.secondary_navigation>
           </:navbar>
         </.page_header>
-        <div class="overflow-x-auto pb-4">
-          <.table
-            id="user_table"
-            rows={@users}
-            row_click={
-              fn user ->
-                JS.push("select_user", value: %{id: user.id})
-              end
-            }
-          >
-            <:col :let={user} label="Id" class="font-semibold">
-              <%= user.id %>
-            </:col>
-            <:col :let={user} label="First name">
-              <%= user.first_name %>
-            </:col>
-            <:col :let={user} label="Last name">
-              <%= user.last_name %>
-            </:col>
-            <:col :let={user} label="Email">
-              <%= user.email %>
-            </:col>
-            <:col :let={user} label="Age" class="text-right">
-              <%= user.age %>
-            </:col>
+        <Pagify.Components.table
+          id="user_table"
+          items={@users}
+          row_click={
+            fn user ->
+              JS.push("select_user", value: %{id: user.id})
+            end
+          }
+        >
+          <:col :let={user} label="Id" class="font-semibold">
+            <%= user.id %>
+          </:col>
+          <:col :let={user} label="First name">
+            <%= user.first_name %>
+          </:col>
+          <:col :let={user} label="Last name">
+            <%= user.last_name %>
+          </:col>
+          <:col :let={user} label="Email">
+            <%= user.email %>
+          </:col>
+          <:col :let={user} label="Age" class="text-right">
+            <%= user.age %>
+          </:col>
 
-            <:action :let={user} class="-mx-3 -my-1.5 sm:-mx-2.5">
-              <.table_actions id={"user_#{user.id}"}>
-                <li>
-                  <button
-                    type="button"
-                    class="hover:bg-primary hover:text-primary-content"
-                    phx-click={JS.push("select_user", value: %{id: user.id})}
-                  >
-                    View
-                  </button>
-                </li>
-                <li>
-                  <button type="button" class="hover:bg-primary hover:text-primary-content">
-                    Edit
-                  </button>
-                </li>
-                <li>
-                  <.link
-                    phx-click={JS.push("delete", value: %{id: user.id})}
-                    class="hover:bg-primary hover:text-primary-content"
-                    data-confirm="Are you sure?"
-                  >
-                    Delete
-                  </.link>
-                </li>
-              </.table_actions>
-            </:action>
-          </.table>
-        </div>
+          <:action :let={user} class="whitespace-nowrap text-right">
+            <.table_actions id={"user_#{user.id}"}>
+              <li>
+                <button
+                  type="button"
+                  class="hover:bg-primary hover:text-primary-content"
+                  phx-click={JS.push("select_user", value: %{id: user.id})}
+                >
+                  View
+                </button>
+              </li>
+              <li>
+                <button type="button" class="hover:bg-primary hover:text-primary-content">
+                  Edit
+                </button>
+              </li>
+              <li>
+                <.link
+                  phx-click={JS.push("delete", value: %{id: user.id})}
+                  class="hover:bg-primary hover:text-primary-content"
+                  data-confirm="Are you sure?"
+                >
+                  Delete
+                </.link>
+              </li>
+            </.table_actions>
+          </:action>
+        </Pagify.Components.table>
       </div>
       <:secondary>
         <.slideover

@@ -428,6 +428,22 @@ defmodule PagifyTest do
       assert meta.current_order_by == ["name", "-comments_count"]
     end
 
+    test "adds current_order_by for simple binary" do
+      pagify = %Pagify{limit: 1, offset: 0, order_by: "name"}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta.current_order_by == ["name"]
+    end
+
+    test "adds current_order_by for list of binaries" do
+      pagify = %Pagify{limit: 1, offset: 0, order_by: ["name", "comments_count"]}
+      page = Pagify.all(Post, pagify)
+      meta = Pagify.meta(page, pagify)
+
+      assert meta.current_order_by == ["name", "comments_count"]
+    end
+
     test "sets options" do
       pagify = %Pagify{limit: 1, offset: 0, order_by: :name}
       page = Pagify.all(Post, pagify)
@@ -625,6 +641,50 @@ defmodule PagifyTest do
 
       assert [%Ash.Error.Query.NoSuchAttributeOrRelationship{attribute_or_relationship: :other}] =
                Keyword.get(error.errors, :filters)
+    end
+  end
+
+  describe "get_index/2" do
+    test "returns index of a field in the `Pagify.order_by` list" do
+      order_by = [name: :asc, age: :desc]
+      assert Pagify.get_index(order_by, :name) == 0
+      assert Pagify.get_index(order_by, :age) == 1
+      assert Pagify.get_index(order_by, :species) == nil
+
+      # Or with a list of strings
+      order_by = ["name", "age"]
+      assert Pagify.get_index(order_by, :name) == 0
+      assert Pagify.get_index(order_by, :age) == 1
+      assert Pagify.get_index(order_by, :species) == nil
+
+      # Or with a tuple:
+      order_by = {:name, :asc}
+      assert Pagify.get_index(order_by, :name) == nil
+      assert Pagify.get_index(order_by, :age) == nil
+
+      # Or with a single string:
+      order_by = "name"
+      assert Pagify.get_index(order_by, :name) == nil
+      assert Pagify.get_index(order_by, :age) == nil
+
+      # Or with a single atom:
+      order_by = :name
+      assert Pagify.get_index(order_by, :name) == nil
+      assert Pagify.get_index(order_by, :age) == nil
+
+      # If the `order_by` parameter is `nil`, the function will return `nil`.
+      assert Pagify.get_index(nil, :name) == nil
+    end
+  end
+
+  describe "push_order/3" do
+    test "raises error if invalid directions option is passed" do
+      for pagify <- [%Pagify{}, %Pagify{order_by: [:name]}],
+          directions <- [{:up, :down}, "up,down"] do
+        assert_raise Pagify.Error.InvalidDirectionsError, fn ->
+          Pagify.push_order(pagify, :name, directions: directions)
+        end
+      end
     end
   end
 

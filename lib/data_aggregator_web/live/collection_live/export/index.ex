@@ -70,41 +70,46 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           active
         />
       </.secondary_navigation>
-      <div :if={@meta.total_count > 0} class="no-scrollbar overflow-x-auto py-4">
-        <.table
-          id="exports_table"
-          rows={@streams.results}
-          row_click={
-            fn {_id, export} ->
-              JS.push("export:select", value: %{id: export.id})
-            end
-          }
-        >
-          <:col :let={{_id, export}} label={~t"State"m}>
-            <.export_state_badge export={export} />
-          </:col>
-          <:col :let={{_id, export}} label={~t"File"m}>
-            <div class="font-mono">
-              <%= if export.attachment != nil, do: export.attachment.filename, else: "-" %>
-            </div>
-            <div class="text-base-content/60 text-xs">
-              <%= format_number(export.rows_count) %> rows
-            </div>
-          </:col>
-          <:col :let={{_id, export}} label={~t"Size"m}>
-            <.attachment_download_badge :if={export.attachment != nil} attachment={export.attachment} />
-          </:col>
-          <:col :let={{_id, export}} label={~t"Started at"m}>
-            <%= format_datetime(export.started_at, format: :short) %>
-            <div :if={export.duration} class="text-base-content/60 text-xs">
-              <%= export.duration %>
-            </div>
-          </:col>
-          <:col :let={{_id, export}} label={~t"Records"m} class="text-right">
-            <%= format_number(export.rows_count, format: :short) %>
-          </:col>
 
-          <:action :let={{_id, export}} class="flex items-center justify-end gap-x-2">
+      <Pagify.Components.table
+        opts={[
+          no_results_content: no_results_content(%{collection: @collection})
+        ]}
+        path={~p"/collections/#{@collection}/exports"}
+        items={@streams.results}
+        meta={@meta}
+        row_click={
+          fn {_id, export} ->
+            JS.push("export:select", value: %{id: export.id})
+          end
+        }
+      >
+        <:col :let={{_id, export}} field={:state} label={~t"State"m}>
+          <.export_state_badge export={export} />
+        </:col>
+        <:col :let={{_id, export}} label={~t"File"m}>
+          <div class="font-mono">
+            <%= if export.attachment != nil, do: export.attachment.filename, else: "-" %>
+          </div>
+          <div class="text-base-content/60 text-xs">
+            <%= format_number(export.rows_count) %> rows
+          </div>
+        </:col>
+        <:col :let={{_id, export}} label={~t"Size"m}>
+          <.attachment_download_badge :if={export.attachment != nil} attachment={export.attachment} />
+        </:col>
+        <:col :let={{_id, export}} field={:started_at} label={~t"Started at"m}>
+          <%= format_datetime(export.started_at, format: :short) %>
+          <div :if={export.duration} class="text-base-content/60 text-xs">
+            <%= export.duration %>
+          </div>
+        </:col>
+        <:col :let={{_id, export}} field={:rows_count} label={~t"Records"m} class="text-right">
+          <%= format_number(export.rows_count, format: :short) %>
+        </:col>
+
+        <:action :let={{_id, export}} class="whitespace-nowrap text-right">
+          <span class="flex items-center justify-end gap-x-2">
             <button
               :if={can_run?(export)}
               type="button"
@@ -125,21 +130,15 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
             >
               <.icon name="hero-x-circle-mini" class="size-6" />
             </button>
-          </:action>
-        </.table>
-        <div class="border-black-white/10 flex items-center justify-end border-t px-6 pt-4 lg:px-8">
-          <Pagify.Components.pagination meta={@meta} path={~p"/collections/#{@collection}/exports"} />
-        </div>
+          </span>
+        </:action>
+      </Pagify.Components.table>
+      <div
+        :if={Pagify.Components.Pagination.show_pagination?(@meta)}
+        class="border-black-white/10 flex items-center justify-end border-t px-6 py-4 lg:px-8"
+      >
+        <Pagify.Components.pagination meta={@meta} path={~p"/collections/#{@collection}/exports"} />
       </div>
-
-      <.empty_state
-        :if={@meta.total_count == 0}
-        title={~t"No exports"m}
-        description={~t"Get started by exporting records."m}
-        label={~t"Export"m}
-        icon="hero-arrow-down-tray"
-        href={~p"/collections/#{@collection}/records"}
-      />
 
       <:secondary>
         <.slideover
@@ -327,5 +326,19 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
 
   defp list_exports(params, opts \\ [load: @load, action: :by_collection]) do
     Pagify.validate_and_run(Export, params, opts, params["id"])
+  end
+
+  attr :collection, :any
+
+  defp no_results_content(assigns) do
+    ~H"""
+    <.empty_state
+      title={~t"No exports"m}
+      description={~t"Get started by exporting records."m}
+      label={~t"Export"m}
+      icon="hero-arrow-down-tray"
+      href={~p"/collections/#{@collection}/records"}
+    />
+    """
   end
 end

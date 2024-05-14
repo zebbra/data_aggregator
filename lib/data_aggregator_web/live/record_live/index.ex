@@ -42,55 +42,62 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     ~H"""
     <.page current="records" open={@selected_record != nil}>
       <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6"><%= ~t"Records"m %></.page_header>
-      <div :if={@meta.total_count > 0} class="no-scrollbar overflow-x-auto pb-4">
-        <.table
-          id="records_table"
-          rows={@streams.results}
-          row_click={
-            fn {_id, record} ->
-              JS.push("record:select", value: %{id: record.id})
-            end
-          }
+      <Pagify.Components.table
+        path={~p"/records"}
+        items={@streams.results}
+        meta={@meta}
+        row_click={
+          fn {_id, record} ->
+            JS.push("record:select", value: %{id: record.id})
+          end
+        }
+      >
+        <:col
+          :let={{_id, record}}
+          field={:mte_material_entity_id}
+          label={~t"MaterialEntityID"m}
+          class="font-semibold"
         >
-          <:col :let={{_id, record}} label={~t"MaterialEntityID"m} class="font-semibold">
-            <%= record.mte_material_entity_id %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Scientific Name"m}>
-            <%= encoded_attribute(record, :tax_scientific_name) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Genus"m}>
-            <%= encoded_attribute(record, :tax_genus) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Family"m}>
-            <%= encoded_attribute(record, :tax_family) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Order"m}>
-            <%= encoded_attribute(record, :tax_order) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Class"m}>
-            <%= encoded_attribute(record, :tax_class) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Phylum"m}>
-            <%= encoded_attribute(record, :tax_phylum) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Encoding"m} class="text-center">
-            <.encoding_state_badge state={record.state} />
-          </:col>
-          <:col :let={{_id, record}} label={~t"Collection"m}>
-            <.link
-              navigate={~p"/collections/#{record.collection}/records"}
-              class="link link-primary link-hover font-semibold rounded-md"
-            >
-              <%= record.collection.name %>
-            </.link>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Updated At"m} class="text-end">
-            <%= format_datetime(record.updated_at, format: :medium) %>
-          </:col>
-        </.table>
-        <div class="border-black-white/10 flex items-center justify-end border-t px-6 pt-4 lg:px-8">
-          <Pagify.Components.pagination meta={@meta} path={~p"/records"} />
-        </div>
+          <%= record.mte_material_entity_id %>
+        </:col>
+        <:col :let={{_id, record}} field={:tax_scientific_name} label={~t"Scientific Name"m}>
+          <%= encoded_attribute(record, :tax_scientific_name) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Genus"m}>
+          <%= encoded_attribute(record, :tax_genus) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Family"m}>
+          <%= encoded_attribute(record, :tax_family) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Order"m}>
+          <%= encoded_attribute(record, :tax_order) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Class"m}>
+          <%= encoded_attribute(record, :tax_class) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Phylum"m}>
+          <%= encoded_attribute(record, :tax_phylum) %>
+        </:col>
+        <:col :let={{_id, record}} field={:state} label={~t"Encoding"m} class="text-center">
+          <.encoding_state_badge state={record.state} />
+        </:col>
+        <:col :let={{_id, record}} label={~t"Collection"m}>
+          <.link
+            navigate={~p"/collections/#{record.collection}/records"}
+            class="link link-primary link-hover font-semibold rounded-md"
+          >
+            <%= record.collection.name %>
+          </.link>
+        </:col>
+        <:col :let={{_id, record}} field={:updated_at} label={~t"Updated At"m} class="text-end">
+          <%= format_datetime(record.updated_at, format: :medium) %>
+        </:col>
+      </Pagify.Components.table>
+      <div
+        :if={Pagify.Components.Pagination.show_pagination?(@meta)}
+        class="border-black-white/10 flex items-center justify-end border-t px-6 py-4 lg:px-8"
+      >
+        <Pagify.Components.pagination meta={@meta} path={~p"/records"} />
       </div>
 
       <.empty_state
@@ -119,9 +126,10 @@ defmodule DataAggregatorWeb.RecordLive.Index do
                 class="px-6 lg:px-8"
               />
               <div class="no-scrollbar overflow-x-auto pt-4">
-                <.table
+                <Pagify.Components.table
+                  opts={[container: false]}
                   id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
-                  rows={category.attributes}
+                  items={category.attributes}
                 >
                   <:col :let={attribute} label={~t"Name"} class="font-semibold">
                     <%= attribute.name %>
@@ -132,7 +140,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
                   <:col :let={attribute} label={~t"Encoded"}>
                     <%= attribute.encoded %>
                   </:col>
-                </.table>
+                </Pagify.Components.table>
               </div>
             </section>
           <% end %>
@@ -144,7 +152,11 @@ defmodule DataAggregatorWeb.RecordLive.Index do
               class="px-6 lg:px-8"
             />
             <div class="no-scrollbar overflow-x-auto pt-4">
-              <.table id="encoding_result_table" rows={@record_encoding_results}>
+              <Pagify.Components.table
+                opts={[container: false, no_results_content: ""]}
+                id="encoding_result_table"
+                items={@record_encoding_results}
+              >
                 <:col :let={result} label={~t"Catalog"} class="font-semibold">
                   <%= result.catalog %>
                 </:col>
@@ -154,7 +166,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
                 <:col :let={result} label={~t"Created"} class="text-right">
                   <%= format_datetime(result.inserted_at, format: :short) %>
                 </:col>
-              </.table>
+              </Pagify.Components.table>
             </div>
           </section>
         </.slideover>

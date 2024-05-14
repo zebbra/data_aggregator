@@ -8,7 +8,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   import DataAggregatorWeb.CollectionLive.Import.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Import
 
   @load [
@@ -88,38 +87,43 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           </.link>
         </li>
       </.secondary_navigation>
-      <div :if={@meta.total_count > 0} class="no-scrollbar overflow-x-auto py-4">
-        <.table
-          id="imports_table"
-          rows={@streams.results}
-          row_click={
-            fn {_id, import} ->
-              JS.push("import:select", value: %{id: import.id})
-            end
-          }
-        >
-          <:col :let={{_id, import}} label={~t"State"m}>
-            <.import_state_badge import={import} />
-          </:col>
-          <:col :let={{_id, import}} label={~t"File"m}>
-            <div class="font-mono"><%= import.attachment.filename %></div>
-            <div class="text-base-content/60 text-xs">
-              <%= format_number(import.rows_count) %> rows
-            </div>
-          </:col>
-          <:col :let={{_id, import}} label={~t"Size"m}>
-            <.attachment_download_badge attachment={import.attachment} />
-          </:col>
-          <:col :let={{_id, import}} label={~t"Started at"m}>
-            <%= format_datetime(import.started_at, format: :short) %>
-            <div :if={import.duration} class="text-base-content/60 text-xs">
-              <%= import.duration %>
-            </div>
-          </:col>
-          <:col :let={{_id, import}} label={~t"Records"m} class="text-right">
-            <%= format_number(import.records_count, format: :short) %>
-          </:col>
-          <:action :let={{_id, import}} class="flex items-center justify-end gap-x-2">
+
+      <Pagify.Components.table
+        opts={[
+          no_results_content: no_results_content(%{collection: @collection})
+        ]}
+        path={~p"/collections/#{@collection}/imports"}
+        items={@streams.results}
+        meta={@meta}
+        row_click={
+          fn {_id, import} ->
+            JS.push("import:select", value: %{id: import.id})
+          end
+        }
+      >
+        <:col :let={{_id, import}} field={:state} label={~t"State"m}>
+          <.import_state_badge import={import} />
+        </:col>
+        <:col :let={{_id, import}} label={~t"File"m}>
+          <div class="font-mono"><%= import.attachment.filename %></div>
+          <div class="text-base-content/60 text-xs">
+            <%= format_number(import.rows_count) %> rows
+          </div>
+        </:col>
+        <:col :let={{_id, import}} label={~t"Size"m}>
+          <.attachment_download_badge attachment={import.attachment} />
+        </:col>
+        <:col :let={{_id, import}} field={:started_at} label={~t"Started at"m}>
+          <%= format_datetime(import.started_at, format: :short) %>
+          <div :if={import.duration} class="text-base-content/60 text-xs">
+            <%= import.duration %>
+          </div>
+        </:col>
+        <:col :let={{_id, import}} field={:records_count} label={~t"Records"m} class="text-right">
+          <%= format_number(import.records_count, format: :short) %>
+        </:col>
+        <:action :let={{_id, import}} class="whitespace-nowrap text-right">
+          <span class="flex items-center justify-end gap-x-2">
             <button
               :if={can_run?(import)}
               type="button"
@@ -154,21 +158,15 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             >
               <.icon name="hero-x-circle-mini" class="size-6" />
             </button>
-          </:action>
-        </.table>
-        <div class="border-black-white/10 flex items-center justify-end border-t px-6 pt-4 lg:px-8">
-          <Pagify.Components.pagination meta={@meta} path={~p"/collections/#{@collection}/imports"} />
-        </div>
+          </span>
+        </:action>
+      </Pagify.Components.table>
+      <div
+        :if={Pagify.Components.Pagination.show_pagination?(@meta)}
+        class="border-black-white/10 flex items-center justify-end border-t px-6 py-4 lg:px-8"
+      >
+        <Pagify.Components.pagination meta={@meta} path={~p"/collections/#{@collection}/imports"} />
       </div>
-
-      <.empty_state
-        :if={@meta.total_count == 0}
-        title={~t"No imports"m}
-        description={~t"Get started by importing a new dataset."m}
-        label={~t"Import"m}
-        icon="hero-arrow-up-tray"
-        href={~p"/collections/#{@collection}/imports/new"}
-      />
 
       <:secondary>
         <.slideover
@@ -301,7 +299,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             </.section_heading>
 
             <div class="no-scrollbar overflow-x-auto">
-              <.table id="import_mapping_table" rows={@selected_import.mappings}>
+              <Pagify.Components.table
+                opts={[container: false]}
+                id="import_mapping_table"
+                items={@selected_import.mappings}
+              >
                 <:col :let={column} label={~t"Column"m}>
                   <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
                     <%= column.name %>
@@ -313,7 +315,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                 <:col :let={column} label={~t"Mapped to"m} class="py-5">
                   <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
                 </:col>
-              </.table>
+              </Pagify.Components.table>
             </div>
 
             <div class="px-6 py-4 lg:px-8">
@@ -419,7 +421,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   defp handle_import_created(notification, socket) do
     %Ash.Notifier.Notification{data: import} = notification
-    import = Records.load!(import, @load, lazy?: true)
+    import = Import.get_by_id!(import.id, load: @load_import)
     {:noreply, stream_insert(socket, :results, import, at: 0)}
   end
 
@@ -476,5 +478,19 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   defp list_imports(params, opts \\ [load: @load, action: :by_collection]) do
     Pagify.validate_and_run(Import, params, opts, params["id"])
+  end
+
+  attr :collection, :any
+
+  defp no_results_content(assigns) do
+    ~H"""
+    <.empty_state
+      title={~t"No imports"m}
+      description={~t"Get started by importing a new dataset."m}
+      label={~t"Import"m}
+      icon="hero-arrow-up-tray"
+      href={~p"/collections/#{@collection}/imports/new"}
+    />
+    """
   end
 end

@@ -168,6 +168,10 @@ config :data_aggregator, :logger, [
    }}
 ]
 
+config :data_aggregator, :pagify_phoenix,
+  pagination: [opts: {DataAggregatorWeb.Components, :pagination_opts}],
+  table: [opts: {DataAggregatorWeb.Components, :table_opts}]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

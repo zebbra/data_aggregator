@@ -13,6 +13,9 @@ defmodule DataAggregator.Records.Collection do
   alias DataAggregator.Records.Export.Calculations
   alias DataAggregator.Records.Validations
 
+  @default_limit 15
+  def default_limit, do: @default_limit
+
   attributes do
     uuid_attribute :id, prefix: "col"
 
@@ -141,6 +144,12 @@ defmodule DataAggregator.Records.Collection do
     read :read do
       primary? true
       argument :sort, :string, allow_nil?: true
+
+      pagination offset?: true,
+                 default_limit: @default_limit,
+                 countable: true,
+                 required?: false,
+                 keyset?: true
     end
 
     update :update_import_mapping do

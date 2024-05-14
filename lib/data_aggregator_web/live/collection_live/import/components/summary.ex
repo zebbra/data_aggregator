@@ -55,7 +55,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
       <.section_heading text={~t"Mapping"m} size="md" />
       <div class="-mx-6 py-4 lg:-mx-8">
         <div class="no-scrollbar overflow-x-auto">
-          <.table id="import_mapping_table" rows={@import.mappings}>
+          <Pagify.Components.table
+            opts={[container: false]}
+            id="import_mapping_table"
+            items={@import.mappings}
+          >
             <:col :let={column} label={~t"Column"m}>
               <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
                 <%= column.name %>
@@ -67,7 +71,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
             <:col :let={column} label={~t"Mapped to"m}>
               <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
             </:col>
-          </.table>
+          </Pagify.Components.table>
         </div>
       </div>
 

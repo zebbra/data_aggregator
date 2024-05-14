@@ -5,34 +5,31 @@ defmodule Pagify.Components.Pagination do
   alias Pagify.Components.Misc
   alias Pagify.Meta
 
-  @spec default_opts() :: [Pagify.Components.pagination_option()]
+  @spec default_opts() :: [Components.pagination_option()]
   def default_opts do
     [
       current_link_attrs: [
-        class: "join-item btn btn-sm btn-active max-sm:hidden",
+        class: "pagination-link is-current",
         aria: [current: "page"]
       ],
-      disabled_class: "text-base-content/20 pointer-events-none",
-      ellipsis_attrs: [
-        class: "join-item btn btn-sm text-base-content/20 pointer-events-none max-sm:hidden",
-        aria: [hidden: "true"]
-      ],
+      disabled_class: "disabled",
+      ellipsis_attrs: [class: "pagination-ellipsis"],
       ellipsis_content: Phoenix.HTML.raw("&hellip;"),
       next_link_attrs: [
         aria: [label: "Go to next page"],
-        class: "join-item btn btn-sm"
+        class: "pagination-next"
       ],
       next_link_content: "Next",
-      page_links: {:ellipsis, 3},
+      page_links: :all,
       pagination_link_aria_label: &"Go to page #{&1}",
-      pagination_link_attrs: [class: "join-item btn btn-sm max-sm:hidden"],
+      pagination_link_attrs: [class: "pagination-link"],
       previous_link_attrs: [
         aria: [label: "Go to previous page"],
-        class: "join-item btn btn-sm"
+        class: "pagination-previous"
       ],
-      previous_link_content: "Prev",
+      previous_link_content: "Previous",
       wrapper_attrs: [
-        class: "join",
+        class: "pagination",
         role: "navigation",
         aria: [label: "pagination"]
       ]
@@ -40,12 +37,20 @@ defmodule Pagify.Components.Pagination do
   end
 
   def merge_opts(opts) do
-    Misc.deep_merge(default_opts(), opts)
+    default_opts()
+    |> Misc.deep_merge(Misc.get_global_opts(:pagination))
+    |> Misc.deep_merge(opts)
   end
 
   def max_pages(:all, total_pages), do: total_pages
   def max_pages(:hide, _), do: 0
   def max_pages({:ellipsis, max_pages}, _), do: max_pages
+
+  def show_pagination?(%Meta{errors: [], total_pages: total_pages}) do
+    total_pages > 1
+  end
+
+  def show_pagination?(_), do: false
 
   def get_page_link_range(current_page, max_pages, total_pages) do
     # number of additional pages to show before or after current page

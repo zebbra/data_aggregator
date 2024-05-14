@@ -41,7 +41,13 @@ defmodule Pagify do
   }
   ```
 
-  Then simply copy the `Pagify` module into your project. No additional dependencies are required.
+  Then simply copy the `Pagify` module into your project's lib folder. No additional dependencies are required.
+
+  Replace the `:my_app` atom with the name of your application in the following places:
+  - `config/config.exs` (for the global configuration)
+  - `lib/pagify/pagify.ex`
+  - `lib/pagify/components/pagination.ex`
+  - `lib/pagify/components/table.ex`
 
   If you want to include the tests, you can copy the `test/pagify` directory as well. In this case, you
   will need to add the `test/pagify/support` folder to `elixir_paths(:test)` in your `mix.exs` file. You
@@ -59,6 +65,18 @@ defmodule Pagify do
     ]
   end
   ```
+
+  ## Global configuration
+
+  You can set some global options like the default_limit via the application
+  environment. All global options can be overridden by passing them directly to
+  the functions.
+      config :my_app, :pagify,
+        default_limit: 50,
+        max_limit: 1000,
+        replace_invalid_params?: true
+
+  See `t:Pagify.option/0` for a description of all available options.
 
   ## Usage
 
@@ -148,6 +166,42 @@ defmodule Pagify do
     end
   end
   ```
+
+  ## Sortable tables and pagination
+
+  To add a sortable table and pagination links, you can add the following to your template:
+
+  ```heex
+  <h1>Posts</h1>
+
+  <Pagify.Components.table items={@posts} meta={@meta} path={~p"/posts"}>
+    <:col :let={post} label="Name" field={:name}><%= post.name %></:col>
+    <:col :let={post} label="Author" field={:author}><%= post.author %></:col>
+  </Pagify.Components.table>
+
+  <Pagify.Components.pagination meta={@meta} path={~p"/posts"} />
+  ```
+
+  In this context, path points to the current route, and Pagify Components appends
+  pagination, filtering, and sorting parameters to it. You can use verified
+  routes, route helpers, or custom path builder functions. You'll find
+  explanations for the different formats in the documentation for
+  `Pagify.Components.build_path/3`.
+
+  Note that the field attribute in the `:col` slot is optional. If set and the
+  corresponding field in the resource is defined as sortable, the table header for
+  that column will be interactive, allowing users to sort by that column. However,
+  if the field isn't defined as sortable, or if the field attribute is omitted, or
+  set to `nil` or `false`, the table header will not be clickable.
+
+  By using the `for` option in your Pagify query, Pagify Components can identify which
+  table columns are sortable. Additionally, it omits the `order_by` and `limit`
+  parameters if they align with the default values specified either in your resoruce or
+  in the Pagify module.
+
+  You also have the option to pass a `Phoenix.LiveView.JS` command instead of or
+  in addition to a path. For more details, please refer to the component
+  documentation.
 
   ## Parameter format
 
@@ -297,20 +351,48 @@ defmodule Pagify do
 
   require Logger
 
-  @default_limit 25
-  def default_limit, do: @default_limit
-
-  @default_max_limit 100
-  def default_max_limit, do: @default_max_limit
-
-  @pagify_opts [
-    :default_limit,
-    :max_limit,
-    :replace_invalid_params?
-  ]
-  def pagify_opts, do: @pagify_opts
+  @default_opts [default_limit: 25, max_limit: 100, replace_invalid_params?: false]
+  @default_opts_keys Enum.map(@default_opts, fn {k, _} -> k end)
 
   defstruct limit: nil, offset: nil, filters: nil, order_by: nil
+
+  @typedoc """
+  These options can be passed to most functions or configured via the
+  application environment.
+
+  ## Options
+
+  Default pagify options in addition to the ones provided by the
+  `c:Ash.Api.read/2` function. These options are used to configure the
+  pagination behavior.
+
+  - `:default_limit` - The default number of records to return. Defaults to 25.
+    Can be overridden by the resource's `default_limit` function.
+  - `:max_limit` - The maximum number of records that can be returned. Defaults
+    to 100.
+  - `:replace_invalid_params?` - If set to `true`, invalid parameters will be
+    replaced with the default value. If set to `false`, invalid parameters
+    will result in an error. Defaults to `false`.
+
+  ## Look-up order
+
+  Options are looked up in the following order:
+
+  1. Function arguments
+  2. Resource-level options
+  3. Global options in the application environment
+  4. Library defaults
+
+  """
+  @type option ::
+          {default_limit :: non_neg_integer()}
+          | {max_limit :: non_neg_integer()}
+          | {replace_invalid_params? :: boolean()}
+
+  @typedoc """
+  Valid order_by types for the `t:Pagify.t/0` struct.
+  """
+  @type order_by :: [atom() | String.t() | {atom(), Ash.Sort.sort_order()} | [String.t()]] | nil
 
   @typedoc """
   Represents the query parameters for filtering, ordering and pagination.
@@ -325,10 +407,7 @@ defmodule Pagify do
           limit: pos_integer() | nil,
           offset: non_neg_integer() | nil,
           filters: map() | Keyword.t() | nil,
-          order_by:
-            String.t()
-            | [atom() | String.t() | {atom(), Ash.Sort.sort_order()} | [String.t()]]
-            | nil
+          order_by: order_by()
         }
 
   @doc """
@@ -488,7 +567,7 @@ defmodule Pagify do
   end
 
   defp remove_pagify_opts(opts) do
-    Enum.filter(opts, fn {k, _} -> !Enum.member?(@pagify_opts, k) end)
+    Enum.filter(opts, fn {k, _} -> !Enum.member?(@default_opts_keys, k) end)
   end
 
   @doc """
@@ -564,15 +643,7 @@ defmodule Pagify do
 
   The keyword list `opts` is used to pass additional options to the query engine.
   It shoud conform to the list of valid options at `c:Ash.Api.read/2`. Furthermore
-  the following options are supported:
-
-  - `:default_limit` - The default number of records to return. Defaults to 25.
-    Can be overridden by the resource's `default_limit` function.
-  - `:max_limit` - The maximum number of records that can be returned. Defaults
-    to 100.
-  - `:replace_invalid_params?` - If set to `true`, invalid parameters will be
-    replaced with the default value. If set to `false`, invalid parameters
-    will result in an error. Defaults to `false`.
+  the `t:Pagify.option/0` library options are supported.
   """
   @spec validate_and_run(Ash.Query.t() | Ash.Resource.t(), map() | Pagify.t(), Keyword.t(), any()) ::
           {:ok, {[Ash.Resource.record()], Meta.t()}} | {:error, Meta.t()}
@@ -699,10 +770,15 @@ defmodule Pagify do
   defp get_current_order_by(%Pagify{order_by: nil}), do: nil
   defp get_current_order_by(%Pagify{order_by: order_by}), do: concat_sort(order_by)
 
+  @doc """
+  Transforms the given `order_by` parameter into a list of strings (user input domain).
+  """
+  @spec concat_sort(order_by(), [String.t()]) :: [String.t()]
   def concat_sort(list, acc \\ [])
   def concat_sort(nil, _), do: nil
   def concat_sort([], []), do: nil
   def concat_sort([], acc), do: Enum.reverse(acc)
+  def concat_sort(order_by, acc) when is_binary(order_by), do: concat_sort([order_by], acc)
   def concat_sort(order_by, acc) when is_atom(order_by), do: concat_sort([order_by], acc)
   def concat_sort(order_by, acc) when is_tuple(order_by), do: concat_sort([order_by], acc)
 
@@ -711,7 +787,10 @@ defmodule Pagify do
       {field, order} ->
         concat_sort(rest, ["#{order_to_prefix(order)}#{Atom.to_string(field)}" | acc])
 
-      field ->
+      field when is_binary(field) ->
+        concat_sort(rest, [field | acc])
+
+      field when is_atom(field) ->
         concat_sort(rest, [Atom.to_string(field) | acc])
     end
   end
@@ -720,6 +799,29 @@ defmodule Pagify do
   defp order_to_prefix(:desc), do: "-"
   defp order_to_prefix(:desc_nils_last), do: "--"
   defp order_to_prefix(_), do: ""
+
+  @doc """
+  Transforms the given field with order prefix into an `t:Ash.Sort.sort_order/t`.
+
+  ## Examples
+
+      iex> Pagify.prefix_to_order("name")
+      :asc
+      iex> Pagify.prefix_to_order("-name")
+      :desc
+      iex> Pagify.prefix_to_order("++name")
+      :asc_nils_first
+      iex> Pagify.prefix_to_order("--name")
+      :desc_nils_last
+      iex> Pagify.prefix_to_order("+name")
+      :asc
+  """
+  @spec prefix_to_order(String.t()) :: Ash.Sort.sort_order()
+  def prefix_to_order("++" <> field) when is_binary(field), do: :asc_nils_first
+  def prefix_to_order("--" <> field) when is_binary(field), do: :desc_nils_last
+  def prefix_to_order("+" <> field) when is_binary(field), do: :asc
+  def prefix_to_order("-" <> field) when is_binary(field), do: :desc
+  def prefix_to_order(_), do: :asc
 
   # Query
 
@@ -935,7 +1037,7 @@ defmodule Pagify do
   end
 
   defp put_default_limit(_, %Pagify{limit: nil} = pagify) do
-    %{pagify | limit: @default_limit}
+    %{pagify | limit: get_option(:default_limit)}
   end
 
   defp put_default_limit(_, pagify), do: pagify
@@ -981,7 +1083,7 @@ defmodule Pagify do
   def page(%Pagify{limit: limit, offset: offset}, count: count)
       when is_nil(limit) and (is_integer(offset) and offset >= 0) do
     []
-    |> Keyword.put(:limit, @default_limit)
+    |> Keyword.put(:limit, get_option(:default_limit))
     |> Keyword.put(:offset, offset)
     |> Keyword.put(:count, count)
   end
@@ -1003,7 +1105,7 @@ defmodule Pagify do
 
   def page(%Pagify{limit: limit, offset: offset}, _) when is_nil(limit) and (is_integer(offset) and offset >= 0) do
     []
-    |> Keyword.put(:limit, @default_limit)
+    |> Keyword.put(:limit, get_option(:default_limit))
     |> Keyword.put(:offset, offset)
     |> Keyword.put(:count, true)
   end
@@ -1099,21 +1201,447 @@ defmodule Pagify do
   end
 
   @doc """
+  Sets the offset value of a `Pagify` struct.
+
+      iex> set_offset(%Pagify{limit: 10, offset: 10}, 20)
+      %Pagify{offset: 20, limit: 10}
+
+      iex> set_offset(%Pagify{limit: 10, offset: 10}, "20")
+      %Pagify{offset: 20, limit: 10}
+
+  The offset will not be allowed to go below 0.
+
+      iex> set_offset(%Pagify{}, -5)
+      %Pagify{offset: 0}
+  """
+  @spec set_offset(Pagify.t(), non_neg_integer | binary) :: Pagify.t()
+  def set_offset(%Pagify{} = pagify, offset) when is_integer(offset) do
+    %{
+      pagify
+      | offset: max(offset, 0)
+    }
+  end
+
+  def set_offset(%Pagify{} = pagify, offset) when is_binary(offset) do
+    set_offset(pagify, String.to_integer(offset))
+  end
+
+  @doc """
+  Sets the offset of a Pagify struct to the page depending on the limit.
+
+  ## Examples
+
+      iex> to_previous_offset(%Pagify{offset: 20, limit: 10})
+      %Pagify{offset: 10, limit: 10}
+
+      iex> to_previous_offset(%Pagify{offset: 5, limit: 10})
+      %Pagify{offset: 0, limit: 10}
+
+      iex> to_previous_offset(%Pagify{offset: 0, limit: 10})
+      %Pagify{offset: 0, limit: 10}
+
+      iex> to_previous_offset(%Pagify{offset: -2, limit: 10})
+      %Pagify{offset: 0, limit: 10}
+  """
+  @spec to_previous_offset(Pagify.t()) :: Pagify.t()
+  def to_previous_offset(%Pagify{offset: 0} = pagify), do: pagify
+
+  def to_previous_offset(%Pagify{offset: offset, limit: limit} = pagify) when is_integer(limit) and is_integer(offset),
+    do: %{pagify | offset: max(0, offset - limit)}
+
+  @doc """
+  Sets the offset of a Pagify struct to the next page depending on the limit.
+
+  If the total count is given as the second argument, the offset will not be
+  increased if the last page has already been reached. You can get the total
+  count from the `Pagify.Meta` struct. If the Pagify has an offset beyond the total
+  count, the offset will be set to the last page.
+
+  ## Examples
+
+      iex> to_next_offset(%Pagify{offset: 10, limit: 5})
+      %Pagify{offset: 15, limit: 5}
+
+      iex> to_next_offset(%Pagify{offset: 15, limit: 5}, 21)
+      %Pagify{offset: 20, limit: 5}
+
+      iex> to_next_offset(%Pagify{offset: 15, limit: 5}, 20)
+      %Pagify{offset: 15, limit: 5}
+
+      iex> to_next_offset(%Pagify{offset: 28, limit: 5}, 22)
+      %Pagify{offset: 20, limit: 5}
+
+      iex> to_next_offset(%Pagify{offset: -5, limit: 20})
+      %Pagify{offset: 0, limit: 20}
+  """
+  @spec to_next_offset(Pagify.t(), non_neg_integer | nil) :: Pagify.t()
+  def to_next_offset(pagify, total_count \\ nil)
+
+  def to_next_offset(%Pagify{limit: limit, offset: offset} = pagify, _)
+      when is_integer(limit) and is_integer(offset) and offset < 0,
+      do: %{pagify | offset: 0}
+
+  def to_next_offset(%Pagify{limit: limit, offset: offset} = pagify, nil) when is_integer(limit) and is_integer(offset),
+    do: %{pagify | offset: offset + limit}
+
+  def to_next_offset(%Pagify{limit: limit, offset: offset} = pagify, total_count)
+      when is_integer(limit) and is_integer(offset) and is_integer(total_count) and offset >= total_count do
+    %{pagify | offset: (ceil(total_count / limit) - 1) * limit}
+  end
+
+  def to_next_offset(%Pagify{limit: limit, offset: offset} = pagify, total_count)
+      when is_integer(limit) and is_integer(offset) and is_integer(total_count) do
+    case offset + limit do
+      new_offset when new_offset >= total_count -> pagify
+      new_offset -> %{pagify | offset: new_offset}
+    end
+  end
+
+  @doc """
+  Removes all filters from a Pagify struct.
+
+  ## Example
+
+      iex> reset_filters(%Pagify{filters: %{
+      ...>  name: "foo",
+      ...> }})
+      %Pagify{filters: %{}}
+  """
+  @spec reset_filters(Pagify.t()) :: Pagify.t()
+  def reset_filters(%Pagify{} = pagify), do: %{pagify | filters: %{}}
+
+  @doc """
+  Returns the current order direction for the given field.
+
+  ## Examples
+
+      iex> pagify = %Pagify{order_by: [name: :desc, age: :asc]}
+      iex> current_order(pagify, :name)
+      :desc
+      iex> current_order(pagify, :age)
+      :asc
+      iex> current_order(pagify, :species)
+      nil
+
+  If the field is not an atom, the function will return `nil`.
+
+      iex> pagify = %Pagify{order_by: [name: :desc]}
+      iex> current_order(pagify, "name")
+      nil
+
+  If `Pagify.order_by` is nil, the function will return `nil`.
+
+      iex> current_order(%Pagify{}, :name)
+      nil
+  """
+  @spec current_order(Pagify.t(), atom) :: Ash.Sort.sort_order() | nil
+  def current_order(%Pagify{order_by: nil}, _field), do: nil
+
+  def current_order(%Pagify{order_by: order_by}, field) when is_atom(field) do
+    case Enum.find(order_by, &(elem(&1, 0) == field)) do
+      {_, order} -> order
+      nil -> nil
+    end
+  end
+
+  def current_order(_, _), do: nil
+
+  @doc """
+  Resets the order of a Pagify struct.
+
+  ## Example
+
+      iex> reset_order(%Pagify{order_by: [name: :asc]})
+      %Pagify{order_by: nil}
+
+  """
+  @spec reset_order(Pagify.t()) :: Pagify.t()
+  def reset_order(%Pagify{} = pagify), do: %{pagify | order_by: nil}
+
+  @doc """
+  Updates the `order_by` value of a `Pagify` struct.
+
+  - If the field is not in the current `order_by` value, it will be prepended to
+    the list. By default, the order direction for the field will be set to
+    `:asc`.
+  - If the field is already at the front of the `order_by` list, the order
+    direction will be reversed.
+  - If the field is already in the list, but not at the front, it will be moved
+    to the front and the order direction will be set to `:asc` (or the custom
+    asc direction supplied in the `:directions` option).
+  - If the `:directions` option --a 2-element tuple-- is passed, the first and
+    second elements will be used as custom sort declarations for ascending and
+    descending, respectively.
+
+  ## Examples
+
+      iex> pagify = push_order(%Pagify{}, :name)
+      iex> pagify.order_by
+      [name: :asc]
+      iex> pagify = push_order(pagify, :age)
+      iex> pagify.order_by
+      [age: :asc, name: :asc]
+      iex> pagify = push_order(pagify, :age)
+      iex> pagify.order_by
+      [age: :desc, name: :asc]
+      iex> pagify = push_order(pagify, :species)
+      iex> pagify.order_by
+      [species: :asc, age: :desc, name: :asc]
+      iex> pagify = push_order(pagify, :age)
+      iex> pagify.order_by
+      [age: :asc, species: :asc, name: :asc]
+
+  By default, the function toggles between `:asc` and `:desc`. You can override
+  this with the `:directions` option.
+
+      iex> directions = {:asc_nils_first, :desc_nils_last}
+      iex> pagify = push_order(%Pagify{}, :ttfb, directions: directions)
+      iex> pagify.order_by
+      [ttfb: :asc_nils_first]
+      iex> pagify = push_order(pagify, :ttfb, directions: directions)
+      iex> pagify.order_by
+      [ttfb: :desc_nils_last]
+
+  This also allows you to sort in descending order initially.
+
+      iex> directions = {:desc, :asc}
+      iex> pagify = push_order(%Pagify{}, :ttfb, directions: directions)
+      iex> pagify.order_by
+      [ttfb: :desc]
+      iex> pagify = push_order(pagify, :ttfb, directions: directions)
+      iex> pagify.order_by
+      [ttfb: :asc]
+
+  If a string is passed as the second argument, it will be converted to an atom
+  using `String.to_existing_atom/1`. If the atom does not exist, the `Pagify`
+  struct will be returned unchanged.
+
+      iex> pagify = push_order(%Pagify{}, "name")
+      iex> pagify.order_by
+      [name: :asc]
+      iex> pagify = push_order(%Pagify{}, "this_atom_does_not_exist")
+      iex> pagify.order_by
+      nil
+
+  If the `order_by` is either an atom or a binary, the function will return the coerced `order_by` value.
+
+      iex> pagify = push_order(%Pagify{order_by: "author"}, :name)
+      iex> pagify.order_by
+      [name: :asc, author: :asc]
+      iex> pagify = push_order(%Pagify{order_by: :author}, "name")
+      iex> pagify.order_by
+      [name: :asc, author: :asc]
+
+  If the `:limit_order_by` option is passed, the `order_by` will be limited to the given number of fields.
+
+      iex> pagify = push_order(%Pagify{order_by: [name: :asc, age: :asc]}, :species, limit_order_by: 1)
+      iex> pagify.order_by
+      [species: :asc]
+  """
+  @spec push_order(Pagify.t(), atom() | String.t(), Keyword.t()) :: Pagify.t()
+  def push_order(pagify, field, opts \\ [])
+
+  def push_order(%Pagify{order_by: order_by} = pagify, field, opts) when is_atom(field) do
+    order_by = coerce_order_by(order_by)
+    previous_index = get_index(order_by, field)
+    previous_direction = get_order_direction(order_by, previous_index)
+
+    directions = Keyword.get(opts, :directions, nil)
+    new_direction = new_order_direction(previous_index, previous_direction, directions)
+
+    order_by =
+      case previous_index do
+        nil ->
+          [{field, new_direction} | order_by]
+
+        idx ->
+          [{field, new_direction} | List.delete_at(order_by, idx)]
+      end
+
+    order_by = limit_order_by(order_by, opts)
+
+    %Pagify{pagify | order_by: order_by}
+  end
+
+  def push_order(pagify, field, opts) when is_binary(field) do
+    push_order(pagify, String.to_existing_atom(field), opts)
+  rescue
+    _e in ArgumentError -> pagify
+  end
+
+  defp limit_order_by(order_by, opts) do
+    case Keyword.get(opts, :limit_order_by) do
+      limit when is_integer(limit) and limit > 0 -> Enum.take(order_by, limit)
+      _ -> order_by
+    end
+  end
+
+  @doc """
+  Transforms the given `order_by` parameter into a list of tuples with
+  the field and the default :asc direction.
+
+  ## Examples
+
+      iex> coerce_order_by(nil)
+      []
+      iex> coerce_order_by([])
+      []
+      iex> coerce_order_by(:name)
+      [name: :asc]
+      iex> coerce_order_by("name")
+      [name: :asc]
+      iex> coerce_order_by({:name, :asc})
+      [name: :asc]
+      iex> coerce_order_by([name: :asc, age: :desc])
+      [name: :asc, age: :desc]
+  """
+  @spec coerce_order_by(order_by()) :: order_by()
+  def coerce_order_by(nil), do: []
+  def coerce_order_by([]), do: []
+  def coerce_order_by(order_by) when is_atom(order_by), do: [{order_by, :asc}]
+
+  def coerce_order_by(order_by) when is_binary(order_by), do: [{String.to_existing_atom(order_by), :asc}]
+
+  def coerce_order_by(order_by) when is_tuple(order_by), do: [order_by]
+
+  def coerce_order_by(order_by) when is_list(order_by) do
+    Enum.map(order_by, fn
+      {field, direction} when is_binary(field) -> {String.to_existing_atom(field), direction}
+      {field, direction} -> {field, direction}
+      field when is_binary(field) -> {String.to_existing_atom(field), :asc}
+      field when is_atom(field) -> {field, :asc}
+    end)
+  end
+
+  @doc """
+  Finds the current index of a field in the `order_by` list.
+
+  Following rules are applied:
+
+  - if the `order_by` is `nil`, `nil` is returned
+  - if the `order_by` is an atom or a binary, `nil` is returned
+  - if the `order_by` is a tuple, `nil` is returned
+  - if the `order_by` is a list, the index of the field is returned
+  """
+  @spec get_index(order_by(), atom()) :: non_neg_integer() | nil
+  def get_index(order_by, field)
+  def get_index(nil, _field), do: nil
+  def get_index([], _field), do: nil
+  def get_index(order_by, _field) when is_atom(order_by), do: nil
+  def get_index(order_by, _field) when is_binary(order_by), do: nil
+  def get_index(order_by, _field) when is_tuple(order_by), do: nil
+
+  def get_index(order_by, field) when is_binary(field), do: get_index(order_by, String.to_existing_atom(field))
+
+  def get_index(order_by, field) do
+    Enum.find_index(order_by, fn item ->
+      case item do
+        {f, _} -> f == field
+        f when is_binary(f) -> String.to_existing_atom(f) == field
+        f -> f == field
+      end
+    end)
+  end
+
+  @doc """
+  Returns the current order direction for the given index and `Pagify.order_by`.
+
+  Following rules are applied:
+
+  - if the `order_by` is `nil`, `nil` is returned
+  - if the `order_by` is an atom or a binary, `:asc` is returned
+  - if the `order_by` is a tuple, the second element of the tuple is returned
+  - if the index is out of bounds, `nil` is returned
+  - if the `order_by` is a list, the direction of the element at the given index
+  is returned
+  """
+  @spec get_order_direction(order_by(), non_neg_integer() | nil) :: Ash.Sort.sort_order() | nil
+  def get_order_direction(order_by, index)
+  def get_order_direction(_, nil), do: :asc
+  def get_order_direction(nil, _), do: nil
+  def get_order_direction([], _), do: nil
+  def get_order_direction(order_by, _) when is_atom(order_by), do: :asc
+  def get_order_direction(order_by, _) when is_binary(order_by), do: :asc
+  def get_order_direction(order_by, _) when is_tuple(order_by), do: Enum.at(order_by, 1)
+
+  def get_order_direction(order_by, index) do
+    case Enum.at(order_by, index, :asc) do
+      {_, direction} -> direction
+      _ -> :asc
+    end
+  end
+
+  defguardp is_direction(value)
+            when value in [
+                   :asc,
+                   :asc_nils_first,
+                   :desc,
+                   :desc_nils_last
+                 ]
+
+  defguardp is_asc_direction(value)
+            when value in [
+                   :asc,
+                   :asc_nils_first
+                 ]
+
+  defguardp is_desc_direction(value)
+            when value in [
+                   :desc,
+                   :desc_nils_last
+                 ]
+
+  defp new_order_direction(0, current_direction, nil), do: reverse_direction(current_direction)
+
+  defp new_order_direction(0, current_direction, {_asc, desc})
+       when is_asc_direction(current_direction) and is_desc_direction(desc),
+       do: desc
+
+  defp new_order_direction(0, current_direction, {desc, _asc})
+       when is_asc_direction(current_direction) and is_desc_direction(desc),
+       do: desc
+
+  defp new_order_direction(0, current_direction, {asc, _desc})
+       when is_desc_direction(current_direction) and is_asc_direction(asc),
+       do: asc
+
+  defp new_order_direction(0, current_direction, {_desc, asc})
+       when is_desc_direction(current_direction) and is_asc_direction(asc),
+       do: asc
+
+  defp new_order_direction(0, _current_direction, directions) do
+    raise Pagify.Error.InvalidDirectionsError, directions: directions
+  end
+
+  defp new_order_direction(_, _, nil), do: :asc
+  defp new_order_direction(_, _, {asc, _desc}) when is_direction(asc), do: asc
+
+  defp new_order_direction(_, _, directions) do
+    raise Pagify.Error.InvalidDirectionsError, directions: directions
+  end
+
+  defp reverse_direction(:asc), do: :desc
+  defp reverse_direction(:asc_nils_first), do: :desc_nils_last
+  defp reverse_direction(:desc), do: :asc
+  defp reverse_direction(:desc_nils_last), do: :asc_nils_first
+
+  @doc """
   Returns the option with the given key.
 
   The look-up order is:
 
   1. the keyword list passed as the second argument
   2. the Ash.Resource resource, if the passed list includes the `:for` option
-  3. the Pagify default value if defined
-  4. the default passed as the last argument
+  3. the application environment
+  4. the Pagify default value if defined
+  5. the default passed as the last argument
   """
   @spec get_option(atom(), Keyword.t(), any()) :: any()
-  def get_option(key, opts, default \\ nil) do
+  def get_option(key, opts \\ [], default \\ nil) do
     with nil <- opts[key],
          nil <- resource_option(opts[:for], key),
-         nil <- pagify_option(key) do
-      default
+         nil <- global_option(key) do
+      Keyword.get(@default_opts, key, default)
     end
   end
 
@@ -1129,18 +1657,21 @@ defmodule Pagify do
 
   defp resource_option(_, _), do: nil
 
-  def resource_preparation_sort(preparations, default \\ nil)
-  def resource_preparation_sort([], default), do: default
+  defp resource_preparation_sort(preparations, default \\ nil)
+  defp resource_preparation_sort([], default), do: default
 
-  def resource_preparation_sort([%Ash.Resource.Preparation{preparation: {_, [options: [sort: sort]]}} | _rest], _default)
-      when is_list(sort) do
+  defp resource_preparation_sort([%Ash.Resource.Preparation{preparation: {_, [options: [sort: sort]]}} | _rest], _default)
+       when is_list(sort) do
     sort
   end
 
-  def resource_preparation_sort([_ | rest], default) do
+  defp resource_preparation_sort([_ | rest], default) do
     resource_preparation_sort(rest, default)
   end
 
-  defp pagify_option(key) when key in [:default_limit], do: apply(__MODULE__, key, [])
-  defp pagify_option(_), do: nil
+  defp global_option(key) when is_atom(key) do
+    :data_aggregator
+    |> Application.get_env(:pagify, [])
+    |> Keyword.get(key, nil)
+  end
 end

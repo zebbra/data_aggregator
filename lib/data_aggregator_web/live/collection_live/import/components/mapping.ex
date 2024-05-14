@@ -97,9 +97,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           </div>
           <div class="collapse-content -mx-4">
             <div class="no-scrollbar overflow-x-auto">
-              <.table
+              <Pagify.Components.table
+                opts={[container: false]}
                 id="collection_mapping_table"
-                rows={@import.collection.import_mapping |> Enum.filter(&(&1["mapped_to"] != nil))}
+                items={@import.collection.import_mapping |> Enum.filter(&(&1["mapped_to"] != nil))}
               >
                 <:col :let={column} label={~t"Column"m}>
                   <span
@@ -116,7 +117,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                   <%= column[:mapped_to] %>
                   <.attribute_badge name={column["mapped_to"]} mapped={column["mapped_to"] != nil} />
                 </:col>
-              </.table>
+              </Pagify.Components.table>
             </div>
           </div>
         </div>

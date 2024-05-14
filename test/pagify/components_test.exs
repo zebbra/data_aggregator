@@ -10,12 +10,48 @@ defmodule Pagify.ComponentsTest do
   import Phoenix.LiveViewTest
 
   alias Pagify.Factory.Post
+  alias Pagify.Meta
   alias Phoenix.LiveView.JS
+  alias Phoenix.LiveView.LiveStream
   alias Plug.Conn.Query
 
   doctest Pagify.Components, import: true
 
   @route_helper_opts [%{}, :posts]
+
+  attr :caption, :string, default: nil
+  attr :on_sort, JS, default: nil
+  attr :id, :string, default: "some_table"
+  attr :meta, Meta, default: %Meta{pagify: %Pagify{}}
+  attr :opts, :list, default: [table_attrs: [class: "some-table"]]
+  attr :target, :string, default: nil
+  attr :path, :any, default: {__MODULE__, :route_helper, @route_helper_opts}
+
+  attr :items, :list,
+    default: [
+      %{name: "George", email: "george@george.post", age: 8, species: "dog"}
+    ]
+
+  defp render_table(assigns) do
+    parse_heex(~H"""
+    <Pagify.Components.table
+      caption={@caption}
+      on_sort={@on_sort}
+      id={@id}
+      items={@items}
+      meta={@meta}
+      opts={@opts}
+      path={@path}
+      target={@target}
+    >
+      <:col :let={post} label="Name" field={:name}><%= post.name %></:col>
+      <:col :let={post} label="Email" field={:email}><%= post.email %></:col>
+      <:col :let={post} label="Age"><%= post.age %></:col>
+      <:col :let={post} label="Species" field={:species}><%= post.species %></:col>
+      <:col>column without label</:col>
+    </Pagify.Components.table>
+    """)
+  end
 
   def route_helper(%{}, action, query) do
     URI.to_string(%URI{path: "/#{action}", query: Query.encode(query)})
@@ -39,7 +75,7 @@ defmodule Pagify.ComponentsTest do
       nav = find_one(html, "nav:root")
 
       assert attribute(nav, "aria-label") == "pagination"
-      assert attribute(nav, "class") == "join"
+      assert attribute(nav, "class") == "pagination"
       assert attribute(nav, "role") == "navigation"
     end
 
@@ -93,7 +129,7 @@ defmodule Pagify.ComponentsTest do
       nav = find_one(html, "nav:root")
 
       assert attribute(nav, "aria-label") == "pagination"
-      assert attribute(nav, "class") == "join"
+      assert attribute(nav, "class") == "pagination"
       assert attribute(nav, "role") == "navigation"
       assert attribute(nav, "title") == "paginate"
     end
@@ -106,9 +142,9 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" />
         """)
 
-      a = find_one(html, "a:fl-contains('Prev')")
+      a = find_one(html, "a:fl-contains('Previous')")
 
-      assert attribute(a, "class") == "join-item btn btn-sm"
+      assert attribute(a, "class") == "pagination-previous"
       assert attribute(a, "data-phx-link") == "patch"
       assert attribute(a, "data-phx-link-state") == "push"
       assert attribute(a, "href") == "/posts?limit=10"
@@ -125,9 +161,9 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} on_paginate={@on_paginate} />
         """)
 
-      a = find_one(html, "a:fl-contains('Prev')")
+      a = find_one(html, "a:fl-contains('Previous')")
 
-      assert attribute(a, "class") == "join-item btn btn-sm"
+      assert attribute(a, "class") == "pagination-previous"
       assert attribute(a, "data-phx-link") == nil
       assert attribute(a, "data-phx-link-state") == nil
       assert attribute(a, "href") == "#"
@@ -137,7 +173,7 @@ defmodule Pagify.ComponentsTest do
 
       a = find_one(html, "a:fl-contains('Next')")
 
-      assert attribute(a, "class") == "join-item btn btn-sm"
+      assert attribute(a, "class") == "pagination-next"
       assert attribute(a, "data-phx-link") == nil
       assert attribute(a, "data-phx-link-state") == nil
       assert attribute(a, "href") == "#"
@@ -154,9 +190,9 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" on_paginate={JS.push("paginate")} />
         """)
 
-      a = find_one(html, "a:fl-contains('Prev')")
+      a = find_one(html, "a:fl-contains('Previous')")
 
-      assert attribute(a, "class") == "join-item btn btn-sm"
+      assert attribute(a, "class") == "pagination-previous"
       assert attribute(a, "data-phx-link") == "patch"
       assert attribute(a, "data-phx-link-state") == "push"
       assert attribute(a, "href") == "/posts?limit=10"
@@ -176,7 +212,7 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path={@path} />
         """)
 
-      assert a = find_one(html, "a:fl-contains('Prev')")
+      assert a = find_one(html, "a:fl-contains('Previous')")
       assert attribute(a, "href") == "/posts?limit=10"
     end
 
@@ -200,7 +236,7 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" />
         """)
 
-      assert a = find_one(html, "a:fl-contains('Prev')")
+      assert a = find_one(html, "a:fl-contains('Previous')")
       assert attribute(a, "href") == "/posts?limit=10"
     end
 
@@ -212,7 +248,7 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} on_paginate={JS.push("paginate")} target="here" />
         """)
 
-      assert a = find_one(html, "a:fl-contains('Prev')")
+      assert a = find_one(html, "a:fl-contains('Previous')")
       assert attribute(a, "phx-target") == "here"
     end
 
@@ -227,8 +263,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path={@path} />
         """)
 
-      assert previous = find_one(html, "a:fl-contains('Prev')")
-      assert attribute(previous, "class") == "join-item btn btn-sm"
+      assert previous = find_one(html, "a:fl-contains('Previous')")
+      assert attribute(previous, "class") == "pagination-previous"
       assert attribute(previous, "data-phx-link") == "patch"
       assert attribute(previous, "data-phx-link-state") == "push"
 
@@ -247,8 +283,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts?category=dinosaurs" />
         """)
 
-      assert previous = find_one(html, "a:fl-contains('Prev')")
-      assert attribute(previous, "class") == "join-item btn btn-sm"
+      assert previous = find_one(html, "a:fl-contains('Previous')")
+      assert attribute(previous, "class") == "pagination-previous"
       assert attribute(previous, "data-phx-link") == "patch"
       assert attribute(previous, "data-phx-link-state") == "push"
 
@@ -289,10 +325,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" />
         """)
 
-      assert previous_link = find_one(html, "span:fl-contains('Prev')")
-
-      assert attribute(previous_link, "class") ==
-               "join-item btn btn-sm text-base-content/20 pointer-events-none"
+      assert previous_link = find_one(html, "span:fl-contains('Previous')")
+      assert attribute(previous_link, "class") == "pagination-previous disabled"
     end
 
     test "disables previous link if on first page when using click handlers" do
@@ -303,10 +337,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} on_paginate={JS.push("paginate")} />
         """)
 
-      assert previous_link = find_one(html, "span:fl-contains('Prev')")
-
-      assert attribute(previous_link, "class") ==
-               "join-item btn btn-sm text-base-content/20 pointer-events-none"
+      assert previous_link = find_one(html, "span:fl-contains('Previous')")
+      assert attribute(previous_link, "class") == "pagination-previous disabled"
     end
 
     test "allows to overwrite previous link class and content if disabled" do
@@ -326,7 +358,7 @@ defmodule Pagify.ComponentsTest do
 
       assert previous_link = find_one(html, "span:fl-contains('Previous')")
 
-      assert attribute(previous_link, "class") == "prev text-base-content/20 pointer-events-none"
+      assert attribute(previous_link, "class") == "prev disabled"
       assert attribute(previous_link, "title") == "no"
       assert text(previous_link) == "Previous"
     end
@@ -341,7 +373,7 @@ defmodule Pagify.ComponentsTest do
 
       assert link = find_one(html, "a:fl-contains('Next')")
 
-      assert attribute(link, "class") == "join-item btn btn-sm"
+      assert attribute(link, "class") == "pagination-next"
       assert attribute(link, "data-phx-link") == "patch"
       assert attribute(link, "data-phx-link-state") == "push"
       assert href = attribute(link, "href")
@@ -358,7 +390,7 @@ defmodule Pagify.ComponentsTest do
 
       assert link = find_one(html, "a:fl-contains('Next')")
 
-      assert attribute(link, "class") == "join-item btn btn-sm"
+      assert attribute(link, "class") == "pagination-next"
       assert attribute(link, "phx-value-offset") == "20"
       assert attribute(link, "href") == "#"
       assert phx_click = attribute(link, "phx-click")
@@ -411,9 +443,7 @@ defmodule Pagify.ComponentsTest do
         """)
 
       assert next = find_one(html, "span:fl-contains('Next')")
-
-      assert attribute(next, "class") ==
-               "join-item btn btn-sm text-base-content/20 pointer-events-none"
+      assert attribute(next, "class") == "pagination-next disabled"
 
       assert attribute(next, "href") == nil
     end
@@ -427,9 +457,7 @@ defmodule Pagify.ComponentsTest do
         """)
 
       assert next = find_one(html, "span:fl-contains('Next')")
-
-      assert attribute(next, "class") ==
-               "join-item btn btn-sm text-base-content/20 pointer-events-none"
+      assert attribute(next, "class") == "pagination-next disabled"
 
       assert attribute(next, "href") == nil
     end
@@ -450,7 +478,7 @@ defmodule Pagify.ComponentsTest do
         """)
 
       assert next_link = find_one(html, "span:fl-contains('N-n-next')")
-      assert attribute(next_link, "class") == "next text-base-content/20 pointer-events-none"
+      assert attribute(next_link, "class") == "next disabled"
       assert attribute(next_link, "title") == "no"
     end
 
@@ -463,14 +491,14 @@ defmodule Pagify.ComponentsTest do
         """)
 
       assert link = find_one(html, "a[aria-label='Go to page 1']")
-      assert attribute(link, "class") == "join-item btn btn-sm max-sm:hidden"
+      assert attribute(link, "class") == "pagination-link"
       assert attribute(link, "data-phx-link") == "patch"
       assert attribute(link, "data-phx-link-state") == "push"
       assert attribute(link, "href") == "/posts?limit=10"
       assert text(link) == "1"
 
       assert link = find_one(html, "a[aria-label='Go to page 2']")
-      assert attribute(link, "class") == "join-item btn btn-sm btn-active max-sm:hidden"
+      assert attribute(link, "class") == "pagination-link is-current"
       assert attribute(link, "data-phx-link") == "patch"
       assert attribute(link, "data-phx-link-state") == "push"
       assert href = attribute(link, "href")
@@ -478,7 +506,7 @@ defmodule Pagify.ComponentsTest do
       assert text(link) == "2"
 
       assert link = find_one(html, "a[aria-label='Go to page 3']")
-      assert attribute(link, "class") == "join-item btn btn-sm max-sm:hidden"
+      assert attribute(link, "class") == "pagination-link"
       assert attribute(link, "data-phx-link") == "patch"
       assert attribute(link, "data-phx-link-state") == "push"
       assert href = attribute(link, "href")
@@ -561,7 +589,7 @@ defmodule Pagify.ComponentsTest do
       # current link attributes are unchanged
       assert link = find_one(html, "a[aria-label='Go to page 2']")
       assert attribute(link, "beep") == nil
-      assert attribute(link, "class") == "join-item btn btn-sm btn-active max-sm:hidden"
+      assert attribute(link, "class") == "pagination-link is-current"
     end
 
     test "allows to overwrite current attributes" do
@@ -577,7 +605,7 @@ defmodule Pagify.ComponentsTest do
         """)
 
       assert link = find_one(html, "a[aria-label='Go to page 1']")
-      assert attribute(link, "class") == "join-item btn btn-sm max-sm:hidden"
+      assert attribute(link, "class") == "pagination-link"
       assert attribute(link, "data-phx-link") == "patch"
       assert attribute(link, "data-phx-link-state") == "push"
       assert attribute(link, "href") == "/posts?limit=10"
@@ -606,14 +634,14 @@ defmodule Pagify.ComponentsTest do
         """)
 
       assert link = find_one(html, "a[aria-label='On to page 1']")
-      assert attribute(link, "class") == "join-item btn btn-sm max-sm:hidden"
+      assert attribute(link, "class") == "pagination-link"
       assert attribute(link, "data-phx-link") == "patch"
       assert attribute(link, "data-phx-link-state") == "push"
       assert attribute(link, "href") == "/posts?limit=10"
       assert text(link) == "1"
 
       assert link = find_one(html, "a[aria-label='On to page 2']")
-      assert attribute(link, "class") == "join-item btn btn-sm btn-active max-sm:hidden"
+      assert attribute(link, "class") == "pagination-link is-current"
       assert attribute(link, "data-phx-link") == "patch"
       assert attribute(link, "data-phx-link-state") == "push"
       assert href = attribute(link, "href")
@@ -649,22 +677,22 @@ defmodule Pagify.ComponentsTest do
         offset -> Keyword.put(default_query, :offset, offset)
       end
 
-      assert previous = find_one(html, "a:fl-contains('Prev')")
-      assert attribute(previous, "class") == "join-item btn btn-sm"
+      assert previous = find_one(html, "a:fl-contains('Previous')")
+      assert attribute(previous, "class") == "pagination-previous"
       assert attribute(previous, "data-phx-link") == "patch"
       assert attribute(previous, "data-phx-link-state") == "push"
       assert href = attribute(previous, "href")
       assert_urls_match(href, "/posts", expected_query.(1))
 
       assert one = find_one(html, "a[aria-label='Go to page 1']")
-      assert attribute(one, "class") == "join-item btn btn-sm max-sm:hidden"
+      assert attribute(one, "class") == "pagination-link"
       assert attribute(one, "data-phx-link") == "patch"
       assert attribute(one, "data-phx-link-state") == "push"
       assert href = attribute(one, "href")
       assert_urls_match(href, "/posts", expected_query.(1))
 
       assert next = find_one(html, "a:fl-contains('Next')")
-      assert attribute(next, "class") == "join-item btn btn-sm"
+      assert attribute(next, "class") == "pagination-next"
       assert attribute(next, "data-phx-link") == "patch"
       assert attribute(next, "data-phx-link-state") == "push"
       assert href = attribute(next, "href")
@@ -678,7 +706,7 @@ defmodule Pagify.ComponentsTest do
             :meta_on_second_page,
             pagify: %Pagify{
               limit: 15,
-              order_by: [id: :asc]
+              order_by: [name: :asc]
             },
             resource: Post
           )
@@ -689,7 +717,7 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" />
         """)
 
-      assert prev = find_one(html, "a:fl-contains('Prev')")
+      assert prev = find_one(html, "a:fl-contains('Previous')")
       assert href = attribute(prev, "href")
 
       refute href =~ "limit="
@@ -704,8 +732,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} on_paginate={JS.push("paginate")} />
         """)
 
-      assert link = find_one(html, "a:fl-contains('Prev')")
-      assert attribute(link, "class") == "join-item btn btn-sm"
+      assert link = find_one(html, "a:fl-contains('Previous')")
+      assert attribute(link, "class") == "pagination-previous"
       assert attribute(link, "phx-value-offset") == "0"
       assert attribute(link, "href") == "#"
       assert phx_click = attribute(link, "phx-click")
@@ -764,22 +792,22 @@ defmodule Pagify.ComponentsTest do
         offset -> Keyword.put(default_query, :offset, offset)
       end
 
-      assert previous = find_one(html, "a:fl-contains('Prev')")
-      assert attribute(previous, "class") == "join-item btn btn-sm"
+      assert previous = find_one(html, "a:fl-contains('Previous')")
+      assert attribute(previous, "class") == "pagination-previous"
       assert attribute(previous, "data-phx-link") == "patch"
       assert attribute(previous, "data-phx-link-state") == "push"
       assert href = attribute(previous, "href")
       assert_urls_match(href, "/posts", expected_query.(1))
 
       assert one = find_one(html, "a[aria-label='Go to page 1']")
-      assert attribute(one, "class") == "join-item btn btn-sm max-sm:hidden"
+      assert attribute(one, "class") == "pagination-link"
       assert attribute(one, "data-phx-link") == "patch"
       assert attribute(one, "data-phx-link-state") == "push"
       assert href = attribute(one, "href")
       assert_urls_match(href, "/posts", expected_query.(1))
 
       assert next = find_one(html, "a:fl-contains('Next')")
-      assert attribute(next, "class") == "join-item btn btn-sm"
+      assert attribute(next, "class") == "pagination-next"
       assert attribute(next, "data-phx-link") == "patch"
       assert attribute(next, "data-phx-link-state") == "push"
       assert href = attribute(next, "href")
@@ -798,8 +826,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" opts={@opts} />
         """)
 
-      assert Floki.find(html, "span[aria-hidden='true']") == []
-      assert html |> Floki.find(".join-item.btn.btn-sm.max-sm\\:hidden") |> length() == 5
+      assert Floki.find(html, ".pagination-ellipsis") == []
+      assert html |> Floki.find("a.pagination-link") |> length() == 5
 
       # max pages equal to total pages
       assigns = %{
@@ -812,8 +840,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" opts={@opts} />
         """)
 
-      assert Floki.find(html, "span[aria-hidden='true']") == []
-      assert html |> Floki.find(".join-item.btn.btn-sm.max-sm\\:hidden") |> length() == 5
+      assert Floki.find(html, ".pagination-ellipsis") == []
+      assert html |> Floki.find("a.pagination-link") |> length() == 5
     end
 
     test "renders end ellipsis and last page link when on page 1" do
@@ -827,8 +855,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" opts={@opts} />
         """)
 
-      assert html |> Floki.find("span[aria-hidden='true']") |> length() == 1
-      assert html |> Floki.find("a.join-item.btn.btn-sm.max-sm\\:hidden") |> length() == 6
+      assert html |> Floki.find(".pagination-ellipsis") |> length() == 1
+      assert html |> Floki.find("a.pagination-link") |> length() == 6
 
       assert find_one(html, "a[aria-label='Go to page 20']")
 
@@ -848,8 +876,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" opts={@opts} />
         """)
 
-      assert html |> Floki.find("span[aria-hidden='true']") |> length() == 1
-      assert html |> Floki.find("a.join-item.btn.btn-sm.max-sm\\:hidden") |> length() == 6
+      assert html |> Floki.find(".pagination-ellipsis") |> length() == 1
+      assert html |> Floki.find("a.pagination-link") |> length() == 6
 
       assert find_one(html, "a[aria-label='Go to page 1']")
 
@@ -869,8 +897,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" opts={@opts} />
         """)
 
-      assert html |> Floki.find("span[aria-hidden='true']") |> length() == 2
-      assert html |> Floki.find("a.join-item.btn.btn-sm.max-sm\\:hidden") |> length() == 8
+      assert html |> Floki.find(".pagination-ellipsis") |> length() == 2
+      assert html |> Floki.find("a.pagination-link") |> length() == 8
 
       assert find_one(html, "a[aria-label='Go to page 1']")
       assert find_one(html, "a[aria-label='Go to page 20']")
@@ -891,8 +919,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" opts={@opts} />
         """)
 
-      assert html |> Floki.find("span[aria-hidden='true']") |> length() == 2
-      assert html |> Floki.find("a.join-item.btn.btn-sm.max-sm\\:hidden") |> length() == 7
+      assert html |> Floki.find(".pagination-ellipsis") |> length() == 2
+      assert html |> Floki.find("a.pagination-link") |> length() == 7
 
       assert find_one(html, "a[aria-label='Go to page 1']")
       assert find_one(html, "a[aria-label='Go to page 20']")
@@ -913,8 +941,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" opts={@opts} />
         """)
 
-      assert html |> Floki.find("span[aria-hidden='true']") |> length() == 2
-      assert html |> Floki.find("a.join-item.btn.btn-sm.max-sm\\:hidden") |> length() == 7
+      assert html |> Floki.find(".pagination-ellipsis") |> length() == 2
+      assert html |> Floki.find("a.pagination-link") |> length() == 7
 
       assert find_one(html, "a[aria-label='Go to page 1']")
       assert find_one(html, "a[aria-label='Go to page 20']")
@@ -935,8 +963,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" opts={@opts} />
         """)
 
-      assert html |> Floki.find("span[aria-hidden='true']") |> length() == 2
-      assert html |> Floki.find("a.join-item.btn.btn-sm.max-sm\\:hidden") |> length() == 7
+      assert html |> Floki.find(".pagination-ellipsis") |> length() == 2
+      assert html |> Floki.find("a.pagination-link") |> length() == 7
 
       assert find_one(html, "a[aria-label='Go to page 1']")
       assert find_one(html, "a[aria-label='Go to page 20']")
@@ -957,8 +985,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" opts={@opts} />
         """)
 
-      assert html |> Floki.find("span[aria-hidden='true']") |> length() == 1
-      assert html |> Floki.find("a.join-item.btn.btn-sm.max-sm\\:hidden") |> length() == 6
+      assert html |> Floki.find(".pagination-ellipsis") |> length() == 1
+      assert html |> Floki.find("a.pagination-link") |> length() == 6
 
       assert find_one(html, "a[aria-label='Go to page 20']")
 
@@ -978,8 +1006,8 @@ defmodule Pagify.ComponentsTest do
         <Pagify.Components.pagination meta={@meta} path="/posts" opts={@opts} />
         """)
 
-      assert html |> Floki.find("span[aria-hidden='true']") |> length() == 1
-      assert html |> Floki.find("a.join-item.btn.btn-sm.max-sm\\:hidden") |> length() == 6
+      assert html |> Floki.find(".pagination-ellipsis") |> length() == 1
+      assert html |> Floki.find("a.pagination-link") |> length() == 6
 
       assert find_one(html, "a[aria-label='Go to page 1']")
 
@@ -1014,6 +1042,1327 @@ defmodule Pagify.ComponentsTest do
       assert parse_heex(~H"""
              <Pagify.Components.pagination meta={@meta} path="/posts" />
              """) == []
+    end
+  end
+
+  describe "table/1" do
+    test "allows to set table attributes" do
+      # attribute from global config
+      html = render_table(%{opts: []})
+      assert table = find_one(html, "table")
+      assert attribute(table, "class") == nil
+
+      html = render_table(%{opts: [table_attrs: [class: "funky-table"]]})
+      assert table = find_one(html, "table")
+      assert attribute(table, "class") == "funky-table"
+    end
+
+    test "optionally adds a table container" do
+      html = render_table(%{opts: []})
+      assert Floki.find(html, "#some_table_container") == []
+
+      html = render_table(%{opts: [container: true]})
+      assert find_one(html, "#some_table_container")
+    end
+
+    test "allows to set container attributes" do
+      html =
+        render_table(%{
+          opts: [
+            container_attrs: [class: "container", data_some: "thing"],
+            container: true
+          ]
+        })
+
+      assert container = find_one(html, "div.container")
+      assert attribute(container, "data_some") == "thing"
+    end
+
+    test "allows to set tbody attributes" do
+      html =
+        render_table(%{
+          opts: [
+            tbody_attrs: [class: "mango_body"],
+            container: true
+          ]
+        })
+
+      assert find_one(html, "tbody.mango_body")
+    end
+
+    test "setting thead attributes" do
+      html =
+        render_table(%{
+          opts: [
+            thead_attrs: [class: "text-left text-zinc-500 leading-6"],
+            container: true
+          ]
+        })
+
+      assert find_one(html, "thead.text-left.text-zinc-500.leading-6")
+    end
+
+    test "allows to set id on table, tbody and container" do
+      html = render_table(%{id: "some_id", opts: [container: true]})
+      assert find_one(html, "div#some_id_container")
+      assert find_one(html, "table#some_id")
+      assert find_one(html, "tbody#some_id_tbody")
+    end
+
+    test "sets default ID based on resource module" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        items: ["George"]
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table items={@items} meta={@meta} on_sort={JS.push("sort")}>
+          <:col></:col>
+        </Pagify.Components.table>
+        """)
+
+      assert find_one(html, "table#post_table")
+      assert find_one(html, "tbody#post_table_tbody")
+    end
+
+    test "sets default ID without resource module" do
+      assigns = %{}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          items={["George"]}
+          meta={%Pagify.Meta{pagify: %Pagify{}}}
+          on_sort={JS.push("sort")}
+          opts={[container: true]}
+        >
+          <:col></:col>
+        </Pagify.Components.table>
+        """)
+
+      assert find_one(html, "div#sortable_table_container")
+      assert find_one(html, "table#sortable_table")
+      assert find_one(html, "tbody#sortable_table_tbody")
+    end
+
+    test "does not set row ID if items are not a stream" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        items: ["George"]
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table items={@items} meta={@meta} on_sort={JS.push("sort")}>
+          <:col></:col>
+        </Pagify.Components.table>
+        """)
+
+      assert tr = find_one(html, "tbody tr")
+      assert attribute(tr, "id") == nil
+    end
+
+    test "allows to set row ID function" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        items: [%Post{id: 1, name: "George"}, %Post{id: 2, name: "Mary"}],
+        row_id: &"posts-#{&1.name}"
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table items={@items} meta={@meta} row_id={@row_id} on_sort={JS.push("sort")}>
+          <:col></:col>
+        </Pagify.Components.table>
+        """)
+
+      assert [tr_1, tr_2] = Floki.find(html, "tbody tr")
+      assert attribute(tr_1, "id") == "posts-George"
+      assert attribute(tr_2, "id") == "posts-Mary"
+    end
+
+    test "uses default row ID function if items are a stream" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        stream: LiveStream.new(:posts, 0, [%Post{id: 1}, %Post{id: 2}], [])
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table items={@stream} meta={@meta} on_sort={JS.push("sort")}>
+          <:col></:col>
+        </Pagify.Components.table>
+        """)
+
+      assert [tr_1, tr_2] = Floki.find(html, "tbody tr")
+      assert attribute(tr_1, "id") == "posts-1"
+      assert attribute(tr_2, "id") == "posts-2"
+    end
+
+    test "allows to override default row item function" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        items: [%Post{name: "George"}],
+        row_item: fn item -> Map.update!(item, :name, &String.upcase/1) end
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          items={@items}
+          meta={@meta}
+          row_item={@row_item}
+          on_sort={JS.push("sort")}
+        >
+          <:col :let={p}><%= p.name %></:col>
+        </Pagify.Components.table>
+        """)
+
+      assert td = find_one(html, "tbody td")
+      assert text(td) == "GEORGE"
+    end
+
+    test "allows to set tr and td classes via keyword lists" do
+      html =
+        render_table(%{
+          opts: [
+            thead_tr_attrs: [class: "mungo"],
+            thead_th_attrs: [class: "bean"],
+            tbody_tr_attrs: [class: "salt"],
+            tbody_td_attrs: [class: "tolerance"]
+          ]
+        })
+
+      assert find_one(html, "tr.mungo")
+      assert [_, _, _, _, _] = Floki.find(html, "th.bean")
+      assert find_one(html, "tr.salt")
+      assert [_, _, _, _, _] = Floki.find(html, "td.tolerance")
+    end
+
+    test "evaluates attrs function for tr" do
+      assigns = %{}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          path="/posts"
+          items={[
+            %{name: "Bruce Wayne", age: 42, occupation: "Superhero"},
+            %{name: "April O'Neil", age: 39, occupation: "Crime Reporter"}
+          ]}
+          opts={[
+            tbody_tr_attrs: fn item, _assigns ->
+              class =
+                item.occupation
+                |> String.downcase()
+                |> String.replace(" ", "-")
+
+              [class: class]
+            end
+          ]}
+          meta={%Pagify.Meta{pagify: %Pagify{}}}
+        >
+          <:col></:col>
+        </Pagify.Components.table>
+        """)
+
+      assert find_one(html, "tr.superhero")
+      assert find_one(html, "tr.crime-reporter")
+    end
+
+    test "evaluates tbody_td_attrs function for col slot / td" do
+      assigns = %{}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          path="/posts"
+          items={[
+            %{name: "Mary Cratsworth-Shane", age: 99},
+            %{name: "Bart Harley-Jarvis", age: 1}
+          ]}
+          meta={%Pagify.Meta{pagify: %Pagify{}}}
+        >
+          <:col tbody_td_attrs={
+            fn item, _assigns ->
+              [class: if(item.age > 17, do: "adult", else: "child")]
+            end
+          }>
+          </:col>
+        </Pagify.Components.table>
+        """)
+
+      assert find_one(html, "td.adult")
+      assert find_one(html, "td.child")
+    end
+
+    test "evaluates tbody_td_attrs function in action columns" do
+      assigns = %{
+        attrs_fun: fn item, _assigns ->
+          [class: if(item.age > 17, do: "adult", else: "child")]
+        end
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          items={[
+            %{name: "Mary Cratsworth-Shane", age: 99},
+            %{name: "Bart Harley-Jarvis", age: 1}
+          ]}
+          meta={%Pagify.Meta{pagify: %Pagify{}}}
+          on_sort={%JS{}}
+        >
+          <:col :let={u} label="Name"><%= u.name %></:col>
+          <:action label="Buttons" tbody_td_attrs={@attrs_fun}>some action</:action>
+        </Pagify.Components.table>
+        """)
+
+      assert find_one(html, "td.adult")
+      assert find_one(html, "td.child")
+    end
+
+    test "allows to set td class on action" do
+      assigns = %{}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          path="/posts"
+          items={[%{}]}
+          meta={%Pagify.Meta{pagify: %Pagify{}}}
+          opts={[tbody_td_attrs: [class: "tolerance"]]}
+        >
+          <:col></:col>
+          <:action>action</:action>
+        </Pagify.Components.table>
+        """)
+
+      assert [_, _] = Floki.find(html, "td.tolerance")
+    end
+
+    test "adds additional attributes to th" do
+      assigns = %{}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          path="/posts"
+          items={[%{name: "George", age: 8}]}
+          meta={%Pagify.Meta{pagify: %Pagify{}}}
+        >
+          <:col :let={post} thead_th_attrs={[class: "name-header"]}>
+            <%= post.name %>
+          </:col>
+          <:col :let={post} thead_th_attrs={[class: "age-header"]}>
+            <%= post.age %>
+          </:col>
+          <:action :let={post} thead_th_attrs={[class: "action-header"]}>
+            <.link navigate={"/show/post/#{post.name}"}>Show Post</.link>
+          </:action>
+        </Pagify.Components.table>
+        """)
+
+      assert find_one(html, "th.name-header")
+      assert find_one(html, "th.age-header")
+      assert find_one(html, "th.action-header")
+    end
+
+    test "adds additional attributes to td" do
+      assigns = %{}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          path="/posts"
+          items={[%{name: "George", age: 8}]}
+          meta={%Pagify.Meta{pagify: %Pagify{}}}
+        >
+          <:col :let={post} tbody_td_attrs={[class: "name-column"]}>
+            <%= post.name %>
+          </:col>
+          <:col :let={post} tbody_td_attrs={[class: "age-column"]}>
+            <%= post.age %>
+          </:col>
+          <:action :let={post} tbody_td_attrs={[class: "action-column"]}>
+            <.link navigate={"/show/post/#{post.name}"}>Show Post</.link>
+          </:action>
+        </Pagify.Components.table>
+        """)
+
+      assert find_one(html, "td.name-column")
+      assert find_one(html, "td.age-column")
+      assert find_one(html, "td.action-column")
+    end
+
+    test "overrides table_th_attrs with thead_th_attrs in col" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        items: [%{name: "George", age: 8}],
+        opts: [thead_th_attrs: [class: "default-th-class"]]
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table items={@items} meta={@meta} on_sort={%JS{}} opts={@opts}>
+          <:col :let={i} thead_th_attrs={[class: "name-th-class"]}><%= i.name %></:col>
+          <:col :let={i}><%= i.age %></:col>
+        </Pagify.Components.table>
+        """)
+
+      assert {"th", [{"class", "name-th-class"}], _} =
+               find_one(html, "th:first-child")
+
+      assert {"th", [{"class", "default-th-class"}], _} =
+               find_one(html, "th:last-child")
+    end
+
+    test "merges table_th_attrs with class from col" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        items: [%{name: "George", age: 8}],
+        opts: [thead_th_attrs: [class: "default-th-class"]]
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table items={@items} meta={@meta} on_sort={%JS{}} opts={@opts}>
+          <:col :let={i} thead_th_attrs={[class: "name-th-class"]} class="name-th-col-class">
+            <%= i.name %>
+          </:col>
+          <:col :let={i} class="name-th-col-class"><%= i.age %></:col>
+        </Pagify.Components.table>
+        """)
+
+      assert {"th", [{"class", "name-th-class name-th-col-class"}], _} =
+               find_one(html, "th:first-child")
+
+      assert {"th", [{"class", "default-th-class name-th-col-class"}], _} =
+               find_one(html, "th:last-child")
+    end
+
+    test "evaluates table th_wrapper_attrs" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        items: [%{name: "George", age: 8}],
+        opts: [th_wrapper_attrs: [class: "default-th-wrapper-class"]]
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table items={@items} meta={@meta} on_sort={%JS{}} opts={@opts}>
+          <:col :let={i} field={:name}><%= i.name %></:col>
+          <:col :let={i}><%= i.age %></:col>
+        </Pagify.Components.table>
+        """)
+
+      assert {"th", [], [{"span", [{"class", "default-th-wrapper-class"}], _}]} =
+               find_one(html, "th:first-child")
+    end
+
+    test "overrides th_wrapper_attrs" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        items: [%{name: "George", age: 8}],
+        opts: [th_wrapper_attrs: [class: "default-th-wrapper-class"]]
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table items={@items} meta={@meta} on_sort={%JS{}} opts={@opts}>
+          <:col :let={i} field={:name} th_wrapper_attrs={[class: "name-th-wrapper-class"]}>
+            <%= i.name %>
+          </:col>
+          <:col :let={i} field={:age}><%= i.age %></:col>
+        </Pagify.Components.table>
+        """)
+
+      assert {"th", [], [{"span", [{"class", "name-th-wrapper-class"}], _}]} =
+               find_one(html, "th:first-child")
+
+      assert {"th", [], [{"span", [{"class", "default-th-wrapper-class"}], _}]} =
+               find_one(html, "th:last-child")
+    end
+
+    test "overrides table_td_attrs with tbody_td_attrs in col" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        items: [%{name: "George", age: 8}],
+        opts: [tbody_td_attrs: [class: "default-td-class"]]
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table items={@items} meta={@meta} on_sort={%JS{}} opts={@opts}>
+          <:col :let={i} tbody_td_attrs={[class: "name-td-class"]}><%= i.name %></:col>
+          <:col :let={i}><%= i.age %></:col>
+        </Pagify.Components.table>
+        """)
+
+      assert {"td", [{"class", "name-td-class"}], _} =
+               find_one(html, "td:first-child")
+
+      assert {"td", [{"class", "default-td-class"}], _} =
+               find_one(html, "td:last-child")
+    end
+
+    test "merges table_td_attrs with class from col" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        items: [%{name: "George", age: 8}],
+        opts: [tbody_td_attrs: [class: "default-td-class"]]
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table items={@items} meta={@meta} on_sort={%JS{}} opts={@opts}>
+          <:col :let={i} tbody_td_attrs={[class: "name-td-class"]} class="name-td-col-class">
+            <%= i.name %>
+          </:col>
+          <:col :let={i} class="name-td-col-class"><%= i.age %></:col>
+        </Pagify.Components.table>
+        """)
+
+      assert {"td", [{"class", "name-td-class name-td-col-class"}], _} =
+               find_one(html, "td:first-child")
+
+      assert {"td", [{"class", "default-td-class name-td-col-class"}], _} =
+               find_one(html, "td:last-child")
+    end
+
+    test "overrides table_th_attrs with thead_th_attrs in action columns" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        items: [%{name: "George", age: 8}],
+        opts: [thead_th_attrs: [class: "default-th-class"]]
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table items={@items} meta={@meta} on_sort={%JS{}} opts={@opts}>
+          <:col :let={i}><%= i.name %></:col>
+          <:action thead_th_attrs={[class: "action-1-th-class"]}>action 1</:action>
+          <:action>action 2</:action>
+        </Pagify.Components.table>
+        """)
+
+      assert {"th", [{"class", "action-1-th-class"}], _} =
+               find_one(html, "th:nth-child(2)")
+
+      assert {"th", [{"class", "default-th-class"}], _} =
+               find_one(html, "th:last-child")
+    end
+
+    test "merges table_th_attrs with class in action columns" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        items: [%{name: "George", age: 8}],
+        opts: [thead_th_attrs: [class: "default-th-class"]]
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table items={@items} meta={@meta} on_sort={%JS{}} opts={@opts}>
+          <:col :let={i}><%= i.name %></:col>
+          <:action thead_th_attrs={[class: "action-1-th-class"]} class="action-1-col-class">
+            action 1
+          </:action>
+          <:action class="action-2-col-class">action 2</:action>
+        </Pagify.Components.table>
+        """)
+
+      assert {"th", [{"class", "action-1-th-class action-1-col-class"}], _} =
+               find_one(html, "th:nth-child(2)")
+
+      assert {"th", [{"class", "default-th-class action-2-col-class"}], _} =
+               find_one(html, "th:last-child")
+    end
+
+    test "overrides table_td_attrs with tbody_td_attrs in action columns" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        items: [%{name: "George", age: 8}],
+        opts: [tbody_td_attrs: [class: "default-td-class"]]
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table items={@items} meta={@meta} on_sort={%JS{}} opts={@opts}>
+          <:col :let={i}><%= i.name %></:col>
+          <:action tbody_td_attrs={[class: "action-1-td-class"]}>action 1</:action>
+          <:action>action 2</:action>
+        </Pagify.Components.table>
+        """)
+
+      assert {"td", [{"class", "action-1-td-class"}], _} =
+               find_one(html, "td:nth-child(2)")
+
+      assert {"td", [{"class", "default-td-class"}], _} =
+               find_one(html, "td:last-child")
+    end
+
+    test "merges table_td_attrs with class in action columns" do
+      assigns = %{
+        meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post},
+        items: [%{name: "George", age: 8}],
+        opts: [tbody_td_attrs: [class: "default-td-class"]]
+      }
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table items={@items} meta={@meta} on_sort={%JS{}} opts={@opts}>
+          <:col :let={i}><%= i.name %></:col>
+          <:action tbody_td_attrs={[class: "action-1-td-class"]} class="action-1-col-class">
+            action 1
+          </:action>
+          <:action class="action-2-col-class">action 2</:action>
+        </Pagify.Components.table>
+        """)
+
+      assert {"td", [{"class", "action-1-td-class action-1-col-class"}], _} =
+               find_one(html, "td:nth-child(2)")
+
+      assert {"td", [{"class", "default-td-class action-2-col-class"}], _} =
+               find_one(html, "td:last-child")
+    end
+
+    test "doesn't render table if items list is empty" do
+      assert [{"p", [], ["No results."]}] = render_table(%{items: []})
+    end
+
+    test "displays headers for action col" do
+      assigns = %{meta: %Pagify.Meta{pagify: %Pagify{}}}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table path="/posts" items={[%{}]} meta={@meta}>
+          <:col></:col>
+          <:action label="Buttons"></:action>
+        </Pagify.Components.table>
+        """)
+
+      assert th = find_one(html, "th:fl-contains('Buttons')")
+      assert Floki.children(th, include_text: false) == []
+    end
+
+    test "displays headers without sorting function" do
+      html = render_table(%{})
+      assert th = find_one(html, "th:fl-contains('Age')")
+      assert Floki.children(th, include_text: false) == []
+    end
+
+    test "conditionally hides an action column" do
+      assigns = %{meta: %Pagify.Meta{pagify: %Pagify{}}}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table path="/posts" items={[%{}]} meta={@meta}>
+          <:col></:col>
+          <:action label="Buttons"><a href="#">Show Post</a></:action>
+        </Pagify.Components.table>
+        """)
+
+      assert find_one(html, "th:fl-contains('Buttons')")
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table path="/posts" items={[%{}]} meta={@meta}>
+          <:col></:col>
+          <:action label="Buttons" show={true} hide={false}></:action>
+        </Pagify.Components.table>
+        """)
+
+      assert find_one(html, "th:fl-contains('Buttons')")
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table path="/posts" items={[%{}]} meta={@meta}>
+          <:col></:col>
+          <:action label="Buttons" show={true} hide={true}></:action>
+        </Pagify.Components.table>
+        """)
+
+      assert [] = Floki.find(html, "th:fl-contains('Buttons')")
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table path="/posts" items={[%{}]} meta={@meta}>
+          <:col></:col>
+          <:action label="Buttons" show={false} hide={true}></:action>
+        </Pagify.Components.table>
+        """)
+
+      assert [] = Floki.find(html, "th:fl-contains('Buttons')")
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table path="/posts" items={[%{}]} meta={@meta}>
+          <:col></:col>
+          <:action label="Buttons" show={false} hide={false}></:action>
+        </Pagify.Components.table>
+        """)
+
+      assert [] = Floki.find(html, "th:fl-contains('Buttons')")
+    end
+
+    test "displays headers with sorting function" do
+      html = render_table(%{})
+
+      assert a = find_one(html, "th a:fl-contains('Name')")
+      assert attribute(a, "data-phx-link") == "patch"
+      assert attribute(a, "data-phx-link-state") == "push"
+
+      assert href = attribute(a, "href")
+      assert_urls_match(href, "/posts?order_by[]=name")
+    end
+
+    test "uses phx-click with on_sort without path" do
+      html =
+        render_table(%{
+          path: nil,
+          on_sort: JS.push("sort")
+        })
+
+      assert a = find_one(html, "th a:fl-contains('Name')")
+      assert attribute(a, "data-phx-link") == nil
+      assert attribute(a, "data-phx-link-state") == nil
+      assert attribute(a, "href") == "#"
+      assert attribute(a, "phx-value-order") == "name"
+      assert phx_click = attribute(a, "phx-click")
+      assert Jason.decode!(phx_click) == [["push", %{"event" => "sort"}]]
+    end
+
+    test "application of custom sort directions per column" do
+      assigns = %{
+        meta: %Pagify.Meta{
+          pagify: %Pagify{
+            order_by: [ttfb: :desc_nils_last]
+          }
+        },
+        items: [
+          %{
+            ttfb: 2
+          },
+          %{
+            ttfb: 1
+          },
+          %{
+            ttfb: nil
+          }
+        ],
+        ttfb_directions: {:asc_nils_first, :desc_nils_last}
+      }
+
+      html =
+        ~H"""
+        <Pagify.Components.table id="metrics-table" items={@items} meta={@meta} path="/navigations">
+          <:col :let={navigation} label="TTFB" field={:ttfb} directions={@ttfb_directions}>
+            <%= navigation.ttfb %>
+          </:col>
+        </Pagify.Components.table>
+        """
+        |> rendered_to_string()
+        |> Floki.parse_fragment!()
+
+      ttfb_sort_href =
+        html
+        |> find_one("thead th a:fl-contains('TTFB')")
+        |> attribute("href")
+
+      %URI{query: query} = URI.parse(ttfb_sort_href)
+      decoded_query = Query.decode(query)
+
+      # assert href representing opposite direction of initial table sort
+      assert %{"order_by" => ["++ttfb"]} = decoded_query
+    end
+
+    test "supports a function/args tuple as path" do
+      html = render_table(%{path: {&route_helper/3, @route_helper_opts}})
+      assert a = find_one(html, "th a:fl-contains('Name')")
+      assert href = attribute(a, "href")
+      assert_urls_match(href, "/posts?order_by[]=name")
+    end
+
+    test "supports a function as path" do
+      html = render_table(%{path: &path_func/1})
+      assert a = find_one(html, "th a:fl-contains('Name')")
+
+      assert href = attribute(a, "href")
+      assert_urls_match(href, "/posts?&order_by[]=name")
+    end
+
+    test "supports a URI string as path" do
+      html = render_table(%{path: "/posts"})
+      assert a = find_one(html, "th a:fl-contains('Name')")
+
+      href = attribute(a, "href")
+      uri = URI.parse(href)
+      assert uri.path == "/posts"
+      assert URI.decode_query(uri.query) == %{"order_by[]" => "name"}
+    end
+
+    test "displays headers with safe HTML values in action col" do
+      assigns = %{}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          on_sort={JS.push("sort")}
+          id="user-table"
+          items={[%{name: "George"}]}
+          meta={%Pagify.Meta{pagify: %Pagify{}}}
+        >
+          <:col :let={post}>
+            <%= post.name %>
+          </:col>
+          <:action :let={post} label={{:safe, "<span>Hello</span>"}}>
+            <%= post.name %>
+          </:action>
+        </Pagify.Components.table>
+        """)
+
+      assert span = find_one(html, "th span")
+      assert text(span) == "Hello"
+    end
+
+    test "displays headers with safe HTML values" do
+      assigns = %{}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          id="user-table"
+          on_sort={JS.push("sort")}
+          items={[%{name: "George"}]}
+          meta={%Pagify.Meta{pagify: %Pagify{}}}
+        >
+          <:col :let={post} label={{:safe, "<span>Hello</span>"}} field={:name}>
+            <%= post.name %>
+          </:col>
+        </Pagify.Components.table>
+        """)
+
+      assert span = find_one(html, "th a span")
+      assert text(span) == "Hello"
+    end
+
+    test "adds aria-sort attribute only to first ordered field" do
+      html =
+        render_table(%{
+          meta: %Pagify.Meta{
+            pagify: %Pagify{
+              order_by: [email: :asc, name: :desc]
+            }
+          }
+        })
+
+      assert [th_name, th_email, th_age, th_species, _] = Floki.find(html, "th")
+      assert attribute(th_name, "aria-sort") == nil
+      assert attribute(th_email, "aria-sort") == "ascending"
+      assert attribute(th_age, "aria-sort") == nil
+      assert attribute(th_species, "aria-sort") == nil
+
+      html =
+        render_table(%{
+          meta: %Pagify.Meta{
+            pagify: %Pagify{
+              order_by: [name: :desc, email: :asc]
+            }
+          }
+        })
+
+      assert [th_name, th_email, th_age, th_species, _] = Floki.find(html, "th")
+      assert attribute(th_name, "aria-sort") == "descending"
+      assert attribute(th_email, "aria-sort") == nil
+      assert attribute(th_age, "aria-sort") == nil
+      assert attribute(th_species, "aria-sort") == nil
+
+      html =
+        render_table(%{
+          meta: %Pagify.Meta{
+            pagify: %Pagify{order_by: []}
+          }
+        })
+
+      assert [th_name, th_email, th_age, th_species, _] = Floki.find(html, "th")
+      assert attribute(th_name, "aria-sort") == nil
+      assert attribute(th_email, "aria-sort") == nil
+      assert attribute(th_age, "aria-sort") == nil
+      assert attribute(th_species, "aria-sort") == nil
+    end
+
+    test "renders links with click handler" do
+      html = render_table(%{on_sort: JS.push("sort"), path: nil})
+
+      assert a = find_one(html, "th a:fl-contains('Name')")
+      assert attribute(a, "href") == "#"
+      assert attribute(a, "phx-value-order") == "name"
+      assert phx_click = attribute(a, "phx-click")
+      assert Jason.decode!(phx_click) == [["push", %{"event" => "sort"}]]
+
+      assert a = find_one(html, "th a:fl-contains('Email')")
+      assert attribute(a, "href") == "#"
+      assert attribute(a, "phx-value-order") == "email"
+      assert phx_click = attribute(a, "phx-click")
+      assert Jason.decode!(phx_click) == [["push", %{"event" => "sort"}]]
+    end
+
+    test "adds phx-target to header links" do
+      html = render_table(%{on_sort: JS.push("sort"), path: nil, target: "here"})
+
+      assert a = find_one(html, "th a:fl-contains('Name')")
+      assert attribute(a, "href") == "#"
+      assert attribute(a, "phx-target") == "here"
+      assert attribute(a, "phx-value-order") == "name"
+      assert phx_click = attribute(a, "phx-click")
+      assert Jason.decode!(phx_click) == [["push", %{"event" => "sort"}]]
+    end
+
+    test "checks for sortability if for option is set" do
+      # without :for option
+      html = render_table(%{})
+
+      assert find_one(html, "a:fl-contains('Name')")
+      assert find_one(html, "a:fl-contains('Species')")
+
+      # with :for assign
+      html = render_table(%{meta: %Pagify.Meta{pagify: %Pagify{}, resource: Post}})
+
+      assert find_one(html, "a:fl-contains('Name')")
+      assert [] = Floki.find(html, "a:fl-contains('Species')")
+    end
+
+    test "hides default order and limit" do
+      html =
+        render_table(%{
+          meta:
+            build(
+              :meta_on_second_page,
+              pagify: %Pagify{
+                limit: 15,
+                order_by: [name: :desc]
+              },
+              resource: Post
+            )
+        })
+
+      assert link = find_one(html, "a:fl-contains('Name')")
+      assert href = attribute(link, "href")
+
+      refute href =~ "limit="
+      refute href =~ "order_by[]="
+    end
+
+    test "renders order direction symbol" do
+      html =
+        render_table(%{
+          meta: %Pagify.Meta{
+            pagify: %Pagify{order_by: [name: :asc]}
+          }
+        })
+
+      assert Floki.find(
+               html,
+               "a:fl-contains('Email') + span.order-direction"
+             ) == []
+
+      html =
+        render_table(%{
+          meta: %Pagify.Meta{
+            pagify: %Pagify{order_by: [email: :asc]}
+          }
+        })
+
+      assert span =
+               find_one(
+                 html,
+                 "th a:fl-contains('Email') + span.order-direction"
+               )
+
+      assert text(span) == "▴"
+
+      html =
+        render_table(%{
+          meta: %Pagify.Meta{
+            pagify: %Pagify{order_by: [email: :desc]}
+          }
+        })
+
+      assert span =
+               find_one(
+                 html,
+                 "th a:fl-contains('Email') + span.order-direction"
+               )
+
+      assert text(span) == "▾"
+    end
+
+    test "only renders order direction symbol for first order field" do
+      html =
+        render_table(%{
+          meta: %Pagify.Meta{
+            pagify: %Pagify{
+              order_by: [name: :asc, email: :desc]
+            }
+          }
+        })
+
+      assert span =
+               find_one(
+                 html,
+                 "th a:fl-contains('Name') + span.order-direction"
+               )
+
+      assert text(span) == "▴"
+
+      assert Floki.find(
+               html,
+               "a:fl-contains('Email') + span.order-direction"
+             ) == []
+    end
+
+    test "allows to set symbol class" do
+      html =
+        render_table(%{
+          meta: %Pagify.Meta{
+            pagify: %Pagify{order_by: [name: :asc]}
+          },
+          opts: [symbol_attrs: [class: "other-class"]]
+        })
+
+      assert find_one(html, "span.other-class")
+    end
+
+    test "allows to override default symbols" do
+      html =
+        render_table(%{
+          meta: %Pagify.Meta{
+            pagify: %Pagify{order_by: [name: :asc]}
+          },
+          opts: [symbol_asc: "asc"]
+        })
+
+      assert span = find_one(html, "span.order-direction")
+      assert text(span) == "asc"
+
+      html =
+        render_table(%{
+          meta: %Pagify.Meta{
+            pagify: %Pagify{order_by: [name: :desc]}
+          },
+          opts: [symbol_desc: "desc"]
+        })
+
+      assert span = find_one(html, "span.order-direction")
+      assert text(span) == "desc"
+    end
+
+    test "allows to set indicator for unsorted column" do
+      html =
+        render_table(%{
+          meta: %Pagify.Meta{
+            pagify: %Pagify{order_by: [name: :asc]}
+          },
+          opts: [symbol_unsorted: "random"]
+        })
+
+      assert span =
+               find_one(
+                 html,
+                 "th a:fl-contains('Email') + span.order-direction"
+               )
+
+      assert text(span) == "random"
+    end
+
+    test "renders notice if item list is empty" do
+      assert [{"p", [], ["No results."]}] = render_table(%{items: []})
+    end
+
+    test "allows to set no_results_content" do
+      assert render_table(%{
+               items: [],
+               opts: [
+                 no_results_content: custom_no_results_content()
+               ]
+             }) == [{"div", [], ["Nothing!"]}]
+    end
+
+    test "renders row_click" do
+      assigns = %{}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          on_sort={JS.push("sort")}
+          id="user-table"
+          items={[%{name: "George", id: 1}]}
+          meta={%Pagify.Meta{pagify: %Pagify{}}}
+          row_click={&JS.navigate("/show/#{&1.id}")}
+        >
+          <:col :let={post} label="Name" field={:name}><%= post.name %></:col>
+          <:action :let={post}>
+            <.link navigate={"/show/post/#{post.name}"}>Show Post</.link>
+          </:action>
+        </Pagify.Components.table>
+        """)
+
+      assert [{"table", _, [{"thead", _, _}, {"tbody", _, rows}]}] = html
+
+      # two columns in total, second one is for action
+      assert [_, _] = Floki.find(rows, "td")
+
+      # only one column should have phx-click attribute
+      assert find_one(rows, "td[phx-click]")
+    end
+
+    test "does not render row_click if not set" do
+      html = render_table(%{})
+
+      assert [
+               {"table", [{"id", "some_table"}, {"class", "some-table"}],
+                [
+                  {"thead", _, _},
+                  {"tbody", _, rows}
+                ]}
+             ] = html
+
+      assert [] = Floki.find(rows, "td[phx-click]")
+    end
+
+    test "renders table action" do
+      assigns = %{meta: %Pagify.Meta{pagify: %Pagify{}}}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          path="/posts"
+          items={[%{name: "George", age: 8}, %{name: "Mary", age: 10}]}
+          meta={@meta}
+        >
+          <:col></:col>
+          <:action :let={post} label="Buttons">
+            <.link navigate={"/show/post/#{post.name}"}>Show Post</.link>
+          </:action>
+        </Pagify.Components.table>
+        """)
+
+      assert [
+               {"table", _,
+                [
+                  {"thead", _, _},
+                  {"tbody", _, rows}
+                ]}
+             ] = html
+
+      assert find_one(rows, "a[href='/show/post/Mary']")
+      assert find_one(rows, "a[href='/show/post/George']")
+    end
+
+    test "does not render action column if option is not set" do
+      html = render_table(%{})
+
+      assert [
+               {"table", [{"id", "some_table"}, {"class", "some-table"}], [{"thead", _, _}, {"tbody", _, rows}]}
+             ] = html
+
+      assert [] = Floki.find(rows, "a")
+
+      # test table has five column
+      assert [_, _, _, _, _] = Floki.find(rows, "td")
+    end
+
+    test "renders table foot" do
+      assigns = %{}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          on_sort={JS.push("sort")}
+          id="user-table"
+          items={[%{name: "George"}]}
+          meta={%Pagify.Meta{pagify: %Pagify{}}}
+        >
+          <:col :let={post} label="Name" field={:name}><%= post.name %></:col>
+          <:foot>
+            <tr>
+              <td>snap</td>
+            </tr>
+          </:foot>
+        </Pagify.Components.table>
+        """)
+
+      assert [
+               {"table", _,
+                [
+                  {"thead", _, _},
+                  {"tbody", _, _},
+                  {"tfoot", [], [{"tr", [], [{"td", [], ["snap"]}]}]}
+                ]}
+             ] = html
+    end
+
+    test "renders colgroup" do
+      assigns = %{}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          on_sort={JS.push("sort")}
+          id="user-table"
+          items={[%{name: "George", surname: "Floyd", age: 8}]}
+          meta={%Pagify.Meta{pagify: %Pagify{}}}
+        >
+          <:col :let={post} label="Name" field={:name} col_style="width: 60%;">
+            <%= post.name %>
+          </:col>
+          <:col :let={post} label="Surname" field={:surname}>
+            <%= post.surname %>
+          </:col>
+          <:col :let={post} label="Age" field={:age} col_class="some-col-class">
+            <%= post.age %>
+          </:col>
+        </Pagify.Components.table>
+        """)
+
+      assert [
+               {"table", _,
+                [
+                  {"colgroup", _,
+                   [
+                     {"col", [{"style", "width: 60%;"}], _},
+                     {"col", [], _},
+                     {"col", [{"class", "some-col-class"}], _}
+                   ]},
+                  {"thead", _, _},
+                  {"tbody", _, _}
+                ]}
+             ] = html
+    end
+
+    test "does not render a colgroup if no style attribute is set" do
+      assigns = %{}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          path="/posts"
+          items={[%{name: "George", age: 8}]}
+          meta={%Pagify.Meta{pagify: %Pagify{}}}
+        >
+          <:col :let={post} label="Name" field={:name}><%= post.name %></:col>
+          <:col :let={post} label="Age" field={:age}><%= post.age %></:col>
+        </Pagify.Components.table>
+        """)
+
+      assert [
+               {"table", _,
+                [
+                  {"thead", _, _},
+                  {"tbody", _, _}
+                ]}
+             ] = html
+    end
+
+    test "renders colgroup on action col" do
+      assigns = %{}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table
+          on_sort={JS.push("sort")}
+          id="user-table"
+          items={[%{name: "George", id: 1}]}
+          meta={%Pagify.Meta{pagify: %Pagify{}}}
+        >
+          <:col :let={post} label="Name" field={:name} col_style="width: 60%;">
+            <%= post.name %>
+          </:col>
+          <:action :let={post} col_style="width: 40%;">
+            <.link navigate={"/show/post/#{post.name}"}>
+              Show Pet
+            </.link>
+          </:action>
+        </Pagify.Components.table>
+        """)
+
+      assert [
+               {"table", _,
+                [
+                  {"colgroup", _,
+                   [
+                     {"col", [{"style", "width: 60%;"}], _},
+                     {"col", [{"style", "width: 40%;"}], _}
+                   ]},
+                  {"thead", _, _},
+                  {"tbody", _, _}
+                ]}
+             ] = html
+    end
+
+    test "doesn't render colgroup on action col if no style attribute is set" do
+      assigns = %{meta: %Pagify.Meta{pagify: %Pagify{}}}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table path="/posts" items={[%{}]} meta={@meta}>
+          <:col></:col>
+          <:action></:action>
+        </Pagify.Components.table>
+        """)
+
+      assert [
+               {"table", _,
+                [
+                  {"thead", _, _},
+                  {"tbody", _, _}
+                ]}
+             ] = html
+    end
+
+    test "renders caption" do
+      assert [
+               {"table", [{"id", "some_table"}, {"class", "some-table"}],
+                [
+                  {"caption", [], ["some caption"]},
+                  {"thead", _, _},
+                  {"tbody", _, _}
+                ]}
+             ] = render_table(%{caption: "some caption"})
+    end
+
+    test "does not render table foot if option is not set" do
+      html = render_table(%{})
+
+      assert [
+               {"table", [{"id", "some_table"}, {"class", "some-table"}], [{"thead", _, _}, {"tbody", _, _}]}
+             ] = html
+    end
+
+    test "renders simple table if no meta is passed" do
+      html = render_table(%{})
+
+      assert [
+               {"table", [{"id", "some_table"}, {"class", "some-table"}], [{"thead", _, _}, {"tbody", _, _}]}
+             ] = html
+    end
+
+    test "raises if neither path nor on_sort are passed" do
+      assert_raise Pagify.Error.Components.PathOrJSError,
+                   fn ->
+                     render_component(&table/1,
+                       __changed__: nil,
+                       col: fn _ -> nil end,
+                       items: [%{name: "George"}],
+                       meta: %Pagify.Meta{pagify: %Pagify{}}
+                     )
+                   end
+    end
+
+    test "does not crash if meta has errors" do
+      {:error, meta} = Pagify.validate(Post, %{offset: -1})
+      render_table(%{meta: meta})
     end
   end
 
@@ -1073,5 +2422,13 @@ defmodule Pagify.ComponentsTest do
       meta = %Pagify.Meta{resource: Post, pagify: %Pagify{limit: 15}}
       assert build_path("/posts", meta) == "/posts"
     end
+  end
+
+  defp custom_no_results_content do
+    assigns = %{}
+
+    ~H"""
+    <div>Nothing!</div>
+    """
   end
 end

@@ -294,9 +294,7 @@ defmodule Pagify.Validation do
   the returned map. If `replace_invalid_params?` is `false`, invalid pagination parameters are not
   removed and an error is added to the `:errors` key in the returned map.
 
-  If the `:limit` key is `nil`, the default_limit value is applied. The default_limit value is determined by
-  the resource's `default_limit` function or the `:default_limit` option provided to this function or
-  the `Pagify.default_limit()` value.
+  If the `:limit` key is `nil`, the default_limit value is applied.
 
   If the `:offset` key is `nil`, it is returned as is.
 
@@ -387,7 +385,7 @@ defmodule Pagify.Validation do
 
   defp validate_limit(%{limit: limit} = params, opts) when is_integer(limit) do
     if limit > 0 do
-      max_limit = Keyword.get(opts, :max_limit, Pagify.default_max_limit())
+      max_limit = Keyword.get(opts, :max_limit, Pagify.get_option(:max_limit, opts))
       validate_within_max_limit(params, max_limit)
     else
       {:error, add_error(params, :limit, InvalidLimit.exception(limit: limit))}

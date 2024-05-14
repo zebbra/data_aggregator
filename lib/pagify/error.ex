@@ -62,6 +62,31 @@ defmodule Pagify.Error.InvalidParamsError do
   end
 end
 
+defmodule Pagify.Error.InvalidDirectionsError do
+  @moduledoc """
+  An error that is raised when invalid directions are passed.
+  """
+
+  defexception [:directions]
+
+  def message(%{directions: directions}) do
+    """
+    invalid `:directions` option
+
+    Expected: A 2-tuple of order directions, e.g. `{:asc, :desc}`.
+
+    Received: #{inspect(directions)}"
+
+    The valid order directions are:
+
+    - :asc
+    - :asc_nils_first
+    - :desc
+    - :desc_nils_last
+    """
+  end
+end
+
 defmodule Pagify.Error.Query.InvalidOrderByParameter do
   @moduledoc "Used when an invalid order_by is provided"
   use Ash.Error.Exception

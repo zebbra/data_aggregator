@@ -60,6 +60,25 @@ defmodule Pagify.Components.Misc do
   def maybe_put(keywords, key, value, _), do: Keyword.put(keywords, key, value)
 
   @doc """
+  Returns the global opts derived from a function referenced in the application
+  environment.
+  """
+  @spec get_global_opts(atom) :: keyword
+  def get_global_opts(component) when component in [:pagination, :table] do
+    case opts_func(component) do
+      nil -> []
+      {module, func} -> apply(module, func, [])
+    end
+  end
+
+  defp opts_func(component) do
+    :data_aggregator
+    |> Application.get_env(:pagify_phoenix, [])
+    |> Keyword.get(component, [])
+    |> Keyword.get(:opts)
+  end
+
+  @doc """
   Remove nil values from a map or struct. Does not work with nested maps.
 
   ## Example
