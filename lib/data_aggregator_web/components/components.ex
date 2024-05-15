@@ -75,7 +75,7 @@ defmodule DataAggregatorWeb.Components do
       ],
       tbody_tr_attrs: fn _item, assigns ->
         if Map.get(assigns, :row_click, false) do
-          [class: "hover border-base-content/10"]
+          [class: "hover:bg-base-300/30 border-base-content/10"]
         else
           [class: "border-base-content/10"]
         end

@@ -108,29 +108,32 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           <%= format_number(export.rows_count, format: :short) %>
         </:col>
 
-        <:action :let={{_id, export}} class="whitespace-nowrap text-right">
-          <span class="flex items-center justify-end gap-x-2">
-            <button
-              :if={can_run?(export)}
-              type="button"
-              phx-click="export:run"
-              phx-value-id={export.id}
-              class="link link-primary link-hover tooltip tooltip-primary rounded-md"
-              data-tip={~t"Run"m}
-            >
-              <.icon name="hero-play-circle-mini" class="size-6" />
-            </button>
+        <:action :let={{_id, export}} tbody_td_attrs={[class: "pr-1 w-6"]}>
+          <.link
+            :if={can_run?(export)}
+            phx-click="export:run"
+            phx-value-id={export.id}
+            class="link link-primary link-hover tooltip tooltip-primary rounded-md"
+            data-tip={~t"Run"m}
+          >
+            <.icon name="hero-play-circle-mini" class="size-6" />
+          </.link>
+        </:action>
 
-            <button
-              type="button"
-              phx-click={JS.push("export:delete", value: %{id: export.id})}
-              class="link link-error link-hover tooltip tooltip-error rounded-md"
-              data-tip={~t"Delete"m}
-              data-confirm={~t"Are you sure?"m}
-            >
-              <.icon name="hero-x-circle-mini" class="size-6" />
-            </button>
-          </span>
+        <:action
+          :let={{_id, export}}
+          tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
+          col_class="bg-base-300/10 border-l border-black-white/5"
+          label={~t"Actions"m}
+        >
+          <.link
+            phx-click={JS.push("export:delete", value: %{id: export.id})}
+            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
+            data-tip={~t"Delete"m}
+            data-confirm={~t"Are you sure?"m}
+          >
+            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
+          </.link>
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/collections/#{@collection}/exports"} />

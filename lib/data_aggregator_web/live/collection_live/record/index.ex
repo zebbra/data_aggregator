@@ -220,20 +220,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           <%= format_datetime(record.updated_at, format: :medium) %>
         </:col>
 
-        <:action :let={{_id, record}} class="whitespace-nowrap text-right">
-          <span class="flex items-center justify-end gap-x-2">
-            <button
-              type="button"
-              phx-click={JS.push("record:delete", value: %{id: record.id})}
-              disabled={record.state in [:encoding, :queued]}
-              class="link link-error link-hover tooltip tooltip-error rounded-md disabled:pointer-events-none disabled:opacity-50"
-              data-tip={~t"Delete"m}
-              data-confirm={~t"Are you sure?"m}
-              data-confirm_id="confirm_record_alert"
-            >
-              <.icon name="hero-x-circle-mini" class="size-6" />
-            </button>
-          </span>
+        <:action
+          :let={{_id, record}}
+          tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
+          col_class="bg-base-300/10 border-l border-black-white/5"
+          label={~t"Actions"m}
+        >
+          <button
+            phx-click={JS.push("record:delete", value: %{id: record.id})}
+            disabled={record.state in [:encoding, :queued]}
+            class="link tooltip link-hover btn btn-sm btn-circle btn-ghost inline-flex disabled:pointer-events-none disabled:opacity-50"
+            data-tip={~t"Delete"m}
+            data-confirm={~t"Are you sure?"m}
+            data-confirm_id="confirm_record_alert"
+          >
+            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
+          </button>
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/collections/#{@collection}/records"} />

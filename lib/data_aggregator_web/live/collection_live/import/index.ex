@@ -125,45 +125,52 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         <:col :let={{_id, import}} field={:records_count} label={~t"Records"m} class="text-right">
           <%= format_number(import.records_count, format: :short) %>
         </:col>
-        <:action :let={{_id, import}} class="whitespace-nowrap text-right">
-          <span class="flex items-center justify-end gap-x-2">
-            <button
-              :if={can_run?(import)}
-              type="button"
-              phx-click="import:run"
-              phx-value-id={import.id}
-              class="link link-primary link-hover tooltip tooltip-primary rounded-md"
-              data-tip={~t"Run"m}
-            >
-              <.icon name="hero-play-circle-mini" class="size-6" />
-            </button>
 
-            <div :if={import.missing_mappings != []} class="text-base-content">
-              <%= ~t"Mapping is invalid"m %>
-            </div>
+        <:action
+          :let={{_id, import}}
+          tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
+          col_class="bg-base-300/10 border-l border-black-white/5"
+          label={~t"Actions"m}
+        >
+          <div
+            :if={import.missing_mappings != []}
+            class="link tooltip link-hover btn btn-sm btn-circle btn-ghost inline-flex"
+            data-tip={~t"Mapping is invalid"m}
+          >
+            <.icon name="hero-exclamation-circle-mini" class="size-5 text-base-content/75" />
+          </div>
 
-            <button
+          <.link
+            :if={can_run?(import)}
+            type="button"
+            phx-click="import:run"
+            phx-value-id={import.id}
+            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
+            data-tip={~t"Run"m}
+          >
+            <.icon name="hero-play-circle-mini" class="size-5 text-base-content/75" />
+          </.link>
+
+          <div class="border-black-white/10 mr-4 inline-flex border-r pr-4">
+            <.link
               :if={import.state == :pending}
-              type="button"
-              phx-click={
-                JS.patch(build_path(~p"/collections/#{@collection}/imports/#{import}/edit", @meta))
-              }
-              class="link link-base-100 link-hover tooltip rounded-md"
+              patch={build_path(~p"/collections/#{@collection}/imports/#{import}/edit", @meta)}
+              class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
               data-tip={~t"Edit"m}
             >
-              <.icon name="hero-pencil-square-mini" class="size-6" />
-            </button>
+              <.icon name="hero-pencil-square-mini" class="size-5 text-base-content/75" />
+            </.link>
+          </div>
 
-            <button
-              type="button"
-              phx-click={JS.push("import:delete", value: %{id: import.id})}
-              class="link link-error link-hover tooltip tooltip-error rounded-md"
-              data-tip={~t"Delete"m}
-              data-confirm={~t"Are you sure?"m}
-            >
-              <.icon name="hero-x-circle-mini" class="size-6" />
-            </button>
-          </span>
+          <.link
+            type="button"
+            phx-click={JS.push("import:delete", value: %{id: import.id})}
+            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
+            data-tip={~t"Delete"m}
+            data-confirm={~t"Are you sure?"m}
+          >
+            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
+          </.link>
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/collections/#{@collection}/imports"} />

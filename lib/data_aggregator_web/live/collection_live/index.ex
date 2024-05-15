@@ -112,34 +112,31 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           <%= format_datetime(collection.updated_at, format: :short) %>
         </:col>
 
-        <:action :let={{_id, collection}} class="whitespace-nowrap text-right">
-          <.table_actions id={"collection_#{collection.id}"}>
-            <li>
-              <.link
-                patch={~p"/collections/#{collection}/records"}
-                class="hover:bg-primary hover:text-primary-content"
-              >
-                <%= ~t"View"m %>
-              </.link>
-            </li>
-            <li>
-              <.link
-                patch={~p"/collections/#{collection}/edit"}
-                class="hover:bg-primary hover:text-primary-content"
-              >
-                <%= ~t"Edit"m %>
-              </.link>
-            </li>
-            <li>
-              <.link
-                phx-click={JS.push("collection:delete", value: %{id: collection.id})}
-                class="hover:bg-primary hover:text-primary-content"
-                data-confirm={~t"Are you sure?"m}
-              >
-                <%= ~t"Delete"m %>
-              </.link>
-            </li>
-          </.table_actions>
+        <:action
+          :let={{_id, collection}}
+          tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
+          col_class="bg-base-300/10 border-l border-black-white/5"
+          label={~t"Actions"m}
+        >
+          <div class="border-black-white/10 mr-4 inline-flex border-r pr-4">
+            <.link
+              role="button"
+              patch={build_path(~p"/collections/#{collection}/edit", @meta)}
+              class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
+              data-tip={~t"Edit"m}
+            >
+              <.icon name="hero-pencil-square-mini" class="size-5 text-base-content/75" />
+            </.link>
+          </div>
+          <.link
+            role="button"
+            phx-click={JS.push("collection:delete", value: %{id: collection.id})}
+            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
+            data-tip={~t"Delete"m}
+            data-confirm={~t"Are you sure?"m}
+          >
+            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
+          </.link>
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/collections"} />
@@ -159,7 +156,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             title={@page_title}
             action={@live_action}
             collection={@collection}
-            patch={~p"/collections"}
+            patch={build_path(~p"/collections", @meta)}
           />
         </.modal>
       </:portal>
