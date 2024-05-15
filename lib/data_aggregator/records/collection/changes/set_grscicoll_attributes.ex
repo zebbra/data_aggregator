@@ -12,16 +12,9 @@ defmodule DataAggregator.Records.Collection.Changes.SetGrsciCollAttributes do
   def change(%Changeset{} = changeset, _opts, _ctx) do
     reference = Changeset.get_argument_or_attribute(changeset, :grscicoll_reference)
 
-    case GrSciColl.get_grscicoll_attributes(reference, ["code", "name", "institutionKey"]) do
+    case GrSciColl.get_grscicoll_attributes(reference, ["code", "name"]) do
       {:ok, attributes} ->
-        Changeset.change_attribute(
-          changeset,
-          :grscicoll_institution_key,
-          attributes["institutionKey"]
-        )
-
-        Changeset.change_attribute(changeset, :code, attributes["code"])
-        Changeset.change_attribute(changeset, :name, attributes["name"])
+        Changeset.change_attributes(changeset, attributes)
 
       {:error, error} ->
         Changeset.add_error(changeset, field: :code, message: inspect(error))

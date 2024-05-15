@@ -8,79 +8,79 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
   use Ash.Resource.Change
 
   alias Ash.Changeset
+  alias DataAggregator.Gbif
 
-  # TODO: TEST THIS!!!!!!!!!!!!
+  require Logger
+
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     dwca_file_url = Changeset.get_argument(changeset, :dwca_file_url)
-    name = Changeset.get_attribute(changeset, :name)
+    collection_name = Changeset.get_attribute(changeset, :name)
+    gbif_dataset_key = Changeset.get_attribute(changeset, :gbif_dataset_key)
 
-    # TODO: get this from the grscicoll response during collection creation
-    institution_key = Changeset.get_attribute(changeset, :grscicoll_institution_key)
-
-    {:ok, dataset_key} =
-      name |> registration_params(institution_key) |> register_collection(dwca_file_url)
-
-    Changeset.change_attribute(changeset, :gbif_dataset_key, dataset_key)
-  end
-
-  defp register_collection(params, dwca_file_url) do
-    # register collection at gbif --> https://api.gbif-uat.org/v1/dataset
-
-    # TODO: check what happens if a collection is already registered...
-    # TODO: mock this for tests
-
-    case Req.post(
-           url: System.get_env("GBIF_DATASET_URL"),
-           auth: gbif_auth(),
-           json: params
-         ) do
-      {:ok, response} ->
-        if response.status == 201 do
-          registration = response.body
-
-          create_endpoint(dwca_file_url, registration)
-        else
-          {:error, "No valid response (status #{response.status}) from Gibif api"}
-        end
+    case register_at_gbif(gbif_dataset_key, collection_name, dwca_file_url) do
+      {:ok, dataset_key} ->
+        Changeset.change_attribute(changeset, :gbif_dataset_key, to_string(dataset_key))
 
       {:error, error} ->
-        {:error, "Error during collection registering with params: #{inspect(params)}, #{inspect(error)}"}
+        Changeset.add_error(changeset, message: error)
     end
   end
 
-  defp registration_params(name, institution_key) do
-    %{
-      title: name,
-      type: "OCCURRENCE",
-      installationKey: System.get_env("GBIF_INSTALLATION_KEY"),
-      publishingOrganizationKey: institution_key,
-      language: "eng"
-    }
+  @spec register_at_gbif(String.t() | nil, String.t(), String.t()) ::
+          {:ok, String.t()} | {:error, String.t()}
+  defp register_at_gbif(_gbif_dataset_key, nil, _dwca_file_url), do: {:error, "Collection name is missing"}
+
+  defp register_at_gbif(gbif_dataset_key, collection_name, dwca_file_url) do
+    if gbif_dataset_key do
+      create_endpoint(gbif_dataset_key, dwca_file_url)
+    else
+      collection_name
+      |> register_collection()
+      |> create_endpoint(dwca_file_url)
+    end
   end
 
-  defp create_endpoint(dwca_file_url, registration) do
-    params = %{
-      "type" => "OCCURRENCE",
-      "url" => dwca_file_url
-    }
-
-    case Req.post(
-           url: ~c"#{System.get_env("GBIF_DATASET_URL")}/#{registration}/endpoint",
-           auth: gbif_auth(),
-           body: params
-         ) do
+  @spec register_collection(String.t()) :: {:ok, String.t()} | {:error, String.t()}
+  defp register_collection(collection_name) do
+    case Gbif.RestApi.register_dataset(collection_name) do
       {:ok, response} ->
         if response.status == 201 do
           {:ok, response.body}
         else
-          {:error, "No valid response (status #{response.status}) from Gibif api"}
+          msg =
+            "No valid response (status #{response.status}) from Gibif api while registering collection: #{inspect(response.body)}"
+
+          Logger.error(msg)
+          {:error, msg}
         end
 
       {:error, error} ->
-        {:error, "Error during endpoint creation with params: #{inspect(params)}, #{inspect(error)}"}
+        {:error, "Error during collection registering: #{inspect(collection_name)}, #{inspect(error)}"}
     end
   end
 
-  defp gbif_auth, do: {:basic, "#{System.get_env("GBIF_USER")}:#{System.get_env("GBIF_PASSWORD")}"}
+  @spec create_endpoint({:ok, String.t()} | {:error, any()}, String.t()) ::
+          {:ok, String.t()} | {:error, String.t()}
+  defp create_endpoint({:ok, registration}, file_url) do
+    case Gbif.RestApi.create_endpoint(file_url, registration) do
+      {:ok, response} ->
+        if response.status == 201 do
+          # within response.body we should have the endpoint key, but we don't need it for now, so we just
+          # return the registration key for storing on the collection
+          {:ok, registration}
+        else
+          msg =
+            "No valid response (status #{response.status}) from Gibif api while creating endpoint with response: #{inspect(response.body)}"
+
+          Logger.error(msg)
+          {:error, msg}
+        end
+
+      {:error, error} ->
+        {:error, "Error during endpoint creation with: #{inspect([file_url, registration])}, #{inspect(error)}"}
+    end
+  end
+
+  defp create_endpoint({:error, error}, _), do: {:error, error}
 end

@@ -1,4 +1,4 @@
-defmodule DataAggregator.Repo.Migrations.AddGrscicollInstitutionKeyToCollection do
+defmodule DataAggregator.Repo.Migrations.ModificationsForCollectionRegistration do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
@@ -9,7 +9,6 @@ defmodule DataAggregator.Repo.Migrations.AddGrscicollInstitutionKeyToCollection 
 
   def up do
     alter table(:collections) do
-      add :grscicoll_institution_key, :text
       add :gbif_dataset_key, :text
     end
   end
@@ -17,7 +16,6 @@ defmodule DataAggregator.Repo.Migrations.AddGrscicollInstitutionKeyToCollection 
   def down do
     alter table(:collections) do
       remove :gbif_dataset_key
-      remove :grscicoll_institution_key
     end
   end
 end

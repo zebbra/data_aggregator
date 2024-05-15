@@ -1,11 +1,13 @@
-defmodule DataAggregator.PublishToGbifTest do
+defmodule DataAggregator.RegisterAtGbifTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.EncodingFixtures
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
@@ -84,19 +86,67 @@ defmodule DataAggregator.PublishToGbifTest do
       [collection: collection, records: records, publication: publication]
     end
 
-    # test "register_at_gbif/1", %{
-    #   collection: collection,
-    #   records: _records,
-    #   publication: publication
-    # } do
-    #   {:ok, publication} =
-    #     Collection.register_at_gbif(collection, publication.attachment.url)
+    test "register_at_gbif/2 success", %{
+      collection: collection,
+      records: _records,
+      publication: publication
+    } do
+      # note for anyone facing the issue of having his/her stub/expect not called:
+      # make sure that the function you are stubbing/expecting is called NOT within the
+      # same module the function is declared!
+      # https://github.com/edgurgel/mimic/issues/27
+      stub(Gbif.RestApi, :register_dataset, fn _collection_name ->
+        {:ok, %{status: 201, body: "1234-1234-1234-1234"}}
+      end)
 
-    #   assert publication.channel == :fast_track
-    #   assert publication.status == :in_publication
+      stub(Gbif.RestApi, :create_endpoint, fn _file_url, _registration ->
+        {:ok, %{status: 201, body: "1234"}}
+      end)
 
-    #   # TODO: go further here!!! as soon as login with provided user
-    #   #   works currently -->  {:error, "No valid response (status 403) from Gibif api"}
-    # end
+      {:ok, collection} =
+        Collection.register_at_gbif(collection, publication.attachment.url)
+
+      assert collection.gbif_dataset_key === "1234-1234-1234-1234"
+    end
+
+    test "register_at_gbif/2 registration failed", %{
+      collection: collection,
+      records: _records,
+      publication: publication
+    } do
+      stub(Gbif.RestApi, :register_dataset, fn _collection_name ->
+        {:ok, %{status: 400, body: "Failed due to bla"}}
+      end)
+
+      {{:error, error}, logs} =
+        with_log(fn -> Collection.register_at_gbif(collection, publication.attachment.url) end)
+
+      assert collection.gbif_dataset_key === nil
+      assert %Ash.Error.Invalid{} = error
+
+      assert logs =~ "Failed due to bla"
+    end
+
+    test "register_at_gbif/2 endpoint creation failed", %{
+      collection: collection,
+      records: _records,
+      publication: publication
+    } do
+      stub(Gbif.RestApi, :register_dataset, fn _collection_name ->
+        {:ok, %{status: 201, body: "1234-1234-1234-1234"}}
+      end)
+
+      stub(Gbif.RestApi, :create_endpoint, fn _file_url, _registration ->
+        {:ok, %{status: 418, body: "I'm a teapot"}}
+      end)
+
+      {{:error, error}, logs} =
+        with_log(fn -> Collection.register_at_gbif(collection, publication.attachment.url) end)
+
+      assert collection.gbif_dataset_key === nil
+      assert %Ash.Error.Invalid{} = error
+
+      assert logs =~ "I'm a teapot"
+    end
   end
 end

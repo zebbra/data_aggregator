@@ -12,6 +12,7 @@ defmodule DataAggregator.Records.Actions.Publish do
   alias DataAggregator.DarwinCore.Publication.ReleveFile
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
 
@@ -57,7 +58,14 @@ defmodule DataAggregator.Records.Actions.Publish do
       publication
     )
 
-    Publication.update_attachment(publication, attachment)
+    publication =
+      publication
+      |> Publication.update_attachment(attachment)
+      |> Records.load!([:collection, :attachment])
+
+    Collection.register_at_gbif(publication.collection, publication.attachment.url)
+
+    {:ok, publication}
   rescue
     e ->
       publication = input.arguments.publication

@@ -2,6 +2,7 @@ defmodule DataAggregator.PublicationTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.EncodingFixtures
   import DataAggregator.RecordsFixtures
@@ -16,6 +17,9 @@ defmodule DataAggregator.PublicationTest do
 
   describe "publication tests" do
     setup do
+      # we don't want to actually register at gbif during this test
+      stub(Collection, :register_at_gbif, fn _collection, _file_url -> :ok end)
+
       collection = collection_fixture(%{name: "Collection NumberO!+ne"})
 
       record1 =
