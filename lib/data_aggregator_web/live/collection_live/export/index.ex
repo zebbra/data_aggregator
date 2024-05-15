@@ -71,7 +71,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
         />
       </.secondary_navigation>
 
-      <Pagify.Components.table
+      <.table
         opts={[
           no_results_content: no_results_content(%{collection: @collection})
         ]}
@@ -132,13 +132,8 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
             </button>
           </span>
         </:action>
-      </Pagify.Components.table>
-      <div
-        :if={Pagify.Components.Pagination.show_pagination?(@meta)}
-        class="border-black-white/10 flex items-center justify-end border-t px-6 py-4 lg:px-8"
-      >
-        <Pagify.Components.pagination meta={@meta} path={~p"/collections/#{@collection}/exports"} />
-      </div>
+      </.table>
+      <.pagination meta={@meta} path={~p"/collections/#{@collection}/exports"} />
 
       <:secondary>
         <.slideover

@@ -64,7 +64,7 @@ defmodule Storybook.Examples.Components do
             </.secondary_navigation>
           </:navbar>
         </.page_header>
-        <Pagify.Components.table
+        <.table
           id="user_table"
           items={@users}
           row_click={
@@ -116,7 +116,7 @@ defmodule Storybook.Examples.Components do
               </li>
             </.table_actions>
           </:action>
-        </Pagify.Components.table>
+        </.table>
       </div>
       <:secondary>
         <.slideover

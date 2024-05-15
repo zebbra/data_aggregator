@@ -60,7 +60,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   def render(assigns) do
     ~H"""
     <.page current="collections" open={@selected_import != nil}>
-      <.collection_header collection={@collection} current={:imports} />
+      <.collection_header collection={@collection} current={:imports} meta={@meta} />
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]" gradient>
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/records"}
@@ -81,14 +81,17 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           data-show_y="40,sm:60,lg:76"
           phx-hook="ShowHideOnScroll"
         >
-          <.link patch={~p"/collections/#{@collection}/imports/new"} class="btn btn-primary btn-sm">
+          <.link
+            patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
+            class="btn btn-primary btn-sm"
+          >
             <.icon name="hero-arrow-up-tray" class="size-4" />
             <span class="max-sm:hidden"><%= ~t"Add"m %></span>
           </.link>
         </li>
       </.secondary_navigation>
 
-      <Pagify.Components.table
+      <.table
         opts={[
           no_results_content: no_results_content(%{collection: @collection})
         ]}
@@ -142,7 +145,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             <button
               :if={import.state == :pending}
               type="button"
-              phx-click={JS.navigate(~p"/collections/#{@collection}/imports/#{import}/edit")}
+              phx-click={
+                JS.patch(build_path(~p"/collections/#{@collection}/imports/#{import}/edit", @meta))
+              }
               class="link link-base-100 link-hover tooltip rounded-md"
               data-tip={~t"Edit"m}
             >
@@ -160,13 +165,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             </button>
           </span>
         </:action>
-      </Pagify.Components.table>
-      <div
-        :if={Pagify.Components.Pagination.show_pagination?(@meta)}
-        class="border-black-white/10 flex items-center justify-end border-t px-6 py-4 lg:px-8"
-      >
-        <Pagify.Components.pagination meta={@meta} path={~p"/collections/#{@collection}/imports"} />
-      </div>
+      </.table>
+      <.pagination meta={@meta} path={~p"/collections/#{@collection}/imports"} />
 
       <:secondary>
         <.slideover
@@ -289,7 +289,12 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               <:actions :if={@selected_import.state == :pending}>
                 <.link
                   type="button"
-                  patch={~p"/collections/#{@collection}/imports/#{@selected_import}/edit"}
+                  patch={
+                    build_path(
+                      ~p"/collections/#{@collection}/imports/#{@selected_import}/edit",
+                      @meta
+                    )
+                  }
                   class="btn btn-primary max-sm:btn-sm"
                 >
                   <.icon name="hero-pencil-square-mini" class="size-6" />
@@ -299,7 +304,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             </.section_heading>
 
             <div class="no-scrollbar overflow-x-auto">
-              <Pagify.Components.table
+              <.table
                 opts={[container: false]}
                 id="import_mapping_table"
                 items={@selected_import.mappings}
@@ -315,7 +320,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                 <:col :let={column} label={~t"Mapped to"m} class="py-5">
                   <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
                 </:col>
-              </Pagify.Components.table>
+              </.table>
             </div>
 
             <div class="px-6 py-4 lg:px-8">
@@ -356,7 +361,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           size="2xl"
           responsive
           backdrop={false}
-          on_cancel={JS.patch(~p"/collections/#{@collection}/imports")}
+          on_cancel={JS.patch(build_path(~p"/collections/#{@collection}/imports", @meta))}
         >
           <.live_component
             :if={@live_action in [:new, :edit, :summary]}
@@ -366,6 +371,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             import={@import}
             collection={@collection}
             show_validation={Phoenix.Flash.get(@flash, :mapping_error)}
+            meta={@meta}
           />
         </.modal>
       </:portal>
@@ -459,6 +465,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
     socket
     |> assign(:page_title, ~t"Edit Import"m)
+    |> assign(:selected_import, nil)
     |> assign(:import, import)
   end
 

@@ -52,7 +52,12 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
     ~H"""
     <div>
-      <.stepper current={current_step(@action)} links={valid_links(@collection, @import)} class="" />
+      <.stepper
+        current={current_step(@action)}
+        links={valid_links(@collection, @import, @meta)}
+        meta={@meta}
+        class=""
+      />
       <div class="space-y-8">
         <.section_heading
           text={~t"Mappings"m}
@@ -97,7 +102,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           </div>
           <div class="collapse-content -mx-4">
             <div class="no-scrollbar overflow-x-auto">
-              <Pagify.Components.table
+              <.table
                 opts={[container: false]}
                 id="collection_mapping_table"
                 items={@import.collection.import_mapping |> Enum.filter(&(&1["mapped_to"] != nil))}
@@ -117,7 +122,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                   <%= column[:mapped_to] %>
                   <.attribute_badge name={column["mapped_to"]} mapped={column["mapped_to"] != nil} />
                 </:col>
-              </Pagify.Components.table>
+              </.table>
             </div>
           </div>
         </div>
@@ -393,7 +398,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         {:ok, import} ->
           socket
           |> put_flash(:info, ~t"Mapping updated"m)
-          |> push_patch(to: ~p"/collections/#{socket.assigns.collection}/imports/#{import}/summary")
+          |> push_patch(
+            to:
+              build_path(
+                ~p"/collections/#{socket.assigns.collection}/imports/#{import}/summary",
+                socket.assigns.meta
+              )
+          )
 
         {:error, form} ->
           assign(socket, :form, form)
@@ -411,7 +422,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         {:ok, import} ->
           socket
           |> assign(:import, import)
-          |> push_patch(to: ~p"/collections/#{import.collection}/imports/#{import}/edit")
+          |> push_patch(
+            to:
+              build_path(
+                ~p"/collections/#{import.collection}/imports/#{import}/edit",
+                socket.assigns.meta
+              )
+          )
 
         {:error, error} ->
           Logger.error(error)
@@ -554,7 +571,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     |> Enum.filter(fn {_index, column} ->
       column["mapped_to"] not in ["", nil] && column["name"] not in ["", nil]
     end)
-    |> Enum.map(fn {_index, column} -> String.to_existing_atom(column["mapped_to"]) end)
+    |> Enum.map(fn {_index, column} -> String.to_atom(column["mapped_to"]) end)
   end
 
   defp extract_mapped_to_with_name(_params), do: []
@@ -570,7 +587,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   defp attributes_in_use(%Import{} = import) do
     import.columns
     |> Enum.filter(&(&1.mapped? == true))
-    |> Enum.map(&String.to_existing_atom(&1.mapped_to))
+    |> Enum.map(&String.to_atom(&1.mapped_to))
   end
 
   defp extract_column_mapped_to(%{"columns" => columns} = _params) do
@@ -597,10 +614,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     end)
   end
 
-  defp valid_links(collection, import) do
+  defp valid_links(collection, import, meta) do
     summary =
       if Enum.empty?(import.missing_mappings),
-        do: ~p"/collections/#{collection}/imports/#{import}/summary"
+        do: build_path(~p"/collections/#{collection}/imports/#{import}/summary", meta)
 
     [nil, nil, summary]
   end

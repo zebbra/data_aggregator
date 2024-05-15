@@ -1141,6 +1141,13 @@ defmodule Pagify.Components do
       ...>   pagify
       ...> )
       "/posts/author/John/page/20?order_by[]=updated_at"
+
+  ### If only path is set
+
+  If only the path is set, it is returned as is.
+
+      iex> build_path("/posts", nil)
+      "/posts"
   """
   @spec build_path(pagination_path(), Meta.t() | Pagify.t() | Keyword.t(), Keyword.t()) ::
           String.t()
@@ -1188,6 +1195,10 @@ defmodule Pagify.Components do
     uri
     |> Map.put(:query, query)
     |> URI.to_string()
+  end
+
+  def build_path(uri, nil, _opts) when is_binary(uri) do
+    uri
   end
 
   defp build_final_args(args, pagify_params) do

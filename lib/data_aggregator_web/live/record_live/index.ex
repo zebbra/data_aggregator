@@ -42,7 +42,11 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     ~H"""
     <.page current="records" open={@selected_record != nil}>
       <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6"><%= ~t"Records"m %></.page_header>
-      <Pagify.Components.table
+      <.table
+        opts={[
+          container_attrs: [class: "no-scrollbar overflow-x-auto pb-4"],
+          no_results_content: no_results_content()
+        ]}
         path={~p"/records"}
         items={@streams.results}
         meta={@meta}
@@ -92,22 +96,8 @@ defmodule DataAggregatorWeb.RecordLive.Index do
         <:col :let={{_id, record}} field={:updated_at} label={~t"Updated At"m} class="text-end">
           <%= format_datetime(record.updated_at, format: :medium) %>
         </:col>
-      </Pagify.Components.table>
-      <div
-        :if={Pagify.Components.Pagination.show_pagination?(@meta)}
-        class="border-black-white/10 flex items-center justify-end border-t px-6 py-4 lg:px-8"
-      >
-        <Pagify.Components.pagination meta={@meta} path={~p"/records"} />
-      </div>
-
-      <.empty_state
-        :if={@meta.total_count == 0}
-        title={~t"No records"m}
-        description={~t"Get started by importing a new dataset."m}
-        label={~t"Import"m}
-        icon="hero-bug-ant"
-        href={~p"/collections"}
-      />
+      </.table>
+      <.pagination meta={@meta} path={~p"/records"} />
 
       <:secondary>
         <.slideover
@@ -126,7 +116,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
                 class="px-6 lg:px-8"
               />
               <div class="no-scrollbar overflow-x-auto pt-4">
-                <Pagify.Components.table
+                <.table
                   opts={[container: false]}
                   id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
                   items={category.attributes}
@@ -140,7 +130,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
                   <:col :let={attribute} label={~t"Encoded"}>
                     <%= attribute.encoded %>
                   </:col>
-                </Pagify.Components.table>
+                </.table>
               </div>
             </section>
           <% end %>
@@ -152,7 +142,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
               class="px-6 lg:px-8"
             />
             <div class="no-scrollbar overflow-x-auto pt-4">
-              <Pagify.Components.table
+              <.table
                 opts={[container: false, no_results_content: ""]}
                 id="encoding_result_table"
                 items={@record_encoding_results}
@@ -166,7 +156,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
                 <:col :let={result} label={~t"Created"} class="text-right">
                   <%= format_datetime(result.inserted_at, format: :short) %>
                 </:col>
-              </Pagify.Components.table>
+              </.table>
             </div>
           </section>
         </.slideover>
@@ -209,5 +199,17 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   defp get_record(id) do
     Record.get_by_id!(id, load: @load)
+  end
+
+  def no_results_content(assigns \\ %{}) do
+    ~H"""
+    <.empty_state
+      title={~t"No records"m}
+      description={~t"Get started by importing a new dataset."m}
+      label={~t"Import"m}
+      icon="hero-bug-ant"
+      href={~p"/collections"}
+    />
+    """
   end
 end

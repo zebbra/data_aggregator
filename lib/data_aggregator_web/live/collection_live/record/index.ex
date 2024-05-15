@@ -118,6 +118,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </.link>
         </li>
       </.secondary_navigation>
+
       <div :if={@meta.total_count > 0} class="space-y-6 p-6 lg:px-8">
         <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
           <.scope_stat
@@ -173,43 +174,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </div>
       </div>
 
-      <%!-- <div class="bg-base-100 top-[104px] sticky z-10 flex flex-wrap justify-between p-6 lg:px-8">
-        <div class="join flex flex-wrap items-center">
-          <input
-            type="text"
-            placeholder={~t"Search...."m}
-            class="input input-bordered border-black-white/10 join-item "
-          />
-          <button class="btn btn-outline border-black-white/10 join-item">
-            <.icon name="hero-adjustments-vertical" />
-            <span class="hidden font-normal lg:inline"><%= ~t"Filter"m %></span>
-          </button>
-          <button class="btn btn-outline border-black-white/10 join-item">
-            <.icon name="hero-view-columns" />
-            <span class="hidden font-normal lg:inline"><%= ~t"Columns"m %></span>
-          </button>
-          <button class="btn btn-outline border-black-white/10 join-item">
-            <.icon name="hero-square-3-stack-3d" />
-            <span class="hidden font-normal lg:inline"><%= ~t"Layers"m %></span>
-          </button>
-        </div>
-        <div id="table_actions" class="join flex lg:justify-end">
-          <button class="btn btn-outline border-black-white/10 join-item rounded-full">
-            <.icon name="hero-puzzle-piece" />
-            <span class="font-normal"><%= ~t"Encode"m %></span>
-          </button>
-          <button class="btn btn-outline border-black-white/10 join-item rounded-full">
-            <.icon name="hero-globe-alt" />
-            <span class="font-normal"><%= ~t"Publish"m %></span>
-          </button>
-          <button class="btn btn-outline border-black-white/10 join-item rounded-full">
-            <.icon name="hero-arrow-down-tray" />
-            <span class="font-normal"><%= ~t"Export"m %></span>
-          </button>
-        </div>
-      </div> --%>
-
-      <Pagify.Components.table
+      <.table
         opts={[
           no_results_content: no_results_content(%{collection: @collection})
         ]}
@@ -270,13 +235,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             </button>
           </span>
         </:action>
-      </Pagify.Components.table>
-      <div
-        :if={Pagify.Components.Pagination.show_pagination?(@meta)}
-        class="border-black-white/10 flex items-center justify-end border-t px-6 py-4 lg:px-8"
-      >
-        <Pagify.Components.pagination meta={@meta} path={~p"/collections/#{@collection}/records"} />
-      </div>
+      </.table>
+      <.pagination meta={@meta} path={~p"/collections/#{@collection}/records"} />
 
       <:secondary>
         <.slideover
@@ -295,7 +255,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 class="px-6 lg:px-8"
               />
               <div class="no-scrollbar overflow-x-auto pt-4">
-                <Pagify.Components.table
+                <.table
                   opts={[container: false]}
                   id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
                   items={category.attributes}
@@ -309,7 +269,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   <:col :let={attribute} label={~t"Encoded"}>
                     <%= attribute.encoded %>
                   </:col>
-                </Pagify.Components.table>
+                </.table>
               </div>
             </section>
           <% end %>
@@ -321,7 +281,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               class="px-6 lg:px-8"
             />
             <div class="no-scrollbar overflow-x-auto pt-4">
-              <Pagify.Components.table
+              <.table
                 opts={[container: false, no_results_content: ""]}
                 id="encoding_result_table"
                 items={@record_encoding_results}
@@ -335,7 +295,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 <:col :let={result} label={~t"Created"} class="text-right">
                   <%= format_datetime(result.inserted_at, format: :short) %>
                 </:col>
-              </Pagify.Components.table>
+              </.table>
             </div>
           </section>
         </.slideover>
@@ -405,10 +365,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_event("collection:encode", _params, socket) do
     Task.start(fn ->
-      %{collection: collection} = socket.assigns
+      %{collection: collection, meta: %{pagify: pagify}} = socket.assigns
 
-      %{"id" => collection.id}
-      |> list_records()
+      {records, _meta} =
+        Pagify.validate_and_run!(
+          Record,
+          pagify,
+          [load: @load, action: :by_collection],
+          collection.id
+        )
+
+      records
       |> Task.async_stream(&Record.enqueue_encoder!/1)
       |> Stream.run()
 

@@ -36,7 +36,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
   def render(assigns) do
     ~H"""
     <div>
-      <.stepper current={current_step(@action)} steps={3} />
+      <.stepper current={current_step(@action)} steps={3} meta={@meta} />
       <div class="space-y-8">
         <.section_heading
           text={~t"Import records"m}
@@ -167,7 +167,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
         :noreply,
         socket
         |> handle_flash(import)
-        |> push_patch(to: ~p"/collections/#{collection}/imports/#{import}/edit")
+        |> push_patch(to: build_path(~p"/collections/#{collection}/imports/#{import}/edit", socket.assigns.meta))
       }
     end
   end

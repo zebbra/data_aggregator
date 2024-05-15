@@ -12,9 +12,6 @@ defmodule DataAggregator.Records.Export do
   alias DataAggregator.Records.Changes
   alias DataAggregator.Records.Collection
 
-  @default_limit 15
-  def default_limit, do: @default_limit
-
   attributes do
     uuid_attribute :id, prefix: "exp"
 
@@ -80,7 +77,6 @@ defmodule DataAggregator.Records.Export do
       argument :sort, :string, allow_nil?: true
 
       pagination offset?: true,
-                 default_limit: @default_limit,
                  countable: true,
                  required?: false,
                  keyset?: true

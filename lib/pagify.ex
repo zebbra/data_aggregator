@@ -1201,6 +1201,44 @@ defmodule Pagify do
   end
 
   @doc """
+  Sets the limit value of a `Pagify` struct.
+
+      iex> set_limit(%Pagify{limit: 10, offset: 10}, 20)
+      %Pagify{limit: 20, offset: 10}
+
+      iex> set_limit(%Pagify{limit: 10, offset: 10}, "20")
+      %Pagify{limit: 20, offset: 10}
+
+  The limit will not be allowed to go below 1.
+
+      iex> set_limit(%Pagify{}, -5)
+      %Pagify{limit: 25}
+
+  If the limit is higher than the max_limit option, the limit will be set to the max_limit.
+
+      iex> set_limit(%Pagify{}, 102)
+      %Pagify{limit: 100}
+  """
+  @spec set_limit(Pagify.t(), pos_integer(), Keyword.t()) :: Pagify.t()
+  def set_limit(pagify, limit, opts \\ [])
+
+  def set_limit(%Pagify{} = pagify, limit, opts) when is_integer(limit) and limit >= 1 do
+    if limit <= get_option(:max_limit, opts) do
+      %{pagify | limit: limit}
+    else
+      %{pagify | limit: get_option(:max_limit, opts)}
+    end
+  end
+
+  def set_limit(%Pagify{} = pagify, limit, opts) when is_binary(limit) do
+    set_limit(pagify, String.to_integer(limit), opts)
+  end
+
+  def set_limit(%Pagify{} = pagify, _, opts) do
+    %{pagify | limit: get_option(:default_limit, opts)}
+  end
+
+  @doc """
   Sets the offset value of a `Pagify` struct.
 
       iex> set_offset(%Pagify{limit: 10, offset: 10}, 20)

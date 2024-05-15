@@ -27,9 +27,6 @@ defmodule DataAggregator.Records.Import do
   # ensure module is recompiled when the flow chart changes
   @external_resource flow_chart
 
-  @default_limit 15
-  def default_limit, do: @default_limit
-
   attributes do
     uuid_attribute :id, prefix: "if"
 
@@ -143,7 +140,6 @@ defmodule DataAggregator.Records.Import do
       argument :sort, :string, allow_nil?: true
 
       pagination offset?: true,
-                 default_limit: @default_limit,
                  countable: true,
                  required?: false,
                  keyset?: true
@@ -154,7 +150,6 @@ defmodule DataAggregator.Records.Import do
       argument :sort, :string, allow_nil?: true
 
       pagination offset?: true,
-                 default_limit: @default_limit,
                  countable: true,
                  required?: false,
                  keyset?: true

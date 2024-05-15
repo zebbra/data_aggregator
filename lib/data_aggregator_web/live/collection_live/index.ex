@@ -46,7 +46,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
       <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
         <%= ~t"Collections"m %>
         <:actions>
-          <.link patch={~p"/collections/new"} class="btn btn-primary max-sm:btn-sm">
+          <.link patch={build_path(~p"/collections/new", @meta)} class="btn btn-primary max-sm:btn-sm">
             <.icon name="hero-squares-2x2" class="max-sm:size-4" />
             <span class="max-sm:hidden"><%= ~t"New collection"m %></span>
             <span class="sm:hidden"><%= ~t"Add"m %></span>
@@ -54,8 +54,11 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         </:actions>
       </.page_header>
 
-      <Pagify.Components.table
+      <.table
         opts={[
+          container_attrs: [
+            class: "no-scrollbar overflow-x-auto pb-4"
+          ],
           no_results_content: no_results_content(%{collection: @collection})
         ]}
         path={~p"/collections"}
@@ -138,13 +141,8 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             </li>
           </.table_actions>
         </:action>
-      </Pagify.Components.table>
-      <div
-        :if={Pagify.Components.Pagination.show_pagination?(@meta)}
-        class="border-black-white/10 flex items-center justify-end border-t px-6 py-4 lg:px-8"
-      >
-        <Pagify.Components.pagination meta={@meta} path={~p"/collections"} />
-      </div>
+      </.table>
+      <.pagination meta={@meta} path={~p"/collections"} />
 
       <:portal>
         <.modal
@@ -152,7 +150,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           show={@live_action in [:new, :edit]}
           responsive
           backdrop={false}
-          on_cancel={JS.patch(~p"/collections")}
+          on_cancel={JS.patch(build_path(~p"/collections", @meta))}
         >
           <.live_component
             :if={@live_action in [:new, :edit]}

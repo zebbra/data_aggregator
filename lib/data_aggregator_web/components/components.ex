@@ -23,8 +23,10 @@ defmodule DataAggregatorWeb.Components do
       import DataAggregatorWeb.Components.List
       import DataAggregatorWeb.Components.LocaleSelect
       import DataAggregatorWeb.Components.Modal
+      import DataAggregatorWeb.Components.Pagination
       import DataAggregatorWeb.Components.Progress
       import DataAggregatorWeb.Components.Transitions
+      import Pagify.Components, only: [table: 1, build_path: 2, build_path: 3]
     end
   end
 
@@ -41,12 +43,13 @@ defmodule DataAggregatorWeb.Components do
       next_link_attrs: [
         class: "join-item btn btn-sm"
       ],
+      next_link_content: next_link_content(),
       page_links: {:ellipsis, 3},
       pagination_link_attrs: [class: "join-item btn btn-sm max-sm:hidden"],
       previous_link_attrs: [
         class: "join-item btn btn-sm"
       ],
-      previous_link_content: "Prev",
+      previous_link_content: previous_link_content(),
       wrapper_attrs: [
         class: "join"
       ]
@@ -103,6 +106,22 @@ defmodule DataAggregatorWeb.Components do
 
     ~H"""
     <DataAggregatorWeb.Components.Icon.icon name="hero-chevron-down-micro" class="size-5" />
+    """
+  end
+
+  def previous_link_content do
+    assigns = %{}
+
+    ~H"""
+    <DataAggregatorWeb.Components.Icon.icon name="hero-chevron-left-micro" />
+    """
+  end
+
+  def next_link_content do
+    assigns = %{}
+
+    ~H"""
+    <DataAggregatorWeb.Components.Icon.icon name="hero-chevron-right-micro" />
     """
   end
 end

@@ -10,6 +10,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Stepper do
   attr :links, :list, default: nil, doc: "The links for each step in the stepper."
   attr :current, :integer, required: true, doc: "The current step in the stepper."
 
+  attr :meta, Pagify.Meta,
+    required: true,
+    doc: "The meta information of the query as returned by the `Pagify` query functions"
+
   def stepper(assigns) do
     ~H"""
     <nav class={["flex items-center justify-start", @class]} aria-label="Progress">
