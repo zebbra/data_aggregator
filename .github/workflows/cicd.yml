@@ -15,6 +15,13 @@ jobs:
     name: Run tests
     runs-on: ubuntu-latest
 
+    env:
+      OPEN_CAGE_DATA_API_KEY: ${{ secrets.OPEN_CAGE_DATA_API_KEY }}
+      GBIF_INSTALLATION_KEY: ${{ secrets.GBIF_INSTALLATION_KEY }}
+      GBIF_ORGANIZATION_KEY: ${{ secrets.GBIF_ORGANIZATION_KEY }}
+      GBIF_USER: ${{ secrets.GBIF_USER }}
+      GBIF_PASSWORD: ${{ secrets.GBIF_PASSWORD }}
+
     services:
       postgres:
         image: postgres:15-alpine
