@@ -235,6 +235,22 @@ defmodule Pagify.Components.Table do
     """
   end
 
+  defp header_column(%{sortable: false, th_wrapper_attrs: []} = assigns) do
+    ~H"""
+    <th {@thead_th_attrs}><%= @label %></th>
+    """
+  end
+
+  defp header_column(%{sortable: false, th_wrapper_attrs: th_wrapper_attrs} = assigns) when is_list(th_wrapper_attrs) do
+    ~H"""
+    <th {@thead_th_attrs}>
+      <span {@th_wrapper_attrs}>
+        <%= @label %>
+      </span>
+    </th>
+    """
+  end
+
   defp header_column(%{sortable: false} = assigns) do
     ~H"""
     <th {@thead_th_attrs}><%= @label %></th>
