@@ -663,6 +663,7 @@ defmodule Pagify.Components do
     <:caption>
       <h2>Posts</h2>
     </:caption>
+    ```
     """
 
   slot :col,
