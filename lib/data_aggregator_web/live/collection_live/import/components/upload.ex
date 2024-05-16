@@ -36,7 +36,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
   def render(assigns) do
     ~H"""
     <div>
-      <.stepper current={current_step(@action)} steps={3} meta={@meta} />
+      <.stepper current={current_step(@action)} steps={3} />
       <div class="space-y-8">
         <.section_heading
           text={~t"Import records"m}

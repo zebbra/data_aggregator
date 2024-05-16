@@ -293,47 +293,42 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           </div>
 
           <div>
-            <.section_heading
-              text={~t"Mapping"m}
-              class="border-b border-black-white/10 px-6 pb-8 lg:px-8"
-              size="md"
-            >
-              <:actions :if={@selected_import.state == :pending}>
-                <.link
-                  type="button"
-                  patch={
-                    build_path(
-                      ~p"/collections/#{@collection}/imports/#{@selected_import}/edit",
-                      @meta
-                    )
-                  }
-                  class="btn btn-primary max-sm:btn-sm"
+            <.table id="import_mapping_table" items={@selected_import.mappings}>
+              <:caption>
+                <.section_heading
+                  text={~t"Mapping"m}
+                  class="border-b border-black-white/10 px-6 pb-8 lg:px-8 text-left"
+                  size="md"
                 >
-                  <.icon name="hero-pencil-square-mini" class="size-6" />
-                  <%= ~t"Edit"m %>
-                </.link>
-              </:actions>
-            </.section_heading>
-
-            <div class="no-scrollbar overflow-x-auto">
-              <.table
-                opts={[container: false]}
-                id="import_mapping_table"
-                items={@selected_import.mappings}
-              >
-                <:col :let={column} label={~t"Column"m}>
-                  <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
-                    <%= column.name %>
-                  </span>
-                  <span :if={column.name == nil} class="text-error">
-                    <%= ~t"Mapping is invalid"m %>
-                  </span>
-                </:col>
-                <:col :let={column} label={~t"Mapped to"m} class="py-5">
-                  <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
-                </:col>
-              </.table>
-            </div>
+                  <:actions :if={@selected_import.state == :pending}>
+                    <.link
+                      type="button"
+                      patch={
+                        build_path(
+                          ~p"/collections/#{@collection}/imports/#{@selected_import}/edit",
+                          @meta
+                        )
+                      }
+                      class="btn btn-primary max-sm:btn-sm"
+                    >
+                      <.icon name="hero-pencil-square-mini" class="size-6" />
+                      <%= ~t"Edit"m %>
+                    </.link>
+                  </:actions>
+                </.section_heading>
+              </:caption>
+              <:col :let={column} label={~t"Column"m}>
+                <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
+                  <%= column.name %>
+                </span>
+                <span :if={column.name == nil} class="text-error">
+                  <%= ~t"Mapping is invalid"m %>
+                </span>
+              </:col>
+              <:col :let={column} label={~t"Mapped to"m} class="py-5">
+                <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
+              </:col>
+            </.table>
 
             <div class="px-6 py-4 lg:px-8">
               <.section_heading text={~t"Unmapped columns"m} class="pb-4" size="md" />

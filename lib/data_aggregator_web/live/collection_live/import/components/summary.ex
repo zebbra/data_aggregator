@@ -23,7 +23,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
       <.stepper
         current={current_step(@action)}
         links={[nil, build_path(~p"/collections/#{@collection}/imports/#{@import}/edit", @meta), nil]}
-        meta={@meta}
       />
       <.section_heading
         text={~t"Summary"m}
@@ -53,23 +52,23 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
         </.list>
       </div>
 
-      <.section_heading text={~t"Mapping"m} size="md" />
-      <div class="-mx-6 py-4 lg:-mx-8">
-        <div class="no-scrollbar overflow-x-auto">
-          <.table opts={[container: false]} id="import_mapping_table" items={@import.mappings}>
-            <:col :let={column} label={~t"Column"m}>
-              <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
-                <%= column.name %>
-              </span>
-              <span :if={column.name == nil} class="text-error">
-                <%= ~t"Mapping is invalid"m %>
-              </span>
-            </:col>
-            <:col :let={column} label={~t"Mapped to"m}>
-              <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
-            </:col>
-          </.table>
-        </div>
+      <div class="-mx-6 lg:-mx-8">
+        <.table id="import_mapping_table" items={@import.mappings}>
+          <:caption>
+            <.section_heading text={~t"Mapping"m} size="md" class="px-6 lg:px-8 text-left" />
+          </:caption>
+          <:col :let={column} label={~t"Column"m}>
+            <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
+              <%= column.name %>
+            </span>
+            <span :if={column.name == nil} class="text-error">
+              <%= ~t"Mapping is invalid"m %>
+            </span>
+          </:col>
+          <:col :let={column} label={~t"Mapped to"m}>
+            <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
+          </:col>
+        </.table>
       </div>
 
       <.section_heading text={~t"Unmapped columns"m} size="md" />

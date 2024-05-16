@@ -28,19 +28,6 @@ defmodule Pagify do
   end
   ```
 
-  Configure Tailwind CSS in your project by adding the pagify folder to the contents array in your
-  tailwind.config.js file.
-
-  ```javascript
-  module.exports = {
-    content: [
-      // ...
-      "../lib/pagify/components/**/*.*ex",
-    ],
-    // ...
-  }
-  ```
-
   Then simply copy the `Pagify` module into your project's lib folder. No additional dependencies are required.
 
   Replace the `:my_app` atom with the name of your application in the following places:

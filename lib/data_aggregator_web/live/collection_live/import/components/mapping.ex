@@ -56,7 +56,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       <.stepper
         current={current_step(@action)}
         links={valid_links(@collection, @import, @meta)}
-        meta={@meta}
         class=""
       />
       <div class="space-y-8">
