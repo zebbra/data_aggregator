@@ -19,6 +19,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
@@ -266,36 +267,140 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         }
       >
         <:col
+          :if={CollectionType.visible?(@collection.type, :picture)}
+          th_wrapper_attrs={[
+            class: "hero-photo size-5 tooltip",
+            aria: [hidden: "true"]
+          ]}
+          class="text-center"
+        >
+          <btn class="btn btn-xs btn-square btn-disabled">
+            <.icon name="hero-x-mark-micro" class="size-5 text-base-content" />
+          </btn>
+        </:col>
+        <:col
+          :if={CollectionType.visible?(@collection.type, :iucn_redlist)}
+          th_wrapper_attrs={[class: "hero-flag size-5", aria: [hidden: "true"]]}
+          class="text-center"
+        >
+          <.icon name="hero-flag-micro" class="size-5 text-error" />
+        </:col>
+        <:col
           :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :idf_type_status)}
+          field={:idf_type_status}
+          label={~t"Typus"m}
+        >
+          <%= record.idf_type_status %>
+        </:col>
+        <:col
+          :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :tax_scientific_name)}
+          field={:tax_scientific_name}
+          label={~t"Scientific Name"m}
+        >
+          <%= encoded_attribute(record, :tax_scientific_name) %>
+        </:col>
+        <:col
+          :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :idf_verbatim_identification)}
+          field={:idf_verbatim_identification}
+          label={~t"Identification (verbatim)"m}
+        >
+          <%= record.idf_verbatim_identification %>
+        </:col>
+        <:col
+          :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :occ_occurrence_id)}
+          field={:occ_occurrence_id}
+          label={~t"GBIF ID"m}
+        >
+          <%= record.occ_occurrence_id %>
+        </:col>
+        <:col
+          :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :mte_catalog_number)}
           field={:mte_catalog_number}
-          label={~t"Catalog Number"m}
-          class="font-semibold"
+          label={~t"Catalog ID"m}
         >
           <%= record.mte_catalog_number %>
         </:col>
-        <:col :let={{_id, record}} label={~t"Scientific Name"m}>
-          <%= encoded_attribute(record, :tax_scientific_name) %>
+        <:col
+          :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :eve_field_number)}
+          field={:eve_field_number}
+          label={~t"Field ID"m}
+        >
+          <%= record.eve_field_number %>
         </:col>
-        <:col :let={{_id, record}} label={~t"Genus"m}>
-          <%= encoded_attribute(record, :tax_genus) %>
+        <:col
+          :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :mte_recorded_by)}
+          field={:mte_recorded_by}
+          label={~t"Collected by"m}
+        >
+          <%= record.mte_recorded_by %>
         </:col>
-        <:col :let={{_id, record}} label={~t"Family"m}>
-          <%= encoded_attribute(record, :tax_family) %>
+        <:col
+          :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :idf_identified_by)}
+          field={:idf_identified_by}
+          label={~t"Identified by"m}
+        >
+          <%= record.idf_identified_by %>
         </:col>
-        <:col :let={{_id, record}} label={~t"Order"m}>
-          <%= encoded_attribute(record, :tax_order) %>
+        <:col
+          :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :eve_event_date)}
+          field={:eve_event_date}
+          label={~t"Date"m}
+        >
+          <%= format_datetime(record.eve_event_date, format: :medium) %>
         </:col>
-        <:col :let={{_id, record}} label={~t"Class"m}>
-          <%= encoded_attribute(record, :tax_class) %>
+        <:col
+          :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :loc_state_province)}
+          field={:loc_state_province}
+          label={~t"Place"m}
+        >
+          <div><%= encoded_attribute(record, :loc_state_province) %></div>
+          <div class="text-base-content/75 text-xs">
+            <%= encoded_attribute(record, :loc_country_code) %>
+          </div>
         </:col>
-        <:col :let={{_id, record}} label={~t"Phylum"m}>
-          <%= encoded_attribute(record, :tax_phylum) %>
+        <:col
+          :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :loc_verbatim_elevation)}
+          field={:loc_verbatim_elevation}
+          label={~t"Elevation"m}
+        >
+          <div :if={record.loc_verbatim_elevation}><%= record.loc_verbatim_elevation %></div>
+          <div :if={record.loc_minimum_elevation_in_meters}>
+            <%= record.loc_minimum_elevation_in_meters %> / <%= record.loc_maximum_elevation_in_meters %>
+          </div>
         </:col>
-        <:col :let={{_id, record}} field={:state} label={~t"Encoding"m} class="text-center">
+        <:col
+          :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :loc_decimal_latitude)}
+          field={:loc_decimal_latitude}
+          label={~t"Coordinates"m}
+          directions={{:asc, :desc_nils_last}}
+        >
+          <div><%= encoded_attribute(record, :loc_decimal_latitude) %></div>
+          <div><%= encoded_attribute(record, :loc_decimal_longitude) %></div>
+        </:col>
+        <:col
+          :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :state)}
+          field={:state}
+          label={~t"Encoding"m}
+          class="text-center"
+        >
           <.encoding_state_badge state={record.state} />
         </:col>
         <:col
           :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :fast_track_status)}
           field={:fast_track_status}
           label={~t"Fast Track Pub."m}
           class="text-center"
@@ -304,16 +409,29 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :approval_status)}
           field={:approval_status}
           label={~t"Approval Pub."m}
           class="text-center"
         >
           <.publication_status_badge state={record.approval_status} />
         </:col>
-        <:col :let={{_id, record}} field={:mids_level} label={~t"Quality"m} class="text-center">
+        <:col
+          :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :mids_level)}
+          field={:mids_level}
+          label={~t"Quality"m}
+          class="text-center"
+        >
           <.mids_level_indicator level={record.mids_level} />
         </:col>
-        <:col :let={{_id, record}} field={:updated_at} label={~t"Updated At"m} class="text-end">
+        <:col
+          :let={{_id, record}}
+          :if={CollectionType.visible?(@collection.type, :updated_at)}
+          field={:updated_at}
+          label={~t"Updated At"m}
+          class="text-end"
+        >
           <%= format_datetime(record.updated_at, format: :medium) %>
         </:col>
 

@@ -1652,6 +1652,18 @@ defmodule Pagify.ComponentsTest do
       assert Floki.children(th, include_text: false) == []
     end
 
+    test "displays headers without sorting function with th_wrapper_attrs" do
+      html =
+        render_table(%{
+          opts: [
+            th_wrapper_attrs: [class: "default-th-wrapper-class"]
+          ]
+        })
+
+      assert th = find_one(html, "th span:fl-contains('Age')")
+      assert Floki.children(th, include_text: false) == []
+    end
+
     test "conditionally hides an action column" do
       assigns = %{meta: %Pagify.Meta{pagify: %Pagify{}}}
 
