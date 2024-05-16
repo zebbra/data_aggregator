@@ -21,14 +21,6 @@ defmodule DataAggregator.RecordTest do
     }
 
     test "read!/0 returns all records" do
-      Logger.debug("--------------------------------------")
-      Logger.debug("--------------------------------------")
-      Logger.debug("--------------------------------------")
-      Logger.debug(System.get_env("GBIF_INSTALLATION_KEY"))
-      Logger.debug("--------------------------------------")
-      Logger.debug("--------------------------------------")
-      Logger.debug("--------------------------------------")
-
       created = [
         record_fixture(),
         record_fixture()
