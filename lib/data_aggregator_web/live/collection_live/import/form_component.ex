@@ -18,6 +18,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
           action={@action}
           import={@import}
           collection={@collection}
+          meta={@meta}
         />
         <.live_component
           :if={@action == :edit}
@@ -27,6 +28,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
           import={@import}
           collection={@collection.id}
           show_validation={@show_validation}
+          meta={@meta}
         />
         <.live_component
           :if={@action == :summary}
@@ -35,6 +37,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
           action={@action}
           import={@import}
           collection={@collection.id}
+          meta={@meta}
         />
       </div>
       <div :if={@import.state not in [nil, :pending]}>

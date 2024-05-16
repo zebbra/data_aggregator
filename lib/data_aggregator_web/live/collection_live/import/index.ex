@@ -8,9 +8,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   import DataAggregatorWeb.CollectionLive.Import.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Import
-  alias DataAggregatorWeb.Components.DataTable
 
   @load [
     :duration,
@@ -38,6 +36,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     socket =
       socket
       |> assign(:collection, get_collection(id))
+      |> assign(selected_import: nil)
       |> subscribe_for_import_updates(connected?(socket))
 
     {:ok, socket}
@@ -45,22 +44,24 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    socket =
-      socket
-      |> assign(selected_import: nil)
-      |> assign(:collection, get_collection(id))
-      |> assign(count: Records.count!(collection_scope(params)))
-      |> assign_imports(params)
-      |> apply_action(socket.assigns.live_action, params)
+    case list_imports(params) do
+      {:ok, {records, meta}} ->
+        socket
+        |> assign(meta: meta)
+        |> stream(:results, records, reset: true)
+        |> apply_action(socket.assigns.live_action, params)
+        |> noreply()
 
-    {:noreply, socket}
+      {:error, _meta} ->
+        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/imports")}
+    end
   end
 
   @impl true
   def render(assigns) do
     ~H"""
     <.page current="collections" open={@selected_import != nil}>
-      <.collection_header collection={@collection} current={:imports} />
+      <.collection_header collection={@collection} current={:imports} meta={@meta} />
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]" gradient>
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/records"}
@@ -85,90 +86,99 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           data-show_y="40,sm:60,lg:76"
           phx-hook="ShowHideOnScroll"
         >
-          <.link patch={~p"/collections/#{@collection}/imports/new"} class="btn btn-primary btn-sm">
+          <.link
+            patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
+            class="btn btn-primary btn-sm"
+          >
             <.icon name="hero-arrow-up-tray" class="size-4" />
             <span class="max-sm:hidden"><%= ~t"Add"m %></span>
           </.link>
         </li>
       </.secondary_navigation>
-      <div :if={@count > 0} class="no-scrollbar overflow-x-auto py-4">
-        <.table
-          id="imports_table"
-          rows={@streams.results}
-          row_click={
-            fn {_id, import} ->
-              JS.push("import:select", value: %{id: import.id})
-            end
-          }
+
+      <.table
+        opts={[
+          no_results_content: no_results_content(%{collection: @collection})
+        ]}
+        path={~p"/collections/#{@collection}/imports"}
+        items={@streams.results}
+        meta={@meta}
+        row_click={
+          fn {_id, import} ->
+            JS.push("import:select", value: %{id: import.id})
+          end
+        }
+      >
+        <:col :let={{_id, import}} field={:state} label={~t"State"m}>
+          <.import_state_badge import={import} />
+        </:col>
+        <:col :let={{_id, import}} label={~t"File"m}>
+          <div class="font-mono"><%= import.attachment.filename %></div>
+          <div class="text-base-content/60 text-xs">
+            <%= format_number(import.rows_count) %> rows
+          </div>
+        </:col>
+        <:col :let={{_id, import}} label={~t"Size"m}>
+          <.attachment_download_badge attachment={import.attachment} />
+        </:col>
+        <:col :let={{_id, import}} field={:started_at} label={~t"Started at"m}>
+          <%= format_datetime(import.started_at, format: :short) %>
+          <div :if={import.duration} class="text-base-content/60 text-xs">
+            <%= import.duration %>
+          </div>
+        </:col>
+        <:col :let={{_id, import}} field={:records_count} label={~t"Records"m} class="text-right">
+          <%= format_number(import.records_count, format: :short) %>
+        </:col>
+
+        <:action
+          :let={{_id, import}}
+          tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
+          col_class="bg-base-300/10 border-l border-black-white/5"
+          label={~t"Actions"m}
         >
-          <:col :let={{_id, import}} label={~t"State"m}>
-            <.import_state_badge import={import} />
-          </:col>
-          <:col :let={{_id, import}} label={~t"File"m}>
-            <div class="font-mono"><%= import.attachment.filename %></div>
-            <div class="text-base-content/60 text-xs">
-              <%= format_number(import.rows_count) %> rows
-            </div>
-          </:col>
-          <:col :let={{_id, import}} label={~t"Size"m}>
-            <.attachment_download_badge attachment={import.attachment} />
-          </:col>
-          <:col :let={{_id, import}} label={~t"Started at"m}>
-            <%= format_datetime(import.started_at, format: :short) %>
-            <div :if={import.duration} class="text-base-content/60 text-xs">
-              <%= import.duration %>
-            </div>
-          </:col>
-          <:col :let={{_id, import}} label={~t"Records"m} class="text-right">
-            <%= format_number(import.records_count, format: :short) %>
-          </:col>
-          <:action :let={{_id, import}} class="flex items-center justify-end gap-x-2">
-            <button
-              :if={can_run?(import)}
-              type="button"
-              phx-click="import:run"
-              phx-value-id={import.id}
-              class="link link-primary link-hover tooltip tooltip-primary rounded-md"
-              data-tip={~t"Run"m}
-            >
-              <.icon name="hero-play-circle-mini" class="size-6" />
-            </button>
+          <div
+            :if={import.missing_mappings != []}
+            class="link tooltip link-hover btn btn-sm btn-circle btn-ghost inline-flex"
+            data-tip={~t"Mapping is invalid"m}
+          >
+            <.icon name="hero-exclamation-circle-mini" class="size-5 text-base-content/75" />
+          </div>
 
-            <div :if={import.missing_mappings != []} class="text-base-content">
-              <%= ~t"Mapping is invalid"m %>
-            </div>
+          <.link
+            :if={can_run?(import)}
+            type="button"
+            phx-click="import:run"
+            phx-value-id={import.id}
+            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
+            data-tip={~t"Run"m}
+          >
+            <.icon name="hero-play-circle-mini" class="size-5 text-base-content/75" />
+          </.link>
 
-            <button
+          <div class="border-black-white/10 mr-4 inline-flex border-r pr-4">
+            <.link
               :if={import.state == :pending}
-              type="button"
-              phx-click={JS.navigate(~p"/collections/#{@collection}/imports/#{import}/edit")}
-              class="link link-base-100 link-hover tooltip rounded-md"
+              patch={build_path(~p"/collections/#{@collection}/imports/#{import}/edit", @meta)}
+              class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
               data-tip={~t"Edit"m}
             >
-              <.icon name="hero-pencil-square-mini" class="size-6" />
-            </button>
+              <.icon name="hero-pencil-square-mini" class="size-5 text-base-content/75" />
+            </.link>
+          </div>
 
-            <button
-              type="button"
-              phx-click={JS.push("import:delete", value: %{id: import.id})}
-              class="link link-error link-hover tooltip tooltip-error rounded-md"
-              data-tip={~t"Delete"m}
-              data-confirm={~t"Are you sure?"m}
-            >
-              <.icon name="hero-x-circle-mini" class="size-6" />
-            </button>
-          </:action>
-        </.table>
-      </div>
-
-      <.empty_state
-        :if={@count == 0}
-        title={~t"No imports"m}
-        description={~t"Get started by importing a new dataset."m}
-        label={~t"Import"m}
-        icon="hero-arrow-up-tray"
-        href={~p"/collections/#{@collection}/imports/new"}
-      />
+          <.link
+            type="button"
+            phx-click={JS.push("import:delete", value: %{id: import.id})}
+            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
+            data-tip={~t"Delete"m}
+            data-confirm={~t"Are you sure?"m}
+          >
+            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
+          </.link>
+        </:action>
+      </.table>
+      <.pagination meta={@meta} path={~p"/collections/#{@collection}/imports"} />
 
       <:secondary>
         <.slideover
@@ -283,38 +293,42 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           </div>
 
           <div>
-            <.section_heading
-              text={~t"Mapping"m}
-              class="border-b border-black-white/10 px-6 pb-8 lg:px-8"
-              size="md"
-            >
-              <:actions :if={@selected_import.state == :pending}>
-                <.link
-                  type="button"
-                  patch={~p"/collections/#{@collection}/imports/#{@selected_import}/edit"}
-                  class="btn btn-primary max-sm:btn-sm"
+            <.table id="import_mapping_table" items={@selected_import.mappings}>
+              <:caption>
+                <.section_heading
+                  text={~t"Mapping"m}
+                  class="border-b border-black-white/10 px-6 pb-8 lg:px-8 text-left"
+                  size="md"
                 >
-                  <.icon name="hero-pencil-square-mini" class="size-6" />
-                  <%= ~t"Edit"m %>
-                </.link>
-              </:actions>
-            </.section_heading>
-
-            <div class="no-scrollbar overflow-x-auto">
-              <.table id="import_mapping_table" rows={@selected_import.mappings}>
-                <:col :let={column} label={~t"Column"m}>
-                  <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
-                    <%= column.name %>
-                  </span>
-                  <span :if={column.name == nil} class="text-error">
-                    <%= ~t"Mapping is invalid"m %>
-                  </span>
-                </:col>
-                <:col :let={column} label={~t"Mapped to"m} class="py-5">
-                  <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
-                </:col>
-              </.table>
-            </div>
+                  <:actions :if={@selected_import.state == :pending}>
+                    <.link
+                      type="button"
+                      patch={
+                        build_path(
+                          ~p"/collections/#{@collection}/imports/#{@selected_import}/edit",
+                          @meta
+                        )
+                      }
+                      class="btn btn-primary max-sm:btn-sm"
+                    >
+                      <.icon name="hero-pencil-square-mini" class="size-6" />
+                      <%= ~t"Edit"m %>
+                    </.link>
+                  </:actions>
+                </.section_heading>
+              </:caption>
+              <:col :let={column} label={~t"Column"m}>
+                <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
+                  <%= column.name %>
+                </span>
+                <span :if={column.name == nil} class="text-error">
+                  <%= ~t"Mapping is invalid"m %>
+                </span>
+              </:col>
+              <:col :let={column} label={~t"Mapped to"m} class="py-5">
+                <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
+              </:col>
+            </.table>
 
             <div class="px-6 py-4 lg:px-8">
               <.section_heading text={~t"Unmapped columns"m} class="pb-4" size="md" />
@@ -354,7 +368,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           size="2xl"
           responsive
           backdrop={false}
-          on_cancel={JS.patch(~p"/collections/#{@collection}/imports")}
+          on_cancel={JS.patch(build_path(~p"/collections/#{@collection}/imports", @meta))}
         >
           <.live_component
             :if={@live_action in [:new, :edit, :summary]}
@@ -364,6 +378,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             import={@import}
             collection={@collection}
             show_validation={Phoenix.Flash.get(@flash, :mapping_error)}
+            meta={@meta}
           />
         </.modal>
       </:portal>
@@ -419,7 +434,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   defp handle_import_created(notification, socket) do
     %Ash.Notifier.Notification{data: import} = notification
-    import = Records.load!(import, @load, lazy?: true)
+    import = Import.get_by_id!(import.id, load: @load_import)
     {:noreply, stream_insert(socket, :results, import, at: 0)}
   end
 
@@ -457,6 +472,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
     socket
     |> assign(:page_title, ~t"Edit Import"m)
+    |> assign(:selected_import, nil)
     |> assign(:import, import)
   end
 
@@ -474,23 +490,21 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     end
   end
 
-  defp assign_imports(socket, params) do
-    stream(socket, :results, list_imports(params))
+  defp list_imports(params, opts \\ [load: @load, action: :by_collection]) do
+    Pagify.validate_and_run(Import, params, opts, params["id"])
   end
 
-  defp list_imports(params) do
-    opts = DataTable.read_opts(collection_scope(params), params)
-    opts = Keyword.put(opts, :load, @load)
+  attr :collection, :any
 
-    {:ok, result} = Import.read(opts)
-
-    case result do
-      %Ash.Page.Offset{results: imports} -> imports
-      imports -> imports
-    end
-  end
-
-  defp collection_scope(params) do
-    Ash.Query.filter_input(Import, %{"collection" => %{"id" => params["id"]}})
+  defp no_results_content(assigns) do
+    ~H"""
+    <.empty_state
+      title={~t"No imports"m}
+      description={~t"Get started by importing a new dataset."m}
+      label={~t"Import"m}
+      icon="hero-arrow-up-tray"
+      href={~p"/collections/#{@collection}/imports/new"}
+    />
+    """
   end
 end

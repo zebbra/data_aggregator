@@ -45,7 +45,7 @@ defmodule DataAggregator.MixProject do
   defp extra_applications(_), do: [:logger, :runtime_tools, :ssl, :os_mon]
 
   # Specifies which paths to compile per environment.
-  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:test), do: ["lib", "test/support", "test/pagify/support"]
   defp elixirc_paths(_), do: ["lib"]
 
   defp docs do
@@ -109,7 +109,8 @@ defmodule DataAggregator.MixProject do
     [
       DataAggregator,
       DataAggregatorWeb,
-      DataAggregatorApi
+      DataAggregatorApi,
+      Pagify
     ]
   end
 
@@ -168,6 +169,10 @@ defmodule DataAggregator.MixProject do
       ],
       Plugs: [
         ~r/^DataAggregatorWeb\.Plug/
+      ],
+      Pagify: [
+        Pagify,
+        ~r/^Pagify\./
       ]
     ]
   end
@@ -214,6 +219,7 @@ defmodule DataAggregator.MixProject do
       {:mimic, "~> 1.7", only: :test},
       {:styler, "~> 0.11", only: [:dev, :test], runtime: false},
       {:junit_formatter, "~> 3.3", only: :test},
+      {:ex_machina, "~> 2.7.0", only: :test},
 
       # Assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
@@ -271,6 +277,7 @@ defmodule DataAggregator.MixProject do
 
       # Utilities and Helpers
       {:envy, "~> 1.1.1"},
+      {:splode, "~> 0.2.2"},
 
       # Documentation
       {:ecto_erd, "~> 0.5", only: :dev},

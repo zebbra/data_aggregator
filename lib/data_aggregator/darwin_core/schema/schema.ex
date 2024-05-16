@@ -2178,7 +2178,7 @@ defmodule DataAggregator.DarwinCore.Schema do
     |> String.split("_")
     |> List.delete_at(0)
     |> Enum.join("_")
-    |> String.to_atom()
+    |> String.to_existing_atom()
   end
 
   @spec attribute_name_without_prefix(atom()) :: atom()

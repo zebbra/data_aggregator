@@ -25,9 +25,6 @@ defmodule DataAggregator.Records.EncodedRecord do
 
   @type t :: %EncodedRecord{}
 
-  @default_limit 15
-  def default_limit, do: @default_limit
-
   attributes do
     uuid_attribute :id, prefix: "enr"
     attribute :extra_data, :map
@@ -61,7 +58,7 @@ defmodule DataAggregator.Records.EncodedRecord do
     read :read do
       primary? true
       argument :sort, :string, allow_nil?: true
-      pagination offset?: true, default_limit: @default_limit, countable: true, required?: false
+      pagination offset?: true, countable: true, required?: false
     end
 
     create :create do

@@ -11,8 +11,8 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
 
   @states AshStateMachine.Info.state_machine_all_states(Publication)
 
-  attr(:attachment, Attachment, required: true)
-  attr(:class, :string, default: nil)
+  attr :attachment, Attachment, required: true
+  attr :class, :string, default: nil
 
   def attachment_download_badge(assigns) do
     ~H"""
@@ -29,9 +29,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
     """
   end
 
-  attr(:publication, Publication, required: false)
-  attr(:state, :atom, required: false, values: @states)
-  attr(:progress, :float, required: false, default: nil)
+  attr :publication, Publication, required: false
+  attr :state, :atom, required: false, values: @states
+  attr :progress, :float, required: false, default: nil
 
   def publication_state_badge(%{publication: publication} = assigns) when is_struct(publication) do
     progress = if publication.state == :publishing, do: publication.publication_progress
@@ -52,8 +52,8 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
     """
   end
 
-  attr(:state, :atom, required: true, values: @states)
-  attr(:progress, :float, required: false, default: nil)
+  attr :state, :atom, required: true, values: @states
+  attr :progress, :float, required: false, default: nil
 
   def publication_state_badge_label(%{state: :publishing} = assigns) do
     ~H"""
@@ -83,7 +83,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
     end
   end
 
-  attr(:state, :atom, required: true, values: @states)
+  attr :state, :atom, required: true, values: @states
 
   def publication_state_icon(%{state: state} = assigns) do
     {icon, class} = publication_state_icon_class(state)
@@ -124,17 +124,13 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
     end
   end
 
-  attr(:channel, :atom, required: true, values: [:fast_track, :approval])
+  attr :channel, :atom, required: true, values: [:fast_track, :approval]
 
   def publication_channel_badge(%{channel: :fast_track} = assigns) do
     ~H"""
-    <.badge
-      class="px-2 tooltip tooltip-ghost"
-      color="gray"
-      data-tip={~t"Publication to Gbif Swiss Portal"m}
-    >
+    <.badge class="tooltip" color="gray" data-tip={~t"Publication to Gbif Swiss Portal"m}>
       <.icon name="hero-fire-mini" class="size-4 shrink-0" />
-      <span class="text-nowrap px-1.5"><%= ~t"Fast Track"m %></span>
+      <span class="text-nowrap pr-1.5"><%= ~t"Fast Track"m %></span>
     </.badge>
     """
   end
@@ -142,12 +138,12 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
   def publication_channel_badge(%{channel: :approval} = assigns) do
     ~H"""
     <.badge
-      class="px-2 tooltip tooltip-ghost"
+      class="tooltip"
       color="gray"
       data-tip={~t"Publication to Gbif.org via Infospecies Approval"m}
     >
       <.icon name="hero-shield-check" class="size-4 shrink-0" />
-      <span class="text-nowrap px-1.5"><%= ~t"Approval"m %></span>
+      <span class="text-nowrap pr-1.5"><%= ~t"Approval"m %></span>
     </.badge>
     """
   end

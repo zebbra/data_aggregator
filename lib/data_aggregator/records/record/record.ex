@@ -33,9 +33,6 @@ defmodule DataAggregator.Records.Record do
 
   @type t :: %Record{}
 
-  @default_limit 15
-  def default_limit, do: @default_limit
-
   attributes do
     uuid_attribute :id, prefix: "rec"
     attribute :import_data, :map
@@ -158,10 +155,21 @@ defmodule DataAggregator.Records.Record do
       argument :sort, :string, allow_nil?: true
 
       pagination offset?: true,
-                 default_limit: @default_limit,
                  countable: true,
                  required?: false,
                  keyset?: true
+    end
+
+    read :by_collection do
+      argument :collection_id, :string, allow_nil?: false
+      argument :sort, :string, allow_nil?: true
+
+      pagination offset?: true,
+                 countable: true,
+                 required?: false,
+                 keyset?: true
+
+      filter expr(collection_id == ^arg(:collection_id))
     end
 
     create :create do
@@ -271,6 +279,7 @@ defmodule DataAggregator.Records.Record do
     define_for DataAggregator.Records
 
     define :read
+    define :by_collection, args: [:collection_id]
     define :create
     define :import, args: [:import, :params]
     define :bulk_import, args: [:import, :rows]

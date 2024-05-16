@@ -7,7 +7,6 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
 
   alias DataAggregator.PubSub
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
 
   @load [
@@ -22,19 +21,22 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   @impl true
   def mount(_params, _session, socket) do
     if connected?(socket), do: PubSub.subscribe(@topics)
-
-    results = Collection.read!(load: @load)
-    socket = stream(socket, :results, results)
-
     {:ok, socket}
   end
 
   @impl true
   def handle_params(params, _url, socket) do
-    {:noreply,
-     socket
-     |> assign(count: Records.count!(Collection))
-     |> apply_action(socket.assigns.live_action, params)}
+    case list_collections(params) do
+      {:ok, {collections, meta}} ->
+        socket
+        |> assign(meta: meta)
+        |> stream(:results, collections, reset: true)
+        |> apply_action(socket.assigns.live_action, params)
+        |> noreply()
+
+      {:error, _meta} ->
+        {:noreply, push_navigate(socket, to: ~p"/collections")}
+    end
   end
 
   @impl true
@@ -44,7 +46,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
       <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
         <%= ~t"Collections"m %>
         <:actions>
-          <.link patch={~p"/collections/new"} class="btn btn-primary max-sm:btn-sm">
+          <.link patch={build_path(~p"/collections/new", @meta)} class="btn btn-primary max-sm:btn-sm">
             <.icon name="hero-squares-2x2" class="max-sm:size-4" />
             <span class="max-sm:hidden"><%= ~t"New collection"m %></span>
             <span class="sm:hidden"><%= ~t"Add"m %></span>
@@ -52,85 +54,92 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         </:actions>
       </.page_header>
 
-      <div class="no-scrollbar overflow-x-auto pb-4">
-        <.table :if={@count > 0} id="collections_table" rows={@streams.results}>
-          <:col :let={{_id, collection}} label={~t"Name"m}>
-            <.link
-              navigate={~p"/collections/#{collection}/records"}
-              class="link link-primary font-semibold link-hover"
-            >
-              <%= collection.name %>
-            </.link>
-          </:col>
-          <:col :let={{_id, collection}} label={~t"Code"m}>
-            <%= collection.code %>
-          </:col>
-          <:col :let={{_id, collection}} label={~t"Institution"m}>
-            <%= collection.institution %>
-          </:col>
-          <:col :let={{_id, collection}} label={~t"Progress"m} class="text-right">
-            <div
-              class="tooltip tooltip-primary flex flex-1 items-center"
-              data-tip={
+      <.table
+        opts={[
+          container_attrs: [
+            class: "no-scrollbar overflow-x-auto pb-4"
+          ],
+          no_results_content: no_results_content(%{collection: @collection})
+        ]}
+        path={~p"/collections"}
+        items={@streams.results}
+        meta={@meta}
+      >
+        <:col :let={{_id, collection}} field={:name} label={~t"Name"m}>
+          <.link
+            navigate={~p"/collections/#{collection}/records"}
+            class="link link-primary font-semibold link-hover"
+          >
+            <%= collection.name %>
+          </.link>
+        </:col>
+        <:col :let={{_id, collection}} field={:code} label={~t"Code"m}>
+          <%= collection.code %>
+        </:col>
+        <:col :let={{_id, collection}} label={~t"Institution"m}>
+          <%= collection.institution %>
+        </:col>
+        <:col
+          :let={{_id, collection}}
+          field={:digitizing_progress}
+          label={~t"Progress"m}
+          class="text-right"
+        >
+          <div
+            class="tooltip tooltip-primary flex flex-1 items-center"
+            data-tip={
                 "#{collection.digitizing_progress |> Decimal.from_float() |> Decimal.round(1)}%"}
+          >
+            <progress
+              class="progress progress-primary min-w-32"
+              value={collection.digitizing_progress}
+              max="100"
+            />
+          </div>
+        </:col>
+        <:col
+          :let={{_id, collection}}
+          field={:records_count}
+          label={~t"Records count / est."m}
+          class="text-right"
+        >
+          <%= inspect(collection.records_count) %> / <%= collection.items_to_digitize %>
+        </:col>
+        <:col :let={{_id, collection}} field={:encoding_state} label={~t"State"m} class="text-center">
+          <.encoding_state_badge state={collection.encoding_state} />
+        </:col>
+        <:col :let={{_id, collection}} field={:updated_at} label={~t"Updated At"m} class="text-right">
+          <%= format_datetime(collection.updated_at, format: :short) %>
+        </:col>
+
+        <:action
+          :let={{_id, collection}}
+          tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
+          col_class="bg-base-300/10 border-l border-black-white/5"
+          label={~t"Actions"m}
+        >
+          <div class="border-black-white/10 mr-4 inline-flex border-r pr-4">
+            <.link
+              role="button"
+              patch={build_path(~p"/collections/#{collection}/edit", @meta)}
+              class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
+              data-tip={~t"Edit"m}
             >
-              <progress
-                class="progress progress-primary min-w-32"
-                value={collection.digitizing_progress}
-                max="100"
-              />
-            </div>
-          </:col>
-          <:col :let={{_id, collection}} label={~t"Records count / est."m} class="text-right">
-            <%= inspect(collection.records_count) %> / <%= collection.items_to_digitize %>
-          </:col>
-          <:col :let={{_id, collection}} label={~t"State"m} class="text-center">
-            <.encoding_state_badge state={collection.encoding_state} />
-          </:col>
-          <:col :let={{_id, collection}} label={~t"Updated At"m} class="text-right">
-            <%= format_datetime(collection.updated_at, format: :short) %>
-          </:col>
-
-          <:action :let={{_id, collection}} class="-mx-3 -my-1.5 sm:-mx-2.5">
-            <.table_actions id={"collection_#{collection.id}"}>
-              <li>
-                <.link
-                  patch={~p"/collections/#{collection}/records"}
-                  class="hover:bg-primary hover:text-primary-content"
-                >
-                  <%= ~t"View"m %>
-                </.link>
-              </li>
-              <li>
-                <.link
-                  patch={~p"/collections/#{collection}/edit"}
-                  class="hover:bg-primary hover:text-primary-content"
-                >
-                  <%= ~t"Edit"m %>
-                </.link>
-              </li>
-              <li>
-                <.link
-                  phx-click={JS.push("collection:delete", value: %{id: collection.id})}
-                  class="hover:bg-primary hover:text-primary-content"
-                  data-confirm={~t"Are you sure?"m}
-                >
-                  <%= ~t"Delete"m %>
-                </.link>
-              </li>
-            </.table_actions>
-          </:action>
-        </.table>
-      </div>
-
-      <.empty_state
-        :if={@count == 0}
-        title={~t"No collections"m}
-        description={~t"Get started by adding a new collection."m}
-        label={~t"New collection"m}
-        icon="hero-squares-2x2"
-        href={~p"/collections/new"}
-      />
+              <.icon name="hero-pencil-square-mini" class="size-5 text-base-content/75" />
+            </.link>
+          </div>
+          <.link
+            role="button"
+            phx-click={JS.push("collection:delete", value: %{id: collection.id})}
+            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
+            data-tip={~t"Delete"m}
+            data-confirm={~t"Are you sure?"m}
+          >
+            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
+          </.link>
+        </:action>
+      </.table>
+      <.pagination meta={@meta} path={~p"/collections"} />
 
       <:portal>
         <.modal
@@ -138,7 +147,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           show={@live_action in [:new, :edit]}
           responsive
           backdrop={false}
-          on_cancel={JS.patch(~p"/collections")}
+          on_cancel={JS.patch(build_path(~p"/collections", @meta))}
         >
           <.live_component
             :if={@live_action in [:new, :edit]}
@@ -147,7 +156,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             title={@page_title}
             action={@live_action}
             collection={@collection}
-            patch={~p"/collections"}
+            patch={build_path(~p"/collections", @meta)}
           />
         </.modal>
       </:portal>
@@ -197,5 +206,21 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
      socket
      |> put_flash(:info, ~t"Collection deleted successfully"m)
      |> stream_delete(:results, collection)}
+  end
+
+  defp list_collections(params, opts \\ [load: @load]) do
+    Pagify.validate_and_run(Collection, params, opts)
+  end
+
+  defp no_results_content(assigns) do
+    ~H"""
+    <.empty_state
+      title={~t"No collections"m}
+      description={~t"Get started by adding a new collection."m}
+      label={~t"New collection"m}
+      icon="hero-squares-2x2"
+      href={~p"/collections/new"}
+    />
+    """
   end
 end
