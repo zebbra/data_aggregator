@@ -612,7 +612,7 @@ defmodule Pagify.Components do
     default: nil,
     doc: "Sets the `phx-target` attribute for the header links."
 
-  attr :caption, :string,
+  attr :caption_text, :string,
     default: nil,
     doc: "Content for the `<caption>` element."
 
@@ -652,6 +652,17 @@ defmodule Pagify.Components do
     doc: """
     This function is called on the row item before it is passed to the :col
     and :action slots.
+    """
+
+  slot :caption,
+    doc: """
+    The slot for the table caption. If set, the content of the slot is rendered
+    as the content of the `<caption>` element.
+
+    ```elixir
+    <:caption>
+      <h2>Posts</h2>
+    </:caption>
     """
 
   slot :col,
@@ -824,6 +835,7 @@ defmodule Pagify.Components do
       <%= if @opts[:container] do %>
         <div id={@id <> "_container"} {@opts[:container_attrs]}>
           <Table.render
+            caption_text={@caption_text}
             caption={@caption}
             col={@col}
             foot={@foot}
@@ -842,6 +854,7 @@ defmodule Pagify.Components do
         </div>
       <% else %>
         <Table.render
+          caption_text={@caption_text}
           caption={@caption}
           col={@col}
           foot={@foot}

@@ -12,7 +12,7 @@ defmodule DataAggregator.EncodedRecordTest do
   describe "encoded_records" do
     @invalid_attrs %{
       record: nil,
-      mte_material_entity_id: nil
+      mte_catalog_number: nil
     }
 
     test "read!/0 returns all encoded_records" do
@@ -59,14 +59,14 @@ defmodule DataAggregator.EncodedRecordTest do
       encoded_record = encoded_record_fixture()
 
       update_attrs = %{
-        mte_material_entity_id: "encoded_record2",
+        mte_catalog_number: "encoded_record2",
         tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
       }
 
       assert {:ok, %EncodedRecord{} = encoded_record} =
                EncodedRecord.update(encoded_record, update_attrs)
 
-      assert EncodedRecord.get_by_id!(encoded_record.id).mte_material_entity_id ==
+      assert EncodedRecord.get_by_id!(encoded_record.id).mte_catalog_number ==
                "encoded_record2"
     end
 

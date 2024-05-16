@@ -36,8 +36,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
         loc_country: "Switzerland",
         loc_country_code: "ch",
         loc_state_province: "Bern",
-        loc_city: "Liebefeld",
-        loc_municipality: "Köniz"
+        loc_municipality: "Liebefeld"
       })
 
       assert record.state === :encoded
@@ -53,7 +52,6 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
           loc_continent: nil,
           loc_country: "Switzerland",
           loc_country_code: nil,
-          loc_city: nil,
           loc_municipality: nil,
           loc_state_province: nil
         })
@@ -73,7 +71,6 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
         loc_continent: "Europe",
         loc_country: "Switzerland",
         loc_country_code: "ch",
-        loc_city: "Reichenbach im Kandertal",
         loc_locality: "Niesen",
         loc_municipality: "Reichenbach im Kandertal",
         loc_state_province: "Bern"
@@ -92,7 +89,6 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
           loc_continent: "Europe",
           loc_country: "Switzerland",
           loc_country_code: "ch",
-          loc_city: "Lausanne",
           loc_municipality: "Lausanne",
           loc_state_province: "Vaud"
         })
@@ -113,7 +109,6 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
         loc_continent: "Europe",
         loc_country: "Switzerland",
         loc_country_code: "ch",
-        loc_city: "Lausanne",
         loc_municipality: "Lausanne",
         loc_state_province: "Vaud"
       })
@@ -135,7 +130,6 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
           loc_country: nil,
           loc_country_code: nil,
           loc_state_province: nil,
-          loc_city: nil,
           loc_municipality: nil
         })
 
@@ -156,7 +150,6 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
         loc_country: nil,
         loc_country_code: nil,
         loc_state_province: nil,
-        loc_city: nil,
         loc_municipality: nil
       })
 

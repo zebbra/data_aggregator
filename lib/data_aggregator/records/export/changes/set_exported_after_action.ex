@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Changes.SetExportedAfterAction do
+defmodule DataAggregator.Records.Export.Changes.SetExportedAfterAction do
   @moduledoc """
   Action call to `DataAggregator.Records.Export.set_exported/1` after the export action
   """

@@ -41,7 +41,7 @@ defmodule DataAggregator.CollectionTest do
       attrs = %{
         name: "Collection",
         owner: "Max Powers",
-        type: :animalia,
+        type: :zoology,
         grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
       }
 
@@ -70,7 +70,7 @@ defmodule DataAggregator.CollectionTest do
       update_attrs = %{
         name: "Collection 2",
         owner: "Max Powers 2",
-        type: :plantae
+        type: :botany
       }
 
       assert {:ok, %Collection{} = _collection} = Collection.update(collection, update_attrs)
@@ -81,7 +81,7 @@ defmodule DataAggregator.CollectionTest do
 
       updated_import_mapping = [
         %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
-        %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"}
+        %{name: "Numéro scientifique GBIF", mapped_to: "mte_catalog_number"}
       ]
 
       assert {:ok, %Collection{} = result} =

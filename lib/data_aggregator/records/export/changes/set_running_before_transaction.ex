@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Changes.SetRunningBeforeTransaction do
+defmodule DataAggregator.Records.Export.Changes.SetRunningBeforeTransaction do
   @moduledoc """
   Sets the state to `:running` before the transaction is started
   """

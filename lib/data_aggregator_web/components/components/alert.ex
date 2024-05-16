@@ -52,7 +52,7 @@ defmodule DataAggregatorWeb.Components.Alert do
               <button class="btn btn-ghost" value="cancel">
                 <%= ~t"Cancel"m %>
               </button>
-              <button type="submit" value="confirm" class="btn btn-error">
+              <button type="submit" value="confirm" class="btn btn-primary">
                 <%= ~t"OK"m %>
               </button>
             </div>

@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Changes.EnqueueExporter do
+defmodule DataAggregator.Records.Export.Changes.EnqueueExporter do
   @moduledoc """
   Enques a job to run by the `DataAggregator.Records.Export.Workers.Exporter` worker with the given export object as parameter
   """

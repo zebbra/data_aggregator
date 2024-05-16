@@ -15,7 +15,7 @@ defmodule DataAggregator.Repo.Migrations.ExportExtensions do
       add :started_at, :utc_datetime
       add :finished_at, :utc_datetime
       add :mapping, :map
-      add :records_query, :binary, null: false
+      add :records_query, :map, null: false
       add :exported_count, :bigint, null: false, default: 0
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")

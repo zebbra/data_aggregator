@@ -7,67 +7,66 @@ defmodule DataAggregatorWeb.Router do
   # Browser
 
   pipeline :locale do
-    plug(:fetch_session)
+    plug :fetch_session
 
-    plug(Cldr.Plug.PutLocale,
+    plug Cldr.Plug.PutLocale,
       apps: [:cldr, :gettext],
       cldr: DataAggregatorWeb.Cldr,
       gettext: DataAggregatorWeb.Gettext,
       from: [:query, :session, :accept_language],
       param: "locale"
-    )
 
-    plug(:assign_current_locale)
+    plug :assign_current_locale
 
-    plug(Cldr.Plug.PutSession, as: :language_tag)
+    plug Cldr.Plug.PutSession, as: :language_tag
   end
 
   pipeline :browser do
-    plug(:accepts, ["html"])
-    plug(:fetch_live_flash)
-    plug(:protect_from_forgery)
-    plug(:put_secure_browser_headers)
+    plug :accepts, ["html"]
+    plug :fetch_live_flash
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
   end
 
   pipeline :with_root_layout do
-    plug(:put_root_layout, html: {DataAggregatorWeb.Layouts, :root})
+    plug :put_root_layout, html: {DataAggregatorWeb.Layouts, :root}
   end
 
   scope "/" do
-    pipe_through([:locale, :browser])
+    pipe_through [:locale, :browser]
 
     scope "/", DataAggregatorWeb do
-      pipe_through([:with_root_layout])
+      pipe_through [:with_root_layout]
 
-      user_hooks = [
+      default_hooks = [
         DataAggregatorWeb.LiveLogger,
-        DataAggregatorWeb.LiveLocale
+        DataAggregatorWeb.LiveLocale,
+        Sentry.LiveViewHook
       ]
 
-      live_session :default, on_mount: user_hooks do
-        live("/", DashboardLive.Index, :index)
+      live_session :default, on_mount: default_hooks do
+        live "/", DashboardLive.Index, :index
 
-        live("/collections", CollectionLive.Index, :index)
-        live("/collections/new", CollectionLive.Index, :new)
-        live("/collections/:id/edit", CollectionLive.Index, :edit)
-        live("/collections/:id/records", CollectionLive.Record.Index, :index)
-        live("/collections/:id/imports", CollectionLive.Import.Index, :index)
-        live("/collections/:id/imports/new", CollectionLive.Import.Index, :new)
-        live("/collections/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit)
-        live("/collections/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary)
-        live("/collections/:id/encodings", CollectionLive.Encoding.Index, :index)
-        live("/collections/:id/details", CollectionLive.Details.Index, :index)
-        live("/collections/:id/exports", CollectionLive.Export.Index, :index)
+        live "/collections", CollectionLive.Index, :index
+        live "/collections/new", CollectionLive.Index, :new
+        live "/collections/:id/edit", CollectionLive.Index, :edit
+        live "/collections/:id/records", CollectionLive.Record.Index, :index
+        live "/collections/:id/imports", CollectionLive.Import.Index, :index
+        live "/collections/:id/imports/new", CollectionLive.Import.Index, :new
+        live "/collections/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit
+        live "/collections/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary
+        live "/collections/:id/exports", CollectionLive.Export.Index, :index
+        live "/collections/:id/publications", CollectionLive.Publication.Index, :index
 
-        live("/records", RecordLive.Index, :index)
+        live "/records", RecordLive.Index, :index
 
-        live("/tasks", TaskLive.Index, :index)
+        live "/tasks", TaskLive.Index, :index
       end
     end
   end
 
   scope "/api" do
-    forward("/", DataAggregatorApi.Router)
+    forward "/", DataAggregatorApi.Router
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
@@ -86,22 +85,21 @@ defmodule DataAggregatorWeb.Router do
       storybook_assets()
 
       scope "/", DataAggregatorWeb do
-        pipe_through([:locale, :browser])
+        pipe_through [:locale, :browser]
         live_storybook("/storybook", backend_module: DataAggregatorWeb.Storybook)
       end
     end
 
     scope "/dev" do
-      pipe_through([:locale, :browser])
+      pipe_through [:locale, :browser]
 
-      live_dashboard("/dashboard",
+      live_dashboard "/dashboard",
         metrics: DataAggregatorWeb.Telemetry,
         additional_pages: [
           oban: Oban.LiveDashboard
         ]
-      )
 
-      forward("/mailbox", Plug.Swoosh.MailboxPreview)
+      forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end
 end

@@ -12,6 +12,7 @@ defmodule DataAggregator.Records.Import.Calculations.MappingsTest do
   setup do
     {:ok, collection} =
       Collection.create(%{
+        type: :zoology,
         name: "Test Collection",
         owner: "Max Powers",
         grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
@@ -31,7 +32,7 @@ defmodule DataAggregator.Records.Import.Calculations.MappingsTest do
     {:ok, import} = Records.load(import, :mappings, lazy?: true)
 
     expected = [
-      {nil, "mte_material_entity_id"},
+      {nil, "mte_catalog_number"},
       {nil, "tax_scientific_name"}
     ]
 
@@ -43,12 +44,12 @@ defmodule DataAggregator.Records.Import.Calculations.MappingsTest do
 
     import =
       Import.update_mapping!(import, [
-        %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"},
+        %{name: "Numéro scientifique GBIF", mapped_to: "mte_catalog_number"},
         %{name: "Scientific Name", mapped_to: "tax_scientific_name"}
       ])
 
     expected = [
-      {"Numéro scientifique GBIF", "mte_material_entity_id"},
+      {"Numéro scientifique GBIF", "mte_catalog_number"},
       {"Scientific Name", "tax_scientific_name"}
     ]
 

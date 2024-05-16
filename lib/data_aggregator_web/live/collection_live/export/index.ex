@@ -69,6 +69,10 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           label={~t"Exports"m}
           active
         />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/publications"}
+          label={~t"Publications"m}
+        />
       </.secondary_navigation>
 
       <.table
@@ -108,24 +112,22 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           <%= format_number(export.rows_count, format: :short) %>
         </:col>
 
-        <:action :let={{_id, export}} tbody_td_attrs={[class: "pr-1 w-6"]}>
-          <.link
-            :if={can_run?(export)}
-            phx-click="export:run"
-            phx-value-id={export.id}
-            class="link link-primary link-hover tooltip tooltip-primary rounded-md"
-            data-tip={~t"Run"m}
-          >
-            <.icon name="hero-play-circle-mini" class="size-6" />
-          </.link>
-        </:action>
-
         <:action
           :let={{_id, export}}
           tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
           col_class="bg-base-300/10 border-l border-black-white/5"
           label={~t"Actions"m}
         >
+          <div :if={can_run?(export)} class="border-black-white/10 mr-4 inline-flex border-r pr-4">
+            <.link
+              phx-click="export:run"
+              phx-value-id={export.id}
+              class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
+              data-tip={~t"Run"m}
+            >
+              <.icon name="hero-play-circle-mini" class="size-5 text-base-content/75" />
+            </.link>
+          </div>
           <.link
             phx-click={JS.push("export:delete", value: %{id: export.id})}
             class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"

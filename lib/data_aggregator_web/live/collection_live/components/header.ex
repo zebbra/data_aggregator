@@ -12,7 +12,11 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   attr :collection_id, :any, default: nil
   attr :collection, Collection, default: nil
-  attr :current, :atom, default: :records, values: ~w(records imports encodings exports details)a
+
+  attr :current, :atom,
+    default: :records,
+    values: ~w(records imports encodings exports publications)a
+
   attr :meta, Pagify.Meta, default: nil
 
   def collection_header(%{collection: nil} = assigns) do
@@ -50,15 +54,12 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           ]}
         />
         <h2 class="text-base-content text-2xl font-bold max-sm:line-clamp-2 sm:hidden sm:truncate sm:text-3xl sm:tracking-tight">
-          <%= @collection.name %>
+          <%= @collection.code %> - <%= @collection.name %>
         </h2>
       </:title>
       <:subtitle>
         <div class="text-base-content/60 text-sm/6 line-clamp-3 flex max-w-4xl items-center gap-x-2 sm:mt-2">
-          <span class="max-sm:hidden">
-            <.encoding_state_badge state={@collection.encoding_state} />
-          </span>
-          <%= @collection.description %>
+          <%= @collection.code %>
         </div>
       </:subtitle>
       <:actions :if={@current in [:records, :imports]} class="max-sm:hidden">

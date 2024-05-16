@@ -56,7 +56,11 @@ defmodule DataAggregatorWeb.Blocks.Slideover do
           </button>
         </.section_heading>
 
-        <div class="relative flex-1 space-y-8 pt-8" phx-window-keydown={@on_cancel} phx-key="Escape">
+        <div
+          class={["relative flex-1 space-y-8 pt-8", @class]}
+          phx-window-keydown={@on_cancel}
+          phx-key="Escape"
+        >
           <%= render_slot(@inner_block) %>
         </div>
       </div>

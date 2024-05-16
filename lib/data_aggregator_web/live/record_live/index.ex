@@ -58,11 +58,11 @@ defmodule DataAggregatorWeb.RecordLive.Index do
       >
         <:col
           :let={{_id, record}}
-          field={:mte_material_entity_id}
-          label={~t"MaterialEntityID"m}
+          field={:mte_catalog_number}
+          label={~t"Catalog Number"m}
           class="font-semibold"
         >
-          <%= record.mte_material_entity_id %>
+          <%= record.mte_catalog_number %>
         </:col>
         <:col :let={{_id, record}} field={:tax_scientific_name} label={~t"Scientific Name"m}>
           <%= encoded_attribute(record, :tax_scientific_name) %>
@@ -106,59 +106,55 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           open={@selected_record != nil}
           on_cancel={JS.push("record:select", value: %{id: nil})}
           size="xl"
+          class="space-y-2"
         >
           <%= for category <- @attrs_in_categories do %>
-            <section>
-              <.section_heading
-                text={category.label}
-                description={category.description}
-                size="md"
-                class="px-6 lg:px-8"
-              />
-              <div class="no-scrollbar overflow-x-auto pt-4">
-                <.table
-                  opts={[container: false]}
-                  id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
-                  items={category.attributes}
-                >
-                  <:col :let={attribute} label={~t"Name"} class="font-semibold">
-                    <%= attribute.name %>
-                  </:col>
-                  <:col :let={attribute} label={~t"Imported"}>
-                    <%= attribute.imported %>
-                  </:col>
-                  <:col :let={attribute} label={~t"Encoded"}>
-                    <%= attribute.encoded %>
-                  </:col>
-                </.table>
-              </div>
-            </section>
+            <.table
+              id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
+              items={category.attributes}
+            >
+              <:caption>
+                <.section_heading
+                  text={category.label}
+                  description={category.description}
+                  size="md"
+                  class="px-6 lg:px-8 text-left"
+                />
+              </:caption>
+              <:col :let={attribute} label={~t"Name"} class="font-semibold">
+                <%= attribute.name %>
+              </:col>
+              <:col :let={attribute} label={~t"Imported"}>
+                <%= attribute.imported %>
+              </:col>
+              <:col :let={attribute} label={~t"Encoded"}>
+                <%= attribute.encoded %>
+              </:col>
+            </.table>
           <% end %>
-          <section>
-            <.section_heading
-              text={~t"Record encodings"m}
-              description={~t"Results by catalog"m}
-              size="md"
-              class="px-6 lg:px-8"
-            />
-            <div class="no-scrollbar overflow-x-auto pt-4">
-              <.table
-                opts={[container: false, no_results_content: ""]}
-                id="encoding_result_table"
-                items={@record_encoding_results}
-              >
-                <:col :let={result} label={~t"Catalog"} class="font-semibold">
-                  <%= result.catalog %>
-                </:col>
-                <:col :let={result} label={~t"State"} class="text-center">
-                  <.encoding_state_badge reason={result.message} state={result.state} />
-                </:col>
-                <:col :let={result} label={~t"Created"} class="text-right">
-                  <%= format_datetime(result.inserted_at, format: :short) %>
-                </:col>
-              </.table>
-            </div>
-          </section>
+          <.table
+            opts={[no_results_content: ""]}
+            id="encoding_result_table"
+            items={@record_encoding_results}
+          >
+            <:caption>
+              <.section_heading
+                text={~t"Record encodings"m}
+                description={~t"Results by catalog"m}
+                size="md"
+                class="px-6 lg:px-8 text-left"
+              />
+            </:caption>
+            <:col :let={result} label={~t"Catalog"} class="font-semibold">
+              <%= result.catalog %>
+            </:col>
+            <:col :let={result} label={~t"State"} class="text-center">
+              <.encoding_state_badge reason={result.message} state={result.state} />
+            </:col>
+            <:col :let={result} label={~t"Created"} class="text-right">
+              <%= format_datetime(result.inserted_at, format: :short) %>
+            </:col>
+          </.table>
         </.slideover>
       </:secondary>
     </.page>

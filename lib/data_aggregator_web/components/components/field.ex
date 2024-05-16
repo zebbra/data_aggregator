@@ -197,7 +197,7 @@ defmodule DataAggregatorWeb.Components.Field do
 
   def field(%{type: "radio"} = assigns) do
     assigns =
-      assign_new(assigns, :checked, fn -> Form.normalize_value("radio", assigns[:value]) end)
+      assign_new(assigns, :checked, fn -> Form.normalize_value("radio", assigns[:checked]) end)
 
     ~H"""
     <div
@@ -413,7 +413,7 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <label for={@for} class={["label px-0 pt-0", @class]}>
       <span class={[
-        "label-text text-base/6 font-medium sm:text-sm/6",
+        "label-text text-base/6 truncate font-medium sm:text-sm/6",
         @required && "after:content-['*']",
         @disabled && "text-base-content/50"
       ]}>

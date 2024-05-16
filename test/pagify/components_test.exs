@@ -19,7 +19,7 @@ defmodule Pagify.ComponentsTest do
 
   @route_helper_opts [%{}, :posts]
 
-  attr :caption, :string, default: nil
+  attr :caption_text, :string, default: nil
   attr :on_sort, JS, default: nil
   attr :id, :string, default: "some_table"
   attr :meta, Meta, default: %Meta{pagify: %Pagify{}}
@@ -35,7 +35,7 @@ defmodule Pagify.ComponentsTest do
   defp render_table(assigns) do
     parse_heex(~H"""
     <Pagify.Components.table
-      caption={@caption}
+      caption_text={@caption_text}
       on_sort={@on_sort}
       id={@id}
       items={@items}
@@ -2321,7 +2321,7 @@ defmodule Pagify.ComponentsTest do
              ] = html
     end
 
-    test "renders caption" do
+    test "renders caption text" do
       assert [
                {"table", [{"id", "some_table"}, {"class", "some-table"}],
                 [
@@ -2329,7 +2329,31 @@ defmodule Pagify.ComponentsTest do
                   {"thead", _, _},
                   {"tbody", _, _}
                 ]}
-             ] = render_table(%{caption: "some caption"})
+             ] = render_table(%{caption_text: "some caption"})
+    end
+
+    test "renders caption slot" do
+      assigns = %{meta: %Pagify.Meta{pagify: %Pagify{}}}
+
+      html =
+        parse_heex(~H"""
+        <Pagify.Components.table path="/posts" items={[%{}]} meta={@meta}>
+          <:caption>
+            <h1>Some caption</h1>
+          </:caption>
+          <:col></:col>
+          <:action></:action>
+        </Pagify.Components.table>
+        """)
+
+      assert [
+               {"table", _,
+                [
+                  {"caption", [], [{"h1", [], ["Some caption"]}]},
+                  {"thead", _, _},
+                  {"tbody", _, _}
+                ]}
+             ] = html
     end
 
     test "does not render table foot if option is not set" do

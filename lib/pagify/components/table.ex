@@ -41,7 +41,8 @@ defmodule Pagify.Components.Table do
   attr :path, :any, required: true
   attr :on_sort, JS
   attr :target, :string, required: true
-  attr :caption, :string, required: true
+  attr :caption_text, :string, required: true
+  attr :caption, :any
   attr :opts, :any, required: true
   attr :col, :any
   attr :items, :list, required: true
@@ -59,7 +60,10 @@ defmodule Pagify.Components.Table do
 
     ~H"""
     <table id={@id} {@opts[:table_attrs]}>
-      <caption :if={@caption}><%= @caption %></caption>
+      <caption :if={@caption_text}><%= @caption_text %></caption>
+      <caption :for={caption <- @caption}>
+        <%= render_slot(caption) %>
+      </caption>
       <.maybe_colgroup col={@col ++ @action} />
       <thead {@opts[:thead_attrs]}>
         <tr {@opts[:thead_tr_attrs]}>

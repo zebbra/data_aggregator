@@ -3,6 +3,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form
+  alias DataAggregator.Gbif.GrSciColl
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.CollectionType
 
@@ -23,6 +24,13 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         CollectionType.get_collection_type_options()
       )
 
+    assigns =
+      assign(
+        assigns,
+        :grscicoll_collections,
+        GrSciColl.get_collection_options()
+      )
+
     ~H"""
     <div>
       <.simple_form
@@ -33,20 +41,9 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         phx-change="collection:validate"
         phx-submit="collection:save"
       >
-        <.input
-          type="hidden"
-          field={@form[:grscicoll_reference]}
-          value="322ce107-3156-4420-8a2b-7f17efeaa472"
-        />
         <.fieldset legend={@title} text={~t"Use this form to manage collections in your database."m}>
           <.fieldgroup>
             <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
-              <.field
-                field={@form[:name]}
-                label={~t"Name"m}
-                placeholder={~t"My Collection"m}
-                required
-              />
               <.field field={@form[:owner]} label={~t"Owner"m} placeholder="Brigit Hansson" required />
             </div>
             <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
@@ -57,12 +54,25 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
                 options={@collection_types}
                 placeholder={~t"Filter types"m}
                 prompt={~t"None"m}
+                required
               />
               <.field
                 type="number"
                 field={@form[:items_to_digitize]}
                 label={~t"Total items to digitize"m}
                 placeholder="42042"
+                required
+              />
+            </div>
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-1 sm:gap-4">
+              <.field
+                type="combobox"
+                field={@form[:grscicoll_reference]}
+                label={~t"GrSciColl Collection"m}
+                options={@grscicoll_collections}
+                placeholder={~t"Filter Collections"m}
+                prompt={~t"None"m}
+                required
               />
             </div>
             <.field
