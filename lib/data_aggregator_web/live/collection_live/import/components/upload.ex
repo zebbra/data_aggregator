@@ -192,7 +192,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
           :noreply,
           socket
           |> handle_flash(import)
-          |> push_patch(to: ~p"/collections/#{collection}/imports/#{import}/edit")
+          |> push_patch(
+            to:
+              build_path(
+                ~p"/collections/#{collection}/imports/#{import}/edit",
+                socket.assigns.meta
+              )
+          )
         }
 
       _ ->
@@ -200,7 +206,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
           :noreply,
           socket
           |> handle_flash(nil)
-          |> push_patch(to: ~p"/collections/#{collection}/imports")
+          |> push_patch(to: build_path(~p"/collections/#{collection}/imports", meta: socket.assigns.meta))
         }
     end
   end

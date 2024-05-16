@@ -10,7 +10,6 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
 
   alias DataAggregator.Records
   alias DataAggregator.Records.Publication
-  alias DataAggregatorWeb.Components.DataTable
 
   @load [
     :duration,
@@ -28,22 +27,26 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   @impl true
   def mount(%{"id" => id} = _params, _session, socket) do
     socket =
-      assign(socket, :collection, get_collection(id))
+      socket
+      |> assign(:collection, get_collection(id))
+      |> assign(selected_publication: nil)
 
     {:ok, socket}
   end
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    socket =
-      socket
-      |> assign(selected_publication: nil)
-      |> assign(:collection, get_collection(id))
-      |> assign(count: Records.count!(collection_scope(params)))
-      |> assign_publications(params)
-      |> apply_action(socket.assigns.live_action, params)
+    case list_publications(params) do
+      {:ok, {publications, meta}} ->
+        socket
+        |> assign(meta: meta)
+        |> stream(:results, publications, reset: true)
+        |> apply_action(socket.assigns.live_action, params)
+        |> noreply()
 
-    {:noreply, socket}
+      {:error, _meta} ->
+        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/publications")}
+    end
   end
 
   @impl true
@@ -70,79 +73,79 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
           active
         />
       </.secondary_navigation>
-      <div :if={@count > 0} class="no-scrollbar overflow-x-auto py-4">
-        <.table
-          id="publications_table"
-          rows={@streams.results}
-          row_click={
-            fn {_id, publication} ->
-              JS.push("publication:select", value: %{id: publication.id})
-            end
-          }
-        >
-          <:col :let={{_id, publication}} label={~t"State"m}>
-            <.publication_state_badge publication={publication} />
-          </:col>
-          <:col :let={{_id, publication}} label={~t"Channel"m} class="text-center">
-            <.publication_channel_badge channel={publication.channel} />
-          </:col>
-          <:col :let={{_id, publication}} label={~t"File"m}>
-            <div class="font-mono">
-              <%= if publication.attachment != nil, do: publication.attachment.filename, else: "-" %>
-            </div>
-            <div class="text-base-content/60 text-xs">
-              <%= format_number(publication.rows_count) %> rows
-            </div>
-          </:col>
-          <:col :let={{_id, publication}} label={~t"Size"m}>
-            <.attachment_download_badge
-              :if={publication.attachment != nil}
-              attachment={publication.attachment}
-            />
-          </:col>
-          <:col :let={{_id, publication}} label={~t"Started at"m}>
-            <%= format_datetime(publication.started_at, format: :short) %>
-            <div :if={publication.duration} class="text-base-content/60 text-xs">
-              <%= publication.duration %>
-            </div>
-          </:col>
-          <:col :let={{_id, publication}} label={~t"Records"m} class="text-right">
-            <%= format_number(publication.rows_count, format: :short) %>
-          </:col>
 
-          <:action :let={{_id, publication}} class="flex items-center justify-end gap-x-2">
-            <button
-              :if={can_run?(publication)}
-              type="button"
+      <.table
+        opts={[
+          no_results_content: no_results_content(%{collection: @collection})
+        ]}
+        path={~p"/collections/#{@collection}/publications"}
+        items={@streams.results}
+        meta={@meta}
+        row_click={
+          fn {_id, publication} ->
+            JS.push("publication:select", value: %{id: publication.id})
+          end
+        }
+      >
+        <:col :let={{_id, publication}} field={:state} label={~t"State"m}>
+          <.publication_state_badge publication={publication} />
+        </:col>
+        <:col :let={{_id, publication}} field={:channel} label={~t"Channel"m} class="text-center">
+          <.publication_channel_badge channel={publication.channel} />
+        </:col>
+        <:col :let={{_id, publication}} label={~t"File"m}>
+          <div class="font-mono">
+            <%= if publication.attachment != nil, do: publication.attachment.filename, else: "-" %>
+          </div>
+          <div class="text-base-content/60 text-xs">
+            <%= format_number(publication.rows_count) %> rows
+          </div>
+        </:col>
+        <:col :let={{_id, publication}} label={~t"Size"m}>
+          <.attachment_download_badge
+            :if={publication.attachment != nil}
+            attachment={publication.attachment}
+          />
+        </:col>
+        <:col :let={{_id, publication}} field={:started_at} label={~t"Started at"m}>
+          <%= format_datetime(publication.started_at, format: :short) %>
+          <div :if={publication.duration} class="text-base-content/60 text-xs">
+            <%= publication.duration %>
+          </div>
+        </:col>
+        <:col :let={{_id, publication}} field={:rows_count} label={~t"Records"m} class="text-right">
+          <%= format_number(publication.rows_count, format: :short) %>
+        </:col>
+
+        <:action
+          :let={{_id, publication}}
+          tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
+          col_class="bg-base-300/10 border-l border-black-white/5"
+          label={~t"Actions"m}
+        >
+          <div
+            :if={can_run?(publication)}
+            class="border-black-white/10 mr-4 inline-flex border-r pr-4"
+          >
+            <.link
               phx-click="publication:run"
               phx-value-id={publication.id}
-              class="link link-primary link-hover tooltip tooltip-primary rounded-md"
+              class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
               data-tip={~t"Run"m}
             >
-              <.icon name="hero-play-circle-mini" class="size-6" />
-            </button>
-
-            <button
-              type="button"
-              phx-click={JS.push("publication:delete", value: %{id: publication.id})}
-              class="link link-error link-hover tooltip tooltip-error rounded-md"
-              data-tip={~t"Delete"m}
-              data-confirm={~t"Are you sure?"m}
-            >
-              <.icon name="hero-x-circle-mini" class="size-6" />
-            </button>
-          </:action>
-        </.table>
-      </div>
-
-      <.empty_state
-        :if={@count == 0}
-        title={~t"No publications"m}
-        description={~t"Get started by publishing records."m}
-        label={~t"Publication"m}
-        icon="hero-arrow-down-tray"
-        href={~p"/collections/#{@collection}/records"}
-      />
+              <.icon name="hero-play-circle-mini" class="size-5 text-base-content/75" />
+            </.link>
+          </div>
+          <.link
+            phx-click={JS.push("publication:delete", value: %{id: publication.id})}
+            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
+            data-tip={~t"Delete"m}
+            data-confirm={~t"Are you sure?"m}
+          >
+            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
+          </.link>
+        </:action>
+      </.table>
 
       <:secondary>
         <.slideover
@@ -340,24 +343,21 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
     |> assign(:publication, nil)
   end
 
-  defp assign_publications(socket, params) do
-    stream(socket, :results, list_publications(params))
+  defp list_publications(params, opts \\ [load: @load, action: :by_collection]) do
+    Pagify.validate_and_run(Publication, params, opts, params["id"])
   end
 
-  defp list_publications(params) do
-    opts = params |> collection_scope() |> DataTable.read_opts(params)
+  attr :collection, :any
 
-    opts = Keyword.put(opts, :load, @load)
-
-    {:ok, result} = Publication.read(opts)
-
-    case result do
-      %Ash.Page.Offset{results: publications} -> publications
-      publications -> publications
-    end
-  end
-
-  defp collection_scope(params) do
-    Ash.Query.filter_input(Publication, %{"collection" => %{"id" => params["id"]}})
+  defp no_results_content(assigns) do
+    ~H"""
+    <.empty_state
+      title={~t"No publications"m}
+      description={~t"Get started by publishing records."m}
+      label={~t"Publication"m}
+      icon="hero-arrow-down-tray"
+      href={~p"/collections/#{@collection}/records"}
+    />
+    """
   end
 end

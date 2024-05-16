@@ -373,6 +373,7 @@ classDiagram
         Job job
         destroy()
         read()
+        by_collection(String collection_id, String sort)
         create(Collection collection, UUID id, String name, UtcDatetime exported_at, ...)
         update_mapping(Map mapping, UUID id, String name, UtcDatetime exported_at, ...)
         update(Struct[] records, UUID id, String name, UtcDatetime exported_at, ...)
@@ -416,6 +417,7 @@ classDiagram
         Job job
         destroy()
         read(String sort)
+        by_collection(String collection_id, String sort)
         create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
         create_from_path(Collection collection, String path, String filename)
         update_mapping(Column[] columns)
@@ -461,6 +463,7 @@ classDiagram
         update(UUID id, String name, Atom channel, UtcDatetime published_at, ...)
         destroy()
         read()
+        by_collection(String collection_id, String sort)
         create(Collection collection, UUID id, String name, Atom channel, ...)
         enqueue()
         add_publication_progress(Integer published)
@@ -773,6 +776,7 @@ classDiagram
         EncodedRecord encoded_record
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read(String sort)
+        by_collection(String collection_id, String sort)
         create(Collection collection, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         import(Import import, Map params, Map ext_vernacular_names, Map ext_species_profile, ...)
         enqueue_encoder()

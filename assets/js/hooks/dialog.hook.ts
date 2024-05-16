@@ -4,8 +4,13 @@ import { Hook, makeHook } from "./hook";
 
 class DialogHook extends Hook {
   execCmd(cmd: string | null | undefined): void {
-    if (cmd && cmd !== "[]") {
-      this.liveSocket.execJS(this.el, cmd);
+    if (emptyCmd(cmd)) return;
+
+    if (lvJSCmd(cmd!)) {
+      this.liveSocket.execJS(this.el, cmd!);
+    } else {
+      const jsCmd = `[["push",{"event":"${cmd}"}]]`;
+      this.liveSocket.execJS(this.el, jsCmd);
     }
   }
 
@@ -87,6 +92,16 @@ class DialogHook extends Hook {
       dialog.showModal();
     }
   }
+}
+
+function emptyCmd(cmd: string | null | undefined): boolean {
+  return (
+    !cmd || cmd === null || cmd === undefined || cmd === "[]" || cmd === ""
+  );
+}
+
+function lvJSCmd(cmd: string): boolean {
+  return cmd.startsWith("[[");
 }
 
 const dialogHook = makeHook(DialogHook);

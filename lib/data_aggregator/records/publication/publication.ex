@@ -81,6 +81,18 @@ defmodule DataAggregator.Records.Publication do
   actions do
     defaults [:read, :destroy, :update]
 
+    read :by_collection do
+      argument :collection_id, :string, allow_nil?: false
+      argument :sort, :string, allow_nil?: true
+
+      pagination offset?: true,
+                 countable: true,
+                 required?: false,
+                 keyset?: true
+
+      filter expr(collection_id == ^arg(:collection_id))
+    end
+
     create :create do
       primary? true
       argument :collection, Collection, allow_nil?: false
@@ -152,6 +164,7 @@ defmodule DataAggregator.Records.Publication do
   code_interface do
     define_for DataAggregator.Records
     define :read
+    define :by_collection, args: [:collection_id]
     define :create
     define :update
     define :destroy

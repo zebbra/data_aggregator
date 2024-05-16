@@ -15,7 +15,9 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   attr :current, :atom,
     default: :records,
-    values: ~w(records imports encodings exports publications details)a
+    values: ~w(records imports encodings exports publications)a
+
+  attr :meta, Pagify.Meta, default: nil
 
   def collection_header(%{collection: nil} = assigns) do
     assigns
@@ -36,7 +38,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         />
         <.link
           :if={@current in [:records, :imports]}
-          patch={~p"/collections/#{@collection}/imports/new"}
+          patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
           class="btn btn-primary btn-sm"
         >
           <.icon name="hero-arrow-up-tray" class="size-4" />
@@ -61,7 +63,10 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         </div>
       </:subtitle>
       <:actions :if={@current in [:records, :imports]} class="max-sm:hidden">
-        <.link patch={~p"/collections/#{@collection}/imports/new"} class="btn btn-primary">
+        <.link
+          patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
+          class="btn btn-primary"
+        >
           <.icon name="hero-arrow-up-tray" />
           <%= ~t"Import dataset"m %>
         </.link>

@@ -19,69 +19,65 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     case assigns.state do
       :publishing ->
         ~H"""
-        <.badge class="px-2 tooltip tooltip-info" color="blue" data-tip={~t"Publication in progress"m}>
+        <.badge class="tooltip" color="blue" data-tip={~t"Publication in progress"m}>
           <.icon name="hero-cog-6-tooth-solid" class="size-5 shrink-0 animate-spin" />
-          <span class="text-nowrap px-1.5"><%= ~t"Publishing"m %></span>
+          <span class="text-nowrap pr-1.5"><%= ~t"Publishing"m %></span>
         </.badge>
         """
 
       :in_publication ->
         ~H"""
         <.badge
-          class="px-2 tooltip tooltip-info"
+          class="tooltip"
           color="blue"
           data-tip={~t"Record is in the publication pipeline - no further action required"m}
         >
           <.icon name="hero-information-circle-solid" class="size-5 shrink-0" />
-          <span class="text-nowrap px-1.5"><%= ~t"In Publication"m %></span>
+          <span class="text-nowrap pr-1.5"><%= ~t"In Publication"m %></span>
         </.badge>
         """
 
       :published ->
         ~H"""
-        <.badge
-          class="px-2 tooltip tooltip-success"
-          color="green"
-          data-tip={~t"Record was successful published"m}
-        >
+        <.badge class="tooltip" color="green" data-tip={~t"Record was successful published"m}>
           <.icon name="hero-check-circle-solid" class="size-5 shrink-0" />
-          <span class="text-nowrap px-1.5"><%= ~t"Published"m %></span>
+          <span class="text-nowrap pr-1.5"><%= ~t"Published"m %></span>
         </.badge>
         """
 
       :stale ->
         ~H"""
         <.badge
-          class="px-2 tooltip tooltip-warning"
+          class="tooltip"
           color="orange"
           data-tip={~t"Record was changed after publishing it and has to be republished"m}
         >
           <.icon name="hero-exclamation-triangle-solid" class="size-5 shrink-0" />
-          <span class="text-nowrap px-1.5"><%= ~t"Stale"m %></span>
+          <span class="text-nowrap pr-1.5"><%= ~t"Stale"m %></span>
         </.badge>
         """
 
       :publication_failed ->
         ~H"""
         <.badge
-          class="px-2 tooltip tooltip-error"
+          class="tooltip"
           color="red"
           data-tip={~t"Publication failed. Process should be started again"m}
         >
           <.icon name="hero-x-circle-solid" class="size-5 shrink-0" />
-          <span class="text-nowrap px-1.5"><%= ~t"Failed"m %></span>
+          <span class="text-nowrap pr-1.5"><%= ~t"Failed"m %></span>
         </.badge>
         """
 
       _ ->
         ~H"""
         <.badge
-          class="px-2 tooltip tooltip-ghost"
+          class="tooltip"
           color="gray"
           data-tip={~t"No publication information available. Publish the collection to see the status"m}
         >
           <.icon name="hero-question-mark-circle-solid" class="size-5 shrink-0" />
-          <span class="text-nowrap px-1.5"><%= ~t"Not Published"m %></span>
+          <span class="text-nowrap pr-1.5"><%= ~t"Not Published"m %></span>
         </.badge>
         """
     end
@@ -104,17 +100,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       data-tip={level_translation(@level)}
     >
       <div :for={_level <- @color_dot_range} :if={@level > 0}>
-        <div class="h-4 w-4 rounded-full bg-current" />
+        <div class="size-4 rounded-full bg-current" />
       </div>
       <div :for={_level <- @gray_dot_range} :if={@level < 4}>
-        <div class="bg-base-100 h-4 w-4 rounded-full " />
+        <div class="bg-base-100 size-4 rounded-full " />
       </div>
     </div>
     """
   end
 
   defp level_indicator(level) do
-    gray = "bg-base-300 text-base-content/60 tooltip-ghost border border-black-white/20"
+    gray = "bg-base-300 text-base-content/60 border border-black-white/20"
     blue = "bg-info/10 text-info tooltip-info border border-info/30"
     green = "bg-success/10 text-success tooltip-success border border-success/30"
     red = "bg-error/10 text-error tooltip-error border border-error/30"

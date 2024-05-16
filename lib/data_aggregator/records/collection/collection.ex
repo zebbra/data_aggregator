@@ -156,6 +156,11 @@ defmodule DataAggregator.Records.Collection do
     read :read do
       primary? true
       argument :sort, :string, allow_nil?: true
+
+      pagination offset?: true,
+                 countable: true,
+                 required?: false,
+                 keyset?: true
     end
 
     create :create do

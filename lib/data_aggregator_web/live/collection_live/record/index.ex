@@ -22,7 +22,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
-  alias DataAggregatorWeb.Components.DataTable
 
   require Ash.Query
 
@@ -31,23 +30,33 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @polling_interval 5_000
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(%{"id" => id} = _params, _session, socket) do
+    collection = get_collection(id)
+
+    socket =
+      socket
+      |> assign(:collection, collection)
+      |> assign(selected_record: nil)
+      |> assign(:busy, collection.encoding_state in [:queued, :encoding])
+      |> subscribe_for_record_updates(connected?(socket))
+      |> subscribe_for_collection_updates(connected?(socket))
+
     {:ok, socket}
   end
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    collection = get_collection(id)
+    case list_records(params) do
+      {:ok, {records, meta}} ->
+        socket
+        |> assign(meta: meta)
+        |> stream(:results, records, reset: true)
+        |> apply_action(socket.assigns.live_action, params)
+        |> noreply()
 
-    socket
-    |> assign(:collection, collection)
-    |> subscribe_for_record_updates(connected?(socket))
-    |> subscribe_for_collection_updates(connected?(socket))
-    |> assign_records(params)
-    |> assign(selected_record: nil)
-    |> assign(:busy, busy?(collection))
-    |> apply_action(socket.assigns.live_action, params)
-    |> noreply()
+      {:error, _meta} ->
+        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/records")}
+    end
   end
 
   defp busy?(collection) do
@@ -62,7 +71,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       <.collection_header collection={@collection} current={:records} />
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]" gradient>
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/records"}
+          href={build_path(~p"/collections/#{@collection}/records", @meta)}
           label={~t"Records"m}
           active
         />
@@ -78,6 +87,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           href={~p"/collections/#{@collection}/publications"}
           label={~t"Publications"m}
         />
+
+        <%!-- Floating action buttons --%>
         <li
           id="dynamic_export_button"
           class="pointer-events-none -my-2 ml-auto w-0 snap-start overflow-hidden opacity-0 transition-opacity duration-150 ease-in-out"
@@ -111,6 +122,42 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </button>
         </li>
         <li
+          id="dynamic_publish_button"
+          class="-my-2 hidden snap-start opacity-0 transition-opacity duration-150 ease-in-out"
+          data-show_y="280,lg:340"
+          phx-hook="ShowHideOnScroll"
+        >
+          <button
+            phx-click="collection:fast_track_pub"
+            class="btn btn-primary text-primary-content btn-sm"
+            disabled={@busy}
+            data-confirm={~t"Are you sure?"m}
+            data-confirm_id="confirm_fast_track_pub_alert"
+          >
+            <.icon :if={@busy == false} name="hero-globe-alt" class="size-4" />
+            <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
+            <span class="max-sm:hidden"><%= ~t"Publish"m %></span>
+          </button>
+        </li>
+        <li
+          id="dynamic_approve_button"
+          class="-my-2 hidden snap-start opacity-0 transition-opacity duration-150 ease-in-out"
+          data-show_y="280,lg:340"
+          phx-hook="ShowHideOnScroll"
+        >
+          <button
+            phx-click="collection:approval_pub"
+            class="btn btn-primary text-primary-content btn-sm"
+            disabled={@busy}
+            data-confirm={~t"Are you sure?"m}
+            data-confirm_id="confirm_approval_pub_alert"
+          >
+            <.icon :if={@busy == false} name="hero-check-badge" class="size-4" />
+            <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
+            <span class="max-sm:hidden"><%= ~t"Approve"m %></span>
+          </button>
+        </li>
+        <li
           id="dynamic_add_button"
           class="-my-2 hidden snap-start opacity-0 transition-opacity duration-150 ease-in-out"
           data-show_y="40,sm:60,lg:76"
@@ -122,7 +169,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </.link>
         </li>
       </.secondary_navigation>
-      <div :if={@collection.records_count > 0} class="space-y-6 p-6 lg:px-8">
+
+      <div :if={@meta.total_count > 0} class="space-y-6 p-6 lg:px-8">
         <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
           <.scope_stat
             href="#"
@@ -153,122 +201,141 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             desc={@collection.records_count_failed}
           />
         </div>
+
+        <%!-- Action buttons --%>
         <div class="flex min-w-0 flex-1 justify-end gap-x-2">
           <button
             phx-click="collection:export"
-            class="btn btn-primary text-primary-content max-sm:btn-sm"
+            class="btn btn-primary text-primary-content max-md:tooltip max-md:tooltip-primary max-sm:btn-sm"
             disabled={@busy}
+            data-tip={~t"Export"m}
           >
             <.icon name="hero-arrow-down-tray" class="max-sm:size-4" />
-            <%= ~t"Export"m %>
+            <span class="max-md:hidden"><%= ~t"Export"m %></span>
           </button>
-
           <button
-            phx-click={JS.push("collection:encode")}
-            class="btn btn-primary text-primary-content max-sm:btn-sm"
+            phx-click="collection:encode"
+            class="btn btn-primary text-primary-content max-md:tooltip max-md:tooltip-primary max-sm:btn-sm"
             disabled={@busy}
+            data-tip={~t"Encode"m}
             data-confirm={~t"Are you sure?"m}
             data-confirm_id="confirm_encoding_alert"
           >
             <.icon :if={@busy == false} name="hero-puzzle-piece" class="max-sm:size-4" />
             <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="max-sm:size-4" />
-            <%= ~t"Encode"m %>
+            <span class="max-md:hidden"><%= ~t"Encode"m %></span>
           </button>
           <button
-            phx-click={JS.push("collection:fast_track_pub")}
-            class="btn btn-primary text-primary-content max-sm:btn-sm"
+            phx-click="collection:fast_track_pub"
+            class="btn btn-primary text-primary-content max-md:tooltip max-md:tooltip-primary max-sm:btn-sm"
             disabled={@busy}
+            data-tip={~t"Publish"m}
             data-confirm={~t"Are you sure?"m}
             data-confirm_id="confirm_fast_track_pub_alert"
           >
             <.icon :if={@busy == false} name="hero-globe-alt" class="max-sm:size-4" />
             <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="max-sm:size-4" />
-            <%= ~t"Publish"m %>
+            <span class="max-md:hidden"><%= ~t"Publish"m %></span>
           </button>
           <button
-            phx-click={JS.push("collection:approval_pub")}
-            class="btn btn-primary text-primary-content max-sm:btn-sm"
+            phx-click="collection:approval_pub"
+            class="btn btn-primary text-primary-content max-md:tooltip max-md:tooltip-primary max-sm:btn-sm"
             disabled={@busy}
+            data-tip={~t"Approve"m}
             data-confirm={~t"Are you sure?"m}
             data-confirm_id="confirm_approval_pub_alert"
           >
             <.icon :if={@busy == false} name="hero-check-badge" class="max-sm:size-4" />
             <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="max-sm:size-4" />
-            <%= ~t"Approve"m %>
+            <span class="max-md:hidden"><%= ~t"Approve"m %></span>
           </button>
         </div>
       </div>
 
-      <div :if={@collection.records_count > 0} class="no-scrollbar overflow-x-auto py-4">
-        <.table
-          id="records_table"
-          rows={@streams.results}
-          row_click={
-            fn {_id, record} ->
-              JS.push("record:select", value: %{id: record.id})
-            end
-          }
+      <.table
+        opts={[
+          no_results_content: no_results_content(%{collection: @collection})
+        ]}
+        path={~p"/collections/#{@collection}/records"}
+        items={@streams.results}
+        meta={@meta}
+        row_click={
+          fn {_id, record} ->
+            JS.push("record:select", value: %{id: record.id})
+          end
+        }
+      >
+        <:col
+          :let={{_id, record}}
+          field={:mte_catalog_number}
+          label={~t"Catalog Number"m}
+          class="font-semibold"
         >
-          <:col :let={{_id, record}} label={~t"Catalog Number"m} class="font-semibold">
-            <%= record.mte_catalog_number %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Scientific Name"m}>
-            <%= encoded_attribute(record, :tax_scientific_name) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Genus"m}>
-            <%= encoded_attribute(record, :tax_genus) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Family"m}>
-            <%= encoded_attribute(record, :tax_family) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Order"m}>
-            <%= encoded_attribute(record, :tax_order) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Class"m}>
-            <%= encoded_attribute(record, :tax_class) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Phylum"m}>
-            <%= encoded_attribute(record, :tax_phylum) %>
-          </:col>
-          <:col :let={{_id, record}} label={~t"Encoding"m} class="text-center">
-            <.encoding_state_badge state={record.state} />
-          </:col>
-          <:col :let={{_id, record}} label={~t"Fast Track Pub."m} class="text-center">
-            <.publication_status_badge state={record.fast_track_status} />
-          </:col>
-          <:col :let={{_id, record}} label={~t"Approval Pub."m} class="text-center">
-            <.publication_status_badge state={record.approval_status} />
-          </:col>
-          <:col :let={{_id, record}} label={~t"Quality"m} class="text-center">
-            <.mids_level_indicator level={record.mids_level} />
-          </:col>
-          <:col :let={{_id, record}} label={~t"Updated At"m} class="text-end">
-            <%= format_datetime(record.updated_at, format: :medium) %>
-          </:col>
+          <%= record.mte_catalog_number %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Scientific Name"m}>
+          <%= encoded_attribute(record, :tax_scientific_name) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Genus"m}>
+          <%= encoded_attribute(record, :tax_genus) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Family"m}>
+          <%= encoded_attribute(record, :tax_family) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Order"m}>
+          <%= encoded_attribute(record, :tax_order) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Class"m}>
+          <%= encoded_attribute(record, :tax_class) %>
+        </:col>
+        <:col :let={{_id, record}} label={~t"Phylum"m}>
+          <%= encoded_attribute(record, :tax_phylum) %>
+        </:col>
+        <:col :let={{_id, record}} field={:state} label={~t"Encoding"m} class="text-center">
+          <.encoding_state_badge state={record.state} />
+        </:col>
+        <:col
+          :let={{_id, record}}
+          field={:fast_track_status}
+          label={~t"Fast Track Pub."m}
+          class="text-center"
+        >
+          <.publication_status_badge state={record.fast_track_status} />
+        </:col>
+        <:col
+          :let={{_id, record}}
+          field={:approval_status}
+          label={~t"Approval Pub."m}
+          class="text-center"
+        >
+          <.publication_status_badge state={record.approval_status} />
+        </:col>
+        <:col :let={{_id, record}} field={:mids_level} label={~t"Quality"m} class="text-center">
+          <.mids_level_indicator level={record.mids_level} />
+        </:col>
+        <:col :let={{_id, record}} field={:updated_at} label={~t"Updated At"m} class="text-end">
+          <%= format_datetime(record.updated_at, format: :medium) %>
+        </:col>
 
-          <:action :let={{_id, record}} class="flex items-center justify-end gap-x-2">
-            <button
-              type="button"
-              phx-click={JS.push("record:delete", value: %{id: record.id})}
-              class="link link-error link-hover tooltip tooltip-error rounded-md disabled:pointer-events-none disabled:opacity-50"
-              data-tip={~t"Delete"m}
-              data-confirm={~t"Are you sure?"m}
-              data-confirm_id="confirm_record_alert"
-            >
-              <.icon name="hero-x-circle-mini" class="size-6" />
-            </button>
-          </:action>
-        </.table>
-      </div>
-
-      <.empty_state
-        :if={@collection.records_count == 0}
-        title={~t"No records"m}
-        description={~t"Get started by importing a new dataset"m}
-        label={~t"Import"m}
-        icon="hero-bug-ant"
-        href={~p"/collections/#{@collection}/imports/new"}
-      />
+        <:action
+          :let={{_id, record}}
+          tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
+          col_class="bg-base-300/10 border-l border-black-white/5"
+          label={~t"Actions"m}
+        >
+          <button
+            phx-click={JS.push("record:delete", value: %{id: record.id})}
+            disabled={record.state in [:encoding, :queued]}
+            class="link tooltip link-hover btn btn-sm btn-circle btn-ghost inline-flex disabled:pointer-events-none disabled:opacity-50"
+            data-tip={~t"Delete"m}
+            data-confirm={~t"Are you sure?"m}
+            data-confirm_id="confirm_record_alert"
+          >
+            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
+          </button>
+        </:action>
+      </.table>
+      <.pagination meta={@meta} path={~p"/collections/#{@collection}/records"} />
 
       <:secondary>
         <.slideover
@@ -278,76 +345,79 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           on_cancel={JS.push("record:select", value: %{id: nil})}
           size="xl"
         >
-          <div role="tablist" class="tabs tabs-bordered">
+          <div role="tablist" class="tabs tabs-lifted">
             <input
               type="radio"
               name="sideover_content_tabs"
               role="tab"
-              class="tab"
+              class="tab !border-b-transparent -mx-px [--tab-border-color:var(--fallback-b3,oklch(var(--black-white)/0.1))]"
               aria-label="Data"
               checked
-              style="width: 17rem"
             />
-            <div role="tabpanel" class="tab-content pt-10">
+            <div
+              role="tabpanel"
+              class="tab-content border-black-white/10 overflow-x-auto border-0 border-t pt-6"
+            >
               <%= for category <- @attrs_in_categories do %>
-                <section>
-                  <.section_heading
-                    text={category.label}
-                    description={category.description}
-                    size="md"
-                    class="px-6 lg:px-8"
-                  />
-                  <div class="no-scrollbar overflow-x-auto pt-4">
-                    <.table
-                      id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
-                      rows={category.attributes}
-                    >
-                      <:col :let={attribute} label={~t"Name"} class="font-semibold">
-                        <%= attribute.name %>
-                      </:col>
-                      <:col :let={attribute} label={~t"Imported"}>
-                        <%= attribute.imported %>
-                      </:col>
-                      <:col :let={attribute} label={~t"Encoded"}>
-                        <%= attribute.encoded %>
-                      </:col>
-                    </.table>
-                  </div>
-                </section>
+                <.table
+                  id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
+                  items={category.attributes}
+                >
+                  <:caption>
+                    <.section_heading
+                      text={category.label}
+                      description={category.description}
+                      size="md"
+                      class="px-6 lg:px-8 text-left"
+                    />
+                  </:caption>
+                  <:col :let={attribute} label={~t"Name"} class="font-semibold">
+                    <%= attribute.name %>
+                  </:col>
+                  <:col :let={attribute} label={~t"Imported"}>
+                    <%= attribute.imported %>
+                  </:col>
+                  <:col :let={attribute} label={~t"Encoded"}>
+                    <%= attribute.encoded %>
+                  </:col>
+                </.table>
               <% end %>
-              <section>
-                <.section_heading
-                  text={~t"Record encodings"m}
-                  description={~t"Results by catalog"m}
-                  size="md"
-                  class="px-6 lg:px-8"
-                />
-                <div class="no-scrollbar overflow-x-auto pt-4">
-                  <.table id="encoding_result_table" rows={@record_encoding_results}>
-                    <:col :let={result} label={~t"Catalog"} class="font-semibold">
-                      <%= result.catalog %>
-                    </:col>
-                    <:col :let={result} label={~t"State"} class="text-center">
-                      <.encoding_state_badge reason={result.message} state={result.state} />
-                    </:col>
-                    <:col :let={result} label={~t"Created"} class="text-right">
-                      <%= format_datetime(result.inserted_at, format: :short) %>
-                    </:col>
-                  </.table>
-                </div>
-              </section>
+              <.table
+                opts={[no_results_content: ""]}
+                id="encoding_result_table"
+                items={@record_encoding_results}
+              >
+                <:caption>
+                  <.section_heading
+                    text={~t"Record encodings"m}
+                    description={~t"Results by catalog"m}
+                    size="md"
+                    class="px-6 lg:px-8 text-left"
+                  />
+                </:caption>
+                <:col :let={result} label={~t"Catalog"} class="font-semibold">
+                  <%= result.catalog %>
+                </:col>
+                <:col :let={result} label={~t"State"} class="text-center">
+                  <.encoding_state_badge reason={result.message} state={result.state} />
+                </:col>
+                <:col :let={result} label={~t"Created"} class="text-right">
+                  <%= format_datetime(result.inserted_at, format: :short) %>
+                </:col>
+              </.table>
             </div>
 
             <input
               type="radio"
               name="sideover_content_tabs"
               role="tab"
-              class="tab"
+              class="tab !border-b-transparent [--tab-border-color:var(--fallback-b3,oklch(var(--black-white)/0.1))]"
               aria-label={~t"Changes"m}
-              style="width: 17rem"
             />
-
-            <div role="tabpanel" class="tab-content pt-10">
+            <div
+              role="tabpanel"
+              class="tab-content border-black-white/10 overflow-x-auto border-0 border-t pt-6"
+            >
               <.activity_feed record={@selected_record} />
             </div>
           </div>
@@ -357,12 +427,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       <:portal>
         <.modal
           id="export_modal"
-          class="no-scrollbar"
           show={@live_action == :export}
           size="2xl"
           responsive
           backdrop={false}
-          on_cancel={JS.patch(~p"/collections/#{@collection}/records")}
+          on_cancel={JS.patch(build_path(~p"/collections/#{@collection}/records", @meta))}
         >
           <.live_component
             :if={@live_action == :export}
@@ -534,7 +603,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       schedule_encoding_poller()
       {:noreply, socket}
     else
-      {:noreply, push_patch(socket, to: ~p"/collections/#{collection.id}/records")}
+      {:noreply,
+       push_patch(socket,
+         to: build_path(~p"/collections/#{collection.id}/records", socket.assigns.meta)
+       )}
     end
   end
 
@@ -586,24 +658,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     assign(socket, :page_title, ~t"Collection Records"m)
   end
 
-  defp assign_records(socket, params) do
-    stream(socket, :results, list_records(params))
-  end
-
-  defp list_records(params) do
-    opts = DataTable.read_opts(collection_scope(params), params)
-    opts = Keyword.put(opts, :load, @load)
-
-    {:ok, result} = Record.read(opts)
-
-    case result do
-      %Ash.Page.Offset{results: records} -> records
-      records -> records
-    end
-  end
-
-  defp collection_scope(params) do
-    Ash.Query.filter_input(Record, %{"collection" => %{"id" => params["id"]}})
+  defp list_records(params, opts \\ [load: @load, action: :by_collection]) do
+    Pagify.validate_and_run(Record, params, opts, params["id"])
   end
 
   defp get_record(id) do
@@ -612,5 +668,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   defp schedule_encoding_poller do
     Process.send_after(self(), :poll_encoding, @polling_interval)
+  end
+
+  attr :collection, :any
+
+  defp no_results_content(assigns) do
+    ~H"""
+    <.empty_state
+      title={~t"No records"m}
+      description={~t"Get started by importing a new dataset"m}
+      label={~t"Import"m}
+      icon="hero-bug-ant"
+      href={~p"/collections/#{@collection}/imports/new"}
+    />
+    """
   end
 end

@@ -18,7 +18,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     <ul role="list" class="space-y-16 px-6">
       <li :for={activity <- @activities} class="relative flex gap-x-4">
         <div class="absolute top-0 -bottom-16 left-0 flex w-6 justify-center">
-          <div class="bg-gray-100/50 w-px"></div>
+          <div class="bg-black-white/10 w-px"></div>
         </div>
         <.activity_feed_element activity={activity} />
       </li>
@@ -31,21 +31,21 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   defp activity_feed_element(%{activity: activity} = assigns) when activity.name in [:import, :update] do
     ~H"""
     <div class="grid w-full grid-cols-9 gap-y-2">
-      <div class="bg-base-100 relative flex h-6 w-6 items-center justify-center">
+      <div class="bg-base-100 size-6 relative flex items-center justify-center">
         <div class="bg-base-100">
           <.activity_icon activity={@activity} />
         </div>
       </div>
-      <div class="col-span-6 py-0.5 text-sm leading-5 text-gray-500">
+      <div class="text-sm/5 col-span-6 py-0.5 text-gray-500">
         <span class="font-medium text-gray-600"><%= @activity.actor %></span>
         - <.activity_text activity={@activity} />
       </div>
       <div class="col-span-2 text-right">
-        <time datetime={@activity.date_time} class="py-0.5 text-xs leading-5 text-gray-500">
+        <time datetime={@activity.date_time} class="text-xs/5 py-0.5 text-gray-500">
           <%= format_datetime(@activity.date_time, format: :short) %>
         </time>
       </div>
-      <div class="ring-gray-100/30 col-start-2 col-end-10 gap-2 rounded-md p-3 ring-1 hover:ring-2">
+      <div class="ring-gray-100/30 col-start-2 col-end-10 rounded-md pt-3 pr-2 pb-2 pl-3 ring-1 hover:ring-2">
         <.changed_value :for={change <- map_to_string(@activity.content)} value={change} />
       </div>
     </div>
@@ -56,17 +56,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
        when activity.name in [:set_encoded, :set_encoding_failed, :update_approval_status, :update_fast_track_status] do
     ~H"""
     <div class="grid w-full grid-cols-9 gap-y-2 ">
-      <div class="bg-base-100 relative flex h-6 w-6 items-center justify-center">
+      <div class="bg-base-100 size-6 relative flex items-center justify-center">
         <div class="bg-base-100 mt-2">
           <.activity_icon activity={@activity} />
         </div>
       </div>
-      <div class="col-span-6 py-0.5 text-sm leading-5 text-gray-500">
+      <div class="text-sm/5 col-span-6 py-0.5 text-gray-500">
         <span class="font-medium text-gray-600"><%= @activity.actor %></span>
         - <.activity_text activity={@activity} />
       </div>
       <div class="col-span-2 text-right">
-        <time datetime={@activity.date_time} class="py-0.5 text-xs leading-5 text-gray-500">
+        <time datetime={@activity.date_time} class="text-xs/5 py-0.5 text-gray-500">
           <%= format_datetime(@activity.date_time, format: :short) %>
         </time>
       </div>
@@ -83,7 +83,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   defp activity_icon(%{activity: activity} = assigns) when activity.name == :import do
     ~H"""
-    <.badge class="tooltip tooltip-info" data-tip={~t"Dataset imported"m} color="blue">
+    <.badge class="tooltip tooltip-right" data-tip={~t"Dataset imported"m} color="blue">
       <.icon name="hero-arrow-up-tray" class="size-5 shrink-0" />
     </.badge>
     """
@@ -91,7 +91,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   defp activity_icon(%{activity: activity} = assigns) when activity.name == :update do
     ~H"""
-    <.badge class="tooltip tooltip-success" data-tip={~t"Encoded data updated"m} color="green">
+    <.badge class="tooltip tooltip-right" data-tip={~t"Encoded data updated"m} color="green">
       <.icon name="hero-puzzle-piece" class="size-5 shrink-0" />
     </.badge>
     """
@@ -99,7 +99,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   defp activity_icon(%{activity: activity} = assigns) when activity.name == :set_encoded do
     ~H"""
-    <.badge class="tooltip tooltip-success" data-tip={~t"Encoding Successful"m} color="green">
+    <.badge class="tooltip tooltip-right" data-tip={~t"Encoding Successful"m} color="green">
       <.icon name="hero-check" class="size-5 shrink-0" />
     </.badge>
     """
@@ -107,7 +107,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   defp activity_icon(%{activity: activity} = assigns) when activity.name == :set_encoding_failed do
     ~H"""
-    <.badge class="tooltip tooltip-error" data-tip={~t"Encoding failed"m} color="red">
+    <.badge class="tooltip tooltip-right" data-tip={~t"Encoding failed"m} color="red">
       <.icon name="hero-x-mark" class="size-5 shrink-0" />
     </.badge>
     """
@@ -118,14 +118,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     cond do
       published?(activity) ->
         ~H"""
-        <.badge class="tooltip tooltip-success" data-tip={~t"Successful published"m} color="green">
+        <.badge class="tooltip tooltip-right" data-tip={~t"Successful published"m} color="green">
           <.icon name="hero-check" class="size-5 shrink-0" />
         </.badge>
         """
 
       publishing?(activity) ->
         ~H"""
-        <.badge class="tooltip tooltip-info" data-tip={~t"Publishing in progress"m} color="blue">
+        <.badge class="tooltip tooltip-right" data-tip={~t"Publishing in progress"m} color="blue">
           <.icon name="hero-cog-6-tooth-solid" class="size-5 shrink-0" />
         </.badge>
         """
@@ -133,7 +133,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       in_publication?(activity) ->
         ~H"""
         <.badge
-          class="tooltip tooltip-info"
+          class="tooltip tooltip-right"
           data-tip={~t"Record is now in the publication pipeline"m}
           color="blue"
         >
@@ -143,28 +143,28 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
       publication_failed?(activity) ->
         ~H"""
-        <.badge class="tooltip tooltip-red" data-tip={~t"Publication failed"m} color="red">
+        <.badge class="tooltip tooltip-right" data-tip={~t"Publication failed"m} color="red">
           <.icon name="hero-x-mark" class="size-5 shrink-0" />
         </.badge>
         """
 
       publication_stale?(activity) ->
         ~H"""
-        <.badge class="tooltip tooltip-ghost" data-tip={~t"Record data changed"m} color="orange">
+        <.badge class="tooltip tooltip-right" data-tip={~t"Record data changed"m} color="orange">
           <.icon name="hero-exclamation-triangle-solid" class="size-5 shrink-0" />
         </.badge>
         """
 
       not_published?(activity) ->
         ~H"""
-        <.badge class="tooltip tooltip-info" data-tip={~t"Publishing in progress"m} color="gray">
+        <.badge class="tooltip tooltip-right" data-tip={~t"Publishing in progress"m} color="blue">
           <.icon name="hero-information-circle" class="size-5 shrink-0" />
         </.badge>
         """
 
       true ->
         ~H"""
-        <.badge class="tooltip tooltip-info" data-tip={~t"Record is in an unknown state"m} color="gray">
+        <.badge class="tooltip tooltip-right" data-tip={~t"Record is in an unknown state"m} color="blue">
           <.icon name="hero-question-mark-circle-solid" class="size-5 shrink-0" />
         </.badge>
         """
@@ -431,7 +431,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       """
     else
       ~H"""
-      <.badge class="tooltip tooltip-ghost" data-tip={@key} color="gray">
+      <.badge class="tooltip mr-1 mb-1" data-tip={@key} color="gray">
         <%= @value %>
       </.badge>
       """
