@@ -230,6 +230,10 @@ defmodule DataAggregator.Records.Record do
       run Encoding.Actions.EncodeRecord
     end
 
+    update :check_if_fast_track_pubished do
+      change Record.Changes.CheckIfFastTrackPublished
+    end
+
     update :set_imported do
       change transition_state(:imported)
     end
@@ -295,6 +299,7 @@ defmodule DataAggregator.Records.Record do
     define :enqueue_encoder
     define :update_fast_track_status, action: :update_fast_track_status, args: [:status]
     define :update_approval_status, action: :update_approval_status, args: [:status]
+    define :check_if_fast_track_pubished, action: :check_if_fast_track_pubished
   end
 
   postgres do
