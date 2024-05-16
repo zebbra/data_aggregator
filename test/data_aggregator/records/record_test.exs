@@ -12,6 +12,8 @@ defmodule DataAggregator.RecordTest do
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
 
+  require Logger
+
   describe "records" do
     @invalid_attrs %{
       mte_catalog_number: nil,
@@ -19,6 +21,14 @@ defmodule DataAggregator.RecordTest do
     }
 
     test "read!/0 returns all records" do
+      Logger.debug("--------------------------------------")
+      Logger.debug("--------------------------------------")
+      Logger.debug("--------------------------------------")
+      Logger.debug(System.get_env("GBIF_INSTALLATION_KEY"))
+      Logger.debug("--------------------------------------")
+      Logger.debug("--------------------------------------")
+      Logger.debug("--------------------------------------")
+
       created = [
         record_fixture(),
         record_fixture()
