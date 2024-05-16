@@ -1,5 +1,6 @@
 defmodule DataAggregatorWeb.Router do
   use DataAggregatorWeb, :router
+  use AshAuthentication.Phoenix.Router
 
   import DataAggregatorWeb.Locale, only: [assign_current_locale: 2]
   import PhoenixStorybook.Router
@@ -7,63 +8,70 @@ defmodule DataAggregatorWeb.Router do
   # Browser
 
   pipeline :locale do
-    plug(:fetch_session)
+    plug :fetch_session
 
-    plug(Cldr.Plug.PutLocale,
+    plug Cldr.Plug.PutLocale,
       apps: [:cldr, :gettext],
       cldr: DataAggregatorWeb.Cldr,
       gettext: DataAggregatorWeb.Gettext,
       from: [:query, :session, :accept_language],
       param: "locale"
-    )
 
-    plug(:assign_current_locale)
+    plug :assign_current_locale
 
-    plug(Cldr.Plug.PutSession, as: :language_tag)
+    plug Cldr.Plug.PutSession, as: :language_tag
   end
 
   pipeline :browser do
-    plug(:accepts, ["html"])
-    plug(:fetch_live_flash)
-    plug(:protect_from_forgery)
-    plug(:put_secure_browser_headers)
+    plug :accepts, ["html"]
+    plug :fetch_live_flash
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+    plug :load_from_session
   end
 
   pipeline :with_root_layout do
-    plug(:put_root_layout, html: {DataAggregatorWeb.Layouts, :root})
+    plug :put_root_layout, html: {DataAggregatorWeb.Layouts, :root}
   end
 
-  scope "/" do
-    pipe_through([:locale, :browser])
+  scope "/", DataAggregatorWeb do
+    pipe_through([:locale, :browser, :with_root_layout])
 
-    scope "/", DataAggregatorWeb do
-      pipe_through([:with_root_layout])
+    user_hooks = [
+      DataAggregatorWeb.LiveLogger,
+      DataAggregatorWeb.LiveLocale,
+      {DataAggregatorWeb.LiveUserAuth, :live_user_required}
+    ]
 
-      user_hooks = [
-        DataAggregatorWeb.LiveLogger,
-        DataAggregatorWeb.LiveLocale
-      ]
+    ash_authentication_live_session :default, on_mount: user_hooks do
+      live "/", DashboardLive.Index, :index
 
-      live_session :default, on_mount: user_hooks do
-        live("/", DashboardLive.Index, :index)
+      live "/collections", CollectionLive.Index, :index
+      live "/collections/new", CollectionLive.Index, :new
+      live "/collections/:id/edit", CollectionLive.Index, :edit
+      live "/collections/:id/records", CollectionLive.Record.Index, :index
+      live "/collections/:id/imports", CollectionLive.Import.Index, :index
+      live "/collections/:id/imports/new", CollectionLive.Import.Index, :new
+      live "/collections/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit
+      live "/collections/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary
+      live "/collections/:id/encodings", CollectionLive.Encoding.Index, :index
+      live "/collections/:id/details", CollectionLive.Details.Index, :index
+      live "/collections/:id/exports", CollectionLive.Export.Index, :index
 
-        live("/collections", CollectionLive.Index, :index)
-        live("/collections/new", CollectionLive.Index, :new)
-        live("/collections/:id/edit", CollectionLive.Index, :edit)
-        live("/collections/:id/records", CollectionLive.Record.Index, :index)
-        live("/collections/:id/imports", CollectionLive.Import.Index, :index)
-        live("/collections/:id/imports/new", CollectionLive.Import.Index, :new)
-        live("/collections/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit)
-        live("/collections/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary)
-        live("/collections/:id/encodings", CollectionLive.Encoding.Index, :index)
-        live("/collections/:id/details", CollectionLive.Details.Index, :index)
-        live("/collections/:id/exports", CollectionLive.Export.Index, :index)
+      live "/records", RecordLive.Index, :index
 
-        live("/records", RecordLive.Index, :index)
-
-        live("/tasks", TaskLive.Index, :index)
-      end
+      live "/tasks", TaskLive.Index, :index
     end
+
+    sign_in_route on_mount: [{DataAggregatorWeb.LiveUserAuth, :live_no_user}],
+                  overrides: [
+                    DataAggregatorWeb.AuthOverrides,
+                    AshAuthentication.Phoenix.Overrides.Default
+                  ]
+
+    sign_out_route AuthController
+    auth_routes_for DataAggregator.Accounts.User, to: AuthController
+    reset_route []
   end
 
   scope "/api" do
