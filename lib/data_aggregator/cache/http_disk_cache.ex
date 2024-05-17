@@ -9,7 +9,7 @@ defmodule DataAggregator.Cache.HttpDiskCache do
   require Logger
 
   # default cache time is 1 hour
-  @max_cache_age_seconds 60 * 60
+  @max_cache_age_seconds 1 * 60 * 60
   # accepted http states for caching according to rfc-editor.org/rfc/rfc7231
   @cachable_response_states [200, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501]
 
