@@ -63,9 +63,11 @@ defmodule DataAggregator.Records.Actions.Publish do
       |> Publication.update_attachment(attachment)
       |> Records.load!([:collection, :attachment])
 
-    Collection.register_at_gbif(publication.collection, publication.attachment.url)
-
-    {:ok, publication}
+    with {:ok, _collection} <-
+           Collection.register_at_gbif(publication.collection, publication.attachment.url),
+         :ok <- queue_records_for_verification(query) do
+      {:ok, publication}
+    end
   rescue
     e ->
       publication = input.arguments.publication
@@ -80,6 +82,14 @@ defmodule DataAggregator.Records.Actions.Publish do
       )
 
       {:error, e}
+  end
+
+  @spec queue_records_for_verification(Ash.Query.t()) :: :ok
+  defp queue_records_for_verification(query) do
+    query
+    |> Records.stream!(page: false)
+    |> Stream.map(&Record.enqueue_fast_track_checker/1)
+    |> Stream.run()
   end
 
   @spec set_publication_status(

@@ -95,20 +95,10 @@ defmodule DataAggregator.RegisterAtGbifTest do
       {:ok, publication} = Collection.publish(publication)
       publication = Records.load!(publication, [:attachment])
 
-      # when checking if records are published all records of
-      # the records-list are basically the same, so we just test one of them
-      record_to_check =
-        records
-        |> hd()
-        |> Record.update!(%{
-          mte_catalog_number: "MZL-INVERT-182861"
-        })
-
       [
         collection: collection,
         records: records,
-        publication: publication,
-        record_to_check: record_to_check
+        publication: publication
       ]
     end
 
@@ -156,28 +146,32 @@ defmodule DataAggregator.RegisterAtGbifTest do
       assert logs =~ "I'm a teapot"
     end
 
-    test "check_if_fast_track_published/2 success", %{record_to_check: record_to_check} do
+    test "check_if_fast_track_published/2 success", %{collection: collection} do
+      record_to_check = get_record_to_check(collection)
+
       {:ok, record} = Record.check_if_fast_track_pubished(record_to_check)
 
       assert record.fast_track_status === :published
     end
 
-    test "check_if_fast_track_published/2 not published yet", %{record_to_check: record_to_check} do
+    test "check_if_fast_track_published/2 not published yet", %{collection: collection} do
       stub(Gbif.RestAPI, :search_for_occurrences, fn _catalog_number, _dataset_key ->
         {:ok, %{status: 200, body: %{"results" => []}}}
       end)
+
+      record_to_check = get_record_to_check(collection)
 
       {:ok, record} = Record.check_if_fast_track_pubished(record_to_check)
 
       assert record.fast_track_status === :in_publication
     end
 
-    test "check_if_fast_track_published/2 failed with non http 200", %{
-      record_to_check: record_to_check
-    } do
+    test "check_if_fast_track_published/2 failed with non http 200", %{collection: collection} do
       stub(Gbif.RestAPI, :search_for_occurrences, fn _catalog_number, _dataset_key ->
         {:ok, %{status: 500, body: %{}}}
       end)
+
+      record_to_check = get_record_to_check(collection)
 
       {{:error, error}, logs} =
         with_log(fn -> Record.check_if_fast_track_pubished(record_to_check) end)
@@ -192,11 +186,13 @@ defmodule DataAggregator.RegisterAtGbifTest do
     end
 
     test "check_if_fast_track_published/2 failed with multiple occurrences found", %{
-      record_to_check: record_to_check
+      collection: collection
     } do
       stub(Gbif.RestAPI, :search_for_occurrences, fn _catalog_number, _dataset_key ->
         {:ok, %{status: 200, body: %{"results" => [%{"key" => "1"}, %{"key" => "2"}]}}}
       end)
+
+      record_to_check = get_record_to_check(collection)
 
       {{:error, error}, logs} =
         with_log(fn -> Record.check_if_fast_track_pubished(record_to_check) end)
@@ -209,5 +205,13 @@ defmodule DataAggregator.RegisterAtGbifTest do
       assert logs =~
                "More than one occurrence found on GBIF"
     end
+  end
+
+  defp get_record_to_check(collection) do
+    record_fixture(%{
+      collection: collection,
+      mte_catalog_number: "MZL-INVERT-182861",
+      fast_track_status: :in_publication
+    })
   end
 end

@@ -28,7 +28,7 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
       |> new(schedule_in: @one_day)
       |> Oban.insert!()
     else
-      Logger.warning("Record #{record.id} has been published on GBIF already. We don't queue it again.")
+      Logger.debug("Record #{record.id} has been published on GBIF already. We don't queue it again.")
     end
 
     {:ok, record}

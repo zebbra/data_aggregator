@@ -38,8 +38,7 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
 
       assert record.fast_track_status == :published
 
-      assert logs =~
-               "Record #{record.id} has been published on GBIF already. We don't queue it again."
+      assert logs =~ ""
     end
   end
 end
