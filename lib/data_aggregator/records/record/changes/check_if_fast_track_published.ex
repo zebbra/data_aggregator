@@ -6,12 +6,11 @@ defmodule DataAggregator.Records.Record.Changes.CheckIfFastTrackPublished do
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Cache.HttpDiskCache
+  alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
 
   require Logger
 
-  # TODO: make a test! now!
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     catalog_number = Changeset.get_attribute(changeset, :mte_catalog_number)
@@ -19,42 +18,73 @@ defmodule DataAggregator.Records.Record.Changes.CheckIfFastTrackPublished do
 
     %{grscicoll_reference: grscicoll_reference} = Collection.get_by_id!(collection_id)
 
-    case catalog_number do
-      nil ->
-        {:error, "Catalog number is missing"}
+    case check_if_fast_track_published(catalog_number, grscicoll_reference) do
+      {:ok, nil} ->
+        Logger.debug("Record is not published on GBIF yet. We do nothing.")
 
-      _ ->
-        case check_if_fast_track_published(catalog_number, grscicoll_reference) do
-          {:ok, true} ->
-            Changeset.change_attribute(changeset, :fast_track_status, :published)
+        changeset
 
-          {:ok, false} ->
-            Logger.debug("Record is not published on GBIF yet. We do nothing.")
+      {:ok, gbif_id} ->
+        changeset
+        |> Changeset.change_attribute(:fast_track_status, :published)
+        |> Changeset.change_attribute(:occ_occurrence_id, gbif_id)
 
-          {:error, error} ->
-            msg = "Error while checking if record is published #{inspect(error)}"
-            Logger.error(msg)
+      {:error, error} ->
+        msg =
+          "Error while checking if record is published: #{inspect(error)}. Params were: catalog_number: #{catalog_number}, grscicoll_reference: #{grscicoll_reference}"
 
-            Changeset.add_error(changeset, message: msg)
-        end
+        Logger.error(msg)
+
+        Changeset.add_error(changeset, message: msg)
     end
   end
 
-  @doc """
-  checks if the record is published on the GBIF portal
-  """
+  # checks if the record is published on the GBIF portal
   @spec check_if_fast_track_published(String.t(), String.t()) ::
-          {:ok, boolean()} | {:error, any()}
-  def check_if_fast_track_published(catalog_number, dataset_key) do
-    req =
-      HttpDiskCache.attach(Req.new(params: [catalogNumber: catalog_number, datasetKey: dataset_key]))
+          {:ok, String.t() | nil} | {:error, any()}
+  defp check_if_fast_track_published(_catalog_number, nil), do: {:error, "Collection's :grscicoll_reference is missing"}
 
-    case Req.get(req, url: System.get_env("GBIF_OCCURRENCE_URL"), max_cache_age_seconds: 1 * 60) do
+  defp check_if_fast_track_published(nil, _dataset_key), do: {:error, "Record's :mte_catalog_number is missing"}
+
+  defp check_if_fast_track_published(catalog_number, dataset_key) do
+    case Gbif.RestAPI.search_for_occurrences(catalog_number, dataset_key) do
       {:ok, response} ->
-        {:ok, Enum.empty?(response.body["results"])}
+        response
+        |> verify_api_response()
+        |> extract_gbif_id()
 
       {:error, error} ->
         {:error, error}
     end
+  end
+
+  defp verify_api_response(response) do
+    cond do
+      response.status != 200 ->
+        {:error,
+         "No valid response (status #{response.status}) from GBIF API while searching for occurrences: #{inspect(response.body)}"}
+
+      Enum.count(response.body["results"]) > 1 ->
+        {:error, "More than one occurrence found on GBIF"}
+
+      Enum.empty?(response.body["results"]) ->
+        {:ok, nil}
+
+      Enum.count(response.body["results"]) === 1 ->
+        {:ok, response}
+
+      true ->
+        {:error, "Unknown error while searching for occurrences on GBIF"}
+    end
+  end
+
+  # get the gbif_id from the response, assuming there is one element on response.body["results"], verified by verify_api_response
+  defp extract_gbif_id({:error, error}), do: {:error, error}
+  defp extract_gbif_id({:ok, nil}), do: {:ok, nil}
+
+  defp extract_gbif_id({:ok, response}) do
+    occurrence = hd(response.body["results"])
+
+    {:ok, occurrence["gbifID"]}
   end
 end

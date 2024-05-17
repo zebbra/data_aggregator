@@ -106,7 +106,7 @@ defmodule DataAggregator.Cache.HttpDiskCache do
         if oldest_possible_time > mtime do
           Logger.debug("Cache file is older than #{max_cache_age_seconds} seconds, deleting it")
 
-          File.rm!(file_path)
+          File.rm(file_path)
 
           false
         else

@@ -43,7 +43,7 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
 
   @spec register_collection(String.t()) :: {:ok, String.t()} | {:error, String.t()}
   defp register_collection(collection_name) do
-    case Gbif.RestApi.register_dataset(collection_name) do
+    case Gbif.RestAPI.register_dataset(collection_name) do
       {:ok, response} ->
         if response.status == 201 do
           {:ok, response.body}
@@ -63,7 +63,7 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
   @spec create_endpoint({:ok, String.t()} | {:error, any()}, String.t()) ::
           {:ok, String.t()} | {:error, String.t()}
   defp create_endpoint({:ok, registration}, file_url) do
-    case Gbif.RestApi.create_endpoint(file_url, registration) do
+    case Gbif.RestAPI.create_endpoint(file_url, registration) do
       {:ok, response} ->
         if response.status == 201 do
           # within response.body we should have the endpoint key, but we don't need it for now, so we just

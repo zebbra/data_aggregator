@@ -2,10 +2,12 @@ defmodule DataAggregator.EncodedRecordTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.EncodingFixtures
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
 
@@ -14,6 +16,12 @@ defmodule DataAggregator.EncodedRecordTest do
       record: nil,
       mte_catalog_number: nil
     }
+
+    setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
+      []
+    end
 
     test "read!/0 returns all encoded_records" do
       created = [

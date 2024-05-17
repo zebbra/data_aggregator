@@ -2,11 +2,13 @@ defmodule DataAggregator.RecordTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.EncodingFixtures
   import DataAggregator.RecordEncodingResultFixture
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.RecordEncodingResult
@@ -19,6 +21,12 @@ defmodule DataAggregator.RecordTest do
       mte_catalog_number: nil,
       tax_scientific_name: nil
     }
+
+    setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
+      []
+    end
 
     test "read!/0 returns all records" do
       created = [

@@ -2,10 +2,12 @@ defmodule DataAggregator.RecordEncodingResultTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.RecordEncodingResultFixture
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records
   alias DataAggregator.Records.Encoding.RecordEncodingResult
 
@@ -13,6 +15,12 @@ defmodule DataAggregator.RecordEncodingResultTest do
     @invalid_attrs %{
       catalog: :invalid_catalog
     }
+
+    setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
+      []
+    end
 
     test "read!/0 returns all record_encoding_results" do
       created = [

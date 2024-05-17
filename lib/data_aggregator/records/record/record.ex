@@ -76,6 +76,13 @@ defmodule DataAggregator.Records.Record do
       allow_nil? true
     end
 
+    belongs_to :fast_track_checker_job, Job do
+      api DataAggregator.Jobs
+      attribute_type :integer
+      attribute_writable? true
+      allow_nil? true
+    end
+
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
     end
@@ -218,6 +225,12 @@ defmodule DataAggregator.Records.Record do
       change load(:encoder_job)
     end
 
+    update :enqueue_fast_track_checker do
+      accept []
+      change Record.Changes.EnqueueFastTrackChecker
+      change load(:fast_track_checker_job)
+    end
+
     action :bulk_import, :map do
       description """
       Imports multiple records using `DataAggregator.Records.bulk_create/3`.
@@ -309,6 +322,7 @@ defmodule DataAggregator.Records.Record do
     define :update_fast_track_status, action: :update_fast_track_status, args: [:status]
     define :update_approval_status, action: :update_approval_status, args: [:status]
     define :check_if_fast_track_pubished, action: :check_if_fast_track_pubished
+    define :enqueue_fast_track_checker
   end
 
   postgres do

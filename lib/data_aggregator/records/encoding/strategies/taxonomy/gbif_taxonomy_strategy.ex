@@ -3,7 +3,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     Encode Records with the gbif taxonomy catalog
   """
 
-  alias DataAggregator.Cache.HttpDiskCache
+  alias DataAggregator.Gbif
   alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
@@ -21,13 +21,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   # the first element is the attribute on the encoded record and the second
   # element is the attribute on the gbif response
   @output_attributes Catalog.get_output_attributes(:gbif_taxonomy)
-
-  # the url to the gbif taxonomy api
-  @match_api_url "https://api.gbif.org/v1/species/match"
-  @species_api_url "https://api.gbif.org/v1/species"
-
-  def match_api_url, do: @match_api_url
-  def species_api_url, do: @species_api_url
 
   # the minimum confidence level to accept a result
   @min_confidence 80
@@ -72,21 +65,15 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
   @spec fetch_match_api(list()) :: Req.Response.t()
   defp fetch_match_api(request_params) do
-    fetch_api(@match_api_url, request_params)
+    case Gbif.RestAPI.get_matching_species(request_params) do
+      {:ok, response} -> response
+      {:error, error} -> log_and_throw(error)
+    end
   end
 
-  @spec fetch_species_api(list()) :: Req.Response.t()
+  @spec fetch_species_api(String.t()) :: Req.Response.t()
   defp fetch_species_api(species_key) do
-    fetch_api("#{@species_api_url}/#{species_key}", [])
-  end
-
-  @spec fetch_api(String.t(), list()) :: Req.Response.t()
-  defp fetch_api(url, request_params) do
-    req =
-      HttpDiskCache.attach(Req.new(params: request_params))
-
-    # we cache requests for 30 days
-    case Req.get(req, url: url, max_cache_age_seconds: 30 * 24 * 60 * 60) do
+    case Gbif.RestAPI.get_species(species_key) do
       {:ok, response} -> response
       {:error, error} -> log_and_throw(error)
     end

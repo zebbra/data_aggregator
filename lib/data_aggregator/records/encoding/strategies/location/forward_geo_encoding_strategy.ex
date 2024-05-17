@@ -3,7 +3,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
     Encode Records with the geo location api (opencagedata) to receive forward encoded geo locations
   """
 
-  alias DataAggregator.Cache.HttpDiskCache
+  alias DataAggregator.Opencage
   alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
@@ -16,8 +16,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
   # the first element is the attribute on the encoded record and the second
   # element is the attribute on returning data structure of the catalog
   @output_attributes Catalog.get_output_attributes(:geo_forward)
-
-  @geo_api_url "https://api.opencagedata.com/geocode/v1/json"
 
   @doc """
     lookup the geo encoding api and return the encoded record
@@ -132,10 +130,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
 
   @spec fetch_api(list()) :: Req.Response.t()
   defp fetch_api(params) do
-    req = HttpDiskCache.attach(Req.new(params: params))
-
-    # we cache requests for 30 days
-    case Req.get(req, url: @geo_api_url, max_cache_age_seconds: 30 * 24 * 60 * 60) do
+    case Opencage.RestAPI.fetch(params) do
       {:ok, response} -> response
       {:error, error} -> throw(error)
     end

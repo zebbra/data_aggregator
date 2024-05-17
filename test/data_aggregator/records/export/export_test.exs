@@ -2,11 +2,13 @@ defmodule DataAggregator.ExportTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.ExportFixtures
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.DarwinCore.Schema
+  alias DataAggregator.Gbif
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Export
@@ -16,6 +18,11 @@ defmodule DataAggregator.ExportTest do
     @invalid_attrs %{
       name: nil
     }
+    setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
+      []
+    end
 
     test "read!/0 returns all exports" do
       created = [

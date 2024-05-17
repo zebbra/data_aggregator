@@ -32,6 +32,7 @@ Table collections {
   code varchar
   grscicoll_reference varchar
   description varchar
+  gbif_dataset_key varchar
   import_mapping array
   type varchar
   inserted_at timestamp
@@ -696,6 +697,7 @@ Table records {
   updated_at timestamp
   collection_id uuid
   encoder_job_id integer
+  fast_track_checker_job_id integer
   state varchar
 }
 
@@ -781,6 +783,7 @@ Ref: oban_jobs.id < exports.job_id
 Ref: oban_jobs.id < imports.job_id
 Ref: oban_jobs.id < publications.job_id
 Ref: oban_jobs.id < records.encoder_job_id
+Ref: oban_jobs.id < records.fast_track_checker_job_id
 Ref: records.id - encoded_records.record_id
 Ref: records.id < import_records.record_id
 Ref: records.id < record_encoding_results.record_id

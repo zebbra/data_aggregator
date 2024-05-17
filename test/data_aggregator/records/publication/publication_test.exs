@@ -8,6 +8,7 @@ defmodule DataAggregator.PublicationTest do
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.DarwinCore.Publication.DwcaFile
+  alias DataAggregator.Gbif
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
@@ -17,8 +18,7 @@ defmodule DataAggregator.PublicationTest do
 
   describe "publication tests" do
     setup do
-      # we don't want to actually register at gbif during this test
-      stub(Collection, :register_at_gbif, fn _collection, _file_url -> :ok end)
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       collection = collection_fixture(%{name: "Collection NumberO!+ne"})
 

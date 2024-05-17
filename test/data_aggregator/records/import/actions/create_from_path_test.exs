@@ -2,7 +2,9 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
 
@@ -11,6 +13,8 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
 
   describe "DataAggregator.Records.Import.create_from_path/2" do
     setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       collection =
         Collection.create!(%{
           type: :zoology,

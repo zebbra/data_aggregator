@@ -2,10 +2,12 @@ defmodule DataAggregator.Records.Export.RunnerTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.ExportFixtures
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Export
@@ -17,6 +19,8 @@ defmodule DataAggregator.Records.Export.RunnerTest do
     }
 
     setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       collection = Records.load!(collection_fixture(), [:records_to_export_query])
 
       exportable_record(collection)
