@@ -5,7 +5,6 @@ defmodule Pagify.Meta do
 
   defstruct current_limit: nil,
             current_offset: nil,
-            current_order_by: nil,
             current_page: nil,
             errors: [],
             has_next_page?: false,
@@ -24,7 +23,6 @@ defmodule Pagify.Meta do
 
   - `:current_limit` - The `:limit` value used in the query
   - `:current_offset` - The `:offset` value used in the query
-  - `:current_order_by` - The `:order_by` value used in the query
   - `:current_page` - A derived value when using offset-based pagination. Note that
     the value will be rounded if the offset lies between pages.
   - `:errors` - Any validation errors that occurred.
@@ -43,7 +41,6 @@ defmodule Pagify.Meta do
   @type t :: %__MODULE__{
           current_limit: pos_integer() | nil,
           current_offset: non_neg_integer() | nil,
-          current_order_by: [String.t()] | nil,
           current_page: pos_integer() | nil,
           errors: [{atom(), term()}] | nil,
           has_next_page?: boolean(),

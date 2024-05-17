@@ -69,6 +69,13 @@ defmodule Pagify do
 
   First, define a function that utilizes Pagify.validate_and_run/4 to query your desired list.
   For example in your Ash resource module, you can define a function that queries a list of posts.
+
+  > #### Resource pagination macro {: .info}
+  >
+  > As of Ash >= 3.0 you do not need to use the `pagination` macro in your default read actions as
+  > default read actions are now paginatable with keyset and offset pagination
+  > (but pagination is not required)
+
   You need to add the pagination macro call to the action of the resource that you
   want to be paginated. The macro call is used to set the default limit, offset and
   other options for the pagination.
@@ -668,7 +675,6 @@ defmodule Pagify do
       %Pagify.Meta{
         current_limit: 2,
         current_offset: 1,
-        current_order_by: ["name", "--comments_count"],
         current_page: 2,
         has_next_page?: false,
         has_previous_page?: true,
@@ -698,13 +704,11 @@ defmodule Pagify do
     {has_previous_page?, previous_offset} = get_previous(current_offset, page_size)
     {has_next_page?, next_offset} = get_next(current_offset, page_size, total_count)
 
-    current_order_by = get_current_order_by(pagify)
     resource = get_resource(page)
 
     %Meta{
       current_limit: page_size,
       current_offset: current_offset,
-      current_order_by: current_order_by,
       current_page: current_page,
       has_next_page?: has_next_page?,
       has_previous_page?: has_previous_page?,
@@ -753,9 +757,6 @@ defmodule Pagify do
     page = ceil(offset / limit) + 1
     min(page, total_pages)
   end
-
-  defp get_current_order_by(%Pagify{order_by: nil}), do: nil
-  defp get_current_order_by(%Pagify{order_by: order_by}), do: concat_sort(order_by)
 
   @doc """
   Transforms the given `order_by` parameter into a list of strings (user input domain).
