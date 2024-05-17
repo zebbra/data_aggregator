@@ -271,7 +271,6 @@ defmodule PagifyTest do
       assert meta == %Meta{
                current_limit: 3,
                current_offset: 0,
-               current_order_by: ["name"],
                current_page: 1,
                errors: [],
                has_next_page?: false,
@@ -295,7 +294,6 @@ defmodule PagifyTest do
       assert meta == %Meta{
                current_limit: 15,
                current_offset: 0,
-               current_order_by: nil,
                current_page: 1,
                errors: [],
                has_next_page?: false,
@@ -319,7 +317,6 @@ defmodule PagifyTest do
       assert meta == %Meta{
                current_limit: 2,
                current_offset: 1,
-               current_order_by: ["name"],
                current_page: 2,
                errors: [],
                has_next_page?: false,
@@ -343,7 +340,6 @@ defmodule PagifyTest do
       assert meta == %Meta{
                current_limit: 2,
                current_offset: 3,
-               current_order_by: ["name"],
                current_page: 2,
                errors: [],
                has_next_page?: false,
@@ -396,54 +392,6 @@ defmodule PagifyTest do
       assert meta.has_next_page? == false
     end
 
-    test "adds current_order_by for desc order" do
-      pagify = %Pagify{limit: 1, offset: 0, order_by: {:name, :desc}}
-      page = Pagify.all(Post, pagify)
-      meta = Pagify.meta(page, pagify)
-
-      assert meta.current_order_by == ["-name"]
-    end
-
-    test "adds current_order_by for desc_nils_last order" do
-      pagify = %Pagify{limit: 1, offset: 0, order_by: {:name, :desc_nils_last}}
-      page = Pagify.all(Post, pagify)
-      meta = Pagify.meta(page, pagify)
-
-      assert meta.current_order_by == ["--name"]
-    end
-
-    test "adds current_order_by for asc_nils_first order" do
-      pagify = %Pagify{limit: 1, offset: 0, order_by: {:name, :asc_nils_first}}
-      page = Pagify.all(Post, pagify)
-      meta = Pagify.meta(page, pagify)
-
-      assert meta.current_order_by == ["++name"]
-    end
-
-    test "adds current_order_by for multiple fields" do
-      pagify = %Pagify{limit: 1, offset: 0, order_by: [{:name, :asc}, {:comments_count, :desc}]}
-      page = Pagify.all(Post, pagify)
-      meta = Pagify.meta(page, pagify)
-
-      assert meta.current_order_by == ["name", "-comments_count"]
-    end
-
-    test "adds current_order_by for simple binary" do
-      pagify = %Pagify{limit: 1, offset: 0, order_by: "name"}
-      page = Pagify.all(Post, pagify)
-      meta = Pagify.meta(page, pagify)
-
-      assert meta.current_order_by == ["name"]
-    end
-
-    test "adds current_order_by for list of binaries" do
-      pagify = %Pagify{limit: 1, offset: 0, order_by: ["name", "comments_count"]}
-      page = Pagify.all(Post, pagify)
-      meta = Pagify.meta(page, pagify)
-
-      assert meta.current_order_by == ["name", "comments_count"]
-    end
-
     test "sets options" do
       pagify = %Pagify{limit: 1, offset: 0, order_by: :name}
       page = Pagify.all(Post, pagify)
@@ -470,7 +418,6 @@ defmodule PagifyTest do
       assert meta == %Meta{
                current_limit: 2,
                current_offset: 1,
-               current_order_by: ["name"],
                current_page: 2,
                errors: [],
                has_next_page?: false,
@@ -530,7 +477,6 @@ defmodule PagifyTest do
       assert meta == %Meta{
                current_limit: 2,
                current_offset: 1,
-               current_order_by: ["name"],
                current_page: 2,
                errors: [],
                has_next_page?: false,
@@ -564,7 +510,6 @@ defmodule PagifyTest do
               %Pagify.Meta{
                 current_limit: 1,
                 current_offset: 0,
-                current_order_by: ["name"],
                 current_page: 1,
                 errors: [],
                 has_next_page?: false,
