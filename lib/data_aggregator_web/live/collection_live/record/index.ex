@@ -283,7 +283,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           th_wrapper_attrs={[class: "hero-flag size-5", aria: [hidden: "true"]]}
           class="text-center"
         >
-          <.icon name="hero-flag-micro" class="size-5 text-error" />
+          <div
+            class="tooltip tooltip-right tooltip-success"
+            data-tip={~t"According to IUCN not an endangered species"m}
+          >
+            <.icon name="hero-flag-micro" class="size-5 text-success" />
+          </div>
         </:col>
         <:col
           :let={{_id, record}}

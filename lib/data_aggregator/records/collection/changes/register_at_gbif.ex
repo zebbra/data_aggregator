@@ -33,7 +33,7 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
 
   defp register_at_gbif(gbif_dataset_key, collection_name, dwca_file_url) do
     if gbif_dataset_key do
-      create_endpoint(gbif_dataset_key, dwca_file_url)
+      create_endpoint({:ok, gbif_dataset_key}, dwca_file_url)
     else
       collection_name
       |> register_collection()

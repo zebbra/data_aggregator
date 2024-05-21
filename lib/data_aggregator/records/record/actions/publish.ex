@@ -63,11 +63,7 @@ defmodule DataAggregator.Records.Actions.Publish do
       |> Publication.update_attachment(attachment)
       |> Records.load!([:collection, :attachment])
 
-    with {:ok, _collection} <-
-           Collection.register_at_gbif(publication.collection, publication.attachment.url),
-         :ok <- queue_records_for_verification(query) do
-      {:ok, publication}
-    end
+    register_at_gbif(publication, query)
   rescue
     e ->
       publication = input.arguments.publication
@@ -114,4 +110,12 @@ defmodule DataAggregator.Records.Actions.Publish do
   defp update_status!(:fast_track, status, record), do: Record.update_fast_track_status!(record, status)
 
   defp update_status!(:approval, status, record), do: Record.update_approval_status!(record, status)
+
+  defp register_at_gbif(publication, query) do
+    with {:ok, _collection} <-
+           Collection.register_at_gbif(publication.collection, publication.attachment.url),
+         :ok <- queue_records_for_verification(query) do
+      {:ok, publication}
+    end
+  end
 end

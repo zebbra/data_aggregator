@@ -82,11 +82,12 @@ defmodule DataAggregator.Gbif.RestAPI do
   end
 
   defp get_single_collection(reference) do
-    req = HttpDiskCache.attach(Req.new(params: %{country: "CH", limit: 1000}))
-
     url = System.get_env("GBIF_API_BASE_URL") <> "/grscicoll/collection/#{reference}"
 
-    case Req.get(req, url: url, max_cache_age_seconds: 1 * 60 * 60) do
+    case [params: %{country: "CH", limit: 1000}]
+         |> Req.new()
+         |> HttpDiskCache.attach()
+         |> Req.get(url: url, max_cache_age_seconds: 1 * 60 * 60) do
       {:ok, result} ->
         body =
           result |> Map.from_struct() |> Map.get(:body)
@@ -108,21 +109,22 @@ defmodule DataAggregator.Gbif.RestAPI do
 
   @spec lookup_all_collections() :: list()
   defp lookup_all_collections do
-    req = HttpDiskCache.attach(Req.new(params: %{country: "CH", limit: 1000}))
-
     url = System.get_env("GBIF_API_BASE_URL") <> "/grscicoll/collection"
 
-    %{body: body} = Req.get!(req, url: url, max_cache_age_seconds: 1 * 60 * 60)
+    %{body: body} =
+      [params: %{country: "CH", limit: 1000}]
+      |> Req.new()
+      |> HttpDiskCache.attach()
+      |> Req.get!(url: url, max_cache_age_seconds: 1 * 60 * 60)
 
     body["results"]
   end
 
   def get_species(species_key) do
-    req =
-      HttpDiskCache.attach(Req.new())
+    req = HttpDiskCache.attach(Req.new())
 
     Req.get(req,
-      url: System.get_env("GBIF_API_BASE_URL") <> "/species/" <> species_key,
+      url: System.get_env("GBIF_API_BASE_URL") <> "/species/#{species_key}",
       max_cache_age_seconds: 30 * 24 * 60 * 60
     )
   end

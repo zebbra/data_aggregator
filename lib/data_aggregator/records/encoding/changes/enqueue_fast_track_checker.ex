@@ -17,6 +17,8 @@ defmodule DataAggregator.Records.Record.Changes.EnqueueFastTrackChecker do
   end
 
   defp enqueue_fast_track_checker(%Changeset{data: record} = changeset) do
+    Scheduler.FastTrackPublicationVerifier.cancel_job(record.fast_track_checker_job_id)
+
     case insert_job(record) do
       {:ok, job} ->
         Logger.debug("Enqueued record fast_track_checker job #{inspect(job.id)}")
