@@ -80,20 +80,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           href={~p"/collections/#{@collection}/publications"}
           label={~t"Publications"m}
         />
-        <li
-          id="dynamic_add_button"
-          class="-my-2 ml-auto snap-start opacity-0 transition-opacity duration-150 ease-in-out"
-          data-show_y="40,sm:60,lg:76"
-          phx-hook="ShowHideOnScroll"
-        >
-          <.link
-            patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
-            class="btn btn-primary btn-sm"
-          >
-            <.icon name="hero-arrow-up-tray" class="size-4" />
-            <span class="max-sm:hidden"><%= ~t"Add"m %></span>
-          </.link>
-        </li>
       </.secondary_navigation>
 
       <.table

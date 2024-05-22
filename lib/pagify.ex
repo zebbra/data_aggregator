@@ -1,14 +1,15 @@
 defmodule Pagify do
   @moduledoc """
-  Pagify is an Elixir library designed to easily apply filtering, ordering, and pagination to
-  your `Ash` queries.
+  Pagify is an Elixir library designed to easily apply scoping, filtering, ordering, and
+  pagination to your `Ash` queries.
 
   ## Features
 
   - **Offset-based pagination**: Pagify uses `OFFSET` and `LIMIT` to paginate your queries.
+  - **Scoping**: Apply predefined filters to your queries using a simple map syntax.
+  - **Filtering**: Apply user-input filters to your queries using a simple map syntax. Allows
+    complex data filtering using multiple conditions, operators, and fields.
   - **Sorting**: Sort your queries by multiple fields and any directions.
-  - **Filtering**: Apply filters to your queries using a simple map syntax. Allows complex data
-  filtering using multiple conditions, operators, and fields.
   - **UI helpers and URL builders**: Pagify provides a `Pagify.Meta` struct with information about
   the current page, total pages, and more. This information can be used to build pagination links
   in your UI.
@@ -36,7 +37,7 @@ defmodule Pagify do
   - `lib/pagify/components/pagination.ex`
   - `lib/pagify/components/table.ex`
 
-  If you want to include the tests, you can copy the `test/pagify` directory as well. In this case, you
+  If you want to include tests, you can copy the `test/pagify` directory as well. In this case, you
   will need to add the `test/pagify/support` folder to `elixir_paths(:test)` in your `mix.exs` file. You
   will also need to add the `ex_machina` dependency to your `deps` function.
 
@@ -58,17 +59,23 @@ defmodule Pagify do
   You can set some global options like the default_limit via the application
   environment. All global options can be overridden by passing them directly to
   the functions.
+
       config :my_app, :pagify,
         default_limit: 50,
         max_limit: 1000,
-        replace_invalid_params?: true
+        replace_invalid_params?: true,
+        pagify_scopes: %{
+          role: [
+            %{name: :all, filter: nil},
+            %{name: :admin, filter: %{role: "admin"}},
+            %{name: :user, filter: %{role: "user"}}
+          ]
+        },
+        reset_on_filter?: true
 
   See `t:Pagify.option/0` for a description of all available options.
 
   ## Usage
-
-  First, define a function that utilizes Pagify.validate_and_run/4 to query your desired list.
-  For example in your Ash resource module, you can define a function that queries a list of posts.
 
   > #### Resource pagination macro {: .info}
   >
@@ -80,10 +87,22 @@ defmodule Pagify do
   want to be paginated. The macro call is used to set the default limit, offset and
   other options for the pagination.
 
+  Furthermore, you can define scopes in the resource module. Scopes are predefined
+  filters that can be applied to the query.
+
   ```elixir
   defmodule YourApp.Resource.Post
     @default_limit 15
     def default_limit, do: @default_limit
+
+    @pagify_scopes %{
+      role: [
+        %{name: :all, filter: nil},
+        %{name: :admin, filter: %{author: "John"}},
+        %{name: :user, filter: %{author: "Doe"}}
+      ]
+    }
+    def pagify_scopes, do: @pagify_scopes
 
     actions do
       read :read do
@@ -177,7 +196,7 @@ defmodule Pagify do
   ```
 
   In this context, path points to the current route, and Pagify Components appends
-  pagination, filtering, and sorting parameters to it. You can use verified
+  pagination, scoping, filtering, and sorting parameters to it. You can use verified
   routes, route helpers, or custom path builder functions. You'll find
   explanations for the different formats in the documentation for
   `Pagify.Components.build_path/3`.
@@ -189,7 +208,7 @@ defmodule Pagify do
   set to `nil` or `false`, the table header will not be clickable.
 
   By using the `for` option in your Pagify query, Pagify Components can identify which
-  table columns are sortable. Additionally, it omits the `order_by` and `limit`
+  table columns are sortable. Additionally, it omits the `scopes`, `order_by` and `limit`
   parameters if they align with the default values specified either in your resoruce or
   in the Pagify module.
 
@@ -215,6 +234,44 @@ defmodule Pagify do
   ?offset=100&limit=20
   ```
 
+  ## Scoping
+
+  To apply predefined filters to a query, you can set the `:scopes` parameter. `:scopes`
+  should be a map of predefined filters available in your resource. The filter name
+  is used to look up the predefined filter. If the filter is found, it is applied to
+  the query. If the filter is not found, an error is raised.
+
+      iex> params = %{scopes: %{role: :admin}}
+      iex> {:ok, pagify} = Pagify.validate(Post, params)
+      iex> pagify.scopes
+      %{role: :admin, status: :all}
+
+  This translates to the following query parameter string:
+
+    ```URL
+    ?scopes[role]=admin
+    ```
+
+  ## Filters
+
+  Filters can be passed as a list of maps or plain maps.
+
+      iex> params = %{filters: %{name: "Post 1"}}
+      iex> {:ok, {results, meta}} = Pagify.validate_and_run(Post, params)
+      iex> meta.total_count
+      1
+      iex> [post] = results
+      iex> post.name
+      "Post 1"
+
+  This translates to the following query parameter string:
+
+  ```URL
+  ?filters[name]=Post%201
+  ```
+
+  See `Ash.Query.filter_input/2` for a list of all available filter operators.
+
   ## Ordering
 
   To add an ordering clause to a query, you need to set the `:order_by`
@@ -239,26 +296,6 @@ defmodule Pagify do
   ```URL
   ?order_by=name,--author
   ```
-
-  ## Filters
-
-  Filters can be passed as a list of maps or plain maps.
-
-      iex> params = %{filters: %{name: "Post 1"}}
-      iex> {:ok, {results, meta}} = Pagify.validate_and_run(Post, params)
-      iex> meta.total_count
-      1
-      iex> [post] = results
-      iex> post.name
-      "Post 1"
-
-  This translates to the following query parameter string:
-
-  ```URL
-  ?filters[name]=Post%201
-  ```
-
-  See `Ash.Query.filter_input/2` for a list of all available filter operators.
 
   ## Internal parameters
 
@@ -341,14 +378,23 @@ defmodule Pagify do
   """
   alias Ash.Resource.Info
   alias Pagify.Meta
+  alias Pagify.Misc
   alias Pagify.Validation
 
   require Logger
 
-  @default_opts [default_limit: 25, max_limit: 100, replace_invalid_params?: false]
+  @default_opts [
+    default_limit: 25,
+    max_limit: 100,
+    replace_invalid_params?: false,
+    pagify_scopes: %{},
+    reset_on_filter?: true
+  ]
   @default_opts_keys Enum.map(@default_opts, fn {k, _} -> k end)
 
-  defstruct limit: nil, offset: nil, filters: nil, order_by: nil
+  @internal_opts [:__compiled_pagify_scopes, :__compiled_pagify_default_scopes]
+
+  defstruct limit: nil, offset: nil, filters: nil, order_by: nil, scopes: nil
 
   @typedoc """
   These options can be passed to most functions or configured via the
@@ -367,6 +413,10 @@ defmodule Pagify do
   - `:replace_invalid_params?` - If set to `true`, invalid parameters will be
     replaced with the default value. If set to `false`, invalid parameters
     will result in an error. Defaults to `false`.
+  - `:pagify_scopes` - A map of predefined filters to apply to the query. Each map
+    entry itself is a group (list) of `t:Pagify.scope/0` entries.
+  - `:reset_on_filter?` - If set to `true`, the offset will be reset to 0 when
+    a filter is applied. Defaults to `true`.
 
   ## Look-up order
 
@@ -382,6 +432,29 @@ defmodule Pagify do
           {default_limit :: non_neg_integer()}
           | {max_limit :: non_neg_integer()}
           | {replace_invalid_params? :: boolean()}
+          | {pagify_scopes :: map()}
+          | {reset_on_filter? :: boolean()}
+
+  @typedoc """
+  A scope is a predefined filter that is merged with the user-provided filters.
+
+  Scope definitions live in the resource provided `pagify_scopes` function or in
+  the provided `t:Pagify.option/0`. Contrary to user-provided filters, scope filters
+  are not parsed as user input and are not validated as such. However, they are
+  validated in the `Pagify.validate_and_run/4` context. User-provided parameters are
+  used to lookup the scope filter. If the scope filter is found, it is applied to the query.
+  If the scope filter is not found, an error is raised.
+
+  ## Fields
+
+  - `:name` - The name of the filter for the scope.
+  - `:filter` - The filter to apply to the query.
+  - `:default?` - If set to `true`, the scope is applied by default.
+  """
+  @type scope ::
+          {name :: atom()}
+          | {filter :: Ash.Filter.t()}
+          | {default? :: boolean()}
 
   @typedoc """
   Valid order_by types for the `t:Pagify.t/0` struct.
@@ -389,32 +462,37 @@ defmodule Pagify do
   @type order_by :: [atom() | String.t() | {atom(), Ash.Sort.sort_order()} | [String.t()]] | nil
 
   @typedoc """
-  Represents the query parameters for filtering, ordering and pagination.
+  Represents the query parameters for scoping, filtering, ordering and pagination.
 
   ### Fields
 
   - `limit`, `offset`: Used for offset-based pagination.
-  - `filters`: A map of filters to apply to the query (see `AshPhoenix.FilterForm` for examples).
+  - `scopes`: A map of user provided scopes to apply to the query.
+    Scopes are internally translated to predefined filters and merged into the query enginge.
+  - `filters`: A map of user provided filters to apply to the query (see `AshPhoenix.FilterForm` for examples).
   - `order_by`: A list of fields to order by (see `Ash.Sort.parse_input/3` for all available orders).
   """
   @type t :: %__MODULE__{
           limit: pos_integer() | nil,
           offset: non_neg_integer() | nil,
+          scopes: map() | nil,
           filters: map() | Keyword.t() | nil,
           order_by: order_by()
         }
 
   @doc """
-  Adds clauses for filtering, ordering and pagination to an `t:Ash.Query.t/0` or
+  Adds clauses for scoping, filtering, ordering and pagination to an `t:Ash.Query.t/0` or
   `t:Ash.Resource.t/0` from the given `t:Pagify.t/0` parameters and `t:Keyword.t/0`
   options.
 
   The keyword list `opts` is used to pass additional options to the query engine.
-  It shoud conform to the list of valid options at `c:Ash.Api.read/2`.
+  It shoud conform to the list of valid options at `c:Ash.Api.read/2`. Furthermore
+  the `t:Pagify.option/0` library options are supported.
 
   We take the keyword list `opts` and return a keyword list callback according to
   `c:Ash.Api.read/2` but with the __:query__ keyword also within the list.
 
+  - `Paigfy.scopes` are used to apply predefined filters to the query.
   - `Pagify.filters` and `Pagify.order_by` are used to filter and order the query.
   - `Pagify.limit` and `Pagify.offset` are used to paginate the query.
 
@@ -443,33 +521,43 @@ defmodule Pagify do
 
   Sorting only:
 
-        iex> alias Pagify.Factory.Post
-        iex> pagify = %Pagify{order_by: ["name"]}
-        iex> [page, {:query, query}] = parse(Post, pagify)
-        iex> page
-        {:page, [count: true, offset: 0, limit: 15]}
-        iex> query
-        #Ash.Query<resource: Pagify.Factory.Post, sort: [{"name", :asc}]>
+      iex> alias Pagify.Factory.Post
+      iex> pagify = %Pagify{order_by: ["name"]}
+      iex> [page, {:query, query}] = parse(Post, pagify)
+      iex> page
+      {:page, [count: true, offset: 0, limit: 15]}
+      iex> query
+      #Ash.Query<resource: Pagify.Factory.Post, sort: [{"name", :asc}]>
 
   Filtering only:
 
-        iex> alias Pagify.Factory.Post
-        iex> pagify = %Pagify{filters: %{name: "foo"}}
-        iex> [page, {:query, query}] = parse(Post, pagify)
-        iex> page
-        {:page, [count: true, offset: 0, limit: 15]}
-        iex> query
-        #Ash.Query<resource: Pagify.Factory.Post, filter: #Ash.Filter<name == "foo">>
+      iex> alias Pagify.Factory.Post
+      iex> pagify = %Pagify{filters: %{name: "foo"}}
+      iex> [page, {:query, query}] = parse(Post, pagify)
+      iex> page
+      {:page, [count: true, offset: 0, limit: 15]}
+      iex> query
+      #Ash.Query<resource: Pagify.Factory.Post, filter: #Ash.Filter<name == "foo">>
 
   Pagination only:
 
-        iex> alias Pagify.Factory.Post
-        iex> pagify = %Pagify{limit: 10, offset: 20}
-        iex> [page, {:query, query}] = parse(Post, pagify)
-        iex> page
-        {:page, [count: true, offset: 20, limit: 10]}
-        iex> query
-        #Ash.Query<resource: Pagify.Factory.Post>
+      iex> alias Pagify.Factory.Post
+      iex> pagify = %Pagify{limit: 10, offset: 20}
+      iex> [page, {:query, query}] = parse(Post, pagify)
+      iex> page
+      {:page, [count: true, offset: 20, limit: 10]}
+      iex> query
+      #Ash.Query<resource: Pagify.Factory.Post>
+
+  Scoping only:
+
+      iex> alias Pagify.Factory.Post
+      iex> pagify = %Pagify{scopes: %{role: :admin}}
+      iex> [page, {:query, query}] = parse(Post, pagify)
+      iex> page
+      {:page, [count: true, offset: 0, limit: 15]}
+      iex> query
+      #Ash.Query<resource: Pagify.Factory.Post, filter: #Ash.Filter<author == "John">>
 
   This function does _not_ validate or apply default parameters to the given
   Pagify struct. Be sure to validate any user-generated parameters with
@@ -496,6 +584,7 @@ defmodule Pagify do
   The `opts` keyword list is used to pass additional options to the query engine.
   It should conform to the list of valid options at `c:Ash.Api.read/2`.
 
+  - `Paigfy.scopes` are used to apply predefined filters to the query.
   - `Pagify.filters` and `Pagify.order_by` are used to filter and order the query.
   - `Pagify.limit` and `Pagify.offset` are used to paginate the query.
 
@@ -532,6 +621,14 @@ defmodule Pagify do
       iex> count
       2
 
+  Or with scopes:
+
+      iex> alias Pagify.Factory.Post
+      iex> pagify = %Pagify{scopes: %{role: :admin}}
+      iex> %Ash.Page.Offset{count: count} = Pagify.all(Post, pagify)
+      iex> count
+      1
+
   This function does _not_ validate or apply default parameters to the given
   Pagify struct. Be sure to validate any user-generated parameters with
   `validate/2` or `validate!/2` before passing them to this function. Doing so
@@ -543,8 +640,8 @@ defmodule Pagify do
   def all(query_or_resource, pagify, opts \\ [], args \\ nil)
 
   def all(%Ash.Query{resource: r} = q, %Pagify{} = pagify, opts, args) do
-    opts = remove_pagify_opts(opts)
     opts = parse(q, pagify, opts)
+    opts = remove_pagify_opts(opts)
 
     case Keyword.get(opts, :action) do
       nil ->
@@ -561,7 +658,9 @@ defmodule Pagify do
   end
 
   defp remove_pagify_opts(opts) do
-    Enum.filter(opts, fn {k, _} -> !Enum.member?(@default_opts_keys, k) end)
+    Enum.filter(opts, fn {k, _} ->
+      !Enum.member?(@default_opts_keys, k) and !Enum.member?(@internal_opts, k)
+    end)
   end
 
   @doc """
@@ -633,6 +732,11 @@ defmodule Pagify do
       iex> meta.total_count
       2
 
+  Or with scopes:
+
+      iex> alias Pagify.Factory.Post
+      iex> {:ok, {[%Post{}], %Pagify.Meta{}}} = Pagify.validate_and_run(Post, %Pagify{scopes: %{role: :user}})
+
   ## Options
 
   The keyword list `opts` is used to pass additional options to the query engine.
@@ -658,6 +762,7 @@ defmodule Pagify do
         ) ::
           {[Ash.Resource.record()], Meta.t()}
   def validate_and_run!(query_or_resource, map_or_pagify, opts \\ [], args \\ nil) do
+    opts = Misc.maybe_put_compiled_pagify_scopes(query_or_resource, opts)
     pagify = validate!(query_or_resource, map_or_pagify, opts)
     run(query_or_resource, pagify, opts, args)
   end
@@ -676,6 +781,7 @@ defmodule Pagify do
         current_limit: 2,
         current_offset: 1,
         current_page: 2,
+        default_scopes: %{status: :all},
         has_next_page?: false,
         has_previous_page?: true,
         next_offset: nil,
@@ -706,14 +812,17 @@ defmodule Pagify do
 
     resource = get_resource(page)
 
+    default_scopes = get_default_scopes(resource, opts)
+
     %Meta{
       current_limit: page_size,
       current_offset: current_offset,
       current_page: current_page,
+      default_scopes: default_scopes,
       has_next_page?: has_next_page?,
       has_previous_page?: has_previous_page?,
       next_offset: next_offset,
-      opts: opts,
+      opts: remove_pagify_opts(opts),
       pagify: pagify,
       previous_offset: previous_offset,
       resource: resource,
@@ -756,6 +865,11 @@ defmodule Pagify do
   defp get_current_page(%Ash.Page.Offset{offset: offset, limit: limit}, total_pages) do
     page = ceil(offset / limit) + 1
     min(page, total_pages)
+  end
+
+  defp get_default_scopes(resource, opts) do
+    opts = Misc.maybe_put_compiled_pagify_scopes(resource, opts)
+    Keyword.get(opts, :__compiled_pagify_default_scopes)
   end
 
   @doc """
@@ -814,7 +928,7 @@ defmodule Pagify do
   # Query
 
   @doc """
-  Adds clauses for filtering and ordering to an `t:Ash.Query.t/0` from the given
+  Adds clauses for scoping, filtering and ordering to an `t:Ash.Query.t/0` from the given
   `t:Pagify.t/0` parameter.
 
   This function does _not_ validate or apply default parameters to the given
@@ -831,11 +945,73 @@ defmodule Pagify do
       iex> query(q, pagify)
       #Ash.Query<resource: Pagify.Factory.Post, filter: #Ash.Filter<name == "John">, sort: [{"name", :asc}]>
   """
-  @spec query(Ash.Query.t(), Pagify.t()) :: Ash.Query.t()
-  def query(%Ash.Query{} = q, %Pagify{} = pagify) do
+  @spec query(Ash.Query.t(), Pagify.t(), Keyword.t()) :: Ash.Query.t()
+  def query(%Ash.Query{} = q, %Pagify{} = pagify, opts \\ []) do
     q
+    |> scope(pagify, opts)
     |> filter(pagify)
     |> order_by(pagify)
+  end
+
+  ## Scope
+
+  @doc """
+  Applies the `scopes` parameter of a `t:Pagify.t/0` to an `t:Ash.Query.t/0`.
+
+  Used by `Pagify.query/2`. At this stage we assume that the scopes are already
+  compiled and validated. Further, default scopes are loaded into the Pagify struct.
+
+  For a completed list of filter operators, see `Ash.Filter`.
+
+  This function does _not_ validate or apply default parameters to the given
+  Pagify struct. Be sure to validate any user-generated parameters with
+  `validate/2` or `validate!/2` before passing them to this function. Doing so
+  will automatically parse user provided input into the correct format for the
+  query engine.
+
+  ## Examples
+
+      iex> alias Pagify.Factory.Post
+      iex> q = Ash.Query.to_query(Post)
+      iex> pagify = %Pagify{scopes: %{status: :active}}
+      iex> scope(q, pagify)
+      #Ash.Query<resource: Pagify.Factory.Post, filter: #Ash.Filter<age < \e[36m10\e[0m>>
+  """
+  @spec scope(Ash.Query.t(), Pagify.t(), Keyword.t()) :: Ash.Query.t()
+  def scope(q, pagify, opts \\ [])
+
+  def scope(%Ash.Query{} = q, %Pagify{scopes: nil}, _), do: q
+
+  def scope(%Ash.Query{resource: resource} = query, %Pagify{scopes: scopes}, opts) when is_map(scopes) do
+    opts = Misc.maybe_put_compiled_pagify_scopes(resource, opts)
+    compiled_scopes = Keyword.get(opts, :__compiled_pagify_scopes)
+
+    Enum.reduce(scopes, query, fn {group, name}, acc ->
+      apply_scope(acc, compiled_scopes, group, name)
+    end)
+  end
+
+  defp apply_scope(query, compiled_scopes, group, name) do
+    group_scopes = get_group_scopes(compiled_scopes, group)
+    scope = find_scope(group_scopes, group, name)
+
+    if scope.filter == nil do
+      query
+    else
+      Ash.Query.filter_input(query, scope.filter)
+    end
+  end
+
+  defp get_group_scopes(compiled_scopes, group) do
+    case Map.get(compiled_scopes, group) do
+      nil -> raise ArgumentError, "Group `#{group}` not found"
+      group_scopes -> group_scopes
+    end
+  end
+
+  defp find_scope(group_scopes, group, name) do
+    Enum.find(group_scopes, fn scope -> scope.name == name end) ||
+      raise ArgumentError, "Scope `#{name}` not found in group `#{group}`"
   end
 
   ## Filter
@@ -1108,7 +1284,7 @@ defmodule Pagify do
       iex> alias Pagify.Factory.Post
       iex> params = %{limit: 10, offset: 20, other_param: "foo"}
       iex> Pagify.validate(Post, params)
-      {:ok, %Pagify{limit: 10, offset: 20}}
+      {:ok, %Pagify{limit: 10, offset: 20, scopes: %{status: :all}}}
 
       iex> pagify = %Pagify{offset: -1}
       iex> {:error, %Pagify.Meta{} = meta} = Pagify.validate(Post, pagify)
@@ -1121,16 +1297,34 @@ defmodule Pagify do
 
   The function is aware of the `Ash.Resource` type passed either as query or as
   resource. Thus the function is able to validate that only allowed fields are
-  used for ordering and filtering. The function will also apply the default_limit
-  if the resource provides one.
+  used for scoping, ordering and filtering. The function will also apply the
+  default_limit and scoping if the resource provides one.
+
+  > #### Resource pagination macro {: .info}
+  >
+  > As of Ash >= 3.0 you do not need to use the `pagination` macro in your default read actions as
+  > default read actions are now paginatable with keyset and offset pagination
+  > (but pagination is not required)
 
   You need to add the pagination macro call to the action of the resource that you
   want to be paginated. The macro call is used to set the default limit, offset and
   other options for the pagination.
 
+  Furthermore, you can define scopes in the resource module. Scopes are predefined
+  filters that can be applied to the query.
+
       defmodule Your.Ash.Resource
         @default_limit 15
         def default_limit, do: @default_limit
+
+        @pagify_scopes %{
+          role: [
+            %{name: :all, filter: nil},
+            %{name: :admin, filter: %{author: "John"}},
+            %{name: :user, filter: %{author: "Doe"}}
+          ]
+        }
+        def pagify_scopes, do: @pagify_scopes
 
         actions do
           read :read do
@@ -1320,6 +1514,81 @@ defmodule Pagify do
     case offset + limit do
       new_offset when new_offset >= total_count -> pagify
       new_offset -> %{pagify | offset: new_offset}
+    end
+  end
+
+  @doc """
+  Sets the scope of a Pagify struct.
+
+  If the scope already exists, it will be replaced with the new value. If the
+  scope does not exist, it will be added to the scopes map.
+
+  If the reset option is set to false, the offset will not be reset to 0.
+
+  ## Examples
+
+      iex> set_scope(%Pagify{offset: 10, scopes: %{status: :active}}, %{status: :inactive})
+      %Pagify{scopes: %{status: :inactive}}
+
+      iex> set_scope(%Pagify{offset: 10, scopes: %{status: :active}}, %{status: :active})
+      %Pagify{scopes: %{status: :active}}
+
+  Or add a new scope:
+
+      iex> set_scope(%Pagify{offset: 10, scopes: %{role: :admin}}, %{status: :active})
+      %Pagify{scopes: %{status: :active, role: :admin}}
+
+      iex> set_scope(%Pagify{}, %{role: :admin})
+      %Pagify{scopes: %{role: :admin}}
+
+  Or without reset offset:
+
+      iex> set_scope(%Pagify{offset: 10}, %{status: :active}, reset_on_filter?: false)
+      %Pagify{scopes: %{status: :active}, offset: 10}
+  """
+  @spec set_scope(Pagify.t(), map(), Keyword.t()) :: Pagify.t()
+  def set_scope(pagify, scope, opts \\ [])
+
+  def set_scope(%Pagify{} = pagify, scope, opts) do
+    scopes = pagify.scopes || %{}
+    pagify = %{pagify | scopes: Map.merge(scopes, scope)}
+
+    reset_on_filter = get_option(:reset_on_filter?, opts, true)
+
+    if reset_on_filter do
+      %{pagify | offset: nil}
+    else
+      pagify
+    end
+  end
+
+  @doc """
+  Helper function to check if a scope is active in a Pagify struct.
+
+  ## Examples
+
+      iex> active_scope?(%Pagify{scopes: %{status: :active}}, %{status: :active})
+      true
+
+      iex> active_scope?(%Pagify{scopes: %{status: :active}}, %{status: :inactive})
+      false
+
+      iex> active_scope?(%Pagify{scopes: %{status: :active}}, %{role: :admin})
+      false
+
+      iex> active_scope?(%Pagify{}, %{role: :admin})
+      false
+  """
+  @spec active_scope?(Pagify.t(), map()) :: boolean
+  def active_scope?(%Pagify{scopes: nil}, _), do: false
+
+  def active_scope?(%Pagify{scopes: scopes}, scope) do
+    group = scope |> Map.keys() |> hd()
+    name = scope |> Map.values() |> hd()
+
+    case Map.get(scopes, group) do
+      nil -> false
+      active -> active == name
     end
   end
 
@@ -1661,9 +1930,64 @@ defmodule Pagify do
   3. the application environment
   4. the Pagify default value if defined
   5. the default passed as the last argument
+
+  For the `:pagify_scopes` option, the function will deep merge the options
+  in reverse order (keyword overrides resource, resource overrides global, etc.)
+
+  ## Examples for `:pagify_scopes`
+
+    iex> alias Pagify.Factory.Post
+    iex> opts = [
+    ...>   pagify_scopes: %{
+    ...>     role: [
+    ...>       %{name: :user, filter: %{name: "changed"}},
+    ...>       %{name: :other, filter: %{name: "other"}}
+    ...>     ],
+    ...>     status: [
+    ...>       %{name: :all, filter: nil, default?: true},
+    ...>       %{name: :active, filter: %{age: %{lt: 10}}},
+    ...>       %{name: :inactive, filter: %{age: %{gte: 10}}}
+    ...>     ]
+    ...>   },
+    ...>   for: Post
+    ...> ]
+    iex> get_option(:pagify_scopes, opts, %{
+    ...>   role: [
+    ...>     %{name: :default, filter: %{author: "Default"}}
+    ...>   ]
+    ...> })
+    %{
+      role: [
+        %{name: :admin, filter: %{author: "John"}},
+        %{name: :user, filter: %{name: "changed"}},
+        %{name: :other, filter: %{name: "other"}},
+        %{name: :default, filter: %{author: "Default"}}
+      ],
+      status: [
+        %{name: :inactive, filter: %{age: %{gte: 10}}},
+        %{name: :all, filter: nil, default?: true},
+        %{name: :active, filter: %{age: %{lt: 10}}}
+      ]
+    }
   """
   @spec get_option(atom(), Keyword.t(), any()) :: any()
-  def get_option(key, opts \\ [], default \\ nil) do
+  def get_option(key, opts \\ [], default \\ nil)
+
+  def get_option(:pagify_scopes, opts, default) do
+    opts_scopes = Keyword.get(opts, :pagify_scopes, %{})
+    resource_scopes = resource_option(opts[:for], :pagify_scopes) || %{}
+    global_scopes = global_option(:pagify_scopes) || %{}
+    default_scopes = Keyword.get(@default_opts, :pagify_scopes, %{})
+    default = default || %{}
+
+    default
+    |> merge_scopes(default_scopes)
+    |> merge_scopes(global_scopes)
+    |> merge_scopes(resource_scopes)
+    |> merge_scopes(opts_scopes)
+  end
+
+  def get_option(key, opts, default) do
     with nil <- opts[key],
          nil <- resource_option(opts[:for], key),
          nil <- global_option(key) do
@@ -1671,7 +1995,28 @@ defmodule Pagify do
     end
   end
 
-  defp resource_option(resource, key) when is_atom(resource) and resource != nil and key in [:default_limit] do
+  defp merge_scopes(nil, default), do: default
+
+  defp merge_scopes(opts, default) do
+    Map.merge(default, opts, fn _key, default_val, opts_val ->
+      merge_scope_lists(default_val, opts_val)
+    end)
+  end
+
+  defp merge_scope_lists(default_list, opts_list) do
+    default_map = Map.new(default_list, &{&1[:name], &1})
+    opts_map = Map.new(opts_list, &{&1[:name], &1})
+
+    merged_map =
+      Map.merge(default_map, opts_map, fn _key, default_item, opts_item ->
+        Map.merge(opts_item, default_item)
+      end)
+
+    merged_map |> Map.values() |> Enum.reverse()
+  end
+
+  defp resource_option(resource, key)
+       when is_atom(resource) and resource != nil and key in [:default_limit, :pagify_scopes] do
     if Keyword.has_key?(resource.__info__(:functions), key) do
       apply(resource, key, [])
     end

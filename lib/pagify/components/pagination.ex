@@ -84,7 +84,7 @@ defmodule Pagify.Components.Pagination do
   end
 
   defp build_query_params(%Meta{} = meta) do
-    Components.to_query(meta.pagify, for: meta.resource)
+    Components.to_query(meta.pagify, for: meta.resource, default_scopes: meta.default_scopes)
   end
 
   defp maybe_put_offset(params, 0), do: Keyword.delete(params, :offset)

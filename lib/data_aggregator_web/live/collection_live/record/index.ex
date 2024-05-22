@@ -30,6 +30,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @polling_interval 5_000
 
+  @actions [
+    {~t"Export"m, "hero-arrow-down-tray", "collection:export", nil},
+    {~t"Encode"m, "hero-puzzle-piece", "collection:encode", "confirm_encoding_alert"},
+    {~t"Publish"m, "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"},
+    {~t"Approve"m, "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
+  ]
+
   @impl true
   def mount(%{"id" => id} = _params, _session, socket) do
     collection = get_collection(id)
@@ -39,6 +46,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       |> assign(:collection, collection)
       |> assign(selected_record: nil)
       |> assign(:busy, collection.encoding_state in [:queued, :encoding])
+      |> assign(:actions, @actions)
       |> subscribe_for_record_updates(connected?(socket))
       |> subscribe_for_collection_updates(connected?(socket))
 
@@ -60,16 +68,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     end
   end
 
-  defp busy?(collection) do
-    collection.encoding_state in [:queued, :encoding] or
-      collection.records_publishing > 0
-  end
-
   @impl true
   def render(assigns) do
     ~H"""
     <.page current="collections" open={@selected_record != nil}>
       <.collection_header collection={@collection} current={:records} />
+
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]" gradient>
         <.secondary_navigation_item
           href={build_path(~p"/collections/#{@collection}/records", @meta)}
@@ -88,100 +92,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           href={~p"/collections/#{@collection}/publications"}
           label={~t"Publications"m}
         />
-
-        <%!-- Floating action buttons --%>
-        <li
-          id="dynamic_export_button"
-          class="pointer-events-none -my-2 ml-auto w-0 snap-start overflow-hidden opacity-0 transition-opacity duration-150 ease-in-out"
-          data-show_y="280,lg:340"
-          data-class_list="pointer-events-none w-0 overflow-hidden"
-          phx-hook="ShowHideOnScroll"
-        >
-          <button
-            phx-click="collection:export"
-            class="btn btn-primary text-primary-content btn-sm"
-            disabled={@busy}
-          >
-            <.icon name="hero-arrow-down-tray" class="size-4" />
-            <span class="max-sm:hidden"><%= ~t"Export"m %></span>
-          </button>
-        </li>
-        <li
-          id="dynamic_encode_button"
-          class="-my-2 hidden snap-start opacity-0 transition-opacity duration-150 ease-in-out"
-          data-show_y="280,lg:340"
-          phx-hook="ShowHideOnScroll"
-        >
-          <button
-            phx-click="collection:encode"
-            class="btn btn-primary text-primary-content btn-sm"
-            disabled={@busy}
-          >
-            <.icon :if={@busy == false} name="hero-puzzle-piece" class="size-4" />
-            <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
-            <span class="max-sm:hidden"><%= ~t"Encode"m %></span>
-          </button>
-        </li>
-        <li
-          id="dynamic_publish_button"
-          class="-my-2 hidden snap-start opacity-0 transition-opacity duration-150 ease-in-out"
-          data-show_y="280,lg:340"
-          phx-hook="ShowHideOnScroll"
-        >
-          <button
-            phx-click="collection:fast_track_pub"
-            class="btn btn-primary text-primary-content btn-sm"
-            disabled={@busy}
-            data-confirm={~t"Are you sure?"m}
-            data-confirm_id="confirm_fast_track_pub_alert"
-          >
-            <.icon :if={@busy == false} name="hero-globe-alt" class="size-4" />
-            <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
-            <span class="max-sm:hidden"><%= ~t"Publish"m %></span>
-          </button>
-        </li>
-        <li
-          id="dynamic_approve_button"
-          class="-my-2 hidden snap-start opacity-0 transition-opacity duration-150 ease-in-out"
-          data-show_y="280,lg:340"
-          phx-hook="ShowHideOnScroll"
-        >
-          <button
-            phx-click="collection:approval_pub"
-            class="btn btn-primary text-primary-content btn-sm"
-            disabled={@busy}
-            data-confirm={~t"Are you sure?"m}
-            data-confirm_id="confirm_approval_pub_alert"
-          >
-            <.icon :if={@busy == false} name="hero-check-badge" class="size-4" />
-            <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
-            <span class="max-sm:hidden"><%= ~t"Approve"m %></span>
-          </button>
-        </li>
-        <li
-          id="dynamic_add_button"
-          class="-my-2 hidden snap-start opacity-0 transition-opacity duration-150 ease-in-out"
-          data-show_y="40,sm:60,lg:76"
-          phx-hook="ShowHideOnScroll"
-        >
-          <.link patch={~p"/collections/#{@collection}/imports/new"} class="btn btn-primary btn-sm">
-            <.icon name="hero-arrow-up-tray" class="size-4" />
-            <span class="max-sm:hidden"><%= ~t"Add"m %></span>
-          </.link>
-        </li>
       </.secondary_navigation>
 
-      <div :if={@meta.total_count > 0} class="space-y-6 p-6 lg:px-8">
-        <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
+      <%!-- Stat scopes --%>
+      <div :if={@meta.total_count > 0} class="p-6 lg:px-8">
+        <div class="grid grid-cols-2 gap-2 xl:grid-cols-4">
           <.scope_stat
-            href="#"
+            href={build_scope_path(~p"/collections/#{@collection}/records", @meta, %{status: :all})}
             title={~t"All records"m}
             value={1.0}
             desc={@collection.records_count}
-            active
+            active={Pagify.active_scope?(@meta.pagify, %{status: :all})}
           />
           <.scope_stat
-            href="#"
+            href={
+              build_scope_path(~p"/collections/#{@collection}/records", @meta, %{status: :not_encoded})
+            }
             title={~t"Not encoded"m}
             value={
               if @collection.records_count_not_encoded == 0,
@@ -189,66 +115,148 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 else: @collection.records_count_not_encoded / @collection.records_count
             }
             desc={@collection.records_count_not_encoded}
+            active={Pagify.active_scope?(@meta.pagify, %{status: :not_encoded})}
           />
-          <.scope_stat href="#" title={~t"Unpublished"m} value={0.0} desc={0} />
-          <.scope_stat
-            href="#"
-            title={~t"Records with issues"m}
-            value={
-              if @collection.records_count_failed == 0,
-                do: 0,
-                else: @collection.records_count_failed / @collection.records_count
-            }
-            desc={@collection.records_count_failed}
-          />
+        </div>
+      </div>
+
+      <%!-- Search, filter and actions toolbar --%>
+      <div :if={@meta.total_count > 0} class="flex justify-between px-6 pb-6 lg:px-8">
+        <%!-- Search and filter --%>
+        <div class="join">
+          <div>
+            <div>
+              <input class="input input-bordered join-item max-sm:max-w-32" placeholder={~t"Search"m} />
+            </div>
+          </div>
+          <button
+            data-tip={~t"Columns"m}
+            class="join-item btn btn-outline border-base-content/20 border-y max-sm:btn-square sm:max-md:tooltip"
+          >
+            <.icon name="hero-table-cells" />
+            <span class="max-md:hidden"><%= ~t"Columns"m %></span>
+          </button>
+
+          <div class="indicator">
+            <span
+              :if={Pagify.active_scope?(@meta.pagify, %{layer: :all}) == false}
+              class="indicator-item badge badge-primary"
+            >
+              <.icon
+                :if={Pagify.active_scope?(@meta.pagify, %{layer: :encoding})}
+                name="hero-puzzle-piece"
+                class="size-4"
+              />
+              <.icon
+                :if={Pagify.active_scope?(@meta.pagify, %{layer: :approval})}
+                name="hero-check-badge"
+                class="size-4"
+              />
+            </span>
+            <.dropdown id="layer" class="dropdown-end">
+              <:summary>
+                <summary
+                  class="join-item btn btn-outline border-base-content/20 border-y max-md:inline-flex max-sm:btn-square sm:max-md:tooltip"
+                  data-tip={~t"Layers"m}
+                >
+                  <.icon name="hero-view-columns" />
+                  <span class="max-md:hidden"><%= ~t"Layers"m %></span>
+                </summary>
+              </:summary>
+              <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-44 gap-1 border p-2 shadow-2xl">
+                <li>
+                  <.link
+                    patch={
+                      build_scope_path(~p"/collections/#{@collection}/records", @meta, %{
+                        layer: :all
+                      })
+                    }
+                    class={Pagify.active_scope?(@meta.pagify, %{layer: :all}) && "active"}
+                  >
+                    <.icon name="hero-view-columns" class="size-5" />
+                    <span class="font-[sans-serif]"><%= ~t"Original"m %></span>
+                  </.link>
+                </li>
+                <li>
+                  <.link
+                    patch={
+                      build_scope_path(~p"/collections/#{@collection}/records", @meta, %{
+                        layer: :encoding
+                      })
+                    }
+                    class={Pagify.active_scope?(@meta.pagify, %{layer: :encoding}) && "active"}
+                  >
+                    <.icon name="hero-puzzle-piece" class="size-5" />
+                    <span class="font-[sans-serif]"><%= ~t"Encoding"m %></span>
+                  </.link>
+                </li>
+                <li>
+                  <.link
+                    patch={
+                      build_scope_path(~p"/collections/#{@collection}/records", @meta, %{
+                        layer: :approval
+                      })
+                    }
+                    class={Pagify.active_scope?(@meta.pagify, %{layer: :approval}) && "active"}
+                  >
+                    <.icon name="hero-check-badge" class="size-5" />
+                    <span class="font-[sans-serif]"><%= ~t"Approval"m %></span>
+                  </.link>
+                </li>
+              </ul>
+            </.dropdown>
+          </div>
+          <div class="indicator">
+            <span class="indicator-item badge badge-primary">2</span>
+
+            <button
+              class="join-item btn btn-outline border-base-content/20 border-y max-sm:btn-square sm:max-md:tooltip"
+              data-tip={~t"Filter"m}
+            >
+              <.icon name="hero-adjustments-vertical" />
+              <span class="max-md:hidden"><%= ~t"Filter"m %></span>
+            </button>
+          </div>
         </div>
 
         <%!-- Action buttons --%>
-        <div class="flex min-w-0 flex-1 justify-end gap-x-2">
+        <.dropdown id="actions" class="dropdown-end xl:hidden">
+          <:summary>
+            <summary
+              disabled={@busy}
+              class="btn btn-outline border-base-content/20 max-lg:inline-flex max-sm:btn-square sm:max-lg:tooltip"
+              data-tip={~t"Actions"m}
+            >
+              <.icon name={if @busy, do: "hero-cog-6-tooth-solid animate-spin", else: "hero-bars-3"} />
+              <span class="max-lg:hidden"><%= ~t"Actions"m %></span>
+            </summary>
+          </:summary>
+          <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-44 gap-1 border p-2 shadow-2xl">
+            <li :for={{label, icon, action, alert} <- @actions}>
+              <button
+                phx-click={action}
+                data-confirm={alert && ~t"Are you sure?"m}
+                data-confirm_id={alert}
+              >
+                <.icon name={icon} class="size-5" />
+                <span class="font-[sans-serif]"><%= label %></span>
+              </button>
+            </li>
+          </ul>
+        </.dropdown>
+
+        <div class="join max-xl:hidden">
           <button
-            phx-click="collection:export"
-            class="btn btn-primary text-primary-content max-md:tooltip max-md:tooltip-primary max-sm:btn-sm"
+            :for={{label, icon, action, alert} <- @actions}
+            class="join-item btn btn-outline border-base-content/20"
+            phx-click={action}
+            data-confirm={alert && ~t"Are you sure?"m}
+            data-confirm_id={alert}
             disabled={@busy}
-            data-tip={~t"Export"m}
           >
-            <.icon name="hero-arrow-down-tray" class="max-sm:size-4" />
-            <span class="max-md:hidden"><%= ~t"Export"m %></span>
-          </button>
-          <button
-            phx-click="collection:encode"
-            class="btn btn-primary text-primary-content max-md:tooltip max-md:tooltip-primary max-sm:btn-sm"
-            disabled={@busy}
-            data-tip={~t"Encode"m}
-            data-confirm={~t"Are you sure?"m}
-            data-confirm_id="confirm_encoding_alert"
-          >
-            <.icon :if={@busy == false} name="hero-puzzle-piece" class="max-sm:size-4" />
-            <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="max-sm:size-4" />
-            <span class="max-md:hidden"><%= ~t"Encode"m %></span>
-          </button>
-          <button
-            phx-click="collection:fast_track_pub"
-            class="btn btn-primary text-primary-content max-md:tooltip max-md:tooltip-primary max-sm:btn-sm"
-            disabled={@busy}
-            data-tip={~t"Publish"m}
-            data-confirm={~t"Are you sure?"m}
-            data-confirm_id="confirm_fast_track_pub_alert"
-          >
-            <.icon :if={@busy == false} name="hero-globe-alt" class="max-sm:size-4" />
-            <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="max-sm:size-4" />
-            <span class="max-md:hidden"><%= ~t"Publish"m %></span>
-          </button>
-          <button
-            phx-click="collection:approval_pub"
-            class="btn btn-primary text-primary-content max-md:tooltip max-md:tooltip-primary max-sm:btn-sm"
-            disabled={@busy}
-            data-tip={~t"Approve"m}
-            data-confirm={~t"Are you sure?"m}
-            data-confirm_id="confirm_approval_pub_alert"
-          >
-            <.icon :if={@busy == false} name="hero-check-badge" class="max-sm:size-4" />
-            <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="max-sm:size-4" />
-            <span class="max-md:hidden"><%= ~t"Approve"m %></span>
+            <.icon :if={@busy == false} name={icon} />
+            <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" />
+            <span class="max-md:hidden"><%= label %></span>
           </button>
         </div>
       </div>
@@ -269,14 +277,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <:col
           :if={CollectionType.visible?(@collection.type, :picture)}
           th_wrapper_attrs={[
-            class: "hero-photo size-5 tooltip",
+            class: "hero-photo size-5",
             aria: [hidden: "true"]
           ]}
           class="text-center"
         >
-          <btn class="btn btn-xs btn-square btn-disabled">
-            <.icon name="hero-x-mark-micro" class="size-5 text-base-content" />
-          </btn>
+          <.icon name="hero-photo-micro" class="size-5 text-success" />
         </:col>
         <:col
           :if={CollectionType.visible?(@collection.type, :iucn_redlist)}
@@ -559,45 +565,49 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             collection={@collection}
           />
         </.modal>
+
+        <.alert id="confirm_record_alert" size="sm">
+          <p class="text-sm"><%= ~t"This will also delete the following associations:"m %></p>
+          <ul class="mt-2 list-inside list-disc text-sm">
+            <li class="text-info">
+              <span class="text-base-content"><%= ~t"Record encodings"m %></span>
+            </li>
+            <li class="text-info">
+              <span class="text-base-content"><%= ~t"Record encoding results"m %></span>
+            </li>
+            <li class="text-info">
+              <span class="text-base-content"><%= ~t"Record imports"m %></span>
+            </li>
+            <li class="text-info">
+              <span class="text-base-content"><%= ~t"Record images"m %></span>
+            </li>
+          </ul>
+        </.alert>
+
+        <.alert
+          id="confirm_encoding_alert"
+          size="sm"
+          title={~t"Are you sure?"m}
+          text={~t"You're about to encode this collection"m}
+        >
+        </.alert>
+
+        <.alert
+          id="confirm_fast_track_pub_alert"
+          size="sm"
+          title={~t"Are you sure?"m}
+          text={~t"You're about to publish this collection directly to the Gbif.ch Portal"m}
+        >
+        </.alert>
+
+        <.alert
+          id="confirm_approval_pub_alert"
+          size="sm"
+          title={~t"Are you sure?"m}
+          text={~t"You're about to publish this collection to Infospecies for approval"m}
+        >
+        </.alert>
       </:portal>
-
-      <.alert id="confirm_record_alert" size="sm">
-        <p class="text-sm"><%= ~t"This will also delete the following associations:"m %></p>
-        <ul class="mt-2 list-inside list-disc text-sm">
-          <li class="text-info">
-            <span class="text-base-content"><%= ~t"Record encodings"m %></span>
-          </li>
-          <li class="text-info">
-            <span class="text-base-content"><%= ~t"Record encoding results"m %></span>
-          </li>
-          <li class="text-info"><span class="text-base-content"><%= ~t"Record imports"m %></span></li>
-          <li class="text-info"><span class="text-base-content"><%= ~t"Record images"m %></span></li>
-        </ul>
-      </.alert>
-
-      <.alert
-        id="confirm_encoding_alert"
-        size="sm"
-        title={~t"Are you sure?"m}
-        text={~t"You're about to encode this collection"m}
-      >
-      </.alert>
-
-      <.alert
-        id="confirm_fast_track_pub_alert"
-        size="sm"
-        title={~t"Are you sure?"m}
-        text={~t"You're about to publish this collection directly to the Gbif.ch Portal"m}
-      >
-      </.alert>
-
-      <.alert
-        id="confirm_approval_pub_alert"
-        size="sm"
-        title={~t"Are you sure?"m}
-        text={~t"You're about to publish this collection to Infospecies for approval"m}
-      >
-      </.alert>
     </.page>
     """
   end
@@ -786,6 +796,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   defp schedule_encoding_poller do
     Process.send_after(self(), :poll_encoding, @polling_interval)
+  end
+
+  defp busy?(collection) do
+    collection.encoding_state in [:queued, :encoding] or
+      collection.records_publishing > 0
   end
 
   attr :collection, :any
