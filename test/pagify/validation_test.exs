@@ -53,13 +53,148 @@ defmodule Pagify.ValidationTest do
   end
 
   test "passes with string based map params" do
-    assert {:ok, %Pagify{limit: 15, offset: 0, order_by: [name: :asc]}} =
+    assert {:ok, %Pagify{limit: 15, offset: 0, order_by: [name: :asc], scopes: %{role: :admin}}} =
              Validation.validate_params(Post, %{
                "limit" => "15",
                "offset" => "0",
                "filters" => %{author: "John"},
-               "order_by" => "name"
+               "order_by" => "name",
+               "scopes" => %{"role" => "admin"}
              })
+  end
+
+  describe "validate_scopes/2" do
+    test "passes with nil scopes" do
+      assert %{scopes: nil} = Validation.validate_scopes(%{scopes: nil}, %{})
+    end
+
+    test "passes with no scopes" do
+      assert %{} = Validation.validate_scopes(%{}, %{})
+    end
+
+    test "passes with empty map scopes" do
+      assert %{scopes: nil} = Validation.validate_scopes(%{scopes: %{}}, %{})
+    end
+
+    test "passes with non-empty map scopes" do
+      pagify_scopes = Pagify.get_option(:pagify_scopes, for: Post)
+
+      assert %{scopes: %{role: :admin}} =
+               Validation.validate_scopes(%{scopes: %{role: :admin}}, pagify_scopes)
+    end
+
+    test "replaces invalid scope name and adds errors" do
+      pagify_scopes = Pagify.get_option(:pagify_scopes, for: Post)
+
+      assert %{
+               scopes: nil,
+               errors: [
+                 scopes: [%Pagify.Error.Query.NoSuchScope{group: :role, name: :invalid}]
+               ]
+             } =
+               Validation.validate_scopes(%{scopes: %{role: :invalid}}, pagify_scopes, nil, true)
+    end
+
+    test "does not replace invalid scope name and adds errors" do
+      pagify_scopes = Pagify.get_option(:pagify_scopes, for: Post)
+
+      assert %{
+               scopes: %{role: :invalid},
+               errors: [
+                 scopes: [%Pagify.Error.Query.NoSuchScope{group: :role, name: :invalid}]
+               ]
+             } =
+               Validation.validate_scopes(%{scopes: %{role: :invalid}}, pagify_scopes)
+    end
+
+    test "replaces invalid scope group and adds errors" do
+      pagify_scopes = Pagify.get_option(:pagify_scopes, for: Post)
+
+      assert %{
+               scopes: nil,
+               errors: [
+                 scopes: [%Pagify.Error.Query.NoSuchScope{group: :invalid, name: :admin}]
+               ]
+             } =
+               Validation.validate_scopes(%{scopes: %{invalid: :admin}}, pagify_scopes, nil, true)
+    end
+
+    test "does not replace invalid scope group and adds errors" do
+      pagify_scopes = Pagify.get_option(:pagify_scopes, for: Post)
+
+      assert %{
+               scopes: %{invalid: :admin},
+               errors: [
+                 scopes: [%Pagify.Error.Query.NoSuchScope{group: :invalid, name: :admin}]
+               ]
+             } =
+               Validation.validate_scopes(%{scopes: %{invalid: :admin}}, pagify_scopes)
+    end
+
+    test "replaces invalid scopes parameter" do
+      pagify_scopes = Pagify.get_option(:pagify_scopes, for: Post)
+
+      assert %{
+               scopes: nil,
+               errors: [
+                 scopes: [%Pagify.Error.Query.InvalidScopesParameter{scopes: 1}]
+               ]
+             } =
+               Validation.validate_scopes(%{scopes: 1}, pagify_scopes, nil, true)
+    end
+
+    test "does not replace invalid scopes parameter" do
+      pagify_scopes = Pagify.get_option(:pagify_scopes, for: Post)
+
+      assert %{
+               scopes: 1,
+               errors: [
+                 scopes: [%Pagify.Error.Query.InvalidScopesParameter{scopes: 1}]
+               ]
+             } =
+               Validation.validate_scopes(%{scopes: 1}, pagify_scopes)
+    end
+
+    test "replaces invalid scope group and keeps valid scopes" do
+      pagify_scopes = Pagify.get_option(:pagify_scopes, for: Post)
+
+      assert %{
+               scopes: %{role: :admin},
+               errors: [
+                 scopes: [%Pagify.Error.Query.NoSuchScope{group: :invalid, name: :admin}]
+               ]
+             } =
+               Validation.validate_scopes(
+                 %{scopes: %{role: :admin, invalid: :admin}},
+                 pagify_scopes,
+                 nil,
+                 true
+               )
+    end
+
+    test "replaces invalid scope group and keeps valid scopes and loads default scopes" do
+      pagify_scopes = Pagify.get_option(:pagify_scopes, for: Post)
+
+      assert %{
+               scopes: %{role: :user},
+               errors: [
+                 scopes: [%Pagify.Error.Query.NoSuchScope{group: :invalid, name: :admin}]
+               ]
+             } =
+               Validation.validate_scopes(
+                 %{scopes: %{invalid: :admin}},
+                 pagify_scopes,
+                 %{role: :user},
+                 true
+               )
+    end
+
+    test "loads default scopes" do
+      pagify_scopes = Pagify.get_option(:pagify_scopes, for: Post)
+
+      assert %{scopes: %{role: :user}} =
+               Validation.validate_scopes(%{}, pagify_scopes, %{role: :user})
+    end
   end
 
   describe "validate_filters/2" do

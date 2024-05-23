@@ -33,6 +33,24 @@ defmodule DataAggregator.Records.Record do
 
   @type t :: %Record{}
 
+  @pagify_scopes %{
+    status: [
+      %{name: :all, filter: nil, default?: true},
+      %{
+        name: :not_encoded,
+        filter: %{
+          or: [
+            %{state: :imported},
+            %{state: :queued},
+            %{state: :encoding},
+            %{state: :failed}
+          ]
+        }
+      }
+    ]
+  }
+  def pagify_scopes, do: @pagify_scopes
+
   attributes do
     uuid_attribute :id, prefix: "rec"
     attribute :import_data, :map

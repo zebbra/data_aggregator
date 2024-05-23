@@ -135,4 +135,112 @@ defmodule Pagify.Misc do
         unique_keywords(rest, seen, result)
     end
   end
+
+  @doc """
+  Coerce a maybe empty map to nil if it is empty.
+
+  ## Example
+
+      iex> Pagify.Misc.coerce_maybe_empty_map(%{})
+      nil
+
+      iex> Pagify.Misc.coerce_maybe_empty_map(%{a: 1})
+      %{a: 1}
+
+      iex> Pagify.Misc.coerce_maybe_empty_map(nil)
+      nil
+  """
+  @spec coerce_maybe_empty_map(any()) :: map() | nil
+  def coerce_maybe_empty_map(maybe_empty_map) when is_map(maybe_empty_map) do
+    if Enum.empty?(maybe_empty_map) do
+      nil
+    else
+      maybe_empty_map
+    end
+  end
+
+  def coerce_maybe_empty_map(map), do: map
+
+  @doc """
+  Put compiled pagify scopes into the options if they are not already there.
+
+  ## Example
+
+      iex> alias Pagify.Factory.Post
+      iex> Pagify.Misc.maybe_put_compiled_pagify_scopes(Post)
+      [
+        __compiled_pagify_default_scopes: %{status: :all},
+        __compiled_pagify_scopes: %{
+          role: [
+            %{name: :admin, filter: %{author: "John"}},
+            %{name: :user, filter: %{author: "Doe"}}
+          ],
+          status: [
+            %{name: :all, filter: nil, default?: true},
+            %{name: :active, filter: %{age: %{lt: 10}}},
+            %{name: :inactive, filter: %{age: %{gte: 10}}}
+          ]
+        }
+      ]
+
+  Or with default scopes passed as opts
+
+      iex> alias Pagify.Factory.Post
+      iex> pagify_scopes = %{role: [%{name: :user, filter: %{author: "Doe"}, default?: true}]}
+      iex> Pagify.Misc.maybe_put_compiled_pagify_scopes(Post, [pagify_scopes: pagify_scopes])
+      [
+        __compiled_pagify_default_scopes: %{role: :user, status: :all},
+        __compiled_pagify_scopes: %{
+          role: [
+            %{name: :admin, filter: %{author: "John"}},
+            %{name: :user, filter: %{author: "Doe"}, default?: true}
+          ],
+          status: [
+            %{name: :all, filter: nil, default?: true},
+            %{name: :active, filter: %{age: %{lt: 10}}},
+            %{name: :inactive, filter: %{age: %{gte: 10}}}
+          ]
+        },
+        pagify_scopes: pagify_scopes
+      ]
+  """
+  @spec maybe_put_compiled_pagify_scopes(Ash.Query.t() | Ash.Resource.t(), Keyword.t()) ::
+          Keyword.t()
+  def maybe_put_compiled_pagify_scopes(query_or_resource, opts \\ [])
+
+  def maybe_put_compiled_pagify_scopes(%Ash.Query{resource: resource}, opts) do
+    maybe_put_compiled_pagify_scopes(resource, opts)
+  end
+
+  def maybe_put_compiled_pagify_scopes(resource, opts) do
+    if scopes_compiled?(opts) do
+      opts
+    else
+      pagify_scopes = Pagify.get_option(:pagify_scopes, Keyword.put(opts, :for, resource))
+
+      opts
+      |> Keyword.put(:__compiled_pagify_scopes, pagify_scopes)
+      |> Keyword.put(:__compiled_pagify_default_scopes, default_scopes(pagify_scopes))
+    end
+  end
+
+  defp scopes_compiled?(opts) do
+    Keyword.has_key?(opts, :__compiled_pagify_scopes)
+  end
+
+  defp default_scopes(pagify_scopes) do
+    pagify_scopes
+    |> Enum.reduce(%{}, fn {group, scopes}, acc ->
+      Enum.reduce(scopes, acc, fn scope, acc -> maybe_put_default_scope(acc, group, scope) end)
+    end)
+    |> coerce_maybe_empty_map()
+  end
+
+  defp maybe_put_default_scope(scopes, group, scope) do
+    if Map.get(scope, :default?) do
+      Map.put(scopes, group, scope.name)
+    else
+      scopes
+    end
+  end
 end

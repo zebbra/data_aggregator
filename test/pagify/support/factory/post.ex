@@ -7,6 +7,19 @@ defmodule Pagify.Factory.Post do
   @default_limit 15
   def default_limit, do: @default_limit
 
+  @pagify_scopes %{
+    role: [
+      %{name: :admin, filter: %{author: "John"}},
+      %{name: :user, filter: %{author: "Doe"}}
+    ],
+    status: [
+      %{name: :all, filter: nil, default?: true},
+      %{name: :active, filter: %{age: %{lt: 10}}},
+      %{name: :inactive, filter: %{age: %{gte: 10}}}
+    ]
+  }
+  def pagify_scopes, do: @pagify_scopes
+
   ets do
     table :posts
     private? true

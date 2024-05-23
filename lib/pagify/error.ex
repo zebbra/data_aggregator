@@ -97,6 +97,26 @@ defmodule Pagify.Error.Query.InvalidOrderByParameter do
   end
 end
 
+defmodule Pagify.Error.Query.InvalidScopesParameter do
+  @moduledoc "Used when an invalid scopes is provided"
+  use Ash.Error.Exception
+  use Splode.Error, fields: [:scopes], class: :invalid
+
+  def message(%{scopes: scopes}) do
+    "#{inspect(scopes)} is not a valid scopes parameter"
+  end
+end
+
+defmodule Pagify.Error.Query.NoSuchScope do
+  @moduledoc "Used when an invalid scopes is provided"
+  use Ash.Error.Exception
+  use Splode.Error, fields: [:group, :name], class: :invalid
+
+  def message(%{group: group, name: name}) do
+    "#{inspect(name)} is not a valid scope parameter for group #{inspect(group)}"
+  end
+end
+
 defmodule Pagify.Error.Components.PathOrJSError do
   @moduledoc """
   Raised when a neither the `path` nor the `on_*` attribute is set for a
