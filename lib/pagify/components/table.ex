@@ -323,7 +323,8 @@ defmodule Pagify.Components.Table do
     Pagify.Components.build_path(
       path,
       Pagify.push_order(meta.pagify, field, opts),
-      for: meta.resource
+      for: meta.resource,
+      default_scopes: meta.default_scopes
     )
   end
 end

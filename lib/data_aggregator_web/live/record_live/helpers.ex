@@ -40,8 +40,11 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
     end
   end
 
-  @spec encoded_attribute(Record.t(), atom()) :: any()
-  def encoded_attribute(record, attribute) do
+  @spec encoded_attribute(Record.t(), atom(), String.t() | nil) :: any()
+  def encoded_attribute(record, attribute, layer \\ nil)
+  def encoded_attribute(record, attribute, "original"), do: Map.get(record, attribute)
+
+  def encoded_attribute(record, attribute, _) do
     if record.encoded_record != nil do
       record.encoded_record |> Map.get(attribute) |> value_for_record_attribute()
     else

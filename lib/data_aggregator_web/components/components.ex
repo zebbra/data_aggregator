@@ -26,7 +26,9 @@ defmodule DataAggregatorWeb.Components do
       import DataAggregatorWeb.Components.Pagination
       import DataAggregatorWeb.Components.Progress
       import DataAggregatorWeb.Components.Transitions
-      import Pagify.Components, only: [table: 1, build_path: 2, build_path: 3]
+
+      import Pagify.Components,
+        only: [table: 1, build_path: 2, build_path: 3, build_scope_path: 3]
     end
   end
 

@@ -60,6 +60,59 @@ defmodule Pagify.Components.Misc do
   def maybe_put(keywords, key, value, _), do: Keyword.put(keywords, key, value)
 
   @doc """
+  Puts the scopes params of a Pagify struct into a keyword list only if they don't
+  match the defaults either passed as last argument or loaded on the fly.
+
+  Example:
+
+      iex> maybe_put_scopes([], %Pagify{scopes: %{status: :inactive}}, default_scopes: %{status: :active})
+      [scopes: %{status: :inactive}]
+
+      iex> maybe_put_scopes([], %Pagify{scopes: %{status: :active}}, default_scopes: %{status: :active})
+      []
+
+      iex> alias Pagify.Factory.Post
+      iex> maybe_put_scopes([], %Pagify{scopes: %{status: :active}}, for: Post)
+      [scopes: %{status: :active}]
+  """
+  @spec maybe_put_scopes(Keyword.t(), Pagify.t(), Keyword.t()) :: Keyword.t()
+  def maybe_put_scopes(keywords, pagify, opts \\ [])
+
+  def maybe_put_scopes(keywords, pagify, opts) do
+    default_scopes = maybe_load_default_scopes(opts)
+    scopes = pagify.scopes || %{}
+
+    scopes =
+      scopes
+      |> Enum.reduce(%{}, fn {group, name}, acc ->
+        if default_scope?(group, name, default_scopes) do
+          acc
+        else
+          Map.put(acc, group, name)
+        end
+      end)
+      |> Pagify.Misc.coerce_maybe_empty_map()
+
+    maybe_put(keywords, :scopes, scopes)
+  end
+
+  defp maybe_load_default_scopes(opts) do
+    if Keyword.has_key?(opts, :default_scopes) do
+      Keyword.get(opts, :default_scopes, %{})
+    else
+      resource = Keyword.get(opts, :for)
+      opts = Pagify.Misc.maybe_put_compiled_pagify_scopes(resource, opts)
+      Keyword.get(opts, :__compiled_pagify_default_scopes, %{})
+    end
+  end
+
+  defp default_scope?(_, _, nil), do: false
+
+  defp default_scope?(group, name, default_scopes) do
+    Map.get(default_scopes, group) == name
+  end
+
+  @doc """
   Returns the global opts derived from a function referenced in the application
   environment.
   """
