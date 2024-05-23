@@ -1118,7 +1118,7 @@ mte_attributes = [
   %{
     dwc_field: "associatedMedia",
     dwc_link: "http://rs.tdwg.org/dwc/terms/associatedMedia",
-    dwca_file: :multimedia,
+    dwca_file: :core,
     attribute: %Attribute{name: :associated_media, type: :string, allow_nil?: true}
   },
   %{
