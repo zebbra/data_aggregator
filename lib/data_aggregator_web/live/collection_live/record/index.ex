@@ -271,10 +271,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           class="text-center"
         >
           <div
-            class="tooltip tooltip-right tooltip-success"
+            class="tooltip tooltip-right"
             data-tip={~t"According to IUCN not an endangered species"m}
           >
-            <.icon name="hero-flag-micro" class="size-5 text-success" />
+            <.icon name="hero-flag" class="size-5 text-gray-600" />
           </div>
         </:col>
         <:col

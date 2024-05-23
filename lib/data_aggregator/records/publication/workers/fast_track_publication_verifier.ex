@@ -19,6 +19,7 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
   defp scheduler_active?,
     do: Application.get_env(:data_aggregator, :publication_verification_scheduler_active, true) === true
 
+  # the seconds of one day
   @one_day 1 * 60 * 60 * 24
 
   @impl true
