@@ -12,7 +12,12 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   attr :collection_id, :any, default: nil
   attr :collection, Collection, default: nil
-  attr :current, :atom, default: :records, values: ~w(records imports encodings exports details)a
+
+  attr :current, :atom,
+    default: :records,
+    values: ~w(records imports encodings exports publications)a
+
+  attr :meta, Pagify.Meta, default: nil
 
   def collection_header(%{collection: nil} = assigns) do
     assigns
@@ -33,7 +38,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         />
         <.link
           :if={@current in [:records, :imports]}
-          patch={~p"/collections/#{@collection}/imports/new"}
+          patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
           class="btn btn-primary btn-sm"
         >
           <.icon name="hero-arrow-up-tray" class="size-4" />
@@ -49,19 +54,19 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           ]}
         />
         <h2 class="text-base-content text-2xl font-bold max-sm:line-clamp-2 sm:hidden sm:truncate sm:text-3xl sm:tracking-tight">
-          <%= @collection.name %>
+          <%= @collection.code %> - <%= @collection.name %>
         </h2>
       </:title>
       <:subtitle>
         <div class="text-base-content/60 text-sm/6 line-clamp-3 flex max-w-4xl items-center gap-x-2 sm:mt-2">
-          <span class="max-sm:hidden">
-            <.encoding_state_badge state={@collection.encoding_state} />
-          </span>
-          <%= @collection.description %>
+          <%= @collection.code %>
         </div>
       </:subtitle>
       <:actions :if={@current in [:records, :imports]} class="max-sm:hidden">
-        <.link patch={~p"/collections/#{@collection}/imports/new"} class="btn btn-primary">
+        <.link
+          patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
+          class="btn btn-primary"
+        >
           <.icon name="hero-arrow-up-tray" />
           <%= ~t"Import dataset"m %>
         </.link>

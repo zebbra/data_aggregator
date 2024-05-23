@@ -38,7 +38,6 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
         loc_country: "Switzerland",
         loc_country_code: "ch",
         loc_state_province: "Bern",
-        loc_city: "Bern",
         loc_municipality: "Bern"
       })
 
@@ -67,7 +66,6 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
       assert_map_includes(encoded_record, %{
         loc_swiss_coordinates_x: nil,
         loc_swiss_coordinates_y: nil,
-        loc_city: "Benghazi",
         loc_continent: "Africa",
         loc_country: "Libya",
         loc_country_code: "ly",
@@ -108,7 +106,6 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
         loc_country: "Switzerland",
         loc_country_code: "ch",
         loc_state_province: "Bern",
-        loc_city: "Bern",
         loc_municipality: "Bern"
       })
 
@@ -143,7 +140,6 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
         loc_country: nil,
         loc_country_code: nil,
         loc_state_province: nil,
-        loc_city: nil,
         loc_municipality: nil
       })
 
@@ -178,7 +174,6 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
         loc_country: nil,
         loc_country_code: nil,
         loc_state_province: nil,
-        loc_city: nil,
         loc_municipality: nil
       })
 
@@ -212,7 +207,6 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
         loc_country: nil,
         loc_country_code: nil,
         loc_state_province: nil,
-        loc_city: nil,
         loc_municipality: nil
       })
 

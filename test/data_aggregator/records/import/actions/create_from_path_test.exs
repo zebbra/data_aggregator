@@ -13,6 +13,7 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
     setup do
       collection =
         Collection.create!(%{
+          type: :zoology,
           name: "Test Collection",
           owner: "Max Powers",
           grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
@@ -30,33 +31,33 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
       columns = Enum.map(import.columns, &{&1.name, &1.type})
 
       assert columns == [
-               {"Age", :string},
+               {"Scientific Name", :string},
+               {"Numéro scientifique GBIF", :string},
+               {"Ordre", :string},
+               {"Famille", :string},
+               {"Genre", :string},
+               {"Espèce", :string},
+               {"Sous espèce", :string},
                {"Auteur et date ssp", :string},
+               {"Sexe", :string},
+               {"Age", :string},
+               {"Parties", :string},
                {"Autres numéros", :string},
-               {"Collecteur", :string},
+               {"Pays", :string},
+               {"Province", :string},
+               {"Localité", :string},
+               {"Station", :string},
+               {"LongitudeDecimale", :float},
+               {"LatitudeDecimale", :float},
+               {"PrecisionGEO", :string},
+               {"Remarques", :string},
                {"DAYCOLLECTED", :integer},
+               {"MONTHCOLLECTED", :integer},
+               {"YEARCOLLECTED", :integer},
                {"ENDOFPERIODDAY", :integer},
                {"ENDOFPERIODMONTH", :integer},
                {"ENDOFPERIODYEAR", :integer},
-               {"Espèce", :string},
-               {"Famille", :string},
-               {"Genre", :string},
-               {"LatitudeDecimale", :float},
-               {"Localité", :string},
-               {"LongitudeDecimale", :float},
-               {"MONTHCOLLECTED", :integer},
-               {"Numéro scientifique GBIF", :string},
-               {"Ordre", :string},
-               {"Parties", :string},
-               {"Pays", :string},
-               {"PrecisionGEO", :string},
-               {"Province", :string},
-               {"Remarques", :string},
-               {"Scientific Name", :string},
-               {"Sexe", :string},
-               {"Sous espèce", :string},
-               {"Station", :string},
-               {"YEARCOLLECTED", :integer}
+               {"Collecteur", :string}
              ]
     end
 

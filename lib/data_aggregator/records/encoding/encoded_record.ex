@@ -14,7 +14,8 @@ defmodule DataAggregator.Records.EncodedRecord do
       AshUUID,
       AshGraphql.Resource,
       AshJsonApi.Resource,
-      DataAggregator.DarwinCore.Resource
+      DataAggregator.DarwinCore.Resource,
+      AshPaperTrail.Resource
     ]
 
   alias __MODULE__
@@ -23,9 +24,6 @@ defmodule DataAggregator.Records.EncodedRecord do
   alias DataAggregator.Records.Record
 
   @type t :: %EncodedRecord{}
-
-  @default_limit 15
-  def default_limit, do: @default_limit
 
   attributes do
     uuid_attribute :id, prefix: "enr"
@@ -36,8 +34,17 @@ defmodule DataAggregator.Records.EncodedRecord do
   relationships do
     belongs_to :record, Record do
       allow_nil? false
-      primary_key? true
     end
+  end
+
+  paper_trail do
+    change_tracking_mode :changes_only
+    store_action_name? true
+    ignore_attributes [:inserted_at, :updated_at]
+    reference_source? false
+
+    mixin DataAggregator.Records.EncodedRecordVersionMixin
+    version_extensions extensions: [AshJsonApi.Resource]
   end
 
   preparations do
@@ -51,7 +58,7 @@ defmodule DataAggregator.Records.EncodedRecord do
     read :read do
       primary? true
       argument :sort, :string, allow_nil?: true
-      pagination offset?: true, default_limit: @default_limit, countable: true, required?: false
+      pagination offset?: true, countable: true, required?: false
     end
 
     create :create do
@@ -60,7 +67,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
       upsert? true
       upsert_fields [:extra_data | DarwinCore.Schema.prefixed_attribute_names()]
-      upsert_identity :record_mte_material_entity_id
+      upsert_identity :record_mte_catalog_number
 
       change Encoding.Changes.SetMandatoryAttributes
       change Encoding.Changes.SetOptionalAttributes
@@ -69,7 +76,7 @@ defmodule DataAggregator.Records.EncodedRecord do
   end
 
   identities do
-    identity :record_mte_material_entity_id, [:record_id, :mte_material_entity_id]
+    identity :record_mte_catalog_number, [:record_id, :mte_catalog_number]
   end
 
   code_interface do

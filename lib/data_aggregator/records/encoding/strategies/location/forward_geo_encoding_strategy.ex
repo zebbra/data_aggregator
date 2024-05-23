@@ -77,10 +77,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
     # we want to encode the location if we have at least one of the following fields,
     # otherwise we would get a way too generic response
     q =
-      if record.loc_locality || record.loc_city || record.loc_municipality do
+      if record.loc_locality || record.loc_municipality do
         [
           record.loc_locality,
-          record.loc_city,
           record.loc_municipality,
           record.loc_state_province,
           record.loc_country,
@@ -89,7 +88,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
         |> Enum.reject(&is_nil/1)
         |> Enum.join(", ")
       else
-        Logger.debug("no record.loc_locality, record.loc_city or record.loc_municipality found on record #{record.id}")
+        Logger.debug("no record.loc_locality or record.loc_municipality found on record #{record.id}")
 
         ""
       end

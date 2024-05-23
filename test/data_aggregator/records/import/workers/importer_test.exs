@@ -10,7 +10,7 @@ defmodule DataAggregator.Records.Import.Workers.ImporterTest do
   describe "DataAggregator.Records.Import.Workers.Importer.perform/1" do
     @valid_mapping [
       %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
-      %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"}
+      %{name: "Numéro scientifique GBIF", mapped_to: "mte_catalog_number"}
     ]
 
     @invalid_mapping [
@@ -20,6 +20,7 @@ defmodule DataAggregator.Records.Import.Workers.ImporterTest do
     setup do
       collection =
         Collection.create!(%{
+          type: :zoology,
           name: "Test Collection",
           owner: "Max Powers",
           grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"

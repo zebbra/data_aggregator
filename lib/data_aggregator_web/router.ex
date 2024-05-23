@@ -37,13 +37,14 @@ defmodule DataAggregatorWeb.Router do
   scope "/", DataAggregatorWeb do
     pipe_through([:locale, :browser, :with_root_layout])
 
-    user_hooks = [
+    default_hooks = [
       DataAggregatorWeb.LiveLogger,
       DataAggregatorWeb.LiveLocale,
+      Sentry.LiveViewHook,
       {DataAggregatorWeb.LiveUserAuth, :live_user_required}
     ]
 
-    ash_authentication_live_session :default, on_mount: user_hooks do
+    ash_authentication_live_session :default, on_mount: default_hooks do
       live "/", DashboardLive.Index, :index
 
       live "/collections", CollectionLive.Index, :index
@@ -54,9 +55,8 @@ defmodule DataAggregatorWeb.Router do
       live "/collections/:id/imports/new", CollectionLive.Import.Index, :new
       live "/collections/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit
       live "/collections/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary
-      live "/collections/:id/encodings", CollectionLive.Encoding.Index, :index
-      live "/collections/:id/details", CollectionLive.Details.Index, :index
       live "/collections/:id/exports", CollectionLive.Export.Index, :index
+      live "/collections/:id/publications", CollectionLive.Publication.Index, :index
 
       live "/records", RecordLive.Index, :index
 
@@ -75,7 +75,7 @@ defmodule DataAggregatorWeb.Router do
   end
 
   scope "/api" do
-    forward("/", DataAggregatorApi.Router)
+    forward "/", DataAggregatorApi.Router
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
@@ -94,22 +94,21 @@ defmodule DataAggregatorWeb.Router do
       storybook_assets()
 
       scope "/", DataAggregatorWeb do
-        pipe_through([:locale, :browser])
+        pipe_through [:locale, :browser]
         live_storybook("/storybook", backend_module: DataAggregatorWeb.Storybook)
       end
     end
 
     scope "/dev" do
-      pipe_through([:locale, :browser])
+      pipe_through [:locale, :browser]
 
-      live_dashboard("/dashboard",
+      live_dashboard "/dashboard",
         metrics: DataAggregatorWeb.Telemetry,
         additional_pages: [
           oban: Oban.LiveDashboard
         ]
-      )
 
-      forward("/mailbox", Plug.Swoosh.MailboxPreview)
+      forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end
 end

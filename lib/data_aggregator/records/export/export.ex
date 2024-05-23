@@ -5,12 +5,18 @@ defmodule DataAggregator.Records.Export do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
+    notifiers: [Ash.Notifier.PubSub]
 
+  alias __MODULE__
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Jobs.Job
-  alias DataAggregator.Records.Changes
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.DataLayerType
+  alias DataAggregator.Records.Export.Changes
+  alias DataAggregator.Records.HeaderSourceType
+
+  @type t :: %Export{}
 
   attributes do
     uuid_attribute :id, prefix: "exp"
@@ -20,9 +26,11 @@ defmodule DataAggregator.Records.Export do
     attribute :started_at, :utc_datetime, allow_nil?: true
     attribute :finished_at, :utc_datetime, allow_nil?: true
     attribute :mapping, :map, allow_nil?: true
-    attribute :records_query, :term, allow_nil?: false
+    attribute :records_query, :map, allow_nil?: false
     attribute :exported_count, :integer, allow_nil?: false, default: 0
     attribute :rows_count, :integer, allow_nil?: false, default: 0
+    attribute :header_source, HeaderSourceType, allow_nil?: false, default: :collection_mapping
+    attribute :data_layer, DataLayerType, allow_nil?: false, default: :raw
 
     timestamps private?: false, writable?: false
   end
@@ -49,7 +57,7 @@ defmodule DataAggregator.Records.Export do
     calculate :collection_name, :string, expr(collection.name)
 
     calculate :attachment_url, :string do
-      calculation fn import, _opts -> import.attachment.url end
+      calculation fn export, _opts -> export.attachment.url end
       load attachment: :url
     end
 
@@ -69,8 +77,25 @@ defmodule DataAggregator.Records.Export do
     end
   end
 
+  preparations do
+    prepare build(sort: [id: :desc])
+    prepare DataAggregator.Preparations.Sort
+  end
+
   actions do
     defaults [:read, :destroy]
+
+    read :by_collection do
+      argument :collection_id, :string, allow_nil?: false
+      argument :sort, :string, allow_nil?: true
+
+      pagination offset?: true,
+                 countable: true,
+                 required?: false,
+                 keyset?: true
+
+      filter expr(collection_id == ^arg(:collection_id))
+    end
 
     create :create do
       primary? true
@@ -142,9 +167,19 @@ defmodule DataAggregator.Records.Export do
     end
   end
 
+  pub_sub do
+    module DataAggregator.PubSub
+    prefix "export"
+
+    publish_all :create, [[:collection_id, nil], "created"]
+    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
+    publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
+  end
+
   code_interface do
     define_for DataAggregator.Records
     define :read
+    define :by_collection, args: [:collection_id]
     define :create
     define :update
     define :destroy

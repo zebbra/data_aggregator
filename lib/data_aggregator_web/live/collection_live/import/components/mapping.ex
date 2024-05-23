@@ -5,10 +5,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   use DataAggregatorWeb, :live_component
 
+  import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
+
   import DataAggregatorWeb.CollectionLive.Import.Components,
     only: [attribute_badge: 1, import_mapping_validation: 1]
 
-  import DataAggregatorWeb.CollectionLive.Import.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
 
   alias AshPhoenix.Form
@@ -52,7 +53,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
     ~H"""
     <div>
-      <.stepper current={current_step(@action)} links={valid_links(@collection, @import)} class="" />
+      <.stepper
+        current={current_step(@action)}
+        links={valid_links(@collection, @import, @meta)}
+        class=""
+      />
       <div class="space-y-8">
         <.section_heading
           text={~t"Mappings"m}
@@ -96,28 +101,27 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
             </.link>
           </div>
           <div class="collapse-content -mx-4">
-            <div class="no-scrollbar overflow-x-auto">
-              <.table
-                id="collection_mapping_table"
-                rows={@import.collection.import_mapping |> Enum.filter(&(&1["mapped_to"] != nil))}
-              >
-                <:col :let={column} label={~t"Column"m}>
-                  <span
-                    :if={column["name"]}
-                    class="bg-info text-info-content inline-flex rounded px-2 py-1 text-xs"
-                  >
-                    <%= column["name"] %>
-                  </span>
-                  <span :if={column["name"] == nil} class="text-error">
-                    <%= ~t"Mapping is invalid"m %>
-                  </span>
-                </:col>
-                <:col :let={column} label={~t"Mapped to"m} class="py-5">
-                  <%= column[:mapped_to] %>
-                  <.attribute_badge name={column["mapped_to"]} mapped={column["mapped_to"] != nil} />
-                </:col>
-              </.table>
-            </div>
+            <.table
+              opts={[no_results_content: no_mapping_available()]}
+              id="collection_mapping_table"
+              items={@import.collection.import_mapping |> Enum.filter(&(&1["mapped_to"] != nil))}
+            >
+              <:col :let={column} label={~t"Column"m}>
+                <span
+                  :if={column["name"]}
+                  class="bg-info text-info-content inline-flex rounded px-2 py-1 text-xs"
+                >
+                  <%= column["name"] %>
+                </span>
+                <span :if={column["name"] == nil} class="text-error">
+                  <%= ~t"Mapping is invalid"m %>
+                </span>
+              </:col>
+              <:col :let={column} label={~t"Mapped to"m} class="py-5">
+                <%= column[:mapped_to] %>
+                <.attribute_badge name={column["mapped_to"]} mapped={column["mapped_to"] != nil} />
+              </:col>
+            </.table>
           </div>
         </div>
 
@@ -392,7 +396,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         {:ok, import} ->
           socket
           |> put_flash(:info, ~t"Mapping updated"m)
-          |> push_patch(to: ~p"/collections/#{socket.assigns.collection}/imports/#{import}/summary")
+          |> push_patch(
+            to:
+              build_path(
+                ~p"/collections/#{socket.assigns.collection}/imports/#{import}/summary",
+                socket.assigns.meta
+              )
+          )
 
         {:error, form} ->
           assign(socket, :form, form)
@@ -410,7 +420,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         {:ok, import} ->
           socket
           |> assign(:import, import)
-          |> push_patch(to: ~p"/collections/#{import.collection}/imports/#{import}/edit")
+          |> push_patch(
+            to:
+              build_path(
+                ~p"/collections/#{import.collection}/imports/#{import}/edit",
+                socket.assigns.meta
+              )
+          )
 
         {:error, error} ->
           Logger.error(error)
@@ -473,7 +489,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   end
 
   defp mandatory?(%Phoenix.HTML.Form{} = form), do: mandatory?(coalesce_mapped_to(form))
-  defp mandatory?(mapped_to) when is_binary(mapped_to), do: mandatory?(String.to_atom(mapped_to))
+
+  defp mandatory?(mapped_to) when is_binary(mapped_to), do: mandatory?(String.to_existing_atom(mapped_to))
+
   defp mandatory?(mapped_to) when is_atom(mapped_to), do: mapped_to in @mandatory_attributes
   defp mandatory?(_), do: false
 
@@ -520,7 +538,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   defp insert_attribute(category, attribute, prefixed_attribute, options) do
     Enum.map(options, fn {desc, attrs} ->
       if desc == category do
-        {desc, [{attribute, String.to_atom(prefixed_attribute)} | attrs]}
+        {desc, [{attribute, String.to_existing_atom(prefixed_attribute)} | attrs]}
       else
         {desc, attrs}
       end
@@ -574,7 +592,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     columns
     |> Enum.map(fn {_index, column} -> column["mapped_to"] end)
     |> Enum.reject(&(&1 in ["", nil]))
-    |> Enum.map(&String.to_atom/1)
+    |> Enum.map(&String.to_existing_atom/1)
   end
 
   defp extract_column_mapped_to(_params), do: []
@@ -594,10 +612,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     end)
   end
 
-  defp valid_links(collection, import) do
+  defp valid_links(collection, import, meta) do
     summary =
       if Enum.empty?(import.missing_mappings),
-        do: ~p"/collections/#{collection}/imports/#{import}/summary"
+        do: build_path(~p"/collections/#{collection}/imports/#{import}/summary", meta)
 
     [nil, nil, summary]
   end
@@ -630,5 +648,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     Enum.map(params["columns"], fn {_, column} ->
       %{mapped_to: column["mapped_to"], name: column["name"]}
     end)
+  end
+
+  defp no_mapping_available(assigns \\ %{}) do
+    ~H"""
+    <div class="text-base-content/50 text-center text-sm">
+      <%= ~t"No mapping available"m %>
+    </div>
+    """
   end
 end

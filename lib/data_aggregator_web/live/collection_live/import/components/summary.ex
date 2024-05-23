@@ -5,8 +5,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
 
   use DataAggregatorWeb, :live_component
 
+  import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Components
-  import DataAggregatorWeb.CollectionLive.Import.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
 
   alias DataAggregator.Records.Import
@@ -22,7 +22,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
     <div class="overflow-x-hidden">
       <.stepper
         current={current_step(@action)}
-        links={[nil, ~p"/collections/#{@collection}/imports/#{@import}/edit", nil]}
+        links={[nil, build_path(~p"/collections/#{@collection}/imports/#{@import}/edit", @meta), nil]}
       />
       <.section_heading
         text={~t"Summary"m}
@@ -52,23 +52,23 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
         </.list>
       </div>
 
-      <.section_heading text={~t"Mapping"m} size="md" />
-      <div class="-mx-6 py-4 lg:-mx-8">
-        <div class="no-scrollbar overflow-x-auto">
-          <.table id="import_mapping_table" rows={@import.mappings}>
-            <:col :let={column} label={~t"Column"m}>
-              <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
-                <%= column.name %>
-              </span>
-              <span :if={column.name == nil} class="text-error">
-                <%= ~t"Mapping is invalid"m %>
-              </span>
-            </:col>
-            <:col :let={column} label={~t"Mapped to"m}>
-              <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
-            </:col>
-          </.table>
-        </div>
+      <div class="-mx-6 lg:-mx-8">
+        <.table id="import_mapping_table" items={@import.mappings}>
+          <:caption>
+            <.section_heading text={~t"Mapping"m} size="md" class="px-6 lg:px-8 text-left" />
+          </:caption>
+          <:col :let={column} label={~t"Column"m}>
+            <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
+              <%= column.name %>
+            </span>
+            <span :if={column.name == nil} class="text-error">
+              <%= ~t"Mapping is invalid"m %>
+            </span>
+          </:col>
+          <:col :let={column} label={~t"Mapped to"m}>
+            <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
+          </:col>
+        </.table>
       </div>
 
       <.section_heading text={~t"Unmapped columns"m} size="md" />
@@ -98,7 +98,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
           <%= ~t"Run import"m %>
         </button>
         <.link
-          patch={~p"/collections/#{@collection}/imports/#{@import}/edit"}
+          patch={build_path(~p"/collections/#{@collection}/imports/#{@import}/edit", @meta)}
           type="button"
           class="btn btn-ghost"
         >
@@ -117,6 +117,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
      socket
      |> put_flash(:info, ~t"Import started in background"m)
      |> push_event("submit:close", %{})
-     |> push_patch(to: ~p"/collections/#{socket.assigns.collection}/imports")}
+     |> push_patch(to: build_path(~p"/collections/#{socket.assigns.collection}/imports", socket.assigns.meta))}
   end
 end

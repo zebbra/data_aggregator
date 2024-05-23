@@ -52,7 +52,7 @@ defmodule DataAggregatorWeb.Components.Alert do
               <button class="btn btn-ghost" value="cancel">
                 <%= ~t"Cancel"m %>
               </button>
-              <button type="submit" value="confirm" class="btn btn-error">
+              <button type="submit" value="confirm" class="btn btn-primary">
                 <%= ~t"OK"m %>
               </button>
             </div>
@@ -68,16 +68,16 @@ defmodule DataAggregatorWeb.Components.Alert do
 
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   defp size(size) do
-    case String.to_atom(size) do
-      :xs -> "sm:max-w-xs"
-      :sm -> "sm:max-w-sm"
-      :md -> "sm:max-w-md"
-      :lg -> "sm:max-w-lg"
-      :xl -> "sm:max-w-xl"
-      :"2xl" -> "sm:max-w-2xl"
-      :"3xl" -> "sm:max-w-3xl"
-      :"4xl" -> "sm:max-w-4xl"
-      :"5xl" -> "sm:max-w-5xl"
+    case size do
+      "xs" -> "sm:max-w-xs"
+      "sm" -> "sm:max-w-sm"
+      "md" -> "sm:max-w-md"
+      "lg" -> "sm:max-w-lg"
+      "xl" -> "sm:max-w-xl"
+      "2xl" -> "sm:max-w-2xl"
+      "3xl" -> "sm:max-w-3xl"
+      "4xl" -> "sm:max-w-4xl"
+      "5xl" -> "sm:max-w-5xl"
       _ -> "sm:max-w-5xl"
     end
   end

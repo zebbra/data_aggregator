@@ -35,6 +35,9 @@ data_aggregator-*.tar
 /priv/plts/*.plt
 /priv/plts/*.plt.hash
 
+# Ignore CLDR locales
+/priv/cldr/locales/*.json
+
 # Ignore waffle storage dir
 /priv/storage/
 

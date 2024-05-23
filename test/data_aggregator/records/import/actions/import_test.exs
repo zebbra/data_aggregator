@@ -8,12 +8,13 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
   @valid_mapping [
     %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
-    %{name: "Numéro scientifique GBIF", mapped_to: "mte_material_entity_id"}
+    %{name: "Numéro scientifique GBIF", mapped_to: "mte_catalog_number"}
   ]
 
   setup do
     collection =
       Collection.create!(%{
+        type: :zoology,
         name: "Test Collection",
         owner: "Max Powers",
         grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
@@ -28,7 +29,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       |> Import.create_from_path!(path)
       |> Import.update_mapping!(@valid_mapping)
 
-    [import: import]
+    [import: import, path: path]
   end
 
   describe "DataAggregator.Records.Import.import/1" do
@@ -75,6 +76,19 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert import.records_count == 2
       assert import.rows_imported_count == 2
       assert import.rows_invalid_count == 0
+    end
+
+    @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"
+    test "imports columns with same order as provided by the import file", %{
+      import: import,
+      path: path
+    } do
+      assert {:ok, import} = Import.import(import)
+
+      column_names = Enum.map(import.columns, & &1.name)
+      column_order = DataAggregator.Records.Import.Changes.DetectColumns.column_order(path)
+
+      assert column_names == column_order
     end
   end
 end

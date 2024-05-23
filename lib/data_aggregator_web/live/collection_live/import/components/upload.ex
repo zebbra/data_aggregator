@@ -5,7 +5,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
 
   use DataAggregatorWeb, :live_component
 
-  import DataAggregatorWeb.CollectionLive.Import.Components.Stepper, only: [stepper: 1]
+  import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
 
   alias AshPhoenix.Form
@@ -55,11 +55,21 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
             <.fieldgroup>
               <div
                 :if={@error_message}
-                role="alert"
-                class="alert alert-error bg-error/10 text-error text-sm/6 items-center"
+                class="collapse text-error-content border-error/20 bg-error/10 border"
               >
-                <.icon name="hero-exclamation-triangle" />
-                <%= @error_message %>
+                <input type="checkbox" />
+                <div class="collapse-title text-error pe-4 flex items-center gap-x-2 text-sm">
+                  <div class="flex min-w-0 flex-1 items-center gap-x-2">
+                    <.icon name="hero-exclamation-triangle" />
+                    <span><%= ~t"An error has occurred"m %></span>
+                  </div>
+                  <%= ~t"Show more"m %>
+                </div>
+                <div class="collapse-content">
+                  <div class="text-error text-sm/6">
+                    <%= @error_message %>
+                  </div>
+                </div>
               </div>
               <section
                 phx-drop-target={@uploads.file.ref}
@@ -145,7 +155,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
 
   @impl true
   def handle_event("upload:validate", _params, socket) do
-    {:noreply, validate_max_entries(socket)}
+    {:noreply, check_for_errors(socket)}
   end
 
   @impl true
@@ -159,16 +169,45 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
       {:noreply, assign(socket, :error_message, error_to_string(:required))}
     else
       collection = socket.assigns.collection
-      imports = consume(socket, collection)
+      results = consume(socket, collection)
 
-      import = Enum.at(imports, 0)
+      handle_upload_result(socket, results, collection)
+    end
+  end
 
-      {
-        :noreply,
-        socket
-        |> handle_flash(import)
-        |> push_patch(to: ~p"/collections/#{collection}/imports/#{import}/edit")
-      }
+  defp handle_upload_result(socket, results, collection) do
+    case Enum.at(results, 0) do
+      {:error, error} ->
+        error_message = "File upload failed with error #{inspect(error)}"
+
+        {
+          :noreply,
+          socket
+          |> assign(error_message: error_message)
+          |> push_patch(to: ~p"/collections/#{collection}/imports/new")
+        }
+
+      %Import{} = import ->
+        {
+          :noreply,
+          socket
+          |> handle_flash(import)
+          |> push_patch(
+            to:
+              build_path(
+                ~p"/collections/#{collection}/imports/#{import}/edit",
+                socket.assigns.meta
+              )
+          )
+        }
+
+      _ ->
+        {
+          :noreply,
+          socket
+          |> handle_flash(nil)
+          |> push_patch(to: build_path(~p"/collections/#{collection}/imports", meta: socket.assigns.meta))
+        }
     end
   end
 
@@ -180,9 +219,19 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
 
         {:error, error} ->
           Logger.error(error)
-          {:postpone, ~t"Could not create import file"m}
+          handle_upload_error(error)
       end
     end)
+  end
+
+  defp handle_upload_error(error) do
+    case error do
+      %Ash.Error.Invalid{} = error ->
+        {:postpone, {:error, Enum.map_join(error.errors, ", ", & &1.message)}}
+
+      error ->
+        {:postpone, {:error, "Could not create import file: #{inspect(error)}"}}
+    end
   end
 
   defp handle_upload(collection, path, %UploadEntry{} = entry) do
@@ -226,6 +275,21 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
     end
   end
 
+  defp check_for_errors(socket) do
+    cond do
+      has_too_many_files?(socket) ->
+        assign(socket, :error_message, error_to_string(:too_many_files))
+
+      other_error_message?(socket) ->
+        assign(socket, :error_message, socket.assigns.error_message)
+
+      true ->
+        assign(socket, :error_message, nil)
+    end
+  end
+
+  defp other_error_message?(socket), do: socket.assigns.error_message != nil
+
   defp has_too_many_files?(socket) do
     Enum.any?(socket.assigns.uploads.file.errors, fn
       {_id, :too_many_files} -> true
@@ -237,4 +301,5 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
   defp error_to_string(:too_large), do: ~t"Too large"m
   defp error_to_string(:too_many_files), do: ~t"You have selected too many files"m
   defp error_to_string(:not_accepted), do: ~t"You have selected an unacceptable file type"m
+  defp error_to_string(_), do: ~t"An error has occurred"m
 end

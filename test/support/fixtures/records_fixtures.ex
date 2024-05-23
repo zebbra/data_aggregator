@@ -9,15 +9,16 @@ defmodule DataAggregator.RecordsFixtures do
   alias DataAggregator.Records.Record
 
   @record_defaults %{
-    mte_material_entity_id: "record1",
+    mte_catalog_number: "record1",
     tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
   }
 
   @collection_defaults %{
     name: "Collection",
     owner: "Max Powers",
-    type: :animalia,
-    grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
+    type: :zoology,
+    grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472",
+    code: "322ce107-3156-4420-8a2b-7f17efeaa472"
   }
 
   @doc """

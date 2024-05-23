@@ -166,27 +166,19 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     Map.take(encoded_record, Catalog.get_input_dwc_attributes(catalog))
   end
 
-  @doc """
-    create an encoded record if it does not exist yet
-  """
+  #  create an encoded record if it does not exist yet
   @spec create_encoded_record(Record.t()) :: EncodedRecord.t()
-  def create_encoded_record(record) do
-    encoded_record =
-      case EncodedRecord.get_by_record(record) do
-        {:ok, result} -> result
-        {:error, %Ash.Error.Query.NotFound{}} -> nil
-      end
+  defp create_encoded_record(record) do
+    case EncodedRecord.get_by_record(record) do
+      {:ok, result} ->
+        result
 
-    case encoded_record do
-      nil ->
+      {:error, %Ash.Error.Query.NotFound{}} ->
         EncodedRecord.create!(
           record
           |> Map.from_struct()
           |> Map.put_new_lazy(:record, fn -> record end)
         )
-
-      _ ->
-        encoded_record
     end
   end
 
@@ -195,7 +187,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     updated_attributes =
       output_attributes
       |> Enum.map(fn {record_attribute, catalog_attribute} ->
-        {record_attribute, Map.get(updated_values, catalog_attribute)}
+        {record_attribute, updated_values[catalog_attribute]}
       end)
       |> Enum.filter(fn {_key, value} -> value != nil end)
       |> Enum.uniq()

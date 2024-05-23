@@ -115,6 +115,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
 
     request_params = request_params ++ [{:key, api_key}, {:language, "en"}, {:no_annotations, 1}]
 
+    Logger.debug("fetching geo api with params: #{inspect(request_params)}")
+
     req = HttpDiskCache.attach(Req.new(params: request_params))
 
     # we cache requests for 30 days

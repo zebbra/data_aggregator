@@ -13,7 +13,9 @@ defmodule DataAggregator.DarwinCore.Schema.Docs do
     """
   end
 
-  defp category_docs(%Category{name: name, attributes: attributes, description: description}) do
+  defp category_docs(%Category{name: name, dwc_attributes: dwc_attributes, description: description}) do
+    attributes = Enum.map(dwc_attributes, & &1.attribute)
+
     """
     ### #{name |> Atom.to_string() |> String.upcase()}
 

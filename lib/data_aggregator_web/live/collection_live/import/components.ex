@@ -128,7 +128,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
   attr :on_hide, JS, default: %JS{}
 
   def import_mapping_validation(%{import: import} = assigns) do
-    attributes = for cat <- import.missing_mappings, attr <- cat.attributes, do: {cat, attr}
+    attributes = for cat <- import.missing_mappings, attr <- cat.dwc_attributes, do: {cat, attr}
     assigns = assign(assigns, attributes: attributes)
 
     ~H"""
@@ -150,7 +150,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
             <div class="bg-error text-error-content rounded-l px-2 py-1 uppercase">
               <%= cat.name %>
             </div>
-            <div class="bg-base-100 rounded-r px-2 py-1"><%= attr.name %></div>
+            <div class="bg-base-100 rounded-r px-2 py-1"><%= attr.attribute.name %></div>
           </div>
         </div>
       </div>

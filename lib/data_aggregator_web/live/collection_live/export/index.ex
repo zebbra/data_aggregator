@@ -10,7 +10,6 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
 
   alias DataAggregator.Records
   alias DataAggregator.Records.Export
-  alias DataAggregatorWeb.Components.DataTable
 
   @load [
     :duration,
@@ -30,6 +29,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
     socket =
       socket
       |> assign(:collection, get_collection(id))
+      |> assign(selected_export: nil)
       |> subscribe_for_export_updates(connected?(socket))
 
     {:ok, socket}
@@ -37,15 +37,17 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    socket =
-      socket
-      |> assign(selected_export: nil)
-      |> assign(:collection, get_collection(id))
-      |> assign(count: Records.count!(collection_scope(params)))
-      |> assign_exports(params)
-      |> apply_action(socket.assigns.live_action, params)
+    case list_exports(params) do
+      {:ok, {records, meta}} ->
+        socket
+        |> assign(meta: meta)
+        |> stream(:results, records, reset: true)
+        |> apply_action(socket.assigns.live_action, params)
+        |> noreply()
 
-    {:noreply, socket}
+      {:error, _meta} ->
+        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/exports")}
+    end
   end
 
   @impl true
@@ -67,74 +69,76 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           label={~t"Exports"m}
           active
         />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/publications"}
+          label={~t"Publications"m}
+        />
       </.secondary_navigation>
-      <div :if={@count > 0} class="no-scrollbar overflow-x-auto py-4">
-        <.table
-          id="exports_table"
-          rows={@streams.results}
-          row_click={
-            fn {_id, export} ->
-              JS.push("export:select", value: %{id: export.id})
-            end
-          }
-        >
-          <:col :let={{_id, export}} label={~t"State"m}>
-            <.export_state_badge export={export} />
-          </:col>
-          <:col :let={{_id, export}} label={~t"File"m}>
-            <div class="font-mono">
-              <%= if export.attachment != nil, do: export.attachment.filename, else: "-" %>
-            </div>
-            <div class="text-base-content/60 text-xs">
-              <%= format_number(export.rows_count) %> rows
-            </div>
-          </:col>
-          <:col :let={{_id, export}} label={~t"Size"m}>
-            <.attachment_download_badge :if={export.attachment != nil} attachment={export.attachment} />
-          </:col>
-          <:col :let={{_id, export}} label={~t"Started at"m}>
-            <%= format_datetime(export.started_at, format: :short) %>
-            <div :if={export.duration} class="text-base-content/60 text-xs">
-              <%= export.duration %>
-            </div>
-          </:col>
-          <:col :let={{_id, export}} label={~t"Records"m} class="text-right">
-            <%= format_number(export.rows_count, format: :short) %>
-          </:col>
 
-          <:action :let={{_id, export}} class="flex items-center justify-end gap-x-2">
-            <button
-              :if={can_run?(export)}
-              type="button"
+      <.table
+        opts={[
+          no_results_content: no_results_content(%{collection: @collection})
+        ]}
+        path={~p"/collections/#{@collection}/exports"}
+        items={@streams.results}
+        meta={@meta}
+        row_click={
+          fn {_id, export} ->
+            JS.push("export:select", value: %{id: export.id})
+          end
+        }
+      >
+        <:col :let={{_id, export}} field={:state} label={~t"State"m}>
+          <.export_state_badge export={export} />
+        </:col>
+        <:col :let={{_id, export}} label={~t"File"m}>
+          <div class="font-mono">
+            <%= if export.attachment != nil, do: export.attachment.filename, else: "-" %>
+          </div>
+          <div class="text-base-content/60 text-xs">
+            <%= format_number(export.rows_count) %> rows
+          </div>
+        </:col>
+        <:col :let={{_id, export}} label={~t"Size"m}>
+          <.attachment_download_badge :if={export.attachment != nil} attachment={export.attachment} />
+        </:col>
+        <:col :let={{_id, export}} field={:started_at} label={~t"Started at"m}>
+          <%= format_datetime(export.started_at, format: :short) %>
+          <div :if={export.duration} class="text-base-content/60 text-xs">
+            <%= export.duration %>
+          </div>
+        </:col>
+        <:col :let={{_id, export}} field={:rows_count} label={~t"Records"m} class="text-right">
+          <%= format_number(export.rows_count, format: :short) %>
+        </:col>
+
+        <:action
+          :let={{_id, export}}
+          tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
+          col_class="bg-base-300/10 border-l border-black-white/5"
+          label={~t"Actions"m}
+        >
+          <div :if={can_run?(export)} class="border-black-white/10 mr-4 inline-flex border-r pr-4">
+            <.link
               phx-click="export:run"
               phx-value-id={export.id}
-              class="link link-primary link-hover tooltip tooltip-primary rounded-md"
+              class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
               data-tip={~t"Run"m}
             >
-              <.icon name="hero-play-circle-mini" class="size-6" />
-            </button>
-
-            <button
-              type="button"
-              phx-click={JS.push("export:delete", value: %{id: export.id})}
-              class="link link-error link-hover tooltip tooltip-error rounded-md"
-              data-tip={~t"Delete"m}
-              data-confirm={~t"Are you sure?"m}
-            >
-              <.icon name="hero-x-circle-mini" class="size-6" />
-            </button>
-          </:action>
-        </.table>
-      </div>
-
-      <.empty_state
-        :if={@count == 0}
-        title={~t"No exports"m}
-        description={~t"Get started by exporting records."m}
-        label={~t"Export"m}
-        icon="hero-arrow-down-tray"
-        href={~p"/collections/#{@collection}/records"}
-      />
+              <.icon name="hero-play-circle-mini" class="size-5 text-base-content/75" />
+            </.link>
+          </div>
+          <.link
+            phx-click={JS.push("export:delete", value: %{id: export.id})}
+            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
+            data-tip={~t"Delete"m}
+            data-confirm={~t"Are you sure?"m}
+          >
+            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
+          </.link>
+        </:action>
+      </.table>
+      <.pagination meta={@meta} path={~p"/collections/#{@collection}/exports"} />
 
       <:secondary>
         <.slideover
@@ -320,23 +324,21 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
     |> assign(:export, nil)
   end
 
-  defp assign_exports(socket, params) do
-    stream(socket, :results, list_exports(params))
+  defp list_exports(params, opts \\ [load: @load, action: :by_collection]) do
+    Pagify.validate_and_run(Export, params, opts, params["id"])
   end
 
-  defp list_exports(params) do
-    opts = DataTable.read_opts(collection_scope(params), params)
-    opts = Keyword.put(opts, :load, @load)
+  attr :collection, :any
 
-    {:ok, result} = Export.read(opts)
-
-    case result do
-      %Ash.Page.Offset{results: exports} -> exports
-      exports -> exports
-    end
-  end
-
-  defp collection_scope(params) do
-    Ash.Query.filter_input(Export, %{"collection" => %{"id" => params["id"]}})
+  defp no_results_content(assigns) do
+    ~H"""
+    <.empty_state
+      title={~t"No exports"m}
+      description={~t"Get started by exporting records."m}
+      label={~t"Export"m}
+      icon="hero-arrow-down-tray"
+      href={~p"/collections/#{@collection}/records"}
+    />
+    """
   end
 end
