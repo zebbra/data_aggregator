@@ -1383,6 +1383,30 @@ defmodule Pagify do
   end
 
   @doc """
+  Validates the given query or resource and pagify parameters and returns a
+  validated query.
+
+  ## Examples
+
+      iex> alias Pagify.Factory.Post
+      iex> pagify = %Pagify{limit: 10, offset: 20, order_by: ["name"], filters: %{name: "foo"}}
+      iex> validated_query(Post, pagify)
+      #Ash.Query<resource: Pagify.Factory.Post, filter: #Ash.Filter<name == "foo">>
+  """
+  @spec validated_query(Ash.Query.t() | Ash.Resource.t(), map() | Pagify.t(), Keyword.t()) ::
+          Ash.Query.t()
+  def validated_query(query_or_resource, map_or_pagify, opts \\ [])
+
+  def validated_query(%Ash.Query{} = q, map_or_pagify, opts) do
+    pagify = q |> validate!(map_or_pagify, opts) |> reset_order()
+    query(q, pagify, opts)
+  end
+
+  def validated_query(r, map_or_pagify, opts) when is_atom(r) and r != nil do
+    validated_query(Ash.Query.to_query(r), map_or_pagify, opts)
+  end
+
+  @doc """
   Sets the limit value of a `Pagify` struct.
 
       iex> set_limit(%Pagify{limit: 10, offset: 10}, 20)
@@ -1604,6 +1628,75 @@ defmodule Pagify do
   """
   @spec reset_filters(Pagify.t()) :: Pagify.t()
   def reset_filters(%Pagify{} = pagify), do: %{pagify | filters: %{}}
+
+  @doc """
+  Merges the given filters with the filters of a Pagify struct.
+
+  If the filter already exists, it will be replaced with the new value. If the
+  filter does not exist, it will be added to the filters map.
+
+  ## Examples
+
+      iex> merge_filters(%Pagify{filters: %{name: "foo"}}, %{name: "bar"})
+      %Pagify{filters: %{name: "bar"}}
+
+      iex> merge_filters(%Pagify{filters: %{name: "foo"}}, %{age: 10})
+      %Pagify{filters: %{name: "foo", age: 10}}
+  """
+  @spec merge_filters(Pagify.t(), map()) :: Pagify.t()
+  def merge_filters(%Pagify{} = pagify, filters) do
+    %{pagify | filters: Map.merge(pagify.filters || %{}, filters)}
+  end
+
+  @doc """
+  Takes the Pagify.scopes and compiles them into a map of filters.
+  The filters are merged with the filters of the Pagify struct.
+
+  At this stage we assume that the filters and scopes are valid and
+  have been validated.
+
+  ## Examples
+
+      iex> alias Pagify.Factory.Post
+      iex> compile_filters(Post, %Pagify{scopes: [{:role, :admin}]})
+      %Pagify{filters: %{author: "John"}, scopes: [role: :admin]}
+  """
+  @spec compile_filters(Ash.Query.t() | Ash.Resource.t(), Pagify.t(), Keyword.t()) :: Pagify.t()
+  def compile_filters(query_or_resource, pagify, opts \\ [])
+
+  def compile_filters(%Ash.Query{resource: resource}, %Pagify{} = pagify, opts) do
+    scopes_filters = load_scopes_filters(resource, pagify.scopes, opts)
+
+    merge_filters(pagify, scopes_filters)
+  end
+
+  def compile_filters(r, %Pagify{} = pagify, opts) when is_atom(r) and r != nil do
+    scopes_filters = load_scopes_filters(r, pagify.scopes, opts)
+
+    merge_filters(pagify, scopes_filters)
+  end
+
+  defp load_scopes_filters(_resource, nil, _opts), do: %{}
+
+  defp load_scopes_filters(resource, scopes, opts) do
+    opts = Misc.maybe_put_compiled_pagify_scopes(resource, opts)
+    compiled_scopes = Keyword.get(opts, :__compiled_pagify_scopes)
+
+    Enum.reduce(scopes, %{}, fn {group, name}, acc ->
+      get_scope_filter(acc, compiled_scopes, group, name)
+    end)
+  end
+
+  defp get_scope_filter(filters, compiled_scopes, group, name) do
+    group_scopes = get_group_scopes(compiled_scopes, group)
+    scope = find_scope(group_scopes, group, name)
+
+    if scope.filter != nil do
+      Map.merge(filters, scope.filter)
+    else
+      filters
+    end
+  end
 
   @doc """
   Returns the current order direction for the given field.

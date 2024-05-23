@@ -40,18 +40,13 @@ defmodule DataAggregator.Records.Record do
         name: :not_encoded,
         filter: %{
           or: [
-            state: :imported,
-            state: :queued,
-            state: :encoding,
-            state: :failed
+            %{state: :imported},
+            %{state: :queued},
+            %{state: :encoding},
+            %{state: :failed}
           ]
         }
       }
-    ],
-    layer: [
-      %{name: :all, filter: nil, default?: true},
-      %{name: :encoding, filter: nil},
-      %{name: :approval, filter: nil}
     ]
   }
   def pagify_scopes, do: @pagify_scopes
