@@ -53,10 +53,6 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
         end
       )
     end
-  rescue
-    error ->
-      Logger.error("Error encoding Record #{id}: #{inspect(error)}")
-      {:error, error}
   end
 
   @impl Oban.Worker
