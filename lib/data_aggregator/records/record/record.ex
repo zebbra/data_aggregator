@@ -331,6 +331,7 @@ defmodule DataAggregator.Records.Record do
 
     references do
       reference :collection, on_delete: :delete, on_update: :update
+      reference :fast_track_checker_job, on_delete: :nilify, on_update: :update
     end
   end
 

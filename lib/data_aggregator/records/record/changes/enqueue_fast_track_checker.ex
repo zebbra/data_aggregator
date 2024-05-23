@@ -13,16 +13,14 @@ defmodule DataAggregator.Records.Record.Changes.EnqueueFastTrackChecker do
 
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_action(changeset, &enqueue_fast_track_checker/1)
+    enqueue_fast_track_checker(changeset)
   end
 
   defp enqueue_fast_track_checker(%Changeset{data: record} = changeset) do
-    Scheduler.FastTrackPublicationVerifier.cancel_job(record.fast_track_checker_job_id)
-
     case insert_job(record) do
       {:ok, job} ->
         Logger.debug("Enqueued record fast_track_checker job #{inspect(job.id)}")
-        Changeset.manage_relationship(changeset, :fast_track_checker_job, job)
+        Changeset.change_attribute(changeset, :fast_track_checker_job_id, job.id)
 
       {:error, error} ->
         Logger.error("Failed to enqueue record fast_track_checker job: #{inspect(error)}")

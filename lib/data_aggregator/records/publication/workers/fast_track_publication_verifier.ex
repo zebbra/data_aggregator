@@ -9,37 +9,33 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
   * `id` - the ID of the record to check on the gbif portal
 
   """
-  use Oban.Worker, queue: :publication_verification, max_attempts: 10, unique: [period: one_day()]
+  use Oban.Worker, queue: :publication_verifications, max_attempts: 10
 
+  alias __MODULE__
   alias DataAggregator.Records.Record
 
   require Logger
 
-  @one_day 1 * 60 * 60 * 24
+  defp scheduler_active?,
+    do: Application.get_env(:data_aggregator, :publication_verification_scheduler_active, true) === true
 
-  defp one_day, do: @one_day
+  @one_day 1 * 60 * 60 * 24
 
   @impl true
   def perform(%Oban.Job{args: %{"id" => id}}) do
     record = id |> Record.get_by_id!() |> Record.check_if_fast_track_pubished!()
 
-    if record.fast_track_status != :published do
+    if scheduler_active?() && record.fast_track_status != :published do
       %{id: id}
-      |> new(schedule_in: interval())
+      |> FastTrackPublicationVerifier.new(schedule_in: interval())
       |> Oban.insert!()
 
+      Logger.debug("Record #{record.id} has not been published to GBIF. We queue it to check again.")
+    else
       Logger.debug("Record #{record.id} has been published on GBIF already. We don't queue it again.")
     end
 
     {:ok, record}
-  end
-
-  def cancel_job(nil) do
-    Logger.debug("No job to cancel")
-  end
-
-  def cancel_job(id) do
-    Oban.cancel_job(__MODULE__, id)
   end
 
   @impl Oban.Worker

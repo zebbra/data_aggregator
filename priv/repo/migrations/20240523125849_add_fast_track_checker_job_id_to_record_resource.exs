@@ -14,7 +14,9 @@ defmodule DataAggregator.Repo.Migrations.AddFastTrackCheckerJobIdToRecordResourc
             column: :id,
             name: "records_fast_track_checker_job_id_fkey",
             type: :bigint,
-            prefix: "public"
+            prefix: "public",
+            on_delete: :nilify_all,
+            on_update: :update_all
           )
     end
   end

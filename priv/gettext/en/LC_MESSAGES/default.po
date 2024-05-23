@@ -2222,3 +2222,9 @@ msgstr ""
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "According to IUCN not an endangered species"
 msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:277
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "No images uploaded yet"
+msgstr ""

@@ -67,7 +67,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
 
   @spec build_params(EncodedRecord.t()) :: {:ok, list()} | {:error, any()}
   defp build_params(record) do
-    # why doesn't it work to get the env via Application.compile_env(...) in module body?
     api_key =
       System.get_env("OPEN_CAGE_DATA_API_KEY") ||
         throw("No open cage data api key found in the environment variables. set one under OPEN_CAGE_DATA_API_KEY")

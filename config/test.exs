@@ -65,3 +65,6 @@ config :data_aggregator, :pagify, default_limit: 25
 config :data_aggregator, :pagify_phoenix,
   pagination: [opts: {Pagify.Components.Pagination, :default_opts}],
   table: [opts: {Pagify.Components.Table, :default_opts}]
+
+# Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier`
+config :data_aggregator, publication_verification_scheduler_active: false

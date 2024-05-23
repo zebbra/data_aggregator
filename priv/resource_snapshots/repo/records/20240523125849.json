@@ -7,8 +7,8 @@
       "source": "ext_vernacular_names",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -17,8 +17,8 @@
       "source": "ext_species_profile",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -27,8 +27,8 @@
       "source": "ext_species_distribution",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -37,8 +37,8 @@
       "source": "ext_references",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -47,8 +47,8 @@
       "source": "ext_resource_relationship",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -57,8 +57,8 @@
       "source": "ext_permit",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -67,8 +67,8 @@
       "source": "ext_chronometric",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -77,8 +77,8 @@
       "source": "ext_assertions",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -87,8 +87,8 @@
       "source": "ext_amplification",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -97,8 +97,8 @@
       "source": "oth_specify_author_of_record",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -107,8 +107,8 @@
       "source": "oth_specify_event",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -117,8 +117,8 @@
       "source": "oth_specify_locality",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -127,8 +127,8 @@
       "source": "oth_specify_organism_name",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -137,8 +137,8 @@
       "source": "oth_specify_person",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -147,8 +147,8 @@
       "source": "oth_type",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -157,8 +157,8 @@
       "source": "oth_rights_holder",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -167,8 +167,8 @@
       "source": "oth_owner_institution_code",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -177,8 +177,8 @@
       "source": "oth_modified_by",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -187,8 +187,8 @@
       "source": "oth_license",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -197,8 +197,8 @@
       "source": "oth_language",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -207,8 +207,8 @@
       "source": "oth_institution_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -217,8 +217,8 @@
       "source": "oth_institution_code",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -227,8 +227,8 @@
       "source": "oth_information_withheld",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -237,8 +237,8 @@
       "source": "oth_date_available",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -247,8 +247,8 @@
       "source": "oth_dataset_name",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -257,8 +257,8 @@
       "source": "oth_dataset_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -267,8 +267,8 @@
       "source": "oth_data_generalizations",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -277,8 +277,8 @@
       "source": "oth_collection_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -287,8 +287,8 @@
       "source": "oth_collection_code",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -297,8 +297,8 @@
       "source": "oth_bibliographic_citation",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -307,8 +307,8 @@
       "source": "oth_basis_of_record",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -317,8 +317,8 @@
       "source": "oth_access_rights",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -327,8 +327,8 @@
       "source": "pvn_tissue_bank_institution",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -337,8 +337,8 @@
       "source": "pvn_storage_name",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -347,8 +347,8 @@
       "source": "pvn_preservation_type",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -357,8 +357,8 @@
       "source": "pvn_sequence",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -367,8 +367,8 @@
       "source": "pvn_preservation_temperature",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -377,8 +377,8 @@
       "source": "pvn_preservation_special_mode",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -387,8 +387,8 @@
       "source": "pvn_preservation_quality",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -397,8 +397,8 @@
       "source": "pvn_preservation_mode_text",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -407,8 +407,8 @@
       "source": "pvn_preservation_mode_keywords",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -417,8 +417,8 @@
       "source": "pvn_preservation_method",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -427,8 +427,8 @@
       "source": "pvn_preservation_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -437,8 +437,8 @@
       "source": "pvn_preservation_date_begin",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -447,8 +447,8 @@
       "source": "pvn_preservation_alteration_text",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -457,8 +457,8 @@
       "source": "pvn_dna_storage_code",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -467,8 +467,8 @@
       "source": "pvn_dna_bank_institution",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -477,8 +477,8 @@
       "source": "occ_occurrence_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -487,8 +487,8 @@
       "source": "org_organism_remarks",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -497,8 +497,8 @@
       "source": "org_organism_scope",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -507,8 +507,8 @@
       "source": "org_organism_name",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -517,8 +517,8 @@
       "source": "org_organism_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -527,8 +527,8 @@
       "source": "org_pathway",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -537,8 +537,8 @@
       "source": "org_degree_of_establishment",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -547,8 +547,8 @@
       "source": "org_establishment_means",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -557,8 +557,8 @@
       "source": "org_sex",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -567,8 +567,8 @@
       "source": "gec_place_of_origin",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -577,8 +577,8 @@
       "source": "gec_member",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -587,8 +587,8 @@
       "source": "gec_group",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -597,8 +597,8 @@
       "source": "gec_formation",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -607,8 +607,8 @@
       "source": "gec_lithostratigraphic_terms",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -617,8 +617,8 @@
       "source": "gec_highest_biostratigraphic_zone",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -627,8 +627,8 @@
       "source": "gec_lowest_biostratigraphic_zone",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -637,8 +637,8 @@
       "source": "gec_latest_age_or_highest_stage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -647,8 +647,8 @@
       "source": "gec_latest_epoch_or_highest_series",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -657,8 +657,8 @@
       "source": "gec_latest_period_or_highest_system",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -667,8 +667,8 @@
       "source": "gec_latest_era_or_highest_erathem",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -677,8 +677,8 @@
       "source": "gec_latest_eon_or_highest_eonothem",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -687,8 +687,8 @@
       "source": "gec_earliest_period_or_lowest_system",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -697,8 +697,8 @@
       "source": "gec_earliest_era_or_lowest_erathem",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -707,8 +707,8 @@
       "source": "gec_earliest_epoch_or_lowest_series",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -717,8 +717,8 @@
       "source": "gec_earliest_eon_or_lowest_eonothem",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -727,8 +727,8 @@
       "source": "gec_earliest_age_or_lowest_stage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -737,8 +737,8 @@
       "source": "gec_bed",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -747,8 +747,8 @@
       "source": "gec_geological_context_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -757,8 +757,8 @@
       "source": "mts_material_sample_type",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -767,8 +767,8 @@
       "source": "mts_material_sample_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -777,8 +777,8 @@
       "source": "mte_original_biominerals",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -787,8 +787,8 @@
       "source": "mte_orig_col_author",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -797,8 +797,8 @@
       "source": "mte_year_collection_entrance",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -807,8 +807,8 @@
       "source": "mte_tissue_bank_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -817,8 +817,8 @@
       "source": "mte_taphonomy",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -827,8 +827,8 @@
       "source": "mte_sample_designation",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -837,8 +837,8 @@
       "source": "mte_orientation",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -847,8 +847,8 @@
       "source": "mte_organism_quantity_method",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -857,8 +857,8 @@
       "source": "mte_mineralization",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -867,8 +867,8 @@
       "source": "mte_matrix",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -877,8 +877,8 @@
       "source": "mte_gbif_doi",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -887,8 +887,8 @@
       "source": "mte_form",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -897,8 +897,8 @@
       "source": "mte_feeding_predation_traces",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -907,8 +907,8 @@
       "source": "mte_extraction_temporary_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -917,8 +917,8 @@
       "source": "mte_encrustation",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -927,8 +927,8 @@
       "source": "mte_dna_stable_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -937,8 +937,8 @@
       "source": "mte_dna_bank_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -947,8 +947,8 @@
       "source": "mte_depositional_environment_type",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -957,8 +957,8 @@
       "source": "mte_depositional_environment_text",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -967,8 +967,8 @@
       "source": "mte_completeness",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -977,8 +977,8 @@
       "source": "mte_paleo_completeness",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -987,8 +987,8 @@
       "source": "mte_catalog_number",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -997,8 +997,8 @@
       "source": "mte_bioerosion",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1007,8 +1007,8 @@
       "source": "mte_assemblage_origin",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1017,8 +1017,8 @@
       "source": "mte_articulation",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1027,8 +1027,8 @@
       "source": "mte_permit_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1037,8 +1037,8 @@
       "source": "mte_replacement_minerals",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1047,8 +1047,8 @@
       "source": "mte_barcode_label",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1057,8 +1057,8 @@
       "source": "mte_references",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1067,8 +1067,8 @@
       "source": "mte_other_catalog_numbers",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1077,8 +1077,8 @@
       "source": "mte_associated_media",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1087,8 +1087,8 @@
       "source": "mte_occurrence_status",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1097,8 +1097,8 @@
       "source": "mte_behavior",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1107,8 +1107,8 @@
       "source": "mte_reproductive_condition",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1117,8 +1117,8 @@
       "source": "mte_life_stage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1127,8 +1127,8 @@
       "source": "mte_organism_quantity_type",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1137,8 +1137,8 @@
       "source": "mte_organism_quantity",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1147,8 +1147,8 @@
       "source": "mte_recorded_by_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1157,8 +1157,8 @@
       "source": "mte_recorded_by",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1167,8 +1167,8 @@
       "source": "mte_record_number",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1177,8 +1177,8 @@
       "source": "mte_material_entity_remarks",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1187,8 +1187,8 @@
       "source": "mte_preparations",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1197,8 +1197,8 @@
       "source": "mte_verbatim_label",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1207,8 +1207,8 @@
       "source": "mte_post_burial_transportation",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1217,8 +1217,8 @@
       "source": "mte_part_of_organism",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1227,8 +1227,8 @@
       "source": "mte_parent_material_entity_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1237,8 +1237,8 @@
       "source": "mte_anatomical_description",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1247,8 +1247,8 @@
       "source": "mte_material_entity_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1257,8 +1257,8 @@
       "source": "loc_swiss_coordinates_y",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1267,8 +1267,8 @@
       "source": "loc_swiss_coordinates_x",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1277,8 +1277,8 @@
       "source": "loc_georeference_verification_status",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1287,8 +1287,8 @@
       "source": "loc_georeference_remarks",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1297,8 +1297,8 @@
       "source": "loc_georeference_sources",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1307,8 +1307,8 @@
       "source": "loc_georeference_protocol",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1317,8 +1317,8 @@
       "source": "loc_georeferenced_date",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1327,8 +1327,8 @@
       "source": "loc_georeferenced_by",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1337,8 +1337,8 @@
       "source": "loc_footprint_spatial_fit",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1347,8 +1347,8 @@
       "source": "loc_footprint_srs",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1357,8 +1357,8 @@
       "source": "loc_footprint_wkt",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1367,8 +1367,8 @@
       "source": "loc_verbatim_srs",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1377,8 +1377,8 @@
       "source": "loc_verbatim_coordinate_system",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1387,8 +1387,8 @@
       "source": "loc_verbatim_longitude",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1397,8 +1397,8 @@
       "source": "loc_verbatim_latitude",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1407,8 +1407,8 @@
       "source": "loc_verbatim_coordinates",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1417,8 +1417,8 @@
       "source": "loc_point_radius_spatial_fit",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1427,8 +1427,8 @@
       "source": "loc_coordinate_precision",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1437,8 +1437,8 @@
       "source": "loc_coordinate_uncertainty_in_meters",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1447,8 +1447,8 @@
       "source": "loc_geodetic_datum",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1457,8 +1457,8 @@
       "source": "loc_location_remarks",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1467,8 +1467,8 @@
       "source": "loc_location_according_to",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1477,8 +1477,8 @@
       "source": "loc_maximum_distance_above_surface_in_meters",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1487,8 +1487,8 @@
       "source": "loc_minimum_distance_above_surface_in_meters",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1497,8 +1497,8 @@
       "source": "loc_verbatim_depth",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1507,8 +1507,8 @@
       "source": "loc_maximum_depth_in_meters",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1517,8 +1517,8 @@
       "source": "loc_minimum_depth_in_meters",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1527,8 +1527,8 @@
       "source": "loc_vertical_datum",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1537,8 +1537,8 @@
       "source": "loc_verbatim_elevation",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1547,8 +1547,8 @@
       "source": "loc_maximum_elevation_in_meters",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1557,8 +1557,8 @@
       "source": "loc_minimum_elevation_in_meters",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1567,8 +1567,8 @@
       "source": "loc_country_code",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1577,8 +1577,8 @@
       "source": "loc_municipality",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1587,8 +1587,8 @@
       "source": "loc_county",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1597,8 +1597,8 @@
       "source": "loc_decimal_latitude",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1607,8 +1607,8 @@
       "source": "loc_decimal_longitude",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1617,8 +1617,8 @@
       "source": "loc_state_province",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1627,8 +1627,8 @@
       "source": "loc_verbatim_locality",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1637,8 +1637,8 @@
       "source": "loc_locality",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1647,8 +1647,8 @@
       "source": "loc_country",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1657,8 +1657,8 @@
       "source": "loc_island",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1667,8 +1667,8 @@
       "source": "loc_island_group",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1677,8 +1677,8 @@
       "source": "loc_continent",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1687,8 +1687,8 @@
       "source": "loc_higher_geography",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1697,8 +1697,8 @@
       "source": "loc_water_body_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1707,8 +1707,8 @@
       "source": "loc_water_body",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1717,8 +1717,8 @@
       "source": "loc_higher_geography_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1727,8 +1727,8 @@
       "source": "loc_location_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1737,8 +1737,8 @@
       "source": "tax_taxon_remarks",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1747,8 +1747,8 @@
       "source": "tax_nomenclatural_status",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1757,8 +1757,8 @@
       "source": "tax_taxonomic_status",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1767,8 +1767,8 @@
       "source": "tax_nomenclatural_code",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1777,8 +1777,8 @@
       "source": "tax_vernacular_name",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1787,8 +1787,8 @@
       "source": "tax_verbatim_taxon_rank",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1797,8 +1797,8 @@
       "source": "tax_taxon_rank",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1807,8 +1807,8 @@
       "source": "tax_accepted_name_usage_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1817,8 +1817,8 @@
       "source": "tax_accepted_name_usage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1827,8 +1827,8 @@
       "source": "tax_taxon_id_ch",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1837,8 +1837,8 @@
       "source": "tax_cultivar_epithet",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1847,8 +1847,8 @@
       "source": "tax_specific_epithet",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1857,8 +1857,8 @@
       "source": "tax_infraspecific_epithet",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1867,8 +1867,8 @@
       "source": "tax_infrageneric_epithet",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1877,8 +1877,8 @@
       "source": "tax_scientific_name_authorship",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1887,8 +1887,8 @@
       "source": "tax_generic_name",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1897,8 +1897,8 @@
       "source": "tax_scientific_name",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1907,8 +1907,8 @@
       "source": "tax_sub_tribe",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1917,8 +1917,8 @@
       "source": "tax_tribe",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1927,8 +1927,8 @@
       "source": "tax_sub_genus",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1937,8 +1937,8 @@
       "source": "tax_genus",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1947,8 +1947,8 @@
       "source": "tax_subfamily",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1957,8 +1957,8 @@
       "source": "tax_family",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1967,8 +1967,8 @@
       "source": "tax_order",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1977,8 +1977,8 @@
       "source": "tax_class",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1987,8 +1987,8 @@
       "source": "tax_superfamily",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -1997,8 +1997,8 @@
       "source": "tax_phylum",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2007,8 +2007,8 @@
       "source": "tax_kingdom",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2017,8 +2017,8 @@
       "source": "tax_taxon_concept_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2027,8 +2027,8 @@
       "source": "tax_higher_classification",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2037,8 +2037,8 @@
       "source": "tax_name_published_in_year",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2047,8 +2047,8 @@
       "source": "tax_name_published_in",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2057,8 +2057,8 @@
       "source": "tax_name_published_in_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2067,8 +2067,8 @@
       "source": "tax_name_according_to",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2077,8 +2077,8 @@
       "source": "tax_name_according_to_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2087,8 +2087,8 @@
       "source": "tax_original_name_usage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2097,8 +2097,8 @@
       "source": "tax_original_name_usage_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2107,8 +2107,8 @@
       "source": "tax_parent_name_usage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2117,8 +2117,8 @@
       "source": "tax_parent_name_usage_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2127,8 +2127,8 @@
       "source": "tax_scientific_name_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2137,8 +2137,8 @@
       "source": "tax_identifier",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2147,8 +2147,8 @@
       "source": "tax_taxon_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2157,8 +2157,8 @@
       "source": "idf_last_verified_by_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2167,8 +2167,8 @@
       "source": "idf_last_verified_by",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2177,8 +2177,8 @@
       "source": "idf_verbatim_identification",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2187,8 +2187,8 @@
       "source": "idf_previous_identifications",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2197,8 +2197,8 @@
       "source": "idf_identified_by_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2207,8 +2207,8 @@
       "source": "idf_identification_verification_status",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2217,8 +2217,8 @@
       "source": "idf_identification_remarks",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2227,8 +2227,8 @@
       "source": "idf_identification_reference",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2237,8 +2237,8 @@
       "source": "idf_identification_qualifier",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2247,8 +2247,8 @@
       "source": "idf_evidence_type",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2257,8 +2257,8 @@
       "source": "idf_type_status",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2267,8 +2267,8 @@
       "source": "idf_identified_by",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2277,8 +2277,8 @@
       "source": "idf_date_identified",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2287,8 +2287,8 @@
       "source": "eve_shrub_layer_height_in_meters",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2297,8 +2297,8 @@
       "source": "eve_start_day_of_year",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2307,8 +2307,8 @@
       "source": "eve_sampling_effort",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2317,8 +2317,8 @@
       "source": "eve_sample_size_unit",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2327,8 +2327,8 @@
       "source": "eve_sample_size_value",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2337,8 +2337,8 @@
       "source": "eve_sampling_protocol",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2347,8 +2347,8 @@
       "source": "eve_substratum_state",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2357,8 +2357,8 @@
       "source": "eve_substratum",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2367,8 +2367,8 @@
       "source": "eve_micro_structure",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2377,8 +2377,8 @@
       "source": "eve_landscape_structure",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2387,8 +2387,8 @@
       "source": "eve_influence",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2397,8 +2397,8 @@
       "source": "eve_habitat_ref",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2407,8 +2407,8 @@
       "source": "eve_habitat_inclusion",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2417,8 +2417,8 @@
       "source": "eve_habitat_contact",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2427,8 +2427,8 @@
       "source": "eve_habitat_code",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2437,8 +2437,8 @@
       "source": "eve_end_of_period_year",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2447,8 +2447,8 @@
       "source": "eve_end_of_period_month",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2457,8 +2457,8 @@
       "source": "eve_end_of_period_day",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2467,8 +2467,8 @@
       "source": "eve_tree_layer_height_in_meters",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2477,8 +2477,8 @@
       "source": "eve_syntaxon_name",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2487,8 +2487,8 @@
       "source": "eve_project",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2497,8 +2497,8 @@
       "source": "eve_mosses_identified",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2507,8 +2507,8 @@
       "source": "eve_lichens_identified",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2517,8 +2517,8 @@
       "source": "eve_inclination_in_degrees",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2527,8 +2527,8 @@
       "source": "eve_herb_layer_height_in_centimeters",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2537,8 +2537,8 @@
       "source": "eve_event_remarks",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2547,8 +2547,8 @@
       "source": "eve_field_notes",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2557,8 +2557,8 @@
       "source": "eve_habitat",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2567,8 +2567,8 @@
       "source": "eve_verbatim_event_date",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2577,8 +2577,8 @@
       "source": "eve_year",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2587,8 +2587,8 @@
       "source": "eve_month",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2597,8 +2597,8 @@
       "source": "eve_day",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2607,8 +2607,8 @@
       "source": "eve_end_day_of_year",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2617,8 +2617,8 @@
       "source": "eve_event_time",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2627,8 +2627,8 @@
       "source": "eve_event_date",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2637,8 +2637,8 @@
       "source": "eve_field_number",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2647,8 +2647,8 @@
       "source": "eve_parent_event_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2657,8 +2657,8 @@
       "source": "eve_event_id",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2667,8 +2667,8 @@
       "source": "eve_cover_water_in_percentage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2677,8 +2677,8 @@
       "source": "eve_cover_trees_in_percentage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2687,8 +2687,8 @@
       "source": "eve_cover_toal_in_percentage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2697,8 +2697,8 @@
       "source": "eve_cover_shrubs_in_percentage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2707,8 +2707,8 @@
       "source": "eve_cover_rock_in_percentage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2717,8 +2717,8 @@
       "source": "eve_cover_mosses_in_percentage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2727,8 +2727,8 @@
       "source": "eve_cover_litter_in_percentage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2737,8 +2737,8 @@
       "source": "eve_cover_lychens_in_percentage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2747,8 +2747,8 @@
       "source": "eve_cover_herbs_in_percentage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2757,8 +2757,8 @@
       "source": "eve_cover_cryptogams_in_percentage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2767,8 +2767,8 @@
       "source": "eve_cover_algae_in_percentage",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2777,8 +2777,8 @@
       "source": "eve_aspect",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "fragment(\"uuid_generate_v7()\")",
@@ -2787,8 +2787,8 @@
       "source": "id",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": true,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": true
     },
     {
       "default": "nil",
@@ -2797,8 +2797,8 @@
       "source": "import_data",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2807,8 +2807,8 @@
       "source": "extra_data",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2817,8 +2817,8 @@
       "source": "errors",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "\"not_published\"",
@@ -2827,8 +2827,8 @@
       "source": "fast_track_status",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "\"not_published\"",
@@ -2837,8 +2837,8 @@
       "source": "approval_status",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "fragment(\"now()\")",
@@ -2847,8 +2847,8 @@
       "source": "inserted_at",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "fragment(\"now()\")",
@@ -2857,8 +2857,8 @@
       "source": "updated_at",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2869,24 +2869,24 @@
         "name": "records_collection_id_fkey",
         "table": "collections",
         "schema": "public",
-        "on_delete": "delete",
-        "on_update": "update",
-        "primary_key?": true,
-        "destination_attribute": "id",
         "multitenancy": {
           "global": null,
           "attribute": null,
           "strategy": null
         },
+        "primary_key?": true,
+        "on_delete": "delete",
+        "destination_attribute": "id",
         "deferrable": false,
-        "match_with": null,
         "match_type": null,
+        "match_with": null,
+        "on_update": "update",
         "destination_attribute_default": null,
         "destination_attribute_generated": null
       },
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2897,24 +2897,24 @@
         "name": "records_encoder_job_id_fkey",
         "table": "oban_jobs",
         "schema": "public",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "destination_attribute": "id",
         "multitenancy": {
           "global": null,
           "attribute": null,
           "strategy": null
         },
+        "primary_key?": true,
+        "on_delete": null,
+        "destination_attribute": "id",
         "deferrable": false,
-        "match_with": null,
         "match_type": null,
+        "match_with": null,
+        "on_update": null,
         "destination_attribute_default": null,
         "destination_attribute_generated": null
       },
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -2925,24 +2925,24 @@
         "name": "records_fast_track_checker_job_id_fkey",
         "table": "oban_jobs",
         "schema": "public",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "destination_attribute": "id",
         "multitenancy": {
           "global": null,
           "attribute": null,
           "strategy": null
         },
+        "primary_key?": true,
+        "on_delete": "nilify",
+        "destination_attribute": "id",
         "deferrable": false,
-        "match_with": null,
         "match_type": null,
+        "match_with": null,
+        "on_update": "update",
         "destination_attribute_default": null,
         "destination_attribute_generated": null
       },
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "\"imported\"",
@@ -2951,14 +2951,13 @@
       "source": "state",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     }
   ],
   "table": "records",
-  "hash": "52658307AA43023D84A0BD15D5ECB04B557741340BC57E634196443526573E01",
+  "hash": "B776854C2B564862F28CA4BA877343CE24D754F837B86CA4675F7D1705037070",
   "repo": "Elixir.DataAggregator.Repo",
-  "schema": null,
   "identities": [
     {
       "name": "collection_mte_catalog_number",
@@ -2967,18 +2966,19 @@
         "mte_catalog_number"
       ],
       "all_tenants?": false,
-      "base_filter": null,
-      "index_name": "records_collection_mte_catalog_number_index"
+      "index_name": "records_collection_mte_catalog_number_index",
+      "base_filter": null
     }
   ],
-  "check_constraints": [],
-  "custom_indexes": [],
+  "schema": null,
   "multitenancy": {
     "global": null,
     "attribute": null,
     "strategy": null
   },
   "base_filter": null,
+  "check_constraints": [],
+  "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true
 }

@@ -269,14 +269,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <:col
           :if={CollectionType.visible?(@collection.type, :picture)}
           th_wrapper_attrs={[
-            class: "hero-photo size-5 tooltip",
+            class: "hero-camera size-5 tooltip",
             aria: [hidden: "true"]
           ]}
           class="text-center"
         >
-          <btn class="btn btn-xs btn-square btn-disabled">
-            <.icon name="hero-x-mark-micro" class="size-5 text-base-content" />
-          </btn>
+          <div class="tooltip tooltip-right" data-tip={~t"No images uploaded yet"m}>
+            <.icon name="hero-camera" class="size-5 text-gray-600" />
+          </div>
         </:col>
         <:col
           :if={CollectionType.visible?(@collection.type, :iucn_redlist)}
@@ -694,7 +694,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     %{collection: collection} = socket.assigns
     collection = Records.load!(collection, [:approval_query], lazy?: true)
 
-    count_query = Ash.Query.filter_input(Record, collection.fast_track_query)
+    count_query = Ash.Query.filter_input(Record, collection.approval_query)
 
     publication =
       %{
