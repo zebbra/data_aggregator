@@ -100,7 +100,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       </.secondary_navigation>
 
       <%!-- Stat scopes --%>
-      <div :if={@meta.total_count > 0} class="p-6 lg:px-8">
+      <div class="p-6 lg:px-8">
         <div class="grid grid-cols-2 gap-2 xl:grid-cols-4">
           <.scope_stat
             href={path_helper(@collection, @layer, @meta, %{status: :all})}
@@ -124,7 +124,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       </div>
 
       <%!-- Search, filter and actions toolbar --%>
-      <div :if={@meta.total_count > 0} class="flex justify-between px-6 pb-6 lg:px-8">
+      <div class="flex justify-between px-6 pb-6 lg:px-8">
         <%!-- Search and filter --%>
         <div class="join">
           <div>
