@@ -20,7 +20,9 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
     do: Application.get_env(:data_aggregator, :publication_verification_scheduler_active, true) === true
 
   # the seconds of one day
-  @one_day 1 * 60 * 60 * 24
+  @minute 60
+  @hour 60 * @minute
+  @day 24 * @hour
 
   @impl true
   def perform(%Oban.Job{args: %{"id" => id}}) do
@@ -28,7 +30,7 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
 
     if scheduler_active?() && record.fast_track_status != :published do
       %{id: id}
-      |> FastTrackPublicationVerifier.new(schedule_in: interval())
+      |> FastTrackPublicationVerifier.new(schedule_in: publication_interval_minutes())
       |> Oban.insert!()
 
       Logger.debug("Record #{record.id} has not been published to GBIF. We queue it to check again.")
@@ -43,18 +45,18 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
   def timeout(_job), do: :timer.hours(1)
 
   # gives us the interval for the next job to be executed, in seconds
-  defp interval do
-    interval = System.get_env("PUBLICATION_VERIFY_JOB_SCHEDULE_MINUTES")
+  defp publication_interval_minutes do
+    publication_interval_minutes = System.get_env("PUBLICATION_VERIFY_JOB_SCHEDULE_MINUTES")
 
-    if interval do
-      Logger.debug("Setting publication verification job interval to #{interval} minutes")
+    if publication_interval_minutes do
+      Logger.debug("Setting publication verification job interval to #{publication_interval_minutes} minutes")
 
       # we wanna have seconds so, we multiply with 60
-      String.to_integer(interval) * 60
+      String.to_integer(publication_interval_minutes) * 60
     else
-      Logger.debug("Setting publication verification job interval to #{@one_day} minutes")
+      Logger.debug("Setting publication verification job interval to #{@day} minutes")
 
-      @one_day
+      @day
     end
   end
 end

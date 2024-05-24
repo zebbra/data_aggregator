@@ -12,6 +12,8 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
 
   require Logger
 
+  @type registered_collection :: {:ok, String.t()} | {:error, String.t()}
+
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     dwca_file_url = Changeset.get_argument(changeset, :dwca_file_url)
@@ -28,7 +30,7 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
   end
 
   @spec register_at_gbif(String.t() | nil, String.t(), String.t()) ::
-          {:ok, String.t()} | {:error, String.t()}
+          registered_collection()
   defp register_at_gbif(_gbif_dataset_key, nil, _dwca_file_url), do: {:error, "Collection name is missing"}
 
   defp register_at_gbif(gbif_dataset_key, collection_name, dwca_file_url) do
@@ -41,27 +43,36 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
     end
   end
 
-  @spec register_collection(String.t()) :: {:ok, String.t()} | {:error, String.t()}
+  @spec register_collection(String.t()) :: registered_collection()
   defp register_collection(collection_name) do
-    case Gbif.RestAPI.register_dataset(collection_name) do
-      {:ok, response} ->
-        if response.status == 201 do
-          {:ok, response.body}
-        else
-          msg =
-            "No valid response (status #{response.status}) from Gibif api while registering collection: #{inspect(response.body)}"
-
-          Logger.error(msg)
-          {:error, msg}
-        end
-
-      {:error, error} ->
-        {:error, "Error during collection registering: #{inspect(collection_name)}, #{inspect(error)}"}
+    with {:ok, response} <-
+           collection_name |> Gbif.RestAPI.register_dataset() |> ensure_response(collection_name),
+         :ok <- ensure_status(response) do
+      {:ok, response.body}
     end
   end
 
-  @spec create_endpoint({:ok, String.t()} | {:error, any()}, String.t()) ::
-          {:ok, String.t()} | {:error, String.t()}
+  defp ensure_response({:ok, response}, _), do: {:ok, response}
+
+  defp ensure_response({:error, error}, collection_name) do
+    msg = "Error during collection registering: #{inspect(collection_name)}, #{inspect(error)}"
+
+    Logger.error(msg)
+
+    {:error, msg}
+  end
+
+  defp ensure_status(response) when response.status == 201, do: :ok
+
+  defp ensure_status(response) do
+    msg =
+      "No valid response (status #{response.status}) from Gibif api while registering dataset with response: #{inspect(response.body)}"
+
+    Logger.error(msg)
+
+    {:error, msg}
+  end
+
   defp create_endpoint({:ok, registration}, file_url) do
     case Gbif.RestAPI.create_endpoint(file_url, registration) do
       {:ok, response} ->

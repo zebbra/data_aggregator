@@ -64,19 +64,21 @@ defmodule DataAggregator.Records.Record.Changes.CheckIfFastTrackPublished do
         {:error,
          "No valid response (status #{response.status}) from GBIF API while searching for occurrences: #{inspect(response.body)}"}
 
-      Enum.count(response.body["results"]) > 1 ->
+      occurrences_count(response) > 1 ->
         {:error, "More than one occurrence found on GBIF"}
 
-      Enum.empty?(response.body["results"]) ->
+      occurrences_count(response) === 0 ->
         {:ok, nil}
 
-      Enum.count(response.body["results"]) === 1 ->
+      occurrences_count(response) === 1 ->
         {:ok, response}
 
       true ->
         {:error, "Unknown error while searching for occurrences on GBIF"}
     end
   end
+
+  defp occurrences_count(response), do: Enum.count(response.body["results"])
 
   # get the gbif_id from the response, assuming there is one element on response.body["results"], verified by verify_api_response
   defp extract_gbif_id({:error, error}), do: {:error, error}
