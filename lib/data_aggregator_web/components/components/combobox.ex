@@ -12,40 +12,40 @@ defmodule DataAggregatorWeb.Components.Combobox do
 
   ## Usage:
 
-    ```heex
-    <.combobox
-      id="widget_category_names"
-      options={@widget_category_options}
-    />
+  ```heex
+  <.combobox
+    id="widget_category_names"
+    options={@widget_category_options}
+  />
 
-    <.combobox
-      id="widget_category_names_multiple"
-      options={@widget_category_options}
-      multiple
-    />
+  <.combobox
+    id="widget_category_names_multiple"
+    options={@widget_category_options}
+    multiple
+  />
 
-    <.combobox
-      id="widget_category_names_multiple"
-      options={@widget_category_options}
-      create
-    />
+  <.combobox
+    id="widget_category_names_multiple"
+    options={@widget_category_options}
+    create
+  />
 
-    <.field
-      type="combobox"
-      label="With placeholder"
-      description="You can select only one option"
-      placeholder="Select an option.."
-      field={@form[:widget_category_names]}
-    />
+  <.field
+    type="combobox"
+    label="With placeholder"
+    description="You can select only one option"
+    placeholder="Select an option.."
+    field={@form[:widget_category_names]}
+  />
 
-    <.field
-      type="combobox"
-      label="With prompt"
-      description="You can select only one option"
-      prompt="Select an option.."
-      field={@form[:widget_category_names]}
-    />
-    ```
+  <.field
+    type="combobox"
+    label="With prompt"
+    description="You can select only one option"
+    prompt="Select an option.."
+    field={@form[:widget_category_names]}
+  />
+  ```
 
   ## Remote data source
 
@@ -53,32 +53,32 @@ defmodule DataAggregatorWeb.Components.Combobox do
   similar to a `phx-change` event. When a user starts typing this will trigger an event with the name you pass. You handle
   the event in your live veiw return a list of options. The event will be passed the search term as first argument.
 
-    ```heex
-    <.field
-      type="combobox"
-      label="Remote single"
-      description="You can select only one option"
-      placeholder="Select an option.."
-      remote_options_event_name="combobox_search"
-      field={@form[:widget_category_names]}
-    />
-    ```
+  ```heex
+  <.field
+    type="combobox"
+    label="Remote single"
+    description="You can select only one option"
+    placeholder="Select an option.."
+    remote_options_event_name="combobox_search"
+    field={@form[:widget_category_names]}
+  />
+  ```
 
-    ```elixir
-    # @impl true
-    def handle_event("combobox_search", payload, socket) do
+  ```elixir
+  # @impl true
+  def handle_event("combobox_search", payload, socket) do
 
-      # `payload` will be a string ("some search term")
+    # `payload` will be a string ("some search term")
 
-      # Do your search and turn the results into a list of maps with `text` and `value` keys
-      results =
-        Widget.search_widget_categories(payload)
-        |> Enum.map(&%{text: &1.name, value: &1.name})
+    # Do your search and turn the results into a list of maps with `text` and `value` keys
+    results =
+      Widget.search_widget_categories(payload)
+      |> Enum.map(&%{text: &1.name, value: &1.name})
 
-      # Make sure you return a map with a `results` key. The value of the `results` key must be a list of maps with `text` and `value` keys
-      {:reply, %{results: results}, socket}
-    end
-    ```
+    # Make sure you return a map with a `results` key. The value of the `results` key must be a list of maps with `text` and `value` keys
+    {:reply, %{results: results}, socket}
+  end
+  ```
   """
 
   attr :class, :string, default: nil, doc: "the class to add to the input"
@@ -94,10 +94,12 @@ defmodule DataAggregatorWeb.Components.Combobox do
   attr :placeholder, :string, default: nil, doc: "The placeholder text"
 
   attr :options, :list,
-    doc: ~s|A list of options. eg. ["Admin", "User"] (label and value will be the same) or
+    default: [],
+    doc: """
+      A list of options. eg. ["Admin", "User"] (label and value will be the same) or
       if you want the value to be different from the label: ["Admin": "admin", "User": "user"].
-      We use https://hexdocs.pm/phoenix_html/Phoenix.HTML.Form.html#options_for_select/2 underneath.|,
-    default: []
+      We use https://hexdocs.pm/phoenix_html/Phoenix.HTML.Form.html#options_for_select/2 underneath.
+    """
 
   attr :multiple, :boolean, default: false, doc: "can multiple choices be selected?"
   attr :create, :boolean, default: false, doc: "create new options on the fly?"
@@ -109,13 +111,17 @@ defmodule DataAggregatorWeb.Components.Combobox do
 
   attr :tom_select_plugins, :map,
     default: %{},
-    doc: ~s|Which plugins should be activated? Pass a map that will be converted to a Javascript object via JSON.
-      eg. `%{remove_button: %{title: "Remove!"}}`. See https://tom-select.js.org/plugins for available plugins.|
+    doc: """
+      Which plugins should be activated? Pass a map that will be converted to a Javascript object via JSON.
+      eg. `%{remove_button: %{title: "Remove!"}}`. See https://tom-select.js.org/plugins for available plugins.
+    """
 
   attr :remote_options_event_name, :string,
     default: nil,
-    doc: "The event name to trigger when searching for remote options. That event must return a list
-      wrapped in a map with a `results` key. eg. `%{results: [%{text: \"Admin\", value: \"admin\"}]}`"
+    doc: """
+      The event name to trigger when searching for remote options. That event must return a list
+      wrapped in a map with a `results` key. eg. `%{results: [%{text: \"Admin\", value: \"admin\"}]}`
+    """
 
   attr :remove_button_title, :string, default: nil, doc: "The title for the remove item button"
   attr :add_text, :string, default: nil, doc: "The text for the add item action"
@@ -134,14 +140,18 @@ defmodule DataAggregatorWeb.Components.Combobox do
 
   attr :tom_select_options, :map,
     default: %{},
-    doc: "Options to pass to Tom Select. Uses camel case. eg `%{maxOptions: 1000}`.
-      See https://tom-select.js.org/docs for options."
+    doc: """
+      Options to pass to Tom Select. Uses camel case. eg `%{maxOptions: 1000}`.
+      See https://tom-select.js.org/docs for options.
+    """
 
   attr :tom_select_options_global_variable, :string,
     default: nil,
-    doc: ~s|for when you want to manually pass the options to Tom Select. eg. inside some script tags:
+    doc: """
+      for when you want to manually pass the options to Tom Select. eg. inside some script tags:
       `window.myOptions = { render: {...}}`. And in your component:`tom_select_options_global_variable="myOptions"`.
-      It will merge the options with the existing ones.|
+      It will merge the options with the existing ones.
+    """
 
   attr :rest, :global,
     include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength

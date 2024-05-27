@@ -12,10 +12,7 @@ defmodule Storybook.Examples.ControlledModal do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok,
-     assign(socket,
-       show: false
-     )}
+    {:ok, assign(socket, show: false)}
   end
 
   @impl true
@@ -26,13 +23,22 @@ defmodule Storybook.Examples.ControlledModal do
         Open modal
       </button>
 
-      <.modal :if={@show} id="modal" show responsive backdrop={false} on_cancel={JS.push("hide")}>
-        <.simple_form :let={f} for={%{}} as={:user} phx-submit={JS.push("save")}>
+      <.modal
+        :if={@show}
+        id="modal"
+        show
+        responsive
+        backdrop={false}
+        on_cancel={JS.push("hide")}
+        overflow="manual"
+      >
+        <.simple_form :let={f} for={%{}} as={:user} phx-submit={JS.push("save")} modal>
           <.fieldset
             legend="Shipping details"
             text="Without this your odds of getting your order are low."
+            modal
           >
-            <.fieldgroup>
+            <.fieldgroup modal>
               <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
                 <.field field={f[:first_name]} label="First name" required />
                 <.field field={f[:last_name]} label="Last name" required />
@@ -60,14 +66,14 @@ defmodule Storybook.Examples.ControlledModal do
                 required
               />
             </.fieldgroup>
+            <:actions modal>
+              <button type="submit" class="btn btn-primary">Save user</button>
+              <button type="reset" class="btn btn-ghost">Reset</button>
+              <button type="button" class="btn btn-ghost" onclick="modal.close()">
+                Cancel
+              </button>
+            </:actions>
           </.fieldset>
-          <:actions>
-            <button type="submit" class="btn btn-primary">Save user</button>
-            <button type="reset" class="btn btn-ghost">Reset</button>
-            <button type="button" class="btn btn-ghost" onclick="modal.close()">
-              Cancel
-            </button>
-          </:actions>
         </.simple_form>
       </.modal>
 

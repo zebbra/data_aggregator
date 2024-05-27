@@ -35,8 +35,10 @@ defmodule DataAggregatorWeb.Components.Input do
 
   ## Examples
 
-      <.input field={@form[:email]} type="email" />
-      <.input name="my-input" errors={["oh no!"]} />
+  ```heex
+  <.input field={@form[:email]} type="email" />
+  <.input name="my-input" errors={["oh no!"]} />
+  ```
   """
   attr :id, :any, default: nil
   attr :name, :any
