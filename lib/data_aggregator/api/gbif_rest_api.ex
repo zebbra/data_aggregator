@@ -114,30 +114,36 @@ defmodule DataAggregator.Gbif.RestAPI do
   defp get_single_collection(reference) do
     url = System.get_env("GBIF_API_BASE_URL") <> "/grscicoll/collection/#{reference}"
 
-    case [params: %{country: "CH", limit: 1000}]
-         |> Req.new()
-         |> HttpDiskCache.attach()
-         |> Req.get(url: url, max_cache_age_seconds: @hour) do
-      {:ok, result} ->
-        body =
-          result |> Map.from_struct() |> Map.get(:body)
-
-        case result.status do
-          200 ->
-            {:ok, body}
-
-          _ ->
-            {:error, "Non 200 status code from GrSciColl api with message: #{body}"}
-        end
-
-      {:error, error} ->
-        msg =
-          "Could not fetch GrSciColl collection for reference #{reference}. error was: #{inspect(error)}"
-
-        Logger.error(msg)
-
-        {:error, msg}
+    with {:ok, response} <-
+           [params: %{country: "CH", limit: 1000}]
+           |> Req.new()
+           |> HttpDiskCache.attach()
+           |> Req.get(url: url, max_cache_age_seconds: @hour)
+           |> ensure_response(reference),
+         :ok <- ensure_status(response) do
+      {:ok, response |> Map.from_struct() |> Map.get(:body)}
     end
+  end
+
+  defp ensure_response({:ok, response}, _), do: {:ok, response}
+
+  defp ensure_response({:error, error}, reference) do
+    msg =
+      "Could not fetch GrSciColl collection for reference #{reference}. error was: #{inspect(error)}"
+
+    Logger.error(msg)
+
+    {:error, msg}
+  end
+
+  defp ensure_status(response) when response.status == 200, do: :ok
+
+  defp ensure_status(response) do
+    msg = "Non 200 status code from GrSciColl api with message: #{inspect(response)}"
+
+    Logger.error(msg)
+
+    {:error, msg}
   end
 
   defp lookup_all_collections do

@@ -104,7 +104,7 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
   end
 
   defp add_error(changeset, error) do
-    Logger.error("Error validating records: #{inspect(error)}")
+    Logger.warning("Error validating records: #{inspect(error)}")
     Changeset.add_error(changeset, error)
   end
 end

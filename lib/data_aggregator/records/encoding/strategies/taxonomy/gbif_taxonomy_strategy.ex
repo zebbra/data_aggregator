@@ -160,7 +160,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
   @spec log_and_throw(map()) :: {:ok, map()} | {:error, any()}
   defp log_and_throw(error) do
-    Logger.error("Error while fetching gbif taxonomy api: #{inspect(error)}")
+    Logger.warning("Error while fetching gbif taxonomy api: #{inspect(error)}")
 
     throw(error)
   end

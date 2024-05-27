@@ -218,7 +218,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
           {:ok, import}
 
         {:error, error} ->
-          Logger.error(error)
+          Logger.warning(error)
           handle_upload_error(error)
       end
     end)

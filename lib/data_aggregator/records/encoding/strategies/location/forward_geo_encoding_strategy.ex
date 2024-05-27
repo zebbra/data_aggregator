@@ -168,6 +168,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
 
   @spec handle_error(String.t(), map()) :: :ok
   defp handle_error(record_id, error) do
-    Logger.error("Error while encoding the record #{record_id} with the geo api: #{inspect(error)}")
+    Logger.warning("Error while encoding the record #{record_id} with the geo api: #{inspect(error)}")
   end
 end
