@@ -5,9 +5,11 @@ defmodule DataAggregatorWeb.Components.Flash do
 
   use Phoenix.Component
 
+  import DataAggregatorWeb.Components.CloseButton, only: [close_button: 1]
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Components.Transitions, only: [show: 1, hide: 1, hide: 2]
   import DataAggregatorWeb.Gettext
+  import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
   alias Phoenix.LiveView.JS
 
@@ -16,8 +18,10 @@ defmodule DataAggregatorWeb.Components.Flash do
 
   ## Examples
 
-      <.flash kind={:info} flash={@flash} />
-      <.flash kind={:info} phx-mounted={show("#flash")}>Welcome Back!</.flash>
+  ```heex
+  <.flash kind={:info} flash={@flash} />
+  <.flash kind={:info} phx-mounted={show("#flash")}>Welcome Back!</.flash>
+  ```
   """
   attr :id, :string, doc: "the optional id of flash container"
   attr :flash, :map, default: %{}, doc: "the map of flash messages to display"
@@ -57,18 +61,19 @@ defmodule DataAggregatorWeb.Components.Flash do
           </div>
         </div>
 
-        <button
+        <.close_button
           :if={@close}
-          type="button"
-          class={[
-            "btn btn-sm btn-square btn-ghost absolute top-2 right-2",
-            @kind == :info && "text-success hover:bg-success/20",
-            @kind == :error && "text-error hover:bg-error/20"
-          ]}
-          aria-label={~t"close"m}
-        >
-          <.icon name="hero-x-mark-mini" />
-        </button>
+          dense
+          class={
+            class_names([
+              @kind == :info && "text-success hover:bg-success/20",
+              @kind == :error && "text-error hover:bg-error/20"
+            ])
+          }
+          squared
+          icon_class=""
+          on_cancel={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
+        />
       </div>
     </div>
     """

@@ -7,6 +7,14 @@ defmodule DataAggregatorWeb.Components.Badge do
 
   @doc """
   Renders a badge with different colors.
+
+  ## Examples
+
+  ```heex
+  <.badge color="blue">
+    Blue badge
+  </.badge>
+  ```
   """
   attr :class, :string, default: nil, doc: "the badge class"
 

@@ -8,11 +8,38 @@ defmodule DataAggregatorWeb.Blocks.EmptyState do
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Gettext
 
-  attr :title, :string, default: ~t"No entries"m
-  attr :description, :string, default: ~t"Get started by creating a new entry."m
-  attr :label, :string, default: ~t"New entry"m
-  attr :icon, :string, default: "hero-folder"
-  attr :href, :string, required: true
+  @doc """
+  Renders an empty state block.
+
+  Used to display an empty state with a title, description, and a button to navigate to a new entry.
+
+  ## Example
+
+  ```heex
+  <.empty_state
+    title: "No entries",
+    description: "Get started by creating a new entry.",
+    label: "New entry",
+    icon: "hero-folder",
+    href: ~p"/entries/new"
+  />
+  ```
+  """
+  attr :title, :string, default: ~t"No entries"m, doc: "The title to display in the empty state."
+
+  attr :description, :string,
+    default: ~t"Get started by creating a new entry."m,
+    doc: "The description to display in the empty state."
+
+  attr :label, :string,
+    default: ~t"New entry"m,
+    doc: "The label to display in the empty state button."
+
+  attr :icon, :string,
+    default: "hero-folder",
+    doc: "The icon to display in the empty state button."
+
+  attr :href, :string, required: true, doc: "The URL to navigate to when the button is clicked."
 
   def empty_state(assigns) do
     ~H"""

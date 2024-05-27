@@ -35,8 +35,10 @@ defmodule DataAggregatorWeb.Components.Field do
 
   ## Examples
 
-      <.field field={@form[:email]} type="email" />
-      <.field name="my-input" errors={["oh no!"]} />
+  ```heex
+  <.field field={@form[:email]} type="email" />
+  <.field name="my-input" errors={["oh no!"]} />
+  ```
   """
   attr :id, :any, default: nil
   attr :name, :any
@@ -345,13 +347,15 @@ defmodule DataAggregatorWeb.Components.Field do
 
   ## Examples
 
-      <.custom_field field={f[:first_name]} label={~t"First name"m}>
-        <:content :let={field}>
-          <.label {field} required />
-          <.input {field} />
-          <.errors {field} class="mt-2" />
-        </:content>
-      </.custom_field>
+  ```heex
+  <.custom_field field={f[:first_name]} label={~t"First name"m}>
+    <:content :let={field}>
+      <.label {field} required />
+      <.input {field} />
+      <.errors {field} class="mt-2" />
+    </:content>
+  </.custom_field>
+  ```
   """
   attr :id, :any, default: nil
   attr :name, :any

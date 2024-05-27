@@ -14,24 +14,26 @@ defmodule DataAggregatorWeb.Components.Dropdown do
 
   ## Examples
 
-      <.dropdown id="dropdown" class="dropdown-end" label="Language" icon="hero-language">
-        <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px mt-16 w-44 gap-1 border p-2 shadow-2xl">
-          <li :for={option <- options()}>
-            <button
-              type="button"
-              class={option.selected && "active"}
-              phx-click={
-                JS.dispatch("set-locale", to: "#locale_selector_wrapper", detail: option.value)
-              }
-            >
-              <span class="badge badge-sm badge-outline font-mono text-[.6rem] pt-px pr-1 pl-1.5 font-bold tracking-widest opacity-50">
-                <%= option.short %>
-              </span>
-              <span class="font-[sans-serif]"><%= option.name %></span>
-            </button>
-          </li>
-        </ul>
-      </.dropdown>
+  ```heex
+  <.dropdown id="dropdown" class="dropdown-end" label="Language" icon="hero-language">
+    <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px mt-16 w-44 gap-1 border p-2 shadow-2xl">
+      <li :for={option <- options()}>
+        <button
+          type="button"
+          class={option.selected && "active"}
+          phx-click={
+            JS.dispatch("set-locale", to: "#locale_selector_wrapper", detail: option.value)
+          }
+        >
+          <span class="badge badge-sm badge-outline font-mono text-[.6rem] pt-px pr-1 pl-1.5 font-bold tracking-widest opacity-50">
+            <%= option.short %>
+          </span>
+          <span class="font-[sans-serif]"><%= option.name %></span>
+        </button>
+      </li>
+    </ul>
+  </.dropdown>
+  ```
   """
   attr :id, :string, required: true, doc: "ID of the dropdown"
   attr :class, :string, default: nil, doc: "Class to add to the dropdown"

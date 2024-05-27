@@ -10,27 +10,29 @@ defmodule DataAggregatorWeb.Components.Drawer do
 
   ## Examples
 
-      <.drawer
-        id="drawer_right"
-        class="drawer-end"
-        overlay
+  ```heex
+  <.drawer
+    id="drawer_right"
+    class="drawer-end"
+    overlay
+  >
+    <section>
+      <label
+        aria-label="Open drawer"
+        for="drawer_right"
+        class="btn btn-square btn-ghost drawer-button"
       >
-        <section>
-          <label
-            aria-label="Open drawer"
-            for="drawer_right"
-            class="btn btn-square btn-ghost drawer-button"
-          >
-            <.icon name="hero-bars-3-mini" class="size-5 md:size-6" />
-          </label>
-          Main content
-        </section>
-        <:side>
-          <div class="bg-base-100 border-black-white/10 min-h-screen w-80 border-l p-4">
-            Sidebar content
-          </div>
-        </:side>
-      </.drawer>
+        <.icon name="hero-bars-3-mini" class="size-5 md:size-6" />
+      </label>
+      Main content
+    </section>
+    <:side>
+      <div class="bg-base-100 border-black-white/10 min-h-screen w-80 border-l p-4">
+        Sidebar content
+      </div>
+    </:side>
+  </.drawer>
+  ```
   """
   attr :id, :string, required: true, doc: "ID of the drawer"
   attr :class, :string, default: nil, doc: "Class to add to the drawer"

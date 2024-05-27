@@ -79,7 +79,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     <.page current="collections" open={@selected_record != nil}>
       <.collection_header collection={@collection} current={:records} />
 
-      <.secondary_navigation class="sticky top-[calc(4rem-1px)]" gradient>
+      <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
         <.secondary_navigation_item
           href={path_helper(@collection, @layer, @meta)}
           label={~t"Records"m}
@@ -100,8 +100,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       </.secondary_navigation>
 
       <%!-- Stat scopes --%>
-      <div class="p-6 lg:px-8">
-        <div class="grid grid-cols-2 gap-2 xl:grid-cols-4">
+      <div class="px-6 py-4 md:py-6 lg:px-8">
+        <div class="grid grid-cols-2 gap-4 md:gap-6 xl:grid-cols-4">
           <.scope_stat
             href={path_helper(@collection, @layer, @meta, %{status: :all})}
             title={~t"All records"m}
@@ -448,19 +448,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           on_cancel={JS.push("record:select", value: %{id: nil})}
           size="xl"
         >
-          <div role="tablist" class="tabs tabs-lifted">
-            <input
-              type="radio"
-              name="sideover_content_tabs"
-              role="tab"
-              class="tab !border-b-transparent -mx-px [--tab-border-color:var(--fallback-b3,oklch(var(--black-white)/0.1))]"
-              aria-label="Data"
-              checked
-            />
-            <div
-              role="tabpanel"
-              class="tab-content border-black-white/10 overflow-x-auto border-0 border-t pt-6"
-            >
+          <.tabs>
+            <.tab name="slideover_content_tabs" label={~t"Data"m} class="pt-6" checked>
               <%= for category <- @attrs_in_categories do %>
                 <.table
                   id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
@@ -485,11 +474,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   </:col>
                 </.table>
               <% end %>
-              <.table
-                opts={[no_results_content: ""]}
-                id="encoding_result_table"
-                items={@record_encoding_results}
-              >
+              <.table id="encoding_result_table" items={@record_encoding_results}>
                 <:caption>
                   <.section_heading
                     text={~t"Record encodings"m}
@@ -508,22 +493,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   <%= format_datetime(result.inserted_at, format: :short) %>
                 </:col>
               </.table>
-            </div>
-
-            <input
-              type="radio"
-              name="sideover_content_tabs"
-              role="tab"
-              class="tab !border-b-transparent [--tab-border-color:var(--fallback-b3,oklch(var(--black-white)/0.1))]"
-              aria-label={~t"Changes"m}
-            />
-            <div
-              role="tabpanel"
-              class="tab-content border-black-white/10 overflow-x-auto border-0 border-t pt-6"
-            >
+            </.tab>
+            <.tab name="slideover_content_tabs" label={~t"Changes"m} class="pt-6">
               <.activity_feed record={@selected_record} />
-            </div>
-          </div>
+            </.tab>
+          </.tabs>
         </.slideover>
       </:secondary>
 
@@ -535,6 +509,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           responsive
           backdrop={false}
           on_cancel={JS.patch(path_helper(@collection, @layer, @meta))}
+          overflow="manual"
         >
           <.live_component
             :if={@live_action == :export}

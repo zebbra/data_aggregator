@@ -9,8 +9,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div>
-      <div :if={@import.state in [nil, :pending]}>
+    <div class="contents">
+      <div :if={@import.state in [nil, :pending]} class="contents">
         <.live_component
           :if={@action == :new}
           module={Components.Upload}
@@ -40,7 +40,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
           meta={@meta}
         />
       </div>
-      <div :if={@import.state not in [nil, :pending]}>
+      <div :if={@import.state not in [nil, :pending]} class="p-6 lg:px-8">
         <.section_heading
           text={~t"Import was already processed"m}
           description={
