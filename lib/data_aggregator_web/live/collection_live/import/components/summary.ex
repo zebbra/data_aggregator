@@ -19,41 +19,50 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="overflow-x-hidden">
-      <.stepper
-        current={current_step(@action)}
-        links={[nil, build_path(~p"/collections/#{@collection}/imports/#{@import}/edit", @meta), nil]}
-      />
-      <.section_heading
-        text={~t"Summary"m}
-        description={~t"Please review the summary of your import."m}
-        class="border-b border-black-white/10 py-4 sm:!items-start"
-      >
-        <:actions>
-          <div class="flex items-center gap-x-2">
-            <span class="text-sm"><%= ~t"State:"m %></span>
-            <.import_state_badge import={@import} />
-          </div>
-        </:actions>
-      </.section_heading>
-      <div class="-mx-6 pb-4 lg:-mx-8">
-        <.list>
-          <:item title={~t"File"m}>
-            <div class="font-mono"><%= @import.attachment.filename %></div>
-            <div class="text-base-content/60 mt-1 flex items-center gap-x-2 text-xs">
-              <.attachment_download_badge attachment={@import.attachment} />
-              <%= format_number(@import.rows_count) %> rows
+    <div class="contents">
+      <.modal_header id={@id} title_class="!-mr-4 w-full">
+        <.stepper
+          current={current_step(@action)}
+          links={[
+            nil,
+            build_path(~p"/collections/#{@collection}/imports/#{@import}/edit", @meta),
+            nil
+          ]}
+        />
+        <.section_heading
+          text={~t"Summary"m}
+          description={~t"Please review the summary of your import."m}
+          class="mt-4"
+        >
+          <:actions>
+            <div class="flex items-center gap-x-2">
+              <span class="text-sm max-sm:hidden"><%= ~t"State:"m %></span>
+              <.import_state_badge import={@import} />
             </div>
+          </:actions>
+        </.section_heading>
+      </.modal_header>
+
+      <div class="h-full overflow-y-auto overflow-x-hidden px-6 py-1">
+        <.list dense>
+          <:item title={~t"File"m}>
+            <.file_info attachment={@import.attachment} rows={@import.rows_count} badge />
           </:item>
           <:item title={~t"Created at"m}>
             <%= format_datetime(@import.inserted_at) %>
           </:item>
           <:item title={~t"Rows"m}><%= format_number(@import.rows_count) %></:item>
         </.list>
-      </div>
 
-      <div class="-mx-6 lg:-mx-8">
-        <.table id="import_mapping_table" items={@import.mappings}>
+        <.table
+          opts={[
+            container_attrs: [
+              class: "no-scrollbar overflow-x-auto py-4 -mx-6 lg:-mx-8"
+            ]
+          ]}
+          id="import_mapping_table"
+          items={@import.mappings}
+        >
           <:caption>
             <.section_heading text={~t"Mapping"m} size="md" class="px-6 lg:px-8 text-left" />
           </:caption>
@@ -69,24 +78,24 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
             <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
           </:col>
         </.table>
+
+        <.section_heading text={~t"Unmapped columns"m} size="md" />
+        <div class="py-4">
+          <span
+            :for={
+              col <-
+                @import.columns
+                |> Enum.filter(&(&1.mapped? == false))
+                |> Enum.map(& &1.name)
+            }
+            class="bg-base-200 mr-1 mb-1 inline-flex rounded px-2 py-1 text-xs"
+          >
+            <%= col %>
+          </span>
+        </div>
       </div>
 
-      <.section_heading text={~t"Unmapped columns"m} size="md" />
-      <div class="py-4">
-        <span
-          :for={
-            col <-
-              @import.columns
-              |> Enum.filter(&(&1.mapped? == false))
-              |> Enum.map(& &1.name)
-          }
-          class="bg-base-200 mr-1 mb-1 inline-flex rounded px-2 py-1 text-xs"
-        >
-          <%= col %>
-        </span>
-      </div>
-
-      <div class="modal-action flex-row-reverse justify-start pr-1 pb-1">
+      <.modal_footer id={@id}>
         <button
           :if={@import.state == :pending}
           type="button"
@@ -104,7 +113,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
         >
           <%= ~t"Back"m %>
         </.link>
-      </div>
+      </.modal_footer>
     </div>
     """
   end

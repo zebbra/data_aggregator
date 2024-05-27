@@ -85,6 +85,7 @@ defmodule DataAggregatorWeb.Components do
       use DataAggregatorWeb.LiveComponents.ThemeSelect
 
       import DataAggregatorWeb.Components.Alert
+      import DataAggregatorWeb.Components.Attachment
       import DataAggregatorWeb.Components.Badge
       import DataAggregatorWeb.Components.Breadcrumbs
       import DataAggregatorWeb.Components.CloseButton

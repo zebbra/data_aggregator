@@ -106,7 +106,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           open={@selected_record != nil}
           on_cancel={JS.push("record:select", value: %{id: nil})}
           size="xl"
-          class="space-y-2"
+          class="space-y-2 pt-2"
         >
           <%= for category <- @attrs_in_categories do %>
             <.table
@@ -132,11 +132,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
               </:col>
             </.table>
           <% end %>
-          <.table
-            opts={[no_results_content: ""]}
-            id="encoding_result_table"
-            items={@record_encoding_results}
-          >
+          <.table id="encoding_result_table" items={@record_encoding_results}>
             <:caption>
               <.section_heading
                 text={~t"Record encodings"m}

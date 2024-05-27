@@ -148,6 +148,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           responsive
           backdrop={false}
           on_cancel={JS.patch(build_path(~p"/collections", @meta))}
+          overflow="manual"
         >
           <.live_component
             :if={@live_action in [:new, :edit]}

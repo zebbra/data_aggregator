@@ -54,7 +54,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
     ~H"""
     <.page current="collections" open={@selected_publication != nil}>
       <.collection_header collection={@collection} current={:publications} />
-      <.secondary_navigation class="sticky top-[calc(4rem-1px)]" gradient>
+      <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/records"}
           label={~t"Records"m}
@@ -94,12 +94,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
           <.publication_channel_badge channel={publication.channel} />
         </:col>
         <:col :let={{_id, publication}} label={~t"File"m}>
-          <div class="font-mono">
-            <%= if publication.attachment != nil, do: publication.attachment.filename, else: "-" %>
-          </div>
-          <div class="text-base-content/60 text-xs">
-            <%= format_number(publication.rows_count) %> rows
-          </div>
+          <.file_info attachment={publication.attachment} rows={publication.rows_count} />
         </:col>
         <:col :let={{_id, publication}} label={~t"Size"m}>
           <.attachment_download_badge
@@ -152,100 +147,100 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
           title={
             if @selected_publication != nil, do: @selected_publication.name, else: ~t"Publication"m
           }
-          subtitle=""
+          subtitle={~t"Publication status details."m}
           open={@selected_publication != nil}
           on_cancel={JS.push("publication:select", value: %{id: nil})}
           size="xl"
         >
-          <div>
-            <.section_heading
-              text={~t"Publication"m}
-              class="border-b border-black-white/10 px-6 sm:px-8 pb-8"
-              size="md"
-            >
-              <:subtitle>
-                <div :if={@selected_publication.state == :pending} class="flex items-center gap-x-2">
-                  <.publication_state_badge publication={@selected_publication} />
-                </div>
-              </:subtitle>
-              <:actions>
-                <button
-                  :if={can_run?(@selected_publication)}
-                  type="button"
-                  phx-value-id={@selected_publication.id}
-                  phx-click="publication:run"
-                  class="btn btn-primary max-sm:btn-sm"
-                >
-                  <.icon name="hero-play-circle-mini" class="size-6" />
-                  <%= ~t"Run"m %>
-                </button>
-                <div
-                  :if={
-                    can_run?(@selected_publication) == false &&
-                      @selected_publication.state != :pending
-                  }
-                  class="flex items-center gap-x-2"
-                >
-                  <.publication_state_badge publication={@selected_publication} />
-                </div>
-              </:actions>
-            </.section_heading>
+          <.section_heading
+            text={~t"Publication"m}
+            class="border-b border-black-white/10 px-6 sm:px-8 pb-6"
+            align_items="center"
+            size="md"
+          >
+            <:subtitle>
+              <div
+                :if={@selected_publication.state == :pending}
+                class="mt-1 flex items-center gap-x-2"
+              >
+                <span class="text-sm"><%= ~t"State:"m %></span>
+                <.publication_state_badge publication={@selected_publication} />
+              </div>
+            </:subtitle>
+            <:actions>
+              <button
+                :if={can_run?(@selected_publication)}
+                type="button"
+                phx-value-id={@selected_publication.id}
+                phx-click="publication:run"
+                class="btn btn-primary max-sm:btn-sm"
+              >
+                <.icon name="hero-play-circle-mini" class="size-6" />
+                <%= ~t"Run"m %>
+              </button>
+              <div
+                :if={
+                  can_run?(@selected_publication) == false &&
+                    @selected_publication.state != :pending
+                }
+                class="flex items-center gap-x-2"
+              >
+                <span class="text-sm"><%= ~t"State:"m %></span>
+                <.publication_state_badge publication={@selected_publication} />
+              </div>
+            </:actions>
+          </.section_heading>
 
-            <.list>
-              <:item title={~t"File"m}>
-                <div class="font-mono">
-                  <%= if @selected_publication.attachment != nil,
-                    do: @selected_publication.attachment.filename,
-                    else: "-" %>
-                </div>
-                <div class="text-base-content/60 mt-1 flex items-center gap-x-2 text-xs">
-                  <.attachment_download_badge
-                    :if={@selected_publication.attachment != nil}
-                    attachment={@selected_publication.attachment}
-                  />
-                  <%= format_number(@selected_publication.rows_count) %> rows
-                </div>
-              </:item>
-              <:item title={~t"Created at"m}>
-                <%= format_datetime(@selected_publication.inserted_at) %>
-              </:item>
-              <:item title={~t"Rows"m}><%= format_number(@selected_publication.rows_count) %></:item>
+          <.list>
+            <:item title={~t"Channel"m}>
+              <.publication_channel_badge channel={@selected_publication.channel} />
+            </:item>
+            <:item title={~t"File"m}>
+              <.file_info
+                attachment={@selected_publication.attachment}
+                rows={@selected_publication.rows_count}
+                badge
+              />
+            </:item>
+            <:item title={~t"Created at"m}>
+              <%= format_datetime(@selected_publication.inserted_at) %>
+            </:item>
+            <:item title={~t"Rows"m}><%= format_number(@selected_publication.rows_count) %></:item>
 
-              <:item title={~t"Done"m}>
-                <div class="flex flex-col">
-                  <.progress
-                    value={@selected_publication.publication_progress || 0}
-                    max={1}
-                    class="w-full progress progress-primary"
-                  />
-                  <div>
-                    <%= format_number(@selected_publication.published_count) %> / <%= format_number(
-                      @selected_publication.rows_count
-                    ) %> <%= ~t"rows"m %>
-                  </div>
+            <:item title={~t"Done"m}>
+              <div class="flex flex-col">
+                <.progress
+                  value={@selected_publication.publication_progress || 0}
+                  max={1}
+                  class="w-full progress progress-primary"
+                />
+                <div>
+                  <%= format_number(@selected_publication.published_count) %> / <%= format_number(
+                    @selected_publication.rows_count
+                  ) %> <%= ~t"rows"m %>
                 </div>
-              </:item>
+              </div>
+            </:item>
 
-              <:item title={~t"Started at"m}>
-                <div :if={@selected_publication.finished_at == nil}>
-                  <%= format_datetime(@selected_publication.started_at) %>
-                </div>
-                <div :if={@selected_publication.finished_at != nil}>
-                  <%= format_date_interval(
-                    @selected_publication.started_at,
-                    @selected_publication.finished_at
-                  ) %>
-                </div>
-                <%= @selected_publication.duration %>
-              </:item>
+            <:item title={~t"Started at"m}>
+              <div :if={@selected_publication.finished_at == nil}>
+                <%= format_datetime(@selected_publication.started_at) %>
+              </div>
+              <div :if={@selected_publication.finished_at != nil}>
+                <%= format_date_interval(
+                  @selected_publication.started_at,
+                  @selected_publication.finished_at
+                ) %>
+              </div>
+              <%= @selected_publication.duration %>
+            </:item>
 
-              <:item title={~t"Job"m}>
-                <div :if={@selected_publication.job}>
-                  <%= @selected_publication.job.id %> <%= @selected_publication.job.state %>
-                </div>
-              </:item>
-            </.list>
-          </div>
+            <:item title={~t"Job"m}>
+              <div :if={@selected_publication.job}>
+                <%= @selected_publication.job.id %> <%= @selected_publication.job.state %>
+              </div>
+            </:item>
+          </.list>
 
           <:footer :if={@selected_publication && @selected_publication.state == :pending}>
             <button
