@@ -1,6 +1,81 @@
 defmodule DataAggregatorWeb.Components do
   @moduledoc """
-  This module is used to import all components, blocks, and live_components at once.
+  This module is used to import all components, and live_components at once.
+
+  ## Introduction
+
+  We use [daisyUI](https://daisyui.com) in conjunction with [Tailwind CSS](https://tailwindcss.com)
+  to style our components. The components provided in this module are wrapper components around
+  the daisyUI components to make them easier to use in Phoenix LiveView.
+
+  ## Installation
+
+  Make sure to install and setup Tailwind CSS in your Phoenix project. If you create a new Phoenix
+  project with Tailwind CSS, you can skip this step.
+
+  Furthermore, the following npm packages are required to use the components:
+
+  ```bash
+  cd assets && npm install daisyui tom-select
+  ```
+
+  Add the required `tailwind.config.js` configuration to your project:
+
+  ```javascript
+  module.exports = {
+    // ...
+
+    theme: {
+      extend: {
+        colors: {
+          "black-white": "oklch(var(--black-white) / <alpha-value>)",
+        },
+        screens: {
+          "3xl": "1850px",
+        },
+      },
+    },
+    daisyui: {
+      themes: [
+        {
+          light: {
+            ...themes.light,
+            "--black-white": "0% 0 0",
+          },
+        },
+        {
+          dark: {
+            ...themes.dark,
+            "--black-white": "100% 0 0",
+          },
+        },
+      ],
+    },
+    plugins: [
+      // DaisyUI
+      require("daisyui"),
+      // ...
+    ],
+
+    // ...
+  }
+  ```
+
+  To use the components in your project, copy over the following folders into your project:
+
+  - `assets/css` - Contains the CSS files for the components.
+  - `assets/js` - Contains the JavaScript files for the components.
+  - `blocks` - Contains blocks to build a coherent layout with consistent spacing and responsive behaviour.
+  - `components` - Contains the components that are used to build the content of the page.
+  - `layouts` - Contains the layout components that are used to build the layout of the page.
+  - `live_components` - Contains the live components.
+
+  ## Customization
+
+  Most of the components have a `class` attribute that allows you to add custom classes to the
+  component. This allows you to customize the component to your needs. Furthermore, you can also
+  use the `slot` attribute to add custom content to the component. Check the documentation of the
+  component for more information.
   """
 
   use Phoenix.Component
@@ -10,8 +85,10 @@ defmodule DataAggregatorWeb.Components do
       use DataAggregatorWeb.LiveComponents.ThemeSelect
 
       import DataAggregatorWeb.Components.Alert
+      import DataAggregatorWeb.Components.Attachment
       import DataAggregatorWeb.Components.Badge
       import DataAggregatorWeb.Components.Breadcrumbs
+      import DataAggregatorWeb.Components.CloseButton
       import DataAggregatorWeb.Components.Combobox
       import DataAggregatorWeb.Components.Drawer
       import DataAggregatorWeb.Components.Dropdown
@@ -25,6 +102,7 @@ defmodule DataAggregatorWeb.Components do
       import DataAggregatorWeb.Components.Modal
       import DataAggregatorWeb.Components.Pagination
       import DataAggregatorWeb.Components.Progress
+      import DataAggregatorWeb.Components.Tab
       import DataAggregatorWeb.Components.Transitions
 
       import Pagify.Components,
@@ -64,6 +142,7 @@ defmodule DataAggregatorWeb.Components do
       container_attrs: [
         class: "no-scrollbar overflow-x-auto py-4"
       ],
+      no_results_content: "",
       symbol_asc: symbol_asc(),
       symbol_desc: symbol_desc(),
       symbol_attrs: [
@@ -103,7 +182,7 @@ defmodule DataAggregatorWeb.Components do
     """
   end
 
-  def symbol_desc do
+  defp symbol_desc do
     assigns = %{}
 
     ~H"""
@@ -111,7 +190,7 @@ defmodule DataAggregatorWeb.Components do
     """
   end
 
-  def previous_link_content do
+  defp previous_link_content do
     assigns = %{}
 
     ~H"""
@@ -119,7 +198,7 @@ defmodule DataAggregatorWeb.Components do
     """
   end
 
-  def next_link_content do
+  defp next_link_content do
     assigns = %{}
 
     ~H"""

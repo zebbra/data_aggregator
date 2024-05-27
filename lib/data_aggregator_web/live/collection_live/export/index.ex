@@ -55,7 +55,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
     ~H"""
     <.page current="collections" open={@selected_export != nil}>
       <.collection_header collection={@collection} current={:exports} />
-      <.secondary_navigation class="sticky top-[calc(4rem-1px)]" gradient>
+      <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/records"}
           label={~t"Records"m}
@@ -92,12 +92,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           <.export_state_badge export={export} />
         </:col>
         <:col :let={{_id, export}} label={~t"File"m}>
-          <div class="font-mono">
-            <%= if export.attachment != nil, do: export.attachment.filename, else: "-" %>
-          </div>
-          <div class="text-base-content/60 text-xs">
-            <%= format_number(export.rows_count) %> rows
-          </div>
+          <.file_info attachment={export.attachment} rows={export.rows_count} />
         </:col>
         <:col :let={{_id, export}} label={~t"Size"m}>
           <.attachment_download_badge :if={export.attachment != nil} attachment={export.attachment} />
@@ -143,94 +138,88 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
       <:secondary>
         <.slideover
           title={if @selected_export != nil, do: @selected_export.name, else: ~t"Export"m}
-          subtitle=""
+          subtitle={~t"Export status details."m}
           open={@selected_export != nil}
           on_cancel={JS.push("export:select", value: %{id: nil})}
           size="xl"
         >
-          <div>
-            <.section_heading
-              text={~t"Export"m}
-              class="border-b border-black-white/10 px-6 sm:px-8 pb-8"
-              size="md"
-            >
-              <:subtitle>
-                <div :if={@selected_export.state == :pending} class="flex items-center gap-x-2">
-                  <.export_state_badge export={@selected_export} />
-                </div>
-              </:subtitle>
-              <:actions>
-                <button
-                  :if={can_run?(@selected_export)}
-                  type="button"
-                  phx-value-id={@selected_export.id}
-                  phx-click="export:run"
-                  class="btn btn-primary max-sm:btn-sm"
-                >
-                  <.icon name="hero-play-circle-mini" class="size-6" />
-                  <%= ~t"Run"m %>
-                </button>
-                <div
-                  :if={can_run?(@selected_export) == false && @selected_export.state != :pending}
-                  class="flex items-center gap-x-2"
-                >
-                  <.export_state_badge export={@selected_export} />
-                </div>
-              </:actions>
-            </.section_heading>
+          <.section_heading
+            text={~t"Export"m}
+            class="border-b border-black-white/10 px-6 sm:px-8 pb-6"
+            align_items={if can_run?(@selected_export), do: "center", else: "baseline"}
+            size="md"
+          >
+            <:subtitle>
+              <div :if={@selected_export.state == :pending} class="mt-1 flex items-center gap-x-2">
+                <span class="text-sm"><%= ~t"State:"m %></span>
+                <.export_state_badge export={@selected_export} />
+              </div>
+            </:subtitle>
+            <:actions>
+              <button
+                :if={can_run?(@selected_export)}
+                type="button"
+                phx-value-id={@selected_export.id}
+                phx-click="export:run"
+                class="btn btn-primary max-sm:btn-sm"
+              >
+                <.icon name="hero-play-circle-mini" class="size-6" />
+                <%= ~t"Run"m %>
+              </button>
+              <div
+                :if={can_run?(@selected_export) == false && @selected_export.state != :pending}
+                class="flex items-center gap-x-2"
+              >
+                <span class="text-sm"><%= ~t"State:"m %></span>
+                <.export_state_badge export={@selected_export} />
+              </div>
+            </:actions>
+          </.section_heading>
 
-            <.list>
-              <:item title={~t"File"m}>
-                <div class="font-mono">
-                  <%= if @selected_export.attachment != nil,
-                    do: @selected_export.attachment.filename,
-                    else: "-" %>
-                </div>
-                <div class="text-base-content/60 mt-1 flex items-center gap-x-2 text-xs">
-                  <.attachment_download_badge
-                    :if={@selected_export.attachment != nil}
-                    attachment={@selected_export.attachment}
-                  />
-                  <%= format_number(@selected_export.rows_count) %> rows
-                </div>
-              </:item>
-              <:item title={~t"Created at"m}>
-                <%= format_datetime(@selected_export.inserted_at) %>
-              </:item>
-              <:item title={~t"Rows"m}><%= format_number(@selected_export.rows_count) %></:item>
+          <.list>
+            <:item title={~t"File"m}>
+              <.file_info
+                attachment={@selected_export.attachment}
+                rows={@selected_export.rows_count}
+                badge
+              />
+            </:item>
+            <:item title={~t"Created at"m}>
+              <%= format_datetime(@selected_export.inserted_at) %>
+            </:item>
+            <:item title={~t"Rows"m}><%= format_number(@selected_export.rows_count) %></:item>
 
-              <:item title={~t"Exported"m}>
-                <div class="flex flex-col">
-                  <.progress
-                    value={@selected_export.export_progress || 0}
-                    max={1}
-                    class="w-full progress progress-primary"
-                  />
-                  <div>
-                    <%= format_number(@selected_export.exported_count) %> / <%= format_number(
-                      @selected_export.rows_count
-                    ) %> <%= ~t"rows"m %>
-                  </div>
+            <:item title={~t"Exported"m}>
+              <div class="flex flex-col">
+                <.progress
+                  value={@selected_export.export_progress || 0}
+                  max={1}
+                  class="w-full progress progress-primary"
+                />
+                <div>
+                  <%= format_number(@selected_export.exported_count) %> / <%= format_number(
+                    @selected_export.rows_count
+                  ) %> <%= ~t"rows"m %>
                 </div>
-              </:item>
+              </div>
+            </:item>
 
-              <:item title={~t"Started at"m}>
-                <div :if={@selected_export.finished_at == nil}>
-                  <%= format_datetime(@selected_export.started_at) %>
-                </div>
-                <div :if={@selected_export.finished_at != nil}>
-                  <%= format_date_interval(@selected_export.started_at, @selected_export.finished_at) %>
-                </div>
-                <%= @selected_export.duration %>
-              </:item>
+            <:item title={~t"Started at"m}>
+              <div :if={@selected_export.finished_at == nil}>
+                <%= format_datetime(@selected_export.started_at) %>
+              </div>
+              <div :if={@selected_export.finished_at != nil}>
+                <%= format_date_interval(@selected_export.started_at, @selected_export.finished_at) %>
+              </div>
+              <%= @selected_export.duration %>
+            </:item>
 
-              <:item title={~t"Job"m}>
-                <div :if={@selected_export.job}>
-                  <%= @selected_export.job.id %> <%= @selected_export.job.state %>
-                </div>
-              </:item>
-            </.list>
-          </div>
+            <:item title={~t"Job"m}>
+              <div :if={@selected_export.job}>
+                <%= @selected_export.job.id %> <%= @selected_export.job.state %>
+              </div>
+            </:item>
+          </.list>
 
           <:footer :if={@selected_export && @selected_export.state == :pending}>
             <button

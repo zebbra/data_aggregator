@@ -10,17 +10,53 @@ defmodule DataAggregatorWeb.Components.Alert do
   alias Phoenix.LiveView.JS
 
   @doc """
-    Renders an alert.
+  Renders an alert.
 
-    ## Examples
+  Alerts should be placed within the `:portal` slot of the Layout component.
 
-        <.alert>
-          This is an alert.
-        </.alert>
+  ## Examples
+
+  ```heex
+  <.alert>
+    This is an alert.
+  </.alert>
+  ```
+
+  JS commands may be passed to the `:on_cancel` and/or `:on_confirm`
+  to configure the closing/cancel/confirm event, for example:
+
+  ```heex
+  <.modal id="confirm" on_cancel={JS.navigate(~p"/posts")}>
+    This is another modal.
+  </.modal>
+  ```
+
+  You can use custom confirm alerts for method="delete" forms:
+
+  ```heex
+  <button
+    phx-click={action}
+    data-confirm={~t"Are you sure?"m}
+    data-confirm_id="confirm_alert"
+  >
+    <.icon name={icon} class="size-5" />
+    <span class="font-[sans-serif]"><%= label %></span>
+  </button>
+
+  <:portal>
+    <.alert
+      id="confirm_alert"
+      size="sm"
+      title={~t"Are you sure?"m}
+      text={~t"You're about to delete this entry"m}
+    >
+    </.alert>
+  </:portal>
+  ```
   """
-  attr :id, :string, required: true
-  attr :title, :string, default: nil
-  attr :text, :string, default: nil
+  attr :id, :string, required: true, doc: "The alert ID."
+  attr :title, :string, default: nil, doc: "The alert title."
+  attr :text, :string, default: nil, doc: "The alert text."
   attr :on_cancel, JS, default: %JS{}, doc: "JS commands to run when the modal is cancelled."
   attr :on_confirm, JS, default: %JS{}, doc: "JS commands to run when the modal is closed."
   attr :form, :boolean, default: false, doc: "Whether the alert provides a form."

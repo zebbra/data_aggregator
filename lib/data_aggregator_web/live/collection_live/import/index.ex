@@ -62,7 +62,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     ~H"""
     <.page current="collections" open={@selected_import != nil}>
       <.collection_header collection={@collection} current={:imports} meta={@meta} />
-      <.secondary_navigation class="sticky top-[calc(4rem-1px)]" gradient>
+      <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/records"}
           label={~t"Records"m}
@@ -99,10 +99,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           <.import_state_badge import={import} />
         </:col>
         <:col :let={{_id, import}} label={~t"File"m}>
-          <div class="font-mono"><%= import.attachment.filename %></div>
-          <div class="text-base-content/60 text-xs">
-            <%= format_number(import.rows_count) %> rows
-          </div>
+          <.file_info attachment={import.attachment} rows={import.rows_count} />
         </:col>
         <:col :let={{_id, import}} label={~t"Size"m}>
           <.attachment_download_badge attachment={import.attachment} />
@@ -174,162 +171,164 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           on_cancel={JS.push("import:select", value: %{id: nil})}
           size="xl"
         >
-          <div>
-            <.section_heading
-              text={~t"Import"m}
-              class="border-b border-black-white/10 px-6 lg:px-8 pb-8"
-              size="md"
-            >
-              <:subtitle>
-                <div :if={@selected_import.state == :pending} class="flex items-center gap-x-2">
-                  <span class="text-sm"><%= ~t"State:"m %></span>
-                  <.import_state_badge import={@selected_import} />
-                </div>
-              </:subtitle>
-              <:actions>
-                <button
-                  :if={can_run?(@selected_import)}
-                  type="button"
-                  phx-value-id={@selected_import.id}
-                  phx-click="import:run"
-                  class="btn btn-primary max-sm:btn-sm"
-                >
-                  <.icon name="hero-play-circle-mini" class="size-6" />
-                  <%= ~t"Run"m %>
-                </button>
-                <div
-                  :if={can_run?(@selected_import) == false && @selected_import.state == :pending}
-                  class="text-error flex h-8 items-center gap-x-2"
-                >
-                  <.icon name="hero-exclamation-triangle-mini" class="size-6 mt-0.5" />
-                  <span class="text-sm"><%= ~t"Mapping is invalid"m %></span>
-                </div>
-                <div
-                  :if={can_run?(@selected_import) == false && @selected_import.state != :pending}
-                  class="flex items-center gap-x-2"
-                >
-                  <span class="text-sm"><%= ~t"State:"m %></span>
-                  <.import_state_badge import={@selected_import} />
-                </div>
-              </:actions>
-            </.section_heading>
-
-            <.list>
-              <:item title={~t"File"m}>
-                <div class="font-mono"><%= @selected_import.attachment.filename %></div>
-                <div class="text-base-content/60 mt-1 flex items-center gap-x-2 text-xs">
-                  <.attachment_download_badge attachment={@selected_import.attachment} />
-                  <%= format_number(@selected_import.rows_count) %> rows
-                </div>
-              </:item>
-              <:item title={~t"Created at"m}>
-                <%= format_datetime(@selected_import.inserted_at) %>
-              </:item>
-              <:item title={~t"Rows"m}><%= format_number(@selected_import.rows_count) %></:item>
-
-              <:item title={~t"Validation"m}>
-                <div class="flex flex-col">
-                  <.progress
-                    value={@selected_import.validation_progress || 0}
-                    max={1}
-                    class="w-full progress progress-primary"
-                  />
-                  <div>
-                    <%= format_number(@selected_import.rows_validated_count) %> / <%= format_number(
-                      @selected_import.rows_count
-                    ) %> <%= ~t"rows"m %>
-                  </div>
-                  <div :if={@selected_import.rows_invalid_count not in [0, nil]} class="text-error">
-                    <%= ~t"invalid rows:"m %> <%= format_number(@selected_import.rows_invalid_count) %>
-                  </div>
-                </div>
-              </:item>
-
-              <:item title={~t"Imported"m}>
-                <div class="flex flex-col">
-                  <.progress
-                    value={@selected_import.import_progress || 0}
-                    max={1}
-                    class="w-full progress progress-primary"
-                  />
-                  <div>
-                    <%= format_number(@selected_import.rows_imported_count) %> / <%= format_number(
-                      @selected_import.rows_count
-                    ) %> <%= ~t"rows"m %>
-                  </div>
-                </div>
-              </:item>
-
-              <:item title={~t"Started at"m}>
-                <div :if={@selected_import.finished_at == nil}>
-                  <%= format_datetime(@selected_import.started_at) %>
-                </div>
-                <div :if={@selected_import.finished_at != nil}>
-                  <%= format_date_interval(@selected_import.started_at, @selected_import.finished_at) %>
-                </div>
-                <%= @selected_import.duration %>
-              </:item>
-
-              <:item title={~t"Job"m}>
-                <div :if={@selected_import.job}>
-                  <%= @selected_import.job.id %> <%= @selected_import.job.state %>
-                </div>
-              </:item>
-            </.list>
-          </div>
-
-          <div>
-            <.table id="import_mapping_table" items={@selected_import.mappings}>
-              <:caption>
-                <.section_heading
-                  text={~t"Mapping"m}
-                  class="border-b border-black-white/10 px-6 pb-8 lg:px-8 text-left"
-                  size="md"
-                >
-                  <:actions :if={@selected_import.state == :pending}>
-                    <.link
-                      type="button"
-                      patch={
-                        build_path(
-                          ~p"/collections/#{@collection}/imports/#{@selected_import}/edit",
-                          @meta
-                        )
-                      }
-                      class="btn btn-primary max-sm:btn-sm"
-                    >
-                      <.icon name="hero-pencil-square-mini" class="size-6" />
-                      <%= ~t"Edit"m %>
-                    </.link>
-                  </:actions>
-                </.section_heading>
-              </:caption>
-              <:col :let={column} label={~t"Column"m}>
-                <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
-                  <%= column.name %>
-                </span>
-                <span :if={column.name == nil} class="text-error">
-                  <%= ~t"Mapping is invalid"m %>
-                </span>
-              </:col>
-              <:col :let={column} label={~t"Mapped to"m} class="py-5">
-                <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
-              </:col>
-            </.table>
-
-            <div class="px-6 py-4 lg:px-8">
-              <.section_heading text={~t"Unmapped columns"m} class="pb-4" size="md" />
-              <span
-                :for={
-                  col <-
-                    @selected_import.columns
-                    |> Enum.filter(&(&1.mapped? == false))
-                    |> Enum.map(& &1.name)
-                }
-                class="bg-base-200 mr-1 mb-1 inline-flex rounded px-2 py-1 text-xs"
+          <.section_heading
+            text={~t"Import"m}
+            class="border-b border-black-white/10 px-6 lg:px-8 pb-6"
+            align_items={
+              if @selected_import.state == :imported,
+                do: "baseline",
+                else: "center"
+            }
+            size="md"
+          >
+            <:subtitle>
+              <div :if={@selected_import.state == :pending} class="mt-1 flex items-center gap-x-2">
+                <span class="text-sm"><%= ~t"State:"m %></span>
+                <.import_state_badge import={@selected_import} />
+              </div>
+            </:subtitle>
+            <:actions>
+              <button
+                :if={can_run?(@selected_import)}
+                type="button"
+                phx-value-id={@selected_import.id}
+                phx-click="import:run"
+                class="btn btn-primary max-sm:btn-sm"
               >
-                <%= col %>
+                <.icon name="hero-play-circle-mini" class="size-6" />
+                <%= ~t"Run"m %>
+              </button>
+              <div
+                :if={can_run?(@selected_import) == false && @selected_import.state == :pending}
+                class="text-error flex h-8 items-center gap-x-2"
+              >
+                <.icon name="hero-exclamation-triangle-mini" class="size-6 mt-0.5" />
+                <span class="text-sm"><%= ~t"Mapping is invalid"m %></span>
+              </div>
+              <div
+                :if={can_run?(@selected_import) == false && @selected_import.state != :pending}
+                class="flex items-center gap-x-2"
+              >
+                <span class="text-sm"><%= ~t"State:"m %></span>
+                <.import_state_badge import={@selected_import} />
+              </div>
+            </:actions>
+          </.section_heading>
+
+          <.list>
+            <:item title={~t"File"m}>
+              <.file_info
+                attachment={@selected_import.attachment}
+                rows={@selected_import.rows_count}
+                badge
+              />
+            </:item>
+            <:item title={~t"Created at"m}>
+              <%= format_datetime(@selected_import.inserted_at) %>
+            </:item>
+            <:item title={~t"Rows"m}><%= format_number(@selected_import.rows_count) %></:item>
+
+            <:item title={~t"Validation"m}>
+              <div class="flex flex-col">
+                <.progress
+                  value={@selected_import.validation_progress || 0}
+                  max={1}
+                  class="w-full progress progress-primary"
+                />
+                <div>
+                  <%= format_number(@selected_import.rows_validated_count) %> / <%= format_number(
+                    @selected_import.rows_count
+                  ) %> <%= ~t"rows"m %>
+                </div>
+                <div :if={@selected_import.rows_invalid_count not in [0, nil]} class="text-error">
+                  <%= ~t"invalid rows:"m %> <%= format_number(@selected_import.rows_invalid_count) %>
+                </div>
+              </div>
+            </:item>
+
+            <:item title={~t"Imported"m}>
+              <div class="flex flex-col">
+                <.progress
+                  value={@selected_import.import_progress || 0}
+                  max={1}
+                  class="w-full progress progress-primary"
+                />
+                <div>
+                  <%= format_number(@selected_import.rows_imported_count) %> / <%= format_number(
+                    @selected_import.rows_count
+                  ) %> <%= ~t"rows"m %>
+                </div>
+              </div>
+            </:item>
+
+            <:item title={~t"Started at"m}>
+              <div :if={@selected_import.finished_at == nil}>
+                <%= format_datetime(@selected_import.started_at) %>
+              </div>
+              <div :if={@selected_import.finished_at != nil}>
+                <%= format_date_interval(@selected_import.started_at, @selected_import.finished_at) %>
+              </div>
+              <%= @selected_import.duration %>
+            </:item>
+
+            <:item title={~t"Job"m}>
+              <div :if={@selected_import.job}>
+                <%= @selected_import.job.id %> <%= @selected_import.job.state %>
+              </div>
+            </:item>
+          </.list>
+
+          <.table id="import_mapping_table" items={@selected_import.mappings}>
+            <:caption>
+              <.section_heading
+                text={~t"Mapping"m}
+                class="border-b border-black-white/10 px-6 pb-6 lg:px-8 text-left"
+                align_items="center"
+                size="md"
+              >
+                <:actions :if={@selected_import.state == :pending}>
+                  <.link
+                    type="button"
+                    patch={
+                      build_path(
+                        ~p"/collections/#{@collection}/imports/#{@selected_import}/edit",
+                        @meta
+                      )
+                    }
+                    class="btn btn-primary max-sm:btn-sm"
+                  >
+                    <.icon name="hero-pencil-square-mini" class="size-6" />
+                    <%= ~t"Edit"m %>
+                  </.link>
+                </:actions>
+              </.section_heading>
+            </:caption>
+            <:col :let={column} label={~t"Column"m}>
+              <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
+                <%= column.name %>
               </span>
-            </div>
+              <span :if={column.name == nil} class="text-error">
+                <%= ~t"Mapping is invalid"m %>
+              </span>
+            </:col>
+            <:col :let={column} label={~t"Mapped to"m} class="py-5">
+              <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
+            </:col>
+          </.table>
+
+          <div class="px-6 py-4 lg:px-8">
+            <.section_heading text={~t"Unmapped columns"m} class="pb-4" size="md" />
+            <span
+              :for={
+                col <-
+                  @selected_import.columns
+                  |> Enum.filter(&(&1.mapped? == false))
+                  |> Enum.map(& &1.name)
+              }
+              class="bg-base-200 mr-1 mb-1 inline-flex rounded px-2 py-1 text-xs"
+            >
+              <%= col %>
+            </span>
           </div>
 
           <:footer :if={@selected_import && @selected_import.state == :pending}>
@@ -355,6 +354,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           responsive
           backdrop={false}
           on_cancel={JS.patch(build_path(~p"/collections/#{@collection}/imports", @meta))}
+          overflow="manual"
         >
           <.live_component
             :if={@live_action in [:new, :edit, :summary]}

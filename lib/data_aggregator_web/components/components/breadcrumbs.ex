@@ -9,6 +9,18 @@ defmodule DataAggregatorWeb.Components.Breadcrumbs do
 
   @doc """
   Renders a list of breadcrumbs.
+
+  ## Examples
+
+  ```heex
+  <.breadcrumbs
+    items={[
+      %{label: "Home", link: ~p"/"},
+      %{label: "About", link: ~p"/about"},
+      %{label: "Contact", link: ~p"/contact"}
+    ]}
+  />
+  ```
   """
   attr :class, :string, default: "text-sm", doc: "the breadcrumbs class"
   attr :items, :list, default: [], doc: "the list of breadcrumbs items"

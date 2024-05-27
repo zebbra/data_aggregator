@@ -35,22 +35,25 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
   @impl true
   def render(assigns) do
     ~H"""
-    <div>
-      <.stepper current={current_step(@action)} steps={3} />
-      <div class="space-y-8">
+    <div class="contents">
+      <.modal_header id={@id}>
+        <.stepper current={current_step(@action)} steps={3} />
         <.section_heading
           text={~t"Import records"m}
           description={~t"Please provide your collection file holding your records."m}
-          class="border-b border-black-white/10 py-4 sm:!items-start"
+          class="mt-4"
         />
-        <.simple_form
-          for={@form}
-          id="import_upload_form"
-          class="space-y-8"
-          phx-target={@myself}
-          phx-change="upload:validate"
-          phx-submit="upload:save"
-        >
+      </.modal_header>
+
+      <.simple_form
+        for={@form}
+        id="import_upload_form"
+        class="contents"
+        phx-target={@myself}
+        phx-change="upload:validate"
+        phx-submit="upload:save"
+      >
+        <div class="h-full overflow-y-auto px-6 py-8">
           <.fieldset>
             <.fieldgroup>
               <div
@@ -125,20 +128,20 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
               </section>
             </.fieldgroup>
           </.fieldset>
+        </div>
 
-          <:actions>
-            <button
-              type="submit"
-              class={["btn btn-primary", Enum.any?(@uploads.file.errors) && "btn-disabled"]}
-            >
-              <%= ~t"Upload file"m %>
-            </button>
-            <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
-              <%= ~t"Cancel"m %>
-            </button>
-          </:actions>
-        </.simple_form>
-      </div>
+        <:actions modal>
+          <button
+            type="submit"
+            class={["btn btn-primary", Enum.any?(@uploads.file.errors) && "btn-disabled"]}
+          >
+            <%= ~t"Upload file"m %>
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
+            <%= ~t"Cancel"m %>
+          </button>
+        </:actions>
+      </.simple_form>
     </div>
     """
   end

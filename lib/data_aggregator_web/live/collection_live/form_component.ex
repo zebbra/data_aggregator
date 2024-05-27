@@ -32,7 +32,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
       )
 
     ~H"""
-    <div>
+    <div class="contents">
       <.simple_form
         for={@form}
         id="collection_form"
@@ -40,9 +40,14 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         phx-target={@myself}
         phx-change="collection:validate"
         phx-submit="collection:save"
+        modal
       >
-        <.fieldset legend={@title} text={~t"Use this form to manage collections in your database."m}>
-          <.fieldgroup>
+        <.fieldset
+          legend={@title}
+          text={~t"Use this form to manage collections in your database."m}
+          modal
+        >
+          <.fieldgroup modal>
             <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
               <.field field={@form[:owner]} label={~t"Owner"m} placeholder="Brigit Hansson" required />
             </div>
@@ -82,15 +87,14 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
               placeholder={~t"Description"m}
             />
           </.fieldgroup>
+          <:actions modal>
+            <button type="submit" class="btn btn-primary"><%= ~t"Save collection"m %></button>
+            <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
+            <button type="button" class="btn btn-ghost" onclick="collection_modal.close()">
+              <%= ~t"Cancel"m %>
+            </button>
+          </:actions>
         </.fieldset>
-
-        <:actions>
-          <button type="submit" class="btn btn-primary"><%= ~t"Save collection"m %></button>
-          <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
-          <button type="button" class="btn btn-ghost" onclick="collection_modal.close()">
-            <%= ~t"Cancel"m %>
-          </button>
-        </:actions>
       </.simple_form>
     </div>
     """
