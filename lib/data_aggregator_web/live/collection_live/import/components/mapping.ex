@@ -52,17 +52,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     assigns = assign(assigns, :count, count)
 
     ~H"""
-    <div>
-      <.stepper
-        current={current_step(@action)}
-        links={valid_links(@collection, @import, @meta)}
-        class=""
-      />
-      <div class="space-y-8">
+    <div class="contents">
+      <.modal_header id={@id} title_class="!-mr-5 pr-1 w-full">
+        <.stepper current={current_step(@action)} links={valid_links(@collection, @import, @meta)} />
         <.section_heading
           text={~t"Mappings"m}
           description={~t"Map columns to record attributes"m}
-          class="border-b border-black-white/10 py-4 sm:!items-start"
+          class="mt-4 sm:!items-start"
           break_at="sm"
         >
           <:actions>
@@ -77,63 +73,68 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
             />
           </:actions>
         </.section_heading>
+      </.modal_header>
 
-        <.import_mapping_validation
-          :if={@show_validation && @import}
-          import={@import}
-          on_hide={JS.push("validation:hide", target: @myself)}
-        />
+      <.simple_form
+        id="import_mapping_form"
+        for={@form}
+        novalidate
+        phx-target={@myself}
+        phx-change="mapping:validate"
+        phx-submit="mapping:save"
+        class="contents"
+      >
+        <div class="h-full space-y-8 overflow-y-auto p-6">
+          <.import_mapping_validation
+            :if={@show_validation && @import}
+            import={@import}
+            on_hide={JS.push("validation:hide", target: @myself)}
+          />
 
-        <div :if={@reuse_mapping} class="collapse text-info-content border-info/20 bg-info/10 border">
-          <input type="checkbox" />
-          <div class="collapse-title text-info pe-4 flex items-center gap-x-2 text-sm">
-            <div class="flex min-w-0 flex-1 items-center gap-x-2">
-              <.icon name="hero-information-circle-solid" />
-              <span><%= ~t"Reuse mapping from previous import"m %></span>
+          <div
+            :if={@reuse_mapping}
+            class="collapse text-info-content border-info/20 bg-info/10 border"
+          >
+            <input type="checkbox" />
+            <div class="collapse-title text-info pe-4 flex items-center gap-x-2 text-sm">
+              <div class="flex min-w-0 flex-1 items-center gap-x-2">
+                <.icon name="hero-information-circle-solid" />
+                <span><%= ~t"Reuse mapping from previous import"m %></span>
+              </div>
+              <.link
+                type="button"
+                class="z-10 link link-hover link-info font-semibold flex items-center gap-x-1 hover:no-underline rounded-md"
+                phx-click="mapping:apply"
+                phx-target={@myself}
+              >
+                <%= ~t"Load"m %> <.icon name="hero-arrow-right-micro" />
+              </.link>
             </div>
-            <.link
-              type="button"
-              class="z-10 link link-hover link-info font-semibold flex items-center gap-x-1 hover:no-underline rounded-md"
-              phx-click="mapping:apply"
-              phx-target={@myself}
-            >
-              <%= ~t"Load"m %> <.icon name="hero-arrow-right-micro" />
-            </.link>
+            <div class="collapse-content -mx-4">
+              <.table
+                opts={[no_results_content: no_mapping_available()]}
+                id="collection_mapping_table"
+                items={@import.collection.import_mapping |> Enum.filter(&(&1["mapped_to"] != nil))}
+              >
+                <:col :let={column} label={~t"Column"m}>
+                  <span
+                    :if={column["name"]}
+                    class="bg-info text-info-content inline-flex rounded px-2 py-1 text-xs"
+                  >
+                    <%= column["name"] %>
+                  </span>
+                  <span :if={column["name"] == nil} class="text-error">
+                    <%= ~t"Mapping is invalid"m %>
+                  </span>
+                </:col>
+                <:col :let={column} label={~t"Mapped to"m} class="py-5">
+                  <%= column[:mapped_to] %>
+                  <.attribute_badge name={column["mapped_to"]} mapped={column["mapped_to"] != nil} />
+                </:col>
+              </.table>
+            </div>
           </div>
-          <div class="collapse-content -mx-4">
-            <.table
-              opts={[no_results_content: no_mapping_available()]}
-              id="collection_mapping_table"
-              items={@import.collection.import_mapping |> Enum.filter(&(&1["mapped_to"] != nil))}
-            >
-              <:col :let={column} label={~t"Column"m}>
-                <span
-                  :if={column["name"]}
-                  class="bg-info text-info-content inline-flex rounded px-2 py-1 text-xs"
-                >
-                  <%= column["name"] %>
-                </span>
-                <span :if={column["name"] == nil} class="text-error">
-                  <%= ~t"Mapping is invalid"m %>
-                </span>
-              </:col>
-              <:col :let={column} label={~t"Mapped to"m} class="py-5">
-                <%= column[:mapped_to] %>
-                <.attribute_badge name={column["mapped_to"]} mapped={column["mapped_to"] != nil} />
-              </:col>
-            </.table>
-          </div>
-        </div>
 
-        <.simple_form
-          id="import_mapping_form"
-          for={@form}
-          class="space-y-8"
-          novalidate
-          phx-target={@myself}
-          phx-change="mapping:validate"
-          phx-submit="mapping:save"
-        >
           <.fieldset
             legend={~t"Required attributes"m}
             text={~t"Please map all required attributes to one of your columns before continueing."m}
@@ -154,18 +155,18 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
               </.inputs_for>
             </.fieldgroup>
           </.fieldset>
+        </div>
 
-          <:actions>
-            <button type="submit" disabled={@disabled} class="btn btn-primary">
-              <%= ~t"Save"m %>
-            </button>
-            <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
-            <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
-              <%= ~t"Cancel"m %>
-            </button>
-          </:actions>
-        </.simple_form>
-      </div>
+        <:actions modal>
+          <button type="submit" disabled={@disabled} class="btn btn-primary">
+            <%= ~t"Save"m %>
+          </button>
+          <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
+          <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
+            <%= ~t"Cancel"m %>
+          </button>
+        </:actions>
+      </.simple_form>
     </div>
     """
   end
@@ -652,7 +653,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   defp no_mapping_available(assigns \\ %{}) do
     ~H"""
-    <div class="text-base-content/50 text-center text-sm">
+    <div class="text-base-content/50 px-6 text-sm">
       <%= ~t"No mapping available"m %>
     </div>
     """

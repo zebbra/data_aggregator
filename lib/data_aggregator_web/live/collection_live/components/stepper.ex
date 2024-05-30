@@ -5,6 +5,23 @@ defmodule DataAggregatorWeb.CollectionLive.Collection.Components.Stepper do
 
   use DataAggregatorWeb, :html
 
+  @doc """
+  Renders a stepper component.
+
+  ## Examples
+
+  ```heex
+  <.stepper
+    steps={3}
+    current={2}
+    links={[
+      ~p"/step1",
+      ~p"/step2",
+      ~p"/step3"
+    ]}
+  />
+  ```
+  """
   attr :class, :string, default: nil
   attr :steps, :integer, default: 0, doc: "The total number of steps in the stepper."
   attr :links, :list, default: nil, doc: "The links for each step in the stepper."

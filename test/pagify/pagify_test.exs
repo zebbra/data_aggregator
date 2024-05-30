@@ -272,6 +272,7 @@ defmodule PagifyTest do
                current_limit: 3,
                current_offset: 0,
                current_page: 1,
+               default_scopes: %{status: :all},
                errors: [],
                has_next_page?: false,
                has_previous_page?: false,
@@ -295,6 +296,7 @@ defmodule PagifyTest do
                current_limit: 15,
                current_offset: 0,
                current_page: 1,
+               default_scopes: %{status: :all},
                errors: [],
                has_next_page?: false,
                has_previous_page?: false,
@@ -318,6 +320,7 @@ defmodule PagifyTest do
                current_limit: 2,
                current_offset: 1,
                current_page: 2,
+               default_scopes: %{status: :all},
                errors: [],
                has_next_page?: false,
                has_previous_page?: true,
@@ -341,6 +344,7 @@ defmodule PagifyTest do
                current_limit: 2,
                current_offset: 3,
                current_page: 2,
+               default_scopes: %{status: :all},
                errors: [],
                has_next_page?: false,
                has_previous_page?: true,
@@ -406,6 +410,25 @@ defmodule PagifyTest do
 
       assert meta.opts == opts
     end
+
+    test "sets default scopes" do
+      pagify = %Pagify{limit: 1, offset: 0, order_by: :name}
+
+      opts =
+        Pagify.Misc.maybe_put_compiled_pagify_scopes(Post,
+          pagify_scopes: %{
+            role: [
+              %{name: :user, filter: %{author: "Doe"}, default?: true}
+            ]
+          }
+        )
+
+      page = Pagify.all(Post, pagify, opts)
+      meta = Pagify.meta(page, pagify, opts)
+
+      assert meta.default_scopes == %{role: :user, status: :all}
+      assert meta.opts == []
+    end
   end
 
   describe "run/4" do
@@ -419,6 +442,7 @@ defmodule PagifyTest do
                current_limit: 2,
                current_offset: 1,
                current_page: 2,
+               default_scopes: %{status: :all},
                errors: [],
                has_next_page?: false,
                has_previous_page?: true,
@@ -444,7 +468,7 @@ defmodule PagifyTest do
       assert meta.pagify == %Pagify{}
 
       assert inspect(meta.params) ==
-               ~s"%{offset: 0, filters: #Ash.Filter<name == \"Post 1\">, limit: 15}"
+               ~s"%{offset: 0, filters: #Ash.Filter<name == \"Post 1\">, limit: 15, scopes: %{status: :all}}"
 
       assert [%Ash.Error.Query.InvalidLimit{limit: -1}] = Keyword.get(meta.errors, :limit)
 
@@ -460,7 +484,12 @@ defmodule PagifyTest do
 
       assert meta.pagify == %Pagify{}
 
-      assert %{limit: -1, filters: %{name: "Post 1", other: "John"}, offset: 0} == meta.params
+      assert %{
+               limit: -1,
+               filters: %{name: "Post 1", other: "John"},
+               offset: 0,
+               scopes: %{status: :all}
+             } == meta.params
 
       assert [%Ash.Error.Query.InvalidLimit{limit: -1}] = Keyword.get(meta.errors, :limit)
 
@@ -478,12 +507,18 @@ defmodule PagifyTest do
                current_limit: 2,
                current_offset: 1,
                current_page: 2,
+               default_scopes: %{status: :all},
                errors: [],
                has_next_page?: false,
                has_previous_page?: true,
                next_offset: nil,
                opts: [],
-               pagify: %Pagify{limit: 2, offset: 1, order_by: [name: :asc]},
+               pagify: %Pagify{
+                 limit: 2,
+                 offset: 1,
+                 order_by: [name: :asc],
+                 scopes: %{status: :all}
+               },
                params: %{},
                previous_offset: 0,
                resource: Post,
@@ -527,8 +562,11 @@ defmodule PagifyTest do
 
   describe "validate/1" do
     test "returns Pagify struct" do
-      assert Pagify.validate(Post, %Pagify{}) == {:ok, %Pagify{limit: 15, offset: 0}}
-      assert Pagify.validate(Post, %{}) == {:ok, %Pagify{limit: 15, offset: 0}}
+      assert Pagify.validate(Post, %Pagify{}) ==
+               {:ok, %Pagify{limit: 15, offset: 0, scopes: %{status: :all}}}
+
+      assert Pagify.validate(Post, %{}) ==
+               {:ok, %Pagify{limit: 15, offset: 0, scopes: %{status: :all}}}
     end
 
     test "returns error and replaced params if parameters are invalid" do
@@ -559,7 +597,12 @@ defmodule PagifyTest do
 
       assert meta.pagify == %Pagify{}
 
-      assert %{limit: -1, filters: %{name: "Post 1", other: "John"}, offset: 0} == meta.params
+      assert %{
+               limit: -1,
+               filters: %{name: "Post 1", other: "John"},
+               offset: 0,
+               scopes: %{status: :all}
+             } == meta.params
 
       assert [%Ash.Error.Query.InvalidLimit{limit: -1}] = Keyword.get(meta.errors, :limit)
 
@@ -570,8 +613,17 @@ defmodule PagifyTest do
 
   describe "validate!/1" do
     test "returns Pagify struct" do
-      assert Pagify.validate!(Post, %Pagify{}) == %Pagify{limit: 15, offset: 0}
-      assert Pagify.validate!(Post, %{}) == %Pagify{limit: 15, offset: 0}
+      assert Pagify.validate!(Post, %Pagify{}) == %Pagify{
+               limit: 15,
+               offset: 0,
+               scopes: %{status: :all}
+             }
+
+      assert Pagify.validate!(Post, %{}) == %Pagify{
+               limit: 15,
+               offset: 0,
+               scopes: %{status: :all}
+             }
     end
 
     test "raises if params are invalid" do
@@ -667,6 +719,69 @@ defmodule PagifyTest do
 
     test "falls back to nil" do
       assert Pagify.get_option(:some_option, []) == nil
+    end
+
+    test "merges pagify_scopes" do
+      # sanity check
+      assert Pagify.get_option(:pagify_scopes, [for: Post], %{}) == Post.pagify_scopes()
+
+      # with default value
+      assert Pagify.get_option(:pagify_scopes, [for: Post], %{
+               role: [
+                 %{name: :admin, filter: %{author: "John"}, default?: true}
+               ]
+             }) == %{
+               role: [
+                 %{name: :admin, filter: %{author: "John"}, default?: true},
+                 %{name: :user, filter: %{author: "Doe"}}
+               ],
+               status: [
+                 %{name: :all, filter: nil, default?: true},
+                 %{name: :active, filter: %{age: %{lt: 10}}},
+                 %{name: :inactive, filter: %{age: %{gte: 10}}}
+               ]
+             }
+
+      # with opts scopes
+      opts = [
+        pagify_scopes: %{
+          other: [
+            %{name: :other, filter: %{name: "other"}}
+          ],
+          role: [
+            %{name: :user, filter: %{name: "changed"}},
+            %{name: :other, filter: %{name: "other"}}
+          ],
+          status: [
+            %{name: :inactive, filter: %{age: %{gte: 10}}},
+            %{name: :all, filter: nil, default?: true},
+            %{name: :active, filter: %{age: %{lt: 10}}}
+          ]
+        },
+        for: Post
+      ]
+
+      default = %{
+        role: [
+          %{name: :admin, filter: %{author: "John"}, default?: true}
+        ]
+      }
+
+      assert Pagify.get_option(:pagify_scopes, opts, default) == %{
+               role: [
+                 %{name: :admin, filter: %{author: "John"}, default?: true},
+                 %{name: :user, filter: %{name: "changed"}},
+                 %{name: :other, filter: %{name: "other"}}
+               ],
+               other: [
+                 %{name: :other, filter: %{name: "other"}}
+               ],
+               status: [
+                 %{name: :inactive, filter: %{age: %{gte: 10}}},
+                 %{name: :all, filter: nil, default?: true},
+                 %{name: :active, filter: %{age: %{lt: 10}}}
+               ]
+             }
     end
   end
 

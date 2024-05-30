@@ -7,11 +7,21 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
 
   @doc """
   Renders a secondary, horizontal navigation which will scroll on small screens.
+
+  ## Example
+
+  ```heex
+  <.secondary_navigation class="mt-6">
+    <.secondary_navigation_item label="Overview" href="#" active />
+    <.secondary_navigation_item label="Details" href="#" />
+    <.secondary_navigation_item label="Settings" href="#" />
+  </.secondary_navigation>
+  ```
   """
 
   attr :id, :string, default: "secondary_navigation", doc: "ID of the navigation"
   attr :class, :string, default: nil, doc: "Class of the navigation"
-  attr :gradient, :boolean, default: false, doc: "Whether to show a gradient on the edges"
+  attr :gradient, :boolean, default: true, doc: "Whether to show a gradient on the edges"
 
   slot :inner_block, required: true, doc: "The navigation items"
 
@@ -45,6 +55,12 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
 
   @doc """
   Renders a secondary navigation item.
+
+  ## Example
+
+  ```heex
+  <.secondary_navigation_item label="Overview" href="#" active />
+  ```
   """
 
   attr :label, :string, required: true, doc: "Label of the item"

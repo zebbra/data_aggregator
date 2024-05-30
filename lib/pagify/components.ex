@@ -1,6 +1,6 @@
 defmodule Pagify.Components do
   @moduledoc """
-  Phoenix components for pagination, sortable tables and filter forms with
+  Phoenix components for scoping, pagination, sortable tables and filter forms with
   `Pagify`.
 
   ## Introduction
@@ -81,7 +81,7 @@ defmodule Pagify.Components do
 
   ## Hiding default parameters
 
-  Default values for pagination and ordering are omitted from the query
+  Default values for scoping, pagination and ordering are omitted from the query
   parameters. Pagify.Components function will pick up the default values
   from the `Ash.Resource` specifications.
 
@@ -894,7 +894,7 @@ defmodule Pagify.Components do
 
   ## Default parameters
 
-  Default parameters for the limit and order parameters are omitted. The
+  Default parameters for the limit, scopes, and order parameters are omitted. The
   defaults are determined by calling `Pagify.get_option/3`.
 
   - Pass the `:for` option to pick up the default values from an `Ash.Resource`.
@@ -955,6 +955,10 @@ defmodule Pagify.Components do
       iex> to_query(f, for: Pagify.Factory.Post)
       []
 
+      iex> f = %Pagify{scopes: %{status: :active}}
+      iex> to_query(f, for: Pagify.Factory.Post)
+      [scopes: %{status: :active}]
+
   Encoding the query as a string:
 
       iex> f = %Pagify{order_by: [name: :desc, age: :asc]}
@@ -968,6 +972,12 @@ defmodule Pagify.Components do
       [filters: %{"comments_count" => %{"gt" => 2}}]
       iex> f |> to_query |> Plug.Conn.Query.encode()
       "filters[comments_count][gt]=2"
+
+      iex> f = %Pagify{scopes: %{status: :active}}
+      iex> to_query(f)
+      [scopes: %{status: :active}]
+      iex> f |> to_query |> Plug.Conn.Query.encode()
+      "scopes[status]=active"
   """
   @spec to_query(Pagify.t(), Keyword.t()) :: Keyword.t()
   def to_query(%Pagify{} = pagify, opts \\ []) do
@@ -981,6 +991,7 @@ defmodule Pagify.Components do
     |> Misc.maybe_put(:limit, pagify.limit, default_limit)
     |> Misc.maybe_put(:order_by, current_order, default_order)
     |> Misc.maybe_put(:filters, pagify.filters)
+    |> Misc.maybe_put_scopes(pagify, opts)
   end
 
   @doc """
@@ -994,7 +1005,7 @@ defmodule Pagify.Components do
   - a URL string, usually produced with a verified route (e.g. `~p"/some/path"`)
   - a function that takes the Pagify parameters as a keyword list as an argument
 
-  Default values for `limit` and `order_by` are omitted from the query parameters.
+  Default values for `scopes`, `limit` and `order_by` are omitted from the query parameters.
   To pick up the default parameters from an `Ash.Resource`, you need to pass the
   `:for` option. If you pass a `Pagify.Meta` struct as the second argument,
   these options are retrieved from the struct automatically.
@@ -1167,8 +1178,14 @@ defmodule Pagify.Components do
           String.t()
   def build_path(path, meta_or_pagify_or_params, opts \\ [])
 
-  def build_path(path, %Meta{pagify: pagify, resource: resource}, opts) when is_atom(resource) and resource != nil do
-    build_path(path, pagify, Keyword.put(opts, :for, resource))
+  def build_path(path, %Meta{pagify: pagify, resource: resource, default_scopes: default_scopes}, opts)
+      when is_atom(resource) and resource != nil do
+    opts =
+      opts
+      |> Keyword.put(:for, resource)
+      |> Keyword.put(:default_scopes, default_scopes)
+
+    build_path(path, pagify, opts)
   end
 
   def build_path(path, %Pagify{} = pagify, opts) do
@@ -1224,5 +1241,30 @@ defmodule Pagify.Components do
       _ ->
         args ++ [pagify_params]
     end
+  end
+
+  @doc """
+  Wrapper around `build_path/3` that builds a path with the updated scope.
+
+  Examples
+
+      iex> pagify = %Pagify{offset: 20, limit: 10}
+      iex> meta = %Pagify.Meta{pagify: pagify, resource: Pagify.Factory.Post}
+      iex> build_scope_path("/posts", meta, %{status: :active})
+      "/posts?limit=10&scopes[status]=active"
+  """
+  @spec build_scope_path(pagination_path(), Meta.t(), map(), Keyword.t()) :: String.t()
+  def build_scope_path(path, meta, scope, opts \\ [])
+
+  def build_scope_path(path, %Meta{pagify: pagify, resource: resource, default_scopes: default_scopes}, scope, opts)
+      when is_atom(resource) and resource != nil do
+    opts =
+      opts
+      |> Keyword.put(:for, resource)
+      |> Keyword.put(:default_scopes, default_scopes)
+
+    pagify = Pagify.set_scope(pagify, scope)
+
+    build_path(path, pagify, opts)
   end
 end

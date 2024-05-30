@@ -15,7 +15,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     assigns = assign_activities(assigns)
 
     ~H"""
-    <ul role="list" class="space-y-16 px-6">
+    <ul role="list" class="space-y-16 overflow-y-hidden p-6">
       <li :for={activity <- @activities} class="relative flex gap-x-4">
         <div class="absolute top-0 -bottom-16 left-0 flex w-6 justify-center">
           <div class="bg-black-white/10 w-px"></div>

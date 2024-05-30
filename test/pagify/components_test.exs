@@ -2407,6 +2407,7 @@ defmodule Pagify.ComponentsTest do
       refute %Pagify{limit: nil} |> to_query() |> Keyword.has_key?(:limit)
       refute %Pagify{order_by: []} |> to_query() |> Keyword.has_key?(:order_by)
       refute %Pagify{filters: %{}} |> to_query() |> Keyword.has_key?(:filters)
+      refute %Pagify{scopes: %{}} |> to_query() |> Keyword.has_key?(:scopes)
     end
 
     test "does not add params for first page/offset" do
@@ -2425,7 +2426,7 @@ defmodule Pagify.ComponentsTest do
              |> Keyword.has_key?(:limit)
     end
 
-    test "does not order params if they match the default" do
+    test "does not add order params if they match the default" do
       opts = [
         default_order: [id: :asc]
       ]
@@ -2447,6 +2448,30 @@ defmodule Pagify.ComponentsTest do
         )
 
       refute Keyword.has_key?(query, :order_by)
+    end
+
+    test "does not add scopes params if they match the default" do
+      opts = [
+        default_scopes: %{status: :active}
+      ]
+
+      # scopes does not match default
+      query =
+        to_query(
+          %Pagify{scopes: %{status: :inactive}},
+          opts
+        )
+
+      assert Keyword.has_key?(query, :scopes)
+
+      # scopes matches default
+      query =
+        to_query(
+          %Pagify{scopes: %{status: :active}},
+          opts
+        )
+
+      refute Keyword.has_key?(query, :scopes)
     end
   end
 

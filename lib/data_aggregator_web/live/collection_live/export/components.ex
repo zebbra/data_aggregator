@@ -4,30 +4,11 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Components do
   """
   use DataAggregatorWeb, :html
 
-  import DataAggregatorWeb.Helpers, only: [class_names: 1, format_bytes: 1]
+  import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
-  alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Export
 
   @states AshStateMachine.Info.state_machine_all_states(Export)
-
-  attr :attachment, Attachment, required: true
-  attr :class, :string, default: nil
-
-  def attachment_download_badge(assigns) do
-    ~H"""
-    <.link
-      href={@attachment.url}
-      class={[
-        "inline-flex items-center rounded-md bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 opacity-75 hover:opacity-100 gap-x-1",
-        @class
-      ]}
-    >
-      <.icon name="hero-arrow-down-tray-mini" class="size-3 shrink-0" />
-      <span class="whitespace-nowrap"><%= format_bytes(@attachment.byte_size) %></span>
-    </.link>
-    """
-  end
 
   attr :export, Export, required: false
   attr :state, :atom, required: false, values: @states

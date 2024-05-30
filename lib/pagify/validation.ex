@@ -1,11 +1,13 @@
 defmodule Pagify.Validation do
   @moduledoc """
-  Utilities for validating and transforming filtering, ordering and pagination parameters.
+  Utilities for validating and transforming scoping, filtering, ordering and pagination parameters.
   """
 
   alias Ash.Error.Query.InvalidLimit
   alias Ash.Error.Query.InvalidOffset
   alias Pagify.Error.Query.InvalidOrderByParameter
+  alias Pagify.Error.Query.InvalidScopesParameter
+  alias Pagify.Error.Query.NoSuchScope
   alias Pagify.Misc
 
   @spec validate_params(Ash.Query.t() | Ash.Resource.t(), map(), Keyword.t()) ::
@@ -19,14 +21,19 @@ defmodule Pagify.Validation do
   def validate_params(resource, %{} = params, opts) do
     replace_invalid_params? = Keyword.get(opts, :replace_invalid_params?, false)
 
+    opts = Misc.maybe_put_compiled_pagify_scopes(resource, opts)
+    pagify_scopes = Keyword.get(opts, :__compiled_pagify_scopes)
+    default_scopes = Keyword.get(opts, :__compiled_pagify_default_scopes)
+
     maybe_valid_params =
       params
       |> Misc.atomize_keys(
-        keys: ["filters", "order_by", "limit", "offset"],
+        keys: ["scopes", "filters", "order_by", "limit", "offset"],
         depth: 1,
         existing?: true
       )
       |> Map.put(:errors, [])
+      |> validate_scopes(pagify_scopes, default_scopes, replace_invalid_params?)
       |> validate_filters(resource, replace_invalid_params?)
       |> validate_order_by(resource, replace_invalid_params?)
       |> validate_pagination(resource, replace_invalid_params?, opts)
@@ -36,6 +43,185 @@ defmodule Pagify.Validation do
       %{errors: errors} -> {:error, errors, Map.delete(maybe_valid_params, :errors)}
     end
   end
+
+  # Scopes validation
+
+  @doc """
+  Validates the scopes in the given parameters.
+
+  If `replace_invalid_params?` is `true`, invalid
+  scopes are removed and an error is added to the `:errors` key in the returned map. If
+  `replace_invalid_params?` is `false`, invalid scopes are not removed and an error is added to
+  the `:errors` key in the returned map. Only the first error is added to the `:errors` key.
+
+  If the `:scopes` key is `nil`, it is returned as is.
+
+  ## Examples
+
+      iex> pagify_scopes = %{}
+      iex> Pagify.Validation.validate_scopes(%{}, pagify_scopes)
+      %{}
+
+      iex> pagify_scopes = %{}
+      iex> Pagify.Validation.validate_scopes(%{scopes: nil}, pagify_scopes)
+      %{scopes: nil}
+
+      iex> pagify_scopes = %{}
+      iex> %{scopes: scopes} = Pagify.Validation.validate_scopes(%{scopes: %{role: :admin}}, pagify_scopes)
+      iex> scopes
+      %{role: :admin}
+
+      iex> pagify_scopes = %{}
+      iex> %{scopes: scopes, errors: errors} = Pagify.Validation.validate_scopes(%{scopes: %{role: :non_existent}}, pagify_scopes)
+      iex> scopes
+      %{role: :non_existent}
+      iex> Pagify.Error.clear_stacktrace(errors)
+      [
+        scopes: [
+          %Pagify.Error.Query.NoSuchScope{group: :role, name: :non_existent}
+        ]
+      ]
+
+      iex> pagify_scopes = %{}
+      iex> %{scopes: scopes, errors: errors} = Pagify.Validation.validate_scopes(%{scopes: %{role: :non_existent}}, pagify_scopes, nil, true)
+      iex> scopes
+      nil
+      iex> Pagify.Error.clear_stacktrace(errors)
+      [
+        scopes: [
+          %Pagify.Error.Query.NoSuchScope{group: :role, name: :non_existent}
+        ]
+      ]
+
+      iex> pagify_scopes = %{}
+      iex> %{scopes: scopes, errors: errors} = Pagify.Validation.validate_scopes(%{scopes: %{non_existent: :admin}}, pagify_scopes)
+      iex> scopes
+      %{non_existent: :admin}
+      iex> Pagify.Error.clear_stacktrace(errors)
+      [
+        scopes: [
+          %Pagify.Error.Query.NoSuchScope{group: :non_existent, name: :admin}
+        ]
+      ]
+
+      iex> pagify_scopes = %{}
+      iex> %{scopes: scopes, errors: errors} = Pagify.Validation.validate_scopes(%{scopes: %{non_existent: :admin}}, pagify_scopes, nil, true)
+      iex> scopes
+      nil
+      iex> Pagify.Error.clear_stacktrace(errors)
+      [
+        scopes: [
+          %Pagify.Error.Query.NoSuchScope{group: :non_existent, name: :admin}
+        ]
+      ]
+  """
+  @spec validate_scopes(map(), map(), map() | nil, boolean()) :: map()
+  def validate_scopes(params, pagify_scopes, default_scopes \\ nil, replace_invalid_params? \\ false)
+
+  def validate_scopes(%{scopes: nil} = params, _, default_scopes, _), do: maybe_put_default_scopes(params, default_scopes)
+
+  def validate_scopes(%{scopes: scopes} = params, pagify_scopes, default_scopes, replace_invalid_params?)
+      when is_map(scopes) do
+    case parse_scopes(scopes, pagify_scopes, default_scopes) do
+      {:ok, scopes} ->
+        Map.put(params, :scopes, scopes)
+
+      {:error, errors, valid_scopes} ->
+        params = add_errors(params, :scopes, errors)
+
+        if replace_invalid_params? do
+          Map.put(params, :scopes, valid_scopes)
+        else
+          params
+        end
+    end
+  end
+
+  def validate_scopes(params, _, default_scopes, replace_invalid_params?) do
+    if Map.get(params, :scopes) == nil do
+      maybe_put_default_scopes(params, default_scopes)
+    else
+      params =
+        add_error(params, :scopes, InvalidScopesParameter.exception(scopes: params[:scopes]))
+
+      if replace_invalid_params? do
+        params
+        |> Map.put(:scopes, nil)
+        |> maybe_put_default_scopes(default_scopes)
+      else
+        params
+      end
+    end
+  end
+
+  defp parse_scopes(scopes, pagify_scopes, default_scopes) do
+    {valid_scopes, errors} =
+      Enum.reduce(scopes, {%{}, []}, fn {group, name}, {valid_scopes, errors} ->
+        case validate_scope(group, name, pagify_scopes) do
+          {:ok, valid_group, valid_name} ->
+            {Map.put(valid_scopes, valid_group, valid_name), errors}
+
+          :error ->
+            {valid_scopes, [NoSuchScope.exception(group: group, name: name) | errors]}
+        end
+      end)
+
+    valid_scopes =
+      valid_scopes
+      |> Misc.coerce_maybe_empty_map()
+      |> ensure_default_scopes(default_scopes)
+
+    if errors == [] do
+      {:ok, valid_scopes}
+    else
+      {:error, errors, valid_scopes}
+    end
+  end
+
+  defp ensure_default_scopes(nil, nil), do: nil
+  defp ensure_default_scopes(scopes, nil), do: scopes
+  defp ensure_default_scopes(nil, default_scopes), do: ensure_default_scopes(%{}, default_scopes)
+
+  defp ensure_default_scopes(scopes, default_scopes) do
+    Map.merge(default_scopes, scopes)
+  end
+
+  defp maybe_put_default_scopes(params, nil), do: params
+
+  defp maybe_put_default_scopes(params, default_scopes) do
+    scopes =
+      params
+      |> Map.get(:scopes)
+      |> Misc.coerce_maybe_empty_map()
+      |> ensure_default_scopes(default_scopes)
+
+    if scopes == nil do
+      params
+    else
+      Map.put(params, :scopes, scopes)
+    end
+  end
+
+  defp validate_scope(group, name, pagify_scopes) when is_binary(group) and is_binary(name) do
+    validate_scope(String.to_existing_atom(group), String.to_existing_atom(name), pagify_scopes)
+  rescue
+    _ -> :error
+  end
+
+  defp validate_scope(group, name, pagify_scopes) do
+    if scope_name_exists?(group, name, pagify_scopes) do
+      {:ok, group, name}
+    else
+      :error
+    end
+  end
+
+  defp scope_name_exists?(group, name, pagify_scopes) do
+    scope_group_exists?(group, pagify_scopes) and
+      Enum.find(pagify_scopes[group], &(&1.name == name)) != nil
+  end
+
+  defp scope_group_exists?(group, pagify_scopes), do: Map.has_key?(pagify_scopes, group)
 
   # Filter validation
 
@@ -458,6 +644,17 @@ defmodule Pagify.Validation do
 
   defp put_default_offset(params) do
     Map.put_new(params, :offset, 0)
+  end
+
+  defp add_errors(params, key, ash_errors) when is_list(ash_errors) do
+    params = Map.put_new_lazy(params, :errors, fn -> [] end)
+
+    errors =
+      params
+      |> Map.get(:errors, [])
+      |> Keyword.put(key, ash_errors)
+
+    Map.put(params, :errors, errors)
   end
 
   defp add_error(params, key, ash_error) do

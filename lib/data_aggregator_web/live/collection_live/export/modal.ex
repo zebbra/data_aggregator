@@ -19,89 +19,94 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="space-y-8">
-      <.section_heading
-        text={~t"Export records"m}
-        description={
-          mgettext(
-            "You are about to export %{row_count} records. Please choose the column headers for your export file and the data layer to be exported.",
-            row_count: @export.rows_count
-          )
-        }
-        class="border-b border-black-white/10 py-4 sm:!items-start"
-      />
+    <div class="contents">
+      <.modal_header id={@id}>
+        <.section_heading
+          text={~t"Export records"m}
+          description={
+            mgettext(
+              "You are about to export %{row_count} records. Please choose the column headers for your export file and the data layer to be exported.",
+              row_count: @export.rows_count
+            )
+          }
+          size="md"
+        />
+      </.modal_header>
+
       <.simple_form
         for={@form}
         as={:story}
         id="export_form"
-        class="space-y-8"
+        class="contents"
         phx-target={@myself}
         phx-submit="export:save"
       >
-        <section class="border-black-white/25 flex flex-col rounded-lg border border-dashed p-6">
-          <.fieldset legend={~t"Select your data headers"m}>
-            <.fieldgroup class="space-y-3">
-              <.field
-                field={@form[:header_source]}
-                name="header_source"
-                id="header_source_1"
-                label="Collection Mapping"
-                description="The column headers will be based on the last file you uploaded"
-                type="radio"
-                required
-                checked={true}
-                value="collection_mapping"
-              />
-              <.field
-                field={@form[:header_source]}
-                name="header_source"
-                id="header_source_2"
-                label="DWC Attributes"
-                description="The Darwin Core attributes will be used as column headers"
-                type="radio"
-                required
-                value="dwc_attributes"
-              />
-            </.fieldgroup>
-          </.fieldset>
-        </section>
+        <div class="h-full space-y-8 overflow-y-auto p-6">
+          <section class="border-black-white/25 flex flex-col rounded-lg border border-dashed p-6">
+            <.fieldset legend={~t"Select your data headers"m}>
+              <.fieldgroup class="space-y-3">
+                <.field
+                  field={@form[:header_source]}
+                  name="header_source"
+                  id="header_source_1"
+                  label="Collection Mapping"
+                  description="The column headers will be based on the last file you uploaded"
+                  type="radio"
+                  required
+                  checked={true}
+                  value="collection_mapping"
+                />
+                <.field
+                  field={@form[:header_source]}
+                  name="header_source"
+                  id="header_source_2"
+                  label="DWC Attributes"
+                  description="The Darwin Core attributes will be used as column headers"
+                  type="radio"
+                  required
+                  value="dwc_attributes"
+                />
+              </.fieldgroup>
+            </.fieldset>
+          </section>
 
-        <section class="border-black-white/25 flex flex-col rounded-lg border border-dashed p-6">
-          <.fieldset legend={~t"Select the data layer to be exported"m}>
-            <.fieldgroup class="space-y-3">
-              <.field
-                field={@form[:data_layer]}
-                name="data_layer"
-                id="data_layer_1"
-                label="Raw"
-                description="The exported data will be the same as the original collection data"
-                type="radio"
-                required
-                checked={true}
-                value="raw"
-              />
-              <.field
-                field={@form[:data_layer]}
-                name="data_layer"
-                id="data_layer_2"
-                label="Encoded"
-                description="Exported data will consist of enriched data from various thesauri and vocabularies"
-                type="radio"
-                required
-                value="encoded"
-              />
-            </.fieldgroup>
-          </.fieldset>
-        </section>
+          <section class="border-black-white/25 flex flex-col rounded-lg border border-dashed p-6">
+            <.fieldset legend={~t"Select the data layer to be exported"m}>
+              <.fieldgroup class="space-y-3">
+                <.field
+                  field={@form[:data_layer]}
+                  name="data_layer"
+                  id="data_layer_1"
+                  label="Raw"
+                  description="The exported data will be the same as the original collection data"
+                  type="radio"
+                  required
+                  checked={true}
+                  value="raw"
+                />
+                <.field
+                  field={@form[:data_layer]}
+                  name="data_layer"
+                  id="data_layer_2"
+                  label="Encoded"
+                  description="Exported data will consist of enriched data from various thesauri and vocabularies"
+                  type="radio"
+                  required
+                  value="encoded"
+                />
+              </.fieldgroup>
+            </.fieldset>
+          </section>
 
-        <p class="text-base-content/60 mt-1 text-sm">
-          * <%= ~t"required to choose an option"m %>
-        </p>
+          <p class="text-base-content/60 mt-1 text-sm">
+            * <%= ~t"required to choose an option"m %>
+          </p>
+        </div>
 
-        <:actions>
+        <:actions modal>
           <button type="submit" class="btn btn-primary text-primary-content" disabled={false}>
             <.icon name="hero-arrow-down-tray" />
-            <span class="max-sm:hidden"><%= ~t"Export"m %></span>
+            <%= ~t"Export"m %>
           </button>
           <button type="button" class="btn btn-ghost" onclick="export_modal.close()">
             <%= ~t"Cancel"m %>

@@ -7,6 +7,27 @@ defmodule DataAggregatorWeb.Blocks.Header do
 
   @doc """
   Renders a header with title, subtitle, breadcrumbs, secondary navigation, and actions.
+
+  ## Example
+
+  ```heex
+  <.page_header title_class="px-6 lg:px-8">
+    Hello World
+    <:subtitle>I am a header subtitle</:subtitle>
+    <:actions>
+      <button type="button" class="btn btn-primary max-sm:btn-sm">
+        <.icon name="hero-link-mini" /> Link
+      </button>
+    </:actions>
+    <:navbar>
+      <.secondary_navigation class="mt-6">
+        <.secondary_navigation_item label="Overview" href="#" active />
+        <.secondary_navigation_item label="Details" href="#" />
+        <.secondary_navigation_item label="Settings" href="#" />
+      </.secondary_navigation>
+    </:navbar>
+  </.page_header>
+  ```
   """
   attr :as, :string, default: "h2", doc: "the tag of the title"
   attr :class, :string, default: nil, doc: "the page header class"
@@ -76,6 +97,23 @@ defmodule DataAggregatorWeb.Blocks.Header do
     """
   end
 
+  @doc """
+  Renders a section heading with title, subtitle, and actions.
+
+  ## Example
+
+  ```heex
+  <.section_heading>
+    Hello World
+    <:subtitle>I am a section heading subtitle</:subtitle>
+    <:actions>
+      <button type="button" class="btn btn-primary max-sm:btn-sm">
+        <.icon name="hero-link-mini" /> Link
+      </button>
+    </:actions>
+  </.section_heading>
+  ```
+  """
   attr :as, :string, default: "h4", doc: "the tag of the title"
   attr :text, :string, default: nil, doc: "the optional text (title) of the section heading"
 
@@ -85,6 +123,11 @@ defmodule DataAggregatorWeb.Blocks.Header do
 
   attr :class, :string, default: nil, doc: "the section heading class"
   attr :align_actions, :boolean, default: false, doc: "force the alignment of the actions"
+
+  attr :align_items, :string,
+    default: "baseline",
+    values: ~w[center baseline],
+    doc: "the alignment of the items"
 
   attr :size, :string,
     default: "lg",
@@ -112,13 +155,13 @@ defmodule DataAggregatorWeb.Blocks.Header do
 
   def section_heading(assigns) do
     ~H"""
-    <div class={["w-full", break_size_class(@break_at), @class]}>
+    <div class={["w-full", break_size_class(@break_at, @align_items), @class]}>
       <div class={["min-w-0 flex-1", @align_actions && "sm:mt-2"]}>
         <.dynamic_tag
           :if={@title == []}
           name={@as}
           class={[
-            "text-base-content max-sm:line-clamp-2 sm:truncate max-w-4xl",
+            "text-base-content max-sm:line-clamp-2 sm:truncate max-w-4xl text-inherit",
             heading_title_size_class(@size)
           ]}
         >
@@ -152,12 +195,23 @@ defmodule DataAggregatorWeb.Blocks.Header do
     """
   end
 
-  defp break_size_class(size) do
+  defp break_size_class(size, align_items)
+
+  defp break_size_class(size, "baseline") do
     cond do
       size == "none" -> "flex items-baseline justify-between"
       size == "sm" -> "sm:flex sm:items-baseline sm:justify-between"
       size == "md" -> "md:flex md:items-baseline md:justify-between"
       true -> "lg:flex lg:items-baseline lg:justify-between"
+    end
+  end
+
+  defp break_size_class(size, "center") do
+    cond do
+      size == "none" -> "flex items-center justify-between"
+      size == "sm" -> "sm:flex sm:items-center sm:justify-between"
+      size == "md" -> "md:flex md:items-center md:justify-between"
+      true -> "lg:flex lg:items-center lg:justify-between"
     end
   end
 
@@ -172,8 +226,8 @@ defmodule DataAggregatorWeb.Blocks.Header do
 
   defp heading_title_size_class(size) do
     case size do
-      "sm" -> "text-sm/6 font-medium"
-      "md" -> "text-base/6 font-semibold"
+      "sm" -> "text-sm/5 font-semibold"
+      "md" -> "text-base/5 font-bold"
       "lg" -> "text-lg/6 font-bold"
       "xl" -> "text-2xl font-bold sm:text-3xl sm:tracking-tight"
     end
@@ -181,7 +235,7 @@ defmodule DataAggregatorWeb.Blocks.Header do
 
   defp heading_subtitle_size_class(size) do
     case size do
-      "sm" -> "text-sm/6 line-clamp-2"
+      "sm" -> "text-sm/5 line-clamp-2"
       "md" -> "text-sm/6 mt-1 line-clamp-2"
       "lg" -> "text-sm/6 mt-1 line-clamp-2"
       "xl" -> "text-sm/6 mt-1 line-clamp-3"
