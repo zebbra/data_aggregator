@@ -17,7 +17,7 @@ permissions:
 jobs:
   test:
     name: Run tests
-    runs-on: self-hosted
+    runs-on: hetzner
 
     services:
       postgres:
@@ -84,7 +84,7 @@ jobs:
   build:
     name: Build Docker image
     needs: test
-    runs-on: self-hosted
+    runs-on: hetzner
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -145,7 +145,7 @@ jobs:
     name: Deploy to staging
     if: github.ref == 'refs/heads/main'
     needs: build
-    runs-on: self-hosted
+    runs-on: hetzner
 
     environment:
       name: staging
