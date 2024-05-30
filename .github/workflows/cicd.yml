@@ -47,6 +47,7 @@ jobs:
         with:
           node-version-file: .tool-versions
           cache: npm
+          cache-dependency-path: assets/package-lock.json
 
       - name: Restore cache
         id: cache
