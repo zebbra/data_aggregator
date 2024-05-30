@@ -42,6 +42,12 @@ jobs:
           version-file: .tool-versions
           version-type: strict
 
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version-file: .tool-versions
+          cache: npm
+
       - name: Restore cache
         id: cache
         uses: actions/cache/restore@v4
