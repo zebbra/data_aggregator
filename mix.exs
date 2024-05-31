@@ -261,6 +261,7 @@ defmodule DataAggregator.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       {:floki, ">= 0.30.0", only: :test},
       {:sweet_xml, "~> 0.6"},
+      {:xml_builder, "~> 2.3"},
 
       # Background Jobs
       {:oban, "~> 2.16"},

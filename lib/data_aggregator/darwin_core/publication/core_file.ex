@@ -9,10 +9,10 @@ defmodule DataAggregator.DarwinCore.Publication.CoreFile do
 
   @spec create(Ash.Query.t(), String.t()) :: {:ok, any()} | {:error, any()}
   def create(query, path) do
-    path = "#{path}/core.csv"
+    path = path <> "/core.csv"
 
-    file = DwcaFile.create_file!(:core, query, path)
+    DwcaFile.create_file!(:core, query, path)
 
-    {:ok, file}
+    {:ok, path}
   end
 end

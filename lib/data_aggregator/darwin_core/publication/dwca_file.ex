@@ -20,13 +20,23 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   @spec create_file!(atom(), Ash.Query.t(), String.t()) :: any()
   def create_file!(extension_type, query, path) do
     header_fields = file_mapping(extension_type)
+
+    headers = get_only_column_headers(header_fields)
+
     record_attributes = record_attributes(extension_type)
 
     query
     |> Records.stream!(page: false)
     |> Stream.map(&map_record(&1, record_attributes))
     |> Stream.map(&FlatFileUtils.map_data_to_headers(&1, header_fields))
-    |> FlatFileUtils.store_on_disk!(path)
+    |> FlatFileUtils.store_on_disk!(path, headers)
+  end
+
+  @spec get_only_column_headers(list()) :: keyword()
+  def get_only_column_headers(header_fields) do
+    header_fields
+    |> set_id_as_first_column_header({:occ_occurrence_id, "occurrenceID"})
+    |> Enum.map(fn {_k, v} -> v end)
   end
 
   @doc """
@@ -37,6 +47,22 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
     Enum.map(file_mapping(file_type), fn {_k, v} -> v end)
   end
 
+  # returns a list of record attributes and it's header field companion in the
+  # structure `[eve_event_id: "eventID", eve_parent_event_id: "parentEventID", ...]` for the given file type
+  @spec file_mapping(atom()) :: list()
+  def file_mapping(file_type) do
+    Schema.categories()
+    |> Enum.map(&attributes_by_category/1)
+    |> Enum.map(&header_fields(&1, file_type))
+    |> Enum.map(&attributes_prefixed/1)
+    |> Enum.flat_map(fn {_category, attributes} -> attributes end)
+  end
+
+  defp set_id_as_first_column_header(header_fields, {key, column}) do
+    headers_without_id = Enum.reject(header_fields, fn {k, _v} -> k == key end)
+    [{key, column} | headers_without_id]
+  end
+
   # gives you a map of all relevant record attributes and its values
   @spec map_record(Record.t(), list()) :: map()
   defp map_record(record, record_attributes) do
@@ -44,18 +70,12 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
 
     encoded_layer = get_encoded_layer(record, record_attributes)
 
-    Map.merge(raw_layer, encoded_layer)
-  end
-
-  # returns a list of record attributes and it's header field companion in the
-  # structure `[eve_event_id: "eventID", eve_parent_event_id: "parentEventID", ...]` for the given file type
-  @spec file_mapping(atom()) :: list()
-  defp file_mapping(file_type) do
-    Schema.categories()
-    |> Enum.map(&attributes_by_category/1)
-    |> Enum.map(&header_fields(&1, file_type))
-    |> Enum.map(&attributes_prefixed/1)
-    |> Enum.flat_map(fn {_category, attributes} -> attributes end)
+    Map.merge(raw_layer, encoded_layer, fn _key, val1, val2 ->
+      case val2 do
+        nil -> val1
+        _ -> val2
+      end
+    end)
   end
 
   # returns a tuple with the name and the dwc_attributes of a given category

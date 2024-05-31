@@ -6,8 +6,9 @@ defmodule DataAggregator.Records.Actions.Publish do
   use Ash.Resource.Actions.Implementation
 
   alias DataAggregator.DarwinCore.Publication.CoreFile
+  alias DataAggregator.DarwinCore.Publication.EmlFile
   alias DataAggregator.DarwinCore.Publication.MaterialSampleFile
-  alias DataAggregator.DarwinCore.Publication.MultimediaFile
+  alias DataAggregator.DarwinCore.Publication.MetaFile
   alias DataAggregator.DarwinCore.Publication.PreservationFile
   alias DataAggregator.DarwinCore.Publication.ReleveFile
   alias DataAggregator.Misc.FlatFileUtils
@@ -33,14 +34,19 @@ defmodule DataAggregator.Records.Actions.Publish do
 
     path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
 
+    # TODO: ensure that in each of the following files the first column is the
+    #  occurrenceID and all data is correctly mapped to the headers
     CoreFile.create(query, path)
-    MaterialSampleFile.create(query, path)
-    PreservationFile.create(query, path)
-    ReleveFile.create(query, path)
-    MultimediaFile.create(query, path)
 
-    # TODO: implement the following files, they contain of
-    #  attributes from json data, so a dfiferent approach is needed
+    EmlFile.create(publication.collection, path)
+
+    # MaterialSampleFile.create(query, path)
+    # PreservationFile.create(query, path)
+    # ReleveFile.create(query, path)
+
+    # MetaFile.create(publication.collection, path)
+
+    # TODO: implement the following files, they contain of attributes from json data
 
     # ChronometricAgeFile.create(query, path)
     # DistributionFile.create(query, path)

@@ -10,7 +10,7 @@ defmodule DataAggregator.DarwinCore.Publication.PreservationFile do
 
   @spec create(Ash.Query.t(), String.t()) :: {:ok, any()} | {:error, any()}
   def create(query, path) do
-    path = "#{path}/preservation.csv"
+    path = path <> "/preservation.csv"
 
     file = DwcaFile.create_file!(:preservation, query, path)
 
