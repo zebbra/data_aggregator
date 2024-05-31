@@ -1,7 +1,11 @@
 name: CI/CD
 
 on:
-  - push
+  push:
+
+  pull_request:
+    branches:
+      - main
 
 env:
   MIX_ENV: test
@@ -13,7 +17,7 @@ permissions:
 jobs:
   test:
     name: Run tests
-    runs-on: ubuntu-latest
+    runs-on: hetzner
 
     services:
       postgres:
@@ -37,6 +41,13 @@ jobs:
         with:
           version-file: .tool-versions
           version-type: strict
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version-file: .tool-versions
+          cache: npm
+          cache-dependency-path: assets/package-lock.json
 
       - name: Restore cache
         id: cache
@@ -80,7 +91,7 @@ jobs:
   build:
     name: Build Docker image
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: hetzner
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -141,7 +152,7 @@ jobs:
     name: Deploy to staging
     if: github.ref == 'refs/heads/main'
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: hetzner
 
     environment:
       name: staging
