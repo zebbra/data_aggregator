@@ -34,17 +34,15 @@ defmodule DataAggregator.Records.Actions.Publish do
 
     path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
 
-    # TODO: ensure that in each of the following files the first column is the
-    #  occurrenceID and all data is correctly mapped to the headers
     CoreFile.create(query, path)
 
     EmlFile.create(publication.collection, path)
 
-    # MaterialSampleFile.create(query, path)
-    # PreservationFile.create(query, path)
-    # ReleveFile.create(query, path)
+    MaterialSampleFile.create(query, path)
+    PreservationFile.create(query, path)
+    ReleveFile.create(query, path)
 
-    # MetaFile.create(publication.collection, path)
+    MetaFile.create(publication.collection, path)
 
     # TODO: implement the following files, they contain of attributes from json data
 

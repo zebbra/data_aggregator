@@ -109,7 +109,15 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   # filter out any non relevant fields for the publication of the given file type
   @spec header_fields({atom(), list()}, atom()) :: {String.t(), list()}
   defp header_fields({category, attributes}, file_type) do
-    {category, Enum.filter(attributes, &(Map.get(&1, :dwca_file) == file_type))}
+    {category, Enum.filter(attributes, &usable_header_field?(&1, file_type))}
+  end
+
+  # returns true if the given header field is relevant for the given file type or
+  # is occurrenceID (we use occurrenceID as the ID column in each dwc extension file)
+  @spec usable_header_field?(DwcAttribute.t(), atom()) :: boolean()
+  defp usable_header_field?(dwca_attribute, file_type) do
+    Map.get(dwca_attribute, :dwca_file) == file_type ||
+      Map.get(dwca_attribute, :dwc_field) == "occurrenceID"
   end
 
   # returns a list of all record attributes which are relevant for the given file type

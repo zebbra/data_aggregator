@@ -9,24 +9,24 @@ defmodule DataAggregator.DarwinCore.Publication.MetaFile do
   alias DataAggregator.Records.Collection
 
   @dwca_extension_file_types [
-    # material_sample: "material_sample.csv",
-    # preservation: "preservation.csv",
-    # releve: "releve.csv"
+    material_sample: "material_sample.csv",
+    preservation: "preservation.csv",
+    releve: "releve.csv"
   ]
 
   @spec create(Collection.t(), String.t()) :: {:ok, String.t()} | {:error, any()}
   def create(_collection, path) do
     path = path <> "/meta.xml"
 
-    create_meta_file(path)
+    create_meta_file(build(), path)
 
     {:ok, path}
   end
 
-  defp create_meta_file(path) do
+  defp create_meta_file(content, path) do
     file = File.open!(path, [:write, :utf8])
 
-    IO.write(file, build())
+    IO.write(file, content)
     File.close(file)
 
     file
@@ -68,7 +68,7 @@ defmodule DataAggregator.DarwinCore.Publication.MetaFile do
   end
 
   # generates the extension xml elements for the meta.xml file
-  defp extensions do
+  def extensions do
     Enum.map(@dwca_extension_file_types, fn {dwca_file_type, file_path} ->
       children = [
         files_element(file_path),
@@ -110,26 +110,31 @@ defmodule DataAggregator.DarwinCore.Publication.MetaFile do
 
   @spec build_field_elements([String.t()]) :: [map()]
   defp build_field_elements(dwc_links) do
-    for i <- amount_of_fields(dwc_links) do
+    for i <- amount_of_fields_range(dwc_links) do
       dwc_link = Enum.at(dwc_links, i)
 
       element(:field, %{index: i, term: dwc_link})
     end
   end
 
-  @spec amount_of_fields([String.t()]) :: [integer()]
-  defp amount_of_fields(dwc_links) do
+  @spec amount_of_fields_range([String.t()]) :: [integer()]
+  defp amount_of_fields_range(dwc_links) do
     Enum.to_list(0..(length(dwc_links) - 1))
   end
 
   @spec dwc_links(atom()) :: [String.t()]
   defp dwc_links(dwca_file_type) do
+    dwca_attributes = dwca_attribute(dwca_file_type)
+
     [
       "http://rs.tdwg.org/dwc/terms/occurrenceID"
-      | dwca_file_type
-        |> Schema.dwc_attributes_by_dwca_file_type()
-        |> Enum.filter(&(&1.dwc_field != nil && &1.dwc_link != nil))
-        |> Enum.map(& &1.dwc_link)
+      | Enum.map(dwca_attributes, fn dwca_attribute -> dwca_attribute.dwc_link end)
     ]
+  end
+
+  defp dwca_attribute(dwca_file_type) do
+    dwca_file_type
+    |> Schema.dwc_attributes_by_dwca_file_type()
+    |> Enum.filter(&(&1.dwc_field != nil && &1.dwc_link != nil))
   end
 end

@@ -2,6 +2,8 @@ defmodule DataAggregator.Gbif.RestAPI do
   @moduledoc """
   Module to interact with the GBIF Rest API
   """
+  import DataAggregator.Api.Helpers
+
   alias DataAggregator.Cache.HttpDiskCache
   alias DataAggregator.Types.Api
 
@@ -14,7 +16,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   @spec register_dataset(String.t()) :: Api.response()
   def register_dataset(collection_name) do
     Req.post(
-      url: System.get_env("GBIF_API_BASE_URL") <> "/dataset",
+      url: register_dataset_url(),
       auth: gbif_auth(),
       json: registration_params(collection_name)
     )
@@ -23,7 +25,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   @spec create_endpoint(String.t(), String.t()) :: Api.response()
   def create_endpoint(file_url, registration) do
     Req.post(
-      url: System.get_env("GBIF_API_BASE_URL") <> "/dataset/#{registration}/endpoint",
+      url: create_endpoint_url(registration),
       auth: gbif_auth(),
       json: endpoint_params(file_url)
     )
@@ -33,10 +35,13 @@ defmodule DataAggregator.Gbif.RestAPI do
           Api.response()
   def search_for_occurrences(catalog_number, dataset_key) do
     [params: [{:catalogNumber, catalog_number}, {:datasetKey, dataset_key}]]
+    # TODO: extract attaching cache (and other middlewres) to separate helper
+    #  module (DataAggregator.Api.Helpers) to have it resusable and not
+    #  poluting all api client functions
     |> Req.new()
     |> HttpDiskCache.attach()
     |> Req.get(
-      url: System.get_env("GBIF_API_BASE_URL") <> "/occurrence/search",
+      url: search_occurrence_url(),
       max_cache_age_seconds: @hour
     )
   end
@@ -45,7 +50,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   def get_grscicoll_entity(key, kind) do
     req = HttpDiskCache.attach(Req.new())
 
-    url = System.get_env("GBIF_API_BASE_URL") <> "/grscicoll/#{Atom.to_string(kind)}/#{key}"
+    url = grscicoll_entity_by_key_url(key, kind)
 
     case Req.get(req, url: url, max_cache_age_seconds: 10 * @day) do
       {:ok, response} ->
@@ -77,7 +82,7 @@ defmodule DataAggregator.Gbif.RestAPI do
     req = HttpDiskCache.attach(Req.new())
 
     Req.get(req,
-      url: System.get_env("GBIF_API_BASE_URL") <> "/species/#{species_key}",
+      url: gbif_base_url() <> "/species/#{species_key}",
       max_cache_age_seconds: @month
     )
   end
@@ -89,7 +94,7 @@ defmodule DataAggregator.Gbif.RestAPI do
       HttpDiskCache.attach(Req.new(params: params))
 
     Req.get(req,
-      url: System.get_env("GBIF_API_BASE_URL") <> "/species/match",
+      url: gbif_base_url() <> "/species/match",
       max_cache_age_seconds: @month
     )
   end
@@ -112,7 +117,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   end
 
   defp get_single_collection(reference) do
-    url = System.get_env("GBIF_API_BASE_URL") <> "/grscicoll/collection/#{reference}"
+    url = grscicoll_entity_by_key_url(reference, :collection)
 
     with {:ok, response} <-
            [params: %{country: "CH", limit: 1000}]
@@ -147,7 +152,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   end
 
   defp lookup_all_collections do
-    url = System.get_env("GBIF_API_BASE_URL") <> "/grscicoll/collection"
+    url = grscicoll_entities_url(:collection)
 
     %{body: body} =
       [params: %{country: "CH", limit: 1000}]
@@ -157,6 +162,4 @@ defmodule DataAggregator.Gbif.RestAPI do
 
     body["results"]
   end
-
-  defp gbif_auth, do: {:basic, "#{System.get_env("GBIF_USER")}:#{System.get_env("GBIF_PASSWORD")}"}
 end
