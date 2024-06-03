@@ -12,7 +12,7 @@ defmodule DataAggregator.Records.Collection.Changes.SetGrsciCollAttributes do
   def change(%Changeset{} = changeset, _opts, _ctx) do
     reference = Changeset.get_argument_or_attribute(changeset, :grscicoll_reference)
 
-    case Gbif.RestAPI.get_grscicoll_attributes(reference, ["code", "name"]) do
+    case Gbif.RestAPI.get_grscicoll_collection_attributes(reference, ["code", "name"]) do
       {:ok, attributes} ->
         Changeset.change_attributes(changeset, attributes)
 

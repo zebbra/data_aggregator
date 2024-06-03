@@ -119,8 +119,164 @@ defmodule DataAggregator.Gbif.RestAPIStub do
      }}
   end
 
-  @spec get_grscicoll_attributes(String.t(), list()) :: {:ok, map()} | {:error, any()}
-  def get_grscicoll_attributes(_reference, _attributes) do
+  @spec get_one_collection(String.t()) :: Api.response_body()
+  def get_one_collection(_reference) do
+    {:ok,
+     %{
+       "institutionKey" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+       "apiUrls" => [],
+       "catalogUrls" => [],
+       "geographicCoverage" => "Worldwide; especially Central Europe, southern Africa, New Caledonia",
+       "comments" => [],
+       "institutionName" => "Herbarium of the University of Zürich",
+       "address" => %{
+         "address" => "Zollikerstrasse 107",
+         "city" => "Zürich",
+         "country" => "CH",
+         "key" => 33_456,
+         "postalCode" => "CH-8008"
+       },
+       "createdBy" => "ih-sync",
+       "incorporatedCollections" => ["BERN (2008", "bryophytes)"],
+       "taxonomicCoverage" => "Algae, fungi, bryophytes, and vascular plants",
+       "machineTags" => [],
+       "key" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+       "masterSource" => "IH",
+       "personalCollection" => false,
+       "occurrenceCount" => 0,
+       "alternativeCodes" => [],
+       "created" => "2020-03-31T12:39:13.283+00:00",
+       "importantCollectors" => [
+         "J. H. Albrecht",
+         "O. Appert",
+         "M. Baumann-Bodenheim",
+         "W. Becker",
+         "A. Braun",
+         "P. Culmann",
+         "A. U. Däniker",
+         "K. Dinter",
+         "A. Ernst",
+         "W. Geilinger",
+         "J. Gessner",
+         "M. B. F. Gugelberg von Moos",
+         "J. Hegetschweiler",
+         "T. von Heldreich",
+         "T. C. J. Herzog",
+         "H. Hürlimann",
+         "R. Keller",
+         "K. U. Kramer",
+         "F. Markgraf",
+         "I. Markgraf-Dannenberg",
+         "J. Müller",
+         "M. Rautanen",
+         "A. Rehmann",
+         "J. J. Roemer",
+         "W. Schibler",
+         "H. Schinz",
+         "F. R. R. Schlechter",
+         "H.-J. E. Schlieben",
+         "E. Schmid",
+         "E. Sickenberger"
+       ],
+       "identifiers" => [
+         %{
+           "created" => "2020-03-31T12:39:13.288+00:00",
+           "createdBy" => "ih-sync",
+           "identifier" => "gbif:ih:irn:126516",
+           "key" => 620_469,
+           "type" => "IH_IRN"
+         }
+       ],
+       "mailingAddress" => %{
+         "address" => "Zollikerstrasse 107",
+         "city" => "Zürich",
+         "country" => "CH",
+         "key" => 33_457,
+         "postalCode" => "CH-8008"
+       },
+       "displayOnNHCPortal" => true,
+       "code" => "Z",
+       "tags" => [],
+       "modifiedBy" => "ih-sync",
+       "phone" => ["[41] 44 634 84 11"],
+       "contactPersons" => [
+         %{
+           "address" => [],
+           "city" => "Zürich",
+           "country" => "CH",
+           "created" => "2021-10-11T13:58:40.433+00:00",
+           "createdBy" => "gbif-collections",
+           "email" => ["reto.nyffeler@systbot.uzh.ch"],
+           "fax" => [],
+           "firstName" => "Reto",
+           "key" => 20_769,
+           "lastName" => "Nyffeler",
+           "modified" => "2021-10-11T13:58:40.433+00:00",
+           "modifiedBy" => "gbif-collections",
+           "notes" => "Research pursuits: Alpine plants; Cactaceae.",
+           "phone" => ["[044] 634 84 42"],
+           "position" => ["Curator"],
+           "primary" => false,
+           "taxonomicExpertise" => [],
+           "userIds" => [%{"id" => "134592", "type" => "IH_IRN"}]
+         },
+         %{
+           "address" => [],
+           "city" => "Zürich",
+           "country" => "CH",
+           "created" => "2021-10-11T13:58:40.722+00:00",
+           "createdBy" => "gbif-collections",
+           "email" => ["heike.hofmann@systbot.uzh.ch"],
+           "fax" => [],
+           "firstName" => "Heike",
+           "key" => 20_785,
+           "lastName" => "Hofmann",
+           "modified" => "2021-10-11T13:58:40.722+00:00",
+           "modifiedBy" => "gbif-collections",
+           "phone" => [],
+           "position" => ["Curator of Bryophytes"],
+           "primary" => false,
+           "taxonomicExpertise" => [],
+           "userIds" => [%{"id" => "240840", "type" => "IH_IRN"}]
+         }
+       ],
+       "department" => "Department of Systematic and Evolutionary Botany",
+       "masterSourceMetadata" => %{
+         "created" => "2021-12-21T08:29:33.368+00:00",
+         "createdBy" => "gbif-collections",
+         "key" => 5604,
+         "source" => "IH_IRN",
+         "sourceId" => "126516"
+       },
+       "preservationTypes" => [],
+       "homepage" => "http://www.herbarien.uzh.ch",
+       "modified" => "2022-07-12T08:42:51.517+00:00",
+       "notes" =>
+         "In 1990, the Herbarium of the Eidgenössische Technische Hochschule Zürich (ZT) and the Herbarium of the Universität Zürich (Z) were combined to work together as United Herbaria Zürich Z+ZT. Requests for material to either Z or ZT will be considered as a request to both institutions. Address given above concerns the plant collections of Z+ZT. The bryophyte collection of BERN is maintained separately.The address for the fungi and lichen collections can be found under the entry for ZT. URL of the herbarium is https://www.herbarien.uzh.ch",
+       "occurrenceMappings" => [],
+       "email" => [],
+       "active" => true,
+       "numberSpecimens" => 1_840_000,
+       "institutionCode" => "Z",
+       "contentTypes" => [],
+       "collectionSummary" => %{
+         "numAlgae" => 50_000,
+         "numAlgaeDatabased" => 0,
+         "numAlgaeImaged" => 0,
+         "numBryos" => 350_000,
+         "numBryosDatabased" => 132_800,
+         "numBryosImaged" => 132_800,
+         "numFungi" => 20_000,
+         "numFungiDatabased" => 0,
+         "numFungiImaged" => 0
+       },
+       "name" => "Herbarium - Herbarium of the University of Zürich",
+       "typeSpecimenCount" => 0
+     }}
+  end
+
+  @spec get_grscicoll_collection_attributes(String.t(), list()) :: {:ok, map()} | {:error, any()}
+  def get_grscicoll_collection_attributes(_reference, _attributes) do
     {:ok, %{"code" => "Z", "name" => "Herbarium - Universität Zürich"}}
   end
 

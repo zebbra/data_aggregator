@@ -5,115 +5,151 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
   """
   import XmlBuilder
 
+  alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records.Collection
 
   @spec create(Collection.t(), String.t()) :: {:ok, String.t()} | {:error, any()}
   def create(collection, path) do
-    path = path <> "/eml.xml"
+    with false <- collection.grscicoll_reference == nil,
+         false <- collection.grscicoll_reference == "",
+         {:ok, grscicoll_data} <-
+           RestAPI.get_one_collection(collection.grscicoll_reference) do
+      path = path <> "/eml.xml"
 
-    # XmlBuilder.document("", "Josh") |> XmlBuilder.generate()
-    # TODO: implement the creation of the eml.xml file
-    # file = xyz.create_file!(:eml, ...)
+      xml_data = build(grscicoll_data)
 
-    create_eml_file(collection, path)
+      create_eml_file(xml_data, path)
 
-    {:ok, path}
+      {:ok, path}
+    else
+      _ -> {:error, "No GBIF :grscicoll_reference key found on collection #{collection.id}"}
+    end
   end
 
-  def create_eml_file(collection, path) do
+  def create_eml_file(data, path) do
     file = File.open!(path, [:write, :utf8])
 
-    IO.write(file, build(collection))
+    IO.write(file, data)
 
     File.close(file)
 
     file
   end
 
-  defp build(collection) do
+  defp build(meta_data) do
     {:"eml:eml",
      [
        "xmlns:eml": "eml://ecoinformatics.org/eml-2.1.1",
        "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
        "xsi:schemaLocation": "eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.2/eml.xsd",
-       packageId: collection.gbif_dataset_key,
+       packageId: meta_data["key"],
        system: "http://gbif.org",
        scope: "system"
      ],
      [
-       dataset(collection)
+       dataset(meta_data)
      ]}
     |> document()
     |> generate(format: :none)
   end
 
-  defp dataset(collection) do
-    element(:dataset,
-      title: collection.name,
-      creator: [
-        individualName: [givenName: "John", surName: "Doe"],
-        organizationName: "Info Flora",
-        address: [
-          deliveryPoint: "c/o Botanischer Garten",
-          city: "Bern",
-          postalCode: "CH-3013",
-          country: "SWITZERLAND"
-        ],
-        electronicMailAddress: "john.doe@boga.ch"
-      ],
-      pubDate: "2019-01-01",
-      language: "ENGLISH",
-      abstract: [
-        para: "This dataset is maintained by Info Flora (National Data and Information Center of Swiss
-        Flora), a member of Info Species. It includes records of vascular plants from Switzerland
-        and the adjacent area. Data sources include field observations provided by a large network
-        of volunteer collaborators, environmental impact studies, national inventories (Red List
-        strategy), museum collections, literature and academic work. The period covered by the data
-        extends from 1700 to the present day. All data provided have been subject to a validation
-        procedure."
-      ],
-      intellectualRights: [
-        element(para: {:safe, "This work is licensed under a <ulink
+  defp dataset(meta_data) do
+    element(
+      :dataset,
+      [
+        title: meta_data["name"]
+      ] ++
+        persons(meta_data, :creator) ++
+        [
+          pubDate: pub_date(),
+          language: "ENGLISH",
+          abstract: [
+            para: meta_data["notes"]
+          ],
+          intellectualRights: [
+            element(para: {:safe, "This work is licensed under a <ulink
           url=\"http://creativecommons.org/licenses/by/4.0/legalcode\">
           <citetitle>Creative Commons Attribution (CC-BY) 4.0 License</citetitle>
         </ulink>. "})
-      ],
-      distribution: [
-        online: [element(:url, %{function: "information"}, "http://www.infoflora.ch")]
-      ],
-      maintenance: [description: [para: []], maintenanceUpdateFrequency: "unkown"],
-      contact: [
-        individualName: [givenName: "John", surName: "Doe"]
-      ]
-      # creator: [
-      #   individualName: [givenName: "John", surName: "Doe"],
-      #   organizationName: "Info Flora",
-      #   address: [
-      #     deliveryPoint: "c/o Botanischer Garten",
-      #     city: "Bern",
-      #     postalCode: "CH-3013",
-      #     country: "SWITZERLAND"
-      #   ],
-      #   electronicMailAddress: "john.doe@boga.ch"
-      # ],
-      # pubDate: "2019-01-01",
-      # language: "ENGLISH",
-      # abstract: [para: "Dataset abstract"]
-
-      # metadataProvider: [
-      #   individualName: [givenName: "John", surName: "Doe"],
-      #   organizationName: "Infor Flora",
-      #   address: [
-      #     deliveryPoint: "c/o Botanischer Garten",
-      #     city: "Bern",
-      #     postalCode: "CH-3013",
-      #     country: "SWITZERLAND"
-      #   ],
-      #   electronicMailAddress: "john.doe@bla.com"
-      # ],
-      # pubDate: "2019-01-01",
-      # language: "ENGLISH",
-      # abstract: [para: "Dataset abstract"]
+          ],
+          distribution: [
+            online: [element(:url, %{function: "information"}, "http://www.infoflora.ch")]
+          ],
+          maintenance: [description: [para: []], maintenanceUpdateFrequency: "unkown"]
+        ] ++
+        persons(meta_data, :contact)
     )
+  end
+
+  @spec persons(map(), atom()) :: [map()]
+  defp persons(meta_data, type) do
+    persons = meta_data["contactPersons"]
+
+    if persons != nil do
+      Enum.map(meta_data["contactPersons"], fn person ->
+        element(
+          type,
+          [
+            element(:individualName, givenName: person["firstName"], surName: person["lastName"]),
+            element(:organizationName, meta_data["institutionName"]),
+            address(person),
+            phone(person),
+            email(person)
+          ]
+        )
+      end)
+    else
+      []
+    end
+  end
+
+  defp address(person) do
+    element(:address, [
+      delivery_point(person),
+      element(:city, person["city"]),
+      postal_code(person),
+      element(:country, person["country"])
+    ])
+  end
+
+  defp delivery_point(person) do
+    address = concat_strings(person["address"])
+
+    if address != nil do
+      element(:deliveryPoint, address)
+    end
+  end
+
+  defp postal_code(person) do
+    postal_code = concat_strings(person["postalCode"])
+
+    if postal_code != nil do
+      element(:postalCode, postal_code)
+    end
+  end
+
+  defp phone(person) do
+    phone = concat_strings(person["phone"])
+
+    if phone != nil do
+      element(:phone, phone)
+    end
+  end
+
+  defp email(person) do
+    email = concat_strings(person["email"])
+
+    if email != nil do
+      element(:electronicMailAddress, email)
+    end
+  end
+
+  @spec concat_strings([String.t()] | nil) :: String.t()
+  defp concat_strings(nil), do: nil
+  defp concat_strings([]), do: nil
+  defp concat_strings(enum), do: Enum.join(enum, ", ")
+
+  defp pub_date do
+    to_string(Date.utc_today())
   end
 end
