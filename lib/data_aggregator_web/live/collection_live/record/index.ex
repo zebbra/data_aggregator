@@ -254,6 +254,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         }
       >
         <:col
+          :let={{_id, record}}
           :if={CollectionType.visible?(@collection.type, :picture)}
           th_wrapper_attrs={[
             class: "hero-camera size-5 tooltip",
@@ -261,8 +262,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           ]}
           class="text-center"
         >
-          <div class="tooltip tooltip-right" data-tip={~t"No images uploaded yet"m}>
+          <div
+            :if={record.mte_associated_media === nil}
+            class="tooltip tooltip-right"
+            data-tip={~t"No images uploaded yet"m}
+          >
             <.icon name="hero-camera" class="size-5 text-gray-600" />
+          </div>
+
+          <div
+            :if={record.mte_associated_media !== nil}
+            class="tooltip tooltip-right"
+            data-tip={~t"Images available"m}
+          >
+            <.icon name="hero-camera-mini" class="size-5 text" />
           </div>
         </:col>
         <:col
