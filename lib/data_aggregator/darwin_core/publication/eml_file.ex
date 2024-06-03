@@ -112,42 +112,25 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
     ])
   end
 
-  defp delivery_point(person) do
-    address = concat_strings(person["address"])
+  defp delivery_point(person), do: concat_strings(person["address"], :deliveryPoint)
 
-    if address != nil do
-      element(:deliveryPoint, address)
+  defp postal_code(person), do: concat_strings(person["postalCode"], :postalCode)
+
+  defp phone(person), do: concat_strings(person["phone"], :phone)
+
+  defp email(person), do: concat_strings(person["email"], :electronicMailAddress)
+
+  @spec concat_strings([String.t()] | nil, atom()) :: String.t() | nil
+  defp concat_strings(nil, _), do: nil
+  defp concat_strings([], _), do: nil
+
+  defp concat_strings(enum, attribute) do
+    value = Enum.join(enum, ", ")
+
+    if value != nil do
+      element(attribute, value)
     end
   end
-
-  defp postal_code(person) do
-    postal_code = concat_strings(person["postalCode"])
-
-    if postal_code != nil do
-      element(:postalCode, postal_code)
-    end
-  end
-
-  defp phone(person) do
-    phone = concat_strings(person["phone"])
-
-    if phone != nil do
-      element(:phone, phone)
-    end
-  end
-
-  defp email(person) do
-    email = concat_strings(person["email"])
-
-    if email != nil do
-      element(:electronicMailAddress, email)
-    end
-  end
-
-  @spec concat_strings([String.t()] | nil) :: String.t()
-  defp concat_strings(nil), do: nil
-  defp concat_strings([]), do: nil
-  defp concat_strings(enum), do: Enum.join(enum, ", ")
 
   defp pub_date do
     to_string(Date.utc_today())
