@@ -29,6 +29,7 @@ defmodule DataAggregatorWeb.Components.Flash do
   attr :kind, :atom, values: [:info, :error], doc: "used for styling and flash lookup"
   attr :close, :boolean, default: true, doc: "whether to show the close button"
   attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
+  attr :stretch, :boolean, default: false, doc: "whether the flash should be full width"
 
   slot :inner_block, doc: "the optional inner block that renders the flash message"
 
@@ -41,7 +42,15 @@ defmodule DataAggregatorWeb.Components.Flash do
       id={@id}
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
-      class="bg-base-100 pointer-events-auto relative w-full max-w-sm rounded-xl"
+      class={[
+        "bg-base-100",
+        "pointer-events-auto",
+        "relative",
+        "w-full",
+        @stretch == false && "max-w-sm",
+        "rounded-xl"
+      ]}
+      class="bg-base-100 pointer-events-auto relative w-full rounded-xl"
       {@rest}
     >
       <div class={[

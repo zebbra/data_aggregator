@@ -37,6 +37,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       |> assign(:mapped_to_opts, available_attribute_options(import))
       |> assign(:disabled, Enum.any?(import.missing_mappings))
       |> assign(:reuse_mapping, reuse_mapping?(import))
+      |> assign(:incompatible_mapping, false)
       |> assign_form()
 
     {:ok, socket}
@@ -90,6 +91,15 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
             import={@import}
             on_hide={JS.push("validation:hide", target: @myself)}
           />
+          <.flash
+            :if={@incompatible_mapping}
+            stretch={true}
+            hidden={false}
+            close={false}
+            kind={:error}
+          >
+            <%= ~t"The selected mapping used by a previous import on this collection is not compatible with the current import file. Please create a new mapping or upload a compatible file." %>
+          </.flash>
 
           <div
             :if={@reuse_mapping}
@@ -428,6 +438,16 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                 socket.assigns.meta
               )
           )
+
+        {:error,
+         %Ash.Error.Invalid{
+           errors: [
+             %Ash.Error.Changes.InvalidAttribute{field: :type, message: "cannot be changed"}
+           ]
+         }} ->
+          Logger.warning("The selected mapping isn't valid for the current import file")
+
+          assign(socket, :incompatible_mapping, true)
 
         {:error, error} ->
           Logger.warning(error)
