@@ -13,6 +13,7 @@ defmodule DataAggregator.Gbif.RestAPIStub do
       https://github.com/edgurgel/mimic/issues/27
 
   """
+  alias DataAggregator.Types.Api
 
   def register_dataset(_collection_name) do
     {:ok, %{status: 201, body: "1234-1234-1234-1234"}}
@@ -109,7 +110,7 @@ defmodule DataAggregator.Gbif.RestAPIStub do
      }}
   end
 
-  @spec get_grscicoll_entity(String.t(), atom()) :: {:ok, any()} | {:error, any()}
+  @spec get_grscicoll_entity(String.t(), atom()) :: Api.response_body()
   def get_grscicoll_entity(key, _kind) do
     {:ok,
      %{
@@ -275,7 +276,7 @@ defmodule DataAggregator.Gbif.RestAPIStub do
      }}
   end
 
-  @spec get_grscicoll_collection_attributes(String.t(), list()) :: {:ok, map()} | {:error, any()}
+  @spec get_grscicoll_collection_attributes(String.t(), list()) :: Api.response_body()
   def get_grscicoll_collection_attributes(_reference, _attributes) do
     {:ok, %{"code" => "Z", "name" => "Herbarium - Universität Zürich"}}
   end
