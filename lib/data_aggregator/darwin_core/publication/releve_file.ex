@@ -10,7 +10,7 @@ defmodule DataAggregator.DarwinCore.Publication.ReleveFile do
 
   @spec create(Ash.Query.t(), String.t()) :: {:ok, any()} | {:error, any()}
   def create(query, path) do
-    path = "#{path}/releve.csv"
+    path = path <> "/releve.csv"
 
     file = DwcaFile.create_file!(:releve, query, path)
 

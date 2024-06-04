@@ -2,7 +2,9 @@ defmodule DataAggregator.Records.Import.Workers.ImporterTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.Import.Workers.Importer
@@ -18,6 +20,8 @@ defmodule DataAggregator.Records.Import.Workers.ImporterTest do
     ]
 
     setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       collection =
         Collection.create!(%{
           type: :zoology,

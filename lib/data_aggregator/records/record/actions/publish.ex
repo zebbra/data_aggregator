@@ -6,12 +6,14 @@ defmodule DataAggregator.Records.Actions.Publish do
   use Ash.Resource.Actions.Implementation
 
   alias DataAggregator.DarwinCore.Publication.CoreFile
+  alias DataAggregator.DarwinCore.Publication.EmlFile
   alias DataAggregator.DarwinCore.Publication.MaterialSampleFile
-  alias DataAggregator.DarwinCore.Publication.MultimediaFile
+  alias DataAggregator.DarwinCore.Publication.MetaFile
   alias DataAggregator.DarwinCore.Publication.PreservationFile
   alias DataAggregator.DarwinCore.Publication.ReleveFile
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
 
@@ -33,13 +35,16 @@ defmodule DataAggregator.Records.Actions.Publish do
     path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
 
     CoreFile.create(query, path)
+
+    EmlFile.create(publication.collection, path)
+
     MaterialSampleFile.create(query, path)
     PreservationFile.create(query, path)
     ReleveFile.create(query, path)
-    MultimediaFile.create(query, path)
 
-    # TODO: implement the following files, they contain of
-    #  attributes from json data, so a dfiferent approach is needed
+    MetaFile.create(publication.collection, path)
+
+    # TODO: implement the following files, they contain of attributes from json data
 
     # ChronometricAgeFile.create(query, path)
     # DistributionFile.create(query, path)
@@ -57,7 +62,12 @@ defmodule DataAggregator.Records.Actions.Publish do
       publication
     )
 
-    Publication.update_attachment(publication, attachment)
+    publication =
+      publication
+      |> Publication.update_attachment(attachment)
+      |> Records.load!([:collection, :attachment])
+
+    register_at_gbif(publication, query)
   rescue
     e ->
       publication = input.arguments.publication
@@ -72,6 +82,14 @@ defmodule DataAggregator.Records.Actions.Publish do
       )
 
       {:error, e}
+  end
+
+  @spec queue_records_for_verification(Ash.Query.t()) :: :ok
+  defp queue_records_for_verification(query) do
+    query
+    |> Records.stream!(page: false)
+    |> Stream.map(&Record.enqueue_fast_track_checker/1)
+    |> Stream.run()
   end
 
   @spec set_publication_status(
@@ -96,4 +114,12 @@ defmodule DataAggregator.Records.Actions.Publish do
   defp update_status!(:fast_track, status, record), do: Record.update_fast_track_status!(record, status)
 
   defp update_status!(:approval, status, record), do: Record.update_approval_status!(record, status)
+
+  defp register_at_gbif(publication, query) do
+    with {:ok, _collection} <-
+           Collection.register_at_gbif(publication.collection, publication.attachment.url),
+         :ok <- queue_records_for_verification(query) do
+      {:ok, publication}
+    end
+  end
 end

@@ -61,6 +61,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
 
   @spec handle_error(String.t(), map()) :: :ok
   defp handle_error(record_id, error) do
-    Logger.error("Error while encoding the record #{record_id} with the swiss species catalog: #{inspect(error)}")
+    Logger.warning("Error while encoding the record #{record_id} with the swiss species catalog: #{inspect(error)}")
   end
 end

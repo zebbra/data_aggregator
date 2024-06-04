@@ -20,8 +20,7 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter do
     SwissSpecies.create!(parsed_attrs)
   rescue
     error ->
-      Logger.error("could not import swiss species: #{inspect(attrs)}")
-      Logger.error("error: #{inspect(error)}")
+      Logger.error("could not import swiss species: #{inspect(attrs)}, reason was: #{inspect(error)}")
 
       throw(error)
   end

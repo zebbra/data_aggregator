@@ -94,6 +94,13 @@ defmodule DataAggregator.Records.Record do
       allow_nil? true
     end
 
+    belongs_to :fast_track_checker_job, Job do
+      api DataAggregator.Jobs
+      attribute_type :integer
+      attribute_writable? true
+      allow_nil? true
+    end
+
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
     end
@@ -132,7 +139,17 @@ defmodule DataAggregator.Records.Record do
   paper_trail do
     change_tracking_mode :changes_only
     store_action_name? true
-    ignore_attributes [:inserted_at, :updated_at, :import_data, :errors]
+
+    ignore_attributes [
+      :inserted_at,
+      :updated_at,
+      :import_data,
+      :errors,
+      :approval_status,
+      :fast_track_status,
+      :state
+    ]
+
     attributes_as_attributes [:mte_catalog_number, :tax_scientific_name]
     reference_source? false
 
@@ -195,6 +212,7 @@ defmodule DataAggregator.Records.Record do
       argument :collection, Collection, allow_nil?: false
 
       change Record.Changes.SetImportedAfterAction
+      change Record.Changes.SetOccurrenceIDAfterAction
       change manage_relationship(:collection, :collection, type: :append)
     end
 
@@ -213,6 +231,7 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.ExtractAttributes
       change Record.Changes.SetPublicationStale
       change Record.Changes.SetImportedAfterAction
+      change Record.Changes.SetOccurrenceIDAfterAction
 
       upsert? true
       upsert_identity :collection_mte_catalog_number
@@ -224,6 +243,12 @@ defmodule DataAggregator.Records.Record do
       change transition_state(:queued)
       change Record.Changes.EnqueueEncoder
       change load(:encoder_job)
+    end
+
+    update :enqueue_fast_track_checker do
+      accept []
+      change Record.Changes.EnqueueFastTrackChecker
+      change load(:fast_track_checker_job)
     end
 
     action :bulk_import, :map do
@@ -244,6 +269,10 @@ defmodule DataAggregator.Records.Record do
       argument :catalog, :atom, allow_nil?: false
 
       run Encoding.Actions.EncodeRecord
+    end
+
+    update :check_if_fast_track_pubished do
+      change Record.Changes.CheckIfFastTrackPublished
     end
 
     update :set_imported do
@@ -312,6 +341,8 @@ defmodule DataAggregator.Records.Record do
     define :enqueue_encoder
     define :update_fast_track_status, action: :update_fast_track_status, args: [:status]
     define :update_approval_status, action: :update_approval_status, args: [:status]
+    define :check_if_fast_track_pubished, action: :check_if_fast_track_pubished
+    define :enqueue_fast_track_checker
   end
 
   postgres do
@@ -320,6 +351,7 @@ defmodule DataAggregator.Records.Record do
 
     references do
       reference :collection, on_delete: :delete, on_update: :update
+      reference :fast_track_checker_job, on_delete: :nilify, on_update: :update
     end
   end
 

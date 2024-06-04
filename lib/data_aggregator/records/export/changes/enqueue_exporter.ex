@@ -22,7 +22,7 @@ defmodule DataAggregator.Records.Export.Changes.EnqueueExporter do
         Changeset.change_attribute(changeset, :job_id, job.id)
 
       {:error, error} ->
-        Logger.error("Failed to enqueue export job: #{inspect(error)}")
+        Logger.warning("Failed to enqueue export job: #{inspect(error)}")
         Changeset.add_error(changeset, error)
     end
   end

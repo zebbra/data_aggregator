@@ -15,6 +15,15 @@ defmodule DataAggregator.CollectionTest do
       grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
     }
 
+    setup do
+      # we may not wanna stub the API here, because we wanna actually test the whole
+      # integration with the Gbif API in place to validate if the referenced
+      # collection, instead we can stub the API in other tests
+      # stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
+      []
+    end
+
     test "read!/0 returns all collections" do
       created = [
         collection_fixture(),

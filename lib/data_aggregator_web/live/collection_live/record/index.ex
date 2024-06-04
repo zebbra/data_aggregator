@@ -254,21 +254,41 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         }
       >
         <:col
+          :let={{_id, record}}
           :if={CollectionType.visible?(@collection.type, :picture)}
           th_wrapper_attrs={[
-            class: "hero-photo size-5",
+            class: "hero-camera size-5 tooltip",
             aria: [hidden: "true"]
           ]}
           class="text-center"
         >
-          <.icon name="hero-photo-micro" class="size-5 text-success" />
+          <div
+            :if={record.mte_associated_media === nil}
+            class="tooltip tooltip-right"
+            data-tip={~t"No images uploaded yet"m}
+          >
+            <.icon name="hero-camera" class="size-5 text-gray-600" />
+          </div>
+
+          <div
+            :if={record.mte_associated_media !== nil}
+            class="tooltip tooltip-right"
+            data-tip={~t"Images available"m}
+          >
+            <.icon name="hero-camera-mini" class="size-5 text" />
+          </div>
         </:col>
         <:col
           :if={CollectionType.visible?(@collection.type, :iucn_redlist)}
           th_wrapper_attrs={[class: "hero-flag size-5", aria: [hidden: "true"]]}
           class="text-center"
         >
-          <.icon name="hero-flag-micro" class="size-5 text-error" />
+          <div
+            class="tooltip tooltip-right"
+            data-tip={~t"According to IUCN not an endangered species"m}
+          >
+            <.icon name="hero-flag" class="size-5 text-gray-600" />
+          </div>
         </:col>
         <:col
           :let={{_id, record}}

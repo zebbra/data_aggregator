@@ -26,7 +26,7 @@ defmodule DataAggregator.Records.Export.Changes.ExportRecords do
   end
 
   defp add_error(changeset, error, export) do
-    Logger.error("Error export records: #{inspect(error)}")
+    Logger.warning("Error export records: #{inspect(error)}")
     Export.set_failed(export)
     Changeset.add_error(changeset, error)
   end

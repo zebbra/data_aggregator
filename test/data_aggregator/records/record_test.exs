@@ -2,21 +2,31 @@ defmodule DataAggregator.RecordTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.EncodingFixtures
   import DataAggregator.RecordEncodingResultFixture
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
+
+  require Logger
 
   describe "records" do
     @invalid_attrs %{
       mte_catalog_number: nil,
       tax_scientific_name: nil
     }
+
+    setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
+      []
+    end
 
     test "read!/0 returns all records" do
       created = [
@@ -51,7 +61,8 @@ defmodule DataAggregator.RecordTest do
 
       record = Records.load!(record, [:paper_trail_versions])
 
-      assert length(record.paper_trail_versions) == 1
+      assert length(record.paper_trail_versions) == 2
+      assert record.occ_occurrence_id === record.mte_catalog_number
     end
 
     test "create/1 with invalid data returns error changeset" do
@@ -70,7 +81,7 @@ defmodule DataAggregator.RecordTest do
 
       record = Records.load!(record, [:paper_trail_versions])
 
-      assert length(record.paper_trail_versions) == 2
+      assert length(record.paper_trail_versions) == 3
     end
 
     test "update/2 with invalid data returns error changeset" do
@@ -195,7 +206,7 @@ defmodule DataAggregator.RecordTest do
       record = Records.load!(record, [:paper_trail_versions])
 
       # changed publication states in after_action hook leads to one additional change per record
-      assert length(record.paper_trail_versions) == 3
+      assert length(record.paper_trail_versions) == 4
     end
 
     test "updating a record for the same import", %{import: import} do
@@ -234,7 +245,7 @@ defmodule DataAggregator.RecordTest do
 
       record = Records.load!(record, [:paper_trail_versions])
 
-      assert length(record.paper_trail_versions) == 4
+      assert length(record.paper_trail_versions) == 5
     end
 
     test "updating a record from another import", %{import: import} do
@@ -272,7 +283,7 @@ defmodule DataAggregator.RecordTest do
       record = Records.load!(record, [:paper_trail_versions])
 
       # changed publication states in after_action hook leads to one additional change per record
-      assert length(record.paper_trail_versions) == 4
+      assert length(record.paper_trail_versions) == 5
     end
 
     test "importing a record for another collection", %{import: import} do

@@ -92,7 +92,7 @@ defmodule DataAggregator.EncodingFixtures do
   """
   def expect_failing_swiss_species_api_call do
     expect(SwissSpecies, :get_by_usage_key, fn _key ->
-      Logger.error("unknown error occured")
+      Logger.warning("unknown error occured")
 
       {:error, %Ash.Error.Unknown{}}
     end)

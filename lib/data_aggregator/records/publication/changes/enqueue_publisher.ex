@@ -12,7 +12,7 @@ defmodule DataAggregator.Records.Publication.Changes.EnqueuePublisher do
 
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_action(changeset, &enqueue_publisher/1)
+    enqueue_publisher(changeset)
   end
 
   defp enqueue_publisher(%Changeset{data: publication} = changeset) do
@@ -25,10 +25,6 @@ defmodule DataAggregator.Records.Publication.Changes.EnqueuePublisher do
         Logger.error("Failed to enqueue publication job: #{inspect(error)}")
         Changeset.add_error(changeset, error)
     end
-  end
-
-  defp enqueue_publisher({:error, error}) do
-    {:error, error}
   end
 
   defp insert_job(%Publication{id: id}) do

@@ -37,5 +37,8 @@ config :data_aggregator,
   # different value set for key :http_cache_path during runtime compared to compile time.
   http_cache_path: "priv/cache/prod/http"
 
+# Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier`
+config :data_aggregator, publication_verification_scheduler_active: true
+
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
