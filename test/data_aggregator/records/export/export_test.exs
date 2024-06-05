@@ -95,9 +95,8 @@ defmodule DataAggregator.ExportTest do
       "mte_catalog_number" => "Numéro scientifique GBIF",
       "tax_family" => "Famille"
     }
-    @default_mapping Map.new(Schema.prefixed_attribute_names(), fn name ->
-                       {name, name}
-                     end)
+
+    @default_mapping Map.new(Schema.prefixed_attribute_names(), &{to_string(&1), to_string(&1)})
 
     @collection_mapping [
       %{name: "Scientific Name - collection", mapped_to: "tax_scientific_name"},
@@ -178,8 +177,8 @@ defmodule DataAggregator.ExportTest do
       data_frame: data_frame
     } do
       assert export.mapping == %{
-               mte_catalog_number: "Numéro scientifique GBIF - collection",
-               tax_scientific_name: "Scientific Name - collection"
+               "mte_catalog_number" => "Numéro scientifique GBIF - collection",
+               "tax_scientific_name" => "Scientific Name - collection"
              }
 
       assert Explorer.DataFrame.names(data_frame) == [
@@ -199,8 +198,8 @@ defmodule DataAggregator.ExportTest do
       data_frame: data_frame
     } do
       assert export.mapping == %{
-               mte_catalog_number: "Numéro scientifique GBIF - collection",
-               tax_scientific_name: "Scientific Name - collection"
+               "mte_catalog_number" => "Numéro scientifique GBIF - collection",
+               "tax_scientific_name" => "Scientific Name - collection"
              }
 
       assert Explorer.DataFrame.names(data_frame) == [

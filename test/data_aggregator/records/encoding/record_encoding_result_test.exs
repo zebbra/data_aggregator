@@ -114,8 +114,8 @@ defmodule DataAggregator.RecordEncodingResultTest do
       assert updated_record_encoding_result.id == record_encoding_result.id
       assert updated_record_encoding_result.inserted_at == record_encoding_result.inserted_at
       assert updated_record_encoding_result.updated_at != record_encoding_result.updated_at
-      assert updated_record_encoding_result.output == %{tax_kingdom: "Fungi"}
-      assert updated_record_encoding_result.input == %{tax_taxon_id: 9876}
+      assert updated_record_encoding_result.output == %{"tax_kingdom" => "Fungi"}
+      assert updated_record_encoding_result.input == %{"tax_taxon_id" => 9876}
       assert updated_record_encoding_result.state == :error
       assert updated_record_encoding_result.catalog == :gbif_taxonomy
     end

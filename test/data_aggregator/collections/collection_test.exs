@@ -89,8 +89,8 @@ defmodule DataAggregator.CollectionTest do
       collection = collection_fixture()
 
       updated_import_mapping = [
-        %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
-        %{name: "Numéro scientifique GBIF", mapped_to: "mte_catalog_number"}
+        %{"name" => "Scientific Name", "mapped_to" => "tax_scientific_name"},
+        %{"name" => "Numéro scientifique GBIF", "mapped_to" => "mte_catalog_number"}
       ]
 
       assert {:ok, %Collection{} = result} =
