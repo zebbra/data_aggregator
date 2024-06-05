@@ -105,9 +105,6 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         >
           <%= inspect(collection.records_count) %> / <%= collection.items_to_digitize %>
         </:col>
-        <:col :let={{_id, collection}} field={:encoding_state} label={~t"State"m} class="text-center">
-          <.encoding_state_badge state={collection.encoding_state} />
-        </:col>
         <:col :let={{_id, collection}} field={:updated_at} label={~t"Updated At"m} class="text-right">
           <%= format_datetime(collection.updated_at, format: :short) %>
         </:col>

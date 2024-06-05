@@ -52,7 +52,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert import.rows_imported_count == 2
     end
 
-    @tag path: "test/support/fixtures/files/museum-dataset-import-invalid.csv"
+    @tag path: "test/support/fixtures/files/invalid-records.csv"
     test "fails with a file with some invalid records", %{import: import} do
       {result, _logs} = with_log(fn -> Import.import(import) end)
       assert {:ok, import} = result

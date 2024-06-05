@@ -5,7 +5,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   alias DataAggregator.Files.Attachment
 
   @doc """
-   gives you a map of all relevant dwc header fields and the record values
+   gives you a map of all relevant header fields and the record values
    in the structure of `%{"verbatimLocality" => nil, "kingdom" => "My Kingdom", ..}`
   """
   @spec map_data_to_headers(map(), list()) :: map()
@@ -56,7 +56,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   @doc """
   Stores the given data in a CSV file on the local disk
   """
-  @spec store_local_file(any(), map(), [String.t()]) :: any()
+  @spec store_local_file(any(), map() | [map()], [String.t()] | [{atom(), String.t()}]) :: any()
   def store_local_file(file, data_with_headers, headers) do
     data_with_headers
     |> CSV.encode(separator: ?,, headers: headers)

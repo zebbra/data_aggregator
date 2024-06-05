@@ -409,7 +409,7 @@ defmodule DataAggregator.ExportFixtures do
       eve_cover_mosses_in_percentage: "coverMossesInPercentage",
       eve_cover_rock_in_percentage: "coverRockInPercentage",
       eve_cover_shrubs_in_percentage: "coverShrubsInPercentage",
-      eve_cover_toal_in_percentage: "coverTotalInPercentage",
+      eve_cover_total_in_percentage: "coverTotalInPercentage",
       eve_cover_water_in_percentage: "coverWaterInPercentage",
       eve_day: "day",
       eve_end_day_of_year: "endDayOfYear",

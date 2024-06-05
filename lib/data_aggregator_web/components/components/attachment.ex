@@ -40,17 +40,24 @@ defmodule DataAggregatorWeb.Components.Attachment do
   attr :attachment, Attachment, default: nil, doc: "the attachment to display"
   attr :badge, :boolean, default: false, doc: "whether to show the download badge"
   attr :rows, :integer, default: nil, doc: "the number of rows in the attachment"
+  attr :show_file_name, :boolean, default: true, doc: "whether to show the file name"
 
-  def file_info(assigns) do
+  def file_info(%{show_file_name: true} = assigns) do
     ~H"""
     <div class="font-mono"><%= if is_nil(@attachment), do: "-", else: @attachment.filename %></div>
     <.maybe_badge_with_rows attachment={@attachment} badge={@badge} rows={@rows} />
     """
   end
 
+  def file_info(%{show_file_name: false} = assigns) do
+    ~H"""
+    <.maybe_badge_with_rows attachment={@attachment} badge={@badge} rows={@rows} />
+    """
+  end
+
   defp maybe_badge_with_rows(%{badge: true, attachment: attachment} = assigns) when attachment != nil do
     ~H"""
-    <div class="text-base-content/60 mt-1 flex items-center gap-x-2 text-xs">
+    <div class="text-base-content/60 flex items-center gap-x-2 text-xs">
       <.attachment_download_badge attachment={@attachment} />
       <%= format_number(@rows) %> <%= ~t"rows"m %>
     </div>
