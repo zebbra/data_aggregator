@@ -6,12 +6,13 @@ defmodule DataAggregator.DarwinCore.Publication.MetaFile do
   import XmlBuilder
 
   alias DataAggregator.DarwinCore.Schema
+  alias DataAggregator.DarwinCore.Schema.DwcAttribute
   alias DataAggregator.Records.Collection
 
   @dwca_extension_file_types [
-    material_sample: "material_sample.csv",
-    preservation: "preservation.csv",
-    releve: "releve.csv"
+    material_sample: {"material_sample.csv", "http://rs.tdwg.org/dwc/terms/MaterialSample"},
+    preservation: {"preservation.csv", "http://rs.tdwg.org/dwc/terms/MeasurementOrFact"},
+    releve: {"releve.csv", "http://rs.tdwg.org/dwc/terms/Event"}
   ]
 
   @spec create(Collection.t(), String.t()) :: {:ok, String.t()} | {:error, any()}
@@ -69,7 +70,7 @@ defmodule DataAggregator.DarwinCore.Publication.MetaFile do
 
   # generates the extension xml elements for the meta.xml file
   def extensions do
-    Enum.map(@dwca_extension_file_types, fn {dwca_file_type, file_path} ->
+    Enum.map(@dwca_extension_file_types, fn {dwca_file_type, {file_path, row_type}} ->
       children = [
         files_element(file_path),
         core_id_element() | field_elements(dwca_file_type)
@@ -81,7 +82,7 @@ defmodule DataAggregator.DarwinCore.Publication.MetaFile do
           encoding: "UTF-8",
           fieldsTerminatedBy: ",",
           ignoreHeaderLines: "1",
-          rowType: "http://rs.tdwg.org/dwc/terms/Occurrence"
+          rowType: row_type
         },
         children
       )
@@ -132,9 +133,12 @@ defmodule DataAggregator.DarwinCore.Publication.MetaFile do
     ]
   end
 
+  # returns all dwca attributes for a given dwca file type if they have a dwc_field and dwc_link
+  # and if it's not the occurrenceID, b'cause this is the ID and will be the set as the first column
+  @spec dwca_attribute(atom()) :: [DwcAttribute.t()]
   defp dwca_attribute(dwca_file_type) do
     dwca_file_type
     |> Schema.dwc_attributes_by_dwca_file_type()
-    |> Enum.filter(&(&1.dwc_field != nil && &1.dwc_link != nil))
+    |> Enum.filter(&(&1.dwc_field != nil and &1.dwc_link != nil and &1.dwc_field != "occurrenceID"))
   end
 end
