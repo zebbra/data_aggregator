@@ -3,7 +3,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.FilterForm.Predicate
-  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
   alias Pagify.FilterForm
 
@@ -14,7 +13,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       |> assign(assigns)
       |> assign_form()
       |> assign_collapsible_state()
-      |> assign(:count, assigns.meta.total_count)
+      |> format_count(assigns.meta.total_count)
       |> assign(:label, Map.get(assigns, :label, ~t"entries"m))
       |> assign(:error, nil)
 
@@ -195,27 +194,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     """
   end
 
-  defp filter_form_component(%{component: %{source: %Predicate{field: :tax_class}}} = assigns) do
+  defp filter_form_component(%{component: %{source: %Predicate{field: :idf_verbatim_identification}}} = assigns) do
     ~H"""
-    <.fieldset legend={~t"Class"m} legend_size="md">
+    <.fieldset legend={~t"Identification (verbatim)"m} legend_size="md">
       <.fieldgroup class="!mt-3">
         <.input type="hidden" field={@component[:field]} />
         <.input type="hidden" field={@component[:operator]} />
-        <.input type="hidden" field={@component[:path]} />
-        <.field type="checkgroup" field={@component[:value]} multiple options={tax_class_options()} />
-      </.fieldgroup>
-    </.fieldset>
-    """
-  end
-
-  defp filter_form_component(%{component: %{source: %Predicate{field: :tax_genus}}} = assigns) do
-    ~H"""
-    <.fieldset legend={~t"Genus"m} legend_size="md">
-      <.fieldgroup class="!mt-3">
-        <.input type="hidden" field={@component[:field]} />
-        <.input type="hidden" field={@component[:operator]} />
-        <.input type="hidden" field={@component[:path]} />
-        <.field type="checkgroup" field={@component[:value]} multiple options={tax_genus_options()} />
+        <.field
+          type="checkgroup"
+          field={@component[:value]}
+          multiple
+          options={idf_verbatim_identification_options()}
+        />
       </.fieldgroup>
     </.fieldset>
     """
@@ -318,15 +308,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     end)
     |> FilterForm.add_group(return_id?: true, key: "taxonomy")
     |> then(fn {form, taxonomy_group_id} ->
-      form
-      |> FilterForm.add_predicate(:tax_class, :in, [],
-        to: taxonomy_group_id,
-        path: "encoded_record"
-      )
-      |> FilterForm.add_predicate(:tax_genus, :in, [],
-        to: taxonomy_group_id,
-        path: "encoded_record"
-      )
+      FilterForm.add_predicate(form, :idf_verbatim_identification, :in, [], to: taxonomy_group_id)
     end)
   end
 
@@ -340,6 +322,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     query = Record.query_to_by_collection(collection_id)
     count = FilterForm.count(meta, filter_form_params, reset, query)
 
+    format_count(socket, count)
+  rescue
+    _ ->
+      filter_form = init_form(socket.assigns.meta.resource)
+
+      socket
+      |> assign(:filter_form, filter_form)
+      |> assign(:error, ~t"Something went wrong, please try again.")
+  end
+
+  defp format_count(socket, count) do
     if count > 1000 do
       count = format_number(1000)
       count = "#{count}+"
@@ -348,13 +341,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       count = format_number(count)
       assign(socket, :count, count)
     end
-  rescue
-    _ ->
-      filter_form = init_form(socket.assigns.meta.resource)
-
-      socket
-      |> assign(:filter_form, filter_form)
-      |> assign(:error, ~t"Something went wrong, please try again.")
   end
 
   defp assign_collapsible_state(socket) do
@@ -370,21 +356,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     Map.get(collapsible_state, key, false)
   end
 
-  defp tax_genus_options do
-    EncodedRecord
-    |> Ash.Query.distinct(:tax_genus)
-    |> Ash.Query.select(:tax_genus)
-    |> Ash.Query.sort(:tax_genus)
+  defp idf_verbatim_identification_options do
+    Record
+    |> Ash.Query.distinct(:idf_verbatim_identification)
+    |> Ash.Query.select(:idf_verbatim_identification)
+    |> Ash.Query.sort(:idf_verbatim_identification)
     |> Ash.read!()
-    |> Enum.map(&Map.get(&1, :tax_genus))
-  end
-
-  defp tax_class_options do
-    EncodedRecord
-    |> Ash.Query.distinct(:tax_class)
-    |> Ash.Query.select(:tax_class)
-    |> Ash.Query.sort(:tax_class)
-    |> Ash.read!()
-    |> Enum.map(&Map.get(&1, :tax_class))
+    |> Enum.map(&Map.get(&1, :idf_verbatim_identification))
+    |> Enum.filter(&(&1 != nil))
   end
 end
