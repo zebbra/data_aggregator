@@ -562,6 +562,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             id={:new}
             action={@live_action}
             collection={@collection}
+            meta={@meta}
           />
         </.modal>
 
