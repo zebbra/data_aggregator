@@ -2,6 +2,8 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   @moduledoc false
   use DataAggregatorWeb, :live_component
 
+  import Phoenix.HTML.Form, only: [input_value: 2, input_name: 2]
+
   alias AshPhoenix.Form
   alias DataAggregator.Gbif.GrSciColl
   alias DataAggregator.Records.Collection
@@ -89,7 +91,14 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
           </.fieldgroup>
           <:actions modal>
             <button type="submit" class="btn btn-primary"><%= ~t"Save collection"m %></button>
-            <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
+            <button
+              type="button"
+              phx-click="collection:reset"
+              phx-target={@myself}
+              class="btn btn-ghost"
+            >
+              <%= ~t"Reset"m %>
+            </button>
             <button type="button" class="btn btn-ghost" onclick="collection_modal.close()">
               <%= ~t"Cancel"m %>
             </button>
@@ -122,6 +131,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
     {:noreply, assign(socket, form: form)}
   end
 
+  @impl true
   def handle_event("collection:save", %{"collection" => params}, socket) do
     socket =
       case Form.submit(socket.assigns.form, params: params) do
@@ -142,5 +152,22 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
       end
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("collection:reset", _, socket) do
+    socket = assign_form(socket)
+    %{form: form_initial} = socket.assigns
+
+    socket
+    |> push_event("combobox:reset", %{
+      name: input_name(form_initial, :type),
+      value: input_value(form_initial, :type)
+    })
+    |> push_event("combobox:reset", %{
+      name: input_name(form_initial, :grscicoll_reference),
+      value: input_value(form_initial, :grscicoll_reference)
+    })
+    |> noreply()
   end
 end

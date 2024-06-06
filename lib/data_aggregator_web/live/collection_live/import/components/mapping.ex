@@ -91,26 +91,23 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
             on_hide={JS.push("validation:hide", target: @myself)}
           />
 
-          <div
+          <.collapsible_notification
             :if={@reuse_mapping}
-            class="collapse text-info-content border-info/20 bg-info/10 border"
+            title={~t"Reuse mapping from previous import"m}
+            color="blue"
           >
-            <input type="checkbox" />
-            <div class="collapse-title text-info pe-4 flex items-center gap-x-2 text-sm">
-              <div class="flex min-w-0 flex-1 items-center gap-x-2">
-                <.icon name="hero-information-circle-solid" />
-                <span><%= ~t"Reuse mapping from previous import"m %></span>
-              </div>
+            <:action class="z-10">
               <.link
                 type="button"
-                class="z-10 link link-hover link-info font-semibold flex items-center gap-x-1 hover:no-underline rounded-md"
+                class="link link-hover link-info font-semibold flex items-center gap-x-1 hover:no-underline rounded-md"
                 phx-click="mapping:apply"
                 phx-target={@myself}
               >
                 <%= ~t"Load"m %> <.icon name="hero-arrow-right-micro" />
               </.link>
-            </div>
-            <div class="collapse-content -mx-4">
+            </:action>
+
+            <div class="-mx-4">
               <.table
                 opts={[no_results_content: no_mapping_available()]}
                 id="collection_mapping_table"
@@ -133,7 +130,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                 </:col>
               </.table>
             </div>
-          </div>
+          </.collapsible_notification>
 
           <.fieldset
             legend={~t"Required attributes"m}
@@ -161,7 +158,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           <button type="submit" disabled={@disabled} class="btn btn-primary">
             <%= ~t"Save"m %>
           </button>
-          <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
+          <button type="button" phx-click="mapping:reset" phx-target={@myself} class="btn btn-ghost">
+            <%= ~t"Reset"m %>
+          </button>
           <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
             <%= ~t"Cancel"m %>
           </button>
@@ -223,7 +222,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       type="combobox"
       field={@form[:name]}
       options={@options}
-      placeholder={~t"Filter columns..."m}
+      tom_select_options={%{allowEmptyOption: true}}
+      prompt={~t"Filter columns..."m}
       hidden={@visible == false}
       inline
       required
@@ -300,6 +300,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       placeholder={~t"Filter attributes..."m}
       hidden={@visible == false}
       dropup={@dropup}
+      max_options={1000}
     >
       <:content :let={field}>
         <.label for={@form[:mapped_to].id} class="sm:pb-0 sm:block max-sm:truncate max-sm:mr-11">
@@ -366,6 +367,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       |> assign_filter()
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("mapping:reset", _, socket) do
+    socket
+    |> assign_form(true)
+    |> noreply()
   end
 
   @impl true
@@ -462,14 +470,18 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     |> String.downcase()
   end
 
-  defp assign_form(%{assigns: assigns} = socket) do
-    form = build_form(assigns)
+  defp assign_form(%{assigns: assigns} = socket, reset \\ false) do
+    form = build_form(assigns, reset)
     assign(socket, :form, form)
   end
 
-  defp build_form(%{import: import}) do
+  defp build_form(%{import: import}, reset) do
     import_with_mappings = Records.load!(import, [:mappings, :missing_mappings], lazy?: true)
-    mappings = Enum.sort_by(import_with_mappings.mappings, &{mandatory?(&1.mapped_to)}, :desc)
+
+    mappings =
+      import_with_mappings.mappings
+      |> maybe_reset_mappings(reset)
+      |> Enum.sort_by(&{mandatory?(&1.mapped_to)}, :desc)
 
     import
     |> Form.for_update(
@@ -487,6 +499,16 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       ]
     )
     |> to_form()
+  end
+
+  defp maybe_reset_mappings(mappings, reset) do
+    if reset do
+      mappings
+      |> Enum.filter(&mandatory?(&1.mapped_to))
+      |> Enum.map(&Map.put(&1, :name, nil))
+    else
+      mappings
+    end
   end
 
   defp mandatory?(%Phoenix.HTML.Form{} = form), do: mandatory?(coalesce_mapped_to(form))
@@ -642,7 +664,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   end
 
   defp build_mappings_lookup(mappings) do
-    Enum.map(mappings, fn mapping -> %{mapped_to: mapping.mapped_to, name: mapping.name} end)
+    Enum.map(mappings, fn mapping ->
+      %{mapped_to: mapping.mapped_to, name: coalesce_nil(mapping.name)}
+    end)
   end
 
   defp build_columns_lookup(params) do
@@ -650,6 +674,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       %{mapped_to: column["mapped_to"], name: column["name"]}
     end)
   end
+
+  defp coalesce_nil(nil), do: ""
+  defp coalesce_nil(value), do: value
 
   defp no_mapping_available(assigns \\ %{}) do
     ~H"""

@@ -2,7 +2,8 @@ defmodule Pagify.Factory.Post do
   @moduledoc false
   use Ash.Resource,
     data_layer: Ash.DataLayer.Ets,
-    extensions: [AshUUID]
+    extensions: [AshUUID],
+    api: Pagify.Factory.Api
 
   @default_limit 15
   def default_limit, do: @default_limit
@@ -28,6 +29,8 @@ defmodule Pagify.Factory.Post do
   attributes do
     uuid_attribute :id
     attribute :name, :string, allow_nil?: false
+    attribute :title, :string
+    attribute :text, :string
     attribute :author, :string
     attribute :age, :integer
 

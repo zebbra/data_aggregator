@@ -27,15 +27,12 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
 
   def secondary_navigation(assigns) do
     ~H"""
-    <div class={[
-      "border-black-white/10 bg-base-200/95 relative z-10 border-y backdrop-blur lg:scroll-px-8",
-      @class
-    ]}>
-      <nav aria-labelledby={@id} class="no-scrollbar flex snap-x scroll-px-6 overflow-x-auto py-4">
+    <div class={["border-black-white/10 bg-base-200/95 relative z-10 border-y backdrop-blur", @class]}>
+      <nav aria-labelledby={@id} class="py-4">
         <h2 id={@id} class="sr-only">Secondary navigation</h2>
         <ul
           role="list"
-          class="text-sm/6 text-base-content/75 flex min-w-full flex-none items-center gap-x-6 px-6 font-semibold lg:px-8"
+          class="text-sm/6 text-base-content/75 no-scrollbar flex w-full snap-x scroll-pl-6 items-center gap-x-6 overflow-x-auto font-semibold lg:scroll-pl-8"
         >
           <%= render_slot(@inner_block) %>
         </ul>
@@ -69,7 +66,7 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
 
   def secondary_navigation_item(assigns) do
     ~H"""
-    <li class="snap-start">
+    <li class="snap-start first:pl-6 last:pr-6 lg:first:pl-8 lg:last:pr-8">
       <.link
         navigate={@href}
         class={[
