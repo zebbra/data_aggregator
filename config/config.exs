@@ -102,7 +102,7 @@ config :esbuild,
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "3.4.1",
+  version: "3.4.4",
   data_aggregator: [
     args: ~w(
       --config=tailwind.config.js
