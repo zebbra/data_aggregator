@@ -56,24 +56,16 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
         <div class="h-full overflow-y-auto px-6 py-8">
           <.fieldset>
             <.fieldgroup>
-              <div
+              <.collapsible_notification
                 :if={@error_message}
-                class="collapse text-error-content border-error/20 bg-error/10 border"
+                title={~t"An error has occurred"m}
+                color="red"
               >
-                <input type="checkbox" />
-                <div class="collapse-title text-error pe-4 flex items-center gap-x-2 text-sm">
-                  <div class="flex min-w-0 flex-1 items-center gap-x-2">
-                    <.icon name="hero-exclamation-triangle" />
-                    <span><%= ~t"An error has occurred"m %></span>
-                  </div>
+                <:action>
                   <%= ~t"Show more"m %>
-                </div>
-                <div class="collapse-content">
-                  <div class="text-error text-sm/6">
-                    <%= @error_message %>
-                  </div>
-                </div>
-              </div>
+                </:action>
+                <%= @error_message %>
+              </.collapsible_notification>
               <section
                 phx-drop-target={@uploads.file.ref}
                 class="border-black-white/25 flex flex-col rounded-lg border border-dashed px-6 py-10"

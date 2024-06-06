@@ -220,7 +220,11 @@ defmodule DataAggregatorWeb.Components.Modal do
           <.close_button as="form" method="dialog" position={@close_button_position} />
         </.focus_wrap>
       </div>
-      <form :if={@backdrop} method="dialog" class="modal-backdrop">
+      <form
+        :if={@backdrop}
+        method="dialog"
+        class={["modal-backdrop", backdrop_class(@header, @footer, @title, @overflow)]}
+      >
         <button><%= ~t"close"m %></button>
       </form>
     </dialog>
@@ -261,6 +265,8 @@ defmodule DataAggregatorWeb.Components.Modal do
 
   attr :gradient, :boolean, default: true, doc: "Whether to show a gradient below the title"
 
+  attr :close_button, :boolean, default: false, doc: "Whether to show a close button."
+
   attr :close_button_position, :string,
     values: ["left", "right"],
     default: "right",
@@ -282,14 +288,14 @@ defmodule DataAggregatorWeb.Components.Modal do
             <%= render_slot(@inner_block) %>
           <% end %>
         </div>
-        <div :if={@close_button_position == "right"} class="shrink-0 grow-0 basis-4 text-right" />
+        <div class="shrink-0 grow-0 basis-4 text-right" />
       </div>
       <div
         :if={@gradient}
         class="from-base-100 bottom-[-1.5rem] absolute z-10 h-6 w-full bg-gradient-to-b"
       />
 
-      <.close_button position={@close_button_position} on_cancel={@on_cancel} />
+      <.close_button :if={@close_button} position={@close_button_position} on_cancel={@on_cancel} />
     </header>
     """
   end
@@ -297,14 +303,14 @@ defmodule DataAggregatorWeb.Components.Modal do
   defp title_wrapper_class(close_button_position)
 
   defp title_wrapper_class("left"),
-    do: "border-black-white/10 min-h-12 flex items-center justify-start border-b p-6 sm:min-h-16"
+    do: "border-black-white/10 min-h-12 flex items-center justify-between border-b px-6 py-4 sm:min-h-16"
 
   defp title_wrapper_class("right"),
-    do: "border-black-white/10 min-h-12 flex items-center justify-start border-b p-6 sm:min-h-16"
+    do: "border-black-white/10 min-h-12 flex items-center justify-start border-b px-6 py-4 sm:min-h-16"
 
   defp title_class(close_button_position)
-  defp title_class("left"), do: "shrink-1 ml-4 grow-0 basis-auto overflow-hidden"
-  defp title_class("right"), do: "shrink-1 mr-4 grow-0 basis-auto overflow-hidden"
+  defp title_class("left"), do: "shrink mx-4 grow-0 basis-auto overflow-hidden"
+  defp title_class("right"), do: "shrink mr-4 grow-0 basis-auto overflow-hidden"
 
   @doc """
   Renders a sticky modal footer.
@@ -344,6 +350,10 @@ defmodule DataAggregatorWeb.Components.Modal do
   defp wrapper_class(header, footer, title, overflow)
   defp wrapper_class([], [], nil, "auto"), do: ""
   defp wrapper_class(_, _, _, _), do: "flex h-full items-center justify-center pt-3 sm:p-[40px]"
+
+  defp backdrop_class(header, footer, title, overflow)
+  defp backdrop_class([], [], nil, "auto"), do: ""
+  defp backdrop_class(_, _, _, _), do: "absolute inset-0"
 
   defp focus_wrap_class(header, footer, title, overflow)
   defp focus_wrap_class([], [], nil, "auto"), do: ""

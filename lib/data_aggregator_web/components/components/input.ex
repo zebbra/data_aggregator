@@ -212,7 +212,7 @@ defmodule DataAggregatorWeb.Components.Input do
       name={@name}
       value={Phoenix.HTML.Form.normalize_value("file", @value)}
       class={[
-        "file file-input file-input-bordered",
+        "file file-input file-input-bordered sm:text-sm/6",
         @class,
         @errors != [] && "phx-feedback:file-input-error"
       ]}
@@ -237,7 +237,7 @@ defmodule DataAggregatorWeb.Components.Input do
       id={@id}
       name={@name}
       value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-      class={["grow", @class, @errors != [] && "phx-feedback:input-error"]}
+      class={["grow sm:text-sm/6", @class, @errors != [] && "phx-feedback:input-error"]}
       aria-invalid={@errors != []}
       aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}
@@ -253,7 +253,11 @@ defmodule DataAggregatorWeb.Components.Input do
       id={@id}
       name={@name}
       value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-      class={["input input-bordered", @class, @errors != [] && "phx-feedback:input-error"]}
+      class={[
+        "input input-bordered sm:text-sm/6",
+        @class,
+        @errors != [] && "phx-feedback:input-error"
+      ]}
       aria-invalid={@errors != []}
       aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}
@@ -284,7 +288,11 @@ defmodule DataAggregatorWeb.Components.Input do
       id={@id}
       name={@name}
       value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-      class={["input input-bordered", @class, @errors != [] && "phx-feedback:input-error"]}
+      class={[
+        "input input-bordered sm:text-sm/6",
+        @class,
+        @errors != [] && "phx-feedback:input-error"
+      ]}
       aria-invalid={@errors != []}
       aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}
@@ -303,7 +311,11 @@ defmodule DataAggregatorWeb.Components.Input do
           }
         />
       </div>
-      <%= input(%{assigns | icon_start: nil, class: class_names(["w-full pl-10", @class])}) %>
+      <%= input(%{
+        assigns
+        | icon_start: nil,
+          class: class_names(["w-full pl-10 sm:text-sm/6", @class])
+      }) %>
     </div>
     """
   end
@@ -316,7 +328,10 @@ defmodule DataAggregatorWeb.Components.Input do
         <.icon
           name={@icon_end}
           class={
-            class_names(["size-5 text-base-content/50", @errors != [] && "phx-feedback:text-error"])
+            class_names([
+              "size-5 text-base-content/50 sm:text-sm/6",
+              @errors != [] && "phx-feedback:text-error"
+            ])
           }
         />
       </div>
@@ -339,7 +354,7 @@ defmodule DataAggregatorWeb.Components.Input do
         assigns
         | icon_start: nil,
           icon_end: nil,
-          class: class_names(["w-full pl-10 pr-10", @class])
+          class: class_names(["w-full pl-10 pr-10 sm:text-sm/6", @class])
       }) %>
       <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
         <.icon

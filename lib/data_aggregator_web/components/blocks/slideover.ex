@@ -81,10 +81,10 @@ defmodule DataAggregatorWeb.Blocks.Slideover do
           <.modal_header
             id={@id}
             gradient={@gradient}
-            on_cancel={@on_cancel}
+            close_button
             close_button_position={@close_button_position}
-            title_wrapper_class="lg:pl-8"
-            title_class="text-primary"
+            on_cancel={@on_cancel}
+            title_wrapper_class="lg:pl-8 !py-6"
           >
             <.section_heading>
               <%= @title %>

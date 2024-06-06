@@ -10,6 +10,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
+    api: DataAggregator.Records,
     extensions: [
       AshUUID,
       AshGraphql.Resource,

@@ -35,8 +35,8 @@ defmodule DataAggregatorWeb.Blocks.Header do
   attr :align_actions, :boolean, default: true, doc: "force the alignment of the actions"
 
   attr :size, :string,
-    default: "xl",
-    values: ~w(sm md lg xl),
+    default: "2xl",
+    values: ~w(sm md lg xl 2xl),
     doc: "the size of the title"
 
   attr :break_at, :string,
@@ -131,7 +131,7 @@ defmodule DataAggregatorWeb.Blocks.Header do
 
   attr :size, :string,
     default: "lg",
-    values: ~w(sm md lg xl),
+    values: ~w(sm md lg xl 2xl),
     doc: "the size of the title"
 
   attr :break_at, :string,
@@ -229,7 +229,8 @@ defmodule DataAggregatorWeb.Blocks.Header do
       "sm" -> "text-sm/5 font-semibold"
       "md" -> "text-base/5 font-bold"
       "lg" -> "text-lg/6 font-bold"
-      "xl" -> "text-2xl font-bold sm:text-3xl sm:tracking-tight"
+      "xl" -> "text-xl/6 font-bold"
+      "2xl" -> "text-2xl font-bold sm:text-3xl sm:tracking-tight"
     end
   end
 
@@ -239,6 +240,7 @@ defmodule DataAggregatorWeb.Blocks.Header do
       "md" -> "text-sm/6 mt-1 line-clamp-2"
       "lg" -> "text-sm/6 mt-1 line-clamp-2"
       "xl" -> "text-sm/6 mt-1 line-clamp-3"
+      "2xl" -> "text-sm/6 mt-1 line-clamp-3"
     end
   end
 end
