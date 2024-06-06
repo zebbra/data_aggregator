@@ -282,7 +282,7 @@ defmodule DataAggregator.Records.Import do
     define :set_imported
     define :set_failed
     define :destroy
-    define :update_error_log, action: :update_error_log, args: [:error_log]
+    define :update_error_log, args: [:error_log]
   end
 
   postgres do

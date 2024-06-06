@@ -397,6 +397,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               <:col :let={error} field={:scientificName} label="scientificName">
                 <%= error[:scientificName] %>
               </:col>
+              <:col :let={error} field={:field} label={~t"Field"}>
+                <%= error[:field] %>
+              </:col>
               <:col :let={error} field={:value} label={~t"Value"}>
                 <%= error[:value] %>
               </:col>
@@ -571,10 +574,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     """
   end
 
-  defp error_log_preview_data(attachment) do
-    attachment = Files.load!(attachment, [:url], lazy?: true)
+  defp error_log_preview_data(error_log) do
+    error_log = Files.load!(error_log, [:url], lazy?: true)
 
-    attachment.url
+    error_log.url
     |> Explorer.DataFrame.from_csv!(max_rows: 100)
     |> Explorer.DataFrame.to_rows(atom_keys: true)
   end

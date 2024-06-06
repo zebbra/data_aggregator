@@ -79,8 +79,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
           record.loc_locality,
           record.loc_municipality,
           record.loc_state_province,
-          record.loc_country,
-          record.loc_continent
+          record.loc_country
         ]
         |> Enum.reject(&is_nil/1)
         |> Enum.join(", ")

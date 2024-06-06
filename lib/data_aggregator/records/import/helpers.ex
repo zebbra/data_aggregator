@@ -102,8 +102,19 @@ defmodule DataAggregator.Records.Import.Helpers do
         {:ok, df} ->
           amount_of_errors = Explorer.DataFrame.n_rows(df)
 
-          Import.update!(import, %{rows_error_count: amount_of_errors})
-          Import.update_error_log!(import, attachment)
+          Logger.warning(
+            "#{amount_of_errors} errors occured while importing. Adding errors as file to `import.error_log`"
+          )
+
+          import =
+            import
+            |> Import.update!(%{rows_error_count: amount_of_errors})
+            |> Import.update_error_log!(attachment)
+
+          # remove file from local tmp dir, as it is now stored on s3
+          File.rm!(path)
+
+          import
 
         {:error, _} ->
           Logger.debug("CSV could not be read or - more likely - it was empty, so no errors were found.")
