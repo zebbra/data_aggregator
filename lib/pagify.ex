@@ -3,18 +3,26 @@ defmodule Pagify do
   Pagify is an Elixir library designed to easily apply scoping, filtering, ordering, and
   pagination to your `Ash` queries.
 
+  It takes concepts from `Flop`, `Flop.Phoenix`, `Ash` and `AshPhoenix.FilterForm` and
+  combines them into a single library.
+
   ## Features
 
   - **Offset-based pagination**: Pagify uses `OFFSET` and `LIMIT` to paginate your queries.
   - **Scoping**: Apply predefined filters to your queries using a simple map syntax.
   - **Filtering**: Apply user-input filters to your queries using a simple map syntax. Allows
-    complex data filtering using multiple conditions, operators, and fields.
+    complex data filtering using multiple conditions, operators, and fields. Also incooperates
+    with `AshPhoenix.FilterForm` to provide a simple way to build complex filter user interfaces.
   - **Sorting**: Sort your queries by multiple fields and any directions.
   - **UI helpers and URL builders**: Pagify provides a `Pagify.Meta` struct with information about
   the current page, total pages, and more. This information can be used to build pagination links
   in your UI.
 
   ## Installation
+
+  > #### Note {: .info}
+  >
+  > The following instructions are for Ash 2.13. Ash 3.0 and later versions are not yet supported.
 
   Add `Ash` to your project's dependencies in `mix.exs`:
 
@@ -222,6 +230,14 @@ defmodule Pagify do
   This map can be translated into a URL query parameter string, typically for use in a
   web framework like Phoenix.
 
+  The following parameters are encoded as strings and handled by the library:
+
+  - `limit` - The number of records to return.
+  - `offset` - The number of records to skip.
+  - `scopes` - A map of predefined filters to apply to the query.
+  - `filter_form` - A map of filters provided by the `AshPhoenix.FilterForm` module.
+  - `order_by` - A list of fields to order by.
+
   ## Pagination
 
   You can specify an offset to start from and a limit to the number of results.
@@ -237,7 +253,7 @@ defmodule Pagify do
   ## Scoping
 
   To apply predefined filters to a query, you can set the `:scopes` parameter. `:scopes`
-  should be a map of predefined filters available in your resource. The filter name
+  should be a map of predefined filters (maps) available in your resource. The filter name
   is used to look up the predefined filter. If the filter is found, it is applied to
   the query. If the filter is not found, an error is raised.
 
@@ -252,11 +268,13 @@ defmodule Pagify do
     ?scopes[role]=admin
     ```
 
-  ## Filters
+  ## Filter forms
 
-  Filters can be passed as a list of maps or plain maps.
+  Filter forms can be passed as a map of filter conditions. Usually, this map is generated
+  by a filter form component using the `Pagify.FilterForm` module. `Pagify.FilterForm.params_for_query/2`
+  can be used to convert the form filter map into a query map.
 
-      iex> params = %{filters: %{name: "Post 1"}}
+      iex> params = %{filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"}}
       iex> {:ok, {results, meta}} = Pagify.validate_and_run(Post, params)
       iex> meta.total_count
       1
@@ -267,9 +285,10 @@ defmodule Pagify do
   This translates to the following query parameter string:
 
   ```URL
-  ?filters[name]=Post%201
+  ?filter_form[name][eq]=Post%201
   ```
 
+  Check the `AshPhoenix.FilterForm` documentation for more information.
   See `Ash.Query.filter_input/2` for a list of all available filter operators.
 
   ## Ordering
@@ -377,6 +396,7 @@ defmodule Pagify do
   validated first using `Pagify.validate/2` or `Pagify.validate!/2` to ensure safe execution.
   """
   alias Ash.Resource.Info
+  alias Pagify.FilterForm
   alias Pagify.Meta
   alias Pagify.Misc
   alias Pagify.Validation
@@ -394,7 +414,7 @@ defmodule Pagify do
 
   @internal_opts [:__compiled_pagify_scopes, :__compiled_pagify_default_scopes]
 
-  defstruct limit: nil, offset: nil, filters: nil, order_by: nil, scopes: nil
+  defstruct limit: nil, offset: nil, scopes: nil, filter_form: nil, filters: nil, order_by: nil
 
   @typedoc """
   These options can be passed to most functions or configured via the
@@ -469,14 +489,17 @@ defmodule Pagify do
   - `limit`, `offset`: Used for offset-based pagination.
   - `scopes`: A map of user provided scopes to apply to the query.
     Scopes are internally translated to predefined filters and merged into the query enginge.
-  - `filters`: A map of user provided filters to apply to the query (see `AshPhoenix.FilterForm` for examples).
+  - `filter_form`: A map of filters provided by `AshPhoenix.FilterForm` module.
+  - `filters`: A map of manually provided filters to apply to the query. These filters must be provided in
+    the map syntax and are meant to be used in business logic context (see `Ash.Filter` for examples).
   - `order_by`: A list of fields to order by (see `Ash.Sort.parse_input/3` for all available orders).
   """
   @type t :: %__MODULE__{
           limit: pos_integer() | nil,
           offset: non_neg_integer() | nil,
           scopes: map() | nil,
-          filters: map() | Keyword.t() | nil,
+          filter_form: map() | nil,
+          filters: map() | nil,
           order_by: order_by()
         }
 
@@ -493,6 +516,7 @@ defmodule Pagify do
   `c:Ash.Api.read/2` but with the __:query__ keyword also within the list.
 
   - `Paigfy.scopes` are used to apply predefined filters to the query.
+  - `Pagify.filter_form` is used to apply filters generated by the `AshPhoenix.FilterForm` module.
   - `Pagify.filters` and `Pagify.order_by` are used to filter and order the query.
   - `Pagify.limit` and `Pagify.offset` are used to paginate the query.
 
@@ -585,6 +609,7 @@ defmodule Pagify do
   It should conform to the list of valid options at `c:Ash.Api.read/2`.
 
   - `Paigfy.scopes` are used to apply predefined filters to the query.
+  - `Pagify.filter_form` is used to apply filters generated by the `AshPhoenix.FilterForm` module.
   - `Pagify.filters` and `Pagify.order_by` are used to filter and order the query.
   - `Pagify.limit` and `Pagify.offset` are used to paginate the query.
 
@@ -661,6 +686,71 @@ defmodule Pagify do
     Enum.filter(opts, fn {k, _} ->
       !Enum.member?(@default_opts_keys, k) and !Enum.member?(@internal_opts, k)
     end)
+  end
+
+  @doc """
+  Returns the total count of entries matching the filters, filter_form, and scopes
+  conditions in the given `t:Ash.Query.t/0` or `t:Ash.Resource.t/0` with the given
+  `t:Pagify.t/0` parameters and `t:Keyword.t/0` options.
+
+  The pagination and ordering options are disregarded.
+
+      iex> alias Pagify.Factory.Post
+      iex> Pagify.count(Post, %Pagify{})
+      3
+
+  You can override the default query by passing the `:count_query` option. This
+  doesn't make a lot of sense when you use `count/3` directly, but allows you to
+  optimize the count query when you use one of the `run/4`,
+  `validate_and_run/4` and `validate_and_run!/4` functions.
+
+      query = some expensive query
+      count_query = Ash.Query.to_query(Post)
+      Pagify.count(Post, %Pagify{}, count_query: count_query)
+
+  The filter parameters of the given Pagify are applied to the custom count query.
+
+  If for some reason you already have the count, you can pass it as the `:count`
+  option.
+
+      count(query, %Pagify{}, count: 42, for: Post)
+
+  If you pass both the `:count` and the `:count_query` options, the `:count`
+  option will take precedence.
+
+  This function does _not_ validate or apply default parameters to the given
+  Pagify struct. Be sure to validate any user-generated parameters with
+  `validate/2` or `validate!/2` before passing them to this function. Doing so
+  will automatically parse user provided input into the correct format for the
+  query engine. Or you can use `Pagify.validate_and_run/4` or
+  `Pagify.validate_and_run!/4` instead of this function.
+  """
+  @spec count(Ash.Query.t() | Ash.Resource.t(), Pagify.t(), Keyword.t()) ::
+          non_neg_integer()
+  def count(query_or_resource, pagify, opts \\ [])
+
+  def count(%Ash.Query{resource: r} = q, %Pagify{} = pagify, opts) do
+    if count = opts[:count] do
+      count
+    else
+      pagify = compile_filters(r, pagify, Keyword.put_new(opts, :for, r))
+
+      q =
+        if count_query = opts[:count_query] do
+          count_query
+        else
+          filter(q, pagify)
+        end
+
+      opts = Keyword.delete(opts, :count_query)
+      opts = Keyword.delete(opts, :count)
+
+      Ash.count!(q, opts)
+    end
+  end
+
+  def count(r, %Pagify{} = pagify, opts) when is_atom(r) and r != nil do
+    count(Ash.Query.to_query(r), pagify, opts)
   end
 
   @doc """
@@ -949,6 +1039,7 @@ defmodule Pagify do
   def query(%Ash.Query{} = q, %Pagify{} = pagify, opts \\ []) do
     q
     |> scope(pagify, opts)
+    |> filter_form(pagify)
     |> filter(pagify)
     |> order_by(pagify)
   end
@@ -1012,6 +1103,68 @@ defmodule Pagify do
   defp find_scope(group_scopes, group, name) do
     Enum.find(group_scopes, fn scope -> scope.name == name end) ||
       raise ArgumentError, "Scope `#{name}` not found in group `#{group}`"
+  end
+
+  ## Filter Form
+
+  @doc """
+  Applies the `filter_form` parameter of a `t:Pagify.t/0` to an `t:Ash.Query.t/0`.
+
+  Used by `Pagify.query/2`. See `AshPhoenix.FilterForm` for more information.
+
+  This function does _not_ validate or apply default parameters to the given
+  Pagify struct. Be sure to validate any user-generated parameters with
+  `validate/2` or `validate!/2` before passing them to this function. Doing so
+  will automatically parse user provided input into the correct format for the
+  query engine.
+
+  ## Examples
+
+      iex> alias Pagify.Factory.Post
+      iex> q = Ash.Query.to_query(Post)
+      iex> pagify = %Pagify{filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"}}
+      iex> filter_form(q, pagify)
+      #Ash.Query<resource: Pagify.Factory.Post, filter: #Ash.Filter<name == "Post 1">>
+  """
+  @spec filter_form(Ash.Query.t(), Pagify.t()) :: Ash.Query.t()
+  def filter_form(q, pagify)
+  def filter_form(%Ash.Query{} = q, %Pagify{filter_form: nil}), do: q
+
+  def filter_form(%Ash.Query{} = q, %Pagify{filter_form: %{} = filter_form}) when filter_form == %{}, do: q
+
+  def filter_form(%Ash.Query{resource: r} = q, %Pagify{filter_form: filter_form}) do
+    filter_map = filter_form_to_filter_map(r, filter_form)
+    Ash.Query.filter_input(q, filter_map)
+  end
+
+  def filter_form(%Ash.Query{} = q, _), do: q
+
+  @doc """
+  Transforms the `filter_form` parameter of a `t:Pagify.t/0` into a filter map.
+
+  Used by `Pagify.filter_form/2`. See `AshPhoenix.FilterForm` for more information.
+
+  This function does _not_ validate or apply default parameters to the given
+  Pagify struct. Be sure to validate any user-generated parameters with
+  `validate/2` or `validate!/2` before passing them to this function. Doing so
+  will automatically parse user provided input into the correct format for the
+  query engine.
+
+  ## Examples
+
+      iex> alias Pagify.Factory.Post
+      iex> pagify = %Pagify{filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"}}
+      iex> filter_form_to_filter_map(Post, pagify.filter_form)
+      %{"and" => [%{"name" => %{"eq" => "Post 1"}}]}
+  """
+  @spec filter_form_to_filter_map(Ash.Resource.t(), map() | nil) :: map()
+  def filter_form_to_filter_map(_resource, nil), do: %{}
+
+  def filter_form_to_filter_map(resource, filter_form) do
+    resource
+    |> FilterForm.new(params: filter_form)
+    |> FilterForm.to_filter_map()
+    |> elem(1)
   end
 
   ## Filter
@@ -1630,6 +1783,108 @@ defmodule Pagify do
   def reset_filters(%Pagify{} = pagify), do: %{pagify | filters: %{}}
 
   @doc """
+  Removes all filter_form from a Pagify struct.
+
+  ## Example
+
+      iex> reset_filter_form(%Pagify{
+      ...>   filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"}
+      ...> })
+
+      %Pagify{filter_form: %{}}
+  """
+  @spec reset_filter_form(Pagify.t()) :: Pagify.t()
+  def reset_filter_form(%Pagify{} = pagify), do: %{pagify | filter_form: %{}}
+
+  @doc """
+  Updates the filter form of a Pagify.Meta struct.
+
+  If the filter already exists, it will be replaced with the new value. If the
+  filter does not exist, it will be added to the filter form map.
+
+  If the reset option is set to false, the offset will not be reset to 0.
+
+  ## Examples
+      iex>  set_filter_form(%Pagify.Meta{}, %{"field" => "name", "operator" => "eq", "value" => "Post 2"})
+      %Pagify.Meta{pagify: %Pagify{filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 2"}}}
+
+      iex> set_filter_form(%Pagify.Meta{pagify: %Pagify{filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"}}}, %{"field" => "name", "operator" => "eq", "value" => "Post 2"})
+      %Pagify.Meta{pagify: %Pagify{filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 2"}}}
+
+      iex> set_filter_form(%Pagify.Meta{pagify: %Pagify{filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"}}}, %{"negated" => false, "operator" => "and"})
+      %Pagify.Meta{pagify: %Pagify{filter_form: nil}}
+  """
+  @spec set_filter_form(Meta.t(), map(), Keyword.t()) :: Meta.t()
+  def set_filter_form(meta, filter_form, opts \\ [])
+
+  def set_filter_form(%Meta{pagify: pagify} = meta, filter_form, opts)
+      when filter_form == %{"negated" => false, "operator" => "and"} do
+    pagify = maybe_reset_offset(%{pagify | filter_form: nil}, opts)
+    %{meta | pagify: pagify}
+  end
+
+  def set_filter_form(%Meta{pagify: pagify} = meta, filter_form, opts) do
+    pagify = maybe_reset_offset(%{pagify | filter_form: filter_form}, opts)
+    %{meta | pagify: pagify}
+  end
+
+  defp maybe_reset_offset(%Pagify{} = pagify, opts) do
+    reset_on_filter = get_option(:reset_on_filter?, opts, true)
+
+    if reset_on_filter do
+      %{pagify | offset: nil}
+    else
+      pagify
+    end
+  end
+
+  @doc """
+  Helper function to extract all active filter form fields from a Pagify.Meta struct.
+  """
+  @spec active_filter_form_fields(Meta.t()) :: list()
+  def active_filter_form_fields(meta)
+
+  def active_filter_form_fields(%Meta{pagify: %Pagify{filter_form: nil}}), do: []
+
+  def active_filter_form_fields(%Meta{pagify: %Pagify{filter_form: filter_form}}) do
+    extract_filter_form_fields(filter_form)
+  end
+
+  @doc """
+  Helper function to extract all filter form fields from a AshPhoenix.FilterForm parameter.
+  """
+  @spec extract_filter_form_fields(map() | nil) :: list()
+  def extract_filter_form_fields(nil), do: []
+
+  def extract_filter_form_fields(data) do
+    data
+    |> Map.get("components")
+    |> do_extract_filter_form_fields([])
+    |> Enum.uniq()
+  end
+
+  defp do_extract_filter_form_fields(nil, acc), do: acc
+
+  defp do_extract_filter_form_fields(components, acc) do
+    Enum.reduce(components, acc, fn {_key, value}, acc ->
+      acc =
+        case value do
+          %{"operator" => "is_nil", "field" => field} -> [field | acc]
+          %{"value" => nil} -> acc
+          %{"value" => ""} -> acc
+          %{"value" => []} -> acc
+          %{"field" => field} -> [field | acc]
+          _ -> acc
+        end
+
+      case Map.get(value, "components") do
+        nil -> acc
+        nested_form_parameter -> do_extract_filter_form_fields(nested_form_parameter, acc)
+      end
+    end)
+  end
+
+  @doc """
   Merges the given filters with the filters of a Pagify struct.
 
   If the filter already exists, it will be replaced with the new value. If the
@@ -1643,37 +1898,68 @@ defmodule Pagify do
       iex> merge_filters(%Pagify{filters: %{name: "foo"}}, %{age: 10})
       %Pagify{filters: %{name: "foo", age: 10}}
   """
-  @spec merge_filters(Pagify.t(), map()) :: Pagify.t()
+  @spec merge_filters(Pagify.t(), map() | true) :: Pagify.t()
+  def merge_filters(pagify, nil), do: pagify
+  def merge_filters(pagify, true), do: pagify
+
   def merge_filters(%Pagify{} = pagify, filters) do
     %{pagify | filters: Map.merge(pagify.filters || %{}, filters)}
   end
 
   @doc """
-  Takes the Pagify.scopes and compiles them into a map of filters.
-  The filters are merged with the filters of the Pagify struct.
+  Takes the Pagify.scopes and Pagify.form_filtetr and compiles them into a
+  map of filters. The filters are merged with the filters of the Pagify struct.
 
-  At this stage we assume that the filters and scopes are valid and
+  At this stage we assume that the filters, filter_form, and scopes are valid and
   have been validated.
+
+  Precedence:
+  - scopes (will overwrite filter_form and filters)
+  - filter_form (will overwrite filters)
+  - filters
 
   ## Examples
 
       iex> alias Pagify.Factory.Post
       iex> compile_filters(Post, %Pagify{scopes: [{:role, :admin}]})
       %Pagify{filters: %{author: "John"}, scopes: [role: :admin]}
+
+      iex> compile_filters(Post, %Pagify{filters: %{name: "foo"}})
+      %Pagify{filters: %{name: "foo"}}
+
+      iex> compile_filters(
+      ...>   Post,
+      ...>   %Pagify{
+      ...>     filters: %{author: "Author 1"},
+      ...>     filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"},
+      ...>     scopes: [{:role, :admin}]
+      ...>   }
+      ...> )
+      %Pagify{
+        scopes: [role: :admin],
+        filters: %{:author => "John", "and" => [%{"name" => %{"eq" => "Post 1"}}]},
+        filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"}
+      }
   """
   @spec compile_filters(Ash.Query.t() | Ash.Resource.t(), Pagify.t(), Keyword.t()) :: Pagify.t()
   def compile_filters(query_or_resource, pagify, opts \\ [])
 
   def compile_filters(%Ash.Query{resource: resource}, %Pagify{} = pagify, opts) do
+    filter_form = filter_form_to_filter_map(resource, pagify.filter_form)
     scopes_filters = load_scopes_filters(resource, pagify.scopes, opts)
 
-    merge_filters(pagify, scopes_filters)
+    pagify
+    |> merge_filters(filter_form)
+    |> merge_filters(scopes_filters)
   end
 
   def compile_filters(r, %Pagify{} = pagify, opts) when is_atom(r) and r != nil do
+    filter_form = filter_form_to_filter_map(r, pagify.filter_form)
     scopes_filters = load_scopes_filters(r, pagify.scopes, opts)
 
-    merge_filters(pagify, scopes_filters)
+    pagify
+    |> merge_filters(filter_form)
+    |> merge_filters(scopes_filters)
   end
 
   defp load_scopes_filters(_resource, nil, _opts), do: %{}

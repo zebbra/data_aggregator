@@ -100,6 +100,7 @@ defmodule DataAggregatorWeb.Components do
       import DataAggregatorWeb.Components.List
       import DataAggregatorWeb.Components.LocaleSelect
       import DataAggregatorWeb.Components.Modal
+      import DataAggregatorWeb.Components.Notification
       import DataAggregatorWeb.Components.Pagination
       import DataAggregatorWeb.Components.Progress
       import DataAggregatorWeb.Components.Tab

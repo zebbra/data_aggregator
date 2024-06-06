@@ -22,6 +22,16 @@ class ComboboxHook extends Hook {
 
   mounted(): void {
     this.init(this.el);
+
+    this.handleEvent("combobox:reset", (payload) => {
+      if (!this.tomSelect) return;
+      if (!this.el.querySelector(`input[name='${payload.name}']`)) return;
+
+      const value = payload.value === null ? "" : payload.value;
+      if (this.tomSelect.getValue() === value) return;
+
+      this.tomSelect.setValue(value);
+    });
   }
 
   updated(): void {

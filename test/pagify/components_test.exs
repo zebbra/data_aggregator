@@ -751,7 +751,41 @@ defmodule Pagify.ComponentsTest do
                    end
     end
 
-    test "adds filter parameters to links" do
+    test "adds filter_form parameters to links" do
+      filter_form = %{
+        "components" => %{
+          "0" => %{
+            "field" => :tax_scientific_name,
+            "negated?" => false,
+            "operator" => :in,
+            "path" => "",
+            "value" => ["Post 1", "Post 2"]
+          },
+          "1" => %{
+            "components" => %{
+              "0" => %{
+                "field" => :comments_count,
+                "negated?" => false,
+                "operator" => :greater_than_or_equal,
+                "path" => "",
+                "value" => "2"
+              },
+              "1" => %{
+                "field" => :comments_count,
+                "negated?" => false,
+                "operator" => :less_than_or_equal,
+                "path" => "",
+                "value" => "5"
+              }
+            },
+            "negated" => false,
+            "operator" => "and"
+          }
+        },
+        "negated" => false,
+        "operator" => "and"
+      }
+
       assigns = %{
         meta:
           build(
@@ -759,13 +793,7 @@ defmodule Pagify.ComponentsTest do
             pagify: %Pagify{
               offset: 10,
               limit: 10,
-              filters: %{
-                and: [
-                  %{comments_count: %{gte: 2}},
-                  %{comments_count: %{lte: 5}}
-                ],
-                name: %{in: ["Post 1", "Post 2"]}
-              }
+              filter_form: filter_form
             },
             resource: Post
           )
@@ -778,13 +806,7 @@ defmodule Pagify.ComponentsTest do
 
       default_query = [
         limit: 10,
-        filters: %{
-          and: [
-            %{comments_count: %{gte: 2}},
-            %{comments_count: %{lte: 5}}
-          ],
-          name: %{in: ["Post 1", "Post 2"]}
-        }
+        filter_form: filter_form
       ]
 
       expected_query = fn
@@ -2407,6 +2429,7 @@ defmodule Pagify.ComponentsTest do
       refute %Pagify{limit: nil} |> to_query() |> Keyword.has_key?(:limit)
       refute %Pagify{order_by: []} |> to_query() |> Keyword.has_key?(:order_by)
       refute %Pagify{filters: %{}} |> to_query() |> Keyword.has_key?(:filters)
+      refute %Pagify{filter_form: %{}} |> to_query() |> Keyword.has_key?(:filter_form)
       refute %Pagify{scopes: %{}} |> to_query() |> Keyword.has_key?(:scopes)
     end
 

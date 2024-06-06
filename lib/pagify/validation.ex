@@ -28,12 +28,13 @@ defmodule Pagify.Validation do
     maybe_valid_params =
       params
       |> Misc.atomize_keys(
-        keys: ["scopes", "filters", "order_by", "limit", "offset"],
+        keys: ["scopes", "filter_form", "filters", "order_by", "limit", "offset"],
         depth: 1,
         existing?: true
       )
       |> Map.put(:errors, [])
       |> validate_scopes(pagify_scopes, default_scopes, replace_invalid_params?)
+      |> validate_filter_form(resource, replace_invalid_params?)
       |> validate_filters(resource, replace_invalid_params?)
       |> validate_order_by(resource, replace_invalid_params?)
       |> validate_pagination(resource, replace_invalid_params?, opts)
@@ -222,6 +223,81 @@ defmodule Pagify.Validation do
   end
 
   defp scope_group_exists?(group, pagify_scopes), do: Map.has_key?(pagify_scopes, group)
+
+  # Form filter validation
+
+  @doc """
+  Validates the form filter in the given parameters.
+
+  Uses `Pagify.FormFilter.validate/3` to parse the form filter.
+
+  If `replace_invalid_params?` is `true`, invalid
+  filter_form parameters are removed and an error is added to the `:errors` key
+  in the returned map. If `replace_invalid_params?` is `false`, invalid
+  filter_form parameters are not removed and an error is added to the `:errors`
+  key in the returned map.
+
+  If the `:filter_form` key is `nil`, it is returned as is.
+
+  ## Examples
+
+      iex> Pagify.Validation.validate_filter_form(%{}, Post)
+      %{}
+
+      iex> Pagify.Validation.validate_filter_form(%{filter_form: nil}, Post)
+      %{filter_form: nil}
+
+      iex> %{filter_form: filter_form} = Pagify.Validation.validate_filter_form(%{filter_form: %{}}, Post)
+      iex> filter_form
+      %{}
+
+      iex> %{filter_form: filter_form} = Pagify.Validation.validate_filter_form(%{filter_form: %{}}, Post, true)
+      iex> filter_form
+      %{}
+
+      iex> %{filter_form: filter_form, errors: errors} = Pagify.Validation.validate_filter_form(%{filter_form:  %{"field" => "non_existent", "operator" => "eq", "value" => "Post 1"}}, Post)
+      iex> filter_form
+      %{"field" => "non_existent", "operator" => "eq", "value" => "Post 1"}
+      iex> errors
+      [filter_form: [{:field, {"No such field non_existent", []}}]]
+
+      iex> %{filter_form: filter_form, errors: errors} = Pagify.Validation.validate_filter_form(%{filter_form:  %{"field" => "non_existent", "operator" => "eq", "value" => "Post 1"}}, Post, true)
+      iex> filter_form
+      %{}
+      iex> errors
+      [filter_form: [{:field, {"No such field non_existent", []}}]]
+  """
+  def validate_filter_form(params, resource, replace_invalid_params? \\ false)
+  def validate_filter_form(%{filter_form: nil} = params, _, _), do: params
+
+  def validate_filter_form(%{filter_form: %{} = filter_form} = params, _, _) when filter_form == %{}, do: params
+
+  def validate_filter_form(params, resource, replace_invalid_params?) do
+    filter_form =
+      resource
+      |> Pagify.FilterForm.new()
+      |> Pagify.FilterForm.validate(Map.get(params, :filter_form, %{}))
+
+    case filter_form do
+      %{valid?: false} ->
+        errors = Pagify.FilterForm.errors(filter_form)
+        params = add_errors(params, :filter_form, errors)
+
+        if replace_invalid_params? do
+          valid_components = Enum.filter(filter_form.components, & &1.valid?)
+
+          filter_form =
+            Pagify.FilterForm.params_for_query(%{filter_form | components: valid_components})
+
+          Map.put(params, :filter_form, filter_form)
+        else
+          params
+        end
+
+      _ ->
+        params
+    end
+  end
 
   # Filter validation
 

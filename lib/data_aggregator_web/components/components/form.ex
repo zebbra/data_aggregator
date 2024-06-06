@@ -204,6 +204,11 @@ defmodule DataAggregatorWeb.Components.Form do
   attr :text, :string, default: nil, doc: "the text for the fieldset"
   attr :class, :string, default: nil, doc: "the class to apply to the fieldset"
   attr :disabled, :boolean, default: false, doc: "whether the fieldset is disabled"
+
+  attr :legend_size, :string,
+    default: "md",
+    doc: "the size of the section_heading for the legend wrapper"
+
   attr :rest, :global, doc: "the arbitrary HTML attributes to apply to the fieldset tag"
 
   attr :modal, :boolean,
@@ -256,7 +261,7 @@ defmodule DataAggregatorWeb.Components.Form do
 
   defp fieldset_legend(%{modal: false} = assigns) do
     ~H"""
-    <.section_heading as="legend" text={@legend} description={@text} size="md" />
+    <.section_heading as="legend" text={@legend} description={@text} size={@legend_size} />
     """
   end
 

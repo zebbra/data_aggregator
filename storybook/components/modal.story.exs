@@ -70,7 +70,6 @@ defmodule Storybook.Components.Modal do
       %Variation{
         id: :with_title,
         attributes: %{
-          backdrop: false,
           responsive: true,
           title: "Custom title"
         },
@@ -83,7 +82,6 @@ defmodule Storybook.Components.Modal do
       %Variation{
         id: :with_title_and_custom_title_class,
         attributes: %{
-          backdrop: false,
           responsive: true,
           title: "Custom title",
           title_class: "text-primary"
@@ -97,7 +95,6 @@ defmodule Storybook.Components.Modal do
       %Variation{
         id: :with_header_slot,
         attributes: %{
-          backdrop: false,
           responsive: true
         },
         slots: [
@@ -112,7 +109,6 @@ defmodule Storybook.Components.Modal do
       %Variation{
         id: :with_header_slot_and_header_and_title_class,
         attributes: %{
-          backdrop: false,
           responsive: true,
           title_class: "text-primary"
         },
@@ -128,7 +124,6 @@ defmodule Storybook.Components.Modal do
       %Variation{
         id: :with_footer_slot,
         attributes: %{
-          backdrop: false,
           responsive: true
         },
         slots: [
@@ -143,7 +138,6 @@ defmodule Storybook.Components.Modal do
       %Variation{
         id: :with_title_and_footer_slot,
         attributes: %{
-          backdrop: false,
           responsive: true,
           title: "Custom title"
         },
@@ -159,7 +153,6 @@ defmodule Storybook.Components.Modal do
       %Variation{
         id: :with_header_slot_and_footer_slot,
         attributes: %{
-          backdrop: false,
           responsive: true
         },
         slots: [
@@ -177,7 +170,6 @@ defmodule Storybook.Components.Modal do
       %Variation{
         id: :with_header_slot_and_footer_slot_and_close_button_position_left,
         attributes: %{
-          backdrop: false,
           responsive: true,
           close_button_position: "left"
         },

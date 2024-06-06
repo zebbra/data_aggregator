@@ -262,6 +262,53 @@ defmodule PagifyTest do
     end
   end
 
+  describe "count/2" do
+    test "returns count of matching entries" do
+      pagify = %Pagify{
+        limit: 2,
+        offset: 2,
+        order_by: [:age],
+        filters: %{comments_count: %{lte: 3}}
+      }
+
+      assert Pagify.count(Post, pagify) == 2
+    end
+
+    test "allows overriding query" do
+      pagify = %Pagify{
+        limit: 2,
+        offset: 2,
+        order_by: [:age],
+        filters: %{comments_count: %{lte: 3}}
+      }
+
+      # default query
+      assert Pagify.count(Post, pagify) == 2
+
+      # custom count query
+      assert Pagify.count(
+               Post,
+               pagify,
+               count_query: Ash.Query.filter_input(Post, %{name: "Post 2"})
+             ) == 1
+    end
+
+    test "allows overriding the count itself" do
+      pagify = %Pagify{
+        limit: 2,
+        offset: 2,
+        order_by: [:age],
+        filters: %{comments_count: %{lte: 3}}
+      }
+
+      # default query
+      assert Pagify.count(Post, pagify) == 2
+
+      # custom count
+      assert Pagify.count(Post, pagify, count: 6) == 6
+    end
+  end
+
   describe "meta/3" do
     test "returns the meta information for a query with limit/offset" do
       pagify = %Pagify{limit: 3, offset: 0, order_by: :name}
