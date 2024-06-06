@@ -2262,22 +2262,22 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Images available"
 msgstr "Bilder vorhanden"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:135
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:136
 #, elixir-autogen, elixir-format
 msgid "From"
 msgstr "Start"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:255
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:316
 #, elixir-autogen, elixir-format
 msgid "Please review the form and try again"
 msgstr "Überprüfen Sie das Formular und versuchen Sie es erneut"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:332
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:408
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Something went wrong, please try again."
 msgstr "Etwas ist schief gelaufen!"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:158
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:159
 #, elixir-autogen, elixir-format
 msgid "To"
 msgstr "Ende"
@@ -2288,67 +2288,67 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Reset"
 msgstr "Zurücksetzen"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:62
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:63
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Clear all"
 msgstr "Alle löschen"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:101
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:102
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Date"
 msgstr "Datum"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:138
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:139
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "From %{date}"
 msgstr "Von %{date}"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:82
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:83
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Scientific Name"
 msgstr "Wissenschaftlicher Name"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:102
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:103
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Search your records by occurrence date"
 msgstr "Suche deine Einträge nach Vorkommensdatum"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:83
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:84
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Search your records by scientifc name"
 msgstr "Suche deine Einträge nach wissenschaftlichem Namen"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:54
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:55
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Show %{count} %{label}"
 msgstr "%{count} %{label} anzeigen"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:30
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:31
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Show more"
 msgstr "Zeige mehr"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:180
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:181
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Taxonomy"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:161
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:162
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "To %{date}"
 msgstr "Bis %{date}"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:17
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:18
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "entries"
@@ -2368,14 +2368,32 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "records"
 msgstr "Einträge"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:199
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
-msgid "Identification (verbatim)"
-msgstr "Identifikation (verbatim)"
-
 #: lib/data_aggregator_web/components/components/field.ex:98
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Components.Field"
 msgid "No entries found"
 msgstr "Keine Einträge vorhanden"
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:203
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Kingdom"
+msgstr "Reich"
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:216
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Phylum"
+msgstr "Stamm"
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:259
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Continent"
+msgstr "Kontinent"
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:240
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Location"
+msgstr "Standort"

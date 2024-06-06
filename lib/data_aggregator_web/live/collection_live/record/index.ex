@@ -196,7 +196,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               class={[
                 if(@filters_count == 0,
                   do: "border-base-content/20",
-                  else: "border-primary outline-primary outline hover:outline-none"
+                  else: "border-primary sm:outline-primary sm:outline sm:hover:outline-none"
                 ),
                 "join-item btn btn-outline border-y max-sm:btn-square sm:max-md:tooltip"
               ]}

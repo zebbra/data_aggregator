@@ -55,7 +55,10 @@ defmodule DataAggregatorWeb.Components.Tab do
     />
     <div
       role="tabpanel"
-      class={["tab-content border-black-white/10 overflow-x-auto border-0 border-t", @class]}
+      class={[
+        "tab-content border-black-white/10 min-w-full overflow-x-auto border-0 border-t",
+        @class
+      ]}
     >
       <%= render_slot(@inner_block) %>
     </div>
