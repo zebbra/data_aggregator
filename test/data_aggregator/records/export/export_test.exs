@@ -2,11 +2,13 @@ defmodule DataAggregator.ExportTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.ExportFixtures
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.DarwinCore.Schema
+  alias DataAggregator.Gbif
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Export
@@ -16,6 +18,11 @@ defmodule DataAggregator.ExportTest do
     @invalid_attrs %{
       name: nil
     }
+    setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
+      []
+    end
 
     test "read!/0 returns all exports" do
       created = [
@@ -88,9 +95,8 @@ defmodule DataAggregator.ExportTest do
       "mte_catalog_number" => "Numéro scientifique GBIF",
       "tax_family" => "Famille"
     }
-    @default_mapping Map.new(Schema.prefixed_attribute_names(), fn name ->
-                       {name, name}
-                     end)
+
+    @default_mapping Map.new(Schema.prefixed_attribute_names(), &{to_string(&1), to_string(&1)})
 
     @collection_mapping [
       %{name: "Scientific Name - collection", mapped_to: "tax_scientific_name"},
@@ -157,7 +163,10 @@ defmodule DataAggregator.ExportTest do
       assert Explorer.DataFrame.n_columns(data_frame) == 2
       assert Explorer.DataFrame.n_rows(data_frame) == 3
 
-      assert Explorer.DataFrame.names(data_frame) == ["Famille", "Numéro scientifique GBIF"]
+      assert_lists_equal(Explorer.DataFrame.names(data_frame), [
+        "Famille",
+        "Numéro scientifique GBIF"
+      ])
     end
 
     @tag mapping: nil
@@ -168,8 +177,8 @@ defmodule DataAggregator.ExportTest do
       data_frame: data_frame
     } do
       assert export.mapping == %{
-               mte_catalog_number: "Numéro scientifique GBIF - collection",
-               tax_scientific_name: "Scientific Name - collection"
+               "mte_catalog_number" => "Numéro scientifique GBIF - collection",
+               "tax_scientific_name" => "Scientific Name - collection"
              }
 
       assert Explorer.DataFrame.names(data_frame) == [
@@ -189,8 +198,8 @@ defmodule DataAggregator.ExportTest do
       data_frame: data_frame
     } do
       assert export.mapping == %{
-               mte_catalog_number: "Numéro scientifique GBIF - collection",
-               tax_scientific_name: "Scientific Name - collection"
+               "mte_catalog_number" => "Numéro scientifique GBIF - collection",
+               "tax_scientific_name" => "Scientific Name - collection"
              }
 
       assert Explorer.DataFrame.names(data_frame) == [

@@ -8,6 +8,7 @@ classDiagram
         String code
         String grscicoll_reference
         String description
+        String gbif_dataset_key
         Map[] import_mapping
         CollectionType type
         UtcDatetimeUsec inserted_at
@@ -36,6 +37,7 @@ classDiagram
         create(UUID id, Integer items_to_digitize, String owner, String name, ...)
         update_import_mapping(Map[] import_mapping)
         touch(UUID id, Integer items_to_digitize, String owner, String name, ...)
+        register_at_gbif(String dwca_file_url, UUID id, Integer items_to_digitize, String owner, ...)
         export(Struct export)
         publish(Struct publication)
     }
@@ -761,6 +763,7 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Integer encoder_job_id
+        Integer fast_track_checker_job_id
         Atom state
         Integer mids_level
         Boolean mids_level_one
@@ -773,6 +776,7 @@ classDiagram
         Image[] images
         Attachment[] image_attachments
         Job encoder_job
+        Job fast_track_checker_job
         EncodedRecord encoded_record
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read(String sort)
@@ -780,8 +784,10 @@ classDiagram
         create(Collection collection, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         import(Import import, Map params, Map ext_vernacular_names, Map ext_species_profile, ...)
         enqueue_encoder()
+        enqueue_fast_track_checker()
         bulk_import(Import import, Term rows)
         encode(Term record, Atom catalog)
+        check_if_fast_track_pubished(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         set_imported(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         set_encoding(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         set_encoded(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)

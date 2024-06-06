@@ -1,7 +1,11 @@
 name: CI/CD
 
 on:
-  - push
+  push:
+
+  pull_request:
+    branches:
+      - main
 
 env:
   MIX_ENV: test
@@ -13,7 +17,14 @@ permissions:
 jobs:
   test:
     name: Run tests
-    runs-on: ubuntu-latest
+    runs-on: hetzner
+
+    env:
+      OPEN_CAGE_DATA_API_KEY: ${{ secrets.OPEN_CAGE_DATA_API_KEY }}
+      GBIF_INSTALLATION_KEY: ${{ secrets.GBIF_INSTALLATION_KEY }}
+      GBIF_ORGANIZATION_KEY: ${{ secrets.GBIF_ORGANIZATION_KEY }}
+      GBIF_USER: ${{ secrets.GBIF_USER }}
+      GBIF_PASSWORD: ${{ secrets.GBIF_PASSWORD }}
 
     services:
       postgres:
@@ -37,6 +48,13 @@ jobs:
         with:
           version-file: .tool-versions
           version-type: strict
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version-file: .tool-versions
+          cache: npm
+          cache-dependency-path: assets/package-lock.json
 
       - name: Restore cache
         id: cache
@@ -80,7 +98,7 @@ jobs:
   build:
     name: Build Docker image
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: hetzner
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -99,8 +117,8 @@ jobs:
             type=ref,event=tag
             type=ref,event=branch
             type=ref,event=pr
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}},enable=${{ !startsWith(github.ref, 'refs/tags/0.') && !startsWith(github.ref, 'refs/tags/v0.') }}
             type=sha
 
       - name: Login to quay.io
@@ -141,7 +159,7 @@ jobs:
     name: Deploy to staging
     if: github.ref == 'refs/heads/main'
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: hetzner
 
     environment:
       name: staging

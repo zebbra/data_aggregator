@@ -2,9 +2,11 @@ defmodule DataAggregator.InstitutionTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.PlatformFixtures
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Platform.Institution
 
   describe "institutions" do
@@ -12,6 +14,12 @@ defmodule DataAggregator.InstitutionTest do
       name: nil,
       grscicoll_reference: "5b487a79-76ef-4615-93d9-f4ea25a40c33"
     }
+
+    setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
+      []
+    end
 
     test "read!/0 returns all institutions" do
       created = [

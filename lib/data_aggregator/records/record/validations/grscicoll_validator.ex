@@ -5,7 +5,7 @@ defmodule DataAggregator.Records.Validations.GrSciCollValidator do
 
   use Ash.Resource.Validation
 
-  alias DataAggregator.Cache.HttpDiskCache
+  alias DataAggregator.Gbif
 
   @impl true
   def init(opts) do
@@ -45,7 +45,7 @@ defmodule DataAggregator.Records.Validations.GrSciCollValidator do
 
   @spec does_grscicoll_element_exist?(String.t(), atom()) :: :ok | {:error, any()}
   defp does_grscicoll_element_exist?(key, kind) do
-    case fetch_api(key, kind) do
+    case Gbif.RestAPI.get_grscicoll_entity(key, kind) do
       {:ok, element} ->
         if element != nil && element["key"] == key do
           :ok
@@ -55,26 +55,6 @@ defmodule DataAggregator.Records.Validations.GrSciCollValidator do
 
       {:error, error} ->
         {:error, error}
-    end
-  end
-
-  @spec fetch_api(String.t(), atom()) :: {:ok, any()} | {:error, any()}
-  defp fetch_api(key, kind) do
-    req = HttpDiskCache.attach(Req.new())
-
-    url = "https://api.gbif.org/v1/grscicoll/#{Atom.to_string(kind)}/#{key}"
-
-    # we cache requests for 10 day
-    case Req.get(req, url: url, max_cache_age_seconds: 10 * 24 * 60 * 60) do
-      {:ok, response} ->
-        if response.status == 200 do
-          {:ok, response.body}
-        else
-          {:error, "No valid response (status #{response.status}) from GrSciColl api"}
-        end
-
-      {:error, error} ->
-        {:error, "Error during call of GrSciColl api: #{inspect(error)}"}
     end
   end
 end

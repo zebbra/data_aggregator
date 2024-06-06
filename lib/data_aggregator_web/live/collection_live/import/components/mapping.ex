@@ -438,7 +438,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           )
 
         {:error, error} ->
-          Logger.error(error)
+          Logger.warning(error)
           put_flash(socket, :error, ~t"Mapping from collection could not be used"m)
       end
 

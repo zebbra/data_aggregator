@@ -2,11 +2,13 @@ defmodule DataAggregator.PublicationTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.EncodingFixtures
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.DarwinCore.Publication.DwcaFile
+  alias DataAggregator.Gbif
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
@@ -16,6 +18,8 @@ defmodule DataAggregator.PublicationTest do
 
   describe "publication tests" do
     setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       collection = collection_fixture(%{name: "Collection NumberO!+ne"})
 
       record1 =

@@ -3,8 +3,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
     Encode Records with the geo location api (opencagedata) to receive reverse encoded geo locations
   """
 
-  alias DataAggregator.Cache.HttpDiskCache
   alias DataAggregator.Misc.Coordinates
+  alias DataAggregator.Opencage
   alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
@@ -18,8 +18,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
   # the first element is the attribute on the encoded record and the second
   # element is the attribute on returning data structure of the catalog
   @output_attributes Catalog.get_output_attributes(:geo_reverse)
-
-  @geo_api_url "https://api.opencagedata.com/geocode/v1/json"
 
   @doc """
     lookup the geo encoding api and return the encoded record
@@ -108,19 +106,14 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
   end
 
   @spec fetch_api(list()) :: Req.Response.t()
-  defp fetch_api(request_params) do
+  defp fetch_api(params) do
     api_key =
       System.get_env("OPEN_CAGE_DATA_API_KEY") ||
         throw("No open cage data api key found in the environment variables. set one under OPEN_CAGE_DATA_API_KEY")
 
-    request_params = request_params ++ [{:key, api_key}, {:language, "en"}, {:no_annotations, 1}]
+    params = params ++ [{:key, api_key}, {:language, "en"}, {:no_annotations, 1}]
 
-    Logger.debug("fetching geo api with params: #{inspect(request_params)}")
-
-    req = HttpDiskCache.attach(Req.new(params: request_params))
-
-    # we cache requests for 30 days
-    case Req.get(req, url: @geo_api_url, max_cache_age_seconds: 30 * 24 * 60 * 60) do
+    case Opencage.RestAPI.fetch(params) do
       {:ok, response} -> response
       {:error, error} -> throw(error)
     end
@@ -241,6 +234,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
 
   @spec handle_error(String.t(), map()) :: :ok
   defp handle_error(record_id, error) do
-    Logger.error("Error while encoding the record #{record_id} with the geo api: #{inspect(error)}")
+    Logger.warning("Error while encoding the record #{record_id} with the geo api: #{inspect(error)}")
   end
 end

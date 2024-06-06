@@ -10,7 +10,7 @@ defmodule DataAggregator.DarwinCore.Publication.MaterialSampleFile do
 
   @spec create(Ash.Query.t(), String.t()) :: {:ok, any()} | {:error, any()}
   def create(query, path) do
-    path = "#{path}/material_sample.csv"
+    path = path <> "/material_sample.csv"
 
     file = DwcaFile.create_file!(:material_sample, query, path)
 

@@ -2,11 +2,12 @@ defmodule DataAggregator.Records.Export.Workers.ExportTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
-  use Mimic.DSL
+  use Mimic
 
   import DataAggregator.ExportFixtures
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records.Export
 
   @mapping %{
@@ -16,6 +17,8 @@ defmodule DataAggregator.Records.Export.Workers.ExportTest do
 
   describe "DataAggregator.Records.Export.Workers.Exporter.perform/1" do
     setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       collection = collection_fixture()
 
       exportable_record(collection)

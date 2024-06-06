@@ -2,15 +2,18 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
-  use Mimic.DSL
+  use Mimic
 
   import DataAggregator.EncodingFixtures
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.Record.Workers.Encoder
 
   describe "DataAggregator.Records.Record.Workers.Encoder.perform/1" do
     setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       correct_record = record_fixture_for_encoding()
       invalid_record = record_fixture_for_encoding_gbif_taxonomy_invalid()
 

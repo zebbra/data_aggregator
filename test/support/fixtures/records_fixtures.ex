@@ -22,7 +22,7 @@ defmodule DataAggregator.RecordsFixtures do
   }
 
   @doc """
-  Generate a record.
+  Generate a record
   """
   def record_fixture(attrs \\ %{}) do
     @record_defaults

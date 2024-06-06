@@ -26,7 +26,7 @@ defmodule DataAggregator.Records.Publication.Changes.PublishRecords do
   end
 
   defp add_error(changeset, error, publication) do
-    Logger.error("Error publication records: #{inspect(error)}")
+    Logger.error("Error while publishing records: #{inspect(error)}")
     Publication.set_failed(publication)
     Changeset.add_error(changeset, error)
   end

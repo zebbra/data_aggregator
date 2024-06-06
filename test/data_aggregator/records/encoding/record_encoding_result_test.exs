@@ -2,10 +2,12 @@ defmodule DataAggregator.RecordEncodingResultTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.RecordEncodingResultFixture
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records
   alias DataAggregator.Records.Encoding.RecordEncodingResult
 
@@ -13,6 +15,12 @@ defmodule DataAggregator.RecordEncodingResultTest do
     @invalid_attrs %{
       catalog: :invalid_catalog
     }
+
+    setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
+      []
+    end
 
     test "read!/0 returns all record_encoding_results" do
       created = [
@@ -106,8 +114,8 @@ defmodule DataAggregator.RecordEncodingResultTest do
       assert updated_record_encoding_result.id == record_encoding_result.id
       assert updated_record_encoding_result.inserted_at == record_encoding_result.inserted_at
       assert updated_record_encoding_result.updated_at != record_encoding_result.updated_at
-      assert updated_record_encoding_result.output == %{tax_kingdom: "Fungi"}
-      assert updated_record_encoding_result.input == %{tax_taxon_id: 9876}
+      assert updated_record_encoding_result.output == %{"tax_kingdom" => "Fungi"}
+      assert updated_record_encoding_result.input == %{"tax_taxon_id" => 9876}
       assert updated_record_encoding_result.state == :error
       assert updated_record_encoding_result.catalog == :gbif_taxonomy
     end

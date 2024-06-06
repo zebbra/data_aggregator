@@ -5,7 +5,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   import Phoenix.HTML.Form, only: [input_value: 2, input_name: 2]
 
   alias AshPhoenix.Form
-  alias DataAggregator.Gbif.GrSciColl
+  alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.CollectionType
 
@@ -30,7 +30,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
       assign(
         assigns,
         :grscicoll_collections,
-        GrSciColl.get_collection_options()
+        Gbif.RestAPI.get_collection_options()
       )
 
     ~H"""

@@ -38,6 +38,11 @@ defmodule DataAggregator.Records.Collection do
 
     attribute :description, :string
 
+    attribute :gbif_dataset_key, :string do
+      description "the key of the dataset (to publish) in the GBIF database"
+      allow_nil? true
+    end
+
     attribute :import_mapping, {:array, :map}
 
     attribute :type, CollectionType, allow_nil?: false
@@ -172,6 +177,12 @@ defmodule DataAggregator.Records.Collection do
       change set_attribute(:updated_at, &DateTime.utc_now/0)
     end
 
+    update :register_at_gbif do
+      argument :dwca_file_url, :string, allow_nil?: false
+
+      change Records.Collection.Changes.RegisterAtGbif
+    end
+
     action :export, :map do
       argument :export, :struct, allow_nil?: false
 
@@ -206,6 +217,7 @@ defmodule DataAggregator.Records.Collection do
     define :touch
     define :export, action: :export, args: [:export]
     define :publish, action: :publish, args: [:publication]
+    define :register_at_gbif, args: [:dwca_file_url]
   end
 
   postgres do

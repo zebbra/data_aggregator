@@ -248,7 +248,7 @@ defmodule DataAggregator.MixProject do
       {:jason, "~> 1.2"},
       {:open_api_spex, "~> 3.18"},
       {:redoc_ui_plug, "~> 0.2.1"},
-      {:req, "~> 0.4.8"},
+      {:req, "~> 0.5.0"},
 
       # Mailing
       {:swoosh, "~> 1.3"},
@@ -261,6 +261,7 @@ defmodule DataAggregator.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       {:floki, ">= 0.30.0", only: :test},
       {:sweet_xml, "~> 0.6"},
+      {:xml_builder, "~> 2.3"},
 
       # Background Jobs
       {:oban, "~> 2.16"},

@@ -2,13 +2,17 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.EncodingFixtures
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records.Record
 
   describe "DataAggregator.Records.Record.enqueue_encode/2" do
     setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       correct_record = record_fixture_for_encoding()
       invalid_record = record_fixture_for_encoding_gbif_taxonomy_invalid()
 
