@@ -23,7 +23,7 @@ defmodule DataAggregator.Files.Attachment do
   calculations do
     calculate :url, :string, Attachment.Calculations.Url do
       argument :signed, :boolean, default: true
-      argument :expires_in, :integer, default: 100
+      argument :expires_in, :integer, default: 3600
     end
 
     calculate :cached_file, :string, Attachment.Calculations.CachedFile
