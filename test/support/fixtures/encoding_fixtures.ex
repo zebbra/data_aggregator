@@ -56,6 +56,30 @@ defmodule DataAggregator.EncodingFixtures do
     |> Record.create!()
   end
 
+  #### GBIF Taxonomy API Encoding ####
+
+  @doc """
+    Generate a record for gbif_iucn_redlist encoding with an extincted species
+  """
+  def record_fixture_for_encoding_gbif_iucn_redlist_extinct(attrs \\ %{}) do
+    @encoded_record_defaults
+    |> Map.merge(attrs)
+    |> Map.put(:tax_taxon_id, 2_496_198)
+    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Record.create!()
+  end
+
+  @doc """
+    Generate a record for gbif_iucn_redlist encoding with an not evaluated species
+  """
+  def record_fixture_for_encoding_gbif_iucn_redlist_not_evaluated(attrs \\ %{}) do
+    @encoded_record_defaults
+    |> Map.merge(attrs)
+    |> Map.put(:tax_taxon_id, 2_496_298)
+    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Record.create!()
+  end
+
   #### Swiss Species Catalog Encoding ####
 
   @doc """

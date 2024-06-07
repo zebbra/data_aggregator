@@ -1,4 +1,4 @@
-catalogs = [:gbif_taxonomy, :swiss_species, :geo_reverse, :geo_forward]
+catalogs = [:gbif_taxonomy, :swiss_species, :geo_reverse, :geo_forward, :gbif_iucn_redlist]
 
 defmodule DataAggregator.Taxonomy.Catalog do
   @moduledoc """
@@ -21,6 +21,9 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:tax_order, :order},
           {:tax_family, :family}
         ]
+
+      :gbif_iucn_redlist ->
+        [{:tax_taxon_id, nil}]
 
       :swiss_species ->
         [{:tax_taxon_id, :tax_taxon_id}]
@@ -53,6 +56,11 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:tax_scientific_name, :scientificName},
           {:tax_taxon_id, :key},
           {:tax_taxon_id, :acceptedUsageKey}
+        ]
+
+      :gbif_iucn_redlist ->
+        [
+          {:iucn_redlist_category, "code"}
         ]
 
       :swiss_species ->

@@ -360,4 +360,37 @@ defmodule DataAggregator.Gbif.RestAPIStub do
        }
      }}
   end
+
+  def get_iucn_redlist_category(_) do
+    {:ok,
+     %Req.Response{
+       status: 200,
+       headers: %{
+         "accept-ranges" => ["bytes"],
+         "age" => ["0"],
+         "cache-control" => ["public, max-age=3601"],
+         "connection" => ["keep-alive"],
+         "content-type" => ["application/json"],
+         "date" => ["Fri, 07 Jun 2024 13:53:39 GMT"],
+         "expires" => ["0"],
+         "pragma" => ["no-cache"],
+         "vary" => ["Origin, Access-Control-Request-Method, Access-Control-Request-Headers"],
+         "via" => ["1.1 varnish (Varnish/6.0)"],
+         "x-content-type-options" => ["nosniff"],
+         "x-frame-options" => ["DENY"],
+         "x-varnish" => ["113873540"],
+         "x-xss-protection" => ["1; mode=block"]
+       },
+       body: %{
+         "category" => "EXTINCT",
+         "code" => "EX",
+         "iucnTaxonID" => "22690059",
+         "scientificName" => "Raphus cucullatus (Linnaeus, 1758)",
+         "taxonomicStatus" => "ACCEPTED",
+         "usageKey" => 176_619_915
+       },
+       trailers: %{},
+       private: %{}
+     }}
+  end
 end
