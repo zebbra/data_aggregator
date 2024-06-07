@@ -23,33 +23,37 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
     lookup the gbif iucn redlist api and return the encoded record
   """
   @spec apply_strategy(EncodedRecord.t()) :: EncodingResult.t()
-  def apply_strategy(record) do
-    case process_record(record) do
-      {:ok, record} ->
-        {:ok, record}
+  def apply_strategy(encoded_record) do
+    case process_encoded_record(encoded_record) do
+      {:ok, encoded_record} ->
+        {:ok, encoded_record}
 
       {:error, error} ->
-        handle_error(record.id, error)
+        handle_error(encoded_record.id, error)
 
         {:error, error}
     end
   rescue
     error ->
-      handle_error(record.id, error)
+      handle_error(encoded_record.id, error)
 
       {:error, error}
   end
 
-  @spec process_record(EncodedRecord.t()) :: EncodingResult.t()
-  defp process_record(record) do
-    taxon_id = record |> Map.get(@input_attribute, "") |> to_string()
+  @spec process_encoded_record(EncodedRecord.t()) :: EncodingResult.t()
+  defp process_encoded_record(encoded_record) do
+    taxon_id = encoded_record |> Map.get(@input_attribute, "") |> to_string()
 
     with {:ok, response} <-
            taxon_id
            |> Gbif.RestAPI.get_iucn_redlist_category()
            |> ensure_response(taxon_id),
          :ok <- ensure_status(response) do
-      {:ok, Strategy.update_encoded_record(response.body, record, @output_attributes)}
+      if response.body === nil or response.body === "" do
+        {:ok, encoded_record}
+      else
+        {:ok, Strategy.update_encoded_record(response.body, encoded_record, @output_attributes)}
+      end
     end
   end
 
@@ -64,7 +68,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
     {:error, msg}
   end
 
-  defp ensure_status(response) when response.status == 200, do: :ok
+  defp ensure_status(response) when response.status == 200 or response.status == 204, do: :ok
 
   defp ensure_status(response) do
     msg = "Non 200 status code from gbif iucn redlist api with message: #{inspect(response)}"
