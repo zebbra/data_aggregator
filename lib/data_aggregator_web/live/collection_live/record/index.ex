@@ -26,7 +26,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   require Ash.Query
 
-  @load [:collection, :encoded_record, :mids_level, :paper_trail_versions]
+  @load [:collection, :encoded_record, :mids_level, :paper_trail_versions, :iucn_redlist]
 
   @polling_interval 5_000
 
