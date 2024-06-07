@@ -145,17 +145,23 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
   end
 
   defp assign_export(socket) do
-    %{collection: collection} = socket.assigns
+    %{collection: collection, meta: %{pagify: pagify}} = socket.assigns
     collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
 
-    count_query = Ash.Query.filter_input(Record, collection.records_to_export_query)
+    records_to_export_query =
+      Record
+      |> Pagify.compile_filters(pagify)
+      |> Pagify.merge_filters(collection.records_to_export_query)
+      |> Map.get(:filters)
+
+    count_query = Ash.Query.filter_input(Record, records_to_export_query)
 
     export =
       Export.create!(%{
         name: "export-#{collection.name}-#{:os.system_time()}",
         collection: collection,
         mapping: nil,
-        records_query: collection.records_to_export_query,
+        records_query: records_to_export_query,
         rows_count: Records.count!(count_query)
       })
 

@@ -3,6 +3,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.FilterForm.Predicate
+  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
   alias Pagify.FilterForm
 
@@ -166,7 +167,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
 
   defp filter_form_component(%{component: %{source: %FilterForm{key: "taxonomy"}}} = assigns) do
     ~H"""
-    <div class="py-4">
+    <div class="pt-4">
       <details
         class="collapse collapse-arrow rounded-none px-6"
         open={open_collapsible?(@collapsible_state, "taxonomy")}
@@ -190,21 +191,81 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
           </.inputs_for>
         </div>
       </details>
+      <div class="px-6">
+        <div class="border-black-white/10 border-b pt-4" />
+      </div>
     </div>
     """
   end
 
-  defp filter_form_component(%{component: %{source: %Predicate{field: :idf_verbatim_identification}}} = assigns) do
+  defp filter_form_component(%{component: %{source: %Predicate{field: :tax_kingdom}}} = assigns) do
     ~H"""
-    <.fieldset legend={~t"Identification (verbatim)"m} legend_size="md">
+    <.fieldset legend={~t"Kingdom"m} legend_size="md">
       <.fieldgroup class="!mt-3">
         <.input type="hidden" field={@component[:field]} />
         <.input type="hidden" field={@component[:operator]} />
+        <.input type="hidden" field={@component[:path]} />
+        <.field type="checkgroup" field={@component[:value]} multiple options={tax_kingdom_options()} />
+      </.fieldgroup>
+    </.fieldset>
+    """
+  end
+
+  defp filter_form_component(%{component: %{source: %Predicate{field: :tax_phylum}}} = assigns) do
+    ~H"""
+    <.fieldset legend={~t"Phylum"m} legend_size="md">
+      <.fieldgroup class="!mt-3">
+        <.input type="hidden" field={@component[:field]} />
+        <.input type="hidden" field={@component[:operator]} />
+        <.input type="hidden" field={@component[:path]} />
+        <.field type="checkgroup" field={@component[:value]} multiple options={tax_phylum_options()} />
+      </.fieldgroup>
+    </.fieldset>
+    """
+  end
+
+  defp filter_form_component(%{component: %{source: %FilterForm{key: "location"}}} = assigns) do
+    ~H"""
+    <div class="py-4">
+      <details
+        class="collapse collapse-arrow rounded-none px-6"
+        open={open_collapsible?(@collapsible_state, "location")}
+      >
+        <summary
+          class="collapse-title text-base-content text-xl/6 max-w-4xl px-0 font-bold text-inherit max-sm:line-clamp-2 after:!end-1 sm:truncate"
+          phx-click="collapsible_state:toggle"
+          phx-value-key="location"
+          phx-target={@target}
+        >
+          <%= ~t"Location"m %>
+        </summary>
+        <div class="collapse-content space-y-6 px-0">
+          <.inputs_for :let={component} field={@component[:components]}>
+            <.filter_form_component
+              component={component}
+              resource={@resource}
+              collapsible_state={@collapsible_state}
+              target={@target}
+            />
+          </.inputs_for>
+        </div>
+      </details>
+    </div>
+    """
+  end
+
+  defp filter_form_component(%{component: %{source: %Predicate{field: :loc_continent}}} = assigns) do
+    ~H"""
+    <.fieldset legend={~t"Continent"m} legend_size="md">
+      <.fieldgroup class="!mt-3">
+        <.input type="hidden" field={@component[:field]} />
+        <.input type="hidden" field={@component[:operator]} />
+        <.input type="hidden" field={@component[:path]} />
         <.field
           type="checkgroup"
           field={@component[:value]}
           multiple
-          options={idf_verbatim_identification_options()}
+          options={loc_continent_options()}
         />
       </.fieldgroup>
     </.fieldset>
@@ -308,7 +369,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     end)
     |> FilterForm.add_group(return_id?: true, key: "taxonomy")
     |> then(fn {form, taxonomy_group_id} ->
-      FilterForm.add_predicate(form, :idf_verbatim_identification, :in, [], to: taxonomy_group_id)
+      form
+      |> FilterForm.add_predicate(:tax_kingdom, :in, [],
+        to: taxonomy_group_id,
+        path: "encoded_record"
+      )
+      |> FilterForm.add_predicate(:tax_phylum, :in, [],
+        to: taxonomy_group_id,
+        path: "encoded_record"
+      )
+    end)
+    |> FilterForm.add_group(return_id?: true, key: "location")
+    |> then(fn {form, location_group_id} ->
+      FilterForm.add_predicate(form, :loc_continent, :in, [],
+        to: location_group_id,
+        path: "encoded_record"
+      )
     end)
   end
 
@@ -345,10 +421,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
 
   defp assign_collapsible_state(socket) do
     active_filter_form_fields = Pagify.active_filter_form_fields(socket.assigns.meta)
-    active_taxonomy = Enum.any?(~w[tax_class tax_genus], &(&1 in active_filter_form_fields))
+    active_taxonomy = Enum.any?(~w[tax_kingdom tax_phylum], &(&1 in active_filter_form_fields))
+    active_location = Enum.any?(~w[loc_continent], &(&1 in active_filter_form_fields))
 
     assign(socket, :collapsible_state, %{
-      "taxonomy" => active_taxonomy
+      "taxonomy" => active_taxonomy,
+      "location" => active_location
     })
   end
 
@@ -356,13 +434,33 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     Map.get(collapsible_state, key, false)
   end
 
-  defp idf_verbatim_identification_options do
-    Record
-    |> Ash.Query.distinct(:idf_verbatim_identification)
-    |> Ash.Query.select(:idf_verbatim_identification)
-    |> Ash.Query.sort(:idf_verbatim_identification)
+  defp loc_continent_options do
+    EncodedRecord
+    |> Ash.Query.distinct(:loc_continent)
+    |> Ash.Query.select(:loc_continent)
+    |> Ash.Query.sort(:loc_continent)
     |> Ash.read!()
-    |> Enum.map(&Map.get(&1, :idf_verbatim_identification))
+    |> Enum.map(&Map.get(&1, :loc_continent))
+    |> Enum.filter(&(&1 != nil))
+  end
+
+  defp tax_kingdom_options do
+    EncodedRecord
+    |> Ash.Query.distinct(:tax_kingdom)
+    |> Ash.Query.select(:tax_kingdom)
+    |> Ash.Query.sort(:tax_kingdom)
+    |> Ash.read!()
+    |> Enum.map(&Map.get(&1, :tax_kingdom))
+    |> Enum.filter(&(&1 != nil))
+  end
+
+  defp tax_phylum_options do
+    EncodedRecord
+    |> Ash.Query.distinct(:tax_phylum)
+    |> Ash.Query.select(:tax_phylum)
+    |> Ash.Query.sort(:tax_phylum)
+    |> Ash.read!()
+    |> Enum.map(&Map.get(&1, :tax_phylum))
     |> Enum.filter(&(&1 != nil))
   end
 end
