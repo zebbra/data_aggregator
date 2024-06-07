@@ -60,7 +60,7 @@ eve_attributes = [
     dwc_field: "coverTotalInPercentage",
     dwc_link: "http://rs.gbif.org/terms/1.0/coverTotalInPercentage",
     dwca_file: :releve,
-    attribute: %Attribute{name: :cover_toal_in_percentage, type: :float, allow_nil?: true}
+    attribute: %Attribute{name: :cover_total_in_percentage, type: :float, allow_nil?: true}
   },
   %{
     dwc_field: "coverTreesInPercentage",

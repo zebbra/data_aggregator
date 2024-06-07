@@ -8,6 +8,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   import DataAggregatorWeb.CollectionLive.Import.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
+  alias DataAggregator.Files
   alias DataAggregator.Records.Import
 
   @load [
@@ -28,7 +29,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                    :rows_invalid_count,
                    :validation_progress,
                    :mappings,
-                   :collection
+                   :collection,
+                   error_log: [:filename, :url, :byte_size]
                  ]
 
   @impl true
@@ -37,6 +39,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
       socket
       |> assign(:collection, get_collection(id))
       |> assign(selected_import: nil)
+      |> assign(show_error_log_preview: false)
       |> subscribe_for_import_updates(connected?(socket))
 
     {:ok, socket}
@@ -246,6 +249,37 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               </div>
             </:item>
 
+            <:item title={~t"Error Log"m}>
+              <div class="flex flex-col">
+                <div :if={@selected_import.rows_invalid_count not in [0, nil]}>
+                  <div class="text-error">
+                    <%= ~t"detected errors:"m %> <%= format_number(@selected_import.rows_error_count) %>
+                  </div>
+                  <div class="inline-flex gap-1">
+                    <.link
+                      data-tip={~t"Preview error log"m}
+                      class="self-center tooltip rounded-full text-xs gap-x-1 font-medium bg-blue-100 px-1.5 pb-0.5 text-blue-500 opacity-75 hover:opacity-100"
+                      phx-click="show:error_log_preview"
+                      aria-label={~t"Open error log preview"m}
+                    >
+                      <.icon name="hero-eye-mini" class="size-3 shrink-0" />
+                    </.link>
+                    <div class="tooltip flex h-10 self-center" data-tip={~t"Download error log"}>
+                      <.file_info
+                        show_file_name={false}
+                        attachment={@selected_import.error_log}
+                        rows={@selected_import.rows_error_count}
+                        badge
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div :if={@selected_import.rows_invalid_count in [0, nil]} class="text-italic">
+                  <%= ~t"No errors found"m %>
+                </div>
+              </div>
+            </:item>
+
             <:item title={~t"Imported"m}>
               <div class="flex flex-col">
                 <.progress
@@ -347,6 +381,42 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
       <:portal>
         <.modal
+          :if={@selected_import != nil and @selected_import.error_log != nil}
+          id="import_error_log_preview_modal"
+          show={@show_error_log_preview}
+          title={~t"Import Errors"}
+          responsive
+          on_cancel={JS.push("hide:error_log_preview")}
+          size="5xl"
+        >
+          <div class="-mt-5">
+            <.table items={error_log_preview_data(@selected_import.error_log)}>
+              <:col :let={error} field={:catalogNumber} label="catalogNumber">
+                <%= error[:catalogNumber] %>
+              </:col>
+              <:col :let={error} field={:scientificName} label="scientificName">
+                <%= error[:scientificName] %>
+              </:col>
+              <:col :let={error} field={:field} label={~t"Field"}>
+                <%= error[:field] %>
+              </:col>
+              <:col :let={error} field={:value} label={~t"Value"}>
+                <%= error[:value] %>
+              </:col>
+              <:col :let={error} field={:message} label={~t"Error message"}>
+                <%= error[:message] %>
+              </:col>
+            </.table>
+            <div class="inline-flex gap-2">
+              <.attachment_download_badge attachment={@selected_import.error_log} />
+              <span class="text-base/6 self-center text-xs italic">
+                <%= ~t"Only the first 100 rows will be shown. Download the file to have the complete log" %>
+              </span>
+            </div>
+          </div>
+        </.modal>
+
+        <.modal
           id="import_modal"
           class="no-scrollbar"
           show={@live_action in [:new, :edit, :summary]}
@@ -404,6 +474,16 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
       assign(socket, :selected_import, Import.get_by_id!(id, load: @load_import))
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("show:error_log_preview", _, socket) do
+    {:noreply, assign(socket, :show_error_log_preview, true)}
+  end
+
+  @impl true
+  def handle_event("hide:error_log_preview", _, socket) do
+    {:noreply, assign(socket, :show_error_log_preview, false)}
   end
 
   @impl true
@@ -492,5 +572,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
       href={~p"/collections/#{@collection}/imports/new"}
     />
     """
+  end
+
+  defp error_log_preview_data(error_log) do
+    error_log = Files.load!(error_log, [:url], lazy?: true)
+
+    error_log.url
+    |> Explorer.DataFrame.from_csv!(max_rows: 100)
+    |> Explorer.DataFrame.to_rows(atom_keys: true)
   end
 end

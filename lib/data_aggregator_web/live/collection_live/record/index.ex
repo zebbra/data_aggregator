@@ -328,7 +328,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection.type, :occ_occurrence_id)}
           field={:occ_occurrence_id}
-          label={~t"GBIF ID"m}
+          label={~t"Occurrence ID"m}
         >
           <%= record.occ_occurrence_id %>
         </:col>

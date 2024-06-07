@@ -212,8 +212,9 @@ defmodule DataAggregator.Records.Record do
       primary? true
       argument :collection, Collection, allow_nil?: false
 
+      change Record.Changes.SetOccurrenceID
+      change Record.Changes.SetBasisOfRecord
       change Record.Changes.SetImportedAfterAction
-      change Record.Changes.SetOccurrenceIDAfterAction
       change manage_relationship(:collection, :collection, type: :append)
     end
 
@@ -230,9 +231,10 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.RelateImport
       change Record.Changes.RelateCollectionFromImport
       change Record.Changes.ExtractAttributes
+      change Record.Changes.SetOccurrenceID
+      change Record.Changes.SetBasisOfRecord
       change Record.Changes.SetPublicationStale
       change Record.Changes.SetImportedAfterAction
-      change Record.Changes.SetOccurrenceIDAfterAction
 
       upsert? true
       upsert_identity :collection_mte_catalog_number

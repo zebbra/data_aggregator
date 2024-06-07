@@ -9,7 +9,8 @@ defmodule DataAggregator.Gbif.RestAPI do
 
   require Logger
 
-  @hour 60 * 60
+  @minute 60
+  @hour 60 * @minute
   @day 24 * @hour
   @month 30 * @day
 
@@ -64,7 +65,7 @@ defmodule DataAggregator.Gbif.RestAPI do
 
     url = grscicoll_entity_by_key_url(key, kind)
 
-    case Req.get(req, url: url, max_cache_age_seconds: 10 * @day) do
+    case Req.get(req, url: url, max_cache_age_seconds: 10 * @minute) do
       {:ok, response} ->
         if response.status == 200 do
           {:ok, response.body}

@@ -116,8 +116,9 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   # is occurrenceID (we use occurrenceID as the ID column in each dwc extension file)
   @spec usable_header_field?(DwcAttribute.t(), atom()) :: boolean()
   defp usable_header_field?(dwca_attribute, file_type) do
-    Map.get(dwca_attribute, :dwca_file) == file_type ||
-      Map.get(dwca_attribute, :dwc_field) == "occurrenceID"
+    Map.get(dwca_attribute, :dwc_link) != nil and
+      (Map.get(dwca_attribute, :dwca_file) == file_type ||
+         Map.get(dwca_attribute, :dwc_field) == "occurrenceID")
   end
 
   # returns a list of all record attributes which are relevant for the given file type

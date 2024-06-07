@@ -52,10 +52,39 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert import.rows_imported_count == 2
     end
 
-    @tag path: "test/support/fixtures/files/museum-dataset-import-invalid.csv"
+    @tag path: "test/support/fixtures/files/invalid-records-small.csv"
     test "fails with a file with some invalid records", %{import: import} do
       {result, _logs} = with_log(fn -> Import.import(import) end)
       assert {:ok, import} = result
+
+      assert import.state == :failed
+      assert import.records_count == 0
+      assert import.started_at != nil
+      assert import.finished_at != nil
+      assert import.rows_valid_count == 0
+      assert import.rows_invalid_count == 0
+      assert import.rows_imported_count == 0
+    end
+
+    @tag path: "test/support/fixtures/files/invalid-records-huge.csv"
+    test "fails with a file with huge amount of invalid records", %{import: import} do
+      custom_mapping = [
+        %{name: "original_taxon_name", mapped_to: "tax_scientific_name"},
+        %{name: "barcode", mapped_to: "mte_catalog_number"},
+        %{name: "latitude_dd", mapped_to: "loc_decimal_latitude"},
+        %{name: "longitude_dd", mapped_to: "loc_decimal_longitude"}
+      ]
+
+      import = Import.update_mapping!(import, custom_mapping)
+
+      assert {result, logs} = with_log(fn -> Import.import(import) end)
+
+      assert {:ok, import} = result
+
+      assert logs =~ "Found 1161/1161 invalid rows. Adding error to changeset"
+
+      assert logs =~
+               "1548 errors occured while importing. Adding errors as file to `import.error_log`"
 
       assert import.state == :failed
       assert import.records_count == 0

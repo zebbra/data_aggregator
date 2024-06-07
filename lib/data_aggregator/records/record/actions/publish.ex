@@ -56,6 +56,9 @@ defmodule DataAggregator.Records.Actions.Publish do
 
     attachment = path |> FlatFileUtils.create_zip!() |> FlatFileUtils.store_on_s3!()
 
+    # remove file from local tmp dir, as it is now stored on s3
+    File.rm_rf(path)
+
     set_publication_status(
       query,
       :in_publication,
