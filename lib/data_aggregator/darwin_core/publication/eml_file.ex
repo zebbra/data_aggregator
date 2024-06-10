@@ -148,6 +148,10 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
   defp concat_strings(nil, _), do: nil
   defp concat_strings([], _), do: nil
 
+  defp concat_strings(value, attribute) when is_bitstring(value) or is_number(value) do
+    element(attribute, value)
+  end
+
   defp concat_strings(enum, attribute) do
     value = Enum.join(enum, ", ")
 
