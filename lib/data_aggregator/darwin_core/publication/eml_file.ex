@@ -59,7 +59,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
       [
         title: meta_data["name"]
       ] ++
-        persons(meta_data, :creator) ++
+        creators(meta_data) ++
         [
           pubDate: pub_date(),
           language: "ENGLISH",
@@ -75,10 +75,34 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
           distribution: [
             online: [element(:url, %{function: "information"}, "http://www.infoflora.ch")]
           ],
-          maintenance: [description: [para: []], maintenanceUpdateFrequency: "unkown"]
+          maintenance: [description: [para: "n/a"], maintenanceUpdateFrequency: "unkown"]
         ] ++
-        persons(meta_data, :contact)
+        contacts(meta_data)
     )
+  end
+
+  defp contacts(meta_data) do
+    case persons(meta_data, :contact) do
+      [] ->
+        [
+          empty_person_element(:contact)
+        ]
+
+      creators ->
+        creators
+    end
+  end
+
+  defp creators(meta_data) do
+    case persons(meta_data, :creator) do
+      [] ->
+        [
+          empty_person_element(:creator)
+        ]
+
+      creators ->
+        creators
+    end
   end
 
   @spec persons(map(), atom()) :: [map()]
@@ -134,5 +158,23 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
 
   defp pub_date do
     to_string(Date.utc_today())
+  end
+
+  defp empty_person_element(type) do
+    element(
+      type,
+      [
+        element(:individualName, givenName: "n/a", surName: "n/a"),
+        element(:organizationName, "n/a"),
+        element(:address, [
+          element(:deliveryPoint, "n/a"),
+          element(:city, "n/a"),
+          element(:postalCode, "n/a"),
+          element(:country, "n/a")
+        ]),
+        element(:phone, "n/a"),
+        element(:electronicMailAddress, "n/a")
+      ]
+    )
   end
 end
