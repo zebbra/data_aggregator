@@ -110,8 +110,8 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
   def publication_channel_badge(%{channel: :fast_track} = assigns) do
     ~H"""
     <.badge class="tooltip" color="gray" data-tip={~t"Publication to Gbif Swiss Portal"m}>
-      <.icon name="hero-fire-mini" class="size-4 shrink-0" />
-      <span class="text-nowrap pr-1.5"><%= ~t"Fast Track"m %></span>
+      <.icon name="hero-globe-alt" class="size-4 shrink-0" />
+      <span class="text-nowrap pr-1.5"><%= ~t"Publication"m %></span>
     </.badge>
     """
   end
@@ -123,7 +123,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
       color="gray"
       data-tip={~t"Publication to Gbif.org via Infospecies Approval"m}
     >
-      <.icon name="hero-shield-check" class="size-4 shrink-0" />
+      <.icon name="hero-check-badge" class="size-4 shrink-0" />
       <span class="text-nowrap pr-1.5"><%= ~t"Approval"m %></span>
     </.badge>
     """
