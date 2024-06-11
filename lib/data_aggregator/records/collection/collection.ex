@@ -21,7 +21,7 @@ defmodule DataAggregator.Records.Collection do
     uuid_attribute :id, prefix: "col"
 
     attribute :items_to_digitize, :integer, allow_nil?: false, default: 0
-    attribute :owner, :string, allow_nil?: false
+    attribute :owner, :string, allow_nil?: true
 
     attribute :name, :string do
       allow_nil? false

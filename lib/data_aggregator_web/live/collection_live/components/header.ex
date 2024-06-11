@@ -53,13 +53,28 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             %{label: @collection.name, link: "#"}
           ]}
         />
-        <h2 class="text-base-content text-2xl font-bold max-sm:line-clamp-2 sm:hidden sm:truncate sm:text-3xl sm:tracking-tight">
-          <%= @collection.code %> - <%= @collection.name %>
-        </h2>
       </:title>
       <:subtitle>
-        <div class="text-base-content/60 text-sm/6 line-clamp-3 flex max-w-4xl items-center gap-x-2 sm:mt-2">
-          <%= @collection.code %>
+        <div
+          :if={@collection.gbif_dataset_key !== nil}
+          class="text-base-content/60 text-sm/6 line-clamp-3 flex max-w-4xl items-center gap-x-2 sm:mt-2"
+        >
+          <.link
+            class="tooltip tooltip-bottom inline-flex items-center text-primary gap-x-2"
+            target="_blank"
+            data-tip={~t"Open dataset on GBIF"}
+            href={gbif_dataset_link(@collection.gbif_dataset_key)}
+          >
+            <%= @collection.code %> | <%= @collection.name %>
+            <.icon name="hero-arrow-top-right-on-square" class="size-4" />
+          </.link>
+        </div>
+
+        <div
+          :if={@collection.gbif_dataset_key === nil}
+          class="text-base-content/60 text-sm/6 line-clamp-3 flex max-w-4xl items-center gap-x-2 sm:mt-2"
+        >
+          <%= @collection.code %> - <%= @collection.name %>
         </div>
       </:subtitle>
       <:actions :if={@current in [:records, :imports]} class="max-sm:hidden">
@@ -73,5 +88,12 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
       </:actions>
     </.page_header>
     """
+  end
+
+  defp gbif_dataset_link(key) do
+    case Mix.env() do
+      :prod -> "https://www.gbif.org/dataset/#{key}"
+      _ -> "https://www.gbif-uat.org/dataset/#{key}"
+    end
   end
 end

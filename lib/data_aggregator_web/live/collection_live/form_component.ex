@@ -50,10 +50,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
           modal
         >
           <.fieldgroup modal>
-            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
-              <.field field={@form[:owner]} label={~t"Owner"m} placeholder="Brigit Hansson" required />
-            </div>
-            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-1 sm:gap-4">
               <.field
                 type="combobox"
                 field={@form[:type]}
@@ -61,13 +58,6 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
                 options={@collection_types}
                 placeholder={~t"Filter types"m}
                 prompt={~t"None"m}
-                required
-              />
-              <.field
-                type="number"
-                field={@form[:items_to_digitize]}
-                label={~t"Total items to digitize"m}
-                placeholder="42042"
                 required
               />
             </div>

@@ -67,10 +67,11 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
             para: meta_data["notes"]
           ],
           intellectualRights: [
-            element(para: {:safe, "This work is licensed under a <ulink
-          url=\"http://creativecommons.org/licenses/by/4.0/legalcode\">
-          <citetitle>Creative Commons Attribution (CC-BY) 4.0 License</citetitle>
-        </ulink>. "})
+            element(
+              para:
+                {:safe,
+                 "This work is licensed under a <ulink url=\"http://creativecommons.org/licenses/by/4.0/legalcode\"><citetitle>Creative Commons Attribution (CC-BY) 4.0 License</citetitle></ulink>. "}
+            )
           ],
           distribution: [
             online: [element(:url, %{function: "information"}, "http://www.infoflora.ch")]
