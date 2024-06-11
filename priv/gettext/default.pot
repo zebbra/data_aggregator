@@ -1566,18 +1566,6 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Channel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/components.ex:112
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Publication.Components"
-msgid "Publication to Gbif Swiss Portal"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/publication/components.ex:124
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Publication.Components"
-msgid "Publication to Gbif.org via Infospecies Approval"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/record/components.ex:68
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
@@ -2430,4 +2418,16 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Publications and Approvals"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/publication/components.ex:124
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Publication.Components"
+msgid "Approval from Infospecies to publish on Gbif.org"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/publication/components.ex:112
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Publication.Components"
+msgid "Publication to the Gbif Switzerland Portal"
 msgstr ""
