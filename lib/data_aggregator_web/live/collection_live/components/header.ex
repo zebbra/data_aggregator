@@ -4,7 +4,6 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   """
 
   use DataAggregatorWeb, :html
-  use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_indicator: 1]
 
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
 
@@ -12,6 +11,8 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   attr :collection_id, :any, default: nil
   attr :collection, Collection, default: nil
+  attr :disabled, :boolean, default: false, doc: "Whether the header action is disabled."
+  attr :busy, :boolean, default: false, doc: "Whether the header action is busy."
 
   attr :current, :atom,
     default: :records,
@@ -39,9 +40,13 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         <.link
           :if={@current in [:records, :imports]}
           patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
-          class="btn btn-primary btn-sm"
+          class={[
+            "btn btn-primary btn-sm",
+            @disabled && "btn-disabled"
+          ]}
         >
-          <.icon name="hero-arrow-up-tray" class="size-4" />
+          <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
+          <.icon :if={@busy == false} name="hero-arrow-up-tray" class="size-4" />
           <%= ~t"Add"m %>
         </.link>
       </:breadcrumbs>
@@ -65,9 +70,13 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
       <:actions :if={@current in [:records, :imports]} class="max-sm:hidden">
         <.link
           patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
-          class="btn btn-primary"
+          class={[
+            "btn btn-primary",
+            @disabled && "btn-disabled"
+          ]}
         >
-          <.icon name="hero-arrow-up-tray" />
+          <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" />
+          <.icon :if={@busy == false} name="hero-arrow-up-tray" />
           <%= ~t"Import dataset"m %>
         </.link>
       </:actions>

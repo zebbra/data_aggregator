@@ -2,7 +2,6 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   @moduledoc false
 
   use DataAggregatorWeb, :live_view
-  use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_indicator: 1]
 
   import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
 
@@ -116,24 +115,19 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           label={~t"Actions"m}
         >
           <div class="border-black-white/10 mr-4 inline-flex border-r pr-4">
-            <.link
-              role="button"
+            <.table_action_button
               patch={build_path(~p"/collections/#{collection}/edit", @meta)}
-              class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
               data-tip={~t"Edit"m}
-            >
-              <.icon name="hero-pencil-square-mini" class="size-5 text-base-content/75" />
-            </.link>
+              icon="hero-pencil-square-mini"
+            />
           </div>
-          <.link
-            role="button"
+          <.table_action_button
             phx-click={JS.push("collection:delete", value: %{id: collection.id})}
-            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
             data-tip={~t"Delete"m}
             data-confirm={~t"Are you sure?"m}
-          >
-            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
-          </.link>
+            data-confirm_id="confirm_collection_alert"
+            icon="hero-trash-mini"
+          />
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/collections"} />
@@ -157,6 +151,13 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             patch={build_path(~p"/collections", @meta)}
           />
         </.modal>
+
+        <.alert
+          id="confirm_collection_alert"
+          size="sm"
+          title={~t"Are you sure?"m}
+          label={~t"Yes, delete collection"m}
+        />
       </:portal>
     </.page>
     """

@@ -184,10 +184,4 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
     </div>
     """
   end
-
-  defmacro __using__(_opts) do
-    quote do
-      import DataAggregatorWeb.CollectionLive.Import.Components
-    end
-  end
 end

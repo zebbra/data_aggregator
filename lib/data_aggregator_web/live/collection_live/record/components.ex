@@ -144,10 +144,4 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         ~t"Record has a top quality. Add more data fields to improve your collections relevance"m
     end
   end
-
-  defmacro __using__(_opts) do
-    quote do
-      import DataAggregatorWeb.CollectionLive.Record.Components
-    end
-  end
 end

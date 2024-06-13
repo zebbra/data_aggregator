@@ -59,8 +59,6 @@ defmodule DataAggregatorWeb.Router do
         live "/collections/:id/publications", CollectionLive.Publication.Index, :index
 
         live "/records", RecordLive.Index, :index
-
-        live "/tasks", TaskLive.Index, :index
       end
     end
   end

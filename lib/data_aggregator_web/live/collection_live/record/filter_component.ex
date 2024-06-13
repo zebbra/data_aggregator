@@ -2,6 +2,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   @moduledoc false
   use DataAggregatorWeb, :live_component
 
+  import DataAggregator.Helpers, only: [distinct: 2]
+
   alias AshPhoenix.FilterForm.Predicate
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
@@ -435,32 +437,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   end
 
   defp loc_continent_options do
-    EncodedRecord
-    |> Ash.Query.distinct(:loc_continent)
-    |> Ash.Query.select(:loc_continent)
-    |> Ash.Query.sort(:loc_continent)
-    |> Ash.read!()
-    |> Enum.map(&Map.get(&1, :loc_continent))
-    |> Enum.filter(&(&1 != nil))
+    distinct(EncodedRecord, :loc_continent)
   end
 
   defp tax_kingdom_options do
-    EncodedRecord
-    |> Ash.Query.distinct(:tax_kingdom)
-    |> Ash.Query.select(:tax_kingdom)
-    |> Ash.Query.sort(:tax_kingdom)
-    |> Ash.read!()
-    |> Enum.map(&Map.get(&1, :tax_kingdom))
-    |> Enum.filter(&(&1 != nil))
+    distinct(EncodedRecord, :tax_kingdom)
   end
 
   defp tax_phylum_options do
-    EncodedRecord
-    |> Ash.Query.distinct(:tax_phylum)
-    |> Ash.Query.select(:tax_phylum)
-    |> Ash.Query.sort(:tax_phylum)
-    |> Ash.read!()
-    |> Enum.map(&Map.get(&1, :tax_phylum))
-    |> Enum.filter(&(&1 != nil))
+    distinct(EncodedRecord, :tax_phylum)
   end
 end

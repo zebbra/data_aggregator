@@ -2,8 +2,8 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   @moduledoc false
 
   use DataAggregatorWeb, :live_view
-  use DataAggregatorWeb.CollectionLive.Encoding.Components
 
+  import DataAggregatorWeb.CollectionLive.Encoding.Components
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   import DataAggregatorWeb.RecordLive.Helpers,

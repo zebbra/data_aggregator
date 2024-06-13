@@ -114,6 +114,7 @@ defmodule DataAggregator.Records.Import do
 
     calculate :mappings, {:array, Column}, Import.Calculations.Mappings
     calculate :missing_mappings, :map, Import.Calculations.MissingMappings
+    calculate :running, :boolean, expr(state in [:validating, :importing])
   end
 
   aggregates do
@@ -261,8 +262,11 @@ defmodule DataAggregator.Records.Import do
     prefix "import"
 
     publish_all :create, [[:collection_id, nil], "created"]
-    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
+    publish :set_importing, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_imported, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_failed, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :update_mapping, [[:collection_id, nil], "updated", [:id, nil]]
   end
 
   code_interface do

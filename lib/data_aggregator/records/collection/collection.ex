@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.Collection do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
+    api: DataAggregator.Records,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     notifiers: [Ash.Notifier.PubSub]
 
@@ -105,6 +106,12 @@ defmodule DataAggregator.Records.Collection do
     calculate :records_to_export_query, :map, Calculations.RecordsToExport
     calculate :fast_track_query, :map, Calculations.FastTrackQuery
     calculate :approval_query, :map, Calculations.ApprovalQuery
+    calculate :importing, :boolean, expr(imports_count_running > 0)
+    calculate :exporting, :boolean, expr(exports_count_running > 0)
+    calculate :encoding, :boolean, expr(records_count_encoding > 0)
+    calculate :publishing, :boolean, expr(records_count_publishing > 0)
+    calculate :approving, :boolean, expr(records_count_approving > 0)
+    calculate :busy, :boolean, expr(importing or exporting or encoding or publishing or approving)
   end
 
   aggregates do
@@ -140,8 +147,20 @@ defmodule DataAggregator.Records.Collection do
       filter expr(state == :failed)
     end
 
-    count :records_publishing, :records do
-      filter expr(fast_track_status == :publishing or approval_status == :publishing)
+    count :records_count_publishing, :records do
+      filter expr(fast_track_status == :publishing)
+    end
+
+    count :records_count_approving, :records do
+      filter expr(approval_status == :publishing)
+    end
+
+    count :imports_count_running, :imports do
+      filter expr(running)
+    end
+
+    count :exports_count_running, :exports do
+      filter expr(running)
     end
   end
 
@@ -177,6 +196,14 @@ defmodule DataAggregator.Records.Collection do
       change set_attribute(:updated_at, &DateTime.utc_now/0)
     end
 
+    update :set_encoding do
+      change Changes.SetEncoding
+    end
+
+    update :set_encoding_done do
+      change set_attribute(:updated_at, &DateTime.utc_now/0)
+    end
+
     update :register_at_gbif do
       argument :dwca_file_url, :string, allow_nil?: false
 
@@ -201,8 +228,10 @@ defmodule DataAggregator.Records.Collection do
     prefix "collection"
 
     publish_all :create, ["created", [:id, nil]]
-    publish_all :update, ["updated", [:id, nil]]
     publish_all :destroy, ["destroyed", [:id, nil]]
+    publish :update, ["updated", [:id, nil]]
+    publish :set_encoding, ["updated", [:id, nil]]
+    publish :set_encoding_done, ["updated", [:id, nil]]
   end
 
   code_interface do
@@ -215,6 +244,8 @@ defmodule DataAggregator.Records.Collection do
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :touch
+    define :set_encoding
+    define :set_encoding_done
     define :export, action: :export, args: [:export]
     define :publish, action: :publish, args: [:publication]
     define :register_at_gbif, args: [:dwca_file_url]

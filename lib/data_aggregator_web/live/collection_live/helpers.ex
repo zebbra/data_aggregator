@@ -3,28 +3,7 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
   This module contains helper functions for the collection live view.
   """
 
-  alias DataAggregator.PubSub
   alias DataAggregator.Records.Collection
-  alias Phoenix.LiveView.Socket
-
-  require Logger
-
-  def subscribe_for_collection_updates(socket, connected) do
-    with true <- connected,
-         %Socket{assigns: %{collection: collection}} <- socket,
-         %Collection{id: id} <- collection do
-      topic = "collection:updated:#{id}"
-      PubSub.subscribe(topic)
-      socket
-    else
-      false ->
-        socket
-
-      other ->
-        Logger.warning("Unable to subscribe for collection updates: #{other}")
-        socket
-    end
-  end
 
   def get_collection(id) do
     Collection.get_by_id!(id,
@@ -34,8 +13,29 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
         :encoding_state,
         :records_count_not_encoded,
         :records_count_failed,
-        :records_publishing
+        :imports_count_running,
+        :exports_count_running,
+        :records_count_encoding,
+        :records_count_publishing,
+        :records_count_approving,
+        :importing,
+        :exporting,
+        :encoding,
+        :publishing,
+        :approving,
+        :busy
       ]
     )
+  end
+
+  def busy_action(collection) do
+    cond do
+      collection.importing -> "dataset:import"
+      collection.exporting -> "collection:export"
+      collection.encoding -> "collection:encode"
+      collection.publishing -> "collection:fast_track_pub"
+      collection.approving -> "collection:approval_pub"
+      true -> nil
+    end
   end
 end

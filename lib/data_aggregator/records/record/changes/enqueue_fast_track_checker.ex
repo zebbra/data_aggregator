@@ -13,7 +13,7 @@ defmodule DataAggregator.Records.Record.Changes.EnqueueFastTrackChecker do
 
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    enqueue_fast_track_checker(changeset)
+    Changeset.before_action(changeset, &enqueue_fast_track_checker/1)
   end
 
   defp enqueue_fast_track_checker(%Changeset{data: record} = changeset) do

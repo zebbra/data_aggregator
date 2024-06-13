@@ -155,6 +155,7 @@ defmodule Pagify.FilterForm do
      )}
   end
 
+  @impl true
   def handle_event("filter_submit", %{"filter" => params}, socket) do
     filter_form = Pagify.FilterForm.validate(socket.assigns.filter_form, params)
 
@@ -170,6 +171,7 @@ defmodule Pagify.FilterForm do
     end
   end
 
+  @impl true
   def handle_event("remove_filter_component", %{"component-id" => component_id}, socket) do
     {:noreply,
      assign(socket,
@@ -178,6 +180,7 @@ defmodule Pagify.FilterForm do
      )}
   end
 
+  @impl true
   def handle_event("add_filter_group", %{"component-id" => component_id}, socket) do
     {:noreply,
      assign(socket,
@@ -185,6 +188,7 @@ defmodule Pagify.FilterForm do
      )}
   end
 
+  @impl true
   def handle_event("add_filter_predicate", %{"component-id" => component_id}, socket) do
     {:noreply,
      assign(socket,

@@ -47,7 +47,10 @@ defmodule DataAggregator.Records.Publication do
   end
 
   calculations do
-    calculate :publication_progress, :float, expr(published_count / rows_count)
+    calculate :publication_progress,
+              :float,
+              expr(published_count / if(rows_count == 0, do: 1, else: rows_count))
+
     calculate :duration, :time, expr((finished_at || now()) - started_at)
 
     calculate :collection_name, :string, expr(collection.name)
@@ -157,8 +160,10 @@ defmodule DataAggregator.Records.Publication do
     prefix "publication"
 
     publish_all :create, [[:collection_id, nil], "created"]
-    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
+    publish :set_running, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_done, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_failed, [[:collection_id, nil], "updated", [:id, nil]]
   end
 
   code_interface do

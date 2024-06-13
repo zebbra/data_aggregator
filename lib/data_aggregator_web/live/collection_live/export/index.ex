@@ -1,28 +1,18 @@
 defmodule DataAggregatorWeb.CollectionLive.Export.Index do
   @moduledoc false
   use DataAggregatorWeb, :live_view
-  use DataAggregatorWeb.CollectionLive.Export.Components, only: [export_state_badge: 1]
+  use DataAggregatorWeb.CollectionLive.Export.Subscriptions
 
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
+  import DataAggregatorWeb.CollectionLive.Export.Components, only: [export_state_badge: 1]
   import DataAggregatorWeb.CollectionLive.Export.Helpers
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Export
 
-  @load [
-    :duration,
-    :attachment_filename,
-    :attachment_byte_size,
-    attachment: [:filename, :url, :byte_size]
-  ]
-
-  @load_export @load ++
-                 [
-                   :job,
-                   :export_progress
-                 ]
+  @load load()
+  @load_export load_all()
 
   @impl true
   def mount(%{"id" => id} = _params, _session, socket) do
@@ -114,23 +104,21 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           label={~t"Actions"m}
         >
           <div :if={can_run?(export)} class="border-black-white/10 mr-4 inline-flex border-r pr-4">
-            <.link
+            <.table_action_button
               phx-click="export:run"
               phx-value-id={export.id}
-              class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
               data-tip={~t"Run"m}
-            >
-              <.icon name="hero-play-circle-mini" class="size-5 text-base-content/75" />
-            </.link>
+              icon="hero-play-circle-mini"
+            />
           </div>
-          <.link
+          <.table_action_button
             phx-click={JS.push("export:delete", value: %{id: export.id})}
-            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
             data-tip={~t"Delete"m}
             data-confirm={~t"Are you sure?"m}
-          >
-            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
-          </.link>
+            data-confirm_id="confirm_export_alert"
+            disabled={can_delete?(export) == false}
+            icon="hero-trash-mini"
+          />
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/collections/#{@collection}/exports"} />
@@ -166,10 +154,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
                 <.icon name="hero-play-circle-mini" class="size-6" />
                 <%= ~t"Run"m %>
               </button>
-              <div
-                :if={can_run?(@selected_export) == false && @selected_export.state != :pending}
-                class="flex items-center gap-x-2"
-              >
+              <div :if={can_run?(@selected_export) == false} class="flex items-center gap-x-2">
                 <span class="text-sm"><%= ~t"State:"m %></span>
                 <.export_state_badge export={@selected_export} />
               </div>
@@ -221,12 +206,14 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
             </:item>
           </.list>
 
-          <:footer :if={@selected_export && @selected_export.state == :pending}>
+          <:footer>
             <button
               type="button"
               phx-click={JS.push("export:delete", value: %{id: @selected_export.id})}
               class="btn btn-error max-sm:btn-sm"
               data-confirm={~t"Are you sure?"m}
+              data-confirm_id="confirm_export_alert"
+              disabled={can_delete?(@selected_export) == false}
             >
               <.icon name="hero-x-circle-mini" class="size-6" />
               <%= ~t"Delete"m %>
@@ -234,6 +221,15 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           </:footer>
         </.slideover>
       </:secondary>
+
+      <:portal>
+        <.alert
+          id="confirm_export_alert"
+          size="sm"
+          title={~t"Are you sure?"m}
+          label={~t"Yes, delete export"m}
+        />
+      </:portal>
     </.page>
     """
   end
@@ -272,41 +268,6 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
     {:noreply, socket}
   end
 
-  @impl true
-  def handle_info({topic, _event, notification}, socket) do
-    id = socket.assigns.collection.id
-
-    cond do
-      topic == "export:#{id}:created" -> handle_export_created(notification, socket)
-      topic == "export:#{id}:updated" -> handle_export_updated(notification, socket)
-      topic == "export:#{id}:destroyed" -> handle_export_destroyed(notification, socket)
-      true -> {:noreply, socket}
-    end
-  end
-
-  defp handle_export_created(notification, socket) do
-    %Ash.Notifier.Notification{data: export} = notification
-    export = Records.load!(export, @load, lazy?: true)
-    {:noreply, stream_insert(socket, :results, export, at: 0)}
-  end
-
-  defp handle_export_updated(notification, socket) do
-    %Ash.Notifier.Notification{data: export} = notification
-
-    if socket.assigns.selected_export != nil && export.id == socket.assigns.selected_export.id do
-      export = Export.get_by_id!(export.id, load: @load_export)
-
-      {:noreply, socket |> assign(:selected_export, export) |> stream_insert(:results, export, at: 0)}
-    else
-      handle_export_created(notification, socket)
-    end
-  end
-
-  defp handle_export_destroyed(notification, socket) do
-    %Ash.Notifier.Notification{data: export} = notification
-    {:noreply, stream_delete(socket, :results, export)}
-  end
-
   defp apply_action(socket, :index, _params) do
     socket
     |> assign(:page_title, ~t"Collection Exports"m)
@@ -324,9 +285,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
     <.empty_state
       title={~t"No exports"m}
       description={~t"Get started by exporting records."m}
-      label={~t"Export"m}
       icon="hero-arrow-down-tray"
-      href={~p"/collections/#{@collection}/records"}
     />
     """
   end

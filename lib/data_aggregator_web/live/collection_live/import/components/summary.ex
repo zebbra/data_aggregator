@@ -7,7 +7,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
 
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Components
-  import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
+  import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1, can_run?: 1]
 
   alias DataAggregator.Records.Import
 
@@ -88,7 +88,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
                 |> Enum.filter(&(&1.mapped? == false))
                 |> Enum.map(& &1.name)
             }
-            class="bg-base-200 mr-1 mb-1 inline-flex rounded px-2 py-1 text-xs"
+            class="bg-base-200 mr-2.5 mb-2 inline-flex rounded px-2 py-1 text-sm"
           >
             <%= col %>
           </span>
@@ -97,7 +97,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
 
       <.modal_footer id={@id}>
         <button
-          :if={@import.state == :pending}
+          disabled={@busy || can_run?(@import) == false}
           type="button"
           class="btn btn-primary"
           phx-click="import:run"

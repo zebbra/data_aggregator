@@ -104,9 +104,8 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
         </div>
 
         <:actions modal>
-          <button type="submit" class="btn btn-primary text-primary-content" disabled={false}>
-            <.icon name="hero-arrow-down-tray" />
-            <%= ~t"Export"m %>
+          <button type="submit" class="btn btn-primary text-primary-content" disabled={@busy}>
+            <%= ~t"Start export"m %>
           </button>
           <button type="button" class="btn btn-ghost" onclick="export_modal.close()">
             <%= ~t"Cancel"m %>

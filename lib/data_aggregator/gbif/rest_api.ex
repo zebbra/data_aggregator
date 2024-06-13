@@ -3,8 +3,10 @@ defmodule DataAggregator.Gbif.RestAPI do
   Module to interact with the GBIF Rest API
   """
   import DataAggregator.Api.Helpers
+  import DataAggregator.Helpers, only: [distinct: 2]
 
   alias DataAggregator.Cache.HttpDiskCache
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Types.Api
 
   require Logger
@@ -189,6 +191,11 @@ defmodule DataAggregator.Gbif.RestAPI do
       |> HttpDiskCache.attach()
       |> Req.get!(url: url, max_cache_age_seconds: @hour)
 
-    body["results"]
+    exclude_collections_in_use(body["results"])
+  end
+
+  defp exclude_collections_in_use(collections) do
+    collections_in_use = distinct(Collection, :grscicoll_reference)
+    Enum.filter(collections, fn collection -> collection["key"] not in collections_in_use end)
   end
 end

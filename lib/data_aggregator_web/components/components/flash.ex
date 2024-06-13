@@ -5,7 +5,7 @@ defmodule DataAggregatorWeb.Components.Flash do
 
   use Phoenix.Component
 
-  import DataAggregatorWeb.Components.CloseButton, only: [close_button: 1]
+  import DataAggregatorWeb.Components.Button, only: [close_button: 1]
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Components.Transitions, only: [show: 1, hide: 1, hide: 2]
   import DataAggregatorWeb.Gettext

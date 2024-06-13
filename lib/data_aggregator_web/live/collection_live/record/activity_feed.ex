@@ -427,7 +427,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
     if is_list(value) do
       ~H"""
-      <.changed_value :for={{k, v} <- @value} value={{k, v}} />
+      <.changed_value :for={{k, v} when v not in [nil, "", " "] <- @value} value={{k, v}} />
       """
     else
       ~H"""
@@ -449,11 +449,5 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
       Map.put(acc, key, updated_value)
     end)
-  end
-
-  defmacro __using__(_opts) do
-    quote do
-      import DataAggregatorWeb.CollectionLive.Record.ActivityFeed
-    end
   end
 end

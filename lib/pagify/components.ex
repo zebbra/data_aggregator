@@ -127,6 +127,7 @@ defmodule Pagify.Components do
   LiveView or LiveComponent module. The event name will be the one you set with
   the `:event` option.
 
+      @impl true
       def handle_event("paginate-posts", %{"offset" => offset}, socket) do
         pagify = Pagify.set_offset(socket.assigns.meta.pagify, offset)
 
@@ -135,6 +136,7 @@ defmodule Pagify.Components do
         end
       end
 
+      @impl true
       def handle_event("sort-posts", %{"order" => order}, socket) do
         pagify = Pagify.push_order(socket.assigns.meta.pagify, order)
 

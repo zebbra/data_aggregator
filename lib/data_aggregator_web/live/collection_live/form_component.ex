@@ -2,8 +2,6 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   @moduledoc false
   use DataAggregatorWeb, :live_component
 
-  import Phoenix.HTML.Form, only: [input_value: 2, input_name: 2]
-
   alias AshPhoenix.Form
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
@@ -71,7 +69,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
                 required
               />
             </div>
-            <div class="grid grid-cols-1 gap-8 sm:grid-cols-1 sm:gap-4">
+            <div :if={@action == :new} class="grid grid-cols-1 gap-8 sm:grid-cols-1 sm:gap-4">
               <.field
                 type="combobox"
                 field={@form[:grscicoll_reference]}
@@ -90,15 +88,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
             />
           </.fieldgroup>
           <:actions modal>
-            <button type="submit" class="btn btn-primary"><%= ~t"Save collection"m %></button>
-            <button
-              type="button"
-              phx-click="collection:reset"
-              phx-target={@myself}
-              class="btn btn-ghost"
-            >
-              <%= ~t"Reset"m %>
-            </button>
+            <button type="submit" class="btn btn-primary"><%= submit_label(@action) %></button>
             <button type="button" class="btn btn-ghost" onclick="collection_modal.close()">
               <%= ~t"Cancel"m %>
             </button>
@@ -108,6 +98,9 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
     </div>
     """
   end
+
+  defp submit_label(:new), do: ~t"Create collection"m
+  defp submit_label(:edit), do: ~t"Update collection"m
 
   defp assign_form(%{assigns: assigns} = socket) do
     assign(socket, :form, build_form(assigns))
@@ -152,22 +145,5 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
       end
 
     {:noreply, socket}
-  end
-
-  @impl true
-  def handle_event("collection:reset", _, socket) do
-    socket = assign_form(socket)
-    %{form: form_initial} = socket.assigns
-
-    socket
-    |> push_event("combobox:reset", %{
-      name: input_name(form_initial, :type),
-      value: input_value(form_initial, :type)
-    })
-    |> push_event("combobox:reset", %{
-      name: input_name(form_initial, :grscicoll_reference),
-      value: input_value(form_initial, :grscicoll_reference)
-    })
-    |> noreply()
   end
 end

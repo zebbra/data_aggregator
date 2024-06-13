@@ -1,17 +1,18 @@
 defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @moduledoc false
   use DataAggregatorWeb, :live_view
-  use DataAggregatorWeb.CollectionLive.Components, only: [scope_stat: 1]
-  use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
+  use DataAggregatorWeb.CollectionLive.Record.Subscriptions
 
+  import DataAggregatorWeb.CollectionLive.Components, only: [scope_stat: 1]
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
+  import DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
 
   import DataAggregatorWeb.CollectionLive.Helpers,
-    only: [get_collection: 1, subscribe_for_collection_updates: 2]
+    only: [get_collection: 1, busy_action: 1]
 
   import DataAggregatorWeb.CollectionLive.Record.ActivityFeed
   import DataAggregatorWeb.CollectionLive.Record.Components
-  import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [subscribe_for_record_updates: 2]
+  import DataAggregatorWeb.CollectionLive.Record.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   import DataAggregatorWeb.RecordLive.Helpers,
@@ -26,15 +27,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   require Ash.Query
 
-  @load [:collection, :encoded_record, :mids_level, :paper_trail_versions]
-
-  @polling_interval 5_000
+  @load [:collection, :encoded_record, :mids_level]
 
   @actions [
-    {~t"Export"m, "hero-arrow-down-tray", "collection:export", nil},
-    {~t"Encode"m, "hero-puzzle-piece", "collection:encode", "confirm_encoding_alert"},
-    {~t"Publish"m, "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"},
-    {~t"Approve"m, "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
+    {"export", "hero-arrow-down-tray", "collection:export", nil},
+    {"encode", "hero-puzzle-piece", "collection:encode", "confirm_encoding_alert"},
+    {"publish", "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"},
+    {"approve", "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
   ]
 
   @impl true
@@ -45,13 +44,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     socket =
       socket
       |> assign(:collection, collection)
+      |> assign(:collection_type, collection.type)
       |> assign(:selected_record, nil)
-      |> assign(:busy, collection.encoding_state in [:queued, :encoding])
+      |> assign(:busy, collection.busy)
+      |> assign(:busy_action, busy_action(collection))
       |> assign(:actions, @actions)
       |> assign(:layer, layer)
       |> assign(:show_filters, false)
+      |> assign(:record_tab, "data")
       |> subscribe_for_record_updates(connected?(socket))
-      |> subscribe_for_collection_updates(connected?(socket))
 
     {:ok, socket}
   end
@@ -79,7 +80,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   def render(assigns) do
     ~H"""
     <.page current="collections" open={@selected_record != nil}>
-      <.collection_header collection={@collection} current={:records} />
+      <.collection_header
+        collection={@collection}
+        current={:records}
+        disabled={@busy}
+        busy={busy?("dataset:import", @busy_action)}
+      />
 
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
         <.secondary_navigation_item
@@ -149,22 +155,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <:summary>
               <summary
                 class="join-item btn btn-outline border-base-content/20 border-y max-md:inline-flex max-sm:btn-square sm:max-md:tooltip"
-                data-tip={~t"Layer"m}
+                data-tip={current_layer_label(@layer)}
               >
-                <.icon :if={@layer == "original"} name="hero-arrow-up-tray" />
+                <.icon :if={@layer == "import"} name="hero-arrow-up-tray" />
                 <.icon :if={@layer == "encoding"} name="hero-puzzle-piece" />
                 <.icon :if={@layer == "approval"} name="hero-check-badge" />
-                <span class="max-md:hidden"><%= ~t"Layer"m %></span>
+                <span class="max-md:hidden"><%= current_layer_label(@layer) %></span>
               </summary>
             </:summary>
-            <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-44 gap-1 border p-2 shadow-2xl">
+            <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-56 gap-1 border p-2 shadow-2xl">
               <li>
                 <.link
-                  patch={path_helper(@collection, "original", @meta)}
-                  class={@layer == "original" && "active"}
+                  patch={path_helper(@collection, "approval", @meta)}
+                  class={@layer == "approval" && "active"}
                 >
-                  <.icon name="hero-arrow-up-tray" class="size-5" />
-                  <span class="font-[sans-serif]"><%= ~t"Original"m %></span>
+                  <.icon name="hero-check-badge" class="size-5" />
+                  <span class="font-[sans-serif]"><%= current_layer_label("approval") %></span>
                 </.link>
               </li>
               <li>
@@ -173,16 +179,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   class={@layer == "encoding" && "active"}
                 >
                   <.icon name="hero-puzzle-piece" class="size-5" />
-                  <span class="font-[sans-serif]"><%= ~t"Encoding"m %></span>
+                  <span class="font-[sans-serif]"><%= current_layer_label("encoding") %></span>
                 </.link>
               </li>
               <li>
                 <.link
-                  patch={path_helper(@collection, "approval", @meta)}
-                  class={@layer == "approval" && "active"}
+                  patch={path_helper(@collection, "import", @meta)}
+                  class={@layer == "import" && "active"}
                 >
-                  <.icon name="hero-check-badge" class="size-5" />
-                  <span class="font-[sans-serif]"><%= ~t"Approval"m %></span>
+                  <.icon name="hero-arrow-up-tray" class="size-5" />
+                  <span class="font-[sans-serif]"><%= current_layer_label("import") %></span>
                 </.link>
               </li>
             </ul>
@@ -209,7 +215,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </div>
 
         <%!-- Action buttons --%>
-        <.dropdown id="actions" class="dropdown-end xl:hidden">
+        <.dropdown id="actions" class="dropdown-end 2xl:hidden">
           <:summary>
             <summary
               disabled={@busy}
@@ -228,13 +234,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 data-confirm_id={alert}
               >
                 <.icon name={icon} class="size-5" />
-                <span class="font-[sans-serif]"><%= label %></span>
+                <span class="font-[sans-serif]"><%= action_label(label) %></span>
               </button>
             </li>
           </ul>
         </.dropdown>
 
-        <div class="join max-xl:hidden">
+        <div class="join max-2xl:hidden">
           <button
             :for={{label, icon, action, alert} <- @actions}
             class="join-item btn btn-outline border-base-content/20"
@@ -243,18 +249,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             data-confirm_id={alert}
             disabled={@busy}
           >
-            <.icon :if={@busy == false} name={icon} />
-            <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" />
-            <span class="max-md:hidden"><%= label %></span>
+            <.icon :if={busy?(action, @busy_action) == false} name={icon} />
+            <.icon :if={busy?(action, @busy_action)} name="hero-cog-6-tooth-solid animate-spin" />
+            <span class="max-md:hidden"><%= action_label(label) %></span>
           </button>
         </div>
       </div>
 
       <.table
         opts={[
-          no_results_content: no_results_content(%{collection: @collection})
+          no_results_content:
+            no_results_content(%{collection_id: @collection.id, filters_count: @filters_count})
         ]}
-        path={~p"/collections/#{@collection}/records?layer=#{@layer}"}
+        path={~p"/collections/#{@collection.id}/records?layer=#{@layer}"}
         items={@streams.results}
         meta={@meta}
         row_click={
@@ -265,7 +272,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       >
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :picture)}
+          :if={CollectionType.visible?(@collection_type, :picture)}
           th_wrapper_attrs={[
             class: "hero-camera size-5 tooltip",
             aria: [hidden: "true"]
@@ -289,7 +296,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </div>
         </:col>
         <:col
-          :if={CollectionType.visible?(@collection.type, :iucn_redlist)}
+          :if={CollectionType.visible?(@collection_type, :iucn_redlist)}
           th_wrapper_attrs={[class: "hero-flag size-5", aria: [hidden: "true"]]}
           class="text-center"
         >
@@ -302,7 +309,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :idf_type_status)}
+          :if={CollectionType.visible?(@collection_type, :idf_type_status)}
           field={:idf_type_status}
           label={~t"Typus"m}
         >
@@ -310,7 +317,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :tax_scientific_name)}
+          :if={CollectionType.visible?(@collection_type, :tax_scientific_name)}
           field={:tax_scientific_name}
           label={~t"Scientific Name"m}
         >
@@ -318,7 +325,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :idf_verbatim_identification)}
+          :if={CollectionType.visible?(@collection_type, :idf_verbatim_identification)}
           field={:idf_verbatim_identification}
           label={~t"Identification (verbatim)"m}
         >
@@ -326,7 +333,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :occ_occurrence_id)}
+          :if={CollectionType.visible?(@collection_type, :occ_occurrence_id)}
           field={:occ_occurrence_id}
           label={~t"Occurrence ID"m}
         >
@@ -334,7 +341,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :mte_catalog_number)}
+          :if={CollectionType.visible?(@collection_type, :mte_catalog_number)}
           field={:mte_catalog_number}
           label={~t"Catalog ID"m}
         >
@@ -342,7 +349,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :eve_field_number)}
+          :if={CollectionType.visible?(@collection_type, :eve_field_number)}
           field={:eve_field_number}
           label={~t"Field ID"m}
         >
@@ -350,7 +357,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :mte_recorded_by)}
+          :if={CollectionType.visible?(@collection_type, :mte_recorded_by)}
           field={:mte_recorded_by}
           label={~t"Collected by"m}
         >
@@ -358,7 +365,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :idf_identified_by)}
+          :if={CollectionType.visible?(@collection_type, :idf_identified_by)}
           field={:idf_identified_by}
           label={~t"Identified by"m}
         >
@@ -366,7 +373,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :eve_event_date)}
+          :if={CollectionType.visible?(@collection_type, :eve_event_date)}
           field={:eve_event_date}
           label={~t"Date"m}
         >
@@ -374,7 +381,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :loc_state_province)}
+          :if={CollectionType.visible?(@collection_type, :loc_state_province)}
           field={:loc_state_province}
           label={~t"Place"m}
         >
@@ -385,7 +392,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :loc_verbatim_elevation)}
+          :if={CollectionType.visible?(@collection_type, :loc_verbatim_elevation)}
           field={:loc_verbatim_elevation}
           label={~t"Elevation"m}
         >
@@ -396,7 +403,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :loc_decimal_latitude)}
+          :if={CollectionType.visible?(@collection_type, :loc_decimal_latitude)}
           field={:loc_decimal_latitude}
           label={~t"Coordinates"m}
           directions={{:asc, :desc_nils_last}}
@@ -406,7 +413,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :state)}
+          :if={CollectionType.visible?(@collection_type, :state)}
           field={:state}
           label={~t"Encoding"m}
           class="text-center"
@@ -415,7 +422,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :fast_track_status)}
+          :if={CollectionType.visible?(@collection_type, :fast_track_status)}
           field={:fast_track_status}
           label={~t"Fast Track Pub."m}
           class="text-center"
@@ -424,7 +431,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :approval_status)}
+          :if={CollectionType.visible?(@collection_type, :approval_status)}
           field={:approval_status}
           label={~t"Approval Pub."m}
           class="text-center"
@@ -433,7 +440,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :mids_level)}
+          :if={CollectionType.visible?(@collection_type, :mids_level)}
           field={:mids_level}
           label={~t"Quality"m}
           class="text-center"
@@ -442,7 +449,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection.type, :updated_at)}
+          :if={CollectionType.visible?(@collection_type, :updated_at)}
           field={:updated_at}
           label={~t"Updated At"m}
           class="text-end"
@@ -456,19 +463,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           col_class="bg-base-300/10 border-l border-black-white/5"
           label={~t"Actions"m}
         >
-          <button
+          <.table_action_button
             phx-click={JS.push("record:delete", value: %{id: record.id})}
-            disabled={record.state in [:encoding, :queued]}
-            class="link tooltip link-hover btn btn-sm btn-circle btn-ghost inline-flex disabled:pointer-events-none disabled:opacity-50"
             data-tip={~t"Delete"m}
             data-confirm={~t"Are you sure?"m}
             data-confirm_id="confirm_record_alert"
-          >
-            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
-          </button>
+            disabled={@busy}
+            icon="hero-trash-mini"
+          />
         </:action>
       </.table>
-      <.pagination meta={@meta} path={~p"/collections/#{@collection}/records?layer=#{@layer}"} />
+      <.pagination meta={@meta} path={~p"/collections/#{@collection.id}/records?layer=#{@layer}"} />
 
       <:secondary>
         <.slideover
@@ -477,72 +482,83 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           open={@selected_record != nil}
           on_cancel={JS.push("record:select", value: %{id: nil})}
           size="xl"
+          gradient={false}
+          class=""
         >
-          <.tabs>
-            <.tab name="slideover_content_tabs" label="" disabled input_class="!ps-0 !pe-5"></.tab>
-            <.tab name="slideover_content_tabs" label={~t"Data"m} class="pt-6" checked>
-              <%= for category <- @attrs_in_categories do %>
-                <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 lg:pl-4">
-                  <summary class="collapse-title">
-                    <%= category.label %>
-                  </summary>
-                  <div class="collapse-content">
-                    <p class="text-base-content/60 text-sm/6 line-clamp-2 max-w-4xl">
-                      <%= category.description %>
-                    </p>
-                    <.table
-                      opts={[
-                        container_attrs: [class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
-                      ]}
-                      id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
-                      items={category.attributes}
-                    >
-                      <:col :let={attribute} label={~t"Name"} class="font-semibold">
-                        <%= attribute.name %>
-                      </:col>
-                      <:col :let={attribute} label={~t"Imported"}>
-                        <%= attribute.imported %>
-                      </:col>
-                      <:col :let={attribute} label={~t"Encoded"}>
-                        <%= attribute.encoded %>
-                      </:col>
-                    </.table>
-                  </div>
-                </details>
-              <% end %>
-              <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 lg:pl-4">
+          <.secondary_navigation class="sticky border-t-0 top-0 mb-6">
+            <.secondary_navigation_item
+              label={~t"Data"m}
+              on_click="record:set_tab"
+              phx-value-tab="data"
+              active={@record_tab == "data"}
+            />
+            <.secondary_navigation_item
+              label={~t"Changes"m}
+              on_click="record:set_tab"
+              phx-value-tab="changes"
+              active={@record_tab == "changes"}
+            />
+          </.secondary_navigation>
+          <div :if={@record_tab == "data"} class="contents">
+            <%= for category <- @attrs_in_categories do %>
+              <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 open:first:border-t lg:pl-4">
                 <summary class="collapse-title">
-                  <%= ~t"Record encodings"m %>
+                  <%= category.label %>
                 </summary>
                 <div class="collapse-content">
                   <p class="text-base-content/60 text-sm/6 line-clamp-2 max-w-4xl">
-                    <%= ~t"Results by catalog"m %>
+                    <%= category.description %>
                   </p>
-
                   <.table
                     opts={[
                       container_attrs: [class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
                     ]}
-                    id="encoding_result_table"
-                    items={@record_encoding_results}
+                    id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
+                    items={category.attributes}
                   >
-                    <:col :let={result} label={~t"Catalog"} class="font-semibold">
-                      <%= result.catalog %>
+                    <:col :let={attribute} label={~t"Name"} class="font-semibold">
+                      <%= attribute.name %>
                     </:col>
-                    <:col :let={result} label={~t"State"} class="text-center">
-                      <.encoding_state_badge reason={result.message} state={result.state} />
+                    <:col :let={attribute} label={~t"Imported"}>
+                      <%= attribute.imported %>
                     </:col>
-                    <:col :let={result} label={~t"Created"} class="text-right">
-                      <%= format_datetime(result.inserted_at, format: :short) %>
+                    <:col :let={attribute} label={~t"Encoded"}>
+                      <%= attribute.encoded %>
                     </:col>
                   </.table>
                 </div>
               </details>
-            </.tab>
-            <.tab name="slideover_content_tabs" label={~t"Changes"m} class="pt-6">
-              <.activity_feed record={@selected_record} />
-            </.tab>
-          </.tabs>
+            <% end %>
+            <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 lg:pl-4">
+              <summary class="collapse-title">
+                <%= ~t"Record encodings"m %>
+              </summary>
+              <div class="collapse-content">
+                <p class="text-base-content/60 text-sm/6 line-clamp-2 max-w-4xl">
+                  <%= ~t"Results by catalog"m %>
+                </p>
+
+                <.table
+                  opts={[
+                    container_attrs: [class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
+                  ]}
+                  id="encoding_result_table"
+                  items={@record_encoding_results}
+                >
+                  <:col :let={result} label={~t"Catalog"} class="font-semibold">
+                    <%= result.catalog %>
+                  </:col>
+                  <:col :let={result} label={~t"State"} class="text-center">
+                    <.encoding_state_badge reason={result.message} state={result.state} />
+                  </:col>
+                  <:col :let={result} label={~t"Created"} class="text-right">
+                    <%= format_datetime(result.inserted_at, format: :short) %>
+                  </:col>
+                </.table>
+              </div>
+            </details>
+          </div>
+          <.activity_feed :if={@record_tab == "changes"} record={@selected_record} />
         </.slideover>
       </:secondary>
 
@@ -563,6 +579,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             action={@live_action}
             collection={@collection}
             meta={@meta}
+            busy={@busy}
           />
         </.modal>
 
@@ -586,7 +603,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           />
         </.modal>
 
-        <.alert id="confirm_record_alert" size="sm">
+        <.alert id="confirm_record_alert" size="sm" label={~t"Yes, delete record"m}>
           <p class="text-sm"><%= ~t"This will also delete the following associations:"m %></p>
           <ul class="mt-2 list-inside list-disc text-sm">
             <li class="text-info">
@@ -609,6 +626,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           size="sm"
           title={~t"Are you sure?"m}
           text={~t"You're about to encode this collection"m}
+          label={~t"Yes, encode"m}
+          color="primary"
         >
         </.alert>
 
@@ -617,6 +636,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           size="sm"
           title={~t"Are you sure?"m}
           text={~t"You're about to publish this collection directly to the Gbif.ch Portal"m}
+          label={~t"Yes, publish"m}
+          color="primary"
         >
         </.alert>
 
@@ -625,6 +646,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           size="sm"
           title={~t"Are you sure?"m}
           text={~t"You're about to publish this collection to Infospecies for approval"m}
+          label={~t"Yes, approve"m}
+          color="primary"
         >
         </.alert>
       </:portal>
@@ -669,24 +692,30 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
+  def handle_event("record:set_tab", %{"tab" => tab}, socket) do
+    {:noreply, assign(socket, :record_tab, tab)}
+  end
+
+  @impl true
   def handle_event("collection:encode", _params, socket) do
-    Task.start(fn ->
-      %{collection: collection} = socket.assigns
-      collection_id = collection.id
+    %{collection: collection} = socket.assigns
 
-      Record
-      |> Ash.Query.filter(collection.id == ^collection_id)
-      |> Pagify.validated_query(socket.assigns.meta.pagify)
-      |> Records.stream!(page: false)
-      |> Stream.map(&Record.enqueue_encoder!/1)
-      |> Stream.run()
+    case Collection.set_encoding(collection) do
+      {:ok, %{id: id}} ->
+        Task.start(fn ->
+          Record
+          |> Ash.Query.filter(collection.id == ^id)
+          |> Pagify.validated_query(socket.assigns.meta.pagify)
+          |> Records.stream!(page: false)
+          |> Stream.map(&Record.enqueue_encoder!/1)
+          |> Stream.run()
+        end)
 
-      Collection.touch(collection)
-    end)
+        {:noreply, socket}
 
-    schedule_encoding_poller()
-
-    {:noreply, socket}
+      {:error, _reason} ->
+        {:noreply, put_flash(socket, :error, ~t"Collection is already encoding"m)}
+    end
   end
 
   @impl true
@@ -765,65 +794,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     {:noreply, assign(socket, :show_filters, false)}
   end
 
-  @impl true
-  def handle_info(:poll_encoding, socket) do
-    collection = Collection.get_by_id!(socket.assigns.collection.id, load: [:encoding_state])
-
-    if busy?(collection) do
-      schedule_encoding_poller()
-      {:noreply, socket}
-    else
-      {:noreply,
-       push_patch(socket,
-         to: path_helper(collection, socket.assigns.layer, socket.assigns.meta)
-       )}
-    end
-  end
-
-  @impl true
-  def handle_info({topic, _event, notification}, socket) do
-    id = socket.assigns.collection.id
-
-    cond do
-      topic == "record:#{id}:created" -> handle_record_created(notification, socket)
-      topic == "record:#{id}:updated" -> handle_record_updated(notification, socket)
-      topic == "record:#{id}:destroyed" -> handle_record_destroyed(notification, socket)
-      topic == "import:#{id}:updated" -> handle_import_updated(notification, socket)
-      topic == "collection:updated:#{id}" -> handle_collection_update(notification, socket)
-      true -> {:noreply, socket}
-    end
-  end
-
-  defp handle_record_created(notification, socket) do
-    %Ash.Notifier.Notification{data: record} = notification
-    record = Records.load!(record, @load, lazy?: true)
-    {:noreply, stream_insert(socket, :results, record)}
-  end
-
-  defp handle_record_updated(notification, socket) do
-    handle_record_created(notification, socket)
-  end
-
-  defp handle_record_destroyed(notification, socket) do
-    %Ash.Notifier.Notification{data: record} = notification
-    {:noreply, stream_delete(socket, :results, record)}
-  end
-
-  defp handle_import_updated(notification, socket) do
-    %Ash.Notifier.Notification{data: import} = notification
-    {:noreply, assign(socket, :collection, get_collection(import.collection_id))}
-  end
-
-  defp handle_collection_update(notification, socket) do
-    %Ash.Notifier.Notification{data: collection} = notification
-    collection = get_collection(collection.id)
-
-    {:noreply,
-     socket
-     |> assign(:collection, collection)
-     |> assign(:busy, busy?(collection))}
-  end
-
   defp apply_action(socket, :index, _params) do
     assign(socket, :page_title, ~t"Collection Records"m)
   end
@@ -836,25 +806,26 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     Record.get_by_id!(id, load: @load)
   end
 
-  defp schedule_encoding_poller do
-    Process.send_after(self(), :poll_encoding, @polling_interval)
-  end
+  attr :collection_id, :string
 
-  defp busy?(collection) do
-    collection.encoding_state in [:queued, :encoding] or
-      collection.records_publishing > 0
-  end
-
-  attr :collection, :any
-
-  defp no_results_content(assigns) do
+  defp no_results_content(%{filters_count: 0} = assigns) do
     ~H"""
     <.empty_state
       title={~t"No records"m}
       description={~t"Get started by importing a new dataset"m}
       label={~t"Import"m}
       icon="hero-bug-ant"
-      href={~p"/collections/#{@collection}/imports/new"}
+      href={~p"/collections/#{@collection_id}/imports/new"}
+    />
+    """
+  end
+
+  defp no_results_content(assigns) do
+    ~H"""
+    <.empty_state
+      title={~t"No records found"m}
+      description={~t"Try with a different filter"m}
+      icon="hero-magnifying-glass"
     />
     """
   end
@@ -876,4 +847,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   defp path_helper(collection, layer, meta, scope) do
     build_scope_path(~p"/collections/#{collection}/records?layer=#{layer}", meta, scope)
   end
+
+  defp current_layer_label("approval"), do: ~t"Approval Layer"m
+  defp current_layer_label("encoding"), do: ~t"Encoding Layer"m
+  defp current_layer_label("import"), do: ~t"Import Layer"m
+
+  defp action_label("export"), do: ~t"Export"m
+  defp action_label("encode"), do: ~t"Encode"m
+  defp action_label("publish"), do: ~t"Publish"m
+  defp action_label("approve"), do: ~t"Approve"m
 end

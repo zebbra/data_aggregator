@@ -106,10 +106,4 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Components do
       true -> ~t"Unknown"m
     end
   end
-
-  defmacro __using__(_opts) do
-    quote do
-      import DataAggregatorWeb.CollectionLive.Encoding.Components
-    end
-  end
 end

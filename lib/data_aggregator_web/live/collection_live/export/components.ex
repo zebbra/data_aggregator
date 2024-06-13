@@ -104,10 +104,4 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Components do
       true -> ~t"Unknown"m
     end
   end
-
-  defmacro __using__(_opts) do
-    quote do
-      import DataAggregatorWeb.CollectionLive.Export.Components
-    end
-  end
 end

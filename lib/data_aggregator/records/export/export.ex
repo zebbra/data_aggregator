@@ -63,6 +63,8 @@ defmodule DataAggregator.Records.Export do
 
     calculate :attachment_byte_size, :integer, expr(attachment.byte_size)
     calculate :attachment_filename, :string, expr(attachment.filename)
+
+    calculate :running, :boolean, expr(state == :running)
   end
 
   state_machine do
@@ -172,8 +174,10 @@ defmodule DataAggregator.Records.Export do
     prefix "export"
 
     publish_all :create, [[:collection_id, nil], "created"]
-    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
+    publish :set_running, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_exported, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_failed, [[:collection_id, nil], "updated", [:id, nil]]
   end
 
   code_interface do
