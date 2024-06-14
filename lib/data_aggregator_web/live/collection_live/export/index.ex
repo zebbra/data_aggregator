@@ -236,8 +236,13 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
 
   @impl true
   def handle_event("export:run", %{"id" => id}, socket) do
-    id |> Export.get_by_id!() |> Export.enqueue!()
-    {:noreply, socket}
+    case id |> Export.get_by_id!() |> Export.enqueue() do
+      {:ok, _} ->
+        {:noreply, put_flash(socket, :info, ~t"Export started in background"m)}
+
+      {:error, _} ->
+        {:noreply, put_flash(socket, :error, ~t"An export for this collection is already in process"m)}
+    end
   end
 
   @impl true

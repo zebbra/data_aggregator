@@ -63,8 +63,6 @@ defmodule DataAggregator.Records.Export do
 
     calculate :attachment_byte_size, :integer, expr(attachment.byte_size)
     calculate :attachment_filename, :string, expr(attachment.filename)
-
-    calculate :running, :boolean, expr(state == :running)
   end
 
   state_machine do
@@ -121,6 +119,7 @@ defmodule DataAggregator.Records.Export do
 
     update :enqueue do
       accept []
+      change Changes.SetCollectionExportingBeforeTransaction
       change transition_state(:queued)
       change Changes.EnqueueExporter
     end
@@ -142,6 +141,7 @@ defmodule DataAggregator.Records.Export do
     update :set_failed do
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
+      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :run do
@@ -160,6 +160,7 @@ defmodule DataAggregator.Records.Export do
       change transition_state(:exported)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:exported_at, &DateTime.utc_now/0)
+      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :update_attachment do

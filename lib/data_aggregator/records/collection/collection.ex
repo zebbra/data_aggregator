@@ -6,7 +6,7 @@ defmodule DataAggregator.Records.Collection do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     api: DataAggregator.Records,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
@@ -106,12 +106,12 @@ defmodule DataAggregator.Records.Collection do
     calculate :records_to_export_query, :map, Calculations.RecordsToExport
     calculate :fast_track_query, :map, Calculations.FastTrackQuery
     calculate :approval_query, :map, Calculations.ApprovalQuery
-    calculate :importing, :boolean, expr(imports_count_running > 0)
-    calculate :exporting, :boolean, expr(exports_count_running > 0)
-    calculate :encoding, :boolean, expr(records_count_encoding > 0)
-    calculate :publishing, :boolean, expr(records_count_publishing > 0)
-    calculate :approving, :boolean, expr(records_count_approving > 0)
-    calculate :busy, :boolean, expr(importing or exporting or encoding or publishing or approving)
+    calculate :importing, :boolean, expr(state == :importing)
+    calculate :exporting, :boolean, expr(state == :exporting)
+    calculate :encoding, :boolean, expr(state == :encoding)
+    calculate :publishing, :boolean, expr(state == :fast_track_publishing)
+    calculate :approving, :boolean, expr(state == :approving)
+    calculate :busy, :boolean, expr(state != :idle)
   end
 
   aggregates do
@@ -146,21 +146,26 @@ defmodule DataAggregator.Records.Collection do
     count :records_count_failed, :records do
       filter expr(state == :failed)
     end
+  end
 
-    count :records_count_publishing, :records do
-      filter expr(fast_track_status == :publishing)
-    end
+  state_machine do
+    initial_states [:idle]
+    default_initial_state :idle
 
-    count :records_count_approving, :records do
-      filter expr(approval_status == :publishing)
-    end
+    transitions do
+      transition :set_importing, from: [:idle], to: :importing
+      transition :set_exporting, from: [:idle], to: :exporting
+      transition :set_encoding, from: [:idle], to: :encoding
+      transition :set_fast_track_publishing, from: [:idle], to: :fast_track_publishing
+      transition :set_approving, from: [:idle], to: :approving
 
-    count :imports_count_running, :imports do
-      filter expr(running)
-    end
+      transition :set_idle,
+        from: [:importing, :exporting, :fast_track_publishing, :approving],
+        to: :idle
 
-    count :exports_count_running, :exports do
-      filter expr(running)
+      transition :set_idle_encoding,
+        from: [:encoding],
+        to: :idle
     end
   end
 
@@ -196,18 +201,46 @@ defmodule DataAggregator.Records.Collection do
       change set_attribute(:updated_at, &DateTime.utc_now/0)
     end
 
-    update :set_encoding do
-      change Changes.SetEncoding
-    end
-
-    update :set_encoding_done do
-      change set_attribute(:updated_at, &DateTime.utc_now/0)
-    end
-
     update :register_at_gbif do
       argument :dwca_file_url, :string, allow_nil?: false
 
       change Records.Collection.Changes.RegisterAtGbif
+    end
+
+    update :set_importing do
+      accept []
+      change transition_state(:importing)
+    end
+
+    update :set_exporting do
+      accept []
+      change transition_state(:exporting)
+    end
+
+    update :set_encoding do
+      accept []
+      change transition_state(:encoding)
+      change Changes.SetEncoding
+    end
+
+    update :set_fast_track_publishing do
+      accept []
+      change transition_state(:fast_track_publishing)
+    end
+
+    update :set_approving do
+      accept []
+      change transition_state(:approving)
+    end
+
+    update :set_idle do
+      accept []
+      change transition_state(:idle)
+    end
+
+    update :set_idle_encoding do
+      accept []
+      change transition_state(:idle)
     end
 
     action :export, :map do
@@ -230,8 +263,14 @@ defmodule DataAggregator.Records.Collection do
     publish_all :create, ["created", [:id, nil]]
     publish_all :destroy, ["destroyed", [:id, nil]]
     publish :update, ["updated", [:id, nil]]
+
+    publish :set_importing, ["updated", [:id, nil]]
+    publish :set_exporting, ["updated", [:id, nil]]
     publish :set_encoding, ["updated", [:id, nil]]
-    publish :set_encoding_done, ["updated", [:id, nil]]
+    publish :set_fast_track_publishing, ["updated", [:id, nil]]
+    publish :set_approving, ["updated", [:id, nil]]
+    publish :set_idle, ["updated", [:id, nil]]
+    publish :set_idle_encoding, ["updated", [:id, nil]]
   end
 
   code_interface do
@@ -244,11 +283,17 @@ defmodule DataAggregator.Records.Collection do
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :touch
-    define :set_encoding
-    define :set_encoding_done
     define :export, action: :export, args: [:export]
     define :publish, action: :publish, args: [:publication]
     define :register_at_gbif, args: [:dwca_file_url]
+
+    define :set_importing
+    define :set_exporting
+    define :set_encoding
+    define :set_fast_track_publishing
+    define :set_approving
+    define :set_idle
+    define :set_idle_encoding
   end
 
   postgres do

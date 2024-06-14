@@ -140,25 +140,25 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Updated At"
 msgstr ""
 
-#: lib/data_aggregator_web/components/components/alert.ex:85
+#: lib/data_aggregator_web/components/components/alert.ex:87
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Alert"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/components/components/alert.ex:92
+#: lib/data_aggregator_web/components/components/alert.ex:94
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Alert"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/components/components/alert.ex:100
+#: lib/data_aggregator_web/components/components/alert.ex:102
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Alert"
 msgid "OK"
 msgstr ""
 
-#: lib/data_aggregator_web/components/components/alert.ex:107
+#: lib/data_aggregator_web/components/components/alert.ex:109
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Alert"
 msgid "close"
@@ -200,7 +200,7 @@ msgctxt "DataAggregatorWeb.Components.Flash"
 msgid "We can't find the internet"
 msgstr ""
 
-#: lib/data_aggregator_web/components/components/modal.ex:237
+#: lib/data_aggregator_web/components/components/modal.ex:238
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Modal"
 msgid "close"
@@ -327,25 +327,25 @@ msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Import dataset"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:513
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:518
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Collection Imports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:115
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:114
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "All records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:798
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:801
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Collection Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:122
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:121
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Not encoded"
@@ -358,37 +358,37 @@ msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Description"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:548
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:547
 #: lib/data_aggregator_web/live/record_live/index.ex:151
 #, elixir-autogen, elixir-format
 msgid "Catalog"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:554
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:553
 #: lib/data_aggregator_web/live/record_live/index.ex:157
 #, elixir-autogen, elixir-format
 msgid "Created"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:525
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:524
 #: lib/data_aggregator_web/live/record_live/index.ex:130
 #, elixir-autogen, elixir-format
 msgid "Encoded"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:522
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:521
 #: lib/data_aggregator_web/live/record_live/index.ex:127
 #, elixir-autogen, elixir-format
 msgid "Imported"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:519
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:518
 #: lib/data_aggregator_web/live/record_live/index.ex:124
 #, elixir-autogen, elixir-format
 msgid "Name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:551
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:550
 #: lib/data_aggregator_web/live/record_live/index.ex:154
 #, elixir-autogen, elixir-format
 msgid "State"
@@ -466,32 +466,32 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Updated At"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:481
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:480
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Characteristics according to the darwin core standard"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:418
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:417
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Encoding"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:534
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:610
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:533
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:609
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Record encodings"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:322
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:321
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Scientific Name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:454
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:453
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Updated At"
@@ -593,31 +593,31 @@ msgctxt "DataAggregatorWeb.Blocks.EmptyState"
 msgid "No entries"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:527
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:532
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Edit Import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:519
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:524
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "New Import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:815
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:818
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Get started by importing a new dataset"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:816
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:819
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:814
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:817
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "No records"
@@ -665,26 +665,26 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Please provide your collection file holding your records."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:556
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:561
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Get started by importing a new dataset."
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:170
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:557
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:562
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:537
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:542
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Import Summary"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:555
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:560
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "No imports"
@@ -789,7 +789,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Delete"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:466
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:471
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Import deleted successfully"
@@ -813,7 +813,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Click on columns to add additional column to attribute mappings."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:466
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:467
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Mapping updated"
@@ -854,13 +854,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Load"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:511
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:512
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Mapping from collection could not be used"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:377
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:378
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Remove mapping"
@@ -914,13 +914,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.FormComponent"
 msgid "You are not allowed to process an import twice. Please start again by uploading a new import dataset."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:856
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:859
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Encode"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:855
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:858
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Export"
@@ -1097,48 +1097,48 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Mapping is invalid"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:233
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:248
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:469
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:627
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:637
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:647
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:232
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:247
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:468
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:626
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:636
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:646
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:468
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:467
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Delete"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:689
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:688
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Record deleted successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:613
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:612
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Record encoding results"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:619
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:618
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Record images"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:616
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:615
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Record imports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:607
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:606
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "This will also delete the following associations:"
@@ -1171,13 +1171,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Imports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:98
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:97
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Imports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:93
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:92
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Records"
@@ -1196,7 +1196,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "None"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:356
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:357
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Filter attributes..."
@@ -1252,7 +1252,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:273
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:278
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Collection Exports"
@@ -1278,7 +1278,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Export"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:250
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:255
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Export deleted successfully"
@@ -1297,7 +1297,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "File"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:287
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:292
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Get started by exporting records."
@@ -1309,7 +1309,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Job"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:286
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:291
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "No exports"
@@ -1378,7 +1378,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Exports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:102
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:101
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Exports"
@@ -1428,7 +1428,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:295
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:300
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Collection Publications"
@@ -1460,7 +1460,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "File"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:309
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:314
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Get started by publishing records."
@@ -1478,7 +1478,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Job"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:308
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:313
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "No publications"
@@ -1491,7 +1491,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Publication"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:272
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:277
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Publication deleted successfully"
@@ -1548,7 +1548,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "rows"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:106
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:105
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Publications"
@@ -1585,61 +1585,61 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Components"
 msgid "Publication to Gbif.org via Infospecies Approval"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:68
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:103
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Failed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:36
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:71
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "In Publication"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:77
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:112
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "No publication information available. Publish the collection to see the status"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:80
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:115
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Not Published"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:22
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:57
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Publication in progress"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:44
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:79
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Published"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:24
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:59
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Publishing"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:33
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:68
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Record is in the publication pipeline - no further action required"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:42
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:77
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Record was successful published"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:56
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:91
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Stale"
@@ -1670,25 +1670,25 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "An error has occurred"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:53
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:88
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Record was changed after publishing it and has to be republished"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:628
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:627
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "You're about to encode this collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:638
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:637
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "You're about to publish this collection directly to the Gbif.ch Portal"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:648
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:647
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "You're about to publish this collection to Infospecies for approval"
@@ -1700,31 +1700,31 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Show more"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:135
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:170
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Add all of the following fields to reach level two: taxon_id, part_of_organism"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:141
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:176
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Add one of the follwing fields to reach level four: verbatim_event_date, identified_by, identification_qualifier, identification_verification_status, last_verified_by, verbatim_identification, georeferenced_by, georeference_verification_status, verbatim_coordinates, verbatim_latitude, verbatim_longitude, verbatim_locality, associated_media, completeness, other_catalog_numbers, verbatim_label"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:138
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:173
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Add the following fields to reach level three: event_date, ecorded_by, type_status, original_name_usage, continent, country, county, decimal_latitude, decimal_longitude, higher_geography, locality, state_province, verbatim_depth, verbatim_elevation, year_collection_entrance, occurrence_id"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:132
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:167
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Please submit at least the institution code with your data, to reach the lowest quality level"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:144
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:179
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Record has a top quality. Add more data fields to improve your collections relevance"
@@ -1784,25 +1784,25 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Modal"
 msgid "You are about to export %{row_count} records. Please choose the column headers for your export file and the data layer to be exported."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:858
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:861
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Approve"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:857
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:860
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Publish"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:496
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:495
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Changes"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:65
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:100
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Publication failed. Process should be started again"
@@ -2003,15 +2003,15 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Actions"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:223
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:226
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:464
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:222
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:225
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:463
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Actions"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:753
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:754
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "No mapping available"
@@ -2023,19 +2023,19 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Actions"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:436
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:435
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Approval Pub."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:427
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:426
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Fast Track Pub."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:445
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:444
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Quality"
@@ -2047,74 +2047,74 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "Catalog Number"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:362
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:361
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Collected by"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:408
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:407
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Coordinates"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:378
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:377
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Date"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:397
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:396
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Elevation"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:354
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:353
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Field ID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:330
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:329
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Identification (verbatim)"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:370
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:369
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Identified by"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:386
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:385
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Place"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:314
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:313
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Typus"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:346
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:345
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Catalog ID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:148
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:152
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:147
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:151
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Columns"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:142
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:141
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Search"
@@ -2146,7 +2146,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "State:"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:490
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:489
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Data"
@@ -2159,19 +2159,19 @@ msgctxt "DataAggregatorWeb.Components.Attachment"
 msgid "rows"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:305
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:304
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "According to IUCN not an endangered species"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:285
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:284
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "No images uploaded yet"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:293
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:292
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Images available"
@@ -2263,15 +2263,15 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "entries"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:209
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:212
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:592
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:208
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:211
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:591
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Filters"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:599
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:598
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "records"
@@ -2372,7 +2372,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "detected errors:"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:338
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:337
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Occurrence ID"
@@ -2384,31 +2384,31 @@ msgctxt "DataAggregatorWeb.Components.Button"
 msgid "close"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:851
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:854
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Approval Layer"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:852
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:855
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Encoding Layer"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:826
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:829
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "No records found"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:827
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:830
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Try with a different filter"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:853
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:856
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Import Layer"
@@ -2444,25 +2444,25 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Yes, delete import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:649
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:648
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Yes, approve"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:606
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:605
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Yes, delete record"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:629
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:628
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Yes, encode"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:639
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:638
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Yes, publish"
@@ -2486,16 +2486,10 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Update mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:304
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:305
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Add all"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:717
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
-msgid "Collection is already encoding"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/export/subscriptions.ex:89
@@ -2510,13 +2504,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Subscriptions"
 msgid "The export has been completed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/subscriptions.ex:129
+#: lib/data_aggregator_web/live/collection_live/import/subscriptions.ex:120
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Subscriptions"
 msgid "The import failed, please try again"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/subscriptions.ex:133
+#: lib/data_aggregator_web/live/collection_live/import/subscriptions.ex:124
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Subscriptions"
 msgid "The import has been completed"
@@ -2534,14 +2528,108 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Subscriptions"
 msgid "The publication has been completed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/subscriptions.ex:111
+#: lib/data_aggregator_web/live/collection_live/record/subscriptions.ex:87
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Subscriptions"
 msgid "The encoding process has been completed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:538
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:537
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Results by catalog"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:460
+#, elixir-autogen, elixir-format
+msgid "An import for this collection is already in process"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:457
+#, elixir-autogen, elixir-format
+msgid "Import started in background"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:244
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
+msgid "An export for this collection is already in process"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:241
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
+msgid "Export started in background"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/export/modal.ex:134
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Export.Modal"
+msgid "An export for this collection is already in process"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/export/modal.ex:127
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Export.Modal"
+msgid "Export started in background"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/import/components/summary.ex:133
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Summary"
+msgid "An import for this collection is already in process"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:266
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
+msgid "A publication for this collection is already in process"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:321
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
+msgid "Approval started in background"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:324
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
+msgid "Publication started in background"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:743
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "A publication for this collection is already in process"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:768
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "An approval for this collection is already in process"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:718
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "An encoding for this collection is already in process"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:764
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Approval started in background"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:715
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Encoding started in background"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:739
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Publication started in background"
 msgstr ""

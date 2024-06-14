@@ -17,16 +17,7 @@ defmodule DataAggregator.Records.Collection.Changes.SetEncoding do
 
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    id = Changeset.get_attribute(changeset, :id)
-    collection = Collection.get_by_id!(id, load: [:records_count_encoding])
-
-    if collection.records_count_encoding > 0 do
-      Changeset.add_error(changeset, message: "Collection is already encoding")
-    else
-      changeset
-      |> Changeset.after_action(&schedule_poller/2)
-      |> Changeset.force_change_attribute(:updated_at, DateTime.utc_now())
-    end
+    Changeset.after_action(changeset, &schedule_poller/2)
   end
 
   defp schedule_poller(_changeset, collection) do
@@ -39,7 +30,7 @@ defmodule DataAggregator.Records.Collection.Changes.SetEncoding do
     collection = Collection.get_by_id!(id, load: [:records_count_encoding])
 
     if collection.records_count_encoding == 0 do
-      Collection.set_encoding_done(collection)
+      Collection.set_idle_encoding(collection)
     else
       await_encoded(id)
     end

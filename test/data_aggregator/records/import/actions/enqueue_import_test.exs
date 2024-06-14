@@ -8,7 +8,7 @@ defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
 
-  describe "DataAggregator.Records.Import.enqueue/1" do
+  describe "DataAggregator.Records.Import.enqueue_import/1" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
@@ -34,7 +34,7 @@ defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
         |> Import.create_from_path!(path)
         |> Import.update_mapping!(mapping)
 
-      [import: import]
+      [collection: collection, import: import]
     end
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example.csv"
@@ -47,6 +47,68 @@ defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
 
         assert_enqueued(worker: Import.Workers.Importer, args: %{id: import.id})
       end)
+    end
+
+    @tag path: "test/support/fixtures/files/museum-dataset-import-example.csv"
+    test "enqueue_import/1 fails if collection is in state importing", %{
+      collection: collection,
+      import: import
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_importing!(collection)
+        assert_not_enqueued(import)
+      end)
+    end
+
+    @tag path: "test/support/fixtures/files/museum-dataset-import-example.csv"
+    test "enqueue_import/1 fails if collection is in state exporting", %{
+      collection: collection,
+      import: import
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_exporting!(collection)
+        assert_not_enqueued(import)
+      end)
+    end
+
+    @tag path: "test/support/fixtures/files/museum-dataset-import-example.csv"
+    test "enqueue_import/1 fails if collection is in state encoding", %{
+      collection: collection,
+      import: import
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_encoding!(collection)
+        assert_not_enqueued(import)
+      end)
+    end
+
+    @tag path: "test/support/fixtures/files/museum-dataset-import-example.csv"
+    test "enqueue_import/1 fails if collection is in state approving", %{
+      collection: collection,
+      import: import
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_approving!(collection)
+        assert_not_enqueued(import)
+      end)
+    end
+
+    @tag path: "test/support/fixtures/files/museum-dataset-import-example.csv"
+    test "enqueue_import/1 fails if collection is in state fast_track_publishing", %{
+      collection: collection,
+      import: import
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_fast_track_publishing!(collection)
+        assert_not_enqueued(import)
+      end)
+    end
+
+    defp assert_not_enqueued(import) do
+      assert {:error, %Ash.Error.Invalid{}} = Import.enqueue_import(import)
+      import = Import.get_by_id!(import.id)
+      assert import.state == :pending
+      refute_enqueued(worker: Import.Workers.Importer, args: %{id: import.id})
     end
   end
 end

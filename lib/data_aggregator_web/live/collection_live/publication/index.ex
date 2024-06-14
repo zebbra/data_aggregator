@@ -258,8 +258,13 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
 
   @impl true
   def handle_event("publication:run", %{"id" => id}, socket) do
-    id |> Publication.get_by_id!() |> Publication.enqueue!()
-    {:noreply, socket}
+    case id |> Publication.get_by_id!() |> Publication.enqueue() do
+      {:ok, publication} ->
+        {:noreply, put_flash(socket, :info, publication_success_message(publication))}
+
+      {:error, _} ->
+        {:noreply, put_flash(socket, :error, ~t"A publication for this collection is already in process"m)}
+    end
   end
 
   @impl true
@@ -311,4 +316,10 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
     />
     """
   end
+
+  defp publication_success_message(%{channel: :approval}) do
+    ~t"Approval started in background"m
+  end
+
+  defp publication_success_message(_), do: ~t"Publication started in background"m
 end

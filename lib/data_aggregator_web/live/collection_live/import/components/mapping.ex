@@ -282,6 +282,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         description={~t"Click on columns to add additional column to attribute mappings."m}
         size="md"
         break_at="sm"
+        align_items="center"
       >
         <:actions :if={Enum.any?(@name_opts)}>
           <button
@@ -290,7 +291,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
             phx-value-path={@path}
             phx-target={@target}
             disabled={@disabled}
-            class="btn btn-primary max-sm:btn-sm"
+            class="btn btn-outline border-base-content/20 max-sm:btn-sm"
           >
             <.icon
               name={if @load_all, do: "hero-cog-6-tooth-solid", else: "hero-plus-circle-mini"}

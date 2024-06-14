@@ -13,6 +13,7 @@ classDiagram
         CollectionType type
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Atom state
         Float digitizing_progress
         Atom encoding_state
         Map records_to_export_query
@@ -32,10 +33,6 @@ classDiagram
         Integer records_count_encoding
         Integer records_count_encoded
         Integer records_count_failed
-        Integer records_count_publishing
-        Integer records_count_approving
-        Integer imports_count_running
-        Integer exports_count_running
         Institution institution
         Import[] imports
         Export[] exports
@@ -46,9 +43,14 @@ classDiagram
         create(UUID id, Integer items_to_digitize, String owner, String name, ...)
         update_import_mapping(Map[] import_mapping)
         touch(UUID id, Integer items_to_digitize, String owner, String name, ...)
-        set_encoding(UUID id, Integer items_to_digitize, String owner, String name, ...)
-        set_encoding_done(UUID id, Integer items_to_digitize, String owner, String name, ...)
         register_at_gbif(String dwca_file_url, UUID id, Integer items_to_digitize, String owner, ...)
+        set_importing()
+        set_exporting()
+        set_encoding()
+        set_fast_track_publishing()
+        set_approving()
+        set_idle()
+        set_idle_encoding()
         export(Struct export)
         publish(Struct publication)
     }
@@ -381,7 +383,6 @@ classDiagram
         String attachment_url
         Integer attachment_byte_size
         String attachment_filename
-        Boolean running
         Collection collection
         Attachment attachment
         Job job
@@ -425,7 +426,6 @@ classDiagram
         Term attachment_data
         Column[] mappings
         Map missing_mappings
-        Boolean running
         Integer records_count
         Collection collection
         Attachment attachment

@@ -3,7 +3,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Record.Subscriptions
 
-  import DataAggregatorWeb.CollectionLive.Components, only: [scope_stat: 1]
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
   import DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
 
@@ -700,6 +699,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   def handle_event("collection:encode", _params, socket) do
     %{collection: collection} = socket.assigns
 
+    collection = Collection.get_by_id!(collection.id, load: [:encoding])
+
     case Collection.set_encoding(collection) do
       {:ok, %{id: id}} ->
         Task.start(fn ->
@@ -711,10 +712,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           |> Stream.run()
         end)
 
-        {:noreply, socket}
+        {:noreply, put_flash(socket, :info, ~t"Encoding started in background"m)}
 
-      {:error, _reason} ->
-        {:noreply, put_flash(socket, :error, ~t"Collection is already encoding"m)}
+      {:error, _} ->
+        {:noreply, put_flash(socket, :error, ~t"An encoding for this collection is already in process"m)}
     end
   end
 
@@ -731,21 +732,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
     count_query = Ash.Query.filter_input(Record, fast_track_query)
 
-    publication =
-      %{
-        name: "pub-#{collection.name}-#{:os.system_time()}",
-        channel: :fast_track,
-        records_query: fast_track_query,
-        collection: collection,
-        rows_count: Records.count!(count_query)
-      }
-      |> Publication.create!()
-      |> Publication.enqueue!()
+    case create_and_enqueue(collection, fast_track_query, count_query, :fast_track) do
+      {:ok, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, ~t"Publication started in background"m)
+         |> push_navigate(to: ~p"/collections/#{collection.id}/publications")}
 
-    {:noreply,
-     socket
-     |> assign(:publication, publication)
-     |> push_navigate(to: ~p"/collections/#{collection.id}/publications")}
+      {:error, _} ->
+        {:noreply, put_flash(socket, :error, ~t"A publication for this collection is already in process"m)}
+    end
   end
 
   @impl true
@@ -761,21 +757,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
     count_query = Ash.Query.filter_input(Record, approval_query)
 
-    publication =
-      %{
-        name: "pub-#{collection.name}-#{:os.system_time()}",
-        channel: :approval,
-        records_query: approval_query,
-        collection: collection,
-        rows_count: Records.count!(count_query)
-      }
-      |> Publication.create!()
-      |> Publication.enqueue!()
+    case create_and_enqueue(collection, approval_query, count_query, :approval) do
+      {:ok, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, ~t"Approval started in background"m)
+         |> push_navigate(to: ~p"/collections/#{collection.id}/publications")}
 
-    {:noreply,
-     socket
-     |> assign(:publication, publication)
-     |> push_navigate(to: ~p"/collections/#{collection.id}/publications")}
+      {:error, _} ->
+        {:noreply, put_flash(socket, :error, ~t"An approval for this collection is already in process"m)}
+    end
   end
 
   @impl true
@@ -792,6 +783,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_info({"filter_form:submit", _meta}, socket) do
     {:noreply, assign(socket, :show_filters, false)}
+  end
+
+  defp create_and_enqueue(collection, query, count_query, channel) do
+    %{
+      name: "pub-#{collection.name}-#{:os.system_time()}",
+      channel: channel,
+      records_query: query,
+      collection: collection,
+      rows_count: Records.count!(count_query)
+    }
+    |> Publication.create!()
+    |> Publication.enqueue()
   end
 
   defp apply_action(socket, :index, _params) do

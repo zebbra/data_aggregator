@@ -452,8 +452,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   @impl true
   def handle_event("import:run", %{"id" => id}, socket) do
-    id |> Import.get_by_id!() |> Import.enqueue_import!()
-    {:noreply, socket}
+    case id |> Import.get_by_id!() |> Import.enqueue_import() do
+      {:ok, _} ->
+        {:noreply, put_flash(socket, :info, ~t"Import started in background")}
+
+      {:error, _} ->
+        {:noreply, put_flash(socket, :error, ~t"An import for this collection is already in process")}
+    end
   end
 
   @impl true

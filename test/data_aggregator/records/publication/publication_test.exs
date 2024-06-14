@@ -71,10 +71,6 @@ defmodule DataAggregator.PublicationTest do
         Records.load!(record5, [:encoded_record])
       ]
 
-      [collection: collection, records: records]
-    end
-
-    test "publish/1", %{collection: collection, records: _records} do
       query = %{
         collection: %{id: %{eq: collection.id}},
         encoded_record: %{tax_kingdom: %{is_nil: false}}
@@ -88,6 +84,10 @@ defmodule DataAggregator.PublicationTest do
           collection: collection
         })
 
+      [collection: collection, records: records, publication: publication]
+    end
+
+    test "publish/1", %{collection: _collection, records: _records, publication: publication} do
       {:ok, publication} = Collection.publish(publication)
 
       %{body: body} = Req.get!(publication.attachment.url)
@@ -108,6 +108,75 @@ defmodule DataAggregator.PublicationTest do
       )
 
       assert DataFrame.n_rows(data_frame) == 5
+    end
+
+    test "enqueue/1", %{collection: collection, publication: publication} do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {:ok, publication} = Publication.enqueue(publication)
+
+        assert publication.state == :queued
+        assert_enqueued(worker: Publication.Workers.Publisher, args: %{id: publication.id})
+
+        collection = Collection.get_by_id!(collection.id)
+        assert collection.state == :fast_track_publishing
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state importing", %{
+      collection: collection,
+      publication: publication
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_importing!(collection)
+        assert_not_enqueued(publication)
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state exporting", %{
+      collection: collection,
+      publication: publication
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_exporting!(collection)
+        assert_not_enqueued(publication)
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state encoding", %{
+      collection: collection,
+      publication: publication
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_encoding!(collection)
+        assert_not_enqueued(publication)
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state approving", %{
+      collection: collection,
+      publication: publication
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_approving!(collection)
+        assert_not_enqueued(publication)
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state fast_track_publishing", %{
+      collection: collection,
+      publication: publication
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_fast_track_publishing!(collection)
+        assert_not_enqueued(publication)
+      end)
+    end
+
+    defp assert_not_enqueued(publication) do
+      assert {:error, %Ash.Error.Invalid{}} = Publication.enqueue(publication)
+      publication = Publication.get_by_id!(publication.id)
+      assert publication.state == :pending
+      refute_enqueued(worker: Publication.Workers.Publisher, args: %{id: publication.id})
     end
   end
 end

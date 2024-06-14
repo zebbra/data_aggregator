@@ -10,12 +10,6 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
       :records_count,
       :digitizing_progress,
       :records_count_not_encoded,
-      :encoding_state,
-      :imports_count_running,
-      :exports_count_running,
-      :records_count_encoding,
-      :records_count_publishing,
-      :records_count_approving,
       :importing,
       :exporting,
       :encoding,
@@ -30,14 +24,7 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
       load: [
         :records_count,
         :digitizing_progress,
-        :encoding_state,
         :records_count_not_encoded,
-        :records_count_failed,
-        :imports_count_running,
-        :exports_count_running,
-        :records_count_encoding,
-        :records_count_publishing,
-        :records_count_approving,
         :importing,
         :exporting,
         :encoding,
@@ -48,14 +35,15 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
     )
   end
 
-  def busy_action(collection) do
-    cond do
-      collection.importing -> "dataset:import"
-      collection.exporting -> "collection:export"
-      collection.encoding -> "collection:encode"
-      collection.publishing -> "collection:fast_track_pub"
-      collection.approving -> "collection:approval_pub"
-      true -> nil
-    end
-  end
+  def busy_action("set_importing"), do: "dataset:import"
+  def busy_action(%{importing: true}), do: "dataset:import"
+  def busy_action("set_exporting"), do: "collection:export"
+  def busy_action(%{exporting: true}), do: "collection:export"
+  def busy_action("set_encoding"), do: "collection:encode"
+  def busy_action(%{encoding: true}), do: "collection:encode"
+  def busy_action("set_fast_track_publishing"), do: "collection:fast_track_pub"
+  def busy_action(%{publishing: true}), do: "collection:fast_track_pub"
+  def busy_action("set_approving"), do: "collection:approval_pub"
+  def busy_action(%{approving: true}), do: "collection:approval_pub"
+  def busy_action(_), do: nil
 end

@@ -17,15 +17,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
 
   require Logger
 
-  @import_update_events ~w(set_importing set_imported set_failed update_mapping)
-  @export_update_events ~w(set_running set_exported set_failed)
-  @encode_update_events ~w(set_encoding set_encoding_done)
-  @publication_update_events ~w(set_running set_done set_failed)
-
-  @busy_actions ~w(
+  @collection_action_events ~w(
     set_importing
+    set_exporting
     set_encoding
-    set_running
+    set_fast_track_publishing
+    set_approving
+    set_idle
+    set_idle_encoding
   )
 
   def subscribe_for_record_updates(socket, connected) do
@@ -34,10 +33,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
          %Collection{id: id} <- collection do
       topic = [
         "record:#{id}:destroyed",
-        "import:#{id}:updated",
-        "export:#{id}:updated",
-        "collection:updated:#{id}",
-        "publication:#{id}:updated"
+        "collection:updated:#{id}"
       ]
 
       PubSub.subscribe(topic)
@@ -64,50 +60,30 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
       topic == "record:#{id}:destroyed" ->
         handle_record_destroyed(notification, socket)
 
-      topic == "import:#{id}:updated" and event in @import_update_events ->
-        set_busy(socket, id, event, "dataset:import")
-
-      topic == "export:#{id}:updated" and event in @export_update_events ->
-        set_busy(socket, id, event, "collection:export")
-
-      topic == "collection:updated:#{id}" and event in @encode_update_events ->
-        set_busy(socket, id, event, "collection:encode")
-
-      topic == "publication:#{id}:updated" and event in @publication_update_events ->
-        %{data: %{channel: channel}} = notification
-
-        busy_action =
-          if channel == :approval do
-            "collection:approval_pub"
-          else
-            "collection:fast_track_pub"
-          end
-
-        set_busy(socket, id, event, busy_action)
+      topic == "collection:updated:#{id}" and event in @collection_action_events ->
+        set_busy(socket, event)
 
       true ->
         {:noreply, socket}
     end
   end
 
-  defp set_busy(socket, _id, event, busy_action) when event in @busy_actions do
+  defp set_busy(socket, event) when event in ~w(set_idle set_idle_encoding) do
     socket
-    |> assign(:busy, true)
-    |> assign(:busy_action, busy_action)
-    |> refresh()
-  end
-
-  defp set_busy(socket, id, event, _busy_action) do
-    collection = get_collection(id)
-
-    socket
-    |> assign(:busy, collection.busy)
-    |> assign(:busy_action, busy_action(collection))
+    |> assign(:busy, false)
+    |> assign(:busy_action, nil)
     |> set_notification(event)
     |> refresh()
   end
 
-  defp set_notification(socket, "set_encoding_done") do
+  defp set_busy(socket, event) do
+    socket
+    |> assign(:busy, true)
+    |> assign(:busy_action, busy_action(event))
+    |> refresh()
+  end
+
+  defp set_notification(socket, "set_idle_encoding") do
     put_flash(socket, :info, ~t"The encoding process has been completed"m)
   end
 

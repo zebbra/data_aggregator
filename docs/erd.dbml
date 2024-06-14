@@ -38,6 +38,7 @@ Table collections {
   inserted_at timestamp
   updated_at timestamp
   institution_id uuid
+  state varchar
 }
 
 Table encoded_records {

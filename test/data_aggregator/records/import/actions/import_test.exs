@@ -97,14 +97,14 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"
     @tag capture_log: true
-    test "can be run multiple times", %{import: import} do
+    test "cannot be run multiple times", %{import: import} do
       assert {:ok, import} = Import.import(import)
       assert import.state == :imported
       assert import.records_count == 2
       assert import.rows_imported_count == 2
       assert import.rows_invalid_count == 0
 
-      # Run again, which should should not import the records again
+      # Run again, which should not import the records again and throw an error
       assert {:error, %Ash.Error.Invalid{}} = Import.import(import)
     end
 

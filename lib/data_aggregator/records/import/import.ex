@@ -114,7 +114,6 @@ defmodule DataAggregator.Records.Import do
 
     calculate :mappings, {:array, Column}, Import.Calculations.Mappings
     calculate :missing_mappings, :map, Import.Calculations.MissingMappings
-    calculate :running, :boolean, expr(state in [:validating, :importing])
   end
 
   aggregates do
@@ -203,6 +202,7 @@ defmodule DataAggregator.Records.Import do
 
     update :enqueue_import do
       accept []
+      change Import.Changes.SetCollectionImportingBeforeTransaction
       change transition_state(:import_queued)
       change Import.Changes.EnqueueImporter
       change load(:job)
@@ -242,12 +242,14 @@ defmodule DataAggregator.Records.Import do
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:rows_imported_count, 0)
+      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :set_imported do
       accept []
       change transition_state(:imported)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
+      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :update_error_log do

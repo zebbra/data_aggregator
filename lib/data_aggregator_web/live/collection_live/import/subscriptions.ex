@@ -18,14 +18,15 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
   require Logger
 
   @load_all load_all()
-  @import_update_events ~w(set_importing set_imported set_failed update_mapping)
-  @export_update_events ~w(set_running set_exported set_failed)
-  @encode_update_events ~w(set_encoding set_encoding_done)
-  @publication_update_events ~w(set_running set_done set_failed)
 
-  @busy_actions ~w(
+  @import_update_events ~w(set_importing set_imported set_failed update_mapping)
+  @collection_action_events ~w(
+    set_exporting
     set_encoding
-    set_running
+    set_fast_track_publishing
+    set_approving
+    set_idle
+    set_idle_encoding
   )
 
   def subscribe_for_import_updates(socket, connected) do
@@ -36,9 +37,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
         "import:#{id}:created",
         "import:#{id}:updated",
         "import:#{id}:destroyed",
-        "export:#{id}:updated",
-        "collection:updated:#{id}",
-        "publication:#{id}:updated"
+        "collection:updated:#{id}"
       ]
 
       PubSub.subscribe(topic)
@@ -64,14 +63,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
       topic == "import:#{id}:updated" and event in @import_update_events ->
         handle_import_updated(notification, socket, event)
 
-      topic == "export:#{id}:updated" and event in @export_update_events ->
-        set_busy(socket, id, event)
-
-      topic == "collection:updated:#{id}" and event in @encode_update_events ->
-        set_busy(socket, id, event)
-
-      topic == "publication:#{id}:updated" and event in @publication_update_events ->
-        set_busy(socket, id, event)
+      topic == "collection:updated:#{id}" and event in @collection_action_events ->
+        set_busy(socket, event)
 
       topic == "import:#{id}:destroyed" ->
         handle_import_destroyed(notification, socket)
@@ -101,19 +94,17 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
     {:noreply, socket}
   end
 
-  defp set_busy(socket, _id, event) when event in @busy_actions do
+  defp set_busy(socket, event) when event in ~w(set_idle set_idle_encoding) do
     socket
-    |> assign(:busy, true)
+    |> assign(:busy, false)
     |> assign(:busy_action, nil)
     |> refresh()
   end
 
-  defp set_busy(socket, id, _event) do
-    collection = get_collection(id)
-
+  defp set_busy(socket, event) do
     socket
-    |> assign(:busy, collection.busy)
-    |> assign(:busy_action, busy_action(collection))
+    |> assign(:busy, true)
+    |> assign(:busy_action, busy_action(event))
     |> refresh()
   end
 

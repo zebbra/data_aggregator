@@ -106,6 +106,7 @@ defmodule DataAggregator.Records.Publication do
 
     update :enqueue do
       accept []
+      change Changes.SetCollectionPublishingBeforeTransaction
       change transition_state(:queued)
       change Changes.EnqueuePublisher
     end
@@ -128,6 +129,7 @@ defmodule DataAggregator.Records.Publication do
     update :set_failed do
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
+      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :run do
@@ -146,6 +148,7 @@ defmodule DataAggregator.Records.Publication do
       change transition_state(:done)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:published_at, &DateTime.utc_now/0)
+      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :update_attachment do

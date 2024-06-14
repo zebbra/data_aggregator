@@ -52,6 +52,7 @@ config :phoenix_live_view,
 # Disable warnings for dummy resources
 config :ash, :validate_api_config_inclusion?, false
 config :ash, :validate_api_resource_inclusion?, false
+config :ash, warn_on_transaction_hooks?: false
 
 config :mix_test_watch, clear: true
 

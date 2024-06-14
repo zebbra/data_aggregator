@@ -118,25 +118,41 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
 
   @impl true
   def handle_event("export:save", params, socket) do
-    %{collection: collection, export: export} = socket.assigns
+    %{export: export} = socket.assigns
 
-    export =
-      export
-      |> Export.update!(%{
-        header_source: params["header_source"],
-        data_layer: params["data_layer"],
-        # set the mapping manual, if you want to use
-        # custom headers from the current selection
-        mapping: nil
-      })
-      |> Export.enqueue!()
+    case update_and_enqueue(export, params) do
+      {:ok, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, ~t"Export started in background"m)
+         |> assign_and_redirect(export)}
 
-    {
-      :noreply,
-      socket
-      |> assign(:export, export)
-      |> push_navigate(to: ~p"/collections/#{collection.id}/exports")
-    }
+      {:error, _} ->
+        {
+          :noreply,
+          socket
+          |> put_flash(:error, ~t"An export for this collection is already in process"m)
+          |> assign_and_redirect(export)
+        }
+    end
+  end
+
+  defp assign_and_redirect(socket, export) do
+    socket
+    |> assign(:export, export)
+    |> push_navigate(to: ~p"/collections/#{export.collection_id}/exports")
+  end
+
+  defp update_and_enqueue(export, params) do
+    export
+    |> Export.update!(%{
+      header_source: params["header_source"],
+      data_layer: params["data_layer"],
+      # set the mapping manual, if you want to use
+      # custom headers from the current selection
+      mapping: nil
+    })
+    |> Export.enqueue()
   end
 
   defp assign_form(socket) do

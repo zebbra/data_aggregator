@@ -102,6 +102,7 @@ classDiagram
         CollectionType type
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Atom state
         Float digitizing_progress
         Atom encoding_state
         Map records_to_export_query
@@ -121,10 +122,6 @@ classDiagram
         Integer records_count_encoding
         Integer records_count_encoded
         Integer records_count_failed
-        Integer records_count_publishing
-        Integer records_count_approving
-        Integer imports_count_running
-        Integer exports_count_running
         Institution institution
         Import[] imports
         Export[] exports
@@ -135,9 +132,14 @@ classDiagram
         create(UUID id, Integer items_to_digitize, String owner, String name, ...)
         update_import_mapping(Map[] import_mapping)
         touch(UUID id, Integer items_to_digitize, String owner, String name, ...)
-        set_encoding(UUID id, Integer items_to_digitize, String owner, String name, ...)
-        set_encoding_done(UUID id, Integer items_to_digitize, String owner, String name, ...)
         register_at_gbif(String dwca_file_url, UUID id, Integer items_to_digitize, String owner, ...)
+        set_importing()
+        set_exporting()
+        set_encoding()
+        set_fast_track_publishing()
+        set_approving()
+        set_idle()
+        set_idle_encoding()
         export(Struct export)
         publish(Struct publication)
     }
@@ -470,7 +472,6 @@ classDiagram
         String attachment_url
         Integer attachment_byte_size
         String attachment_filename
-        Boolean running
         Collection collection
         Attachment attachment
         Job job
@@ -514,7 +515,6 @@ classDiagram
         Term attachment_data
         Column[] mappings
         Map missing_mappings
-        Boolean running
         Integer records_count
         Collection collection
         Attachment attachment
@@ -982,6 +982,7 @@ erDiagram
         CollectionType type
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Atom state
         Float digitizing_progress
         Atom encoding_state
         Map records_to_export_query
@@ -1001,10 +1002,6 @@ erDiagram
         Integer records_count_encoding
         Integer records_count_encoded
         Integer records_count_failed
-        Integer records_count_publishing
-        Integer records_count_approving
-        Integer imports_count_running
-        Integer exports_count_running
     }
     EncodedRecord {
         Map ext_vernacular_names
@@ -1322,7 +1319,6 @@ erDiagram
         String attachment_url
         Integer attachment_byte_size
         String attachment_filename
-        Boolean running
     }
     Import {
         UUID id
@@ -1350,7 +1346,6 @@ erDiagram
         Term attachment_data
         ArrayOfColumn mappings
         Map missing_mappings
-        Boolean running
         Integer records_count
     }
     Record {
@@ -1755,6 +1750,7 @@ erDiagram
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
 | **institution_id** | UUID |  |
+| **state** | Atom |  |
 
 #### Actions
 
@@ -1766,9 +1762,14 @@ erDiagram
 | **create** | _create_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 | **update_import_mapping** | _update_ | <ul><li><b>import_mapping</b> <i>Map[]</i> attribute</li></ul> |  |
 | **touch** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
-| **set_encoding** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
-| **set_encoding_done** | _update_ | <ul><li><b>id</b> <i>UUID</i> attribute</li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 | **register_at_gbif** | _update_ | <ul><li><b>dwca_file_url</b> <i>String</i> </li><li><b>id</b> <i>UUID</i> attribute</li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>inserted_at</b> <i>UtcDatetimeUsec</i> attribute</li><li><b>updated_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **set_importing** | _update_ | <ul></ul> |  |
+| **set_exporting** | _update_ | <ul></ul> |  |
+| **set_encoding** | _update_ | <ul></ul> |  |
+| **set_fast_track_publishing** | _update_ | <ul></ul> |  |
+| **set_approving** | _update_ | <ul></ul> |  |
+| **set_idle** | _update_ | <ul></ul> |  |
+| **set_idle_encoding** | _update_ | <ul></ul> |  |
 | **export** | _action_ | <ul><li><b>export</b> <i>Struct</i> </li></ul> |  |
 | **publish** | _action_ | <ul><li><b>publication</b> <i>Struct</i> </li></ul> |  |
 

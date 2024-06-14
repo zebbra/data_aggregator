@@ -164,6 +164,7 @@ defmodule DataAggregatorWeb.Components.Modal do
     ~H"""
     <dialog
       id={@id}
+      role="dialog"
       class={[
         "modal",
         @responsive && "modal-bottom max-sm:items-end sm:modal-middle",

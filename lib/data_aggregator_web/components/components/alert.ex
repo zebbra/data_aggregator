@@ -74,10 +74,12 @@ defmodule DataAggregatorWeb.Components.Alert do
     ~H"""
     <dialog
       id={@id}
+      role="alertdialog"
       class="modal"
       phx-hook="DialogHook"
       data-cancel={@on_cancel}
       data-confirm={@on_confirm}
+      phx-update="ignore"
     >
       <div class={["modal-box max-h-[calc(100dvh-5em)]", size(@size)]}>
         <.focus_wrap id={"#{@id}_content"}>
