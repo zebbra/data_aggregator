@@ -71,6 +71,7 @@ defmodule DataAggregator.Records.Publication do
     transitions do
       transition :enqueue, from: [:pending, :done, :failed], to: :queued
       transition :run, from: [:pending, :done, :failed, :queued], to: :running
+      transition :set_running, from: [:pending, :done, :failed, :queued], to: :running
       transition :set_done, from: :running, to: :done
       transition :set_failed, from: :running, to: :failed
     end
@@ -119,7 +120,7 @@ defmodule DataAggregator.Records.Publication do
 
     update :set_running do
       accept []
-      change set_attribute(:state, :running)
+      change transition_state(:running)
       change set_attribute(:started_at, &DateTime.utc_now/0)
       change set_attribute(:finished_at, nil)
     end

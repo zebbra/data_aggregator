@@ -309,7 +309,7 @@ Table encoded_records {
   eve_event_id varchar
   eve_cover_water_in_percentage float
   eve_cover_trees_in_percentage float
-  eve_cover_toal_in_percentage float
+  eve_cover_total_in_percentage float
   eve_cover_shrubs_in_percentage float
   eve_cover_rock_in_percentage float
   eve_cover_mosses_in_percentage float
@@ -379,8 +379,10 @@ Table imports {
   rows_valid_count integer
   rows_invalid_count integer
   rows_imported_count integer
+  rows_error_count integer
   collection_id uuid
   attachment_id uuid
+  error_log_id uuid
   job_id integer
   state varchar
 }
@@ -677,7 +679,7 @@ Table records {
   eve_event_id varchar
   eve_cover_water_in_percentage float
   eve_cover_trees_in_percentage float
-  eve_cover_toal_in_percentage float
+  eve_cover_total_in_percentage float
   eve_cover_shrubs_in_percentage float
   eve_cover_rock_in_percentage float
   eve_cover_mosses_in_percentage float
@@ -775,6 +777,7 @@ Ref: collections.id < records.collection_id
 Ref: encoded_records.id < encoded_records_versions.version_source_id
 Ref: file_attachments.id < exports.attachment_id
 Ref: file_attachments.id < imports.attachment_id
+Ref: file_attachments.id < imports.error_log_id
 Ref: file_attachments.id < publications.attachment_id
 Ref: file_attachments.id < record_images.attachment_id
 Ref: imports.id < import_records.import_id

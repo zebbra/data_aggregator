@@ -5,6 +5,26 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
 
   alias DataAggregator.Records.Collection
 
+  def load do
+    [
+      :records_count,
+      :digitizing_progress,
+      :records_count_not_encoded,
+      :encoding_state,
+      :imports_count_running,
+      :exports_count_running,
+      :records_count_encoding,
+      :records_count_publishing,
+      :records_count_approving,
+      :importing,
+      :exporting,
+      :encoding,
+      :publishing,
+      :approving,
+      :busy
+    ]
+  end
+
   def get_collection(id) do
     Collection.get_by_id!(id,
       load: [

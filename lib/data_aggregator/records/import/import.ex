@@ -130,6 +130,7 @@ defmodule DataAggregator.Records.Import do
       transition :enqueue_import, from: [:pending, :failed, :imported], to: :import_queued
       transition :import, from: [:pending, :import_queued], to: :importing
       transition :import, from: [:importing], to: :imported
+      transition :set_importing, from: [:pending, :import_queued], to: :importing
       transition :set_imported, from: :importing, to: :imported
       transition :set_failed, from: :importing, to: :failed
     end
@@ -220,7 +221,7 @@ defmodule DataAggregator.Records.Import do
 
     update :set_importing do
       accept []
-      change set_attribute(:state, :importing)
+      change transition_state(:importing)
       change set_attribute(:started_at, &DateTime.utc_now/0)
       change set_attribute(:finished_at, nil)
       change set_attribute(:rows_imported_count, 0)

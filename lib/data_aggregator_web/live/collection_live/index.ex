@@ -2,25 +2,18 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   @moduledoc false
 
   use DataAggregatorWeb, :live_view
+  use DataAggregatorWeb.CollectionLive.Subscriptions
 
+  import DataAggregatorWeb.CollectionLive.Helpers
   import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
 
-  alias DataAggregator.PubSub
   alias DataAggregator.Records.Collection
 
-  @load [
-    :records_count,
-    :digitizing_progress,
-    :records_count_not_encoded,
-    :encoding_state
-  ]
-
-  @topics ["collection:created", "collection:updated", "collection:destroyed"]
+  @load load()
 
   @impl true
   def mount(_params, _session, socket) do
-    if connected?(socket), do: PubSub.subscribe(@topics)
-    {:ok, socket}
+    {:ok, subscribe_for_collection_updates(socket, connected?(socket))}
   end
 
   @impl true
@@ -118,6 +111,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             <.table_action_button
               patch={build_path(~p"/collections/#{collection}/edit", @meta)}
               data-tip={~t"Edit"m}
+              disabled={collection.busy}
               icon="hero-pencil-square-mini"
             />
           </div>
@@ -126,6 +120,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             data-tip={~t"Delete"m}
             data-confirm={~t"Are you sure?"m}
             data-confirm_id="confirm_collection_alert"
+            disabled={collection.busy}
             icon="hero-trash-mini"
           />
         </:action>
@@ -182,18 +177,6 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
       :collection,
       Collection.get_by_id!(id, load: @load)
     )
-  end
-
-  @impl true
-  def handle_info({topic, _event, notification}, socket) when topic in ["collection:created", "collection:updated"] do
-    %Ash.Notifier.Notification{data: collection} = notification
-    {:noreply, stream_insert(socket, :results, Collection.get_by_id!(collection.id, load: @load))}
-  end
-
-  @impl true
-  def handle_info({"collection:destroyed", _event, notification}, socket) do
-    %Ash.Notifier.Notification{data: collection} = notification
-    {:noreply, stream_delete(socket, :results, collection)}
   end
 
   @impl true

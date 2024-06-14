@@ -18,6 +18,12 @@ classDiagram
         Map records_to_export_query
         Map fast_track_query
         Map approval_query
+        Boolean importing
+        Boolean exporting
+        Boolean encoding
+        Boolean publishing
+        Boolean approving
+        Boolean busy
         Integer records_count
         Integer imports_count
         Integer records_count_not_encoded
@@ -26,7 +32,10 @@ classDiagram
         Integer records_count_encoding
         Integer records_count_encoded
         Integer records_count_failed
-        Integer records_publishing
+        Integer records_count_publishing
+        Integer records_count_approving
+        Integer imports_count_running
+        Integer exports_count_running
         Institution institution
         Import[] imports
         Export[] exports
@@ -37,6 +46,8 @@ classDiagram
         create(UUID id, Integer items_to_digitize, String owner, String name, ...)
         update_import_mapping(Map[] import_mapping)
         touch(UUID id, Integer items_to_digitize, String owner, String name, ...)
+        set_encoding(UUID id, Integer items_to_digitize, String owner, String name, ...)
+        set_encoding_done(UUID id, Integer items_to_digitize, String owner, String name, ...)
         register_at_gbif(String dwca_file_url, UUID id, Integer items_to_digitize, String owner, ...)
         export(Struct export)
         publish(Struct publication)
@@ -310,7 +321,7 @@ classDiagram
         String eve_event_id
         Float eve_cover_water_in_percentage
         Float eve_cover_trees_in_percentage
-        Float eve_cover_toal_in_percentage
+        Float eve_cover_total_in_percentage
         Float eve_cover_shrubs_in_percentage
         Float eve_cover_rock_in_percentage
         Float eve_cover_mosses_in_percentage
@@ -370,6 +381,7 @@ classDiagram
         String attachment_url
         Integer attachment_byte_size
         String attachment_filename
+        Boolean running
         Collection collection
         Attachment attachment
         Job job
@@ -398,6 +410,7 @@ classDiagram
         Integer rows_valid_count
         Integer rows_invalid_count
         Integer rows_imported_count
+        Integer rows_error_count
         Integer job_id
         Atom state
         Float import_progress
@@ -412,11 +425,14 @@ classDiagram
         Term attachment_data
         Column[] mappings
         Map missing_mappings
+        Boolean running
         Integer records_count
         Collection collection
         Attachment attachment
+        Attachment error_log
         Record[] records
         Job job
+        update(UUID id, Column[] columns, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at, ...)
         destroy()
         read(String sort)
         by_collection(String collection_id, String sort)
@@ -430,6 +446,7 @@ classDiagram
         add_import_progress(Integer imported)
         set_failed()
         set_imported()
+        update_error_log(Attachment error_log)
     }
     class Record {
         Import import
@@ -744,7 +761,7 @@ classDiagram
         String eve_event_id
         Float eve_cover_water_in_percentage
         Float eve_cover_trees_in_percentage
-        Float eve_cover_toal_in_percentage
+        Float eve_cover_total_in_percentage
         Float eve_cover_shrubs_in_percentage
         Float eve_cover_rock_in_percentage
         Float eve_cover_mosses_in_percentage
