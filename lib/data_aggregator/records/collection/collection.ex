@@ -36,6 +36,16 @@ defmodule DataAggregator.Records.Collection do
       allow_nil? false
     end
 
+    attribute :grscicoll_institution_key, :string do
+      description "the key to identify the institution in the GrSciColl database"
+      allow_nil? true
+    end
+
+    attribute :grscicoll_institution_code, :string do
+      description "the code to identify the institution in the GrSciColl database"
+      allow_nil? true
+    end
+
     attribute :description, :string
 
     attribute :gbif_dataset_key, :string do

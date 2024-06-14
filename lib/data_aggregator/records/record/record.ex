@@ -188,7 +188,7 @@ defmodule DataAggregator.Records.Record do
       transition :set_imported, from: [:encoded, :failed, :encoding, :imported], to: :imported
 
       transition :enqueue_encoder,
-        from: [:imported, :encoded, :failed, :iencoded, :encoding],
+        from: [:imported, :encoded, :failed, :encoding],
         to: :queued
 
       transition :set_encoding,
@@ -234,6 +234,7 @@ defmodule DataAggregator.Records.Record do
       primary? true
       argument :collection, Collection, allow_nil?: false
 
+      change Record.Changes.SetGrSciCollInstitution
       change Record.Changes.SetOccurrenceID
       change Record.Changes.SetBasisOfRecord
       change Record.Changes.SetImportedAfterAction

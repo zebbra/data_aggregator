@@ -116,6 +116,7 @@ defmodule DataAggregator.Gbif.RestAPIStub do
      %{
        "institutionKey" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
        "institutionName" => "Universität Zürich",
+       "institutionCode" => "Z",
        "key" => key
      }}
   end
@@ -278,7 +279,14 @@ defmodule DataAggregator.Gbif.RestAPIStub do
 
   @spec get_grscicoll_collection_attributes(String.t(), list()) :: Api.response_body()
   def get_grscicoll_collection_attributes(_reference, _attributes) do
-    {:ok, %{"code" => "Z", "name" => "Herbarium - Universität Zürich"}}
+    {:ok,
+     %{
+       "code" => "Z",
+       "name" => "Herbarium - Universität Zürich",
+       "institutionKey" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+       "institutionName" => "Universität Zürich",
+       "institutionCode" => "Z"
+     }}
   end
 
   @spec get_collection_options() :: list()

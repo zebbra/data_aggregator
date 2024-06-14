@@ -17,14 +17,18 @@ defmodule DataAggregator.Records.Collection.Changes.SetGrsciCollAttributes do
     case Gbif.RestAPI.get_grscicoll_collection_attributes(reference, [
            "code",
            "name",
-           "numberSpecimens"
+           "numberSpecimens",
+           "institutionKey",
+           "institutionCode"
          ]) do
       {:ok, attributes} ->
         changes =
           %{
             code: attributes["code"],
             name: attributes["name"],
-            items_to_digitize: attributes["numberSpecimens"] || 0
+            items_to_digitize: attributes["numberSpecimens"] || 0,
+            grscicoll_institution_key: attributes["institutionKey"],
+            grscicoll_institution_code: attributes["institutionCode"]
           }
 
         Changeset.change_attributes(changeset, changes)

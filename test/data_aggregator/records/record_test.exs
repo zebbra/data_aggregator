@@ -64,6 +64,9 @@ defmodule DataAggregator.RecordTest do
       assert length(record.paper_trail_versions) == 1
       assert record.occ_occurrence_id === record.mte_catalog_number
       assert record.oth_basis_of_record === "PreservedSpecimen"
+
+      assert record.oth_institution_id === "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+      assert record.oth_institution_code === "Z"
     end
 
     test "create/1 with invalid data returns error changeset" do
