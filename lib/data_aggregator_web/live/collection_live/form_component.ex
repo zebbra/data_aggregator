@@ -18,18 +18,12 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   @impl true
   def render(assigns) do
     assigns =
-      assign(
-        assigns,
+      assigns
+      |> assign(
         :collection_types,
         CollectionType.get_collection_type_options()
       )
-
-    assigns =
-      assign(
-        assigns,
-        :grscicoll_collections,
-        Gbif.RestAPI.get_collection_options()
-      )
+      |> maybe_assign_available_collection_options()
 
     ~H"""
     <div class="contents">
@@ -145,5 +139,13 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
       end
 
     {:noreply, socket}
+  end
+
+  defp maybe_assign_available_collection_options(%{action: :edit} = socket) do
+    socket
+  end
+
+  defp maybe_assign_available_collection_options(socket) do
+    assign(socket, :grscicoll_collections, Gbif.RestAPI.get_available_collection_options())
   end
 end

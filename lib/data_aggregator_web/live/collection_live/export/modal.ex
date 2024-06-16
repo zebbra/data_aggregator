@@ -121,7 +121,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
     %{export: export} = socket.assigns
 
     case update_and_enqueue(export, params) do
-      {:ok, _} ->
+      {:ok, export} ->
         {:noreply,
          socket
          |> put_flash(:info, ~t"Export started in background"m)

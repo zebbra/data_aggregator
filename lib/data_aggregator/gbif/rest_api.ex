@@ -99,6 +99,18 @@ defmodule DataAggregator.Gbif.RestAPI do
   end
 
   @doc """
+  Get all available collections from the GrsciCol API and parse them to have options for
+  UI Select Options.
+
+  Available collections are collections that are not already in use in the database.
+  """
+  @spec get_available_collection_options() :: [{String.t(), String.t()}]
+  def get_available_collection_options do
+    collections_in_use = distinct(Collection, :grscicoll_reference)
+    Enum.reject(get_collection_options(), fn {_, key} -> key in collections_in_use end)
+  end
+
+  @doc """
   Get a single species out of the GBIF API according to its key
   """
   @spec get_species(String.t()) :: Api.response()
@@ -191,11 +203,6 @@ defmodule DataAggregator.Gbif.RestAPI do
       |> HttpDiskCache.attach()
       |> Req.get!(url: url, max_cache_age_seconds: @hour)
 
-    exclude_collections_in_use(body["results"])
-  end
-
-  defp exclude_collections_in_use(collections) do
-    collections_in_use = distinct(Collection, :grscicoll_reference)
-    Enum.filter(collections, fn collection -> collection["key"] not in collections_in_use end)
+    body["results"]
   end
 end
