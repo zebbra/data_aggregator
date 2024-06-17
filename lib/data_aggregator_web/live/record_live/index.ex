@@ -2,8 +2,8 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   @moduledoc false
 
   use DataAggregatorWeb, :live_view
-  use DataAggregatorWeb.CollectionLive.Encoding.Components
 
+  import DataAggregatorWeb.CollectionLive.Encoding.Components
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   import DataAggregatorWeb.RecordLive.Helpers,
@@ -108,7 +108,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           size="xl"
         >
           <%= for category <- @attrs_in_categories do %>
-            <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 lg:pl-4">
+            <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 open:first:border-t lg:pl-4">
               <summary class="collapse-title">
                 <%= category.label %>
               </summary>

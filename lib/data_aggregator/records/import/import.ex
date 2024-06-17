@@ -129,6 +129,7 @@ defmodule DataAggregator.Records.Import do
       transition :enqueue_import, from: [:pending, :failed, :imported], to: :import_queued
       transition :import, from: [:pending, :import_queued], to: :importing
       transition :import, from: [:importing], to: :imported
+      transition :set_importing, from: [:pending, :import_queued], to: :importing
       transition :set_imported, from: :importing, to: :imported
       transition :set_failed, from: :importing, to: :failed
     end
@@ -201,6 +202,7 @@ defmodule DataAggregator.Records.Import do
 
     update :enqueue_import do
       accept []
+      change Import.Changes.SetCollectionImportingBeforeTransaction
       change transition_state(:import_queued)
       change Import.Changes.EnqueueImporter
       change load(:job)
@@ -219,7 +221,7 @@ defmodule DataAggregator.Records.Import do
 
     update :set_importing do
       accept []
-      change set_attribute(:state, :importing)
+      change transition_state(:importing)
       change set_attribute(:started_at, &DateTime.utc_now/0)
       change set_attribute(:finished_at, nil)
       change set_attribute(:rows_imported_count, 0)
@@ -240,12 +242,14 @@ defmodule DataAggregator.Records.Import do
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:rows_imported_count, 0)
+      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :set_imported do
       accept []
       change transition_state(:imported)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
+      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :update_error_log do
@@ -261,8 +265,11 @@ defmodule DataAggregator.Records.Import do
     prefix "import"
 
     publish_all :create, [[:collection_id, nil], "created"]
-    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
+    publish :set_importing, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_imported, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_failed, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :update_mapping, [[:collection_id, nil], "updated", [:id, nil]]
   end
 
   code_interface do

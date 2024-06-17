@@ -28,6 +28,8 @@ erDiagram
     varchar name
     varchar code
     varchar grscicoll_reference
+    varchar grscicoll_institution_key
+    varchar grscicoll_institution_code
     varchar description
     varchar gbif_dataset_key
     array import_mapping
@@ -35,6 +37,7 @@ erDiagram
     timestamp inserted_at
     timestamp updated_at
     uuid institution_id
+    varchar state
   }
   encoded_records {
     jsonb ext_vernacular_names
@@ -305,7 +308,7 @@ erDiagram
     varchar eve_event_id
     float eve_cover_water_in_percentage
     float eve_cover_trees_in_percentage
-    float eve_cover_toal_in_percentage
+    float eve_cover_total_in_percentage
     float eve_cover_shrubs_in_percentage
     float eve_cover_rock_in_percentage
     float eve_cover_mosses_in_percentage
@@ -317,6 +320,7 @@ erDiagram
     varchar eve_aspect
     uuid id PK
     jsonb extra_data
+    varchar iucn_redlist_category
     timestamp inserted_at
     timestamp updated_at
     uuid record_id
@@ -371,8 +375,10 @@ erDiagram
     integer rows_valid_count
     integer rows_invalid_count
     integer rows_imported_count
+    integer rows_error_count
     uuid collection_id
     uuid attachment_id
+    uuid error_log_id
     integer job_id
     varchar state
   }
@@ -666,7 +672,7 @@ erDiagram
     varchar eve_event_id
     float eve_cover_water_in_percentage
     float eve_cover_trees_in_percentage
-    float eve_cover_toal_in_percentage
+    float eve_cover_total_in_percentage
     float eve_cover_shrubs_in_percentage
     float eve_cover_rock_in_percentage
     float eve_cover_mosses_in_percentage
@@ -682,6 +688,7 @@ erDiagram
     jsonb errors
     varchar fast_track_status
     varchar approval_status
+    varchar iucn_redlist_category
     timestamp inserted_at
     timestamp updated_at
     uuid collection_id
@@ -749,6 +756,7 @@ erDiagram
   collections ||--|{ records : ""
   encoded_records ||--|{ encoded_records_versions : ""
   file_attachments ||--|{ exports : ""
+  file_attachments ||--|{ imports : ""
   file_attachments ||--|{ imports : ""
   file_attachments ||--|{ publications : ""
   file_attachments ||--|{ record_images : ""

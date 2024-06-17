@@ -3,41 +3,43 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Helpers do
   This module contains helper functions for the collection > import live view.
   """
 
-  alias DataAggregator.PubSub
-  alias DataAggregator.Records.Collection
-  alias Phoenix.LiveView.Socket
+  def load do
+    [
+      :duration,
+      :collection_name,
+      :records_count,
+      :missing_mappings,
+      :attachment_filename,
+      :attachment_byte_size,
+      attachment: [:filename, :url, :byte_size]
+    ]
+  end
 
-  require Logger
-
-  def subscribe_for_import_updates(socket, connected) do
-    with true <- connected,
-         %Socket{assigns: %{collection: collection}} <- socket,
-         %Collection{id: id} <- collection do
-      topic = [
-        "import:#{id}:created",
-        "import:#{id}:updated",
-        "import:#{id}:destroyed"
+  def load_all do
+    load() ++
+      [
+        :job,
+        :import_progress,
+        :rows_validated_count,
+        :rows_invalid_count,
+        :validation_progress,
+        :mappings,
+        :collection,
+        error_log: [:filename, :url, :byte_size]
       ]
-
-      PubSub.subscribe(topic)
-      socket
-    else
-      false ->
-        socket
-
-      other ->
-        Logger.warning("Unable to subscribe for collection -> import updates: #{other}")
-        socket
-    end
   end
 
-  def can_run?(import) do
-    cond do
-      length(import.missing_mappings) > 0 -> false
-      import.state in [:pending] -> true
-      true -> false
-    end
-  end
+  def invalid?(nil), do: false
+  def invalid?(import), do: length(import.missing_mappings) > 0
+
+  def can_run?(nil), do: false
+  def can_run?(import), do: invalid?(import) == false and import.state in [:pending]
+
+  def can_edit?(nil), do: false
+  def can_edit?(import), do: import.state in [:pending]
+
+  def can_delete?(nil), do: false
+  def can_delete?(import), do: import.state in [:pending, :imported, :failed]
 
   def current_step(action) do
     case action do

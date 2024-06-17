@@ -53,6 +53,8 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
   @doc """
   Renders a secondary navigation item.
 
+  Either the href or the on_click attribute must be set.
+
   ## Example
 
   ```heex
@@ -61,21 +63,57 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
   """
 
   attr :label, :string, required: true, doc: "Label of the item"
-  attr :href, :string, required: true, doc: "URL of the item"
+  attr :href, :string, default: nil, doc: "URL of the item"
+
+  attr :on_click, :any,
+    default: nil,
+    doc: "Either a string or a JavaScript function to call on click"
+
   attr :active, :boolean, default: false, doc: "Whether the item is active"
 
-  def secondary_navigation_item(assigns) do
+  attr :rest, :global,
+    include: ~w(phx-target),
+    doc: "Additional attributes"
+
+  def secondary_navigation_item(%{href: nil, on_click: nil}) do
+    raise """
+    You must provide either a `href` or an `on_click` attribute for the secondary_navigation_item.
+    """
+  end
+
+  def secondary_navigation_item(%{href: _href, on_click: nil} = assigns) do
     ~H"""
     <li class="snap-start first:pl-6 last:pr-6 lg:first:pl-8 lg:last:pr-8">
       <.link
         navigate={@href}
         class={[
+          "whitespace-nowrap",
           @active && "text-primary",
           @active == false && "hover:text-base-content"
         ]}
+        {@rest}
       >
         <%= @label %>
       </.link>
+    </li>
+    """
+  end
+
+  def secondary_navigation_item(%{href: nil, on_click: _on_click} = assigns) do
+    ~H"""
+    <li class="snap-start first:pl-6 last:pr-6 lg:first:pl-8 lg:last:pr-8">
+      <button
+        type="button"
+        class={[
+          "whitespace-nowrap",
+          @active && "text-primary",
+          @active == false && "hover:text-base-content"
+        ]}
+        phx-click={@on_click}
+        {@rest}
+      >
+        <%= @label %>
+      </button>
     </li>
     """
   end

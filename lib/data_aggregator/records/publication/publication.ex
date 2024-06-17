@@ -47,7 +47,10 @@ defmodule DataAggregator.Records.Publication do
   end
 
   calculations do
-    calculate :publication_progress, :float, expr(published_count / rows_count)
+    calculate :publication_progress,
+              :float,
+              expr(published_count / if(rows_count == 0, do: 1, else: rows_count))
+
     calculate :duration, :time, expr((finished_at || now()) - started_at)
 
     calculate :collection_name, :string, expr(collection.name)
@@ -68,6 +71,7 @@ defmodule DataAggregator.Records.Publication do
     transitions do
       transition :enqueue, from: [:pending, :done, :failed], to: :queued
       transition :run, from: [:pending, :done, :failed, :queued], to: :running
+      transition :set_running, from: [:pending, :done, :failed, :queued], to: :running
       transition :set_done, from: :running, to: :done
       transition :set_failed, from: :running, to: :failed
     end
@@ -102,6 +106,7 @@ defmodule DataAggregator.Records.Publication do
 
     update :enqueue do
       accept []
+      change Changes.SetCollectionPublishingBeforeTransaction
       change transition_state(:queued)
       change Changes.EnqueuePublisher
     end
@@ -116,7 +121,7 @@ defmodule DataAggregator.Records.Publication do
 
     update :set_running do
       accept []
-      change set_attribute(:state, :running)
+      change transition_state(:running)
       change set_attribute(:started_at, &DateTime.utc_now/0)
       change set_attribute(:finished_at, nil)
     end
@@ -124,6 +129,7 @@ defmodule DataAggregator.Records.Publication do
     update :set_failed do
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
+      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :run do
@@ -142,6 +148,7 @@ defmodule DataAggregator.Records.Publication do
       change transition_state(:done)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:published_at, &DateTime.utc_now/0)
+      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :update_attachment do
@@ -157,8 +164,10 @@ defmodule DataAggregator.Records.Publication do
     prefix "publication"
 
     publish_all :create, [[:collection_id, nil], "created"]
-    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
+    publish :set_running, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_done, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_failed, [[:collection_id, nil], "updated", [:id, nil]]
   end
 
   code_interface do

@@ -128,10 +128,4 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
     </.badge>
     """
   end
-
-  defmacro __using__(_opts) do
-    quote do
-      import DataAggregatorWeb.CollectionLive.Publication.Components
-    end
-  end
 end

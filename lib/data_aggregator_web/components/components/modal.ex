@@ -6,7 +6,7 @@ defmodule DataAggregatorWeb.Components.Modal do
   use Phoenix.Component
 
   import DataAggregatorWeb.Blocks.Header, only: [section_heading: 1]
-  import DataAggregatorWeb.Components.CloseButton, only: [close_button: 1]
+  import DataAggregatorWeb.Components.Button, only: [close_button: 1]
   import DataAggregatorWeb.Gettext
 
   alias Phoenix.LiveView.JS
@@ -148,6 +148,14 @@ defmodule DataAggregatorWeb.Components.Modal do
 
   slot :footer, doc: "The sticky modal footer." do
     attr :class, :string, doc: "Additional CSS classes to add to the footer slot."
+
+    attr :reverse, :boolean,
+      doc: """
+      Whether to reverse the order of the footer items.
+
+      Usefull to enforce that the submit button is focused first.
+      Default is true.
+      """
   end
 
   slot :inner_block, required: true, doc: "The modal content."
@@ -156,6 +164,7 @@ defmodule DataAggregatorWeb.Components.Modal do
     ~H"""
     <dialog
       id={@id}
+      role="dialog"
       class={[
         "modal",
         @responsive && "modal-bottom max-sm:items-end sm:modal-middle",
@@ -212,6 +221,7 @@ defmodule DataAggregatorWeb.Components.Modal do
               :for={footer <- @footer}
               id={@id}
               footer_class={footer[:class]}
+              reverse={if is_nil(footer[:reverse]), do: true, else: footer[:reverse]}
               gradient={@gradient}
             >
               <%= render_slot(@footer) %>
@@ -331,6 +341,15 @@ defmodule DataAggregatorWeb.Components.Modal do
 
   attr :gradient, :boolean, default: true, doc: "Whether to show a gradient above the footer."
 
+  attr :reverse, :boolean,
+    default: true,
+    doc: """
+    Whether to reverse the order of the footer items.
+
+    Usefull to enforce that the submit button is focused first.
+    Default is true.
+    """
+
   slot :inner_block, required: true, doc: "The footer content."
 
   def modal_footer(assigns) do
@@ -338,7 +357,8 @@ defmodule DataAggregatorWeb.Components.Modal do
     <footer id={"#{@id}_footer"} class="relative">
       <div :if={@gradient} class="from-base-100 top-[-1.5rem] absolute h-6 w-full bg-gradient-to-t" />
       <div class={[
-        "border-black-white/10 modal-action mt-0 flex flex-row-reverse items-center justify-start border-t px-6 py-4",
+        "border-black-white/10 modal-action mt-0 flex items-center justify-start border-t px-6 py-4",
+        @reverse && "flex-row-reverse justify-start",
         @footer_class
       ]}>
         <%= render_slot(@inner_block) %>

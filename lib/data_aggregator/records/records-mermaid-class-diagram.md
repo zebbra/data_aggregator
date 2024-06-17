@@ -7,17 +7,26 @@ classDiagram
         String name
         String code
         String grscicoll_reference
+        String grscicoll_institution_key
+        String grscicoll_institution_code
         String description
         String gbif_dataset_key
         Map[] import_mapping
         CollectionType type
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        Atom state
         Float digitizing_progress
         Atom encoding_state
         Map records_to_export_query
         Map fast_track_query
         Map approval_query
+        Boolean importing
+        Boolean exporting
+        Boolean encoding
+        Boolean publishing
+        Boolean approving
+        Boolean busy
         Integer records_count
         Integer imports_count
         Integer records_count_not_encoded
@@ -26,7 +35,6 @@ classDiagram
         Integer records_count_encoding
         Integer records_count_encoded
         Integer records_count_failed
-        Integer records_publishing
         Institution institution
         Import[] imports
         Export[] exports
@@ -38,6 +46,13 @@ classDiagram
         update_import_mapping(Map[] import_mapping)
         touch(UUID id, Integer items_to_digitize, String owner, String name, ...)
         register_at_gbif(String dwca_file_url, UUID id, Integer items_to_digitize, String owner, ...)
+        set_importing()
+        set_exporting()
+        set_encoding()
+        set_fast_track_publishing()
+        set_approving()
+        set_idle()
+        set_idle_encoding()
         export(Struct export)
         publish(Struct publication)
     }
@@ -310,7 +325,7 @@ classDiagram
         String eve_event_id
         Float eve_cover_water_in_percentage
         Float eve_cover_trees_in_percentage
-        Float eve_cover_toal_in_percentage
+        Float eve_cover_total_in_percentage
         Float eve_cover_shrubs_in_percentage
         Float eve_cover_rock_in_percentage
         Float eve_cover_mosses_in_percentage
@@ -322,6 +337,7 @@ classDiagram
         String eve_aspect
         UUID id
         Map extra_data
+        String iucn_redlist_category
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Version[] paper_trail_versions
@@ -398,6 +414,7 @@ classDiagram
         Integer rows_valid_count
         Integer rows_invalid_count
         Integer rows_imported_count
+        Integer rows_error_count
         Integer job_id
         Atom state
         Float import_progress
@@ -415,8 +432,10 @@ classDiagram
         Integer records_count
         Collection collection
         Attachment attachment
+        Attachment error_log
         Record[] records
         Job job
+        update(UUID id, Column[] columns, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at, ...)
         destroy()
         read(String sort)
         by_collection(String collection_id, String sort)
@@ -430,6 +449,7 @@ classDiagram
         add_import_progress(Integer imported)
         set_failed()
         set_imported()
+        update_error_log(Attachment error_log)
     }
     class Record {
         Import import
@@ -744,7 +764,7 @@ classDiagram
         String eve_event_id
         Float eve_cover_water_in_percentage
         Float eve_cover_trees_in_percentage
-        Float eve_cover_toal_in_percentage
+        Float eve_cover_total_in_percentage
         Float eve_cover_shrubs_in_percentage
         Float eve_cover_rock_in_percentage
         Float eve_cover_mosses_in_percentage
@@ -760,11 +780,13 @@ classDiagram
         Map errors
         PublicationStatusType fast_track_status
         PublicationStatusType approval_status
+        String iucn_redlist_category
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Integer encoder_job_id
         Integer fast_track_checker_job_id
         Atom state
+        Boolean iucn_redlist
         Integer mids_level
         Boolean mids_level_one
         Boolean mids_level_two

@@ -12,7 +12,7 @@ defmodule DataAggregator.Records.Publication.Changes.EnqueuePublisher do
 
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    enqueue_publisher(changeset)
+    Changeset.before_action(changeset, &enqueue_publisher/1)
   end
 
   defp enqueue_publisher(%Changeset{data: publication} = changeset) do

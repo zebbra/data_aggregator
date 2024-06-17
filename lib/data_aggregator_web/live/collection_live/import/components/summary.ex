@@ -7,7 +7,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
 
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Components
-  import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
+  import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1, can_run?: 1]
 
   alias DataAggregator.Records.Import
 
@@ -88,7 +88,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
                 |> Enum.filter(&(&1.mapped? == false))
                 |> Enum.map(& &1.name)
             }
-            class="bg-base-200 mr-1 mb-1 inline-flex rounded px-2 py-1 text-xs"
+            class="bg-base-200 mr-2.5 mb-2 inline-flex rounded px-2 py-1 text-sm"
           >
             <%= col %>
           </span>
@@ -97,7 +97,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
 
       <.modal_footer id={@id}>
         <button
-          :if={@import.state == :pending}
+          disabled={@busy || can_run?(@import) == false}
           type="button"
           class="btn btn-primary"
           phx-click="import:run"
@@ -120,12 +120,30 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
 
   @impl true
   def handle_event("import:run", _params, socket) do
-    Import.enqueue_import!(socket.assigns.import)
+    case Import.enqueue_import(socket.assigns.import) do
+      {:ok, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, ~t"Import started in background"m)
+         |> close_and_redirect()}
 
-    {:noreply,
-     socket
-     |> put_flash(:info, ~t"Import started in background"m)
-     |> push_event("submit:close", %{})
-     |> push_patch(to: build_path(~p"/collections/#{socket.assigns.collection}/imports", socket.assigns.meta))}
+      {:error, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, ~t"An import for this collection is already in process"m)
+         |> close_and_redirect()}
+    end
+  end
+
+  defp close_and_redirect(socket) do
+    socket
+    |> push_event("submit:close", %{})
+    |> push_patch(
+      to:
+        build_path(
+          ~p"/collections/#{socket.assigns.collection}/imports",
+          socket.assigns.meta
+        )
+    )
   end
 end

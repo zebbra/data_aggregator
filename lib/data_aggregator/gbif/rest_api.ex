@@ -3,8 +3,10 @@ defmodule DataAggregator.Gbif.RestAPI do
   Module to interact with the GBIF Rest API
   """
   import DataAggregator.Api.Helpers
+  import DataAggregator.Helpers, only: [distinct: 2]
 
   alias DataAggregator.Cache.HttpDiskCache
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Types.Api
 
   require Logger
@@ -94,6 +96,18 @@ defmodule DataAggregator.Gbif.RestAPI do
   @spec get_collection_options() :: [{String.t(), String.t()}]
   def get_collection_options do
     Enum.map(lookup_all_collections(), &{"#{&1["code"]} - #{&1["name"]}", &1["key"]})
+  end
+
+  @doc """
+  Get all available collections from the GrsciCol API and parse them to have options for
+  UI Select Options.
+
+  Available collections are collections that are not already in use in the database.
+  """
+  @spec get_available_collection_options() :: [{String.t(), String.t()}]
+  def get_available_collection_options do
+    collections_in_use = distinct(Collection, :grscicoll_reference)
+    Enum.reject(get_collection_options(), fn {_, key} -> key in collections_in_use end)
   end
 
   @doc """

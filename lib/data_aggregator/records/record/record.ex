@@ -327,8 +327,6 @@ defmodule DataAggregator.Records.Record do
     module DataAggregator.PubSub
     prefix "record"
 
-    publish_all :create, [[:collection_id, nil], "created", [:id, nil]]
-    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
   end
 

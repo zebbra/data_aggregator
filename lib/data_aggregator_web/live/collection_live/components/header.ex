@@ -4,7 +4,6 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   """
 
   use DataAggregatorWeb, :html
-  use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_indicator: 1]
 
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
 
@@ -16,6 +15,8 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   attr :collection_id, :any, default: nil
   attr :collection, Collection, default: nil
+  attr :disabled, :boolean, default: false, doc: "Whether the header action is disabled."
+  attr :busy, :boolean, default: false, doc: "Whether the header action is busy."
 
   attr :current, :atom,
     default: :records,
@@ -46,9 +47,13 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         <.link
           :if={@current in [:records, :imports]}
           patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
-          class="btn btn-primary btn-sm"
+          class={[
+            "btn btn-primary btn-sm",
+            @disabled && "btn-disabled"
+          ]}
         >
-          <.icon name="hero-arrow-up-tray" class="size-4" />
+          <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
+          <.icon :if={@busy == false} name="hero-arrow-up-tray" class="size-4" />
           <%= ~t"Add"m %>
         </.link>
       </:breadcrumbs>
@@ -57,39 +62,41 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           class="max-sm:hidden text-base-content font-bold text-3xl tracking-tight"
           items={[
             %{label: ~t"Collections"m, link: ~p"/collections"},
-            %{label: @collection.name, link: "#"}
+            %{label: "#{@collection.code} - #{@collection.name}", link: "#"}
           ]}
         />
+        <h2 class="text-base-content text-2xl font-bold tracking-tight max-sm:line-clamp-2 sm:hidden sm:truncate sm:text-3xl">
+          <%= @collection.code %> - <%= @collection.name %>
+        </h2>
       </:title>
       <:subtitle>
-        <div
+        <.link
           :if={@collection.gbif_dataset_key !== nil}
-          class="text-base-content/60 text-sm/6 line-clamp-3 flex max-w-4xl items-center gap-x-2 sm:mt-2"
+          class="link link-primary link-hover text-sm/6 flex max-w-4xl items-center gap-x-2 sm:mt-2"
+          target="_blank"
+          href={"#{@gbif_dataset_base_url}/#{@collection.gbif_dataset_key}"}
         >
-          <.link
-            class="tooltip tooltip-bottom inline-flex items-center text-primary gap-x-2"
-            target="_blank"
-            data-tip={~t"Open dataset on GBIF"}
-            href={"#{@gbif_dataset_base_url}/#{@collection.gbif_dataset_key}"}
-          >
-            <%= @collection.code %> | <%= @collection.name %>
-            <.icon name="hero-arrow-top-right-on-square" class="size-4" />
-          </.link>
-        </div>
+          <%= ~t"Show on GBIF" %>
+          <.icon name="hero-arrow-top-right-on-square" class="size-4" />
+        </.link>
 
         <div
           :if={@collection.gbif_dataset_key === nil}
-          class="text-base-content/60 text-sm/6 line-clamp-3 flex max-w-4xl items-center gap-x-2 sm:mt-2"
+          class="text-base-content/60 text-sm/6 flex max-w-4xl items-center gap-x-2 sm:mt-2"
         >
-          <%= @collection.code %> - <%= @collection.name %>
+          <%= @collection.code %>
         </div>
       </:subtitle>
       <:actions :if={@current in [:records, :imports]} class="max-sm:hidden">
         <.link
           patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
-          class="btn btn-primary"
+          class={[
+            "btn btn-primary",
+            @disabled && "btn-disabled"
+          ]}
         >
-          <.icon name="hero-arrow-up-tray" />
+          <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" />
+          <.icon :if={@busy == false} name="hero-arrow-up-tray" />
           <%= ~t"Import dataset"m %>
         </.link>
       </:actions>

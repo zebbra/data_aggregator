@@ -90,6 +90,110 @@ defmodule DataAggregator.ExportTest do
     end
   end
 
+  describe "enqueue/1" do
+    @collection_mapping [
+      %{name: "Scientific Name - collection", mapped_to: "tax_scientific_name"},
+      %{name: "Numéro scientifique GBIF - collection", mapped_to: "mte_catalog_number"}
+    ]
+
+    setup do
+      collection =
+        Records.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
+          :records_to_export_query
+        ])
+
+      # those two should be exported
+      exportable_record(collection)
+      exportable_record(collection)
+      # this one should not be exported
+      unexportable_record(collection)
+
+      export =
+        Export.create!(%{
+          name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+          collection: collection,
+          mapping: nil,
+          records_query: collection.records_to_export_query,
+          data_layer: :raw,
+          header_source: :collection_mapping
+        })
+
+      [collection: collection, export: export]
+    end
+
+    test "enqueue/1 succeeds if collection state is idle", %{
+      collection: collection,
+      export: export
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {:ok, export} = Export.enqueue(export)
+
+        assert export.state == :queued
+        assert_enqueued(worker: Export.Workers.Exporter, args: %{id: export.id})
+
+        collection = Collection.get_by_id!(collection.id)
+        assert collection.state == :exporting
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state importing", %{
+      collection: collection,
+      export: export
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_importing!(collection)
+        assert_not_enqueued(export)
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state exporting", %{
+      collection: collection,
+      export: export
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_exporting!(collection)
+        assert_not_enqueued(export)
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state encoding", %{
+      collection: collection,
+      export: export
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_encoding!(collection)
+        assert_not_enqueued(export)
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state approving", %{
+      collection: collection,
+      export: export
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_approving!(collection)
+        assert_not_enqueued(export)
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state fast_track_publishing", %{
+      collection: collection,
+      export: export
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_fast_track_publishing!(collection)
+        assert_not_enqueued(export)
+      end)
+    end
+
+    defp assert_not_enqueued(export) do
+      assert {:error, %Ash.Error.Invalid{}} = Export.enqueue(export)
+      export = Export.get_by_id!(export.id)
+      assert export.state == :pending
+      refute_enqueued(worker: Export.Workers.Exporter, args: %{id: export.id})
+    end
+  end
+
   describe "export" do
     @valid_custom_mapping %{
       "mte_catalog_number" => "Numéro scientifique GBIF",

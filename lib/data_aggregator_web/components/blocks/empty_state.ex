@@ -39,7 +39,12 @@ defmodule DataAggregatorWeb.Blocks.EmptyState do
     default: "hero-folder",
     doc: "The icon to display in the empty state button."
 
-  attr :href, :string, required: true, doc: "The URL to navigate to when the button is clicked."
+  attr :href, :string,
+    default: nil,
+    doc: """
+    The URL to navigate to when the button is clicked.
+    If left empty, the button will not be displayed.
+    """
 
   def empty_state(assigns) do
     ~H"""
@@ -48,7 +53,7 @@ defmodule DataAggregatorWeb.Blocks.EmptyState do
         <.icon name={@icon} class="text-base-content/50" />
         <h3 class="text-base-content mt-2 text-sm font-semibold"><%= @title %></h3>
         <p class="text-base-content/60 mt-1 text-sm"><%= @description %></p>
-        <div class="mt-6">
+        <div :if={@href} class="mt-6">
           <.link navigate={@href} type="button" class="btn btn-primary max-sm:btn-sm">
             <.icon name="hero-plus-mini" />
             <%= @label %>

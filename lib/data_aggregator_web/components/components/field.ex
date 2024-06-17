@@ -127,6 +127,7 @@ defmodule DataAggregatorWeb.Components.Field do
       phx-feedback-for={@name}
       class={[
         "form-control grid items-center gap-x-4 gap-y-1",
+        @class,
         @inline && "sm:col-span-3",
         @hidden && "hidden"
       ]}
@@ -154,7 +155,11 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <div
       phx-feedback-for={@name}
-      class={["form-control grid items-center gap-x-4 gap-y-1 sm:col-span-3", @hidden && "hidden"]}
+      class={[
+        "form-control grid items-center gap-x-4 gap-y-1 sm:col-span-3",
+        @class,
+        @hidden && "hidden"
+      ]}
     >
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
@@ -181,6 +186,7 @@ defmodule DataAggregatorWeb.Components.Field do
       phx-feedback-for={@name}
       class={[
         "form-control grid-cols-[1.5rem] grid items-center gap-x-4 gap-y-1",
+        @class,
         @hidden && "hidden"
       ]}
     >
@@ -213,7 +219,11 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <div
       phx-feedback-for={@name}
-      class={["form-control grid items-center gap-x-4 gap-y-1 sm:col-span-3", @hidden && "hidden"]}
+      class={[
+        "form-control grid items-center gap-x-4 gap-y-1 sm:col-span-3",
+        @class,
+        @hidden && "hidden"
+      ]}
     >
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
@@ -240,6 +250,7 @@ defmodule DataAggregatorWeb.Components.Field do
       phx-feedback-for={@name}
       class={[
         "form-control grid-cols-[1.5rem] grid items-center gap-x-4 gap-y-1",
+        @class,
         @hidden && "hidden"
       ]}
     >
@@ -269,7 +280,7 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <div
       phx-feedback-for={@name}
-      class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @hidden && "hidden"]}
+      class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @class, @hidden && "hidden"]}
     >
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
@@ -296,7 +307,7 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <div
       phx-feedback-for={@name}
-      class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @hidden && "hidden"]}
+      class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @class, @hidden && "hidden"]}
     >
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
@@ -326,7 +337,7 @@ defmodule DataAggregatorWeb.Components.Field do
     end
 
     ~H"""
-    <div phx-feedback-for={@name} class={["form-control w-full", @hidden && "hidden"]}>
+    <div phx-feedback-for={@name} class={["form-control w-full", @class, @hidden && "hidden"]}>
       <label for={@id} class="input input-bordered flex items-center gap-2">
         <%= if @label do %>
           <%= @label %>
@@ -344,7 +355,7 @@ defmodule DataAggregatorWeb.Components.Field do
 
   def field(assigns) do
     ~H"""
-    <div phx-feedback-for={@name} class={["form-control w-full", @hidden && "hidden"]}>
+    <div phx-feedback-for={@name} class={["form-control w-full", @class, @hidden && "hidden"]}>
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
       <% else %>
