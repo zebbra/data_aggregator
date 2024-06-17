@@ -39,6 +39,7 @@ defmodule DataAggregator.GbifIUCNRedlistEncodingTest do
       assert record.state === :encoded
     end
 
+    @tag capture_log: true
     test "encode/2 for :gbif_iucn_redlist catalog which identified an not_evaluated species", %{
       not_evaluated_record: record
     } do
