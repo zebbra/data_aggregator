@@ -163,11 +163,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
         """
 
       true ->
-        ~H"""
-        <.badge class="tooltip tooltip-right" data-tip={~t"Record is in an unknown state"m} color="blue">
-          <.icon name="hero-question-mark-circle-solid" class="size-5 shrink-0" />
-        </.badge>
-        """
+        publication_or_approval_activity_badge(assigns)
     end
   end
 
@@ -281,17 +277,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
         """
 
       true ->
-        ~H"""
-        <span class="font-medium">
-          <%= ~t"Record is in"m %>
-        </span>
-        <.badge color="blue">
-          <%= ~t"Unknown"m %>
-        </.badge>
-        <span class="font-medium">
-          <%= ~t"state. Please re-import or encode your collection"m %>
-        </span>
-        """
+        publication_or_approval_activity(assigns)
     end
   end
 
@@ -301,6 +287,56 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       <%= @activity.name %> - <%= inspect(@activity.content) %>
     </span>
     """
+  end
+
+  defp publication_or_approval_activity(%{activity: activity} = assigns) do
+    case activity.name do
+      :update_approval_status ->
+        ~H"""
+        <span class="font-medium">
+          <%= ~t"Approval status was updated"m %>
+        </span>
+        """
+
+      :update_fast_track_status ->
+        ~H"""
+        <span class="font-medium">
+          <%= ~t"Publication status was updated"m %>
+        </span>
+        """
+
+      _ ->
+        ~H"""
+        <span class="font-medium">
+          <%= @activity.name %>
+        </span>
+        """
+    end
+  end
+
+  defp publication_or_approval_activity_badge(%{activity: activity} = assigns) do
+    case activity.name do
+      :update_approval_status ->
+        ~H"""
+        <.badge color="green">
+          <.icon name="hero-check-badge" class="size-5 shrink-0" />
+        </.badge>
+        """
+
+      :update_fast_track_status ->
+        ~H"""
+        <.badge color="green">
+          <.icon name="hero-globe-alt" class="size-5 shrink-0" />
+        </.badge>
+        """
+
+      _ ->
+        ~H"""
+        <.badge color="orange">
+          <.icon name="hero-question-mark-circle-solid" class="size-5 shrink-0" />
+        </.badge>
+        """
+    end
   end
 
   defp assign_activities(assigns) do

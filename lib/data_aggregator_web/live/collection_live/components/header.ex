@@ -10,6 +10,10 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   alias DataAggregator.Records.Collection
 
+  @gbif_dataset_base_url :data_aggregator
+                         |> Application.compile_env(:gbif, [])
+                         |> Keyword.get(:dataset_url)
+
   attr :collection_id, :any, default: nil
   attr :collection, Collection, default: nil
 
@@ -22,10 +26,13 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   def collection_header(%{collection: nil} = assigns) do
     assigns
     |> assign(:collection, get_collection(assigns.collection_id))
+    |> assign(:gbif_dataset_base_url, @gbif_dataset_base_url)
     |> collection_header()
   end
 
   def collection_header(assigns) do
+    assigns = assign_new(assigns, :gbif_dataset_base_url, fn -> @gbif_dataset_base_url end)
+
     ~H"""
     <.page_header title_class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
       <:breadcrumbs class="sm:hidden flex items-center justify-between px-6 mt-1 min-h-8">
@@ -53,13 +60,28 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             %{label: @collection.name, link: "#"}
           ]}
         />
-        <h2 class="text-base-content text-2xl font-bold max-sm:line-clamp-2 sm:hidden sm:truncate sm:text-3xl sm:tracking-tight">
-          <%= @collection.code %> - <%= @collection.name %>
-        </h2>
       </:title>
       <:subtitle>
-        <div class="text-base-content/60 text-sm/6 line-clamp-3 flex max-w-4xl items-center gap-x-2 sm:mt-2">
-          <%= @collection.code %>
+        <div
+          :if={@collection.gbif_dataset_key !== nil}
+          class="text-base-content/60 text-sm/6 line-clamp-3 flex max-w-4xl items-center gap-x-2 sm:mt-2"
+        >
+          <.link
+            class="tooltip tooltip-bottom inline-flex items-center text-primary gap-x-2"
+            target="_blank"
+            data-tip={~t"Open dataset on GBIF"}
+            href={"#{@gbif_dataset_base_url}/#{@collection.gbif_dataset_key}"}
+          >
+            <%= @collection.code %> | <%= @collection.name %>
+            <.icon name="hero-arrow-top-right-on-square" class="size-4" />
+          </.link>
+        </div>
+
+        <div
+          :if={@collection.gbif_dataset_key === nil}
+          class="text-base-content/60 text-sm/6 line-clamp-3 flex max-w-4xl items-center gap-x-2 sm:mt-2"
+        >
+          <%= @collection.code %> - <%= @collection.name %>
         </div>
       </:subtitle>
       <:actions :if={@current in [:records, :imports]} class="max-sm:hidden">

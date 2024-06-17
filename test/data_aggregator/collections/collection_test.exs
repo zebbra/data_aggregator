@@ -54,7 +54,10 @@ defmodule DataAggregator.CollectionTest do
         grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
       }
 
-      assert {:ok, %Collection{} = _collection} = Collection.create(attrs)
+      assert {:ok, %Collection{} = collection} = Collection.create(attrs)
+
+      assert collection.grscicoll_institution_key === "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+      assert collection.grscicoll_institution_code === "Z"
     end
 
     test "create/1 with invalid data returns error changeset" do

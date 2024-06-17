@@ -13,7 +13,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket |> assign(assigns) |> assign_export() |> assign_form()}
+    {:ok, socket |> assign(assigns) |> assign_row_count() |> assign_form()}
   end
 
   @impl true
@@ -26,7 +26,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
           description={
             mgettext(
               "You are about to export %{row_count} records. Please choose the column headers for your export file and the data layer to be exported.",
-              row_count: @export.rows_count
+              row_count: @row_count
             )
           }
           size="md"
@@ -119,17 +119,27 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
 
   @impl true
   def handle_event("export:save", params, socket) do
-    %{collection: collection, export: export} = socket.assigns
+    %{collection: collection, meta: %{pagify: pagify}, rows_count: rows_count} = socket.assigns
+
+    collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
+
+    records_to_export_query =
+      Record
+      |> Pagify.compile_filters(pagify)
+      |> Pagify.merge_filters(collection.records_to_export_query)
+      |> Map.get(:filters)
 
     export =
-      export
-      |> Export.update!(%{
+      %{
+        name: "export-#{collection.name}-#{:os.system_time()}",
+        collection: collection,
+        mapping: nil,
+        records_query: records_to_export_query,
+        rows_count: rows_count,
         header_source: params["header_source"],
-        data_layer: params["data_layer"],
-        # set the mapping manual, if you want to use
-        # custom headers from the current selection
-        mapping: nil
-      })
+        data_layer: params["data_layer"]
+      }
+      |> Export.create!()
       |> Export.enqueue!()
 
     {
@@ -144,7 +154,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
     assign(socket, :form, %{})
   end
 
-  defp assign_export(socket) do
+  defp assign_row_count(socket) do
     %{collection: collection, meta: %{pagify: pagify}} = socket.assigns
     collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
 
@@ -156,15 +166,8 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
 
     count_query = Ash.Query.filter_input(Record, records_to_export_query)
 
-    export =
-      Export.create!(%{
-        name: "export-#{collection.name}-#{:os.system_time()}",
-        collection: collection,
-        mapping: nil,
-        records_query: records_to_export_query,
-        rows_count: Records.count!(count_query)
-      })
+    row_count = Records.count!(count_query)
 
-    assign(socket, :export, export)
+    assign(socket, :row_count, row_count)
   end
 end

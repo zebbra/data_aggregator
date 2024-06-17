@@ -64,6 +64,9 @@ defmodule DataAggregator.RecordTest do
       assert length(record.paper_trail_versions) == 1
       assert record.occ_occurrence_id === record.mte_catalog_number
       assert record.oth_basis_of_record === "PreservedSpecimen"
+
+      assert record.oth_institution_id === "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+      assert record.oth_institution_code === "Z"
     end
 
     test "create/1 with invalid data returns error changeset" do
@@ -207,7 +210,7 @@ defmodule DataAggregator.RecordTest do
       record = Records.load!(record, [:paper_trail_versions])
 
       # changed publication states in after_action hook leads to one additional change per record
-      assert length(record.paper_trail_versions) == 3
+      assert length(record.paper_trail_versions) == 1
     end
 
     test "updating a record for the same import", %{import: import} do
@@ -246,7 +249,7 @@ defmodule DataAggregator.RecordTest do
 
       record = Records.load!(record, [:paper_trail_versions])
 
-      assert length(record.paper_trail_versions) == 4
+      assert length(record.paper_trail_versions) == 2
     end
 
     test "updating a record from another import", %{import: import} do
@@ -284,7 +287,7 @@ defmodule DataAggregator.RecordTest do
       record = Records.load!(record, [:paper_trail_versions])
 
       # changed publication states in after_action hook leads to one additional change per record
-      assert length(record.paper_trail_versions) == 4
+      assert length(record.paper_trail_versions) == 2
     end
 
     test "importing a record for another collection", %{import: import} do

@@ -34,6 +34,8 @@ defmodule DataAggregator.Records.Record do
 
   @type t :: %Record{}
 
+  @iucn_redlist_categories ["EX", "EW", "RE", "CR(PE)", "CR", "EN"]
+
   @pagify_scopes %{
     status: [
       %{name: :all, filter: nil, default?: true},
@@ -63,6 +65,7 @@ defmodule DataAggregator.Records.Record do
       default: :not_published
 
     attribute :approval_status, PublicationStatusType, allow_nil?: false, default: :not_published
+    attribute :iucn_redlist_category, :string, allow_nil?: true
 
     timestamps private?: false, writable?: false
   end
@@ -108,6 +111,13 @@ defmodule DataAggregator.Records.Record do
   end
 
   calculations do
+    calculate :iucn_redlist,
+              :boolean,
+              expr(
+                :iucn_redlist_category in @iucn_redlist_categories or
+                  encoded_record.iucn_redlist_category in @iucn_redlist_categories
+              )
+
     calculate :mids_level,
               :integer,
               expr(
@@ -166,7 +176,7 @@ defmodule DataAggregator.Records.Record do
       transition :set_imported, from: [:encoded, :failed, :encoding, :imported], to: :imported
 
       transition :enqueue_encoder,
-        from: [:imported, :encoded, :failed, :iencoded, :encoding],
+        from: [:imported, :encoded, :failed, :encoding],
         to: :queued
 
       transition :set_encoding,
@@ -212,6 +222,7 @@ defmodule DataAggregator.Records.Record do
       primary? true
       argument :collection, Collection, allow_nil?: false
 
+      change Record.Changes.SetGrSciCollInstitution
       change Record.Changes.SetOccurrenceID
       change Record.Changes.SetBasisOfRecord
       change Record.Changes.SetImportedAfterAction

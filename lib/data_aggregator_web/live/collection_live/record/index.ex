@@ -26,15 +26,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   require Ash.Query
 
-  @load [:collection, :encoded_record, :mids_level, :paper_trail_versions]
+  @load [:collection, :encoded_record, :mids_level, :paper_trail_versions, :iucn_redlist]
 
   @polling_interval 5_000
 
   @actions [
     {~t"Export"m, "hero-arrow-down-tray", "collection:export", nil},
     {~t"Encode"m, "hero-puzzle-piece", "collection:encode", "confirm_encoding_alert"},
-    {~t"Publish"m, "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"},
-    {~t"Approve"m, "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
+    {~t"Publish"m, "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"}
+    # at the moment there is no approval process, so we just remove the button to avoid confusion
+    # {~t"Approve"m, "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
   ]
 
   @impl true
@@ -97,7 +98,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         />
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/publications"}
-          label={~t"Publications"m}
+          label={~t"Publications and Approvals"m}
         />
       </.secondary_navigation>
 
@@ -417,7 +418,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection.type, :fast_track_status)}
           field={:fast_track_status}
-          label={~t"Fast Track Pub."m}
+          label={~t"Publication status"m}
           class="text-center"
         >
           <.publication_status_badge state={record.fast_track_status} />
@@ -426,7 +427,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection.type, :approval_status)}
           field={:approval_status}
-          label={~t"Approval Pub."m}
+          label={~t"Approval status"m}
           class="text-center"
         >
           <.publication_status_badge state={record.approval_status} />

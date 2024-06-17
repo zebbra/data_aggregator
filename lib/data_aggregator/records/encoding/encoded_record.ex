@@ -29,6 +29,8 @@ defmodule DataAggregator.Records.EncodedRecord do
   attributes do
     uuid_attribute :id, prefix: "enr"
     attribute :extra_data, :map
+    attribute :iucn_redlist_category, :string, allow_nil?: true
+
     timestamps private?: false, writable?: false
   end
 

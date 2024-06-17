@@ -18,6 +18,22 @@ Now the CI/CD pipeline will be triggered and...
 - The new Release will be deployed to the staging environment automatically
 - For Test and Production, the deployment has to be triggered manually by pulling the new docker image from quay.io and deploying it to system
 
+## Roll out
+
+No matter where and how you deploy, ensure you execute
+
+```bash
+bin/migrate
+```
+
+to have all migrations up, and
+
+```bash
+bin/catalog_init
+```
+
+to have the most recent static thesaurus data available.
+
 ## Staging - @zebbra
 
 if you do this step the first time,

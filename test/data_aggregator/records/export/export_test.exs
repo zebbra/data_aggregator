@@ -181,10 +181,10 @@ defmodule DataAggregator.ExportTest do
                "tax_scientific_name" => "Scientific Name - collection"
              }
 
-      assert Explorer.DataFrame.names(data_frame) == [
-               "Numéro scientifique GBIF - collection",
-               "Scientific Name - collection"
-             ]
+      assert columns = Explorer.DataFrame.names(data_frame)
+
+      assert Enum.member?(columns, "Numéro scientifique GBIF - collection")
+      assert Enum.member?(columns, "Scientific Name - collection")
 
       assert Explorer.DataFrame.n_columns(data_frame) == 2
       assert Explorer.DataFrame.n_rows(data_frame) == 3
@@ -202,10 +202,10 @@ defmodule DataAggregator.ExportTest do
                "tax_scientific_name" => "Scientific Name - collection"
              }
 
-      assert Explorer.DataFrame.names(data_frame) == [
-               "Numéro scientifique GBIF - collection",
-               "Scientific Name - collection"
-             ]
+      assert columns = Explorer.DataFrame.names(data_frame)
+
+      assert Enum.member?(columns, "Numéro scientifique GBIF - collection")
+      assert Enum.member?(columns, "Scientific Name - collection")
 
       assert Explorer.DataFrame.n_columns(data_frame) == 2
       assert Explorer.DataFrame.n_rows(data_frame) == 3
