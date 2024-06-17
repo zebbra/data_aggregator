@@ -1,6 +1,6 @@
-defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
+defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
   @moduledoc """
-  This module contains the modal to configure an export for collection.
+  This module contains the modal form component to configure an export for collection.
   """
 
   use DataAggregatorWeb, :live_component

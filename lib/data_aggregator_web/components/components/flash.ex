@@ -31,6 +31,10 @@ defmodule DataAggregatorWeb.Components.Flash do
   attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
   attr :stretch, :boolean, default: false, doc: "whether the flash should be full width"
 
+  attr :timeout, :integer,
+    default: nil,
+    doc: "the timeout in milliseconds before the flash is removed"
+
   slot :inner_block, doc: "the optional inner block that renders the flash message"
 
   def flash(assigns) do
@@ -41,6 +45,9 @@ defmodule DataAggregatorWeb.Components.Flash do
       :if={msg = render_slot(@inner_block) || Phoenix.Flash.get(@flash, @kind)}
       id={@id}
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
+      phx-click-away={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
+      phx-hook="FlashHook"
+      data-timeout={@timeout}
       role="alert"
       class={[
         "bg-base-100",
@@ -54,10 +61,20 @@ defmodule DataAggregatorWeb.Components.Flash do
       {@rest}
     >
       <div class={[
-        "alert overflow-hidden",
+        "alert relative overflow-hidden",
         @kind == :info && "alert-success text-success bg-success/10 border-success/20",
         @kind == :error && "alert-error text-error bg-error/10 border-error/20"
       ]}>
+        <progress
+          :if={@timeout}
+          class={[
+            "progress absolute inset-0 h-2 w-0 opacity-100 ease-linear",
+            @kind == :info && "progress-success",
+            @kind == :error && "progress-error"
+          ]}
+          value="1"
+        >
+        </progress>
         <.icon :if={@kind == :info} name="hero-information-circle-mini" class="size-6" />
         <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="size-6" />
 
@@ -107,8 +124,8 @@ defmodule DataAggregatorWeb.Components.Flash do
         class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6"
       >
         <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
-          <.flash kind={:info} title={~t"Success!"m} flash={@flash} />
-          <.flash kind={:error} title={~t"Error!"m} flash={@flash} />
+          <.flash kind={:info} title={~t"Success!"m} flash={@flash} timeout={5000} />
+          <.flash kind={:error} title={~t"Error!"m} flash={@flash} timeout={5000} />
           <.flash
             id="client-error"
             kind={:error}

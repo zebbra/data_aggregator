@@ -573,7 +573,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         >
           <.live_component
             :if={@live_action == :export}
-            module={DataAggregatorWeb.CollectionLive.Export.Modal}
+            module={DataAggregatorWeb.CollectionLive.Export.FormComponent}
             id={:new}
             action={@live_action}
             collection={@collection}
