@@ -126,7 +126,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           </.flash>
 
           <.collapsible_notification
-            :if={@reuse_mapping}
+            :if={@reuse_mapping and import_mapping?(@import)}
             title={~t"Reuse mapping from previous import"m}
             color="blue"
           >
@@ -145,7 +145,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
               <.table
                 opts={[no_results_content: no_mapping_available()]}
                 id="collection_mapping_table"
-                items={@import.collection.import_mapping |> Enum.filter(&(&1["mapped_to"] != nil))}
+                items={import_mapping(@import)}
               >
                 <:col :let={column} label={~t"Column"m}>
                   <span
@@ -755,4 +755,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     </div>
     """
   end
+
+  defp import_mapping(import) do
+    Enum.filter(import.collection.import_mapping, &(&1["mapped_to"] != nil))
+  end
+
+  defp import_mapping?(import), do: Enum.any?(import_mapping(import))
 end

@@ -63,6 +63,7 @@ defmodule DataAggregator.Records.Record do
       default: :not_published
 
     attribute :approval_status, PublicationStatusType, allow_nil?: false, default: :not_published
+    attribute :iucn_redlist_category, :string, allow_nil?: true
 
     timestamps private?: false, writable?: false
   end
@@ -108,6 +109,27 @@ defmodule DataAggregator.Records.Record do
   end
 
   calculations do
+    calculate :iucn_redlist,
+              :boolean,
+              expr(
+                :iucn_redlist_category in [
+                  "EX",
+                  "EW",
+                  "RE",
+                  "CR(PE)",
+                  "CR",
+                  "EN"
+                ] or
+                  encoded_record.iucn_redlist_category in [
+                    "EX",
+                    "EW",
+                    "RE",
+                    "CR(PE)",
+                    "CR",
+                    "EN"
+                  ]
+              )
+
     calculate :mids_level,
               :integer,
               expr(
@@ -212,6 +234,7 @@ defmodule DataAggregator.Records.Record do
       primary? true
       argument :collection, Collection, allow_nil?: false
 
+      change Record.Changes.SetGrSciCollInstitution
       change Record.Changes.SetOccurrenceID
       change Record.Changes.SetBasisOfRecord
       change Record.Changes.SetImportedAfterAction

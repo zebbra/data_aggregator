@@ -87,6 +87,7 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
       <.link
         navigate={@href}
         class={[
+          "whitespace-nowrap",
           @active && "text-primary",
           @active == false && "hover:text-base-content"
         ]}
@@ -103,7 +104,11 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
     <li class="snap-start first:pl-6 last:pr-6 lg:first:pl-8 lg:last:pr-8">
       <button
         type="button"
-        class={[@active && "text-primary", @active == false && "hover:text-base-content"]}
+        class={[
+          "whitespace-nowrap",
+          @active && "text-primary",
+          @active == false && "hover:text-base-content"
+        ]}
         phx-click={@on_click}
         {@rest}
       >

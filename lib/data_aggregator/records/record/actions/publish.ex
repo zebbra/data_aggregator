@@ -118,6 +118,8 @@ defmodule DataAggregator.Records.Actions.Publish do
 
   defp update_status!(:approval, status, record), do: Record.update_approval_status!(record, status)
 
+  defp register_at_gbif(%Publication{channel: :approval} = publication, _query), do: {:ok, publication}
+
   defp register_at_gbif(publication, query) do
     with {:ok, _collection} <-
            Collection.register_at_gbif(publication.collection, publication.attachment.url),

@@ -14,6 +14,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy
   alias DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy
+  alias DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy
   alias DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy
   alias DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy
   alias DataAggregator.Records.Record
@@ -54,6 +55,15 @@ defmodule DataAggregator.Records.Encoding.Strategy do
 
     encoded_record
     |> ForwardGeoEncodingStrategy.apply_strategy()
+    |> check_for_changes(encoded_record, catalog)
+    |> handle_encoding_result(encoded_record, catalog)
+  end
+
+  def encode(record, catalog) when catalog == :gbif_iucn_redlist do
+    encoded_record = create_encoded_record(record)
+
+    encoded_record
+    |> IUCNRedlistStrategy.apply_strategy()
     |> check_for_changes(encoded_record, catalog)
     |> handle_encoding_result(encoded_record, catalog)
   end

@@ -26,13 +26,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   require Ash.Query
 
-  @load [:collection, :encoded_record, :mids_level]
+  @load [:collection, :encoded_record, :mids_level, :iucn_redlist]
 
   @actions [
     {"export", "hero-arrow-down-tray", "collection:export", nil},
     {"encode", "hero-puzzle-piece", "collection:encode", "confirm_encoding_alert"},
-    {"publish", "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"},
-    {"approve", "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
+    {"publish", "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"}
+    # at the moment there is no approval process, so we just remove the button to avoid confusion
+    # {~t"Approve"m, "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
   ]
 
   @impl true
@@ -102,12 +103,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         />
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/publications"}
-          label={~t"Publications"m}
+          label={~t"Publications and Approvals"m}
         />
       </.secondary_navigation>
 
       <%!-- Stat scopes --%>
-      <div class="px-6 py-4 md:py-6 lg:px-8">
+      <div :if={@collection.records_count > 0} class="px-6 py-4 md:py-6 lg:px-8">
         <div class="grid grid-cols-2 gap-4 md:gap-6 xl:grid-cols-4">
           <.scope_stat
             href={path_helper(@collection, @layer, @meta, %{status: :all})}
@@ -131,10 +132,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       </div>
 
       <%!-- Search, filter and actions toolbar --%>
-      <div class="flex justify-between px-6 pb-6 lg:px-8">
+      <div :if={@collection.records_count > 0} class="flex justify-between px-6 pb-6 lg:px-8">
         <%!-- Search and filter --%>
         <div class="join">
-          <div>
+          <%!-- <div>
             <div>
               <input
                 class="input input-bordered join-item max-sm:max-w-32"
@@ -149,17 +150,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           >
             <.icon name="hero-table-cells" />
             <span class="max-md:hidden"><%= ~t"Columns"m %></span>
-          </button>
-          <.dropdown id="layer" class="dropdown-end">
+          </button> --%>
+          <.dropdown id="layer" class="dropdown-start">
             <:summary>
               <summary
-                class="join-item btn btn-outline border-base-content/20 border-y max-md:inline-flex max-sm:btn-square sm:max-md:tooltip"
+                class="join-item btn btn-outline border-base-content/20 rounded-l-lg border-y max-sm:btn-square max-sm:inline-flex sm:max-sm:tooltip"
                 data-tip={current_layer_label(@layer)}
               >
                 <.icon :if={@layer == "import"} name="hero-arrow-up-tray" />
                 <.icon :if={@layer == "encoding"} name="hero-puzzle-piece" />
                 <.icon :if={@layer == "approval"} name="hero-check-badge" />
-                <span class="max-md:hidden"><%= current_layer_label(@layer) %></span>
+                <span class="max-sm:hidden"><%= current_layer_label(@layer) %></span>
               </summary>
             </:summary>
             <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-56 gap-1 border p-2 shadow-2xl">
@@ -203,26 +204,26 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   do: "border-base-content/20",
                   else: "border-primary sm:outline-primary sm:outline sm:hover:outline-none"
                 ),
-                "join-item btn btn-outline border-y max-sm:btn-square sm:max-md:tooltip"
+                "join-item btn btn-outline border-y max-sm:btn-square sm:max-sm:tooltip"
               ]}
               data-tip={~t"Filters"m}
             >
               <.icon name="hero-adjustments-vertical" />
-              <span class="max-md:hidden"><%= ~t"Filters"m %></span>
+              <span class="max-sm:hidden"><%= ~t"Filters"m %></span>
             </button>
           </div>
         </div>
 
         <%!-- Action buttons --%>
-        <.dropdown id="actions" class="dropdown-end 2xl:hidden">
+        <.dropdown id="actions" class="dropdown-end lg:hidden">
           <:summary>
             <summary
               disabled={@busy}
-              class="btn btn-outline border-base-content/20 max-lg:inline-flex max-sm:btn-square sm:max-lg:tooltip"
+              class="btn btn-outline border-base-content/20 max-lg:inline-flex max-sm:btn-square sm:max-sm:tooltip"
               data-tip={~t"Actions"m}
             >
               <.icon name={if @busy, do: "hero-cog-6-tooth-solid animate-spin", else: "hero-bars-3"} />
-              <span class="max-lg:hidden"><%= ~t"Actions"m %></span>
+              <span class="max-sm:hidden"><%= ~t"Actions"m %></span>
             </summary>
           </:summary>
           <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-44 gap-1 border p-2 shadow-2xl">
@@ -239,7 +240,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </ul>
         </.dropdown>
 
-        <div class="join max-2xl:hidden">
+        <div class="join max-lg:hidden">
           <button
             :for={{label, icon, action, alert} <- @actions}
             class="join-item btn btn-outline border-base-content/20"
@@ -279,31 +280,53 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           class="text-center"
         >
           <div
-            :if={record.mte_associated_media === nil}
             class="tooltip tooltip-right"
-            data-tip={~t"No images uploaded yet"m}
+            data-tip={
+              if record.mte_associated_media,
+                do: ~t"Images available"m,
+                else: ~t"No images uploaded yet"m
+            }
           >
-            <.icon name="hero-camera" class="size-5 text-gray-600" />
-          </div>
-
-          <div
-            :if={record.mte_associated_media !== nil}
-            class="tooltip tooltip-right"
-            data-tip={~t"Images available"m}
-          >
-            <.icon name="hero-camera-mini" class="size-5 text" />
+            <.icon
+              name={if record.mte_associated_media, do: "hero-camera-mini", else: "hero-camera"}
+              class={
+                class_names([
+                  "size-5",
+                  record.mte_associated_media === nil && "text-base-content",
+                  record.mte_associated_media !== nil && "text-success"
+                ])
+              }
+            />
           </div>
         </:col>
         <:col
+          :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :iucn_redlist)}
-          th_wrapper_attrs={[class: "hero-flag size-5", aria: [hidden: "true"]]}
+          field={:iucn_redlist}
+          th_wrapper_attrs={[
+            class: "hero-flag size-5 inline-flex items-center",
+            aria: [hidden: "true"]
+          ]}
           class="text-center"
         >
           <div
             class="tooltip tooltip-right"
-            data-tip={~t"According to IUCN not an endangered species"m}
+            data-tip={
+              if record.iucn_redlist,
+                do: ~t"According to IUCN an endangered species"m,
+                else: ~t"According to IUCN not an endangered species"m
+            }
           >
-            <.icon name="hero-flag" class="size-5 text-gray-600" />
+            <.icon
+              name={if record.iucn_redlist, do: "hero-flag-mini", else: "hero-flag"}
+              class={
+                class_names([
+                  "size-5",
+                  record.iucn_redlist == false && "text-base-content",
+                  record.iucn_redlist == true && "text-error"
+                ])
+              }
+            />
           </div>
         </:col>
         <:col
@@ -423,7 +446,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :fast_track_status)}
           field={:fast_track_status}
-          label={~t"Fast Track Pub."m}
+          label={~t"Publication status"m}
           class="text-center"
         >
           <.publication_status_badge state={record.fast_track_status} />
@@ -432,7 +455,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :approval_status)}
           field={:approval_status}
-          label={~t"Approval Pub."m}
+          label={~t"Approval status"m}
           class="text-center"
         >
           <.publication_status_badge state={record.approval_status} />

@@ -156,6 +156,19 @@ defmodule DataAggregator.Gbif.RestAPI do
     end
   end
 
+  @doc """
+  Get the IUCN Redlist category from the GBIF API for a given key
+  """
+  @spec get_iucn_redlist_category(String.t()) :: Api.response()
+  def get_iucn_redlist_category(key) do
+    req = HttpDiskCache.attach(Req.new())
+
+    Req.get(req,
+      url: gbif_base_url() <> "/species/" <> key <> "/iucnRedListCategory",
+      max_cache_age_seconds: @month
+    )
+  end
+
   defp registration_params(collection_name) do
     %{
       "title" => collection_name,

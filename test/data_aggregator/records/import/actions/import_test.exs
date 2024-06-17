@@ -7,10 +7,12 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
+  alias DataAggregator.Records.Record
 
   @valid_mapping [
     %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
-    %{name: "Numéro scientifique GBIF", mapped_to: "mte_catalog_number"}
+    %{name: "Numéro scientifique GBIF", mapped_to: "mte_catalog_number"},
+    %{name: "event_date", mapped_to: "eve_event_date"}
   ]
 
   setup do
@@ -37,19 +39,22 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
   end
 
   describe "DataAggregator.Records.Import.import/1" do
-    @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"
+    @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs-encoding.csv"
     test "succeeds with a valid file", %{import: import} do
-      assert import.rows_count == 2
+      assert import.rows_count == 18
 
       import = Import.import!(import)
 
       assert import.state == :imported
-      assert import.records_count == 2
+      assert import.records_count == 18
       assert import.started_at != nil
       assert import.finished_at != nil
-      assert import.rows_valid_count == 2
+      assert import.rows_valid_count == 18
       assert import.rows_invalid_count == 0
-      assert import.rows_imported_count == 2
+      assert import.rows_imported_count == 18
+
+      assert record = hd(Record.read!())
+      assert record.eve_event_date != nil
     end
 
     @tag path: "test/support/fixtures/files/invalid-records-small.csv"

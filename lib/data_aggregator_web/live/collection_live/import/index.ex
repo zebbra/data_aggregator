@@ -76,7 +76,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         />
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/publications"}
-          label={~t"Publications"m}
+          label={~t"Publications and Approvals"m}
         />
       </.secondary_navigation>
 
