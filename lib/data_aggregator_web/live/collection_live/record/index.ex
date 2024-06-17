@@ -273,11 +273,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <:col
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :picture)}
-          th_wrapper_attrs={[
-            class: "hero-camera size-5 tooltip",
-            aria: [hidden: "true"]
-          ]}
-          class="text-center"
+          field={:mte_associated_media}
+          label={picture_th_label()}
         >
           <div
             class="tooltip tooltip-right"
@@ -303,11 +300,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :iucn_redlist)}
           field={:iucn_redlist}
-          th_wrapper_attrs={[
-            class: "hero-flag size-5 inline-flex items-center",
-            aria: [hidden: "true"]
-          ]}
-          class="text-center"
+          label={iucn_redlist_th_label()}
         >
           <div
             class="tooltip tooltip-right"
@@ -882,4 +875,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   defp action_label("encode"), do: ~t"Encode"m
   defp action_label("publish"), do: ~t"Publish"m
   defp action_label("approve"), do: ~t"Approve"m
+
+  defp picture_th_label(assigns \\ %{}) do
+    ~H"""
+    <.icon name="hero-camera" class="size-5" />
+    """
+  end
+
+  defp iucn_redlist_th_label(assigns \\ %{}) do
+    ~H"""
+    <.icon name="hero-flag" class="size-5" />
+    """
+  end
 end

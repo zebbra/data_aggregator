@@ -1,6 +1,8 @@
 import { Hook, makeHook } from "./hook";
 
 class FlashHook extends Hook {
+  clearTimeout: number | null = null;
+
   mounted(): void {
     if (this.el.checkVisibility()) {
       this.maybeStartProgress();
@@ -32,7 +34,11 @@ class FlashHook extends Hook {
       progress.style.transitionDuration = `${timeout}ms`;
     }
 
-    setTimeout(() => {
+    if (this.clearTimeout) {
+      clearTimeout(this.clearTimeout);
+    }
+
+    this.clearTimeout = setTimeout(() => {
       this.liveSocket.execJS(flash, cmd);
     }, parseInt(timeout, 10));
   }
