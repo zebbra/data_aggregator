@@ -34,6 +34,8 @@ defmodule DataAggregator.Records.Record do
 
   @type t :: %Record{}
 
+  @iucn_redlist_categories ["EX", "EW", "RE", "CR(PE)", "CR", "EN"]
+
   @pagify_scopes %{
     status: [
       %{name: :all, filter: nil, default?: true},
@@ -112,22 +114,8 @@ defmodule DataAggregator.Records.Record do
     calculate :iucn_redlist,
               :boolean,
               expr(
-                :iucn_redlist_category in [
-                  "EX",
-                  "EW",
-                  "RE",
-                  "CR(PE)",
-                  "CR",
-                  "EN"
-                ] or
-                  encoded_record.iucn_redlist_category in [
-                    "EX",
-                    "EW",
-                    "RE",
-                    "CR(PE)",
-                    "CR",
-                    "EN"
-                  ]
+                :iucn_redlist_category in @iucn_redlist_categories or
+                  encoded_record.iucn_redlist_category in @iucn_redlist_categories
               )
 
     calculate :mids_level,

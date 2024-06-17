@@ -9,6 +9,10 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   alias DataAggregator.Records.Collection
 
+  @gbif_dataset_base_url :data_aggregator
+                         |> Application.compile_env(:gbif, [])
+                         |> Keyword.get(:dataset_url)
+
   attr :collection_id, :any, default: nil
   attr :collection, Collection, default: nil
   attr :disabled, :boolean, default: false, doc: "Whether the header action is disabled."
@@ -23,10 +27,13 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   def collection_header(%{collection: nil} = assigns) do
     assigns
     |> assign(:collection, get_collection(assigns.collection_id))
+    |> assign(:gbif_dataset_base_url, @gbif_dataset_base_url)
     |> collection_header()
   end
 
   def collection_header(assigns) do
+    assigns = assign_new(assigns, :gbif_dataset_base_url, fn -> @gbif_dataset_base_url end)
+
     ~H"""
     <.page_header title_class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
       <:breadcrumbs class="sm:hidden flex items-center justify-between px-6 mt-1 min-h-8">
@@ -67,7 +74,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           :if={@collection.gbif_dataset_key !== nil}
           class="link link-primary link-hover text-sm/6 flex max-w-4xl items-center gap-x-2 sm:mt-2"
           target="_blank"
-          href={gbif_dataset_link(@collection.gbif_dataset_key)}
+          href={"#{@gbif_dataset_base_url}/#{@collection.gbif_dataset_key}"}
         >
           <%= ~t"Show on GBIF" %>
           <.icon name="hero-arrow-top-right-on-square" class="size-4" />
@@ -95,12 +102,5 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
       </:actions>
     </.page_header>
     """
-  end
-
-  defp gbif_dataset_link(key) do
-    case Mix.env() do
-      :prod -> "https://www.gbif.org/dataset/#{key}"
-      _ -> "https://www.gbif-uat.org/dataset/#{key}"
-    end
   end
 end
