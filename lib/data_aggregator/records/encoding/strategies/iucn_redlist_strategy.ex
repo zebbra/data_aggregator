@@ -63,7 +63,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
     msg =
       "Error while iucn redlist status on gbif api using taxon_id: #{taxon_id}. #{inspect(error)}"
 
-    Logger.error(msg)
+    Logger.warning(msg)
 
     {:error, msg}
   end
@@ -73,7 +73,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
   defp ensure_status(response) do
     msg = "Non 200 status code from gbif iucn redlist api with message: #{inspect(response)}"
 
-    Logger.error(msg)
+    Logger.warning(msg)
 
     {:error, msg}
   end

@@ -9,10 +9,6 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   alias DataAggregator.Records.Collection
 
-  @gbif_dataset_base_url :data_aggregator
-                         |> Application.compile_env(:gbif, [])
-                         |> Keyword.get(:dataset_url)
-
   attr :collection_id, :any, default: nil
   attr :collection, Collection, default: nil
   attr :disabled, :boolean, default: false, doc: "Whether the header action is disabled."
@@ -27,12 +23,12 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   def collection_header(%{collection: nil} = assigns) do
     assigns
     |> assign(:collection, get_collection(assigns.collection_id))
-    |> assign(:gbif_dataset_base_url, @gbif_dataset_base_url)
+    |> assign(:gbif_dataset_base_url, "#{gbif_base_url()}/dataset")
     |> collection_header()
   end
 
   def collection_header(assigns) do
-    assigns = assign_new(assigns, :gbif_dataset_base_url, fn -> @gbif_dataset_base_url end)
+    assigns = assign_new(assigns, :gbif_dataset_base_url, fn -> "#{gbif_base_url()}/dataset" end)
 
     ~H"""
     <.page_header title_class="px-6 pb-4 pt-1 lg:px-8 md:py-6">

@@ -283,26 +283,26 @@ msgctxt "DataAggregatorWeb.CollectionLive.Encoding.Components"
 msgid "Unknown"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:57
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:53
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Add"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:43
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:64
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:39
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:60
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Collections"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:44
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:40
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Current"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:100
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:96
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Import dataset"
@@ -2591,7 +2591,7 @@ msgctxt "DataAggregatorWeb.Components.Button"
 msgid "close"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:79
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:75
 #, elixir-autogen, elixir-format
 msgid "Show on GBIF"
 msgstr ""

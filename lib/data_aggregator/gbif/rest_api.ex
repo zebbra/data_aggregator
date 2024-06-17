@@ -118,7 +118,7 @@ defmodule DataAggregator.Gbif.RestAPI do
     req = HttpDiskCache.attach(Req.new())
 
     Req.get(req,
-      url: gbif_base_url() <> "/species/#{species_key}",
+      url: gbif_api_base_url() <> "/species/#{species_key}",
       max_cache_age_seconds: @month
     )
   end
@@ -133,7 +133,7 @@ defmodule DataAggregator.Gbif.RestAPI do
       HttpDiskCache.attach(Req.new(params: params))
 
     Req.get(req,
-      url: gbif_base_url() <> "/species/match",
+      url: gbif_api_base_url() <> "/species/match",
       max_cache_age_seconds: @month
     )
   end
@@ -164,7 +164,7 @@ defmodule DataAggregator.Gbif.RestAPI do
     req = HttpDiskCache.attach(Req.new())
 
     Req.get(req,
-      url: gbif_base_url() <> "/species/" <> key <> "/iucnRedListCategory",
+      url: gbif_api_base_url() <> "/species/" <> key <> "/iucnRedListCategory",
       max_cache_age_seconds: @month
     )
   end
@@ -192,7 +192,7 @@ defmodule DataAggregator.Gbif.RestAPI do
     msg =
       "Could not fetch GrSciColl collection for reference #{reference}. error was: #{inspect(error)}"
 
-    Logger.error(msg)
+    Logger.warning(msg)
 
     {:error, msg}
   end
@@ -202,7 +202,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   defp ensure_status(response) do
     msg = "Non 200 status code from GrSciColl api with message: #{inspect(response)}"
 
-    Logger.error(msg)
+    Logger.warning(msg)
 
     {:error, msg}
   end

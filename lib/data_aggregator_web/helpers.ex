@@ -109,4 +109,6 @@ defmodule DataAggregatorWeb.Helpers do
     |> String.trim()
     |> String.replace(~r/\s+/, " ")
   end
+
+  def gbif_base_url, do: System.get_env("GBIF_BASE_URL")
 end

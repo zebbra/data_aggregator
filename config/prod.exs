@@ -40,8 +40,5 @@ config :data_aggregator,
 # Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier`
 config :data_aggregator, publication_verification_scheduler_active: true
 
-# GBIF related configuration
-config :data_aggregator, :gbif, dataset_url: "https://www.gbif.org/dataset"
-
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
