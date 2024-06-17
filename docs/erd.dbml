@@ -31,6 +31,8 @@ Table collections {
   name varchar
   code varchar
   grscicoll_reference varchar
+  grscicoll_institution_key varchar
+  grscicoll_institution_code varchar
   description varchar
   gbif_dataset_key varchar
   import_mapping array
@@ -322,6 +324,7 @@ Table encoded_records {
   eve_aspect varchar
   id uuid [pk]
   extra_data jsonb
+  iucn_redlist_category varchar
   inserted_at timestamp
   updated_at timestamp
   record_id uuid
@@ -696,6 +699,7 @@ Table records {
   errors jsonb
   fast_track_status varchar
   approval_status varchar
+  iucn_redlist_category varchar
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid

@@ -7,6 +7,8 @@ classDiagram
         String name
         String code
         String grscicoll_reference
+        String grscicoll_institution_key
+        String grscicoll_institution_code
         String description
         String gbif_dataset_key
         Map[] import_mapping
@@ -335,6 +337,7 @@ classDiagram
         String eve_aspect
         UUID id
         Map extra_data
+        String iucn_redlist_category
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Version[] paper_trail_versions
@@ -777,11 +780,13 @@ classDiagram
         Map errors
         PublicationStatusType fast_track_status
         PublicationStatusType approval_status
+        String iucn_redlist_category
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         Integer encoder_job_id
         Integer fast_track_checker_job_id
         Atom state
+        Boolean iucn_redlist
         Integer mids_level
         Boolean mids_level_one
         Boolean mids_level_two
