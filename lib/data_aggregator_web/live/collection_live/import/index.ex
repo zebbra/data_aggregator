@@ -3,6 +3,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Import.Components, only: [import_state_badge: 1]
 
+  import DataAggregator.Accounts.Helpers
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers
@@ -60,8 +61,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <.page current="collections" open={@selected_import != nil}>
-      <.collection_header collection={@collection} current={:imports} meta={@meta} />
+    <.page current="collections" current_user={@current_user} open={@selected_import != nil}>
+      <.collection_header
+        collection={@collection}
+        current={:imports}
+        current_user={@current_user}
+        meta={@meta}
+      />
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/records"}
@@ -84,7 +90,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
       <.table
         opts={[
-          no_results_content: no_results_content(%{collection: @collection})
+          no_results_content:
+            no_results_content(%{collection: @collection, current_user: @current_user})
         ]}
         path={~p"/collections/#{@collection}/imports"}
         items={@streams.results}
@@ -484,13 +491,15 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   defp no_results_content(assigns) do
     ~H"""
-    <.empty_state
-      title={~t"No imports"m}
-      description={~t"Get started by importing a new dataset."m}
-      label={~t"Import"m}
-      icon="hero-arrow-up-tray"
-      href={~p"/collections/#{@collection}/imports/new"}
-    />
+    <%= if has_role?(@current_user, ["data_administrator", "admin"]) do %>
+      <.empty_state
+        title={~t"No imports"m}
+        description={~t"Get started by importing a new dataset."m}
+        label={~t"Import"m}
+        icon="hero-arrow-up-tray"
+        href={~p"/collections/#{@collection}/imports/new"}
+      />
+    <% end %>
     """
   end
 end

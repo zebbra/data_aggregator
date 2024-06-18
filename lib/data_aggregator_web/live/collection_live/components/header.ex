@@ -6,6 +6,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   use DataAggregatorWeb, :html
   use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_indicator: 1]
 
+  import DataAggregator.Accounts.Helpers
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
 
   alias DataAggregator.Records.Collection
@@ -16,6 +17,8 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   attr :current, :atom,
     default: :records,
     values: ~w(records imports encodings exports publications)a
+
+  attr :current_user, :map, required: true
 
   attr :meta, Pagify.Meta, default: nil
 
@@ -37,7 +40,10 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           ]}
         />
         <.link
-          :if={@current in [:records, :imports]}
+          :if={
+            @current in [:records, :imports] and
+              has_role?(@current_user, ["data_administrator", "admin"])
+          }
           patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
           class="btn btn-primary btn-sm"
         >
@@ -62,7 +68,13 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <%= @collection.code %>
         </div>
       </:subtitle>
-      <:actions :if={@current in [:records, :imports]} class="max-sm:hidden">
+      <:actions
+        :if={
+          @current in [:records, :imports] and
+            has_role?(@current_user, ["data_administrator", "admin"])
+        }
+        class="max-sm:hidden"
+      >
         <.link
           patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
           class="btn btn-primary"

@@ -1,5 +1,6 @@
-defmodule DataAggregatorWeb.DashboardLive.Index do
+defmodule DataAggregatorWeb.AdministrationLive.Index do
   @moduledoc false
+
   use DataAggregatorWeb, :live_view
 
   import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
@@ -18,13 +19,14 @@ defmodule DataAggregatorWeb.DashboardLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <.page current="home" current_user={@current_user}>
-      <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6"><%= ~t"Dashboard"m %></.page_header>
+    <.page current="administration" current_user={@current_user}>
+      <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6"><%= ~t"Administration"m %></.page_header>
+      <%= @current_user.roles %>
     </.page>
     """
   end
 
   defp apply_action(socket, :index, _params) do
-    assign(socket, :page_title, ~t"Dashboard"m)
+    assign(socket, :page_title, ~t"Administration"m)
   end
 end

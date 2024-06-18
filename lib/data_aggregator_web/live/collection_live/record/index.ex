@@ -4,6 +4,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   use DataAggregatorWeb.CollectionLive.Components, only: [scope_stat: 1]
   use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
 
+  import DataAggregator.Accounts.Helpers
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
 
   import DataAggregatorWeb.CollectionLive.Helpers,
@@ -76,8 +77,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <.page current="collections" open={@selected_record != nil}>
-      <.collection_header collection={@collection} current={:records} />
+    <.page current="collections" current_user={@current_user} open={@selected_record != nil}>
+      <.collection_header collection={@collection} current={:records} current_user={@current_user} />
 
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
         <.secondary_navigation_item
@@ -199,30 +200,32 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </div>
 
         <%!-- Action buttons --%>
-        <.dropdown id="actions" class="dropdown-end xl:hidden">
-          <:summary>
-            <summary
-              disabled={@busy}
-              class="btn btn-outline border-base-content/20 max-lg:inline-flex max-sm:btn-square sm:max-lg:tooltip"
-              data-tip={~t"Actions"m}
-            >
-              <.icon name={if @busy, do: "hero-cog-6-tooth-solid animate-spin", else: "hero-bars-3"} />
-              <span class="max-lg:hidden"><%= ~t"Actions"m %></span>
-            </summary>
-          </:summary>
-          <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-44 gap-1 border p-2 shadow-2xl">
-            <li :for={{label, icon, action, alert} <- @actions}>
-              <button
-                phx-click={action}
-                data-confirm={alert && ~t"Are you sure?"m}
-                data-confirm_id={alert}
+        <%= if has_role?(@current_user, ["data_administrator", "admin"]) do %>
+          <.dropdown id="actions" class="dropdown-end xl:hidden">
+            <:summary>
+              <summary
+                disabled={@busy}
+                class="btn btn-outline border-base-content/20 max-lg:inline-flex max-sm:btn-square sm:max-lg:tooltip"
+                data-tip={~t"Actions"m}
               >
-                <.icon name={icon} class="size-5" />
-                <span class="font-[sans-serif]"><%= label %></span>
-              </button>
-            </li>
-          </ul>
-        </.dropdown>
+                <.icon name={if @busy, do: "hero-cog-6-tooth-solid animate-spin", else: "hero-bars-3"} />
+                <span class="max-lg:hidden"><%= ~t"Actions"m %></span>
+              </summary>
+            </:summary>
+            <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-44 gap-1 border p-2 shadow-2xl">
+              <li :for={{label, icon, action, alert} <- @actions}>
+                <button
+                  phx-click={action}
+                  data-confirm={alert && ~t"Are you sure?"m}
+                  data-confirm_id={alert}
+                >
+                  <.icon name={icon} class="size-5" />
+                  <span class="font-[sans-serif]"><%= label %></span>
+                </button>
+              </li>
+            </ul>
+          </.dropdown>
+        <% end %>
 
         <div class="join max-xl:hidden">
           <button
@@ -242,7 +245,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
       <.table
         opts={[
-          no_results_content: no_results_content(%{collection: @collection})
+          no_results_content:
+            no_results_content(%{collection: @collection, current_user: @current_user})
         ]}
         path={~p"/collections/#{@collection}/records?layer=#{@layer}"}
         items={@streams.results}
@@ -772,13 +776,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   defp no_results_content(assigns) do
     ~H"""
-    <.empty_state
-      title={~t"No records"m}
-      description={~t"Get started by importing a new dataset"m}
-      label={~t"Import"m}
-      icon="hero-bug-ant"
-      href={~p"/collections/#{@collection}/imports/new"}
-    />
+    <%= if has_role?(@current_user, ["data_administrator", "admin"]) do %>
+      <.empty_state
+        title={~t"No records"m}
+        description={~t"Get started by importing a new dataset"m}
+        label={~t"Import"m}
+        icon="hero-bug-ant"
+        href={~p"/collections/#{@collection}/imports/new"}
+      />
+    <% end %>
     """
   end
 

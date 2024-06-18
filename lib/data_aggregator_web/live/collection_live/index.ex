@@ -4,6 +4,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_indicator: 1]
 
+  import DataAggregator.Accounts.Helpers
   import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
 
   alias DataAggregator.PubSub
@@ -42,15 +43,20 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <.page current="collections">
+    <.page current="collections" current_user={@current_user}>
       <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
         <%= ~t"Collections"m %>
         <:actions>
-          <.link patch={build_path(~p"/collections/new", @meta)} class="btn btn-primary max-sm:btn-sm">
-            <.icon name="hero-squares-2x2" class="max-sm:size-4" />
-            <span class="max-sm:hidden"><%= ~t"New collection"m %></span>
-            <span class="sm:hidden"><%= ~t"Add"m %></span>
-          </.link>
+          <%= if has_role?(@current_user, ["collection_digitizer", "admin"]) do %>
+            <.link
+              patch={build_path(~p"/collections/new", @meta)}
+              class="btn btn-primary max-sm:btn-sm"
+            >
+              <.icon name="hero-squares-2x2" class="max-sm:size-4" />
+              <span class="max-sm:hidden"><%= ~t"New collection"m %></span>
+              <span class="sm:hidden"><%= ~t"Add"m %></span>
+            </.link>
+          <% end %>
         </:actions>
       </.page_header>
 
@@ -59,7 +65,8 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           container_attrs: [
             class: "no-scrollbar overflow-x-auto pb-4"
           ],
-          no_results_content: no_results_content(%{collection: @collection})
+          no_results_content:
+            no_results_content(%{collection: @collection, current_user: @current_user})
         ]}
         path={~p"/collections"}
         items={@streams.results}
@@ -114,6 +121,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
         <:action
           :let={{_id, collection}}
+          :if={has_role?(@current_user, ["collection_digitizer", "admin"])}
           tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
           col_class="bg-base-300/10 border-l border-black-white/5"
           label={~t"Actions"m}
@@ -215,13 +223,16 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
   defp no_results_content(assigns) do
     ~H"""
-    <.empty_state
-      title={~t"No collections"m}
-      description={~t"Get started by adding a new collection."m}
-      label={~t"New collection"m}
-      icon="hero-squares-2x2"
-      href={~p"/collections/new"}
-    />
+    <%= if has_role?(@current_user, ["collection_digitizer", "admin"]) do %>
+      <.empty_state
+        title={~t"No collections"m}
+        description={~t"Get started by adding a new collection."m}
+        label={~t"New collection"m}
+        icon="hero-squares-2x2"
+        href={~p"/collections/new"}
+      />
+    <% end %>
+    <%!-- TODO: add empty state for users without permissions --%>
     """
   end
 end

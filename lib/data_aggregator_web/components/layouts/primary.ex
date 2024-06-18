@@ -35,6 +35,7 @@ defmodule DataAggregatorWeb.Layouts.Primary do
   ```
   """
   attr :current, :string, required: true, doc: "Current page"
+  attr :current_user, :map, required: true, doc: "Current user"
 
   slot :inner_block, required: true
   slot :portal, doc: "Portal slot for modal, dialog, etc."
@@ -45,7 +46,7 @@ defmodule DataAggregatorWeb.Layouts.Primary do
       <.main {assigns} />
 
       <:side>
-        <.main_navigation current={@current} />
+        <.main_navigation current={@current} current_user={@current_user} />
       </:side>
     </.drawer>
 

@@ -53,8 +53,8 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <.page current="collections" open={@selected_export != nil}>
-      <.collection_header collection={@collection} current={:exports} />
+    <.page current="collections" current_user={@current_user} open={@selected_export != nil}>
+      <.collection_header collection={@collection} current={:exports} current_user={@current_user} />
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/records"}

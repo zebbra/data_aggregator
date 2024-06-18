@@ -83,5 +83,19 @@
         </span>
       </.link>
     </li>
+    <%= if Enum.any?(@current_user.roles, fn role -> role in ["collection_digitizer", "admin"] end) do %>
+      <li>
+        <.link
+          navigate={~p"/administration"}
+          class={[
+            "flex md:flex-col md:p-3 active:!bg-primary",
+            @current == "administration" && "bg-primary text-primary-content hover:bg-primary"
+          ]}
+        >
+          <.icon name="hero-wrench-screwdriver" />
+          <span class="md:hidden lg:inline"><%= ~t"Administration"m %></span>
+        </.link>
+      </li>
+    <% end %>
   </ul>
 </nav>

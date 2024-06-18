@@ -10,7 +10,7 @@ defmodule Storybook.Layouts.Primary do
   @impl true
   def render(assigns) do
     ~H"""
-    <.page current="records">
+    <.page current="records" current_user={@current_user}>
       <.page_header class="px-6 lg:px-8 md:py-6">Records</.page_header>
     </.page>
     """

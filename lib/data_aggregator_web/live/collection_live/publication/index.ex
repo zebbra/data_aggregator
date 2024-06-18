@@ -52,8 +52,12 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <.page current="collections" open={@selected_publication != nil}>
-      <.collection_header collection={@collection} current={:publications} />
+    <.page current="collections" current_user={@current_user} open={@selected_publication != nil}>
+      <.collection_header
+        collection={@collection}
+        current={:publications}
+        current_user={@current_user}
+      />
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/records"}

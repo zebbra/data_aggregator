@@ -30,6 +30,13 @@ defmodule DataAggregator.Accounts.User do
     uuid_attribute :id, prefix: "usr"
     attribute :email, :ci_string, allow_nil?: false
     attribute :hashed_password, :string, allow_nil?: false, sensitive?: true
+    attribute :roles, {:array, :string}, default: []
+  end
+
+  relationships do
+    belongs_to :institution, DataAggregator.Platform.Institution do
+      api DataAggregator.Platform
+    end
   end
 
   identities do

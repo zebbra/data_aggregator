@@ -2256,3 +2256,22 @@ msgstr ""
 msgctxt "DataAggregatorWeb.Components.Attachment"
 msgid "rows"
 msgstr ""
+
+#: lib/data_aggregator_web/live/administration_live/index.ex:23
+#: lib/data_aggregator_web/live/administration_live/index.ex:29
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.AdministrationLive.Index"
+msgid "Administration"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:95
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Primary"
+msgid "Administration"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:95
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Secondary"
+msgid "Administration"
+msgstr ""

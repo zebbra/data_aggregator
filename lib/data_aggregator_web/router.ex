@@ -47,6 +47,8 @@ defmodule DataAggregatorWeb.Router do
     ash_authentication_live_session :default, on_mount: default_hooks do
       live "/", DashboardLive.Index, :index
 
+      live "/administration", AdministrationLive.Index, :index
+
       live "/collections", CollectionLive.Index, :index
       live "/collections/new", CollectionLive.Index, :new
       live "/collections/:id/edit", CollectionLive.Index, :edit
