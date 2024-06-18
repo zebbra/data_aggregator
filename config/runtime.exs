@@ -156,6 +156,12 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
+  # Configure Oban job queues
+  config :data_aggregator, Oban,
+    repo: DataAggregator.Repo,
+    plugins: [{Oban.Plugins.Pruner, max_age: 300}],
+    queues: [imports: 1, encoders: 1, exports: 1, publications: 1, publication_verifications: 1]
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key
