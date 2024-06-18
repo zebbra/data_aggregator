@@ -54,6 +54,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
         </div>
         <:actions class="justify-between" modal>
           <button disabled={@filter_form.valid? == false} type="submit" class="btn btn-primary">
+            <.icon
+              name="hero-cog-6-tooth-solid animate-spin"
+              class="hidden opacity-0 phx-submit-loading:inline-flex phx-submit-loading:opacity-100 ease-linear duration-300"
+            />
             <%= mgettext("Show %{count} %{label}", count: @count, label: @label) %>
           </button>
           <button

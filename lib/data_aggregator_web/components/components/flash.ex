@@ -45,8 +45,7 @@ defmodule DataAggregatorWeb.Components.Flash do
       :if={msg = render_slot(@inner_block) || Phoenix.Flash.get(@flash, @kind)}
       id={@id}
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
-      phx-click-away={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
-      phx-hook="FlashHook"
+      phx-hook={@timeout && "FlashHook"}
       data-timeout={@timeout}
       role="alert"
       class={[
@@ -68,7 +67,7 @@ defmodule DataAggregatorWeb.Components.Flash do
         <progress
           :if={@timeout}
           class={[
-            "progress absolute inset-0 h-2 w-0 opacity-100 ease-linear",
+            "progress absolute inset-0 w-0 ease-linear",
             @kind == :info && "progress-success",
             @kind == :error && "progress-error"
           ]}
