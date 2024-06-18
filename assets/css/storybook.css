@@ -6,6 +6,7 @@
 /* This file is for your main application CSS */
 @import "./components/combobox.css";
 @import "./components/drawer.css";
+@import "./components/input.css";
 @import "./components/modal.css";
 @import "./components/scrollbar.css";
 @import "./components/table.css";
@@ -18,6 +19,10 @@
 @layer utilities {
   * {
     font-family: ui-sans-serif, system-ui;
+  }
+
+  .collapse {
+    visibility: visible;
   }
 }
 

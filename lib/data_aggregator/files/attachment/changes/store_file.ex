@@ -70,8 +70,10 @@ defmodule DataAggregator.Files.Attachment.Changes.StoreFile do
         {:ok, attachment}
 
       {:error, error} ->
-        message = "[#{attachment.id}] Unable to upload file: #{inspect(error)}}"
-        Logger.error(message)
+        msg = "[#{attachment.id}] Unable to upload file: #{inspect(error)}}"
+
+        Logger.error(msg)
+
         {:ok, error}
     end
   end

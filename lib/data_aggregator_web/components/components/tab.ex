@@ -13,7 +13,7 @@ defmodule DataAggregatorWeb.Components.Tab do
 
   def tabs(assigns) do
     ~H"""
-    <div role="tablist" class="tabs tabs-lifted">
+    <div role="tablist" class={["tabs tabs-lifted", @class]}>
       <%= render_slot(@inner_block) %>
     </div>
     """
@@ -29,7 +29,12 @@ defmodule DataAggregatorWeb.Components.Tab do
     default: nil,
     doc: "Additional CSS classes that can be added to the tab panel"
 
+  attr :input_class, :string,
+    default: nil,
+    doc: "Additional CSS classes that can be added to the input element"
+
   attr :checked, :boolean, default: false, doc: "Whether the tab is checked or not"
+  attr :disabled, :boolean, default: false, doc: "Whether the tab is disabled or not"
 
   slot :inner_block, required: true, doc: "The slot for the tab content"
 
@@ -39,13 +44,21 @@ defmodule DataAggregatorWeb.Components.Tab do
       type="radio"
       name={@name}
       role="tab"
-      class="tab !border-b-transparent -mx-px [--tab-border-color:var(--fallback-b3,oklch(var(--black-white)/0.1))]"
+      class={[
+        "tab !border-b-transparent -mx-px [--tab-border-color:var(--fallback-b3,oklch(var(--black-white)/0.1))]",
+        @disabled && "!cursor-default",
+        @input_class
+      ]}
       aria-label={@label}
       checked={@checked}
+      disabled={@disabled}
     />
     <div
       role="tabpanel"
-      class={["tab-content border-black-white/10 overflow-x-auto border-0 border-t", @class]}
+      class={[
+        "tab-content border-black-white/10 min-w-full overflow-x-auto border-0 border-t",
+        @class
+      ]}
     >
       <%= render_slot(@inner_block) %>
     </div>

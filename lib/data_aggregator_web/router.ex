@@ -61,8 +61,6 @@ defmodule DataAggregatorWeb.Router do
       live "/collections/:id/publications", CollectionLive.Publication.Index, :index
 
       live "/records", RecordLive.Index, :index
-
-      live "/tasks", TaskLive.Index, :index
     end
 
     sign_in_route on_mount: [{DataAggregatorWeb.LiveUserAuth, :live_no_user}],

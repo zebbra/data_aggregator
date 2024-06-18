@@ -24,7 +24,9 @@ defmodule DataAggregatorWeb.Helpers do
     Cldr.Unit.to_string!(number, opts)
   end
 
-  def format_date(date, opts \\ []), do: Cldr.Date.to_string!(date, opts)
+  def format_date(date, opts \\ [])
+  def format_date(nil, _opts), do: @placeholder
+  def format_date(date, opts), do: Cldr.Date.to_string!(date, opts)
 
   def format_datetime(datetime, opts \\ [])
   def format_datetime(nil, _opts), do: @placeholder
@@ -107,4 +109,6 @@ defmodule DataAggregatorWeb.Helpers do
     |> String.trim()
     |> String.replace(~r/\s+/, " ")
   end
+
+  def gbif_base_url, do: System.get_env("GBIF_BASE_URL")
 end

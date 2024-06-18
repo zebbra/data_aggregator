@@ -9,7 +9,7 @@ defmodule DataAggregator.Cache.HttpDiskCache do
   require Logger
 
   # default cache time is 1 hour
-  @max_cache_age_seconds 60 * 60
+  @max_cache_age_seconds 1 * 60 * 60
   # accepted http states for caching according to rfc-editor.org/rfc/rfc7231
   @cachable_response_states [200, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501]
 
@@ -106,7 +106,7 @@ defmodule DataAggregator.Cache.HttpDiskCache do
         if oldest_possible_time > mtime do
           Logger.debug("Cache file is older than #{max_cache_age_seconds} seconds, deleting it")
 
-          File.rm!(file_path)
+          File.rm(file_path)
 
           false
         else

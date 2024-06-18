@@ -19,7 +19,7 @@ defmodule DataAggregator.Records.Import.Changes.SetFailedOnError do
   end
 
   defp handle_error(%Changeset{data: import}, {:error, error}) do
-    Logger.error("Import error: #{inspect(error)}")
+    Logger.warning("Import error: #{inspect(error)}")
     Import.set_failed(import)
   end
 end

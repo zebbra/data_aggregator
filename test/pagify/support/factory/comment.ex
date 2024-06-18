@@ -12,6 +12,7 @@ defmodule Pagify.Factory.Comment do
   attributes do
     uuid_attribute :id
     attribute :body, :string, allow_nil?: false
+    attribute :text, :string
   end
 
   relationships do

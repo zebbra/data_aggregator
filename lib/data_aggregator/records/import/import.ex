@@ -24,6 +24,8 @@ defmodule DataAggregator.Records.Import do
 
   require Ash.Resource.Change.Builtins
 
+  @type t :: %Import{}
+
   # ensure module is recompiled when the flow chart changes
   @external_resource flow_chart
 
@@ -43,6 +45,7 @@ defmodule DataAggregator.Records.Import do
     attribute :rows_valid_count, :integer, allow_nil?: true
     attribute :rows_invalid_count, :integer, allow_nil?: true
     attribute :rows_imported_count, :integer, allow_nil?: true
+    attribute :rows_error_count, :integer, allow_nil?: true
   end
 
   relationships do
@@ -51,6 +54,10 @@ defmodule DataAggregator.Records.Import do
     end
 
     belongs_to :attachment, Attachment do
+      api DataAggregator.Files
+    end
+
+    belongs_to :error_log, Attachment do
       api DataAggregator.Files
     end
 
@@ -122,6 +129,7 @@ defmodule DataAggregator.Records.Import do
       transition :enqueue_import, from: [:pending, :failed, :imported], to: :import_queued
       transition :import, from: [:pending, :import_queued], to: :importing
       transition :import, from: [:importing], to: :imported
+      transition :set_importing, from: [:pending, :import_queued], to: :importing
       transition :set_imported, from: :importing, to: :imported
       transition :set_failed, from: :importing, to: :failed
     end
@@ -133,7 +141,7 @@ defmodule DataAggregator.Records.Import do
   end
 
   actions do
-    defaults [:destroy]
+    defaults [:destroy, :update]
 
     read :read do
       primary? true
@@ -194,6 +202,7 @@ defmodule DataAggregator.Records.Import do
 
     update :enqueue_import do
       accept []
+      change Import.Changes.SetCollectionImportingBeforeTransaction
       change transition_state(:import_queued)
       change Import.Changes.EnqueueImporter
       change load(:job)
@@ -212,12 +221,13 @@ defmodule DataAggregator.Records.Import do
 
     update :set_importing do
       accept []
-      change set_attribute(:state, :importing)
+      change transition_state(:importing)
       change set_attribute(:started_at, &DateTime.utc_now/0)
       change set_attribute(:finished_at, nil)
       change set_attribute(:rows_imported_count, 0)
       change set_attribute(:rows_valid_count, 0)
       change set_attribute(:rows_invalid_count, 0)
+      change set_attribute(:rows_error_count, 0)
     end
 
     update :add_import_progress do
@@ -232,12 +242,21 @@ defmodule DataAggregator.Records.Import do
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:rows_imported_count, 0)
+      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :set_imported do
       accept []
       change transition_state(:imported)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
+      change Collection.Changes.SetCollectionIdleAfterTransaction
+    end
+
+    update :update_error_log do
+      accept []
+      argument :error_log, Attachment, allow_nil?: false
+      change manage_relationship(:error_log, :error_log, type: :append)
+      change load(:error_log)
     end
   end
 
@@ -246,17 +265,17 @@ defmodule DataAggregator.Records.Import do
     prefix "import"
 
     publish_all :create, [[:collection_id, nil], "created"]
-    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
-
-    # not used yet, just as an example how to extend this
-    # publish :set_failed, [[:collection_id, nil], "failed", [:id, nil]]
-    # publish :set_imported, [[:collection_id, nil], "imported", [:id, nil]]
+    publish :set_importing, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_imported, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_failed, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :update_mapping, [[:collection_id, nil], "updated", [:id, nil]]
   end
 
   code_interface do
     define_for DataAggregator.Records
     define :read
+    define :update
     define :get_by_id, action: :read, get_by: [:id]
     define :by_collection, args: [:collection_id]
     define :create, args: [:collection]
@@ -270,6 +289,7 @@ defmodule DataAggregator.Records.Import do
     define :set_imported
     define :set_failed
     define :destroy
+    define :update_error_log, args: [:error_log]
   end
 
   postgres do
@@ -278,6 +298,7 @@ defmodule DataAggregator.Records.Import do
 
     references do
       reference :collection, on_delete: :delete, on_update: :update
+      reference :error_log, on_delete: :delete, on_update: :update
     end
   end
 

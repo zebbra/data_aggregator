@@ -80,8 +80,8 @@ config :ex_cldr,
 # Configure Oban job queues
 config :data_aggregator, Oban,
   repo: DataAggregator.Repo,
-  plugins: [Oban.Plugins.Pruner],
-  queues: [imports: 1, encoders: 1, exports: 1, publications: 1]
+  plugins: [{Oban.Plugins.Pruner, max_age: 300}],
+  queues: [imports: 1, encoders: 1, exports: 1, publications: 1, publication_verifications: 1]
 
 # Configures the mailer
 #
@@ -103,7 +103,7 @@ config :esbuild,
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "3.4.1",
+  version: "3.4.4",
   data_aggregator: [
     args: ~w(
       --config=tailwind.config.js
@@ -169,8 +169,10 @@ config :data_aggregator, :logger, [
    }}
 ]
 
+# Pagify global configuration
 config :data_aggregator, :pagify, default_limit: 15
 
+# Pagify Phoenix configuration
 config :data_aggregator, :pagify_phoenix,
   pagination: [opts: {DataAggregatorWeb.Components, :pagination_opts}],
   table: [opts: {DataAggregatorWeb.Components, :table_opts}]

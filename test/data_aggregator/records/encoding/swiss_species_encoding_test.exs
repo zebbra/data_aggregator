@@ -1,17 +1,19 @@
 defmodule DataAggregator.SwissSpeciesEncodingTest do
   @moduledoc false
 
-  use ExUnit.Case, async: true
-  use Mimic
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.EncodingFixtures
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
   describe "encoding of records with " do
     setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       correct_record = record_fixture_for_encoding()
 
       invalid_record = record_fixture_for_encoding_swiss_species_invalid()

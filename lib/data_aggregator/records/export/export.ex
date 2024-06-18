@@ -72,6 +72,7 @@ defmodule DataAggregator.Records.Export do
     transitions do
       transition :enqueue, from: [:pending, :exported, :failed], to: :queued
       transition :run, from: [:pending, :exported, :failed, :queued], to: :running
+      transition :set_running, from: [:pending, :exported, :failed, :queued], to: :running
       transition :set_exported, from: :running, to: :exported
       transition :set_failed, from: :running, to: :failed
     end
@@ -118,6 +119,7 @@ defmodule DataAggregator.Records.Export do
 
     update :enqueue do
       accept []
+      change Changes.SetCollectionExportingBeforeTransaction
       change transition_state(:queued)
       change Changes.EnqueueExporter
     end
@@ -131,7 +133,7 @@ defmodule DataAggregator.Records.Export do
 
     update :set_running do
       accept []
-      change set_attribute(:state, :running)
+      change transition_state(:running)
       change set_attribute(:started_at, &DateTime.utc_now/0)
       change set_attribute(:finished_at, nil)
     end
@@ -139,6 +141,7 @@ defmodule DataAggregator.Records.Export do
     update :set_failed do
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
+      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :run do
@@ -157,6 +160,7 @@ defmodule DataAggregator.Records.Export do
       change transition_state(:exported)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:exported_at, &DateTime.utc_now/0)
+      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :update_attachment do
@@ -172,8 +176,10 @@ defmodule DataAggregator.Records.Export do
     prefix "export"
 
     publish_all :create, [[:collection_id, nil], "created"]
-    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
+    publish :set_running, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_exported, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_failed, [[:collection_id, nil], "updated", [:id, nil]]
   end
 
   code_interface do

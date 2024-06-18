@@ -42,6 +42,27 @@ defmodule Storybook.Components.Alert do
         }
       },
       %Variation{
+        id: :with_label,
+        attributes: %{
+          label: "Yes, apply"
+        }
+      },
+      %Variation{
+        id: :with_color,
+        attributes: %{
+          label: "Yes, apply",
+          color: "primary"
+        }
+      },
+      %Variation{
+        id: :disabled,
+        attributes: %{
+          label: "Yes, apply",
+          color: "primary",
+          disabled: true
+        }
+      },
+      %Variation{
         id: :with_form,
         attributes: %{
           form: true,

@@ -2,8 +2,8 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   @moduledoc false
 
   use DataAggregatorWeb, :live_view
-  use DataAggregatorWeb.CollectionLive.Encoding.Components
 
+  import DataAggregatorWeb.CollectionLive.Encoding.Components
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   import DataAggregatorWeb.RecordLive.Helpers,
@@ -106,51 +106,60 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           open={@selected_record != nil}
           on_cancel={JS.push("record:select", value: %{id: nil})}
           size="xl"
-          class="space-y-2 pt-2"
         >
           <%= for category <- @attrs_in_categories do %>
-            <.table
-              id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
-              items={category.attributes}
-            >
-              <:caption>
-                <.section_heading
-                  text={category.label}
-                  description={category.description}
-                  size="md"
-                  class="px-6 lg:px-8 text-left"
-                />
-              </:caption>
-              <:col :let={attribute} label={~t"Name"} class="font-semibold">
-                <%= attribute.name %>
-              </:col>
-              <:col :let={attribute} label={~t"Imported"}>
-                <%= attribute.imported %>
-              </:col>
-              <:col :let={attribute} label={~t"Encoded"}>
-                <%= attribute.encoded %>
-              </:col>
-            </.table>
+            <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 open:first:border-t lg:pl-4">
+              <summary class="collapse-title">
+                <%= category.label %>
+              </summary>
+              <div class="collapse-content">
+                <p class="text-base-content/60 text-sm/6 line-clamp-2 max-w-4xl">
+                  <%= category.description %>
+                </p>
+                <.table
+                  opts={[container_attrs: [class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8 pb-4"]]}
+                  id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
+                  items={category.attributes}
+                >
+                  <:col :let={attribute} label={~t"Name"} class="font-semibold">
+                    <%= attribute.name %>
+                  </:col>
+                  <:col :let={attribute} label={~t"Imported"}>
+                    <%= attribute.imported %>
+                  </:col>
+                  <:col :let={attribute} label={~t"Encoded"}>
+                    <%= attribute.encoded %>
+                  </:col>
+                </.table>
+              </div>
+            </details>
           <% end %>
-          <.table id="encoding_result_table" items={@record_encoding_results}>
-            <:caption>
-              <.section_heading
-                text={~t"Record encodings"m}
-                description={~t"Results by catalog"m}
-                size="md"
-                class="px-6 lg:px-8 text-left"
-              />
-            </:caption>
-            <:col :let={result} label={~t"Catalog"} class="font-semibold">
-              <%= result.catalog %>
-            </:col>
-            <:col :let={result} label={~t"State"} class="text-center">
-              <.encoding_state_badge reason={result.message} state={result.state} />
-            </:col>
-            <:col :let={result} label={~t"Created"} class="text-right">
-              <%= format_datetime(result.inserted_at, format: :short) %>
-            </:col>
-          </.table>
+          <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 lg:pl-4">
+            <summary class="collapse-title">
+              <%= ~t"Record encodings"m %>
+            </summary>
+            <div class="collapse-content">
+              <p class="text-base-content/60 text-sm/6 line-clamp-2 max-w-4xl">
+                <%= ~t"Results by catalog"m %>
+              </p>
+
+              <.table
+                opts={[container_attrs: [class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8 pb-4"]]}
+                id="encoding_result_table"
+                items={@record_encoding_results}
+              >
+                <:col :let={result} label={~t"Catalog"} class="font-semibold">
+                  <%= result.catalog %>
+                </:col>
+                <:col :let={result} label={~t"State"} class="text-center">
+                  <.encoding_state_badge reason={result.message} state={result.state} />
+                </:col>
+                <:col :let={result} label={~t"Created"} class="text-right">
+                  <%= format_datetime(result.inserted_at, format: :short) %>
+                </:col>
+              </.table>
+            </div>
+          </details>
         </.slideover>
       </:secondary>
     </.page>

@@ -21,7 +21,8 @@ defmodule DataAggregator.Records do
     export_timeout: :timer.minutes(60),
     encode_timeout: :timer.minutes(60),
     encode_batch_size: 1000,
-    async_encode_progress?: true
+    async_encode_progress?: true,
+    publication_verification_timeout: :timer.minutes(5)
   ]
 
   resources do

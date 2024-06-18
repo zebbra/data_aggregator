@@ -81,7 +81,7 @@ config :esbuild,
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "3.4.1",
+  version: "3.4.4",
   data_aggregator: [
     args: ~w(
       --config=tailwind.config.js
@@ -149,3 +149,6 @@ config :git_hooks,
       ]
     ]
   ]
+
+# Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier`
+config :data_aggregator, publication_verification_scheduler_active: false

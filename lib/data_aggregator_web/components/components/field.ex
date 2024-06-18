@@ -5,6 +5,7 @@ defmodule DataAggregatorWeb.Components.Field do
   use Phoenix.Component
 
   import DataAggregatorWeb.Components.Input, only: [input: 1]
+  import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
   alias Phoenix.HTML.Form
@@ -48,7 +49,7 @@ defmodule DataAggregatorWeb.Components.Field do
   attr :type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week combobox)
+               range radio search select tel text textarea time url week combobox checkgroup)
 
   attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
@@ -84,6 +85,39 @@ defmodule DataAggregatorWeb.Components.Field do
     |> field()
   end
 
+  def field(%{type: "checkgroup"} = assigns) do
+    ~H"""
+    <div phx-feedback-for={@name} class={["form-control w-full", @class, @hidden && "hidden"]}>
+      <%= if @custom_label != [] do %>
+        <%= render_slot(@custom_label) %>
+      <% else %>
+        <.label :if={@label} for={@id} label={@label} {@rest} />
+      <% end %>
+      <.input type="hidden" name={@name} value="" />
+      <.description :if={@description} description={@description} class="mb-2" />
+      <.description :if={length(@options) == 0} description={~t"No entries found"m} class="mb-2" />
+      <.errors errors={@errors} id={@id} class={is_nil(@description) && "mb-2"} />
+      <div class="grid grid-flow-row sm:grid-cols-2">
+        <div
+          :for={{label, value} <- options_for_checkgroup(@options)}
+          class="flex cursor-pointer justify-between gap-4 py-2 sm:flex-row-reverse sm:justify-end"
+        >
+          <.label for={"#{@name}-#{value}"} label={label} class="cursor-pointer min-w-0 flex-1" />
+          <input
+            type="checkbox"
+            id={"#{@name}-#{value}"}
+            name={@name}
+            value={value}
+            checked={checked?(value, @value)}
+            class="checkbox"
+            {@rest}
+          />
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def field(%{type: "toggle"} = assigns) do
     assigns =
       assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", assigns[:value]) end)
@@ -93,6 +127,7 @@ defmodule DataAggregatorWeb.Components.Field do
       phx-feedback-for={@name}
       class={[
         "form-control grid items-center gap-x-4 gap-y-1",
+        @class,
         @inline && "sm:col-span-3",
         @hidden && "hidden"
       ]}
@@ -120,7 +155,11 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <div
       phx-feedback-for={@name}
-      class={["form-control grid items-center gap-x-4 gap-y-1 sm:col-span-3", @hidden && "hidden"]}
+      class={[
+        "form-control grid items-center gap-x-4 gap-y-1 sm:col-span-3",
+        @class,
+        @hidden && "hidden"
+      ]}
     >
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
@@ -147,6 +186,7 @@ defmodule DataAggregatorWeb.Components.Field do
       phx-feedback-for={@name}
       class={[
         "form-control grid-cols-[1.5rem] grid items-center gap-x-4 gap-y-1",
+        @class,
         @hidden && "hidden"
       ]}
     >
@@ -179,7 +219,11 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <div
       phx-feedback-for={@name}
-      class={["form-control grid items-center gap-x-4 gap-y-1 sm:col-span-3", @hidden && "hidden"]}
+      class={[
+        "form-control grid items-center gap-x-4 gap-y-1 sm:col-span-3",
+        @class,
+        @hidden && "hidden"
+      ]}
     >
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
@@ -206,6 +250,7 @@ defmodule DataAggregatorWeb.Components.Field do
       phx-feedback-for={@name}
       class={[
         "form-control grid-cols-[1.5rem] grid items-center gap-x-4 gap-y-1",
+        @class,
         @hidden && "hidden"
       ]}
     >
@@ -235,7 +280,7 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <div
       phx-feedback-for={@name}
-      class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @hidden && "hidden"]}
+      class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @class, @hidden && "hidden"]}
     >
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
@@ -262,7 +307,7 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <div
       phx-feedback-for={@name}
-      class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @hidden && "hidden"]}
+      class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @class, @hidden && "hidden"]}
     >
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
@@ -292,7 +337,7 @@ defmodule DataAggregatorWeb.Components.Field do
     end
 
     ~H"""
-    <div phx-feedback-for={@name} class={["form-control w-full", @hidden && "hidden"]}>
+    <div phx-feedback-for={@name} class={["form-control w-full", @class, @hidden && "hidden"]}>
       <label for={@id} class="input input-bordered flex items-center gap-2">
         <%= if @label do %>
           <%= @label %>
@@ -310,7 +355,7 @@ defmodule DataAggregatorWeb.Components.Field do
 
   def field(assigns) do
     ~H"""
-    <div phx-feedback-for={@name} class={["form-control w-full", @hidden && "hidden"]}>
+    <div phx-feedback-for={@name} class={["form-control w-full", @class, @hidden && "hidden"]}>
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
       <% else %>
@@ -417,7 +462,7 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <label for={@for} class={["label px-0 pt-0", @class]}>
       <span class={[
-        "label-text text-base/6 truncate font-medium sm:text-sm/6",
+        "label-text text-sm/6 truncate font-medium",
         @required && "after:content-['*']",
         @disabled && "text-base-content/50"
       ]}>
@@ -441,7 +486,7 @@ defmodule DataAggregatorWeb.Components.Field do
 
   def description(assigns) do
     ~H"""
-    <p class={["text-base-content/60 text-base/6 sm:text-sm/6", @class]}>
+    <p class={["text-base-content/60 text-sm/6", @class]}>
       <%= if @description do %>
         <%= @description %>
       <% else %>
@@ -497,4 +542,74 @@ defmodule DataAggregatorWeb.Components.Field do
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
   end
+
+  @doc """
+  Returns options to be used inside a checkgroup.
+
+  ## Examples
+
+      iex> options_for_checkgroup(["Admin": "admin", "User": "user"])
+      [
+        {"Admin", "admin"},
+        {"User", "user"}
+      ]
+
+  Simple arrays of strings are supported:
+
+      iex> options_for_checkgroup(["UK", "Sweden", "France"])
+      [
+        {"UK", "UK"},
+        {"Sweden", "Sweden"},
+        {"France", "France"}
+      ]
+
+  Simple array of atoms are supported:
+
+      iex> options_for_checkgroup([:uk, :se, :fr])
+      [
+        {"uk", "uk"},
+        {"se", "se"},
+        {"fr", "fr"}
+      ]
+
+  Key value pairs are also supported:
+
+      iex> options_for_checkgroup([[key: "UK", value: "uk"], [key: "Sweden", value: "se"], [key: "France", value: "fr"]])
+      [
+        {"UK", "uk"},
+        {"Sweden", "se"},
+        {"France", "fr"}
+      ]
+  """
+  def options_for_checkgroup(options) do
+    Enum.map(options, fn
+      {key, value} ->
+        {to_string(key), to_string(value)}
+
+      options when is_list(options) ->
+        {option_key, options} = Keyword.pop(options, :key)
+
+        option_key ||
+          raise ArgumentError,
+                "expected :key key when building <checkgroup options> from keyword list: #{inspect(options)}"
+
+        {option_value, options} = Keyword.pop(options, :value)
+
+        option_value ||
+          raise ArgumentError,
+                "expected :value key when building <checkgroup options> from keyword list: #{inspect(options)}"
+
+        {to_string(option_key), to_string(option_value)}
+
+      str when is_binary(str) ->
+        {str, str}
+
+      atom when is_atom(atom) ->
+        {Atom.to_string(atom), Atom.to_string(atom)}
+    end)
+  end
+
+  defp checked?(value, options)
+  defp checked?(_, nil), do: false
+  defp checked?(value, options), do: value in options
 end

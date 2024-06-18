@@ -82,13 +82,11 @@ defmodule DataAggregatorWeb.Components do
 
   defmacro __using__(_) do
     quote do
-      use DataAggregatorWeb.LiveComponents.ThemeSelect
-
       import DataAggregatorWeb.Components.Alert
       import DataAggregatorWeb.Components.Attachment
       import DataAggregatorWeb.Components.Badge
       import DataAggregatorWeb.Components.Breadcrumbs
-      import DataAggregatorWeb.Components.CloseButton
+      import DataAggregatorWeb.Components.Button
       import DataAggregatorWeb.Components.Combobox
       import DataAggregatorWeb.Components.Drawer
       import DataAggregatorWeb.Components.Dropdown
@@ -100,10 +98,12 @@ defmodule DataAggregatorWeb.Components do
       import DataAggregatorWeb.Components.List
       import DataAggregatorWeb.Components.LocaleSelect
       import DataAggregatorWeb.Components.Modal
+      import DataAggregatorWeb.Components.Notification
       import DataAggregatorWeb.Components.Pagination
       import DataAggregatorWeb.Components.Progress
       import DataAggregatorWeb.Components.Tab
       import DataAggregatorWeb.Components.Transitions
+      import DataAggregatorWeb.LiveComponents.ThemeSelect
 
       import Pagify.Components,
         only: [table: 1, build_path: 2, build_path: 3, build_scope_path: 3]

@@ -2,6 +2,8 @@ defmodule Pagify.ValidationTest do
   @moduledoc false
   use ExUnit.Case, async: true
 
+  import Pagify.Factory
+
   alias Pagify.Factory.Comment
   alias Pagify.Factory.Post
   alias Pagify.Validation
@@ -197,6 +199,94 @@ defmodule Pagify.ValidationTest do
     end
   end
 
+  describe "validate_filter_form/2" do
+    test "passes with nil filter_form" do
+      params = Validation.validate_filter_form(%{filter_form: nil}, Post)
+      assert %{filter_form: nil} = params
+      refute Map.has_key?(params, :errors)
+    end
+
+    test "passes with no filter_form" do
+      assert %{} == Validation.validate_filter_form(%{}, Post)
+    end
+
+    test "passes with empty map filter_form" do
+      params = Validation.validate_filter_form(%{filter_form: %{}}, Post)
+      assert %{filter_form: %{}} = params
+      refute Map.has_key?(params, :errors)
+    end
+
+    test "passes with non-empty map filter_form" do
+      filter_form_params = build(:form_filter_parameter)
+
+      params = Validation.validate_filter_form(%{filter_form: filter_form_params}, Post)
+      assert %{filter_form: ^filter_form_params} = params
+      refute Map.has_key?(params, :errors)
+    end
+
+    test "passes with relational filter_form" do
+      filter_form_params = build(:relational_filter_form_parameter)
+
+      params = Validation.validate_filter_form(%{filter_form: filter_form_params}, Post)
+      assert %{filter_form: ^filter_form_params} = params
+      refute Map.has_key?(params, :errors)
+    end
+
+    test "passes with calculated filter_form" do
+      filter_form_params = build(:calculated_filter_form_parameter)
+
+      params = Validation.validate_filter_form(%{filter_form: filter_form_params}, Post)
+      assert %{filter_form: ^filter_form_params} = params
+      refute Map.has_key?(params, :errors)
+    end
+
+    test "replaces simple invalid filter_form fields and adds errors" do
+      filter_form_params = build(:invalid_filter_form_parameter)
+
+      assert %{
+               :filter_form => %{},
+               :errors => [filter_form: [field: {"No such field invalid_field", []}]]
+             } =
+               Validation.validate_filter_form(%{filter_form: filter_form_params}, Post, true)
+    end
+
+    test "does not replace simple invalid filter_form fields and adds errors" do
+      filter_form_params = build(:invalid_filter_form_parameter)
+
+      assert %{
+               :filter_form => ^filter_form_params,
+               :errors => [filter_form: [field: {"No such field invalid_field", []}]]
+             } =
+               Validation.validate_filter_form(%{filter_form: filter_form_params}, Post)
+    end
+
+    test "replaces complex invalid filter_form and adds errors and keeps valid fields" do
+      filter_form_params = build(:complex_invalid_filter_form_parameter)
+
+      assert %{
+               :filter_form => %{
+                 "components" => %{
+                   "0" => %{
+                     "field" => :name,
+                     "negated?" => false,
+                     "operator" => :eq,
+                     "path" => "",
+                     "value" => "Post 1"
+                   }
+                 },
+                 "negated" => "false",
+                 "operator" => "or"
+               },
+               :errors => [filter_form: [field: {"No such field invalid_field", []}]]
+             } =
+               Validation.validate_filter_form(
+                 %{filter_form: filter_form_params},
+                 Post,
+                 true
+               )
+    end
+  end
+
   describe "validate_filters/2" do
     test "passes with nil filters" do
       assert %{filters: nil} = Validation.validate_filters(%{filters: nil}, Post)
@@ -236,7 +326,7 @@ defmodule Pagify.ValidationTest do
 
     test "replaces simple invalid filters and adds errors" do
       assert %{:filters => nil, :errors => [filters: [%Ash.Error.Query.InvalidFilterValue{}]]} =
-               Validation.validate_filters(%{filters: 1}, Post, replace_invalid_params?: true)
+               Validation.validate_filters(%{filters: 1}, Post, true)
     end
 
     test "does not replace simple invalid filters and adds errors" do

@@ -54,35 +54,6 @@
         <span class="md:hidden lg:inline"><%= ~t"Records"m %></span>
       </.link>
     </li>
-    <li>
-      <.link
-        navigate={~p"/tasks"}
-        class={[
-          "flex md:flex-col md:p-3 active:!bg-primary",
-          @current == "tasks" && "bg-primary text-primary-content hover:bg-primary",
-          "md:max-lg:indicator"
-        ]}
-      >
-        <.icon name="hero-queue-list" />
-        <span class="md:hidden lg:inline">
-          <%= ~t"Tasks"m %>
-          <span class={[
-            "badge hidden lg:inline-flex",
-            @current != "tasks" && "badge-primary",
-            @current == "tasks" && "bade-base-content"
-          ]}>
-            9
-          </span>
-        </span>
-        <span class={[
-          "badge indicator-item ml-auto md:hidden",
-          @current != "tasks" && "badge-primary",
-          @current == "tasks" && "bade-base-content"
-        ]}>
-          9
-        </span>
-      </.link>
-    </li>
     <%= if Enum.any?(@current_user.roles, fn role -> role in ["collection_digitizer", "admin"] end) do %>
       <li>
         <.link

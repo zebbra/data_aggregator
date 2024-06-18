@@ -18,8 +18,9 @@ defmodule DataAggregator.Records.Record.Changes.SetPublicationStale do
 
   defp set_publication_stale(changeset, record) do
     if Changeset.changing_attributes?(changeset) do
-      with {:ok, record} <- Record.update_fast_track_status(record, :stale) do
-        Record.update_approval_status(record, :stale)
+      with {:ok, record} <-
+             Record.update_fast_track_status(record, target_status(record, :fast_track_status)) do
+        Record.update_approval_status(record, target_status(record, :approval_status))
 
         Logger.debug("Publication states 'fast_track_status' and 'approval_status' set to ':stale'")
 
@@ -28,5 +29,12 @@ defmodule DataAggregator.Records.Record.Changes.SetPublicationStale do
     end
 
     {:ok, record}
+  end
+
+  defp target_status(record, attribute) do
+    case Map.get(record, attribute) do
+      :not_published -> :not_published
+      _ -> :stale
+    end
   end
 end

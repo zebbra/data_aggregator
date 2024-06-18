@@ -45,24 +45,34 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
 
     max_concurrency = Records.import_max_concurrency()
 
-    {valid, invalid} =
+    {valid, invalid, errors} =
       chunk
-      |> Task.async_stream(&valid_import_row?(import, &1), max_concurrency: max_concurrency)
-      |> Enum.reduce({0, 0}, fn
-        {:ok, true}, {valid, invalid} -> {valid + 1, invalid}
-        {:ok, false}, {valid, invalid} -> {valid, invalid + 1}
+      |> Task.async_stream(&validate_import_row(import, &1), max_concurrency: max_concurrency)
+      |> Enum.reduce({0, 0, []}, fn
+        {:ok, []}, {valid, invalid, all_errors} -> {valid + 1, invalid, all_errors}
+        {:ok, errors}, {valid, invalid, all_errors} -> {valid, invalid + 1, [errors | all_errors]}
       end)
 
-    {valid, invalid}
+    {{valid, invalid}, errors |> Enum.reverse() |> List.flatten()}
   end
 
-  def reduce_validation_results(results, changeset) do
+  def reduce_validation_results(results, %Changeset{data: import} = changeset) do
+    {path, error_log_file} = open_error_log_file(import)
+
     changeset =
       Enum.reduce_while(results, changeset, fn
-        result, changeset ->
-          changeset = report_progress(changeset, result)
+        {counts, []}, changeset ->
+          changeset = report_progress(changeset, counts)
+          {:cont, changeset}
+
+        {counts, errors}, changeset ->
+          write_error_log_file(error_log_file, errors)
+
+          changeset = report_progress(changeset, counts)
           {:cont, changeset}
       end)
+
+    upload_error_log_file!(path, import)
 
     valid = Changeset.get_attribute(changeset, :rows_valid_count)
     invalid = Changeset.get_attribute(changeset, :rows_invalid_count)
@@ -104,7 +114,7 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
   end
 
   defp add_error(changeset, error) do
-    Logger.error("Error validating records: #{inspect(error)}")
+    Logger.warning("Error validating records: #{inspect(error)}")
     Changeset.add_error(changeset, error)
   end
 end

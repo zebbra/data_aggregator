@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   use DataAggregatorWeb, :live_component
 
   alias AshPhoenix.Form
-  alias DataAggregator.Gbif.GrSciColl
+  alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.CollectionType
 
@@ -18,18 +18,12 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   @impl true
   def render(assigns) do
     assigns =
-      assign(
-        assigns,
+      assigns
+      |> assign(
         :collection_types,
         CollectionType.get_collection_type_options()
       )
-
-    assigns =
-      assign(
-        assigns,
-        :grscicoll_collections,
-        GrSciColl.get_collection_options()
-      )
+      |> maybe_assign_available_collection_options()
 
     ~H"""
     <div class="contents">
@@ -48,10 +42,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
           modal
         >
           <.fieldgroup modal>
-            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
-              <.field field={@form[:owner]} label={~t"Owner"m} placeholder="Brigit Hansson" required />
-            </div>
-            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-1 sm:gap-4">
               <.field
                 type="combobox"
                 field={@form[:type]}
@@ -61,15 +52,8 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
                 prompt={~t"None"m}
                 required
               />
-              <.field
-                type="number"
-                field={@form[:items_to_digitize]}
-                label={~t"Total items to digitize"m}
-                placeholder="42042"
-                required
-              />
             </div>
-            <div class="grid grid-cols-1 gap-8 sm:grid-cols-1 sm:gap-4">
+            <div :if={@action == :new} class="grid grid-cols-1 gap-8 sm:grid-cols-1 sm:gap-4">
               <.field
                 type="combobox"
                 field={@form[:grscicoll_reference]}
@@ -88,8 +72,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
             />
           </.fieldgroup>
           <:actions modal>
-            <button type="submit" class="btn btn-primary"><%= ~t"Save collection"m %></button>
-            <button type="reset" class="btn btn-ghost"><%= ~t"Reset"m %></button>
+            <button type="submit" class="btn btn-primary"><%= submit_label(@action) %></button>
             <button type="button" class="btn btn-ghost" onclick="collection_modal.close()">
               <%= ~t"Cancel"m %>
             </button>
@@ -99,6 +82,9 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
     </div>
     """
   end
+
+  defp submit_label(:new), do: ~t"Create collection"m
+  defp submit_label(:edit), do: ~t"Update collection"m
 
   defp assign_form(%{assigns: assigns} = socket) do
     assign(socket, :form, build_form(assigns))
@@ -122,6 +108,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
     {:noreply, assign(socket, form: form)}
   end
 
+  @impl true
   def handle_event("collection:save", %{"collection" => params}, socket) do
     socket =
       case Form.submit(socket.assigns.form, params: params) do
@@ -142,5 +129,13 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
       end
 
     {:noreply, socket}
+  end
+
+  defp maybe_assign_available_collection_options(%{action: :edit} = socket) do
+    socket
+  end
+
+  defp maybe_assign_available_collection_options(socket) do
+    assign(socket, :grscicoll_collections, Gbif.RestAPI.get_available_collection_options())
   end
 end

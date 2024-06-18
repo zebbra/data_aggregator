@@ -10,5 +10,7 @@ importing --> imported: set_imported
 importing --> failed: set_failed
 failed --> pending: update_mapping
 failed --> import_queued: enqueue_import
+import_queued --> importing: set_importing
 pending --> importing: import
+pending --> importing: set_importing
 ```

@@ -15,6 +15,15 @@ defmodule DataAggregator.CollectionTest do
       grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
     }
 
+    setup do
+      # we may not wanna stub the API here, because we wanna actually test the whole
+      # integration with the Gbif API in place to validate if the referenced
+      # collection, instead we can stub the API in other tests
+      # stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
+      []
+    end
+
     test "read!/0 returns all collections" do
       created = [
         collection_fixture(),
@@ -45,7 +54,10 @@ defmodule DataAggregator.CollectionTest do
         grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
       }
 
-      assert {:ok, %Collection{} = _collection} = Collection.create(attrs)
+      assert {:ok, %Collection{} = collection} = Collection.create(attrs)
+
+      assert collection.grscicoll_institution_key === "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+      assert collection.grscicoll_institution_code === "Z"
     end
 
     test "create/1 with invalid data returns error changeset" do
@@ -80,8 +92,8 @@ defmodule DataAggregator.CollectionTest do
       collection = collection_fixture()
 
       updated_import_mapping = [
-        %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
-        %{name: "Numéro scientifique GBIF", mapped_to: "mte_catalog_number"}
+        %{"name" => "Scientific Name", "mapped_to" => "tax_scientific_name"},
+        %{"name" => "Numéro scientifique GBIF", "mapped_to" => "mte_catalog_number"}
       ]
 
       assert {:ok, %Collection{} = result} =

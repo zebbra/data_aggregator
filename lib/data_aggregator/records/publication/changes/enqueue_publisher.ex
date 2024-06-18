@@ -27,10 +27,6 @@ defmodule DataAggregator.Records.Publication.Changes.EnqueuePublisher do
     end
   end
 
-  defp enqueue_publisher({:error, error}) do
-    {:error, error}
-  end
-
   defp insert_job(%Publication{id: id}) do
     %{id: id}
     |> Publication.Workers.Publisher.new()

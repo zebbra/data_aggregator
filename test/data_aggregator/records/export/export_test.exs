@@ -2,11 +2,13 @@ defmodule DataAggregator.ExportTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.ExportFixtures
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.DarwinCore.Schema
+  alias DataAggregator.Gbif
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Export
@@ -16,6 +18,11 @@ defmodule DataAggregator.ExportTest do
     @invalid_attrs %{
       name: nil
     }
+    setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
+      []
+    end
 
     test "read!/0 returns all exports" do
       created = [
@@ -83,14 +90,117 @@ defmodule DataAggregator.ExportTest do
     end
   end
 
+  describe "enqueue/1" do
+    @collection_mapping [
+      %{name: "Scientific Name - collection", mapped_to: "tax_scientific_name"},
+      %{name: "Numéro scientifique GBIF - collection", mapped_to: "mte_catalog_number"}
+    ]
+
+    setup do
+      collection =
+        Records.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
+          :records_to_export_query
+        ])
+
+      # those two should be exported
+      exportable_record(collection)
+      exportable_record(collection)
+      # this one should not be exported
+      unexportable_record(collection)
+
+      export =
+        Export.create!(%{
+          name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+          collection: collection,
+          mapping: nil,
+          records_query: collection.records_to_export_query,
+          data_layer: :raw,
+          header_source: :collection_mapping
+        })
+
+      [collection: collection, export: export]
+    end
+
+    test "enqueue/1 succeeds if collection state is idle", %{
+      collection: collection,
+      export: export
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {:ok, export} = Export.enqueue(export)
+
+        assert export.state == :queued
+        assert_enqueued(worker: Export.Workers.Exporter, args: %{id: export.id})
+
+        collection = Collection.get_by_id!(collection.id)
+        assert collection.state == :exporting
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state importing", %{
+      collection: collection,
+      export: export
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_importing!(collection)
+        assert_not_enqueued(export)
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state exporting", %{
+      collection: collection,
+      export: export
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_exporting!(collection)
+        assert_not_enqueued(export)
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state encoding", %{
+      collection: collection,
+      export: export
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_encoding!(collection)
+        assert_not_enqueued(export)
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state approving", %{
+      collection: collection,
+      export: export
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_approving!(collection)
+        assert_not_enqueued(export)
+      end)
+    end
+
+    test "enqueue/1 fails if collection is in state fast_track_publishing", %{
+      collection: collection,
+      export: export
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Collection.set_fast_track_publishing!(collection)
+        assert_not_enqueued(export)
+      end)
+    end
+
+    defp assert_not_enqueued(export) do
+      assert {:error, %Ash.Error.Invalid{}} = Export.enqueue(export)
+      export = Export.get_by_id!(export.id)
+      assert export.state == :pending
+      refute_enqueued(worker: Export.Workers.Exporter, args: %{id: export.id})
+    end
+  end
+
   describe "export" do
     @valid_custom_mapping %{
       "mte_catalog_number" => "Numéro scientifique GBIF",
       "tax_family" => "Famille"
     }
-    @default_mapping Map.new(Schema.prefixed_attribute_names(), fn name ->
-                       {name, name}
-                     end)
+
+    @default_mapping Map.new(Schema.prefixed_attribute_names(), &{to_string(&1), to_string(&1)})
 
     @collection_mapping [
       %{name: "Scientific Name - collection", mapped_to: "tax_scientific_name"},
@@ -157,7 +267,10 @@ defmodule DataAggregator.ExportTest do
       assert Explorer.DataFrame.n_columns(data_frame) == 2
       assert Explorer.DataFrame.n_rows(data_frame) == 3
 
-      assert Explorer.DataFrame.names(data_frame) == ["Famille", "Numéro scientifique GBIF"]
+      assert_lists_equal(Explorer.DataFrame.names(data_frame), [
+        "Famille",
+        "Numéro scientifique GBIF"
+      ])
     end
 
     @tag mapping: nil
@@ -168,14 +281,14 @@ defmodule DataAggregator.ExportTest do
       data_frame: data_frame
     } do
       assert export.mapping == %{
-               mte_catalog_number: "Numéro scientifique GBIF - collection",
-               tax_scientific_name: "Scientific Name - collection"
+               "mte_catalog_number" => "Numéro scientifique GBIF - collection",
+               "tax_scientific_name" => "Scientific Name - collection"
              }
 
-      assert Explorer.DataFrame.names(data_frame) == [
-               "Numéro scientifique GBIF - collection",
-               "Scientific Name - collection"
-             ]
+      assert columns = Explorer.DataFrame.names(data_frame)
+
+      assert Enum.member?(columns, "Numéro scientifique GBIF - collection")
+      assert Enum.member?(columns, "Scientific Name - collection")
 
       assert Explorer.DataFrame.n_columns(data_frame) == 2
       assert Explorer.DataFrame.n_rows(data_frame) == 3
@@ -189,14 +302,14 @@ defmodule DataAggregator.ExportTest do
       data_frame: data_frame
     } do
       assert export.mapping == %{
-               mte_catalog_number: "Numéro scientifique GBIF - collection",
-               tax_scientific_name: "Scientific Name - collection"
+               "mte_catalog_number" => "Numéro scientifique GBIF - collection",
+               "tax_scientific_name" => "Scientific Name - collection"
              }
 
-      assert Explorer.DataFrame.names(data_frame) == [
-               "Numéro scientifique GBIF - collection",
-               "Scientific Name - collection"
-             ]
+      assert columns = Explorer.DataFrame.names(data_frame)
+
+      assert Enum.member?(columns, "Numéro scientifique GBIF - collection")
+      assert Enum.member?(columns, "Scientific Name - collection")
 
       assert Explorer.DataFrame.n_columns(data_frame) == 2
       assert Explorer.DataFrame.n_rows(data_frame) == 3

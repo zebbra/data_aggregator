@@ -52,6 +52,7 @@ config :phoenix_live_view,
 # Disable warnings for dummy resources
 config :ash, :validate_api_config_inclusion?, false
 config :ash, :validate_api_resource_inclusion?, false
+config :ash, warn_on_transaction_hooks?: false
 
 config :mix_test_watch, clear: true
 
@@ -65,3 +66,6 @@ config :data_aggregator, :pagify, default_limit: 25
 config :data_aggregator, :pagify_phoenix,
   pagination: [opts: {Pagify.Components.Pagination, :default_opts}],
   table: [opts: {Pagify.Components.Table, :default_opts}]
+
+# Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier`
+config :data_aggregator, publication_verification_scheduler_active: false

@@ -10,6 +10,7 @@ defmodule DataAggregator.Records.Record do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
+    api: DataAggregator.Records,
     extensions: [
       AshUUID,
       AshGraphql.Resource,
@@ -32,6 +33,8 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.Record.Calculations.Mids
 
   @type t :: %Record{}
+
+  @iucn_redlist_categories ["EX", "EW", "RE", "CR(PE)", "CR", "EN"]
 
   @pagify_scopes %{
     status: [
@@ -62,6 +65,7 @@ defmodule DataAggregator.Records.Record do
       default: :not_published
 
     attribute :approval_status, PublicationStatusType, allow_nil?: false, default: :not_published
+    attribute :iucn_redlist_category, :string, allow_nil?: true
 
     timestamps private?: false, writable?: false
   end
@@ -94,12 +98,26 @@ defmodule DataAggregator.Records.Record do
       allow_nil? true
     end
 
+    belongs_to :fast_track_checker_job, Job do
+      api DataAggregator.Jobs
+      attribute_type :integer
+      attribute_writable? true
+      allow_nil? true
+    end
+
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
     end
   end
 
   calculations do
+    calculate :iucn_redlist,
+              :boolean,
+              expr(
+                :iucn_redlist_category in @iucn_redlist_categories or
+                  encoded_record.iucn_redlist_category in @iucn_redlist_categories
+              )
+
     calculate :mids_level,
               :integer,
               expr(
@@ -132,7 +150,17 @@ defmodule DataAggregator.Records.Record do
   paper_trail do
     change_tracking_mode :changes_only
     store_action_name? true
-    ignore_attributes [:inserted_at, :updated_at, :import_data, :errors]
+
+    ignore_attributes [
+      :inserted_at,
+      :updated_at,
+      :import_data,
+      :errors,
+      :approval_status,
+      :fast_track_status,
+      :state
+    ]
+
     attributes_as_attributes [:mte_catalog_number, :tax_scientific_name]
     reference_source? false
 
@@ -148,7 +176,7 @@ defmodule DataAggregator.Records.Record do
       transition :set_imported, from: [:encoded, :failed, :encoding, :imported], to: :imported
 
       transition :enqueue_encoder,
-        from: [:imported, :encoded, :failed, :iencoded, :encoding],
+        from: [:imported, :encoded, :failed, :encoding],
         to: :queued
 
       transition :set_encoding,
@@ -194,6 +222,9 @@ defmodule DataAggregator.Records.Record do
       primary? true
       argument :collection, Collection, allow_nil?: false
 
+      change Record.Changes.SetGrSciCollInstitution
+      change Record.Changes.SetOccurrenceID
+      change Record.Changes.SetBasisOfRecord
       change Record.Changes.SetImportedAfterAction
       change manage_relationship(:collection, :collection, type: :append)
     end
@@ -211,6 +242,8 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.RelateImport
       change Record.Changes.RelateCollectionFromImport
       change Record.Changes.ExtractAttributes
+      change Record.Changes.SetOccurrenceID
+      change Record.Changes.SetBasisOfRecord
       change Record.Changes.SetPublicationStale
       change Record.Changes.SetImportedAfterAction
 
@@ -224,6 +257,12 @@ defmodule DataAggregator.Records.Record do
       change transition_state(:queued)
       change Record.Changes.EnqueueEncoder
       change load(:encoder_job)
+    end
+
+    update :enqueue_fast_track_checker do
+      accept []
+      change Record.Changes.EnqueueFastTrackChecker
+      change load(:fast_track_checker_job)
     end
 
     action :bulk_import, :map do
@@ -244,6 +283,10 @@ defmodule DataAggregator.Records.Record do
       argument :catalog, :atom, allow_nil?: false
 
       run Encoding.Actions.EncodeRecord
+    end
+
+    update :check_if_fast_track_pubished do
+      change Record.Changes.CheckIfFastTrackPublished
     end
 
     update :set_imported do
@@ -284,8 +327,6 @@ defmodule DataAggregator.Records.Record do
     module DataAggregator.PubSub
     prefix "record"
 
-    publish_all :create, [[:collection_id, nil], "created", [:id, nil]]
-    publish_all :update, [[:collection_id, nil], "updated", [:id, nil]]
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
   end
 
@@ -312,6 +353,8 @@ defmodule DataAggregator.Records.Record do
     define :enqueue_encoder
     define :update_fast_track_status, action: :update_fast_track_status, args: [:status]
     define :update_approval_status, action: :update_approval_status, args: [:status]
+    define :check_if_fast_track_pubished, action: :check_if_fast_track_pubished
+    define :enqueue_fast_track_checker
   end
 
   postgres do
@@ -320,6 +363,7 @@ defmodule DataAggregator.Records.Record do
 
     references do
       reference :collection, on_delete: :delete, on_update: :update
+      reference :fast_track_checker_job, on_delete: :nilify, on_update: :update
     end
   end
 

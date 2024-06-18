@@ -1,14 +1,52 @@
-defmodule DataAggregatorWeb.Components.CloseButton do
+defmodule DataAggregatorWeb.Components.Button do
   @moduledoc """
-  Close button component.
+  Button components.
   """
 
   use Phoenix.Component
 
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Gettext
+  import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
   alias Phoenix.LiveView.JS
+
+  @doc """
+  Renders a table action button.
+
+  """
+  attr :disabled, :boolean, default: false, doc: "whether the button is disabled"
+  attr :icon, :string, doc: "the icon name"
+
+  attr :rest, :global,
+    include: ~w(phx-click phx-value-id patch data-tip data-confirm data-confirm_id),
+    doc: "the arbitrary HTML attributes to add to the button"
+
+  def table_action_button(assigns) do
+    ~H"""
+    <.link
+      type="button"
+      class={[
+        "link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost",
+        @disabled && "pointer-events-none text-base-content/20"
+      ]}
+      {@rest}
+    >
+      <.icon
+        name={@icon}
+        class={
+          class_names([
+            "size-5",
+            if(@disabled,
+              do: "text-base-content/20",
+              else: "text-base-content/75"
+            )
+          ])
+        }
+      />
+    </.link>
+    """
+  end
 
   @doc """
   Renders a close button.

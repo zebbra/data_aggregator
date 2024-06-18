@@ -1,43 +1,35 @@
 defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   @moduledoc false
   use DataAggregatorWeb, :live_view
-  use DataAggregatorWeb.CollectionLive.Import.Components, only: [import_state_badge: 1]
+  use DataAggregatorWeb.CollectionLive.Import.Subscriptions
 
   import DataAggregator.Accounts.Helpers
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
-  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
+  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1, busy_action: 1]
+
+  import DataAggregatorWeb.CollectionLive.Import.Components,
+    only: [import_state_badge: 1, attribute_badge: 1]
+
   import DataAggregatorWeb.CollectionLive.Import.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
+  alias DataAggregator.Files
   alias DataAggregator.Records.Import
 
-  @load [
-    :duration,
-    :collection_name,
-    :records_count,
-    :missing_mappings,
-    :attachment_filename,
-    :attachment_byte_size,
-    attachment: [:filename, :url, :byte_size]
-  ]
-
-  @load_import @load ++
-                 [
-                   :job,
-                   :import_progress,
-                   :rows_validated_count,
-                   :rows_invalid_count,
-                   :validation_progress,
-                   :mappings,
-                   :collection
-                 ]
+  @load load()
+  @load_import load_all()
 
   @impl true
   def mount(%{"id" => id} = _params, _session, socket) do
+    collection = get_collection(id)
+
     socket =
       socket
-      |> assign(:collection, get_collection(id))
+      |> assign(:collection, collection)
       |> assign(selected_import: nil)
+      |> assign(:busy, collection.busy)
+      |> assign(:busy_action, busy_action(collection))
+      |> assign(show_error_log_preview: false)
       |> subscribe_for_import_updates(connected?(socket))
 
     {:ok, socket}
@@ -67,6 +59,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         current={:imports}
         current_user={@current_user}
         meta={@meta}
+        disabled={@busy}
+        busy={@busy_action == "dataset:import"}
       />
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
         <.secondary_navigation_item
@@ -84,7 +78,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         />
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/publications"}
-          label={~t"Publications"m}
+          label={~t"Publications and Approvals"m}
         />
       </.secondary_navigation>
 
@@ -128,44 +122,41 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           label={~t"Actions"m}
         >
           <div
-            :if={import.missing_mappings != []}
+            :if={invalid?(import)}
             class="link tooltip link-hover btn btn-sm btn-circle btn-ghost inline-flex"
             data-tip={~t"Mapping is invalid"m}
           >
             <.icon name="hero-exclamation-circle-mini" class="size-5 text-base-content/75" />
           </div>
 
-          <.link
+          <.table_action_button
             :if={can_run?(import)}
-            type="button"
             phx-click="import:run"
             phx-value-id={import.id}
-            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
             data-tip={~t"Run"m}
-          >
-            <.icon name="hero-play-circle-mini" class="size-5 text-base-content/75" />
-          </.link>
+            icon="hero-play-circle-mini"
+            disabled={@busy}
+          />
 
           <div class="border-black-white/10 mr-4 inline-flex border-r pr-4">
-            <.link
-              :if={import.state == :pending}
+            <.table_action_button
+              :if={can_edit?(import)}
               patch={build_path(~p"/collections/#{@collection}/imports/#{import}/edit", @meta)}
-              class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
               data-tip={~t"Edit"m}
-            >
-              <.icon name="hero-pencil-square-mini" class="size-5 text-base-content/75" />
-            </.link>
+              disabled={@busy}
+              icon="hero-pencil-square-mini"
+            />
           </div>
 
-          <.link
+          <.table_action_button
             type="button"
             phx-click={JS.push("import:delete", value: %{id: import.id})}
-            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
             data-tip={~t"Delete"m}
             data-confirm={~t"Are you sure?"m}
-          >
-            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
-          </.link>
+            data-confirm_id="confirm_import_alert"
+            disabled={@busy || can_delete?(import) == false}
+            icon="hero-trash-mini"
+          />
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/collections/#{@collection}/imports"} />
@@ -189,7 +180,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             size="md"
           >
             <:subtitle>
-              <div :if={@selected_import.state == :pending} class="mt-1 flex items-center gap-x-2">
+              <div :if={can_run?(@selected_import)} class="mt-1 flex items-center gap-x-2">
                 <span class="text-sm"><%= ~t"State:"m %></span>
                 <.import_state_badge import={@selected_import} />
               </div>
@@ -200,20 +191,18 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                 type="button"
                 phx-value-id={@selected_import.id}
                 phx-click="import:run"
+                disabled={@busy}
                 class="btn btn-primary max-sm:btn-sm"
               >
                 <.icon name="hero-play-circle-mini" class="size-6" />
                 <%= ~t"Run"m %>
               </button>
-              <div
-                :if={can_run?(@selected_import) == false && @selected_import.state == :pending}
-                class="text-error flex h-8 items-center gap-x-2"
-              >
+              <div :if={invalid?(@selected_import)} class="text-error flex h-8 items-center gap-x-2">
                 <.icon name="hero-exclamation-triangle-mini" class="size-6 mt-0.5" />
                 <span class="text-sm"><%= ~t"Mapping is invalid"m %></span>
               </div>
               <div
-                :if={can_run?(@selected_import) == false && @selected_import.state != :pending}
+                :if={can_run?(@selected_import) == false && invalid?(@selected_import) == false}
                 class="flex items-center gap-x-2"
               >
                 <span class="text-sm"><%= ~t"State:"m %></span>
@@ -249,6 +238,37 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                 </div>
                 <div :if={@selected_import.rows_invalid_count not in [0, nil]} class="text-error">
                   <%= ~t"invalid rows:"m %> <%= format_number(@selected_import.rows_invalid_count) %>
+                </div>
+              </div>
+            </:item>
+
+            <:item title={~t"Error Log"m}>
+              <div class="flex flex-col">
+                <div :if={@selected_import.rows_invalid_count not in [0, nil]}>
+                  <div class="text-error">
+                    <%= ~t"detected errors:"m %> <%= format_number(@selected_import.rows_error_count) %>
+                  </div>
+                  <div class="inline-flex gap-1">
+                    <.link
+                      data-tip={~t"Preview error log"m}
+                      class="self-center tooltip rounded-full text-xs gap-x-1 font-medium bg-blue-100 px-1.5 pb-0.5 text-blue-500 opacity-75 hover:opacity-100"
+                      phx-click="show:error_log_preview"
+                      aria-label={~t"Open error log preview"m}
+                    >
+                      <.icon name="hero-eye-mini" class="size-3 shrink-0" />
+                    </.link>
+                    <div class="tooltip flex h-10 self-center" data-tip={~t"Download error log"}>
+                      <.file_info
+                        show_file_name={false}
+                        attachment={@selected_import.error_log}
+                        rows={@selected_import.rows_error_count}
+                        badge
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div :if={@selected_import.rows_invalid_count in [0, nil]} class="text-italic">
+                  <%= ~t"No errors found"m %>
                 </div>
               </div>
             </:item>
@@ -293,7 +313,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                 align_items="center"
                 size="md"
               >
-                <:actions :if={@selected_import.state == :pending}>
+                <:actions :if={can_edit?(@selected_import)}>
                   <.link
                     type="button"
                     patch={
@@ -332,18 +352,20 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                   |> Enum.filter(&(&1.mapped? == false))
                   |> Enum.map(& &1.name)
               }
-              class="bg-base-200 mr-1 mb-1 inline-flex rounded px-2 py-1 text-xs"
+              class="bg-base-200 mr-2.5 mb-2 inline-flex rounded px-2 py-1 text-sm"
             >
               <%= col %>
             </span>
           </div>
 
-          <:footer :if={@selected_import && @selected_import.state == :pending}>
+          <:footer>
             <button
               type="button"
               phx-click={JS.push("import:delete", value: %{id: @selected_import.id})}
               class="btn btn-error max-sm:btn-sm"
               data-confirm={~t"Are you sure?"m}
+              data-confirm_id="confirm_import_alert"
+              disabled={can_delete?(@selected_import) == false}
             >
               <.icon name="hero-x-circle-mini" class="size-6" />
               <%= ~t"Delete"m %>
@@ -353,6 +375,50 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
       </:secondary>
 
       <:portal>
+        <.modal
+          :if={@selected_import != nil and @selected_import.error_log != nil}
+          id="import_error_log_preview_modal"
+          show={@show_error_log_preview}
+          title={~t"Import Errors"}
+          responsive
+          on_cancel={JS.push("hide:error_log_preview")}
+          size="5xl"
+        >
+          <.table
+            opts={[
+              container_attrs: [
+                class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8"
+              ]
+            ]}
+            items={error_log_preview_data(@selected_import.error_log)}
+          >
+            <:col :let={error} label="catalogNumber">
+              <%= error[:catalogNumber] %>
+            </:col>
+            <:col :let={error} label="scientificName">
+              <%= error[:scientificName] %>
+            </:col>
+            <:col :let={error} label={~t"Field"}>
+              <%= error[:field] %>
+            </:col>
+            <:col :let={error} label={~t"Value"}>
+              <%= error[:value] %>
+            </:col>
+            <:col :let={error} label={~t"Error message"} class="text-right">
+              <%= error[:message] %>
+            </:col>
+          </.table>
+
+          <:footer reverse={false}>
+            <div class="inline-flex gap-2 py-2">
+              <.attachment_download_badge attachment={@selected_import.error_log} />
+              <span class="text-base/6 self-center text-xs italic">
+                <%= ~t"Only the first 100 rows will be shown. Download the file to have the complete log" %>
+              </span>
+            </div>
+          </:footer>
+        </.modal>
+
         <.modal
           id="import_modal"
           class="no-scrollbar"
@@ -372,8 +438,16 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             collection={@collection}
             show_validation={Phoenix.Flash.get(@flash, :mapping_error)}
             meta={@meta}
+            busy={@busy}
           />
         </.modal>
+
+        <.alert
+          id="confirm_import_alert"
+          size="sm"
+          title={~t"Are you sure?"m}
+          label={~t"Yes, delete import"m}
+        />
       </:portal>
     </.page>
     """
@@ -381,8 +455,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   @impl true
   def handle_event("import:run", %{"id" => id}, socket) do
-    id |> Import.get_by_id!() |> Import.enqueue_import!()
-    {:noreply, socket}
+    case id |> Import.get_by_id!() |> Import.enqueue_import() do
+      {:ok, _} ->
+        {:noreply, put_flash(socket, :info, ~t"Import started in background")}
+
+      {:error, _} ->
+        {:noreply, put_flash(socket, :error, ~t"An import for this collection is already in process")}
+    end
   end
 
   @impl true
@@ -414,38 +493,27 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   end
 
   @impl true
-  def handle_info({topic, _event, notification}, socket) do
-    id = socket.assigns.collection.id
-
-    cond do
-      topic == "import:#{id}:created" -> handle_import_created(notification, socket)
-      topic == "import:#{id}:updated" -> handle_import_updated(notification, socket)
-      topic == "import:#{id}:destroyed" -> handle_import_destroyed(notification, socket)
-      true -> {:noreply, socket}
-    end
+  def handle_event("show:error_log_preview", _, socket) do
+    {:noreply, assign(socket, :show_error_log_preview, true)}
   end
 
-  defp handle_import_created(notification, socket) do
-    %Ash.Notifier.Notification{data: import} = notification
-    import = Import.get_by_id!(import.id, load: @load_import)
-    {:noreply, stream_insert(socket, :results, import, at: 0)}
+  @impl true
+  def handle_event("hide:error_log_preview", _, socket) do
+    {:noreply, assign(socket, :show_error_log_preview, false)}
   end
 
-  defp handle_import_updated(notification, socket) do
-    %Ash.Notifier.Notification{data: import} = notification
+  @impl true
+  def handle_info({:add_all, form, path, name_opts}, socket) do
+    assigns = %{
+      id: socket.assigns.import.id,
+      topic: :add_all,
+      form: form,
+      path: path,
+      name_opts: name_opts
+    }
 
-    if socket.assigns.selected_import != nil && import.id == socket.assigns.selected_import.id do
-      import = Import.get_by_id!(import.id, load: @load_import)
-
-      {:noreply, socket |> assign(:selected_import, import) |> stream_insert(:results, import, at: 0)}
-    else
-      handle_import_created(notification, socket)
-    end
-  end
-
-  defp handle_import_destroyed(notification, socket) do
-    %Ash.Notifier.Notification{data: import} = notification
-    {:noreply, stream_delete(socket, :results, import)}
+    send_update(DataAggregatorWeb.CollectionLive.Import.FormComponent, assigns)
+    {:noreply, socket}
   end
 
   defp apply_action(socket, :index, _params) do
@@ -501,5 +569,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
       />
     <% end %>
     """
+  end
+
+  defp error_log_preview_data(error_log) do
+    error_log = Files.load!(error_log, [:url], lazy?: true)
+
+    error_log.url
+    |> Explorer.DataFrame.from_csv!(max_rows: 100)
+    |> Explorer.DataFrame.to_rows(atom_keys: true)
   end
 end

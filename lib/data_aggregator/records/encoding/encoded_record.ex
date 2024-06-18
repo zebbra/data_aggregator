@@ -10,6 +10,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
+    api: DataAggregator.Records,
     extensions: [
       AshUUID,
       AshGraphql.Resource,
@@ -28,6 +29,8 @@ defmodule DataAggregator.Records.EncodedRecord do
   attributes do
     uuid_attribute :id, prefix: "enr"
     attribute :extra_data, :map
+    attribute :iucn_redlist_category, :string, allow_nil?: true
+
     timestamps private?: false, writable?: false
   end
 

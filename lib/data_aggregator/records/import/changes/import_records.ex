@@ -118,7 +118,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
   end
 
   defp add_error(changeset, error) do
-    Logger.error("Error importing records: #{inspect(error)}")
+    Logger.warning("Error importing records: #{inspect(error)}")
     Changeset.add_error(changeset, error)
   end
 end

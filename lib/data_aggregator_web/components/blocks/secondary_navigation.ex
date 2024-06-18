@@ -27,15 +27,12 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
 
   def secondary_navigation(assigns) do
     ~H"""
-    <div class={[
-      "border-black-white/10 bg-base-200/95 relative z-10 border-y backdrop-blur lg:scroll-px-8",
-      @class
-    ]}>
-      <nav aria-labelledby={@id} class="no-scrollbar flex snap-x scroll-px-6 overflow-x-auto py-4">
+    <div class={["border-black-white/10 bg-base-200/95 relative z-10 border-y backdrop-blur", @class]}>
+      <nav aria-labelledby={@id} class="py-4">
         <h2 id={@id} class="sr-only">Secondary navigation</h2>
         <ul
           role="list"
-          class="text-sm/6 text-base-content/75 flex min-w-full flex-none items-center gap-x-6 px-6 font-semibold lg:px-8"
+          class="text-sm/6 text-base-content/75 no-scrollbar flex w-full snap-x scroll-pl-6 items-center gap-x-6 overflow-x-auto font-semibold lg:scroll-pl-8"
         >
           <%= render_slot(@inner_block) %>
         </ul>
@@ -56,6 +53,8 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
   @doc """
   Renders a secondary navigation item.
 
+  Either the href or the on_click attribute must be set.
+
   ## Example
 
   ```heex
@@ -64,21 +63,57 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
   """
 
   attr :label, :string, required: true, doc: "Label of the item"
-  attr :href, :string, required: true, doc: "URL of the item"
+  attr :href, :string, default: nil, doc: "URL of the item"
+
+  attr :on_click, :any,
+    default: nil,
+    doc: "Either a string or a JavaScript function to call on click"
+
   attr :active, :boolean, default: false, doc: "Whether the item is active"
 
-  def secondary_navigation_item(assigns) do
+  attr :rest, :global,
+    include: ~w(phx-target),
+    doc: "Additional attributes"
+
+  def secondary_navigation_item(%{href: nil, on_click: nil}) do
+    raise """
+    You must provide either a `href` or an `on_click` attribute for the secondary_navigation_item.
+    """
+  end
+
+  def secondary_navigation_item(%{href: _href, on_click: nil} = assigns) do
     ~H"""
-    <li class="snap-start">
+    <li class="snap-start first:pl-6 last:pr-6 lg:first:pl-8 lg:last:pr-8">
       <.link
         navigate={@href}
         class={[
+          "whitespace-nowrap",
           @active && "text-primary",
           @active == false && "hover:text-base-content"
         ]}
+        {@rest}
       >
         <%= @label %>
       </.link>
+    </li>
+    """
+  end
+
+  def secondary_navigation_item(%{href: nil, on_click: _on_click} = assigns) do
+    ~H"""
+    <li class="snap-start first:pl-6 last:pr-6 lg:first:pl-8 lg:last:pr-8">
+      <button
+        type="button"
+        class={[
+          "whitespace-nowrap",
+          @active && "text-primary",
+          @active == false && "hover:text-base-content"
+        ]}
+        phx-click={@on_click}
+        {@rest}
+      >
+        <%= @label %>
+      </button>
     </li>
     """
   end

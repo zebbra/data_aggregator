@@ -50,7 +50,8 @@ defmodule DataAggregatorWeb.Components.Pagination do
               :for={limit <- [15, 25, 50, 75, 100]}
               patch={
                 Pagify.Components.build_path(@path, @meta.pagify |> Pagify.set_limit(limit),
-                  for: @meta.resource
+                  for: @meta.resource,
+                  default_scopes: @meta.default_scopes
                 )
               }
               class={link_class(limit, @meta.current_limit)}

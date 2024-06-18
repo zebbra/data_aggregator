@@ -27,12 +27,14 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
         header_source
       )
 
+    headers = mapping |> get_header_labels() |> Enum.map(fn {_, v} -> v end)
+
     attachment =
       query
       |> Records.stream!(page: false)
       |> Stream.map(&map_record(&1, mapping, export, data_layer))
       |> Stream.map(&FlatFileUtils.map_data_to_headers(&1, get_header_labels(mapping)))
-      |> create_file!()
+      |> create_file!(headers)
       |> FlatFileUtils.create_zip!()
       |> FlatFileUtils.store_on_s3!()
 
@@ -42,12 +44,12 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   end
 
   # create a file from the given records.
-  @spec create_file!(any()) :: any()
-  defp create_file!(records) do
+  @spec create_file!(any(), [String.t()]) :: any()
+  defp create_file!(records, headers) do
     directory = FlatFileUtils.create_directory!("export")
     file_path = "#{directory}/#{Uniq.UUID.uuid7(:slug)}.csv"
 
-    FlatFileUtils.store_on_disk!(records, file_path)
+    FlatFileUtils.store_on_disk!(records, file_path, headers)
 
     directory
   end

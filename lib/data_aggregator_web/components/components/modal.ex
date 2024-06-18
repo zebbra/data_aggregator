@@ -6,7 +6,7 @@ defmodule DataAggregatorWeb.Components.Modal do
   use Phoenix.Component
 
   import DataAggregatorWeb.Blocks.Header, only: [section_heading: 1]
-  import DataAggregatorWeb.Components.CloseButton, only: [close_button: 1]
+  import DataAggregatorWeb.Components.Button, only: [close_button: 1]
   import DataAggregatorWeb.Gettext
 
   alias Phoenix.LiveView.JS
@@ -148,6 +148,14 @@ defmodule DataAggregatorWeb.Components.Modal do
 
   slot :footer, doc: "The sticky modal footer." do
     attr :class, :string, doc: "Additional CSS classes to add to the footer slot."
+
+    attr :reverse, :boolean,
+      doc: """
+      Whether to reverse the order of the footer items.
+
+      Usefull to enforce that the submit button is focused first.
+      Default is true.
+      """
   end
 
   slot :inner_block, required: true, doc: "The modal content."
@@ -156,6 +164,7 @@ defmodule DataAggregatorWeb.Components.Modal do
     ~H"""
     <dialog
       id={@id}
+      role="dialog"
       class={[
         "modal",
         @responsive && "modal-bottom max-sm:items-end sm:modal-middle",
@@ -212,6 +221,7 @@ defmodule DataAggregatorWeb.Components.Modal do
               :for={footer <- @footer}
               id={@id}
               footer_class={footer[:class]}
+              reverse={if is_nil(footer[:reverse]), do: true, else: footer[:reverse]}
               gradient={@gradient}
             >
               <%= render_slot(@footer) %>
@@ -220,7 +230,11 @@ defmodule DataAggregatorWeb.Components.Modal do
           <.close_button as="form" method="dialog" position={@close_button_position} />
         </.focus_wrap>
       </div>
-      <form :if={@backdrop} method="dialog" class="modal-backdrop">
+      <form
+        :if={@backdrop}
+        method="dialog"
+        class={["modal-backdrop", backdrop_class(@header, @footer, @title, @overflow)]}
+      >
         <button><%= ~t"close"m %></button>
       </form>
     </dialog>
@@ -261,6 +275,8 @@ defmodule DataAggregatorWeb.Components.Modal do
 
   attr :gradient, :boolean, default: true, doc: "Whether to show a gradient below the title"
 
+  attr :close_button, :boolean, default: false, doc: "Whether to show a close button."
+
   attr :close_button_position, :string,
     values: ["left", "right"],
     default: "right",
@@ -282,14 +298,14 @@ defmodule DataAggregatorWeb.Components.Modal do
             <%= render_slot(@inner_block) %>
           <% end %>
         </div>
-        <div :if={@close_button_position == "right"} class="shrink-0 grow-0 basis-4 text-right" />
+        <div class="shrink-0 grow-0 basis-4 text-right" />
       </div>
       <div
         :if={@gradient}
         class="from-base-100 bottom-[-1.5rem] absolute z-10 h-6 w-full bg-gradient-to-b"
       />
 
-      <.close_button position={@close_button_position} on_cancel={@on_cancel} />
+      <.close_button :if={@close_button} position={@close_button_position} on_cancel={@on_cancel} />
     </header>
     """
   end
@@ -297,14 +313,14 @@ defmodule DataAggregatorWeb.Components.Modal do
   defp title_wrapper_class(close_button_position)
 
   defp title_wrapper_class("left"),
-    do: "border-black-white/10 min-h-12 flex items-center justify-start border-b p-6 sm:min-h-16"
+    do: "border-black-white/10 min-h-12 flex items-center justify-between border-b px-6 py-4 sm:min-h-16"
 
   defp title_wrapper_class("right"),
-    do: "border-black-white/10 min-h-12 flex items-center justify-start border-b p-6 sm:min-h-16"
+    do: "border-black-white/10 min-h-12 flex items-center justify-start border-b px-6 py-4 sm:min-h-16"
 
   defp title_class(close_button_position)
-  defp title_class("left"), do: "shrink-1 ml-4 grow-0 basis-auto overflow-hidden"
-  defp title_class("right"), do: "shrink-1 mr-4 grow-0 basis-auto overflow-hidden"
+  defp title_class("left"), do: "shrink mx-4 grow-0 basis-auto overflow-hidden"
+  defp title_class("right"), do: "shrink mr-4 grow-0 basis-auto overflow-hidden"
 
   @doc """
   Renders a sticky modal footer.
@@ -325,6 +341,15 @@ defmodule DataAggregatorWeb.Components.Modal do
 
   attr :gradient, :boolean, default: true, doc: "Whether to show a gradient above the footer."
 
+  attr :reverse, :boolean,
+    default: true,
+    doc: """
+    Whether to reverse the order of the footer items.
+
+    Usefull to enforce that the submit button is focused first.
+    Default is true.
+    """
+
   slot :inner_block, required: true, doc: "The footer content."
 
   def modal_footer(assigns) do
@@ -332,7 +357,8 @@ defmodule DataAggregatorWeb.Components.Modal do
     <footer id={"#{@id}_footer"} class="relative">
       <div :if={@gradient} class="from-base-100 top-[-1.5rem] absolute h-6 w-full bg-gradient-to-t" />
       <div class={[
-        "border-black-white/10 modal-action mt-0 flex flex-row-reverse items-center justify-start border-t px-6 py-4",
+        "border-black-white/10 modal-action mt-0 flex items-center justify-start border-t px-6 py-4",
+        @reverse && "flex-row-reverse justify-start",
         @footer_class
       ]}>
         <%= render_slot(@inner_block) %>
@@ -344,6 +370,10 @@ defmodule DataAggregatorWeb.Components.Modal do
   defp wrapper_class(header, footer, title, overflow)
   defp wrapper_class([], [], nil, "auto"), do: ""
   defp wrapper_class(_, _, _, _), do: "flex h-full items-center justify-center pt-3 sm:p-[40px]"
+
+  defp backdrop_class(header, footer, title, overflow)
+  defp backdrop_class([], [], nil, "auto"), do: ""
+  defp backdrop_class(_, _, _, _), do: "absolute inset-0"
 
   defp focus_wrap_class(header, footer, title, overflow)
   defp focus_wrap_class([], [], nil, "auto"), do: ""

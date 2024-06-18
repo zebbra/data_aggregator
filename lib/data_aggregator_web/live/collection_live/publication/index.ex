@@ -1,28 +1,21 @@
 defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   @moduledoc false
   use DataAggregatorWeb, :live_view
-  use DataAggregatorWeb.CollectionLive.Publication.Components, only: [publication_state_badge: 1]
+  use DataAggregatorWeb.CollectionLive.Publication.Subscriptions
 
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
+
+  import DataAggregatorWeb.CollectionLive.Publication.Components,
+    only: [publication_state_badge: 1, publication_channel_badge: 1]
+
   import DataAggregatorWeb.CollectionLive.Publication.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Publication
 
-  @load [
-    :duration,
-    :attachment_filename,
-    :attachment_byte_size,
-    attachment: [:filename, :url, :byte_size]
-  ]
-
-  @load_publication @load ++
-                      [
-                        :job,
-                        :publication_progress
-                      ]
+  @load load()
+  @load_publication load_all()
 
   @impl true
   def mount(%{"id" => id} = _params, _session, socket) do
@@ -30,6 +23,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
       socket
       |> assign(:collection, get_collection(id))
       |> assign(selected_publication: nil)
+      |> subscribe_for_publication_updates(connected?(socket))
 
     {:ok, socket}
   end
@@ -73,7 +67,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
         />
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/publications"}
-          label={~t"Publications"m}
+          label={~t"Publications and Approvals"m}
           active
         />
       </.secondary_navigation>
@@ -126,25 +120,24 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
             :if={can_run?(publication)}
             class="border-black-white/10 mr-4 inline-flex border-r pr-4"
           >
-            <.link
+            <.table_action_button
               phx-click="publication:run"
               phx-value-id={publication.id}
-              class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
               data-tip={~t"Run"m}
-            >
-              <.icon name="hero-play-circle-mini" class="size-5 text-base-content/75" />
-            </.link>
+              icon="hero-play-circle-mini"
+            />
           </div>
-          <.link
+          <.table_action_button
             phx-click={JS.push("publication:delete", value: %{id: publication.id})}
-            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
             data-tip={~t"Delete"m}
             data-confirm={~t"Are you sure?"m}
-          >
-            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
-          </.link>
+            data-confirm_id="confirm_publication_alert"
+            disabled={can_delete?(publication) == false}
+            icon="hero-trash-mini"
+          />
         </:action>
       </.table>
+      <.pagination meta={@meta} path={~p"/collections/#{@collection}/publications"} />
 
       <:secondary>
         <.slideover
@@ -182,13 +175,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
                 <.icon name="hero-play-circle-mini" class="size-6" />
                 <%= ~t"Run"m %>
               </button>
-              <div
-                :if={
-                  can_run?(@selected_publication) == false &&
-                    @selected_publication.state != :pending
-                }
-                class="flex items-center gap-x-2"
-              >
+              <div :if={can_run?(@selected_publication) == false} class="flex items-center gap-x-2">
                 <span class="text-sm"><%= ~t"State:"m %></span>
                 <.publication_state_badge publication={@selected_publication} />
               </div>
@@ -246,12 +233,13 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
             </:item>
           </.list>
 
-          <:footer :if={@selected_publication && @selected_publication.state == :pending}>
+          <:footer :if={can_delete?(@selected_publication)}>
             <button
               type="button"
               phx-click={JS.push("publication:delete", value: %{id: @selected_publication.id})}
               class="btn btn-error max-sm:btn-sm"
               data-confirm={~t"Are you sure?"m}
+              data-confirm_id="confirm_publication_alert"
             >
               <.icon name="hero-x-circle-mini" class="size-6" />
               <%= ~t"Delete"m %>
@@ -259,14 +247,28 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
           </:footer>
         </.slideover>
       </:secondary>
+
+      <:portal>
+        <.alert
+          id="confirm_publication_alert"
+          size="sm"
+          title={~t"Are you sure?"m}
+          label={~t"Yes, delete publication"m}
+        />
+      </:portal>
     </.page>
     """
   end
 
   @impl true
   def handle_event("publication:run", %{"id" => id}, socket) do
-    id |> Publication.get_by_id!() |> Publication.enqueue!()
-    {:noreply, socket}
+    case id |> Publication.get_by_id!() |> Publication.enqueue() do
+      {:ok, publication} ->
+        {:noreply, put_flash(socket, :info, publication_success_message(publication))}
+
+      {:error, _} ->
+        {:noreply, put_flash(socket, :error, ~t"A publication for this collection is already in process"m)}
+    end
   end
 
   @impl true
@@ -297,45 +299,6 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
     {:noreply, socket}
   end
 
-  @impl true
-  def handle_info({topic, _event, notification}, socket) do
-    id = socket.assigns.collection.id
-
-    cond do
-      topic == "publication:#{id}:created" -> handle_publication_created(notification, socket)
-      topic == "publication:#{id}:updated" -> handle_publication_updated(notification, socket)
-      topic == "publication:#{id}:destroyed" -> handle_publication_destroyed(notification, socket)
-      true -> {:noreply, socket}
-    end
-  end
-
-  defp handle_publication_created(notification, socket) do
-    %Ash.Notifier.Notification{data: publication} = notification
-    publication = Records.load!(publication, @load, lazy?: true)
-    {:noreply, stream_insert(socket, :results, publication, at: 0)}
-  end
-
-  defp handle_publication_updated(notification, socket) do
-    %Ash.Notifier.Notification{data: publication} = notification
-
-    if socket.assigns.selected_publication != nil &&
-         publication.id == socket.assigns.selected_publication.id do
-      publication = Publication.get_by_id!(publication.id, load: @load_publication)
-
-      {:noreply,
-       socket
-       |> assign(:selected_publication, publication)
-       |> stream_insert(:results, publication, at: 0)}
-    else
-      handle_publication_created(notification, socket)
-    end
-  end
-
-  defp handle_publication_destroyed(notification, socket) do
-    %Ash.Notifier.Notification{data: publication} = notification
-    {:noreply, stream_delete(socket, :results, publication)}
-  end
-
   defp apply_action(socket, :index, _params) do
     socket
     |> assign(:page_title, ~t"Collection Publications"m)
@@ -353,10 +316,14 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
     <.empty_state
       title={~t"No publications"m}
       description={~t"Get started by publishing records."m}
-      label={~t"Publication"m}
-      icon="hero-arrow-down-tray"
-      href={~p"/collections/#{@collection}/records"}
+      icon="hero-globe-alt"
     />
     """
   end
+
+  defp publication_success_message(%{channel: :approval}) do
+    ~t"Approval started in background"m
+  end
+
+  defp publication_success_message(_), do: ~t"Publication started in background"m
 end

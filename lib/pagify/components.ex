@@ -127,6 +127,7 @@ defmodule Pagify.Components do
   LiveView or LiveComponent module. The event name will be the one you set with
   the `:event` option.
 
+      @impl true
       def handle_event("paginate-posts", %{"offset" => offset}, socket) do
         pagify = Pagify.set_offset(socket.assigns.meta.pagify, offset)
 
@@ -135,6 +136,7 @@ defmodule Pagify.Components do
         end
       end
 
+      @impl true
       def handle_event("sort-posts", %{"order" => order}, socket) do
         pagify = Pagify.push_order(socket.assigns.meta.pagify, order)
 
@@ -892,10 +894,20 @@ defmodule Pagify.Components do
   Converts a Pagify struct into a keyword list that can be used as a query with
   Phoenix verified routes or route helper functions.
 
+  ## Encoded parameters
+
+  The following parameters are encoded as strings:
+
+  - `:scopes`
+  - `:filter_form`
+  - `:order_by`
+  - `:limit`
+  - `:offset`
+
   ## Default parameters
 
-  Default parameters for the limit, scopes, and order parameters are omitted. The
-  defaults are determined by calling `Pagify.get_option/3`.
+  Default parameters for the limit, scopes, filter_form and order parameters
+  are omitted. The defaults are determined by calling `Pagify.get_option/3`.
 
   - Pass the `:for` option to pick up the default values from an `Ash.Resource`.
   - If the `Ash.Resource` has no default options set, the function will fall
@@ -911,13 +923,13 @@ defmodule Pagify.Components do
 
   If you use the result of this function directly with
   `Phoenix.VerifiedRoutes.sigil_p/2` for verified routes or in a route helper
-  function, all cast filter values need to be able to be converted to a string
+  function, all cast filter_form values need to be able to be converted to a string
   using the `Phoenix.Param` protocol.
 
   This protocol is implemented by default for integers, binaries, atoms, and
   structs. For structs, Phoenix's default behavior is to fetch the id field.
 
-  If you have filters with `Date`, `DateTime`, `NaiveDateTime`,
+  If you have filter_forms with `Date`, `DateTime`, `NaiveDateTime`,
   `Time` values, or any other custom structs (e.g. structs that represent
   composite types like a range column), you will need to implement the protocol
   for these specific structs in your application.
@@ -967,11 +979,11 @@ defmodule Pagify.Components do
       iex> f |> to_query |> Plug.Conn.Query.encode()
       "order_by[]=-name&order_by[]=age"
 
-      iex> f = %Pagify{filters: %{"comments_count" => %{"gt" => 2}}}
+      iex> f = %Pagify{filter_form: %{"field" => "comments_count", "operator" => "gt", "value" => 2}}
       iex> to_query(f)
-      [filters: %{"comments_count" => %{"gt" => 2}}]
+      [filter_form: %{"field" => "comments_count", "operator" => "gt", "value" => 2}]
       iex> f |> to_query |> Plug.Conn.Query.encode()
-      "filters[comments_count][gt]=2"
+      "filter_form[field]=comments_count&filter_form[operator]=gt&filter_form[value]=2"
 
       iex> f = %Pagify{scopes: %{status: :active}}
       iex> to_query(f)
@@ -990,7 +1002,7 @@ defmodule Pagify.Components do
     |> Misc.maybe_put(:offset, pagify.offset, 0)
     |> Misc.maybe_put(:limit, pagify.limit, default_limit)
     |> Misc.maybe_put(:order_by, current_order, default_order)
-    |> Misc.maybe_put(:filters, pagify.filters)
+    |> Misc.maybe_put(:filter_form, pagify.filter_form)
     |> Misc.maybe_put_scopes(pagify, opts)
   end
 
@@ -1012,7 +1024,7 @@ defmodule Pagify.Components do
 
   > #### Date and Time Filters {: .info}
   >
-  > When using filters on `Date`, `DateTime`, `NaiveDateTime` or `Time` fields,
+  > When using filter_forms on `Date`, `DateTime`, `NaiveDateTime` or `Time` fields,
   > you may need to implement the `Phoenix.Param` protocol for these structs.
   > See the documentation for `to_query/2`.
 
@@ -1137,23 +1149,24 @@ defmodule Pagify.Components do
       )
 
   Note that the keyword list passed to the path builder function is built using
-  `Plug.Conn.Query.encode/2`, which means filters are formatted as maps.
+  `Plug.Conn.Query.encode/2`, which means filter_forms are formatted as maps.
 
-  ### Set filter value as path parameter
+  ### Set filter_form value as path parameter
       iex> pagify = %Pagify{
       ...>   offset: 20,
       ...>   order_by: [:updated_at],
-      ...>   filters: %{
-      ...>     author: "John",
+      ...>   filter_form: %{
+      ...>     "field" => "author",
+      ...>     "operator" => "eq",
+      ...>     "value" => "John"
       ...>   }
       ...> }
       iex> build_path(
       ...>   fn params ->
       ...>     {offset, params} = Keyword.pop(params, :offset)
-      ...>     filters = Keyword.get(params, :filters, %{})
-      ...>     author = Map.get(filters, :author, nil)
-      ...>     filters = Map.delete(filters, :author)
-      ...>     params = Keyword.put(params, :filters, filters)
+      ...>     filter_form = Keyword.get(params, :filter_form, %{})
+      ...>     author = Map.get(filter_form, "value", nil)
+      ...>     params = Keyword.put(params, :filter_form, %{})
       ...>     query = Plug.Conn.Query.encode(params)
       ...>
       ...>     case {offset, author} do

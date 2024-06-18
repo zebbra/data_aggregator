@@ -1,4 +1,9 @@
-collection_types = [zoology: "Zoology", botany: "Botany"]
+collection_types = [
+  zoology: "Zoology",
+  botany: "Botany",
+  geology: "Geology",
+  paleontology: "Paleontology"
+]
 
 defmodule DataAggregator.Records.CollectionType do
   @moduledoc """

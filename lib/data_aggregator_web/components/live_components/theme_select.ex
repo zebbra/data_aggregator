@@ -69,6 +69,7 @@ defmodule DataAggregatorWeb.LiveComponents.ThemeSelect do
     {:noreply, socket}
   end
 
+  @impl true
   def handle_event("theme:current", %{"theme" => theme}, socket) do
     theme = String.to_existing_atom(theme)
     socket = if theme in @theme_names, do: assign(socket, :current, theme), else: socket
@@ -85,11 +86,5 @@ defmodule DataAggregatorWeb.LiveComponents.ThemeSelect do
     ~H"""
     <.live_component id={@id} module={__MODULE__} />
     """
-  end
-
-  defmacro __using__(_opts) do
-    quote do
-      import DataAggregatorWeb.LiveComponents.ThemeSelect, only: [theme_select: 1]
-    end
   end
 end

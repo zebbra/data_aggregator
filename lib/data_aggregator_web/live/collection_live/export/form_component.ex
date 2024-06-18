@@ -1,6 +1,6 @@
-defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
+defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
   @moduledoc """
-  This module contains the modal to configure an export for collection.
+  This module contains the modal form component to configure an export for collection.
   """
 
   use DataAggregatorWeb, :live_component
@@ -13,7 +13,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket |> assign(assigns) |> assign_export() |> assign_form()}
+    {:ok, socket |> assign(assigns) |> assign_rows_count() |> assign_form()}
   end
 
   @impl true
@@ -25,8 +25,8 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
           text={~t"Export records"m}
           description={
             mgettext(
-              "You are about to export %{row_count} records. Please choose the column headers for your export file and the data layer to be exported.",
-              row_count: @export.rows_count
+              "You are about to export %{rows_count} records. Please choose the column headers for your export file and the data layer to be exported.",
+              rows_count: @rows_count
             )
           }
           size="md"
@@ -104,9 +104,8 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
         </div>
 
         <:actions modal>
-          <button type="submit" class="btn btn-primary text-primary-content" disabled={false}>
-            <.icon name="hero-arrow-down-tray" />
-            <%= ~t"Export"m %>
+          <button type="submit" class="btn btn-primary text-primary-content" disabled={@busy}>
+            <%= ~t"Start export"m %>
           </button>
           <button type="button" class="btn btn-ghost" onclick="export_modal.close()">
             <%= ~t"Cancel"m %>
@@ -119,46 +118,67 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Modal do
 
   @impl true
   def handle_event("export:save", params, socket) do
-    %{collection: collection, export: export} = socket.assigns
+    %{collection: %{id: collection_id}} = socket.assigns
 
-    export =
-      export
-      |> Export.update!(%{
-        header_source: params["header_source"],
-        data_layer: params["data_layer"],
-        # set the mapping manual, if you want to use
-        # custom headers from the current selection
-        mapping: nil
-      })
-      |> Export.enqueue!()
+    case create_and_enqueue(socket, params) do
+      {:ok, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, ~t"Export started in background"m)
+         |> push_navigate(to: ~p"/collections/#{collection_id}/exports")}
 
-    {
-      :noreply,
-      socket
-      |> assign(:export, export)
-      |> push_navigate(to: ~p"/collections/#{collection.id}/exports")
+      {:error, _} ->
+        {
+          :noreply,
+          socket
+          |> put_flash(:error, ~t"An export for this collection is already in process"m)
+          |> push_navigate(to: ~p"/collections/#{collection_id}/exports")
+        }
+    end
+  end
+
+  defp create_and_enqueue(socket, params) do
+    %{collection: collection, meta: %{pagify: pagify}, rows_count: rows_count} = socket.assigns
+
+    collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
+
+    records_to_export_query =
+      Record
+      |> Pagify.compile_filters(pagify)
+      |> Pagify.merge_filters(collection.records_to_export_query)
+      |> Map.get(:filters)
+
+    %{
+      name: "export-#{collection.name}-#{:os.system_time()}",
+      collection: collection,
+      mapping: nil,
+      records_query: records_to_export_query,
+      rows_count: rows_count,
+      header_source: params["header_source"],
+      data_layer: params["data_layer"]
     }
+    |> Export.create!()
+    |> Export.enqueue()
   end
 
   defp assign_form(socket) do
     assign(socket, :form, %{})
   end
 
-  defp assign_export(socket) do
-    %{collection: collection} = socket.assigns
+  defp assign_rows_count(socket) do
+    %{collection: collection, meta: %{pagify: pagify}} = socket.assigns
     collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
 
-    count_query = Ash.Query.filter_input(Record, collection.records_to_export_query)
+    records_to_export_query =
+      Record
+      |> Pagify.compile_filters(pagify)
+      |> Pagify.merge_filters(collection.records_to_export_query)
+      |> Map.get(:filters)
 
-    export =
-      Export.create!(%{
-        name: "export-#{collection.name}-#{:os.system_time()}",
-        collection: collection,
-        mapping: nil,
-        records_query: collection.records_to_export_query,
-        rows_count: Records.count!(count_query)
-      })
+    count_query = Ash.Query.filter_input(Record, records_to_export_query)
 
-    assign(socket, :export, export)
+    rows_count = Records.count!(count_query)
+
+    assign(socket, :rows_count, rows_count)
   end
 end

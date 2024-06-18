@@ -2,27 +2,19 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   @moduledoc false
 
   use DataAggregatorWeb, :live_view
-  use DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_indicator: 1]
+  use DataAggregatorWeb.CollectionLive.Subscriptions
 
   import DataAggregator.Accounts.Helpers
+  import DataAggregatorWeb.CollectionLive.Helpers
   import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
 
-  alias DataAggregator.PubSub
   alias DataAggregator.Records.Collection
 
-  @load [
-    :records_count,
-    :digitizing_progress,
-    :records_count_not_encoded,
-    :encoding_state
-  ]
-
-  @topics ["collection:created", "collection:updated", "collection:destroyed"]
+  @load load()
 
   @impl true
   def mount(_params, _session, socket) do
-    if connected?(socket), do: PubSub.subscribe(@topics)
-    {:ok, socket}
+    {:ok, subscribe_for_collection_updates(socket, connected?(socket))}
   end
 
   @impl true
@@ -112,9 +104,6 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         >
           <%= inspect(collection.records_count) %> / <%= collection.items_to_digitize %>
         </:col>
-        <:col :let={{_id, collection}} field={:encoding_state} label={~t"State"m} class="text-center">
-          <.encoding_state_badge state={collection.encoding_state} />
-        </:col>
         <:col :let={{_id, collection}} field={:updated_at} label={~t"Updated At"m} class="text-right">
           <%= format_datetime(collection.updated_at, format: :short) %>
         </:col>
@@ -127,24 +116,21 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           label={~t"Actions"m}
         >
           <div class="border-black-white/10 mr-4 inline-flex border-r pr-4">
-            <.link
-              role="button"
+            <.table_action_button
               patch={build_path(~p"/collections/#{collection}/edit", @meta)}
-              class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
               data-tip={~t"Edit"m}
-            >
-              <.icon name="hero-pencil-square-mini" class="size-5 text-base-content/75" />
-            </.link>
+              disabled={collection.busy}
+              icon="hero-pencil-square-mini"
+            />
           </div>
-          <.link
-            role="button"
+          <.table_action_button
             phx-click={JS.push("collection:delete", value: %{id: collection.id})}
-            class="link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost"
             data-tip={~t"Delete"m}
             data-confirm={~t"Are you sure?"m}
-          >
-            <.icon name="hero-trash-mini" class="size-5 text-base-content/75" />
-          </.link>
+            data-confirm_id="confirm_collection_alert"
+            disabled={collection.busy}
+            icon="hero-trash-mini"
+          />
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/collections"} />
@@ -168,6 +154,13 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             patch={build_path(~p"/collections", @meta)}
           />
         </.modal>
+
+        <.alert
+          id="confirm_collection_alert"
+          size="sm"
+          title={~t"Are you sure?"m}
+          label={~t"Yes, delete collection"m}
+        />
       </:portal>
     </.page>
     """
@@ -192,18 +185,6 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
       :collection,
       Collection.get_by_id!(id, load: @load)
     )
-  end
-
-  @impl true
-  def handle_info({topic, _event, notification}, socket) when topic in ["collection:created", "collection:updated"] do
-    %Ash.Notifier.Notification{data: collection} = notification
-    {:noreply, stream_insert(socket, :results, Collection.get_by_id!(collection.id, load: @load))}
-  end
-
-  @impl true
-  def handle_info({"collection:destroyed", _event, notification}, socket) do
-    %Ash.Notifier.Notification{data: collection} = notification
-    {:noreply, stream_delete(socket, :results, collection)}
   end
 
   @impl true
