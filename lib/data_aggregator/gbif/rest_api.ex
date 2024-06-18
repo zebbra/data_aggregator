@@ -202,7 +202,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   defp ensure_status(response) do
     msg = "Non 200 status code from GrSciColl api with message: #{inspect(response)}"
 
-    Logger.warning(msg)
+    Logger.info(msg)
 
     {:error, msg}
   end

@@ -63,7 +63,8 @@ defmodule DataAggregator.InstitutionTest do
     end
 
     test "create/1 with ivalid :grscicoll_reference data returns error changeset" do
-      attrs = Map.put(@invalid_attrs, :grscicoll_reference, "this-is-super-wrong")
+      attrs =
+        Map.put(@invalid_attrs, :grscicoll_reference, "this-is-super-wrong")
 
       assert {:error, %Ash.Error.Invalid{}} = Institution.create(attrs)
     end
