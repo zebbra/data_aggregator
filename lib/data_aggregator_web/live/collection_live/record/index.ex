@@ -37,9 +37,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   ]
 
   @impl true
-  def mount(%{"id" => id} = params, _session, socket) do
+  def mount(%{"id" => id}, _session, socket) do
     collection = get_collection(id)
-    layer = Map.get(params, "layer", "approval")
 
     socket =
       socket
@@ -49,7 +48,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       |> assign(:busy, collection.busy)
       |> assign(:busy_action, busy_action(collection))
       |> assign(:actions, @actions)
-      |> assign(:layer, layer)
       |> assign(:show_filters, false)
       |> assign(:record_tab, "data")
       |> subscribe_for_record_updates(connected?(socket))
@@ -59,7 +57,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    layer = Map.get(params, "layer", "approval")
+    layer = params |> Map.get("layer", "approval") |> coalesce_layer()
 
     case list_records(params) do
       {:ok, {records, meta}} ->
@@ -719,14 +717,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
     case Collection.set_encoding(collection) do
       {:ok, %{id: id}} ->
-        Task.start(fn ->
+        enqueue_encoder_fn = fn ->
           Record
           |> Ash.Query.filter(collection.id == ^id)
           |> Pagify.validated_query(socket.assigns.meta.pagify)
           |> Records.stream!(page: false)
           |> Stream.map(&Record.enqueue_encoder!/1)
           |> Stream.run()
-        end)
+        end
+
+        if Records.execute_async?() do
+          Task.start(enqueue_encoder_fn)
+        else
+          enqueue_encoder_fn.()
+        end
 
         {:noreply, put_flash(socket, :info, ~t"Encoding started in background"m)}
 
@@ -870,6 +874,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   defp current_layer_label("approval"), do: ~t"Approval Layer"m
   defp current_layer_label("encoding"), do: ~t"Encoding Layer"m
   defp current_layer_label("import"), do: ~t"Import Layer"m
+
+  defp coalesce_layer(layer) when layer in ~w(approval encoding import), do: layer
+  defp coalesce_layer(_), do: "approval"
 
   defp action_label("export"), do: ~t"Export"m
   defp action_label("encode"), do: ~t"Encode"m
