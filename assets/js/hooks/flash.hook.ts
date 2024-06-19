@@ -15,6 +15,13 @@ class FlashHook extends Hook {
     }
   }
 
+  destroyed(): void {
+    if (this.clearTimeout) {
+      clearTimeout(this.clearTimeout);
+      this.clearTimeout = null;
+    }
+  }
+
   // Start the progress bar if the flash message has a timeout
   // and a phx-click attribute. Hide the flash message when the
   // progress bar reaches 100%.
@@ -36,6 +43,7 @@ class FlashHook extends Hook {
 
     if (this.clearTimeout) {
       clearTimeout(this.clearTimeout);
+      this.clearTimeout = null;
     }
 
     this.clearTimeout = setTimeout(() => {
