@@ -70,7 +70,8 @@ defmodule DataAggregator.RecordTest do
     end
 
     test "create/1 with invalid data returns error changeset" do
-      assert {:error, %Ash.Error.Invalid{}} = Record.create(@invalid_attrs)
+      assert {:error, %Ash.Error.Invalid{}} =
+               Record.create(Map.put(@invalid_attrs, :collection, collection_fixture()))
     end
 
     test "update/2 with valid data updates the record" do
@@ -90,7 +91,9 @@ defmodule DataAggregator.RecordTest do
 
     test "update/2 with invalid data returns error changeset" do
       record = record_fixture()
-      assert {:error, %Ash.Error.Invalid{}} = Record.update(record, @invalid_attrs)
+
+      assert {:error, %Ash.Error.Invalid{}} =
+               Record.update(record, Map.put(@invalid_attrs, :collection, collection_fixture()))
     end
 
     test "destroy/1 deletes the record" do

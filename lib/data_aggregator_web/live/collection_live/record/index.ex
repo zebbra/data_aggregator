@@ -719,14 +719,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
     case Collection.set_encoding(collection) do
       {:ok, %{id: id}} ->
-        Task.start(fn ->
+        enqueue_encoder_fn = fn ->
           Record
           |> Ash.Query.filter(collection.id == ^id)
           |> Pagify.validated_query(socket.assigns.meta.pagify)
           |> Records.stream!(page: false)
           |> Stream.map(&Record.enqueue_encoder!/1)
           |> Stream.run()
-        end)
+        end
+
+        if Records.execute_async?() do
+          Task.start(enqueue_encoder_fn)
+        else
+          enqueue_encoder_fn.()
+        end
 
         {:noreply, put_flash(socket, :info, ~t"Encoding started in background"m)}
 
