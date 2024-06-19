@@ -69,6 +69,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
               field={@form[:description]}
               label={~t"Description"m}
               placeholder={~t"Description"m}
+              rows="4"
             />
           </.fieldgroup>
           <:actions modal>
