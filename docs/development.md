@@ -25,6 +25,47 @@ a good starting point is to use the docker compose setup [`here`](https://github
 
 for windows or linux use your favourite package manager
 
+## Project structure
+
+The project is structured in a way that the code is separated into different folders. Each folder has a specific purpose and contains files that are related to that purpose. The following is a list of the folders and their purpose:
+
+```bash
+├── assets                  # Static assets such as images, stylesheets, and JavaScript files for the UI
+│   ├── css
+│   ├── js
+│   └── vendor
+├── config                  # Environment-specific configuration files
+│   ├── config.exs          # Main config, if config will not be overridden by environment, this will be used
+│   ├── dev.exs             # config only for development environment
+│   ├── prod.exs            # config only for production environment
+│   ├── runtime.exs         # config only for runtime environment, this should be used for prod runtime config
+│   └── test.exs            # config only for test environment
+├── lib
+│   ├── data_aggregator     # Backend application code, each folder represents a dedicated module of the backend
+│   ├── data_aggregator_api # Definitions of interfaces for the application
+│   ├── data_aggregator_web # Frontend application code, the views and event handlers for the UI
+│   └── pagify              # Pagination library, to paginate, search, sort and filter data
+├── priv
+│   ├── cache               # Caches for various usecases within the application
+│   ├── cldr                # Location specific formatting of units, data, and time
+│   ├── gettext             # Translations for the application
+│   ├── initialize          # Scripts to initialize the application, like seeding the thesaurus/catalogs
+│   ├── repo                # Database relevant files, like migrations, seeds, and init scripts
+│   └── static              # Static files that are served by the application to the client
+├── storybook               # UI component library, to develop and test UI components in isolation on dev systems at http://localhost:4000/storybook/welcome
+│   ├── blocks
+│   ├── collections
+│   ├── components
+│   ├── examples
+│   ├── layouts
+│   └── styleguide
+└── test                    # Unit and integration tests for the entire backend- and frontend-application
+    ├── data_aggregator
+    ├── data_aggregator_api
+    ├── data_aggregator_web
+    └── pagify
+```
+
 ## Start coding
 
 - ensure you have your `.env` file in place in the root of the project folder (an example could be found in `.env.test`) and it get picket up by the application when you start it (e.g. use `direnv allow` to load the environment variables into your shell session or your favourite method to load env vars)
