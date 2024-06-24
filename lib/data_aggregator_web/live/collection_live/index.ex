@@ -19,7 +19,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    case list_collections(params) do
+    case list_collections(params, socket.assigns.current_user) do
       {:ok, {collections, meta}} ->
         socket
         |> assign(meta: meta)
@@ -198,7 +198,8 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
      |> stream_delete(:results, collection)}
   end
 
-  defp list_collections(params, opts \\ [load: @load]) do
+  defp list_collections(params, actor, opts \\ [load: @load]) do
+    opts = Keyword.merge(opts, authorize?: true, actor: actor)
     Pagify.validate_and_run(Collection, params, opts)
   end
 
@@ -212,8 +213,12 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         icon="hero-squares-2x2"
         href={~p"/collections/new"}
       />
+    <% else %>
+      <.empty_state
+        title={~t"No collections"m}
+        description={~t"There are no collections yet for your institution"m}
+      />
     <% end %>
-    <%!-- TODO: add empty state for users without permissions --%>
     """
   end
 end

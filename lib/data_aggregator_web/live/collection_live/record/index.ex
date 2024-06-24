@@ -62,7 +62,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   def handle_params(%{"id" => id} = params, _url, socket) do
     layer = Map.get(params, "layer", "approval")
 
-    case list_records(params) do
+    case list_records(params, socket.assigns.current_user) do
       {:ok, {records, meta}} ->
         socket
         |> assign(meta: meta)
@@ -265,7 +265,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           no_results_content:
             no_results_content(%{
               collection_id: @collection.id,
-              current_user: @current_user.id,
+              current_user: @current_user,
               filters_count: @filters_count
             })
         ]}
@@ -825,7 +825,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     assign(socket, :page_title, ~t"Collection Records"m)
   end
 
-  defp list_records(params, opts \\ [load: @load, action: :by_collection]) do
+  defp list_records(params, actor, opts \\ [load: @load, action: :by_collection]) do
+    opts = Keyword.merge(opts, authorize?: true, actor: actor)
     Pagify.validate_and_run(Record, params, opts, params["id"])
   end
 
@@ -845,6 +846,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         icon="hero-bug-ant"
         href={~p"/collections/#{@collection_id}/imports/new"}
       />
+    <% else %>
+      <.empty_state title={~t"No records found"m} icon="hero-magnifying-glass" />
     <% end %>
     """
   end

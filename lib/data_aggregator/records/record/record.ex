@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.Record do
   """
 
   use Ash.Resource,
+    authorizers: [Ash.Policy.Authorizer],
     data_layer: AshPostgres.DataLayer,
     api: DataAggregator.Records,
     extensions: [
@@ -147,6 +148,26 @@ defmodule DataAggregator.Records.Record do
               Mids.LevelFour
   end
 
+  state_machine do
+    initial_states [:imported]
+    default_initial_state :imported
+
+    transitions do
+      transition :set_imported, from: [:encoded, :failed, :encoding, :imported], to: :imported
+
+      transition :enqueue_encoder,
+        from: [:imported, :encoded, :failed, :encoding],
+        to: :queued
+
+      transition :set_encoding,
+        from: [:queued, :imported, :failed, :encoded],
+        to: :encoding
+
+      transition :set_encoded, from: :encoding, to: :encoded
+      transition :set_encoding_failed, from: :encoding, to: :failed
+    end
+  end
+
   paper_trail do
     change_tracking_mode :changes_only
     store_action_name? true
@@ -166,26 +187,6 @@ defmodule DataAggregator.Records.Record do
 
     mixin DataAggregator.Records.RecordVersionMixin
     version_extensions extensions: [AshJsonApi.Resource]
-  end
-
-  state_machine do
-    initial_states [:imported]
-    default_initial_state :imported
-
-    transitions do
-      transition :set_imported, from: [:encoded, :failed, :encoding, :imported], to: :imported
-
-      transition :enqueue_encoder,
-        from: [:imported, :encoded, :failed, :encoding],
-        to: :queued
-
-      transition :set_encoding,
-        from: [:queued, :imported, :failed, :encoded],
-        to: :encoding
-
-      transition :set_encoded, from: :encoding, to: :encoded
-      transition :set_encoding_failed, from: :encoding, to: :failed
-    end
   end
 
   preparations do
@@ -330,10 +331,6 @@ defmodule DataAggregator.Records.Record do
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
   end
 
-  identities do
-    identity :collection_mte_catalog_number, [:collection_id, :mte_catalog_number]
-  end
-
   code_interface do
     define_for DataAggregator.Records
 
@@ -355,6 +352,16 @@ defmodule DataAggregator.Records.Record do
     define :update_approval_status, action: :update_approval_status, args: [:status]
     define :check_if_fast_track_pubished, action: :check_if_fast_track_pubished
     define :enqueue_fast_track_checker
+  end
+
+  identities do
+    identity :collection_mte_catalog_number, [:collection_id, :mte_catalog_number]
+  end
+
+  policies do
+    policy action_type(:read) do
+      authorize_if DataAggregator.Checks.RecordMatchesInstitution
+    end
   end
 
   postgres do

@@ -7,7 +7,8 @@ defmodule DataAggregator.Records.Collection do
     data_layer: AshPostgres.DataLayer,
     api: DataAggregator.Records,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
-    notifiers: [Ash.Notifier.PubSub]
+    notifiers: [Ash.Notifier.PubSub],
+    authorizers: [Ash.Policy.Authorizer]
 
   alias __MODULE__
   alias DataAggregator.Records
@@ -304,6 +305,12 @@ defmodule DataAggregator.Records.Collection do
     define :set_approving
     define :set_idle
     define :set_idle_encoding
+  end
+
+  policies do
+    policy action_type(:read) do
+      authorize_if DataAggregator.Checks.CollectionMatchesInstitution
+    end
   end
 
   postgres do
