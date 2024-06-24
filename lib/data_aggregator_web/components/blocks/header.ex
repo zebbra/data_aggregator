@@ -155,7 +155,11 @@ defmodule DataAggregatorWeb.Blocks.Header do
 
   def section_heading(assigns) do
     ~H"""
-    <div class={["w-full", break_size_class(@break_at, @align_items), @class]}>
+    <div class={[
+      "min-h-[33px] w-full sm:min-h-[50px]",
+      break_size_class(@break_at, @align_items),
+      @class
+    ]}>
       <div class={["min-w-0 flex-1", @align_actions && "sm:mt-2"]}>
         <.dynamic_tag
           :if={@title == []}
