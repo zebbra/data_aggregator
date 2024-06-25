@@ -25,18 +25,20 @@ defmodule DataAggregator.Api.Helpers do
   end
 
   @spec grscicoll_entity_by_key_url(String.t(), atom()) :: String.t()
-  def grscicoll_entity_by_key_url(key, kind) do
-    case kind do
-      :collection -> gbif_api_base_url() <> "/grscicoll/collection/#{key}"
-      :institution -> gbif_api_base_url() <> "/grscicoll/institution/#{key}"
-    end
+  def grscicoll_entity_by_key_url(key, :collection) do
+    gbif_api_base_url() <> "/grscicoll/collection/#{key}"
+  end
+
+  def grscicoll_entity_by_key_url(key, :institution) do
+    gbif_api_base_url() <> "/grscicoll/institution/#{key}"
   end
 
   @spec grscicoll_entities_url(atom()) :: String.t()
-  def grscicoll_entities_url(kind) do
-    case kind do
-      :collection -> gbif_api_base_url() <> "/grscicoll/collection"
-      :institution -> gbif_api_base_url() <> "/grscicoll/institution"
-    end
+  def grscicoll_entities_url(:collection) do
+    gbif_api_base_url() <> "/grscicoll/collection"
+  end
+
+  def grscicoll_entities_url(:institution) do
+    gbif_api_base_url() <> "/grscicoll/institution"
   end
 end

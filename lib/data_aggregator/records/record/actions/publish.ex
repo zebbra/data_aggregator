@@ -5,6 +5,8 @@ defmodule DataAggregator.Records.Actions.Publish do
 
   use Ash.Resource.Actions.Implementation
 
+  # import Ash.Expr
+
   alias DataAggregator.DarwinCore.Publication.CoreFile
   alias DataAggregator.DarwinCore.Publication.EmlFile
   alias DataAggregator.DarwinCore.Publication.MaterialSampleFile
@@ -15,6 +17,7 @@ defmodule DataAggregator.Records.Actions.Publish do
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.Publication.InfoSpecies
   alias DataAggregator.Records.Record
 
   require Ash.Query
@@ -24,7 +27,7 @@ defmodule DataAggregator.Records.Actions.Publish do
   def run(input, _opts, _context) do
     publication = input.arguments.publication
 
-    query = Ash.Query.filter_input(Record, publication.records_query)
+    query = get_ash_query(publication)
 
     set_publication_status(
       query,
@@ -70,11 +73,11 @@ defmodule DataAggregator.Records.Actions.Publish do
       |> Publication.update_attachment(attachment)
       |> Records.load!([:collection, :attachment])
 
-    register_at_gbif(publication, query)
+    register(publication, query)
   rescue
     e ->
       publication = input.arguments.publication
-      query = Ash.Query.filter_input(Record, publication.records_query)
+      query = get_ash_query(publication)
 
       Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(e)}")
 
@@ -85,6 +88,20 @@ defmodule DataAggregator.Records.Actions.Publish do
       )
 
       {:error, e}
+  end
+
+  def get_ash_query(publication) do
+    Ash.Query.filter_input(Record, publication.records_query)
+
+    # TODO: we should only publish records that have been imported after the last approval started
+    # because otherwise too many records would be constantly published towards infospecies
+    # Ash.Query.filter(
+    #   query,
+    #   expr(
+    #     last_approval_started_at == nil or last_imported_at == nil or
+    #       last_imported_at >= last_approval_started_at
+    #   )
+    # )
   end
 
   @spec queue_records_for_verification(Ash.Query.t()) :: :ok
@@ -109,7 +126,11 @@ defmodule DataAggregator.Records.Actions.Publish do
 
   @spec update_record!(Record.t(), atom(), Publication.t()) :: :ok
   defp update_record!(record, status, publication) do
-    Publication.add_publication_progress!(publication, 1)
+    if Records.execute_async?() do
+      Task.start(fn -> Publication.add_publication_progress!(publication, 1) end)
+    else
+      Publication.add_publication_progress!(publication, 1)
+    end
 
     update_status!(publication.channel, status, record)
   end
@@ -118,9 +139,19 @@ defmodule DataAggregator.Records.Actions.Publish do
 
   defp update_status!(:approval, status, record), do: Record.update_approval_status!(record, status)
 
-  defp register_at_gbif(%Publication{channel: :approval} = publication, _query), do: {:ok, publication}
+  defp register(%Publication{channel: :approval} = publication, query) do
+    case InfoSpecies.notify(publication, query) do
+      {:ok, publication} ->
+        {:ok, publication}
 
-  defp register_at_gbif(publication, query) do
+      {:error, error} ->
+        Logger.warning("Error while informing infospecies about new available records for review: #{inspect(error)}")
+
+        {:error, error}
+    end
+  end
+
+  defp register(%Publication{channel: :fast_track} = publication, query) do
     with {:ok, _collection} <-
            Collection.register_at_gbif(publication.collection, publication.attachment.url),
          :ok <- queue_records_for_verification(query) do

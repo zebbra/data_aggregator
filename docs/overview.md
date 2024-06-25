@@ -26,6 +26,8 @@ Among other sophisticated logic in the background, the core functionality is the
 
 `for_coders:` All the modules relevant to the backend functionality are located in the `lib/data_aggregator` directory. The `data_aggregator` module contains the core logic for the data aggregation process, while the `data_aggregator_api` module contains the API endpoints for the application. The `data_aggregator_web` module contains the web interface for the application.
 
+---
+
 ### Upload
 
 #### Validation
@@ -61,6 +63,8 @@ The mapping will then be used to transform the data into a Darwin Core compatibl
 
 So please check if all the fields are correctly mapped, to avoid errors in the import process.
 
+---
+
 ### Import
 
 Importing the Data means, that the selected file will be stored on the S3, an import-object will be created in the database, and the data will be transformed into a Darwin Core compatible format according to the selected mapping in the previous step.
@@ -78,6 +82,8 @@ Should there be incompatibilities in the data, the application will report them 
 <img src="images/import_error.png" alt="Import Error" width="100%">
 
 `for_coders:` The import process is handled by the `lib/data_aggregator/records/import` modules. This modules contain the logic for storing the file on the S3, creating the import object in the database, and transforming the data into a Darwin Core compatible format.
+
+---
 
 ### Encoding
 
@@ -123,9 +129,15 @@ To enrich the data with information about the Swiss taxonomy, we use the Swiss T
 
 To enrich the data with information about the IUCN Redlist which indicates how "endangered" a certain classified species is, we use the GBIF IUCN Redlist API Endpoint at `https://api.gbif.org/v1/species/2496198/iucnRedListCategory` to get the redlist information according to the taxonID of the species.
 
+---
+
 ### Publication
 
 Under the term "Publication" we understand the process of transforming the data into a Darwin Core Archive and publishing it to the GBIF Switzerland or "SVNHC" portal. It's done fully automatic and the user only has to click a single button in the UI to start the process --> "publish".
+
+<img src="images/publish.png" alt="Publish">
+
+The publication process starts and generates an publication object.
 
 <img src="images/publication.png" alt="Publication">
 
@@ -146,5 +158,6 @@ The publication process is done by registering the previously created Darwin Cor
 ### Approve
 
 To have the data published on the GBIF portal, it must be approved by the Infospecies Switzerland team. The team will review the data and approve it if it meets the necessary requirements.
+To start the approval process, the user must click the `approve` button in the UI on the collection.
 
 An API endpoint is available to import the approved data from Infospecies into the application. The data will be imported into the application and can records will be indicated as `approved`.

@@ -87,7 +87,11 @@ defmodule DataAggregator.PublicationTest do
       [collection: collection, records: records, publication: publication]
     end
 
-    test "publish/1", %{collection: _collection, records: _records, publication: publication} do
+    test "publish/1 successful", %{
+      collection: _collection,
+      records: _records,
+      publication: publication
+    } do
       {:ok, publication} = Collection.publish(publication)
 
       %{body: body} = Req.get!(publication.attachment.url)

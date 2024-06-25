@@ -67,6 +67,9 @@ defmodule DataAggregator.Records.Record do
     attribute :approval_status, PublicationStatusType, allow_nil?: false, default: :not_published
     attribute :iucn_redlist_category, :string, allow_nil?: true
 
+    attribute :last_approval_started_at, :utc_datetime, allow_nil?: true
+    attribute :last_imported_at, :utc_datetime, allow_nil?: true
+
     timestamps private?: false, writable?: false
   end
 
@@ -291,6 +294,7 @@ defmodule DataAggregator.Records.Record do
 
     update :set_imported do
       change transition_state(:imported)
+      change set_attribute(:last_imported_at, &DateTime.utc_now/0)
     end
 
     update :set_encoding do
@@ -315,6 +319,12 @@ defmodule DataAggregator.Records.Record do
       argument :status, :atom, allow_nil?: false
 
       change set_attribute(:approval_status, expr(^arg(:status)))
+    end
+
+    update :update_last_approval_started_at do
+      accept []
+
+      change set_attribute(:last_approval_started_at, &DateTime.utc_now/0)
     end
 
     destroy :destroy do
@@ -351,10 +361,11 @@ defmodule DataAggregator.Records.Record do
     define :set_encoded
     define :set_encoding_failed
     define :enqueue_encoder
-    define :update_fast_track_status, action: :update_fast_track_status, args: [:status]
-    define :update_approval_status, action: :update_approval_status, args: [:status]
-    define :check_if_fast_track_pubished, action: :check_if_fast_track_pubished
+    define :update_fast_track_status, args: [:status]
+    define :update_approval_status, args: [:status]
+    define :check_if_fast_track_pubished
     define :enqueue_fast_track_checker
+    define :update_last_approval_started_at
   end
 
   postgres do
