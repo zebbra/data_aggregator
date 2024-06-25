@@ -4,6 +4,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Subscriptions
 
+  import DataAggregatorWeb.CollectionLive.Components, only: [collection_state_badge: 1]
   import DataAggregatorWeb.CollectionLive.Helpers
   import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
 
@@ -67,6 +68,9 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         </:col>
         <:col :let={{_id, collection}} field={:code} label={~t"Code"m}>
           <%= collection.code %>
+        </:col>
+        <:col :let={{_id, collection}} field={:state} label={~t"State"m} class="text-center">
+          <.collection_state_badge collection={collection} />
         </:col>
         <:col :let={{_id, collection}} label={~t"Institution"m}>
           <%= collection.institution %>
