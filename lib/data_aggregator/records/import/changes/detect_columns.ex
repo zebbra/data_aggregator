@@ -66,6 +66,7 @@ defmodule DataAggregator.Records.Import.Changes.DetectColumns do
   defp build_column({name, {:f, _}}), do: build_column({name, :float})
   defp build_column({name, {:s, _}}), do: build_column({name, :integer})
   defp build_column({name, {:datetime, _}}), do: %Import.Column{name: name, type: :date}
+  defp build_column({name, {:naive_datetime, _}}), do: %Import.Column{name: name, type: :date}
   defp build_column({name, type}), do: %Import.Column{name: name, type: type}
 
   defp sort_columns(columns, order) do
