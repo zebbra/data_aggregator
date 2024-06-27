@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-base-100 h-full [scrollbar-gutter:stable]">
+<html lang="en" class="bg-base-100 h-full">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,13 +7,8 @@
       name="description"
       content="Data Aggregator to integrate biodiversity data to a darwin core compatible data format."
     />
-    <meta name="csrf-token" content={get_csrf_token()} />
-    <.live_title suffix=" · DataAggregator">
-      Internal Server Error
-    </.live_title>
-    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
-    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
-    </script>
+    <title>Internal Server Error · DataAggregator</title>
+    <link rel="stylesheet" href={~p"/assets/app.css"} />
   </head>
   <body class="h-full antialiased">
     <main class="mx-auto h-full max-w-6xl p-6 lg:p-10">
