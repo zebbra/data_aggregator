@@ -18,7 +18,7 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
   secret_key_base: "gCUX1IH7IJDICQGJo4YMx912l9PTQXSCTSyoNFpidW1saLPXnEgA8+Zn+TGIA4fz",
   server: true
 
-# In test we don't send emails.
+# In test we don't send emails
 config :data_aggregator, DataAggregator.Mailer, adapter: Swoosh.Adapters.Test
 
 # Serve uploaded files
@@ -37,7 +37,7 @@ config :data_aggregator, DataAggregator.Records,
 # Prevent Oban from running jobs and plugins during test runs
 config :data_aggregator, Oban, testing: :inline
 
-# Disable swoosh api client as it is only required for production adapters.
+# Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false
 
 # Print only warnings and errors during test
@@ -46,9 +46,8 @@ config :logger, level: :warning
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 
-config :phoenix_live_view,
-  # Enable helpful, but potentially expensive runtime checks
-  enable_expensive_runtime_checks: true
+# Enable helpful, but potentially expensive runtime checks
+config :phoenix_live_view, enable_expensive_runtime_checks: true
 
 # Disable warnings for dummy resources
 config :ash, :validate_api_config_inclusion?, false

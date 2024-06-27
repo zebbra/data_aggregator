@@ -77,9 +77,11 @@ defmodule DataAggregatorWeb.Components.Field do
   slot :after_input, doc: "the slot for the region after the input (only for inside)"
 
   def field(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+
     assigns
     |> assign(field: nil, id: assigns.id || field.id)
-    |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
+    |> assign(:errors, Enum.map(errors, &translate_error(&1)))
     |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
     |> assign_new(:value, fn -> field.value end)
     |> field()
@@ -87,13 +89,13 @@ defmodule DataAggregatorWeb.Components.Field do
 
   def field(%{type: "checkgroup"} = assigns) do
     ~H"""
-    <div phx-feedback-for={@name} class={["form-control w-full", @class, @hidden && "hidden"]}>
+    <div class={["form-control w-full", @class, @hidden && "hidden"]}>
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
       <% else %>
         <.label :if={@label} for={@id} label={@label} {@rest} />
       <% end %>
-      <.input type="hidden" name={@name} value="" />
+      <.input type="hidden" name={@name} value="" disabled={@rest[:disabled]} />
       <.description :if={@description} description={@description} class="mb-2" />
       <.description :if={length(@options) == 0} description={~t"No entries found"m} class="mb-2" />
       <.errors errors={@errors} id={@id} class={is_nil(@description) && "mb-2"} />
@@ -123,15 +125,12 @@ defmodule DataAggregatorWeb.Components.Field do
       assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", assigns[:value]) end)
 
     ~H"""
-    <div
-      phx-feedback-for={@name}
-      class={[
-        "form-control grid items-center gap-x-4 gap-y-1",
-        @class,
-        @inline && "sm:col-span-3",
-        @hidden && "hidden"
-      ]}
-    >
+    <div class={[
+      "form-control grid items-center gap-x-4 gap-y-1",
+      @class,
+      @inline && "sm:col-span-3",
+      @hidden && "hidden"
+    ]}>
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
       <% else %>
@@ -153,14 +152,11 @@ defmodule DataAggregatorWeb.Components.Field do
       assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", assigns[:value]) end)
 
     ~H"""
-    <div
-      phx-feedback-for={@name}
-      class={[
-        "form-control grid items-center gap-x-4 gap-y-1 sm:col-span-3",
-        @class,
-        @hidden && "hidden"
-      ]}
-    >
+    <div class={[
+      "form-control grid items-center gap-x-4 gap-y-1 sm:col-span-3",
+      @class,
+      @hidden && "hidden"
+    ]}>
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
       <% else %>
@@ -182,14 +178,11 @@ defmodule DataAggregatorWeb.Components.Field do
       assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", assigns[:value]) end)
 
     ~H"""
-    <div
-      phx-feedback-for={@name}
-      class={[
-        "form-control grid-cols-[1.5rem] grid items-center gap-x-4 gap-y-1",
-        @class,
-        @hidden && "hidden"
-      ]}
-    >
+    <div class={[
+      "form-control grid-cols-[1.5rem] grid items-center gap-x-4 gap-y-1",
+      @class,
+      @hidden && "hidden"
+    ]}>
       <.input {assigns} class="col-start-1 row-start-1 justify-self-center" />
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
@@ -217,14 +210,11 @@ defmodule DataAggregatorWeb.Components.Field do
       assign_new(assigns, :checked, fn -> Form.normalize_value("radio", assigns[:value]) end)
 
     ~H"""
-    <div
-      phx-feedback-for={@name}
-      class={[
-        "form-control grid items-center gap-x-4 gap-y-1 sm:col-span-3",
-        @class,
-        @hidden && "hidden"
-      ]}
-    >
+    <div class={[
+      "form-control grid items-center gap-x-4 gap-y-1 sm:col-span-3",
+      @class,
+      @hidden && "hidden"
+    ]}>
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
       <% else %>
@@ -246,14 +236,11 @@ defmodule DataAggregatorWeb.Components.Field do
       assign_new(assigns, :checked, fn -> Form.normalize_value("radio", assigns[:checked]) end)
 
     ~H"""
-    <div
-      phx-feedback-for={@name}
-      class={[
-        "form-control grid-cols-[1.5rem] grid items-center gap-x-4 gap-y-1",
-        @class,
-        @hidden && "hidden"
-      ]}
-    >
+    <div class={[
+      "form-control grid-cols-[1.5rem] grid items-center gap-x-4 gap-y-1",
+      @class,
+      @hidden && "hidden"
+    ]}>
       <.input class="col-start-1 row-start-1 justify-self-center" {assigns} />
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
@@ -278,10 +265,7 @@ defmodule DataAggregatorWeb.Components.Field do
 
   def field(%{type: "select", inline: true} = assigns) do
     ~H"""
-    <div
-      phx-feedback-for={@name}
-      class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @class, @hidden && "hidden"]}
-    >
+    <div class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @class, @hidden && "hidden"]}>
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
       <% else %>
@@ -305,10 +289,7 @@ defmodule DataAggregatorWeb.Components.Field do
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def field(%{inline: true} = assigns) do
     ~H"""
-    <div
-      phx-feedback-for={@name}
-      class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @class, @hidden && "hidden"]}
-    >
+    <div class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @class, @hidden && "hidden"]}>
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
       <% else %>
@@ -337,7 +318,7 @@ defmodule DataAggregatorWeb.Components.Field do
     end
 
     ~H"""
-    <div phx-feedback-for={@name} class={["form-control w-full", @class, @hidden && "hidden"]}>
+    <div class={["form-control w-full", @class, @hidden && "hidden"]}>
       <label for={@id} class="input input-bordered flex items-center gap-2">
         <%= if @label do %>
           <%= @label %>
@@ -355,7 +336,7 @@ defmodule DataAggregatorWeb.Components.Field do
 
   def field(assigns) do
     ~H"""
-    <div phx-feedback-for={@name} class={["form-control w-full", @class, @hidden && "hidden"]}>
+    <div class={["form-control w-full", @class, @hidden && "hidden"]}>
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
       <% else %>
@@ -441,7 +422,7 @@ defmodule DataAggregatorWeb.Components.Field do
 
   def custom_field(assigns) do
     ~H"""
-    <div phx-feedback-for={@name} class={["form-control", @class, @hidden && "hidden"]}>
+    <div class={["form-control", @class, @hidden && "hidden"]}>
       <%= render_slot(@content, assigns) %>
     </div>
     """
@@ -505,11 +486,7 @@ defmodule DataAggregatorWeb.Components.Field do
 
   def errors(assigns) do
     ~H"""
-    <p
-      :if={@errors != []}
-      id={"#{@id}_error"}
-      class={["text-base/6 phx-no-feedback:hidden sm:text-sm/6", @class]}
-    >
+    <p :if={@errors != []} id={"#{@id}_error"} class={["text-base/6 sm:text-sm/6", @class]}>
       <span :for={msg <- @errors} class="text-error"><%= msg %></span>
     </p>
     """
