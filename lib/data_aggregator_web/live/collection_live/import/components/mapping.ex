@@ -37,7 +37,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
     form =
       Enum.reduce(name_opts, form, fn name, form ->
-        Form.add_form(form, path, params: %{"name" => name})
+        Form.add_form(form, path, params: %{"name" => name, "mapped_to" => name})
       end)
 
     socket =
@@ -410,7 +410,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
     socket
     |> assign(:name_opts, name_opts -- [name])
-    |> assign(:form, Form.add_form(form, path, params: %{"name" => name}))
+    |> assign(
+      :form,
+      Form.add_form(form, path, params: %{"name" => name, "mapped_to" => name})
+    )
     |> assign_filter()
     |> noreply()
   end

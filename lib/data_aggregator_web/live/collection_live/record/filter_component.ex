@@ -314,6 +314,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       send(self(), {"filter_form:submit", meta})
 
       socket
+      |> push_event("submit:close", %{})
       |> push_patch(to: path)
       |> noreply()
     else
