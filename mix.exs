@@ -219,7 +219,7 @@ defmodule DataAggregator.MixProject do
       {:mimic, "~> 1.7", only: :test},
       {:styler, "~> 0.11", only: [:dev, :test], runtime: false},
       {:junit_formatter, "~> 3.3", only: :test},
-      {:ex_machina, "~> 2.7.0", only: :test},
+      {:ex_machina, "~> 2.8.0", only: :test},
 
       # Assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
