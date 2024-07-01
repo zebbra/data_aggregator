@@ -57,7 +57,8 @@ defmodule DataAggregator.DarwinCore.Resource.Transformers.AddAttributes do
       name: attribute.name,
       type: attribute.type,
       description: attribute.description || "",
-      allow_nil?: !!attribute.allow_nil?
+      allow_nil?: !!attribute.allow_nil?,
+      public?: true
     ]
 
     Transformer.build_entity(Ash.Resource.Dsl, [:attributes], :attribute, opts)

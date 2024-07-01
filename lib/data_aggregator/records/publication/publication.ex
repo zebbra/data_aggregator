@@ -38,7 +38,6 @@ defmodule DataAggregator.Records.Publication do
 
     belongs_to :job, Job do
       attribute_type :integer
-      attribute_writable? true
       allow_nil? true
       public? true
     end
@@ -54,7 +53,10 @@ defmodule DataAggregator.Records.Publication do
     calculate :collection_name, :string, expr(collection.name)
 
     calculate :attachment_url, :string do
-      calculation fn publication, _opts -> publication.attachment.url end
+      calculation fn publications, _opts ->
+        Enum.map(publications, fn publication -> publication.attachment.url end)
+      end
+
       load attachment: :url
     end
 

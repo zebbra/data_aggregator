@@ -13,7 +13,7 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
   require Logger
 
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_action(changeset, &validate_rows/1, append?: true)
+    Changeset.before_action(changeset, &validate_rows/1)
   end
 
   defp validate_rows(%Changeset{data: import} = changeset) do

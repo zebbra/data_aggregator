@@ -47,7 +47,6 @@ defmodule DataAggregator.Records.Export do
 
     belongs_to :job, Job do
       attribute_type :integer
-      attribute_writable? true
       allow_nil? true
       public? true
     end
@@ -60,7 +59,10 @@ defmodule DataAggregator.Records.Export do
     calculate :collection_name, :string, expr(collection.name)
 
     calculate :attachment_url, :string do
-      calculation fn export, _opts -> export.attachment.url end
+      calculation fn exports, _opts ->
+        Enum.map(exports, fn export -> export.attachment.url end)
+      end
+
       load attachment: :url
     end
 

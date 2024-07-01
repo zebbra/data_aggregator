@@ -18,7 +18,7 @@ defmodule DataAggregator.Files.Attachment do
     uuid_attribute :id, prefix: "fat", public?: true
     attribute :filename, :string, allow_nil?: false, public?: true
     attribute :byte_size, :integer, allow_nil?: false, public?: true
-    timestamps()
+    timestamps public?: true, writable?: false
   end
 
   calculations do

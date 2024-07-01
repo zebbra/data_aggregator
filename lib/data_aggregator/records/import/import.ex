@@ -61,7 +61,6 @@ defmodule DataAggregator.Records.Import do
 
     belongs_to :job, Job do
       attribute_type :integer
-      attribute_writable? true
       allow_nil? true
       public? true
     end
@@ -88,7 +87,10 @@ defmodule DataAggregator.Records.Import do
     calculate :collection_name, :string, expr(collection.name)
 
     calculate :attachment_url, :string do
-      calculation fn import, _opts -> import.attachment.url end
+      calculation fn imports, _opts ->
+        Enum.map(imports, fn import -> import.attachment.url end)
+      end
+
       load attachment: :url
     end
 
@@ -108,7 +110,7 @@ defmodule DataAggregator.Records.Import do
 
       argument :mapped, :boolean, default: false
 
-      load attachment: :url
+      load attachment: [:filename, :url]
     end
 
     calculate :mappings, {:array, Column}, Import.Calculations.Mappings
@@ -230,14 +232,15 @@ defmodule DataAggregator.Records.Import do
 
     update :set_importing do
       accept []
+      require_atomic? false
 
       change transition_state(:importing)
-      change atomic_update(:started_at, &DateTime.utc_now/0)
-      change atomic_update(:finished_at, nil)
-      change atomic_update(:rows_imported_count, 0)
-      change atomic_update(:rows_valid_count, 0)
-      change atomic_update(:rows_invalid_count, 0)
-      change atomic_update(:rows_error_count, 0)
+      change set_attribute(:started_at, &DateTime.utc_now/0)
+      change set_attribute(:finished_at, nil)
+      change set_attribute(:rows_imported_count, 0)
+      change set_attribute(:rows_valid_count, 0)
+      change set_attribute(:rows_invalid_count, 0)
+      change set_attribute(:rows_error_count, 0)
     end
 
     update :add_import_progress do
@@ -253,8 +256,8 @@ defmodule DataAggregator.Records.Import do
       require_atomic? false
 
       change transition_state(:failed)
-      change atomic_update(:finished_at, &DateTime.utc_now/0)
-      change atomic_update(:rows_imported_count, 0)
+      change set_attribute(:finished_at, &DateTime.utc_now/0)
+      change set_attribute(:rows_imported_count, 0)
       change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
@@ -263,7 +266,7 @@ defmodule DataAggregator.Records.Import do
       require_atomic? false
 
       change transition_state(:imported)
-      change atomic_update(:finished_at, &DateTime.utc_now/0)
+      change set_attribute(:finished_at, &DateTime.utc_now/0)
       change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 

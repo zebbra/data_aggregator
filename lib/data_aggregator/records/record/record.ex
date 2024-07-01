@@ -98,14 +98,12 @@ defmodule DataAggregator.Records.Record do
 
     belongs_to :encoder_job, Job do
       attribute_type :integer
-      attribute_writable? true
       allow_nil? true
       public? true
     end
 
     belongs_to :fast_track_checker_job, Job do
       attribute_type :integer
-      attribute_writable? true
       allow_nil? true
       public? true
     end
