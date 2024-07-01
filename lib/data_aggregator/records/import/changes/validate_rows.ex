@@ -8,7 +8,6 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
   import DataAggregator.Records.Import.Helpers
 
   alias Ash.Changeset
-  alias DataAggregator.Records
   alias DataAggregator.Records.Import
 
   require Logger
@@ -27,11 +26,11 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
   end
 
   defp validate_in_chunks(%Changeset{data: import} = changeset, rows) do
-    chunk_size = Records.import_batch_size()
+    chunk_size = DataAggregator.Records.import_batch_size()
     Logger.debug("Validating rows in chunks of #{chunk_size} rows ...")
 
     # make sure collection is loaded to avoid N+1 queries
-    import = Records.load!(import, [:collection], lazy?: true)
+    import = Ash.load!(import, [:collection], lazy?: true)
 
     rows
     |> Stream.chunk_every(chunk_size)
@@ -43,7 +42,7 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
   defp validate_chunk(import, {chunk, index}) do
     Logger.debug("Validating chunk ##{index} with #{length(chunk)} rows ...")
 
-    max_concurrency = Records.import_max_concurrency()
+    max_concurrency = DataAggregator.Records.import_max_concurrency()
 
     {valid, invalid, errors} =
       chunk
@@ -97,7 +96,7 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
     add_progress = fn -> Import.add_validation_progress!(import, valid, invalid) end
 
     import =
-      if Records.async_import_progress?() do
+      if DataAggregator.Records.async_import_progress?() do
         add_progress |> Task.async() |> Task.await()
       else
         add_progress.()
@@ -107,7 +106,7 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
   end
 
   defp rows_stream(import) do
-    with {:ok, import} <- DataAggregator.Records.load(import, attachment_data: [mapped: true]) do
+    with {:ok, import} <- Ash.load(import, attachment_data: [mapped: true]) do
       stream = Explorer.DataFrame.to_rows_stream(import.attachment_data)
       {:ok, stream}
     end

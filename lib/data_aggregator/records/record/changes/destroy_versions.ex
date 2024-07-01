@@ -6,7 +6,6 @@ defmodule DataAggregator.Records.Record.Changes.DestroyVersions do
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Records
   alias DataAggregator.Records.Record
 
   require Logger
@@ -16,7 +15,7 @@ defmodule DataAggregator.Records.Record.Changes.DestroyVersions do
   end
 
   defp delete_versions(%Changeset{}, %Record{} = record) do
-    record = Records.load!(record, [:paper_trail_versions], lazy?: true)
+    record = Ash.load!(record, [:paper_trail_versions], lazy?: true)
 
     Enum.each(record.paper_trail_versions, &Record.Version.destroy!(&1))
 

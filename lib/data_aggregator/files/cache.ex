@@ -5,7 +5,6 @@ defmodule DataAggregator.Files.Cache do
   The files are stored in the directory specified by `DataAggregator.Files.cache_dir/0`.
   """
 
-  alias DataAggregator.Files
   alias DataAggregator.Files.Attachment
 
   require Logger
@@ -16,7 +15,7 @@ defmodule DataAggregator.Files.Cache do
   If the file is already cached, the cached file path is returned.
   """
   def store(%Attachment{} = attachment) do
-    with {:ok, attachment} <- Files.load(attachment, [:url], lazy?: true) do
+    with {:ok, attachment} <- Ash.load(attachment, [:url], lazy?: true) do
       maybe_download(attachment)
     end
   end
@@ -53,7 +52,7 @@ defmodule DataAggregator.Files.Cache do
   end
 
   defp cached_file_path(%Attachment{id: id, filename: filename}) do
-    [Files.cache_dir(), id, filename]
+    [DataAggregator.Files.cache_dir(), id, filename]
     |> Path.join()
     |> Path.expand()
   end

@@ -9,7 +9,6 @@ defmodule DataAggregator.ExportTest do
 
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Gbif
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Export
   alias Explorer.DataFrame
@@ -69,7 +68,7 @@ defmodule DataAggregator.ExportTest do
       assert {:ok, %Export{} = export} =
                export
                |> Export.update(updated_export)
-               |> Records.load([:collection])
+               |> Ash.load([:collection])
 
       assert export.name == "gbif.org_2"
     end
@@ -98,7 +97,7 @@ defmodule DataAggregator.ExportTest do
 
     setup do
       collection =
-        Records.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
+        Ash.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
           :records_to_export_query
         ])
 
@@ -209,7 +208,7 @@ defmodule DataAggregator.ExportTest do
 
     setup %{mapping: mapping, data_layer: data_layer, header_source: header_source} do
       collection =
-        Records.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
+        Ash.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
           :records_to_export_query
         ])
 

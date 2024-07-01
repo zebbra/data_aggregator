@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.Import.Record do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
+    domain: DataAggregator.Records,
     extensions: [AshUUID]
 
   alias DataAggregator.Records.Import
@@ -14,22 +15,24 @@ defmodule DataAggregator.Records.Import.Record do
     belongs_to :import, Import do
       primary_key? true
       allow_nil? false
+      public? true
     end
 
     belongs_to :record, Record do
-      api DataAggregator.Records
       primary_key? true
       allow_nil? false
+      public? true
     end
   end
 
   actions do
+    default_accept :*
     defaults [:read, :destroy, :update]
 
     create :create do
       primary? true
-      argument :import, Import, allow_nil?: true
-      argument :record, Record, allow_nil?: true
+      argument :import, :struct, allow_nil?: true
+      argument :record, :struct, allow_nil?: true
       change manage_relationship(:import, :import, type: :append)
       change manage_relationship(:record, :record, type: :append)
       upsert? true
@@ -38,7 +41,6 @@ defmodule DataAggregator.Records.Import.Record do
   end
 
   code_interface do
-    define_for DataAggregator.Records
     define :create, args: [:import, :record]
   end
 

@@ -4,7 +4,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
   """
 
   alias DataAggregator.Opencage
-  alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
@@ -22,7 +21,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
   """
   @spec apply_strategy(EncodedRecord.t()) :: EncodingResult.t()
   def apply_strategy(encoded_record) do
-    encoded_record = Records.load!(encoded_record, [:record])
+    encoded_record = Ash.load!(encoded_record, [:record])
 
     longitude = encoded_record.loc_decimal_longitude
     latitude = encoded_record.loc_decimal_latitude

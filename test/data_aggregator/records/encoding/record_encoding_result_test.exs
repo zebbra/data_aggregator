@@ -8,7 +8,6 @@ defmodule DataAggregator.RecordEncodingResultTest do
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.Gbif
-  alias DataAggregator.Records
   alias DataAggregator.Records.Encoding.RecordEncodingResult
 
   describe "record_encoding_results" do
@@ -88,7 +87,7 @@ defmodule DataAggregator.RecordEncodingResultTest do
 
       assert {:ok, %RecordEncodingResult{} = result} = RecordEncodingResult.create(attrs)
 
-      record_encoding_result = Records.load!(result, [:record])
+      record_encoding_result = Ash.load!(result, [:record])
 
       assert record_encoding_result.record.id == record.id
     end

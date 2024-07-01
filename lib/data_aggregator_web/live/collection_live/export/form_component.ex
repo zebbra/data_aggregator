@@ -5,7 +5,6 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
 
   use DataAggregatorWeb, :live_component
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
 
@@ -140,7 +139,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
   defp create_and_enqueue(socket, params) do
     %{collection: collection, meta: %{pagify: pagify}, rows_count: rows_count} = socket.assigns
 
-    collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
+    collection = Ash.load!(collection, [:records_to_export_query], lazy?: true)
 
     records_to_export_query =
       Record
@@ -167,7 +166,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
 
   defp assign_rows_count(socket) do
     %{collection: collection, meta: %{pagify: pagify}} = socket.assigns
-    collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
+    collection = Ash.load!(collection, [:records_to_export_query], lazy?: true)
 
     records_to_export_query =
       Record
@@ -177,7 +176,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
 
     count_query = Ash.Query.filter_input(Record, records_to_export_query)
 
-    rows_count = Records.count!(count_query)
+    rows_count = Ash.count!(count_query)
 
     assign(socket, :rows_count, rows_count)
   end

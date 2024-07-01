@@ -23,7 +23,7 @@ defmodule DataAggregator.Records.EncodedRecordVersionMixin do
       end
 
       code_interface do
-        define_for DataAggregator.Records
+        domain DataAggregator.Records
 
         define :read
         define :destroy

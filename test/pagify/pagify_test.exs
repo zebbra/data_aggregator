@@ -2,7 +2,6 @@ defmodule PagifyTest do
   @moduledoc false
   use DataAggregator.DataCase, async: false
 
-  alias Pagify.Factory.Api
   alias Pagify.Factory.Comment
   alias Pagify.Factory.Post
   alias Pagify.Meta
@@ -16,7 +15,7 @@ defmodule PagifyTest do
       %{name: "Post 3", author: "Doe", comments: ["Second", "Third", "Another"]}
     ]
 
-    Api.bulk_create(posts, Post, :create)
+    Ash.bulk_create(posts, Post, :create)
     :ok
   end
 
@@ -519,8 +518,7 @@ defmodule PagifyTest do
 
       assert [%Ash.Error.Query.InvalidLimit{limit: -1}] = Keyword.get(meta.errors, :limit)
 
-      assert [%Ash.Error.Query.NoSuchAttributeOrRelationship{attribute_or_relationship: :other}] =
-               Keyword.get(meta.errors, :filters)
+      assert [%Ash.Error.Query.NoSuchField{field: :other}] = Keyword.get(meta.errors, :filters)
     end
 
     test "returns error and original params if pagify is invalid" do
@@ -540,8 +538,7 @@ defmodule PagifyTest do
 
       assert [%Ash.Error.Query.InvalidLimit{limit: -1}] = Keyword.get(meta.errors, :limit)
 
-      assert [%Ash.Error.Query.NoSuchAttributeOrRelationship{attribute_or_relationship: :other}] =
-               Keyword.get(meta.errors, :filters)
+      assert [%Ash.Error.Query.NoSuchField{field: :other}] = Keyword.get(meta.errors, :filters)
     end
 
     test "returns data and meta data" do
@@ -631,8 +628,7 @@ defmodule PagifyTest do
 
       assert [%Ash.Error.Query.InvalidLimit{limit: -1}] = Keyword.get(meta.errors, :limit)
 
-      assert [%Ash.Error.Query.NoSuchAttributeOrRelationship{attribute_or_relationship: :other}] =
-               Keyword.get(meta.errors, :filters)
+      assert [%Ash.Error.Query.NoSuchField{field: :other}] = Keyword.get(meta.errors, :filters)
     end
 
     test "returns error and original params if parameters are invalid" do
@@ -653,8 +649,7 @@ defmodule PagifyTest do
 
       assert [%Ash.Error.Query.InvalidLimit{limit: -1}] = Keyword.get(meta.errors, :limit)
 
-      assert [%Ash.Error.Query.NoSuchAttributeOrRelationship{attribute_or_relationship: :other}] =
-               Keyword.get(meta.errors, :filters)
+      assert [%Ash.Error.Query.NoSuchField{field: :other}] = Keyword.get(meta.errors, :filters)
     end
   end
 
@@ -683,8 +678,7 @@ defmodule PagifyTest do
 
       assert [%Ash.Error.Query.InvalidLimit{limit: -1}] = Keyword.get(error.errors, :limit)
 
-      assert [%Ash.Error.Query.NoSuchAttributeOrRelationship{attribute_or_relationship: :other}] =
-               Keyword.get(error.errors, :filters)
+      assert [%Ash.Error.Query.NoSuchField{field: :other}] = Keyword.get(error.errors, :filters)
     end
   end
 
@@ -839,9 +833,8 @@ defmodule PagifyTest do
   end
 
   defp assert_page_opts(pagify, expected, opts) do
-    %Ash.Page.Offset{rerun: {_, opts}} = Pagify.all(Post, pagify, opts)
+    %Ash.Page.Offset{rerun: {%Ash.Query{page: page}, _}} = Pagify.all(Post, pagify, opts)
 
-    page = Keyword.get(opts, :page, [])
     assert_lists_equal(expected, page)
   end
 
@@ -852,9 +845,8 @@ defmodule PagifyTest do
   end
 
   defp assert_comment_page_opts(pagify, expected, opts) do
-    %Ash.Page.Offset{rerun: {_, opts}} = Pagify.all(Comment, pagify, opts)
+    %Ash.Page.Offset{rerun: {%Ash.Query{page: page}, _}} = Pagify.all(Comment, pagify, opts)
 
-    page = Keyword.get(opts, :page, [])
     assert_lists_equal(expected, page)
   end
 end

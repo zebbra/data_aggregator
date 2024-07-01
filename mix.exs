@@ -192,14 +192,14 @@ defmodule DataAggregator.MixProject do
       {:phoenix_storybook, "~> 0.6.3"},
 
       # Ash Framework
-      {:ash, "~> 2.13"},
-      {:ash_graphql, "~> 0.28.0"},
-      {:ash_json_api, "~> 0.34.0"},
-      {:ash_phoenix, "~> 1.2"},
-      {:ash_postgres, "~> 1.3"},
-      {:ash_state_machine, "~> 0.2.2"},
-      {:ash_uuid, "~> 0.7"},
-      {:ash_paper_trail, "~> 0.1"},
+      {:ash, "~> 3.0.16"},
+      {:ash_graphql, "~> 1.2.0"},
+      {:ash_json_api, "~> 1.2.2"},
+      {:ash_phoenix, "~> 2.0.4"},
+      {:ash_postgres, "~> 2.0.12"},
+      {:ash_state_machine, "~> 0.2.4"},
+      {:ash_uuid, "~> 1.1.0"},
+      {:ash_paper_trail, "~> 0.1.2"},
 
       # Database and Ecto
       {:ecto, "~> 3.11.0"},
@@ -278,7 +278,7 @@ defmodule DataAggregator.MixProject do
 
       # Utilities and Helpers
       {:envy, "~> 1.1.1"},
-      {:splode, "~> 0.2.2"},
+      {:picosat_elixir, "~> 0.2"},
 
       # Documentation
       {:ecto_erd, "~> 0.5", only: :dev},

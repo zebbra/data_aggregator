@@ -23,7 +23,6 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
 
   use Oban.Worker, queue: :encoders, max_attempts: 1
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalog
 
@@ -56,5 +55,5 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
   end
 
   @impl Oban.Worker
-  def timeout(_job), do: Records.encode_timeout() + :timer.minutes(1)
+  def timeout(_job), do: DataAggregator.Records.encode_timeout() + :timer.minutes(1)
 end

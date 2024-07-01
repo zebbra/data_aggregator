@@ -23,7 +23,6 @@ defmodule DataAggregator.Records.Import.Workers.Importer do
 
   use Oban.Worker, queue: :imports, max_attempts: 1
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Import
 
   require Logger
@@ -37,5 +36,5 @@ defmodule DataAggregator.Records.Import.Workers.Importer do
   end
 
   @impl Oban.Worker
-  def timeout(_job), do: Records.import_timeout() + :timer.minutes(1)
+  def timeout(_job), do: DataAggregator.Records.import_timeout() + :timer.minutes(1)
 end

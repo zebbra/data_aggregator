@@ -12,7 +12,6 @@ defmodule DataAggregator.Records.Actions.Publish do
   alias DataAggregator.DarwinCore.Publication.PreservationFile
   alias DataAggregator.DarwinCore.Publication.ReleveFile
   alias DataAggregator.Misc.FlatFileUtils
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
@@ -68,7 +67,7 @@ defmodule DataAggregator.Records.Actions.Publish do
     publication =
       publication
       |> Publication.update_attachment(attachment)
-      |> Records.load!([:collection, :attachment])
+      |> Ash.load!([:collection, :attachment])
 
     register_at_gbif(publication, query)
   rescue
@@ -90,7 +89,7 @@ defmodule DataAggregator.Records.Actions.Publish do
   @spec queue_records_for_verification(Ash.Query.t()) :: :ok
   defp queue_records_for_verification(query) do
     query
-    |> Records.stream!(page: false)
+    |> Ash.stream!(page: false)
     |> Stream.map(&Record.enqueue_fast_track_checker/1)
     |> Stream.run()
   end
@@ -102,7 +101,7 @@ defmodule DataAggregator.Records.Actions.Publish do
         ) :: :ok
   defp set_publication_status(query, status, publication) do
     query
-    |> Records.stream!(page: false)
+    |> Ash.stream!(page: false)
     |> Stream.map(&update_record!(&1, status, publication))
     |> Stream.run()
   end

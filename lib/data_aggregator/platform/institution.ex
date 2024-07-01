@@ -5,40 +5,43 @@ defmodule DataAggregator.Platform.Institution do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
+    domain: DataAggregator.Platform,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.Records.Validations
 
   attributes do
-    uuid_attribute :id, prefix: "ins"
-    attribute :name, :string, allow_nil?: false
+    uuid_attribute :id, prefix: "ins", public?: true
+    attribute :name, :string, allow_nil?: false, public?: true
 
     attribute :code, :string do
+      public? true
       description "an iternationally valid code to identify the institution"
     end
 
-    attribute :address, :string
-    attribute :zip_code, :string
-    attribute :city, :string
-    attribute :country, :string
-    attribute :mail, :string
-    attribute :tel, :string
-    attribute :contact_person, :string
+    attribute :address, :string, public?: true
+    attribute :zip_code, :string, public?: true
+    attribute :city, :string, public?: true
+    attribute :country, :string, public?: true
+    attribute :mail, :string, public?: true
+    attribute :tel, :string, public?: true
+    attribute :contact_person, :string, public?: true
 
     attribute :grscicoll_reference, :string do
       description "a code to identify the institution in the GrSciColl database"
       allow_nil? false
+      public? true
     end
 
-    timestamps private?: false, writable?: false
+    timestamps public?: true, writable?: false
   end
 
   actions do
+    default_accept :*
     defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do
-    define_for DataAggregator.Platform
     define :read
     define :create, action: :create
     define :read_all, action: :read

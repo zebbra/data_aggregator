@@ -9,7 +9,6 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
 
   alias Ash.Notifier.Notification
   alias DataAggregator.PubSub
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Export
   alias Phoenix.LiveView.Socket
@@ -61,7 +60,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
   end
 
   defp handle_export_created(%Notification{data: export}, socket) do
-    export = Records.load!(export, @load, lazy?: true)
+    export = Ash.load!(export, @load, lazy?: true)
     {:noreply, stream_insert(socket, :results, export, at: 0)}
   end
 

@@ -8,7 +8,6 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     to keep this module clean, the actual encoding logic is delegated to a
     strategy module like we do with the `DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy` or the `DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy` module
   """
-  alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.RecordEncodingResult
@@ -99,7 +98,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   end
 
   defp create_success_result(attrs, catalog, old_record, new_record) do
-    record = Records.load!(old_record, [:record], lazy?: true).record
+    record = Ash.load!(old_record, [:record], lazy?: true).record
 
     attrs
     |> put_input_values(catalog, old_record)
@@ -110,7 +109,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   end
 
   defp create_unchanged_result(attrs, catalog, old_record, unchanged_record) do
-    record = Records.load!(old_record, [:record], lazy?: true).record
+    record = Ash.load!(old_record, [:record], lazy?: true).record
 
     attrs
     |> put_input_values(catalog, old_record)
@@ -122,7 +121,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   end
 
   defp create_error_result(attrs, catalog, old_record, error) do
-    record = Records.load!(old_record, [:record], lazy?: true).record
+    record = Ash.load!(old_record, [:record], lazy?: true).record
     new_record = EncodedRecord.get_by_record!(record)
 
     err_msg = get_err_msg(error)

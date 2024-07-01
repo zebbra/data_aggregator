@@ -8,13 +8,12 @@ defmodule DataAggregator.Records.Import.Changes.SetTimeout do
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Records
 
   require Logger
 
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    timeout = Records.import_timeout()
+    timeout = DataAggregator.Records.import_timeout()
     Logger.debug("Import timeout set to #{timeout}ms")
     Changeset.timeout(changeset, timeout)
   end

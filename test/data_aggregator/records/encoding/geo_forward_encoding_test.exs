@@ -7,7 +7,6 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
   import DataAggregator.EncodingFixtures
 
   alias DataAggregator.Gbif
-  alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
@@ -141,7 +140,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
       encoded_record =
         record_fixture
         |> EncodedRecord.get_by_record!()
-        |> Records.load!([:record])
+        |> Ash.load!([:record])
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: nil,

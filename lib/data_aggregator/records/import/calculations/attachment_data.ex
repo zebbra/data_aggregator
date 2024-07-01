@@ -1,6 +1,6 @@
 defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
   @moduledoc """
-  This `Ash.Calculation` loads the attachment data for an `DataAggregator.Records.Import` as a `Explorer.DataFrame`.
+  This `Ash.Resource.Calculation` loads the attachment data for an `DataAggregator.Records.Import` as a `Explorer.DataFrame`.
 
   > ### Important {: .warning}
   >
@@ -30,7 +30,7 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
 
   """
 
-  use Ash.Calculation
+  use Ash.Resource.Calculation
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.DataFrame
@@ -39,16 +39,16 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
 
   require Logger
 
-  @impl Ash.Calculation
-  def calculate(imports, opts, ctx) do
+  @impl Ash.Resource.Calculation
+  def calculate(imports, opts, %{arguments: arguments}) do
     imports
-    |> DataAggregator.Records.load!([attachment: :cached_file], lazy?: true)
+    |> Ash.load!([attachment: :cached_file], lazy?: true)
     |> Enum.reverse()
-    |> Enum.reduce_while([], &reduce_attachment(&1, &2, opts, ctx))
+    |> Enum.reduce_while([], &reduce_attachment(&1, &2, opts, arguments))
   end
 
-  defp reduce_attachment(%Import{} = import, acc, opts, context) do
-    case attachment_data(import, opts, context) do
+  defp reduce_attachment(%Import{} = import, acc, opts, arguments) do
+    case attachment_data(import, opts, arguments) do
       {:ok, data} ->
         {:cont, [data | acc]}
 
@@ -57,9 +57,9 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentData do
     end
   end
 
-  defp attachment_data(%Import{} = import, opts, context) do
-    with {:ok, data} <- create_dataframe(import, opts, context) do
-      data = maybe_apply_mapping(data, import, opts, context)
+  defp attachment_data(%Import{} = import, opts, arguments) do
+    with {:ok, data} <- create_dataframe(import, opts, arguments) do
+      data = maybe_apply_mapping(data, import, opts, arguments)
       {:ok, data}
     end
   end

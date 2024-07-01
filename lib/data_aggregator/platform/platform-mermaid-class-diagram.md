@@ -15,9 +15,9 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         destroy()
-        update(UUID id, String name, String code, String address, ...)
+        update(String name, String code, String address, String zip_code, ...)
         read()
-        create(UUID id, String name, String code, String address, ...)
+        create(String name, String code, String address, String zip_code, ...)
     }
 
 

@@ -3,7 +3,6 @@ defmodule DataAggregator.Records.Import.Helpers do
 
   alias Ash.Changeset
   alias DataAggregator.Misc.FlatFileUtils
-  alias DataAggregator.Records
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.Record
 
@@ -123,7 +122,7 @@ defmodule DataAggregator.Records.Import.Helpers do
       end
     end
 
-    if Records.execute_async?() do
+    if DataAggregator.Records.execute_async?() do
       upload_fn
       |> Task.async()
       |> Task.await()

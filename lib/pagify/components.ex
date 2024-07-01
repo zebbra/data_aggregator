@@ -439,7 +439,7 @@ defmodule Pagify.Components do
       Pagination.max_pages(assigns.opts[:page_links], assigns.meta.total_pages)
 
     range =
-      first..last =
+      first..last//1 =
       Pagination.get_page_link_range(
         meta.current_page,
         max_pages,

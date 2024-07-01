@@ -19,7 +19,6 @@ defmodule DataAggregator.Records.Export.Workers.Exporter do
 
   use Oban.Worker, queue: :exports, max_attempts: 1
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Export
 
   require Logger
@@ -33,5 +32,5 @@ defmodule DataAggregator.Records.Export.Workers.Exporter do
   end
 
   @impl Oban.Worker
-  def timeout(_job), do: Records.export_timeout() + :timer.minutes(1)
+  def timeout(_job), do: DataAggregator.Records.export_timeout() + :timer.minutes(1)
 end

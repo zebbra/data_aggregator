@@ -2,8 +2,8 @@ defmodule Pagify.Factory.Post do
   @moduledoc false
   use Ash.Resource,
     data_layer: Ash.DataLayer.Ets,
-    extensions: [AshUUID],
-    api: Pagify.Factory.Api
+    domain: Pagify.Factory.Domain,
+    extensions: [AshUUID]
 
   @default_limit 15
   def default_limit, do: @default_limit
@@ -22,38 +22,37 @@ defmodule Pagify.Factory.Post do
   def pagify_scopes, do: @pagify_scopes
 
   ets do
-    table :posts
     private? true
   end
 
   attributes do
-    uuid_attribute :id
-    attribute :name, :string, allow_nil?: false
-    attribute :title, :string
-    attribute :text, :string
-    attribute :author, :string
-    attribute :age, :integer
+    uuid_attribute :id, public?: true
+    attribute :name, :string, allow_nil?: false, public?: true
+    attribute :title, :string, public?: true
+    attribute :text, :string, public?: true
+    attribute :author, :string, public?: true
+    attribute :age, :integer, public?: true
 
     # allow sorting by inserted_at/updated_at
-    timestamps private?: false, writable?: false
+    timestamps public?: true, writable?: false
   end
 
   relationships do
-    has_many :comments, Pagify.Factory.Comment do
-      api Pagify.Factory.Api
-    end
+    has_many :comments, Pagify.Factory.Comment, public?: true
   end
 
   aggregates do
-    count :comments_count, :comments
+    count :comments_count, :comments, public?: true
   end
 
   preparations do
     prepare build(sort: [name: :asc])
-    prepare DataAggregator.Preparations.Sort
+    prepare Pagify.Factory.Preparations.Sort
   end
 
   actions do
+    default_accept :*
+
     read :read do
       primary? true
       argument :sort, :string, allow_nil?: true
@@ -68,7 +67,6 @@ defmodule Pagify.Factory.Post do
   end
 
   code_interface do
-    define_for Pagify.Factory.Api
     define :read
     define :create
   end

@@ -13,7 +13,6 @@ defmodule DataAggregator.Records.Collection.Changes.SetEncoding do
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
 
   require Logger
@@ -24,7 +23,7 @@ defmodule DataAggregator.Records.Collection.Changes.SetEncoding do
   end
 
   defp schedule_poller(_changeset, collection) do
-    if Records.execute_async?() do
+    if DataAggregator.Records.execute_async?() do
       Task.start(fn -> await_encoded(collection.id) end)
     else
       Logger.debug("not executing if execute_async is false (likely in tests), skipping")

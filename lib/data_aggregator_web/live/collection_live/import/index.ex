@@ -12,7 +12,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   import DataAggregatorWeb.CollectionLive.Import.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
-  alias DataAggregator.Files
   alias DataAggregator.Records.Import
 
   @load load()
@@ -567,7 +566,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   end
 
   defp error_log_preview_data(error_log) do
-    error_log = Files.load!(error_log, [:url], lazy?: true)
+    error_log = Ash.load!(error_log, [:url], lazy?: true)
 
     error_log.url
     |> Explorer.DataFrame.from_csv!(max_rows: 100)

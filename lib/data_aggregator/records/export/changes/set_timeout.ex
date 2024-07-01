@@ -6,13 +6,12 @@ defmodule DataAggregator.Records.Export.Changes.SetTimeout do
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Records
 
   require Logger
 
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    timeout = Records.export_timeout()
+    timeout = DataAggregator.Records.export_timeout()
     Logger.info("Export timeout set to #{timeout}ms")
     Changeset.timeout(changeset, timeout)
   end

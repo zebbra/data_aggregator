@@ -91,7 +91,7 @@ defmodule DataAggregator.InstitutionTest do
     end
 
     test "destroy/1 with invalid id returns error" do
-      assert {:error, %Ash.Error.Unknown{}} = Institution.destroy(%Institution{id: "invalid"})
+      assert {:error, %Ash.Error.Invalid{}} = Institution.destroy(%Institution{id: "invalid"})
     end
   end
 end

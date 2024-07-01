@@ -7,7 +7,6 @@ defmodule DataAggregator.Records.Import.Changes.DetectColumns do
 
   alias Ash.Changeset
   alias Ash.Error.Changes.InvalidArgument
-  alias DataAggregator.Records
   alias DataAggregator.Records.Import
 
   require Logger
@@ -35,7 +34,7 @@ defmodule DataAggregator.Records.Import.Changes.DetectColumns do
   end
 
   def column_order(filename) when is_binary(filename) do
-    with {:ok, df} <- Records.DataFrame.from_file(filename) do
+    with {:ok, df} <- DataAggregator.Records.DataFrame.from_file(filename) do
       Explorer.DataFrame.names(df)
     end
   end
@@ -47,7 +46,7 @@ defmodule DataAggregator.Records.Import.Changes.DetectColumns do
   defp detect_columns(filename) do
     Logger.debug("Detecting columns for file #{inspect(filename)} ...")
 
-    with {:ok, df} <- Records.DataFrame.from_file(filename) do
+    with {:ok, df} <- DataAggregator.Records.DataFrame.from_file(filename) do
       order = column_order(df)
 
       columns =

@@ -1,14 +1,14 @@
 defmodule DataAggregator.Files.Attachment.Calculations.CachedFile do
   @moduledoc """
-  `Ash.Calculation` to load the cached file path for an attachment using
+  `Ash.Resource.Calculation` to load the cached file path for an attachment using
   `DataAggregator.Files.Cache`.
   """
 
-  use Ash.Calculation
+  use Ash.Resource.Calculation
 
   alias DataAggregator.Files.Cache
 
-  @impl Ash.Calculation
+  @impl Ash.Resource.Calculation
   def calculate(attachments, _opts, _ctx) do
     attachments
     |> Enum.reverse()

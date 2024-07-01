@@ -5,7 +5,6 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
 
   use Ash.Resource.Actions.Implementation
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Record
 
   require Logger
@@ -16,17 +15,17 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
 
     # Eager load the imports collection to avoid N+1 queries when
     # creating the records
-    {:ok, import} = Records.load(import, [:collection], lazy?: true)
+    {:ok, import} = Ash.load(import, [:collection], lazy?: true)
 
-    max_concurrency = Records.import_max_concurrency()
-    batch_size = ceil(Records.import_batch_size() / max_concurrency)
+    max_concurrency = DataAggregator.Records.import_max_concurrency()
+    batch_size = ceil(DataAggregator.Records.import_batch_size() / max_concurrency)
 
     Logger.debug("Bulk importing records with batch size #{batch_size} (concurrency: #{max_concurrency}) ...")
 
     result =
       rows
       |> Stream.map(&%{import: import, params: &1})
-      |> DataAggregator.Records.bulk_create!(Record, :import,
+      |> Ash.bulk_create!(Record, :import,
         return_errors?: true,
         return_records?: true,
         max_concurrency: max_concurrency,

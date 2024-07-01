@@ -8,7 +8,6 @@ defmodule DataAggregator.RegisterAtGbifTest do
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.Gbif
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
@@ -72,11 +71,11 @@ defmodule DataAggregator.RegisterAtGbifTest do
       encoded_record_fixture(%{record: record5})
 
       records = [
-        Records.load!(record1, [:encoded_record]),
-        Records.load!(record2, [:encoded_record]),
-        Records.load!(record3, [:encoded_record]),
-        Records.load!(record4, [:encoded_record]),
-        Records.load!(record5, [:encoded_record])
+        Ash.load!(record1, [:encoded_record]),
+        Ash.load!(record2, [:encoded_record]),
+        Ash.load!(record3, [:encoded_record]),
+        Ash.load!(record4, [:encoded_record]),
+        Ash.load!(record5, [:encoded_record])
       ]
 
       query = %{
@@ -93,7 +92,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
         })
 
       {:ok, publication} = Collection.publish(publication)
-      publication = Records.load!(publication, [:attachment])
+      publication = Ash.load!(publication, [:attachment])
 
       [
         collection: collection,

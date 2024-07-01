@@ -37,7 +37,7 @@ defmodule DataAggregator.Records.Record.Changes.RelateImport do
   end
 
   defp bulk_create_import_records(stream) do
-    DataAggregator.Records.bulk_create(stream, Import.Record, :create,
+    Ash.bulk_create(stream, Import.Record, :create,
       batch_size: 1000,
       # max_concurrency: 4, # does not work in tests
       return_records?: true,

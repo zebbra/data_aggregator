@@ -17,7 +17,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   import DataAggregatorWeb.RecordLive.Helpers,
     only: [attrs_by_category_in_layers: 1, encoded_attribute: 2, encoded_attribute: 3]
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.Encoding.RecordEncodingResult
@@ -721,12 +720,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           Record
           |> Ash.Query.filter(collection.id == ^id)
           |> Pagify.validated_query(socket.assigns.meta.pagify)
-          |> Records.stream!(page: false)
+          |> Ash.stream!(page: false)
           |> Stream.map(&Record.enqueue_encoder!/1)
           |> Stream.run()
         end
 
-        if Records.execute_async?() do
+        if DataAggregator.Records.execute_async?() do
           Task.start(enqueue_encoder_fn)
         else
           enqueue_encoder_fn.()
@@ -742,7 +741,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_event("collection:fast_track_pub", _params, socket) do
     %{collection: collection, meta: %{pagify: pagify}} = socket.assigns
-    collection = Records.load!(collection, [:fast_track_query], lazy?: true)
+    collection = Ash.load!(collection, [:fast_track_query], lazy?: true)
 
     fast_track_query =
       Record
@@ -767,7 +766,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_event("collection:approval_pub", _params, socket) do
     %{collection: collection, meta: %{pagify: pagify}} = socket.assigns
-    collection = Records.load!(collection, [:approval_query], lazy?: true)
+    collection = Ash.load!(collection, [:approval_query], lazy?: true)
 
     approval_query =
       Record
@@ -811,7 +810,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       channel: channel,
       records_query: query,
       collection: collection,
-      rows_count: Records.count!(count_query)
+      rows_count: Ash.count!(count_query)
     }
     |> Publication.create!()
     |> Publication.enqueue()

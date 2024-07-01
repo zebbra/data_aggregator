@@ -16,7 +16,7 @@ defmodule Pagify.ValidationTest do
 
   test "passes with empty params and query" do
     assert {:ok, %Pagify{limit: 15, offset: 0}} =
-             Validation.validate_params(Ash.Query.to_query(Post), %{})
+             Validation.validate_params(Ash.Query.new(Post), %{})
   end
 
   test "does not set limit if default_limit is set to false" do
@@ -339,8 +339,8 @@ defmodule Pagify.ValidationTest do
                :filters => nil,
                :errors => [
                  filters: [
-                   %Ash.Error.Query.NoSuchAttributeOrRelationship{},
-                   %Ash.Error.Query.NoSuchAttributeOrRelationship{}
+                   %Ash.Error.Query.NoSuchField{},
+                   %Ash.Error.Query.NoSuchField{}
                  ]
                ]
              } =
@@ -356,8 +356,8 @@ defmodule Pagify.ValidationTest do
                :filters => %Ash.Filter{},
                :errors => [
                  filters: [
-                   %Ash.Error.Query.NoSuchAttributeOrRelationship{},
-                   %Ash.Error.Query.NoSuchAttributeOrRelationship{}
+                   %Ash.Error.Query.NoSuchField{},
+                   %Ash.Error.Query.NoSuchField{}
                  ]
                ]
              } =
@@ -439,7 +439,7 @@ defmodule Pagify.ValidationTest do
                order_by: [name: :desc_nils_last],
                errors: [
                  order_by: [
-                   %Ash.Error.Query.NoSuchAttribute{name: "non_existent", resource: Post}
+                   %Ash.Error.Query.NoSuchField{field: "non_existent", resource: Post}
                  ]
                ]
              } =

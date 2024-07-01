@@ -1,10 +1,10 @@
 defmodule DataAggregator.Records.Import.Calculations.MissingMappings do
   @moduledoc """
-  This `Ash.Calculation` calculates the missing column mappings based on the required attributes
+  This `Ash.Resource.Calculation` calculates the missing column mappings based on the required attributes
   using the attribute definitions from `DataAggregator.DarwinCore.Schema`.
   """
 
-  use Ash.Calculation
+  use Ash.Resource.Calculation
 
   alias Ash.Resource.Attribute
   alias DataAggregator.DarwinCore
@@ -13,12 +13,12 @@ defmodule DataAggregator.Records.Import.Calculations.MissingMappings do
 
   require Logger
 
-  @impl Ash.Calculation
-  def calculate(imports, opts, ctx) do
-    Enum.map(imports, &missing_mappings(&1, opts, ctx))
+  @impl Ash.Resource.Calculation
+  def calculate(imports, _opts, _ctx) do
+    Enum.map(imports, &missing_mappings(&1))
   end
 
-  defp missing_mappings(%Import{columns: columns}, _opts, _context) do
+  defp missing_mappings(%Import{columns: columns}) do
     existing_mappings = Enum.map(columns, & &1.mapped_to)
 
     categories = DarwinCore.Schema.categories()

@@ -6,8 +6,6 @@ defmodule DataAggregatorWeb.RecordLiveTest do
   import DataAggregator.RecordsFixtures
   import Phoenix.LiveViewTest
 
-  alias DataAggregator.Records
-
   @update_attrs %{
     mte_catalog_number: "record2",
     tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083"
@@ -16,7 +14,7 @@ defmodule DataAggregatorWeb.RecordLiveTest do
   @invalid_attrs %{mte_catalog_number: nil, tax_scientific_name: nil}
 
   defp create_record(_) do
-    record = Records.load!(record_fixture(), [:collection, :encoded_record], lazy?: true)
+    record = Ash.load!(record_fixture(), [:collection, :encoded_record], lazy?: true)
 
     %{record: record}
   end

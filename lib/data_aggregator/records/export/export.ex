@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.Export do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
+    domain: DataAggregator.Records,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub]
 
@@ -19,34 +20,36 @@ defmodule DataAggregator.Records.Export do
   @type t :: %Export{}
 
   attributes do
-    uuid_attribute :id, prefix: "exp"
+    uuid_attribute :id, prefix: "exp", public?: true
 
-    attribute :name, :string, allow_nil?: false
-    attribute :exported_at, :utc_datetime, allow_nil?: true
-    attribute :started_at, :utc_datetime, allow_nil?: true
-    attribute :finished_at, :utc_datetime, allow_nil?: true
-    attribute :mapping, :map, allow_nil?: true
-    attribute :records_query, :map, allow_nil?: false
-    attribute :exported_count, :integer, allow_nil?: false, default: 0
-    attribute :rows_count, :integer, allow_nil?: false, default: 0
-    attribute :header_source, HeaderSourceType, allow_nil?: false, default: :collection_mapping
-    attribute :data_layer, DataLayerType, allow_nil?: false, default: :raw
+    attribute :name, :string, allow_nil?: false, public?: true
+    attribute :exported_at, :utc_datetime, allow_nil?: true, public?: true
+    attribute :started_at, :utc_datetime, allow_nil?: true, public?: true
+    attribute :finished_at, :utc_datetime, allow_nil?: true, public?: true
+    attribute :mapping, :map, allow_nil?: true, public?: true
+    attribute :records_query, :map, allow_nil?: false, public?: true
+    attribute :exported_count, :integer, allow_nil?: false, default: 0, public?: true
+    attribute :rows_count, :integer, allow_nil?: false, default: 0, public?: true
 
-    timestamps private?: false, writable?: false
+    attribute :header_source, HeaderSourceType,
+      allow_nil?: false,
+      default: :collection_mapping,
+      public?: true
+
+    attribute :data_layer, DataLayerType, allow_nil?: false, default: :raw, public?: true
+
+    timestamps public?: true, writable?: false
   end
 
   relationships do
-    belongs_to :collection, Collection
-
-    belongs_to :attachment, Attachment do
-      api DataAggregator.Files
-    end
+    belongs_to :collection, Collection, public?: true
+    belongs_to :attachment, Attachment, public?: true
 
     belongs_to :job, Job do
-      api DataAggregator.Jobs
       attribute_type :integer
       attribute_writable? true
       allow_nil? true
+      public? true
     end
   end
 
@@ -84,6 +87,7 @@ defmodule DataAggregator.Records.Export do
   end
 
   actions do
+    default_accept :*
     defaults [:read, :destroy]
 
     read :by_collection do
@@ -100,13 +104,14 @@ defmodule DataAggregator.Records.Export do
 
     create :create do
       primary? true
-      argument :collection, Collection, allow_nil?: false
+      argument :collection, :struct, allow_nil?: false
 
       change manage_relationship(:collection, :collection, type: :append)
     end
 
     update :update_mapping do
       argument :mapping, :map, allow_nil?: true
+      require_atomic? false
 
       change Changes.UpdateMapping
       change load(:attachment)
@@ -119,6 +124,8 @@ defmodule DataAggregator.Records.Export do
 
     update :enqueue do
       accept []
+      require_atomic? false
+
       change Changes.SetCollectionExportingBeforeTransaction
       change transition_state(:queued)
       change Changes.EnqueueExporter
@@ -127,18 +134,22 @@ defmodule DataAggregator.Records.Export do
     update :add_export_progress do
       accept []
       argument :exported, :integer, allow_nil?: false
+
       change atomic_update(:exported_count, expr(exported_count + ^arg(:exported)))
       change ensure_selected(:exported_count)
     end
 
     update :set_running do
       accept []
+
       change transition_state(:running)
-      change set_attribute(:started_at, &DateTime.utc_now/0)
-      change set_attribute(:finished_at, nil)
+      change atomic_update(:started_at, &DateTime.utc_now/0)
+      change atomic_update(:finished_at, nil)
     end
 
     update :set_failed do
+      require_atomic? false
+
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change Collection.Changes.SetCollectionIdleAfterTransaction
@@ -146,6 +157,8 @@ defmodule DataAggregator.Records.Export do
 
     update :run do
       accept []
+      require_atomic? false
+
       change Changes.SetTimeout
       change Changes.SetRunningBeforeTransaction
       change transition_state(:running)
@@ -157,6 +170,8 @@ defmodule DataAggregator.Records.Export do
 
     update :set_exported do
       accept []
+      require_atomic? false
+
       change transition_state(:exported)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:exported_at, &DateTime.utc_now/0)
@@ -165,7 +180,9 @@ defmodule DataAggregator.Records.Export do
 
     update :update_attachment do
       accept []
-      argument :attachment, Attachment, allow_nil?: false
+      argument :attachment, :struct, allow_nil?: false
+      require_atomic? false
+
       change manage_relationship(:attachment, :attachment, type: :append)
       change load(:attachment)
     end
@@ -183,7 +200,6 @@ defmodule DataAggregator.Records.Export do
   end
 
   code_interface do
-    define_for DataAggregator.Records
     define :read
     define :by_collection, args: [:collection_id]
     define :create

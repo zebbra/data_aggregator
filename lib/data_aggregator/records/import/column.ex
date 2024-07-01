@@ -7,9 +7,9 @@ defmodule DataAggregator.Records.Import.Column do
     data_layer: :embedded
 
   attributes do
-    attribute :name, :string, primary_key?: true, allow_nil?: false
-    attribute :type, :atom, allow_nil?: false
-    attribute :mapped_to, :string, allow_nil?: true
+    attribute :name, :string, primary_key?: true, allow_nil?: false, public?: true
+    attribute :type, :atom, allow_nil?: false, public?: true
+    attribute :mapped_to, :string, allow_nil?: true, public?: true
   end
 
   calculations do
@@ -17,6 +17,8 @@ defmodule DataAggregator.Records.Import.Column do
   end
 
   actions do
+    default_accept :*
+
     read :read do
       primary? true
       prepare build(load: [:mapped?])

@@ -207,6 +207,7 @@ defmodule Pagify.FilterForm do
   alias AshPhoenix.FilterForm.Predicate
   alias Pagify.Meta
 
+  require Ash.Expr
   require Ash.Query
 
   defstruct [
@@ -281,10 +282,10 @@ defmodule Pagify.FilterForm do
   Create a new filter form.
 
   Options:
-  #{Spark.OptionsHelpers.docs(@new_opts)}
+  #{Spark.Options.docs(@new_opts)}
   """
   def new(resource, opts \\ []) do
-    opts = Spark.OptionsHelpers.validate!(opts, @new_opts)
+    opts = Spark.Options.validate!(opts, @new_opts)
     params = opts[:params]
 
     params =
@@ -582,7 +583,7 @@ defmodule Pagify.FilterForm do
   defp resource_ref(resource, path, field, arguments) do
     case Resource.Info.public_calculation(Resource.Info.related(resource, path), field) do
       nil ->
-        {:ok, Query.expr(ref(^field, ^path))}
+        {:ok, Ash.Expr.expr(^Ash.Expr.ref(List.wrap(path), field))}
 
       calc ->
         case Query.validate_calculation_arguments(
@@ -1057,10 +1058,10 @@ defmodule Pagify.FilterForm do
 
   Options:
 
-  #{Spark.OptionsHelpers.docs(@add_predicate_opts)}
+  #{Spark.Options.docs(@add_predicate_opts)}
   """
   def add_predicate(form, field, operator_or_function, value, opts \\ []) do
-    opts = Spark.OptionsHelpers.validate!(opts, @add_predicate_opts)
+    opts = Spark.Options.validate!(opts, @add_predicate_opts)
 
     predicate_id = Ash.UUID.generate()
 
@@ -1225,10 +1226,10 @@ defmodule Pagify.FilterForm do
 
   Options:
 
-  #{Spark.OptionsHelpers.docs(@add_group_opts)}
+  #{Spark.Options.docs(@add_group_opts)}
   """
   def add_group(form, opts \\ []) do
-    opts = Spark.OptionsHelpers.validate!(opts, @add_group_opts)
+    opts = Spark.Options.validate!(opts, @add_group_opts)
     group_id = Ash.UUID.generate()
 
     group = %__MODULE__{

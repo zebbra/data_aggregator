@@ -3,6 +3,7 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpecies do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
+    domain: DataAggregator.Taxonomy,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias __MODULE__
@@ -10,27 +11,24 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpecies do
   @type t :: %SwissSpecies{}
 
   attributes do
-    uuid_attribute :id, prefix: "spc"
+    uuid_attribute :id, prefix: "spc", public?: true
 
-    attribute :taxon_id_ch, :integer, primary_key?: true, allow_nil?: false
-    attribute :accepted_name, :string, allow_nil?: true
-    attribute :usage_key, :integer, primary_key?: true, allow_nil?: false
-    attribute :accepted_usage_key, :integer, allow_nil?: true
-    attribute :scientific_name, :string, allow_nil?: true
-    attribute :rank, :string, allow_nil?: true
+    attribute :taxon_id_ch, :integer, primary_key?: true, allow_nil?: false, public?: true
+    attribute :accepted_name, :string, allow_nil?: true, public?: true
+    attribute :usage_key, :integer, primary_key?: true, allow_nil?: false, public?: true
+    attribute :accepted_usage_key, :integer, allow_nil?: true, public?: true
+    attribute :scientific_name, :string, allow_nil?: true, public?: true
+    attribute :rank, :string, allow_nil?: true, public?: true
 
-    timestamps private?: false, writable?: false
-  end
-
-  relationships do
+    timestamps public?: true, writable?: false
   end
 
   actions do
+    default_accept :*
     defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do
-    define_for DataAggregator.Taxonomy
     define :create, action: :create
     define :read_all, action: :read
     define :update, action: :update

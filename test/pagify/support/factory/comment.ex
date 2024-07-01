@@ -2,32 +2,33 @@ defmodule Pagify.Factory.Comment do
   @moduledoc false
   use Ash.Resource,
     data_layer: Ash.DataLayer.Ets,
+    domain: Pagify.Factory.Domain,
     extensions: [AshUUID]
 
   ets do
-    table :comments
     private? true
   end
 
   attributes do
-    uuid_attribute :id
-    attribute :body, :string, allow_nil?: false
-    attribute :text, :string
+    uuid_attribute :id, public?: true
+    attribute :body, :string, allow_nil?: false, public?: true
+    attribute :text, :string, public?: true
   end
 
   relationships do
     belongs_to :post, Pagify.Factory.Post do
       allow_nil? false
-      api Pagify.Factory.Api
+      public? true
     end
   end
 
   preparations do
     prepare build(sort: [id: :asc])
-    prepare DataAggregator.Preparations.Sort
+    prepare Pagify.Factory.Preparations.Sort
   end
 
   actions do
+    default_accept :*
     defaults [:create]
 
     read :read do
@@ -45,7 +46,6 @@ defmodule Pagify.Factory.Comment do
   end
 
   code_interface do
-    define_for Pagify.Factory.Api
     define :read
     define :by_post, args: [:post_id]
     define :create
