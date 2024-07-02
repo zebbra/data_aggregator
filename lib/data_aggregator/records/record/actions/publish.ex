@@ -106,7 +106,7 @@ defmodule DataAggregator.Records.Actions.Publish do
     |> Stream.run()
   end
 
-  @spec update_record!(Record.t(), atom(), Publication.t()) :: :ok
+  @spec update_record!(Record.t(), atom(), Publication.t()) :: any()
   defp update_record!(record, status, publication) do
     Publication.add_publication_progress!(publication, 1)
 

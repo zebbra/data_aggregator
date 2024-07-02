@@ -18,6 +18,7 @@ defmodule DataAggregator.Records.Import.Column do
 
   actions do
     default_accept :*
+    defaults [:destroy]
 
     read :read do
       primary? true
@@ -30,19 +31,21 @@ defmodule DataAggregator.Records.Import.Column do
     end
 
     create :create_mapping do
-      accept [:name, :mapped_to]
+      accept [:name, :mapped_to, :type]
       require_attributes [:mapped_to]
       allow_nil_input [:type]
     end
 
     update :update do
       primary? true
-      accept [:mapped_to]
+      accept [:mapped_to, :type]
+      allow_nil_input [:type]
     end
 
     update :update_mapping do
-      accept [:name, :mapped_to]
+      accept [:name, :mapped_to, :type]
       require_attributes [:mapped_to]
+      allow_nil_input [:type]
     end
   end
 end

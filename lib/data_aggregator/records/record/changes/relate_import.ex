@@ -21,6 +21,9 @@ defmodule DataAggregator.Records.Record.Changes.RelateImport do
 
   @impl Ash.Resource.Change
   def change(%Changeset{} = changeset, _opts, _ctx) do
+    # mix test test/data_aggregator/records/import/actions/import_test.exs:50 -> Ash 3.0 is bulk?: false
+    # Ash 2.0 was bulk?: true. Does this cause the error in file
+    # lib/data_aggregator/records/record/changes/relate_collection_from_import.ex:33
     Changeset.after_action(changeset, &create_import_record/2)
   end
 
