@@ -49,7 +49,8 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           tax_kingdom: "Animalia",
           approval_status: :not_published,
           last_imported_at: nil,
-          last_approval_started_at: nil
+          last_approval_started_at: nil,
+          tax_taxon_id: 9368
         })
 
       record3 =
@@ -59,7 +60,8 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           tax_kingdom: "Animalia",
           approval_status: :not_published,
           last_imported_at: nil,
-          last_approval_started_at: nil
+          last_approval_started_at: nil,
+          tax_taxon_id: 9368
         })
 
       record4 =
@@ -69,7 +71,8 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           tax_kingdom: "Animalia",
           approval_status: :not_published,
           last_imported_at: nil,
-          last_approval_started_at: nil
+          last_approval_started_at: nil,
+          tax_taxon_id: 9368
         })
 
       record5 =
@@ -79,7 +82,8 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           tax_kingdom: "My Kingdom",
           approval_status: :not_published,
           last_imported_at: nil,
-          last_approval_started_at: nil
+          last_approval_started_at: nil,
+          tax_taxon_id: 9368
         })
 
       encoded_record_fixture(%{record: record1})

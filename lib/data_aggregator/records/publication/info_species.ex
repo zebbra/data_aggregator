@@ -21,7 +21,7 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
            get_institution_name(publication.collection.grscicoll_institution_key) do
       notification =
         %{
-          count: Records.count!(query),
+          count: to_string(Records.count!(query)),
           dwca_file_link: publication.attachment.url,
           institution: institution_name,
           date: get_date_time_now(),
@@ -67,8 +67,8 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
       ", date: " <>
       notification.date <>
       ", count: " <>
-      notification.dwca_file_link <>
-      ", link: " <> notification.count
+      notification.count <>
+      ", link: " <> notification.dwca_file_link
   end
 
   @spec notify_infospecies(Ash.Query.t(), map()) :: :ok
