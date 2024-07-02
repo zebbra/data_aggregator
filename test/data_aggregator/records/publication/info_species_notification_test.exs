@@ -13,12 +13,23 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Publication.InfoSpecies
   alias DataAggregator.Records.Record
+  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
   describe "notify infospecies tests" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       collection = collection_fixture(%{name: "Collection One"})
+
+      SwissSpecies.create!(%{
+        taxon_id_ch: 70_740,
+        acceptedd_name: "Vespertilionidae",
+        usage_key: 9368,
+        accepted_usage_key: nil,
+        scientific_name: "Vespertilionidae",
+        rank: "FAMILY",
+        center: :infofauna
+      })
 
       record1 =
         record_fixture(%{
@@ -27,7 +38,8 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           tax_kingdom: "Animalia",
           approval_status: :not_published,
           last_imported_at: nil,
-          last_approval_started_at: nil
+          last_approval_started_at: nil,
+          tax_taxon_id: 9368
         })
 
       record2 =
@@ -102,9 +114,10 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
 
     @tag run: true
     test "verify if :last_approval_started_at is set", %{
-      publication: publication
+      publication: publication,
+      collection: collection
     } do
-      {:ok, _publication} = Collection.publish(publication)
+      {:ok, _publication} = Collection.approve(collection, publication.records_query)
 
       assert records = Record.read!()
 

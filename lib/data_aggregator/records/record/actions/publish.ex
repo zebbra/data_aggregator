@@ -5,8 +5,6 @@ defmodule DataAggregator.Records.Actions.Publish do
 
   use Ash.Resource.Actions.Implementation
 
-  # import Ash.Expr
-
   alias DataAggregator.DarwinCore.Publication.CoreFile
   alias DataAggregator.DarwinCore.Publication.EmlFile
   alias DataAggregator.DarwinCore.Publication.MaterialSampleFile
@@ -47,7 +45,8 @@ defmodule DataAggregator.Records.Actions.Publish do
 
     MetaFile.create(publication.collection, path)
 
-    # TODO: implement the following files, they contain of attributes from json data
+    # TODO: implement the following files, they contain of attributes from json fields,
+    # and therefore need to be implemented in a different way
 
     # ChronometricAgeFile.create(query, path)
     # DistributionFile.create(query, path)
@@ -92,16 +91,6 @@ defmodule DataAggregator.Records.Actions.Publish do
 
   def get_ash_query(publication) do
     Ash.Query.filter_input(Record, publication.records_query)
-
-    # TODO: we should only publish records that have been imported after the last approval started
-    # because otherwise too many records would be constantly published towards infospecies
-    # Ash.Query.filter(
-    #   query,
-    #   expr(
-    #     last_approval_started_at == nil or last_imported_at == nil or
-    #       last_imported_at >= last_approval_started_at
-    #   )
-    # )
   end
 
   @spec queue_records_for_verification(Ash.Query.t()) :: :ok

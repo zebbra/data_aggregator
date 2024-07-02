@@ -264,6 +264,13 @@ defmodule DataAggregator.Records.Collection do
 
       run Records.Actions.Publish
     end
+
+    action :approve, :map do
+      argument :collection, :struct, allow_nil?: false
+      argument :query, :map, allow_nil?: false
+
+      run Records.Actions.Approve
+    end
   end
 
   pub_sub do
@@ -294,7 +301,8 @@ defmodule DataAggregator.Records.Collection do
     define :get_by_id, action: :read, get_by: [:id]
     define :touch
     define :export, action: :export, args: [:export]
-    define :publish, action: :publish, args: [:publication]
+    define :publish, args: [:publication]
+    define :approve, args: [:collection, :query]
     define :register_at_gbif, args: [:dwca_file_url]
 
     define :set_importing

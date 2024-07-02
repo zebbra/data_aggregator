@@ -31,6 +31,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.PublicationStatusType
   alias DataAggregator.Records.Record.Calculations.Mids
+  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
   @type t :: %Record{}
 
@@ -110,6 +111,18 @@ defmodule DataAggregator.Records.Record do
 
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
+    end
+
+    belongs_to :swiss_species, SwissSpecies do
+      api DataAggregator.Taxonomy
+
+      source_attribute :tax_taxon_id
+      destination_attribute :usage_key
+
+      allow_nil? true
+      attribute_writable? false
+      attribute_type :integer
+      define_attribute? false
     end
   end
 

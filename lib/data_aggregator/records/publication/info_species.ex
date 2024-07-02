@@ -2,10 +2,15 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
   @moduledoc """
   Handles the preparation and exchange of data towards infospecies centers
   """
+
+  import Swoosh.Email
+
   alias DataAggregator.Gbif
+  alias DataAggregator.Mailer
   alias DataAggregator.Records
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
+  alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
 
   require Logger
 
@@ -20,7 +25,8 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
           dwca_file_link: publication.attachment.url,
           institution: institution_name,
           date: get_date_time_now(),
-          owner: institution_name
+          owner: institution_name,
+          center: publication.center
         }
 
       # for now we use institution_name as owner, because we don't have this grscicoll collection
@@ -53,12 +59,32 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
     end
   end
 
+  defp get_message_body(notification) do
+    "institution: " <>
+      notification.institution <>
+      "owner: " <>
+      notification.owner <>
+      ", date: " <>
+      notification.date <>
+      ", count: " <>
+      notification.dwca_file_link <>
+      ", link: " <> notification.count
+  end
+
   @spec notify_infospecies(Ash.Query.t(), map()) :: :ok
   defp notify_infospecies(query, notification) do
-    # TODO: here we would send the notification to the infospecies center
-    # via a email. for now we just log the notification, b'cause we don't have
-    # the the mail api credentials yet
     Logger.info("Notifying infospecies center: #{inspect(notification)}")
+
+    {:ok, to_mails} = InfospeciesCenters.get_center_emails(notification.center)
+
+    email =
+      new()
+      |> from(System.get_env("MAILBOX_FROM"))
+      |> to(to_mails)
+      |> subject("New records available for approval")
+      |> text_body(get_message_body(notification))
+
+    Mailer.deliver(email)
 
     if Records.execute_async?() do
       Task.start(fn -> update_records_approval_started_at(query) end)

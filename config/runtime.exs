@@ -156,6 +156,18 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
+  config :data_aggregator, DataAggregator.Mailer,
+    adapter: Swoosh.Adapters.SMTP,
+    relay: "smtp.office365.com",
+    username: System.get_env("MAILBOX_USERNAME"),
+    password: System.get_env("MAILBOX_PASSWORD"),
+    ssl: true,
+    tls: :always,
+    auth: :always,
+    port: 587,
+    retries: 2,
+    no_mx_lookups: false
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key

@@ -27,6 +27,7 @@ defmodule DataAggregator.Records.Publication do
     attribute :records_query, :map, allow_nil?: false
     attribute :published_count, :integer, allow_nil?: false, default: 0
     attribute :rows_count, :integer, allow_nil?: false, default: 0
+    attribute :center, :atom, allow_nil?: true
 
     timestamps private?: false, writable?: false
   end
