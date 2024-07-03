@@ -114,7 +114,7 @@ defmodule DataAggregatorWeb.Components.Form do
   ```
   """
   attr :id, :string, default: "simple_form", doc: "the id of the form"
-  attr :for, :any, required: true, doc: "the datastructure for the form"
+  attr :for, :any, required: true, doc: "the data structure for the form"
   attr :as, :any, default: nil, doc: "the server side parameter to collect all input under"
 
   attr :modal, :boolean,

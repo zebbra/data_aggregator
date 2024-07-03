@@ -27,7 +27,7 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
 
   def secondary_navigation(assigns) do
     ~H"""
-    <div class={["border-black-white/10 bg-base-200/95 relative z-10 border-y backdrop-blur", @class]}>
+    <div class={["border-black-white/10 bg-base-200/95 relative z-20 border-y backdrop-blur", @class]}>
       <nav aria-labelledby={@id} class="py-4">
         <h2 id={@id} class="sr-only">Secondary navigation</h2>
         <ul

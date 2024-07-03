@@ -224,7 +224,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               <span class="max-sm:hidden"><%= ~t"Actions"m %></span>
             </summary>
           </:summary>
-          <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-44 gap-1 border p-2 shadow-2xl">
+          <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-20 mt-14 w-44 gap-1 border p-2 shadow-2xl">
             <li :for={{label, icon, action, alert} <- @actions}>
               <button
                 phx-click={action}
