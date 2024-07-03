@@ -2,10 +2,10 @@ defmodule Pagify.Factory.Comment do
   @moduledoc false
   use Ash.Resource,
     data_layer: Ash.DataLayer.Ets,
+    api: Pagify.Factory.Api,
     extensions: [AshUUID]
 
   ets do
-    table :comments
     private? true
   end
 
@@ -18,13 +18,12 @@ defmodule Pagify.Factory.Comment do
   relationships do
     belongs_to :post, Pagify.Factory.Post do
       allow_nil? false
-      api Pagify.Factory.Api
     end
   end
 
   preparations do
     prepare build(sort: [id: :asc])
-    prepare DataAggregator.Preparations.Sort
+    prepare Pagify.Factory.Preparations.Sort
   end
 
   actions do
