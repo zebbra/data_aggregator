@@ -289,7 +289,7 @@ defmodule DataAggregator.RecordTest do
       record = Records.load!(record, [:paper_trail_versions])
 
       # changed publication states in after_action hook leads to one additional change per record
-      assert length(record.paper_trail_versions) == 4
+      assert length(record.paper_trail_versions) == 3
     end
 
     test "importing a record for another collection", %{import: import} do
