@@ -2,8 +2,8 @@ defmodule Pagify.Factory.Post do
   @moduledoc false
   use Ash.Resource,
     data_layer: Ash.DataLayer.Ets,
-    extensions: [AshUUID],
-    api: Pagify.Factory.Api
+    api: Pagify.Factory.Api,
+    extensions: [AshUUID]
 
   @default_limit 15
   def default_limit, do: @default_limit
@@ -22,7 +22,6 @@ defmodule Pagify.Factory.Post do
   def pagify_scopes, do: @pagify_scopes
 
   ets do
-    table :posts
     private? true
   end
 
@@ -39,9 +38,7 @@ defmodule Pagify.Factory.Post do
   end
 
   relationships do
-    has_many :comments, Pagify.Factory.Comment do
-      api Pagify.Factory.Api
-    end
+    has_many :comments, Pagify.Factory.Comment
   end
 
   aggregates do
@@ -50,7 +47,7 @@ defmodule Pagify.Factory.Post do
 
   preparations do
     prepare build(sort: [name: :asc])
-    prepare DataAggregator.Preparations.Sort
+    prepare Pagify.Factory.Preparations.Sort
   end
 
   actions do

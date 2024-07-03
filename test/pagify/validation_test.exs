@@ -16,7 +16,7 @@ defmodule Pagify.ValidationTest do
 
   test "passes with empty params and query" do
     assert {:ok, %Pagify{limit: 15, offset: 0}} =
-             Validation.validate_params(Ash.Query.to_query(Post), %{})
+             Validation.validate_params(Ash.Query.new(Post), %{})
   end
 
   test "does not set limit if default_limit is set to false" do
