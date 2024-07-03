@@ -800,7 +800,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Click on columns to add additional column to attribute mappings."
 msgstr "Klicke auf Spalten, um zusätzliche Spalten zu Attributzuordnungen hinzuzufügen."
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:467
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:470
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Mapping updated"
@@ -841,7 +841,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Load"
 msgstr "Laden"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:512
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:515
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Mapping from collection could not be used"
@@ -1890,7 +1890,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Actions"
 msgstr "Aktionen"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:754
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:757
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "No mapping available"
@@ -2036,12 +2036,12 @@ msgstr "Bilder vorhanden"
 msgid "From"
 msgstr "Start"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:322
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:323
 #, elixir-autogen, elixir-format
 msgid "Please review the form and try again"
 msgstr "Überprüfe das Formular und versuche es erneut"
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:414
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:415
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Something went wrong, please try again."
 msgstr "Etwas ist schief gelaufen!"
@@ -2131,7 +2131,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "records"
 msgstr "Einträge"
 
-#: lib/data_aggregator_web/components/components/field.ex:98
+#: lib/data_aggregator_web/components/components/field.ex:100
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Components.Field"
 msgid "No entries found"

@@ -1,10 +1,10 @@
-defmodule Storybook.Components.Form.InputValidation do
+defmodule Storybook.Components.Form.Field do
   @moduledoc false
   use PhoenixStorybook.Story, :component
 
   alias DataAggregatorWeb.Components
 
-  def function, do: &Components.Input.input/1
+  def function, do: &Components.Field.field/1
   def imports, do: [{Components.Form, [simple_form: 1, fieldgroup: 1]}]
 
   def template do
@@ -23,29 +23,15 @@ defmodule Storybook.Components.Form.InputValidation do
         id: :basic_inputs,
         variations:
           for type <-
-                ~w(checkbox color date datetime-local email hidden month number password
+                ~w(checkbox date datetime-local email month number password
                range search tel text textarea time url week toggle file)a do
             %Variation{
               id: type,
               attributes: %{
                 type: to_string(type),
                 label: String.capitalize("#{type} input"),
-                placeholder: "Enter #{type} input",
-                autocomplete: to_string(type)
-              }
-            }
-          end
-      },
-      %VariationGroup{
-        id: :radio,
-        variations:
-          for option <- [:option_1, :option_2, :option_3] do
-            %Variation{
-              id: option,
-              attributes: %{
-                label: String.capitalize("#{option} input"),
-                type: "radio",
-                name: "radio_input"
+                autocomplete: to_string(type),
+                description: String.capitalize("#{type} input description")
               }
             }
           end
@@ -55,7 +41,8 @@ defmodule Storybook.Components.Form.InputValidation do
         attributes: %{
           label: "Select input",
           type: "select",
-          options: ["Option 1", "Option 2", "Option 3"]
+          options: ["Option 1", "Option 2", "Option 3"],
+          description: "Select input description"
         }
       },
       %Variation{
@@ -64,6 +51,7 @@ defmodule Storybook.Components.Form.InputValidation do
           label: "Multiselect input",
           type: "select",
           options: ["Option 1", "Option 2", "Option 3"],
+          description: "Multielect input description",
           multiple: true
         }
       },
@@ -72,7 +60,8 @@ defmodule Storybook.Components.Form.InputValidation do
         attributes: %{
           label: "Combobox input",
           type: "combobox",
-          options: ["Option 1", "Option 2", "Option 3"]
+          options: ["Option 1", "Option 2", "Option 3"],
+          description: "Combobox input description"
         }
       }
     ]

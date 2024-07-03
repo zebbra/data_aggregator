@@ -43,8 +43,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   @doc """
   Search for occurrences in the GBIF API. Returns a list of occurrences.
   """
-  @spec search_for_occurrences(String.t(), String.t()) ::
-          Api.response()
+  @spec search_for_occurrences(String.t(), String.t()) :: Api.response()
   def search_for_occurrences(catalog_number, dataset_key) do
     [params: [{:catalogNumber, catalog_number}, {:datasetKey, dataset_key}]]
     # TODO: extract attaching cache (and other middlewres) to separate helper

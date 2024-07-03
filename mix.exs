@@ -183,13 +183,13 @@ defmodule DataAggregator.MixProject do
   defp deps do
     [
       # Phoenix Framework
-      {:bandit, "~> 1.5.0"},
-      {:phoenix, "~> 1.7.12"},
-      {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_html, "~> 4.0"},
+      {:bandit, "~> 1.5.5"},
+      {:phoenix, "~> 1.7.14"},
+      {:phoenix_ecto, "~> 4.5"},
+      {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
-      {:phoenix_live_view, "~> 0.20.11"},
-      {:phoenix_storybook, "~> 0.6.0"},
+      {:phoenix_live_view, "~> 1.0.0-rc.5", override: true},
+      {:phoenix_storybook, "~> 0.6.3"},
 
       # Ash Framework
       {:ash, "~> 2.13"},
@@ -203,13 +203,13 @@ defmodule DataAggregator.MixProject do
 
       # Database and Ecto
       {:ecto, "~> 3.11.0"},
-      {:ecto_sql, "~> 3.11.0"},
+      {:ecto_sql, "~> 3.11.3"},
       {:ecto_dev_logger, "~> 0.9"},
       {:ecto_psql_extras, "~> 0.7"},
       {:postgrex, ">= 0.0.0"},
 
       # Testing and Linting
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
@@ -223,7 +223,7 @@ defmodule DataAggregator.MixProject do
 
       # Assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.2.3", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.1.1",
@@ -255,22 +255,22 @@ defmodule DataAggregator.MixProject do
       {:gen_smtp, "~> 1.1"},
 
       # Data Processing and Parsing
-      {:explorer, "~> 0.8.0"},
+      {:explorer, "~> 0.8.3"},
       {:csv, "~> 3.2"},
-      {:waffle, "~> 1.1"},
-      {:ex_aws, "~> 2.5.0"},
+      {:waffle, "~> 1.1.9"},
+      {:ex_aws, "~> 2.5.4"},
       {:ex_aws_s3, "~> 2.0"},
       {:floki, ">= 0.30.0", only: :test},
       {:sweet_xml, "~> 0.6"},
       {:xml_builder, "~> 2.3"},
 
       # Background Jobs
-      {:oban, "~> 2.16"},
+      {:oban, "~> 2.17.11"},
       {:oban_live_dashboard, "~> 0.1.0"},
 
       # Monitoring and Tracing
-      {:phoenix_live_dashboard, "~> 0.8.1"},
-      {:sentry, "~> 10.0"},
+      {:phoenix_live_dashboard, "~> 0.8.4"},
+      {:sentry, "~> 10.6.1"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
 
@@ -283,7 +283,7 @@ defmodule DataAggregator.MixProject do
 
       # Documentation
       {:ecto_erd, "~> 0.5", only: :dev},
-      {:ex_doc, "~> 0.27", runtime: false},
+      {:ex_doc, "~> 0.34.1", runtime: false},
 
       # Livebook Widgets
       {:kino, "~> 0.12.0", only: :dev},

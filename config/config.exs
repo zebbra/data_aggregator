@@ -153,6 +153,7 @@ config :spark, :formatter,
 config :sentry,
   enable_source_code_context: true,
   root_source_code_paths: [File.cwd!()],
+  before_send: {DataAggregator.SentryEventFilter, :filter_event},
   context_lines: 5
 
 # Configure Sentry logger handler, which will send logs to Sentry
