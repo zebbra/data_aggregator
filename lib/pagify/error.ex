@@ -32,13 +32,13 @@ defmodule Pagify.Error.InvalidParamsError do
     operator.
   - Ordering parameters are not provided in the correct format.
   """
+  use Ash.Error.Exception
+  use Splode.Error, fields: [:errors, :params], class: :invalid
 
   @type t :: %__MODULE__{
           errors: keyword,
           params: map
         }
-
-  defexception [:errors, :params]
 
   def message(%{errors: errors, params: params}) do
     """
@@ -67,7 +67,8 @@ defmodule Pagify.Error.InvalidDirectionsError do
   An error that is raised when invalid directions are passed.
   """
 
-  defexception [:directions]
+  use Ash.Error.Exception
+  use Splode.Error, fields: [:directions], class: :invalid
 
   def message(%{directions: directions}) do
     """
@@ -88,7 +89,9 @@ defmodule Pagify.Error.InvalidDirectionsError do
 end
 
 defmodule Pagify.Error.Query.InvalidOrderByParameter do
-  @moduledoc "Used when an invalid order_by is provided"
+  @moduledoc """
+  Used when an invalid order_by is provided
+  """
   use Ash.Error.Exception
   use Splode.Error, fields: [:order_by], class: :invalid
 
@@ -98,7 +101,9 @@ defmodule Pagify.Error.Query.InvalidOrderByParameter do
 end
 
 defmodule Pagify.Error.Query.InvalidScopesParameter do
-  @moduledoc "Used when an invalid scopes is provided"
+  @moduledoc """
+  Used when an invalid scopes is provided
+  """
   use Ash.Error.Exception
   use Splode.Error, fields: [:scopes], class: :invalid
 
@@ -108,7 +113,9 @@ defmodule Pagify.Error.Query.InvalidScopesParameter do
 end
 
 defmodule Pagify.Error.Query.NoSuchScope do
-  @moduledoc "Used when an invalid scopes is provided"
+  @moduledoc """
+  Used when an invalid scopes is provided
+  """
   use Ash.Error.Exception
   use Splode.Error, fields: [:group, :name], class: :invalid
 
@@ -122,7 +129,8 @@ defmodule Pagify.Error.Components.PathOrJSError do
   Raised when a neither the `path` nor the `on_*` attribute is set for a
   pagination or table component.
   """
-  defexception [:component]
+  use Ash.Error.Exception
+  use Splode.Error, fields: [:component], class: :invalid
 
   def message(%{component: component}) do
     """
