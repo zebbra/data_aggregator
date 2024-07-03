@@ -15,11 +15,11 @@ defmodule Pagify do
     with `AshPhoenix.FilterForm` to provide a simple way to build complex filter user interfaces.
   - **Sorting**: Sort your queries by multiple fields and any directions.
   - **UI helpers and URL builders**: Pagify provides a `Pagify.Meta` struct with information about
-  the current page, total pages, and more. This information can be used to build pagination links
-  in your UI. Further, `Pagify` provides the `Pagify.Components` module with a table and pagination
-  component to easily build sortable tables and pagination links in your Phoenix LiveView. The
-  `Pagify.Components` module also provides a URL builder to generate URLs with the correct
-  pagination, scoping, filtering, and sorting parameters.
+    the current page, total pages, and more. This information can be used to build pagination links
+    in your UI. Further, `Pagify` provides the `Pagify.Components` module with a table and pagination
+    component to easily build sortable tables and pagination links in your Phoenix LiveView. The
+    `Pagify.Components` module also provides a URL builder to generate URLs with the correct
+    pagination, scoping, filtering, and sorting parameters.
 
   ## Installation
 
