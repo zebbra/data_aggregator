@@ -59,7 +59,7 @@ defmodule DataAggregator.RecordTest do
 
       assert {:ok, %Record{} = record} = Record.create(attrs)
 
-      record = Records.load!(record, [:paper_trail_versions])
+      record = Records.load!(record, [:paper_trail_versions, :encoded_record])
 
       assert length(record.paper_trail_versions) == 2
       assert record.occ_occurrence_id === record.mte_catalog_number
@@ -67,6 +67,14 @@ defmodule DataAggregator.RecordTest do
 
       assert record.oth_institution_id === "5b487a79-76ef-4615-93d9-f4ea25a40c33"
       assert record.oth_institution_code === "Z"
+
+      assert record.encoded_record != nil
+
+      assert record.encoded_record.occ_occurrence_id === record.mte_catalog_number
+      assert record.encoded_record.oth_basis_of_record === "PreservedSpecimen"
+
+      assert record.encoded_record.oth_institution_id === "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+      assert record.encoded_record.oth_institution_code === "Z"
     end
 
     test "create/1 with invalid data returns error changeset" do

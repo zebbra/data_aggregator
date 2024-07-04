@@ -19,6 +19,7 @@ defmodule DataAggregator.Records do
     import_batch_size: 1000,
     async_import_progress?: true,
     export_timeout: :timer.minutes(60),
+    approval_timeout: :timer.minutes(60),
     encode_timeout: :timer.minutes(60),
     encode_batch_size: 1000,
     publication_verification_timeout: :timer.minutes(5),
@@ -65,4 +66,5 @@ defmodule DataAggregator.Records do
   end
 
   def export_timeout, do: get_env(:export_timeout)
+  def approval_timeout, do: get_env(:approval_timeout)
 end

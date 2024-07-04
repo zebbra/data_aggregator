@@ -179,17 +179,23 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   #  create an encoded record if it does not exist yet
   @spec create_encoded_record(Record.t()) :: EncodedRecord.t()
   defp create_encoded_record(record) do
-    case EncodedRecord.get_by_record(record) do
-      {:ok, result} ->
-        result
+    EncodedRecord.create!(
+      record
+      |> Map.from_struct()
+      |> Map.put_new_lazy(:record, fn -> record end)
+    )
 
-      {:error, %Ash.Error.Query.NotFound{}} ->
-        EncodedRecord.create!(
-          record
-          |> Map.from_struct()
-          |> Map.put_new_lazy(:record, fn -> record end)
-        )
-    end
+    # case EncodedRecord.get_by_record(record) do
+    #   {:ok, result} ->
+    #     result
+
+    #   {:error, %Ash.Error.Query.NotFound{}} ->
+    #     EncodedRecord.create!(
+    #       record
+    #       |> Map.from_struct()
+    #       |> Map.put_new_lazy(:record, fn -> record end)
+    #     )
+    # end
   end
 
   @spec update_encoded_record(map(), EncodedRecord.t(), list()) :: EncodedRecord.t()

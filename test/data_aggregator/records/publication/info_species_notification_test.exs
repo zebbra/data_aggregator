@@ -116,7 +116,6 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       [collection: collection, records: records, publication: publication]
     end
 
-    @tag run: true
     test "verify if :last_approval_started_at is set", %{
       publication: publication,
       collection: collection
@@ -132,7 +131,6 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       end)
     end
 
-    @tag run: true
     test "notify/2 should fail, wrong channel: :fast_track", %{
       publication: publication
     } do

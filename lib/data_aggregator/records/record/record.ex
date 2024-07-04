@@ -242,6 +242,8 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.SetOccurrenceID
       change Record.Changes.SetBasisOfRecord
       change Record.Changes.SetImportedAfterAction
+      change Record.Changes.CreateEncodedRecordAfterAction
+
       change manage_relationship(:collection, :collection, type: :append)
     end
 
@@ -262,6 +264,7 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.SetBasisOfRecord
       change Record.Changes.SetPublicationStale
       change Record.Changes.SetImportedAfterAction
+      change Record.Changes.CreateEncodedRecordAfterAction
 
       upsert? true
       upsert_identity :collection_mte_catalog_number

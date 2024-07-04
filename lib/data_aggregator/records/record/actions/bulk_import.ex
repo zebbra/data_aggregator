@@ -33,6 +33,29 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
         batch_size: batch_size
       )
 
+    # |> dbg()
+
+    #   result_to_records(result) |>
+    #  create_encoded_records(max_concurrency, batch_size)
+
     {:ok, result}
   end
+
+  # defp create_encoded_records(, max_concurrency, batch_size) do
+  #   records
+  #   |> Stream.map(&%{params: &1})
+  #   |> DataAggregator.Records.bulk_create!(EncodedRecord, :create,
+  #     return_errors?: true,
+  #     return_records?: true,
+  #     max_concurrency: max_concurrency,
+  #     batch_size: batch_size
+  #   )
+  # end
+
+  # defp result_to_records(bulk_result) do
+  #   bulk_result.records
+  #   |> Enum.map(fn
+  #     %Import.Record{} = import_record -> import_record.record
+  #   end)
+  # end
 end
