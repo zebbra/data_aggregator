@@ -185,7 +185,7 @@ defmodule DataAggregator.MixProject do
       # Phoenix Framework
       {:bandit, "~> 1.5.5"},
       {:phoenix, "~> 1.7.14"},
-      {:phoenix_ecto, "~> 4.5"},
+      {:phoenix_ecto, "~> 4.6"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:phoenix_live_view, "~> 1.0.0-rc.5", override: true},
@@ -195,7 +195,7 @@ defmodule DataAggregator.MixProject do
       {:ash, "~> 2.13"},
       {:ash_graphql, "~> 0.28.0"},
       {:ash_json_api, "~> 0.34.0"},
-      {:ash_phoenix, "~> 1.2"},
+      {:ash_phoenix, "~> 1.3"},
       {:ash_postgres, "~> 1.3"},
       {:ash_state_machine, "~> 0.2.2"},
       {:ash_uuid, "~> 0.7"},
@@ -204,7 +204,7 @@ defmodule DataAggregator.MixProject do
       # Database and Ecto
       {:ecto, "~> 3.11.0"},
       {:ecto_sql, "~> 3.11.3"},
-      {:ecto_dev_logger, "~> 0.9"},
+      {:ecto_dev_logger, "~> 0.11"},
       {:ecto_psql_extras, "~> 0.7"},
       {:postgrex, ">= 0.0.0"},
 
@@ -216,10 +216,10 @@ defmodule DataAggregator.MixProject do
       {:assertions, "~> 0.19", only: :test},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
-      {:mimic, "~> 1.7", only: :test},
+      {:mimic, "~> 1.8", only: :test},
       {:styler, "~> 0.11", only: [:dev, :test], runtime: false},
       {:junit_formatter, "~> 3.3", only: :test},
-      {:ex_machina, "~> 2.7.0", only: :test},
+      {:ex_machina, "~> 2.8.0", only: :test},
 
       # Assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
@@ -236,7 +236,7 @@ defmodule DataAggregator.MixProject do
       # Internationalization and Localization
       {:gettext, "~> 0.20"},
       {:ex_cldr, "~> 2.37"},
-      {:ex_cldr_dates_times, "~> 2.14"},
+      {:ex_cldr_dates_times, "~> 2.18.1"},
       {:ex_cldr_numbers, "~> 2.31"},
       {:ex_cldr_units, "~> 3.16"},
       {:ex_cldr_plugs, "~> 1.3"},
@@ -245,7 +245,7 @@ defmodule DataAggregator.MixProject do
       # HTTP and API Utilities
       {:absinthe_plug, "~> 1.5.8"},
       {:hackney, "~> 1.18"},
-      {:jason, "~> 1.2"},
+      {:jason, "~> 1.4"},
       {:open_api_spex, "~> 3.18"},
       {:redoc_ui_plug, "~> 0.2.1"},
       {:req, "~> 0.5.0"},
@@ -264,12 +264,12 @@ defmodule DataAggregator.MixProject do
       {:xml_builder, "~> 2.3"},
 
       # Background Jobs
-      {:oban, "~> 2.17.11"},
+      {:oban, "~> 2.17"},
       {:oban_live_dashboard, "~> 0.1.0"},
 
       # Monitoring and Tracing
       {:phoenix_live_dashboard, "~> 0.8.4"},
-      {:sentry, "~> 10.6.1"},
+      {:sentry, "~> 10.6"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
 
