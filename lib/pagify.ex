@@ -1227,7 +1227,7 @@ defmodule Pagify do
   @doc """
   Applies the `order_by` parameter of a `t:Pagify.t/0` to an `t:Ash.Query.t/0`.
 
-  Used by `Pagify.query/2`. See `Ash.Query.sort/2` for more information.
+  Used by `Pagify.query/2`. See `Ash.Query.sort/3` for more information.
 
   This function does _not_ validate or apply default parameters to the given
   Pagify struct. Be sure to validate any user-generated parameters with

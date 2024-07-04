@@ -66,7 +66,6 @@ defmodule Pagify.Error.InvalidDirectionsError do
   @moduledoc """
   An error that is raised when invalid directions are passed.
   """
-
   use Ash.Error.Exception
   use Splode.Error, fields: [:directions], class: :invalid
 
