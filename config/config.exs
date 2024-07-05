@@ -80,7 +80,13 @@ config :ex_cldr,
 config :data_aggregator, Oban,
   repo: DataAggregator.Repo,
   plugins: [{Oban.Plugins.Pruner, max_age: 5, limit: 2000, interval: 5_000}],
-  queues: [imports: 1, encoders: 1, exports: 1, publications: 1, publication_verifications: 0]
+  queues: [
+    imports: 1,
+    encoders: 1,
+    exports: 1,
+    publications: 1,
+    publication_verifications: [limit: 1, paused: true]
+  ]
 
 # Configures the mailer
 #
