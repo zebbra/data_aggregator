@@ -41,14 +41,7 @@ defmodule DataAggregator.Records.Record do
       %{name: :all, filter: nil, default?: true},
       %{
         name: :not_encoded,
-        filter: %{
-          or: [
-            %{state: :imported},
-            %{state: :queued},
-            %{state: :encoding},
-            %{state: :failed}
-          ]
-        }
+        filter: %{state: %{not_equals: :encoded}}
       }
     ]
   }
@@ -117,6 +110,10 @@ defmodule DataAggregator.Records.Record do
                 :iucn_redlist_category in @iucn_redlist_categories or
                   encoded_record.iucn_redlist_category in @iucn_redlist_categories
               )
+
+    calculate :encoded,
+              :boolean,
+              expr(state == :encoded)
 
     calculate :mids_level,
               :integer,

@@ -876,6 +876,7 @@ classDiagram
         Integer fast_track_checker_job_id
         Atom state
         Boolean iucn_redlist
+        Boolean encoded
         Integer mids_level
         Boolean mids_level_one
         Boolean mids_level_two
@@ -1672,6 +1673,7 @@ erDiagram
         Integer fast_track_checker_job_id
         Atom state
         Boolean iucn_redlist
+        Boolean encoded
         Integer mids_level
         Boolean mids_level_one
         Boolean mids_level_two

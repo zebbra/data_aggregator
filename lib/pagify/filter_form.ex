@@ -223,6 +223,20 @@ defmodule Pagify.FilterForm do
     remove_empty_groups?: false
   ]
 
+  @type t :: %__MODULE__{
+          id: String.t(),
+          resource: Resource.t(),
+          transform_errors: term(),
+          key: term(),
+          name: String.t(),
+          valid?: boolean(),
+          negated?: boolean(),
+          params: map(),
+          components: [term() | t()],
+          operator: :and | :or,
+          remove_empty_groups?: boolean()
+        }
+
   @new_opts [
     params: [
       type: :any,
@@ -558,7 +572,7 @@ defmodule Pagify.FilterForm do
 
         case expr do
           {:ok, expr} ->
-            maybe_netage_expression(expr, negated?)
+            maybe_negate_expression(expr, negated?)
 
           {:error, error} ->
             {:error, %{predicate | errors: predicate.errors ++ [error]}}
@@ -615,7 +629,7 @@ defmodule Pagify.FilterForm do
     end
   end
 
-  defp maybe_netage_expression(expr, negated?) do
+  defp maybe_negate_expression(expr, negated?) do
     if negated? do
       {:ok, Query.Not.new(expr)}
     else
@@ -1156,6 +1170,40 @@ defmodule Pagify.FilterForm do
           end)
     })
   end
+
+  @doc """
+  Update the predicates of the nested_form with the given key.
+
+  Works also for predicates in nested forms inside the nested form.
+  """
+  def update_group(form, key, func, root \\ true)
+
+  def update_group(%__MODULE__{key: form_key} = form, key, func, false) when form_key == key or key == :__nested_group do
+    %{
+      form
+      | components:
+          Enum.map(form.components, fn
+            %__MODULE__{} = nested_form ->
+              update_group(nested_form, :__nested_group, func, false)
+
+            %Predicate{} = pred ->
+              func.(pred)
+          end)
+    }
+  end
+
+  def update_group(%__MODULE__{} = form, key, func, true) do
+    set_validity(%{
+      form
+      | components:
+          Enum.map(form.components, fn component ->
+            update_group(component, key, func, false)
+          end)
+    })
+  end
+
+  def update_group(%Predicate{} = predicate, _key, _func, _root), do: predicate
+  def update_group(%__MODULE__{} = form, _key, _func, _root), do: form
 
   defp predicate_errors(predicate, resource) do
     case Resource.Info.related(resource, predicate.path) do

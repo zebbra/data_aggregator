@@ -19,16 +19,6 @@ defmodule Storybook.Components.Form.Field do
 
   def variations do
     [
-      %Variation{
-        id: :checkgroup,
-        attributes: %{
-          label: "Checkgroup",
-          type: "checkgroup",
-          options: ["Option 1", "Option 2", "Option 3"],
-          description: "Checkgroup input description",
-          multiple: true
-        }
-      },
       %VariationGroup{
         id: :basic_inputs,
         variations:
