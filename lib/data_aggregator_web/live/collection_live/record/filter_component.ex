@@ -144,10 +144,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
         ]}
         option_descriptions={
           %{
-            "1" => ~t"Records with mids level 1"m,
-            "2" => ~t"Records with mids level 2"m,
-            "3" => ~t"Records with mids level 3"m,
-            "4" => ~t"Records with mids level 4"m
+            "1" => ~t"Records with a Mids Level of at least 1"m,
+            "2" => ~t"Records with a Mids Level of at least 2"m,
+            "3" => ~t"Records with a Mids Level of at least 3"m,
+            "4" => ~t"Records with a Mids Level of at least 4"m
           }
         }
         pills
@@ -296,7 +296,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       |> FilterForm.add_predicate(:eve_event_date, :greater_than_or_equal, nil, to: date_range_group_id)
       |> FilterForm.add_predicate(:eve_event_date, :less_than_or_equal, nil, to: date_range_group_id)
     end)
-    |> FilterForm.add_predicate(:mids_level, :eq, "")
+    |> FilterForm.add_predicate(:mids_level, :greater_than_or_equal, "")
     |> FilterForm.add_group(return_id?: true, key: "taxonomy")
     |> then(fn {form, taxonomy_group_id} ->
       form
