@@ -415,6 +415,7 @@ defmodule DataAggregatorWeb.Filters do
     quote do
       import DataAggregatorWeb.Filters.CheckboxGroup
       import DataAggregatorWeb.Filters.CollapsibleGroup
+      import DataAggregatorWeb.Filters.ComboboxGroup
       import DataAggregatorWeb.Filters.DateRange
       import DataAggregatorWeb.Filters.Helpers
       import DataAggregatorWeb.Filters.RadioGroup

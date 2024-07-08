@@ -2720,32 +2720,32 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Mids Level"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:147
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
-msgid "Records with mids level 1"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:148
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
-msgid "Records with mids level 2"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:149
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
-msgid "Records with mids level 3"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:150
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
-msgid "Records with mids level 4"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:136
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Search your records by data mids level"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:147
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Records with a Mids Level of at least 1"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:148
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Records with a Mids Level of at least 2"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:149
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Records with a Mids Level of at least 3"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:150
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Records with a Mids Level of at least 4"
 msgstr ""
