@@ -237,7 +237,7 @@ defmodule DataAggregator.MixProject do
       # Internationalization and Localization
       {:gettext, "~> 0.20"},
       {:ex_cldr, "~> 2.37"},
-      {:ex_cldr_dates_times, "~> 2.18.1"},
+      {:ex_cldr_dates_times, "~> 2.19.0"},
       {:ex_cldr_numbers, "~> 2.31"},
       {:ex_cldr_units, "~> 3.16"},
       {:ex_cldr_plugs, "~> 1.3"},
