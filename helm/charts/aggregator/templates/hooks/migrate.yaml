@@ -35,16 +35,16 @@ spec:
           args:
             - -c
             - "/app/bin/migrate"
-        - name: catalog-init
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-            - secretRef:
-                name: {{ .Values.envSecret }}
-            - configMapRef:
-                name: {{ include "aggregator.fullname" . }}
-          command:
-            - /bin/sh
-          args:
-            - -c
-            - "/app/bin/catalog_init"
+        # - name: catalog-init
+        #   image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        #   imagePullPolicy: {{ .Values.image.pullPolicy }}
+        #   envFrom:
+        #     - secretRef:
+        #         name: {{ .Values.envSecret }}
+        #     - configMapRef:
+        #         name: {{ include "aggregator.fullname" . }}
+        #   command:
+        #     - /bin/sh
+        #   args:
+        #     - -c
+        #     - "/app/bin/catalog_init"
