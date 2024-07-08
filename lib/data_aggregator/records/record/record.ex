@@ -30,11 +30,10 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.PublicationStatusType
+  alias DataAggregator.Records.Record.Calculations.IucnRedlist
   alias DataAggregator.Records.Record.Calculations.Mids
 
   @type t :: %Record{}
-
-  @iucn_redlist_categories ["EX", "EW", "RE", "CR(PE)", "CR", "EN"]
 
   @pagify_scopes %{
     status: [
@@ -106,10 +105,7 @@ defmodule DataAggregator.Records.Record do
   calculations do
     calculate :iucn_redlist,
               :boolean,
-              expr(
-                :iucn_redlist_category in @iucn_redlist_categories or
-                  encoded_record.iucn_redlist_category in @iucn_redlist_categories
-              )
+              IucnRedlist
 
     calculate :encoded,
               :boolean,
