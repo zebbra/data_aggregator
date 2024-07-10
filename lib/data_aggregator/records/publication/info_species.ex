@@ -96,6 +96,14 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
     end
 
     :ok
+  rescue
+    e ->
+      Logger.error("rescue - Error notifying infospecies center: #{inspect(e)}")
+      {:error, e}
+  catch
+    e ->
+      Logger.error("catch - Error notifying infospecies center: #{inspect(e)}")
+      {:error, e}
   end
 
   defp update_records_approval_started_at(query) do
