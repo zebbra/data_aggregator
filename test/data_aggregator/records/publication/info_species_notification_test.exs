@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
 
   alias DataAggregator.Gbif
   alias DataAggregator.Records
+  alias DataAggregator.Records.Actions.Approve
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Publication.InfoSpecies
@@ -94,11 +95,17 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       [collection: collection, records: records, query: query]
     end
 
-    test "verify if publication has the published dwca file attached", %{
+    test "Collection.approve/2 publication has the published dwca file attached", %{
       query: query,
       collection: collection
     } do
-      {:ok, _approval} = Collection.approve(collection, query)
+      # stub the query of the approval method, because swiss_species records are not present on CI
+      # without this all queries asking for swiss_species related records would return 0 records
+      stub(Approve, :get_ash_query, fn _, _ ->
+        Ash.Query.filter_input(Record, query)
+      end)
+
+      {:ok, _} = Collection.approve(collection, query)
 
       {:ok, publications} = Publication.read()
 
@@ -109,6 +116,26 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       assert publication.channel == :approval
       assert publication.collection_id == collection.id
       assert publication.attachment_id != nil
+    end
+
+    test "Collection.approve/2 all records have an updated last_approval_started_at date", %{
+      query: query,
+      collection: collection
+    } do
+      # stub the query of the approval method, because swiss_species records are not present on CI
+      # without this all queries asking for swiss_species related records would return 0 records
+      stub(Approve, :get_ash_query, fn _, _ ->
+        Ash.Query.filter_input(Record, query)
+      end)
+
+      {:ok, _} = Collection.approve(collection, query)
+
+      assert {:ok, records} = Record.read()
+      assert length(records) == 5
+
+      Enum.each(records, fn record ->
+        assert record.last_approval_started_at !== nil
+      end)
     end
 
     test "notify/2 should fail, wrong channel: :fast_track", %{
@@ -126,7 +153,8 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       {:error, "Channel has to be :approval to be published to infospecies"} =
         InfoSpecies.notify(publication, publication.records_query)
 
-      assert records = Record.read!()
+      assert {:ok, records} = Record.read()
+      assert length(records) == 5
 
       Enum.each(records, fn record ->
         assert record.last_approval_started_at === nil
