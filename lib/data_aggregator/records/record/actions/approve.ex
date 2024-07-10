@@ -25,8 +25,7 @@ defmodule DataAggregator.Records.Actions.Approve do
 
     center_and_record_counts =
       Enum.map(infospecies_centers, fn center ->
-        center_query = Map.put(query, :swiss_species, %{center: %{eq: center}})
-        ash_query = get_ash_query(query, center)
+        {center_query, ash_query} = get_queries(query, center)
 
         count = Records.count!(ash_query)
 
@@ -50,9 +49,14 @@ defmodule DataAggregator.Records.Actions.Approve do
     {:ok, center_and_record_counts}
   end
 
-  def get_ash_query(query, center) do
-    Record
-    |> Ash.Query.filter_input(query)
-    |> Ash.Query.filter(expr(swiss_species.center == ^center))
+  def get_queries(query, center) do
+    center_query = Map.put(query, :swiss_species, %{center: %{eq: center}})
+
+    ash_query =
+      Record
+      |> Ash.Query.filter_input(query)
+      |> Ash.Query.filter(expr(swiss_species.center == ^center))
+
+    {center_query, ash_query}
   end
 end

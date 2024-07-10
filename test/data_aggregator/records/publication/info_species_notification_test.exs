@@ -101,8 +101,8 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
     } do
       # stub the query of the approval method, because swiss_species records are not present on CI
       # without this all queries asking for swiss_species related records would return 0 records
-      stub(Approve, :get_ash_query, fn _, _ ->
-        Ash.Query.filter_input(Record, query)
+      stub(Approve, :get_queries, fn _, _ ->
+        {query, Ash.Query.filter_input(Record, query)}
       end)
 
       {:ok, _} = Collection.approve(collection, query)
@@ -124,8 +124,8 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
     } do
       # stub the query of the approval method, because swiss_species records are not present on CI
       # without this all queries asking for swiss_species related records would return 0 records
-      stub(Approve, :get_ash_query, fn _, _ ->
-        Ash.Query.filter_input(Record, query)
+      stub(Approve, :get_queries, fn _, _ ->
+        {query, Ash.Query.filter_input(Record, query)}
       end)
 
       {:ok, _} = Collection.approve(collection, query)
