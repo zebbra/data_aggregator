@@ -5,7 +5,6 @@ defmodule DataAggregatorWeb.Components.Field do
   use Phoenix.Component
 
   import DataAggregatorWeb.Components.Input, only: [input: 1]
-  import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
   alias Phoenix.HTML.Form
@@ -49,7 +48,7 @@ defmodule DataAggregatorWeb.Components.Field do
   attr :type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week combobox checkgroup)
+               range radio search select tel text textarea time url week combobox)
 
   attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
@@ -85,39 +84,6 @@ defmodule DataAggregatorWeb.Components.Field do
     |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
     |> assign_new(:value, fn -> field.value end)
     |> field()
-  end
-
-  def field(%{type: "checkgroup"} = assigns) do
-    ~H"""
-    <div class={["form-control w-full", @class, @hidden && "hidden"]}>
-      <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
-      <% else %>
-        <.label :if={@label} for={@id} label={@label} {@rest} />
-      <% end %>
-      <.input type="hidden" name={@name} value="" disabled={@rest[:disabled]} />
-      <.description :if={@description} description={@description} class="mb-2" />
-      <.description :if={length(@options) == 0} description={~t"No entries found"m} class="mb-2" />
-      <.errors errors={@errors} id={@id} class={is_nil(@description) && "mb-2"} />
-      <div class="grid grid-flow-row sm:grid-cols-2">
-        <div
-          :for={{label, value} <- options_for_checkgroup(@options)}
-          class="flex cursor-pointer justify-between gap-4 py-2 sm:flex-row-reverse sm:justify-end"
-        >
-          <.label for={"#{@name}-#{value}"} label={label} class="cursor-pointer min-w-0 flex-1" />
-          <input
-            type="checkbox"
-            id={"#{@name}-#{value}"}
-            name={@name}
-            value={value}
-            checked={checked?(value, @value)}
-            class="checkbox"
-            {@rest}
-          />
-        </div>
-      </div>
-    </div>
-    """
   end
 
   def field(%{type: "toggle"} = assigns) do
@@ -519,74 +485,4 @@ defmodule DataAggregatorWeb.Components.Field do
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
   end
-
-  @doc """
-  Returns options to be used inside a checkgroup.
-
-  ## Examples
-
-      iex> options_for_checkgroup(["Admin": "admin", "User": "user"])
-      [
-        {"Admin", "admin"},
-        {"User", "user"}
-      ]
-
-  Simple arrays of strings are supported:
-
-      iex> options_for_checkgroup(["UK", "Sweden", "France"])
-      [
-        {"UK", "UK"},
-        {"Sweden", "Sweden"},
-        {"France", "France"}
-      ]
-
-  Simple array of atoms are supported:
-
-      iex> options_for_checkgroup([:uk, :se, :fr])
-      [
-        {"uk", "uk"},
-        {"se", "se"},
-        {"fr", "fr"}
-      ]
-
-  Key value pairs are also supported:
-
-      iex> options_for_checkgroup([[key: "UK", value: "uk"], [key: "Sweden", value: "se"], [key: "France", value: "fr"]])
-      [
-        {"UK", "uk"},
-        {"Sweden", "se"},
-        {"France", "fr"}
-      ]
-  """
-  def options_for_checkgroup(options) do
-    Enum.map(options, fn
-      {key, value} ->
-        {to_string(key), to_string(value)}
-
-      options when is_list(options) ->
-        {option_key, options} = Keyword.pop(options, :key)
-
-        option_key ||
-          raise ArgumentError,
-                "expected :key key when building <checkgroup options> from keyword list: #{inspect(options)}"
-
-        {option_value, options} = Keyword.pop(options, :value)
-
-        option_value ||
-          raise ArgumentError,
-                "expected :value key when building <checkgroup options> from keyword list: #{inspect(options)}"
-
-        {to_string(option_key), to_string(option_value)}
-
-      str when is_binary(str) ->
-        {str, str}
-
-      atom when is_atom(atom) ->
-        {Atom.to_string(atom), Atom.to_string(atom)}
-    end)
-  end
-
-  defp checked?(value, options)
-  defp checked?(_, nil), do: false
-  defp checked?(value, options), do: value in options
 end

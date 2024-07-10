@@ -31,26 +31,18 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.PublicationStatusType
+  alias DataAggregator.Records.Record.Calculations.IucnRedlist
   alias DataAggregator.Records.Record.Calculations.Mids
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
   @type t :: %Record{}
-
-  @iucn_redlist_categories ["EX", "EW", "RE", "CR(PE)", "CR", "EN"]
 
   @pagify_scopes %{
     status: [
       %{name: :all, filter: nil, default?: true},
       %{
         name: :not_encoded,
-        filter: %{
-          or: [
-            %{state: :imported},
-            %{state: :queued},
-            %{state: :encoding},
-            %{state: :failed}
-          ]
-        }
+        filter: %{state: %{not_equals: :encoded}}
       }
     ]
   }
@@ -130,10 +122,11 @@ defmodule DataAggregator.Records.Record do
   calculations do
     calculate :iucn_redlist,
               :boolean,
-              expr(
-                :iucn_redlist_category in @iucn_redlist_categories or
-                  encoded_record.iucn_redlist_category in @iucn_redlist_categories
-              )
+              IucnRedlist
+
+    calculate :encoded,
+              :boolean,
+              expr(state == :encoded)
 
     calculate :mids_level,
               :integer,

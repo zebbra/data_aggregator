@@ -154,8 +154,9 @@ defmodule DataAggregator.MixProject do
       Components: [
         ~r/^DataAggregatorWeb\.Blocks/,
         ~r/^DataAggregatorWeb\.Components/,
-        ~r/^DataAggregatorWeb\.LiveComponents/,
-        ~r/^DataAggregatorWeb\.Layouts/
+        ~r/^DataAggregatorWeb\.Filters/,
+        ~r/^DataAggregatorWeb\.Layouts/,
+        ~r/^DataAggregatorWeb\.LiveComponents/
       ],
       "Live Hooks": [
         DataAggregatorWeb.LiveLocale,

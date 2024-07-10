@@ -919,37 +919,6 @@ defmodule Pagify.Components do
   `Plug.Conn.Query.encode/1`. `URI.encode_query/1` does not support bracket
   notation for arrays and maps.
 
-  ## Date and time filters
-
-  If you use the result of this function directly with
-  `Phoenix.VerifiedRoutes.sigil_p/2` for verified routes or in a route helper
-  function, all cast filter_form values need to be able to be converted to a string
-  using the `Phoenix.Param` protocol.
-
-  This protocol is implemented by default for integers, binaries, atoms, and
-  structs. For structs, Phoenix's default behavior is to fetch the id field.
-
-  If you have filter_forms with `Date`, `DateTime`, `NaiveDateTime`,
-  `Time` values, or any other custom structs (e.g. structs that represent
-  composite types like a range column), you will need to implement the protocol
-  for these specific structs in your application.
-
-      defimpl Phoenix.Param, for: Date do
-        def to_param(%Date{} = d), do: to_string(d)
-      end
-
-      defimpl Phoenix.Param, for: DateTime do
-        def to_param(%DateTime{} = dt), do: to_string(dt)
-      end
-
-      defimpl Phoenix.Param, for: NaiveDateTime do
-        def to_param(%NaiveDateTime{} = dt), do: to_string(dt)
-      end
-
-      defimpl Phoenix.Param, for: Time do
-        def to_param(%Time{} = t), do: to_string(t)
-      end
-
   ## Examples
 
       iex> to_query(%Pagify{})
@@ -1021,12 +990,6 @@ defmodule Pagify.Components do
   To pick up the default parameters from an `Ash.Resource`, you need to pass the
   `:for` option. If you pass a `Pagify.Meta` struct as the second argument,
   these options are retrieved from the struct automatically.
-
-  > #### Date and Time Filters {: .info}
-  >
-  > When using filter_forms on `Date`, `DateTime`, `NaiveDateTime` or `Time` fields,
-  > you may need to implement the `Phoenix.Param` protocol for these structs.
-  > See the documentation for `to_query/2`.
 
   ## Examples
 
