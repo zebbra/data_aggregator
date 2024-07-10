@@ -85,6 +85,7 @@ jobs:
 
       - run: mix assets.setup
       - run: mix assets.build
+      - run: mix catalogs.import
       - run: mix compile --warnings-as-errors
       - run: mix lint
       - run: mix test
