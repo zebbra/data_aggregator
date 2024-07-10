@@ -117,6 +117,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       end)
     end
 
+    @tag run: true
     test "notify/2 should fail, wrong channel: :fast_track", %{
       publication: publication
     } do

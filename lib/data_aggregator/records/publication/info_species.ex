@@ -3,10 +3,10 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
   Handles the preparation and exchange of data towards infospecies centers
   """
 
-  # import Swoosh.Email
+  import Swoosh.Email
 
   alias DataAggregator.Gbif
-  # alias DataAggregator.Mailer
+  alias DataAggregator.Mailer
   alias DataAggregator.Records
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
@@ -60,17 +60,17 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
     end
   end
 
-  # defp get_message_body(notification) do
-  #   "institution: " <>
-  #     notification.institution <>
-  #     "owner: " <>
-  #     notification.owner <>
-  #     ", date: " <>
-  #     notification.date <>
-  #     ", count: " <>
-  #     notification.count <>
-  #     ", link: " <> notification.dwca_file_link
-  # end
+  defp get_message_body(notification) do
+    "institution: " <>
+      notification.institution <>
+      "owner: " <>
+      notification.owner <>
+      ", date: " <>
+      notification.date <>
+      ", count: " <>
+      notification.count <>
+      ", link: " <> notification.dwca_file_link
+  end
 
   @spec notify_infospecies(Ash.Query.t(), map()) :: :ok
   defp notify_infospecies(query, notification) do
@@ -78,23 +78,20 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
 
     {:ok, _to_mails} = InfospeciesCenters.get_center_emails(notification.center)
 
-    # email =
-    #   new()
-    #   |> from(System.get_env("MAILBOX_FROM") || "museums.toapprove@gbif.ch")
-    #   # |> to(to_mails) TODO: uncomment this line (and remove the next one) if you
-    #   #    want to send the email to the infospecies centers directly
-    #   |> to(["data@gbif.ch"])
-    #   |> subject("New records available for approval")
-    #   |> text_body(get_message_body(notification))
+    email =
+      new()
+      |> from(System.get_env("MAILBOX_FROM") || "museums.toapprove@gbif.ch")
+      # |> to(to_mails) TODO: uncomment this line (and remove the next one) if you
+      #    want to send the email to the infospecies centers directly
+      |> to(["data@gbif.ch"])
+      |> subject("New records available for approval")
+      |> text_body(get_message_body(notification))
 
-    # Mailer.deliver(email)
+    Mailer.deliver(email)
 
     if Records.execute_async?() do
-      Logger.error("Starting ASYNC task to update records approval_started_at")
       Task.start(fn -> update_records_approval_started_at(query) end)
     else
-      Logger.error("Starting SYNC task to update records approval_started_at")
-
       update_records_approval_started_at(query)
     end
 
