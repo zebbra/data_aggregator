@@ -28,10 +28,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
-          tax_taxon_id: 9368,
-          swiss_species: %{
-            center: :infofauna
-          }
+          tax_taxon_id: 9368
         })
 
       record2 =
@@ -42,10 +39,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
-          tax_taxon_id: 9368,
-          swiss_species: %{
-            center: :infofauna
-          }
+          tax_taxon_id: 9368
         })
 
       record3 =
@@ -56,10 +50,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
-          tax_taxon_id: 9368,
-          swiss_species: %{
-            center: :infofauna
-          }
+          tax_taxon_id: 9368
         })
 
       record4 =
@@ -70,10 +61,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
-          tax_taxon_id: 9368,
-          swiss_species: %{
-            center: :infofauna
-          }
+          tax_taxon_id: 9368
         })
 
       record5 =
@@ -84,10 +72,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
-          tax_taxon_id: 9368,
-          swiss_species: %{
-            center: :infofauna
-          }
+          tax_taxon_id: 9368
         })
 
       encoded_record_fixture(%{record: record1})
@@ -106,42 +91,42 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
 
       query = %{collection: %{id: %{eq: collection.id}}, tax_kingdom: %{is_nil: false}}
 
-      publication =
-        Publication.create!(%{
-          name: "Publication Fast Track 1",
-          channel: :approval,
-          records_query: query,
-          collection: collection
-        })
-
-      [collection: collection, records: records, publication: publication]
+      [collection: collection, records: records, query: query]
     end
 
-    test "verify if :last_approval_started_at is set", %{
-      publication: publication,
+    test "verify if publication has the published dwca file attached", %{
+      query: query,
       collection: collection
     } do
-      {:ok, _approval} = Collection.approve(collection, publication.records_query)
+      {:ok, _approval} = Collection.approve(collection, query)
 
-      assert records = Record.read!()
+      {:ok, publications} = Publication.read()
 
-      assert length(records) == 5
+      assert length(publications) == 1
 
-      Enum.each(records, fn record ->
-        assert record.last_approval_started_at !== nil
-      end)
+      assert publication = Enum.at(publications, 0)
+
+      assert publication.channel == :approval
+      assert publication.collection_id == collection.id
+      assert publication.attachment_id != nil
     end
 
     test "notify/2 should fail, wrong channel: :fast_track", %{
-      publication: publication
+      query: query,
+      collection: collection
     } do
-      publication = Publication.update!(publication, %{channel: :fast_track})
+      publication =
+        Publication.create!(%{
+          name: "Publication 1",
+          channel: :fast_track,
+          records_query: query,
+          collection: collection
+        })
 
       {:error, "Channel has to be :approval to be published to infospecies"} =
         InfoSpecies.notify(publication, publication.records_query)
 
       assert records = Record.read!()
-      assert length(records) == 5
 
       Enum.each(records, fn record ->
         assert record.last_approval_started_at === nil
