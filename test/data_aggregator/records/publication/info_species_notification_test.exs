@@ -28,7 +28,10 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: 9368,
+          swiss_species: %{
+            center: :infofauna
+          }
         })
 
       record2 =
@@ -39,7 +42,10 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: 9368,
+          swiss_species: %{
+            center: :infofauna
+          }
         })
 
       record3 =
@@ -50,7 +56,10 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: 9368,
+          swiss_species: %{
+            center: :infofauna
+          }
         })
 
       record4 =
@@ -61,7 +70,10 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: 9368,
+          swiss_species: %{
+            center: :infofauna
+          }
         })
 
       record5 =
@@ -72,7 +84,10 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
-          tax_taxon_id: 9368
+          tax_taxon_id: 9368,
+          swiss_species: %{
+            center: :infofauna
+          }
         })
 
       encoded_record_fixture(%{record: record1})
@@ -117,7 +132,6 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       end)
     end
 
-    @tag run: true
     test "notify/2 should fail, wrong channel: :fast_track", %{
       publication: publication
     } do

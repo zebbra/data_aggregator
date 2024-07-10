@@ -21,16 +21,12 @@ defmodule DataAggregator.Records.Actions.Approve do
 
     infospecies_centers = InfospeciesCenters.get_center_names()
 
-    Logger.error("infospecies_centers #{inspect(infospecies_centers)}")
-
     center_and_record_counts =
       Enum.map(infospecies_centers, fn center ->
         center_query = Map.put(query, :swiss_species, %{center: %{eq: center}})
-        ash_query = get_ash_query(center_query)
+        ash_query = get_ash_query(query)
 
         count = Records.count!(ash_query)
-
-        Logger.error("center: #{center}, count: #{count}")
 
         # do only publish dwc file to infospecies center if there are records
         if count > 0 do
@@ -48,8 +44,6 @@ defmodule DataAggregator.Records.Actions.Approve do
 
         {center, count}
       end)
-
-    Logger.error("centers and their record counts: #{inspect(center_and_record_counts)}")
 
     {:ok, center_and_record_counts}
   end
