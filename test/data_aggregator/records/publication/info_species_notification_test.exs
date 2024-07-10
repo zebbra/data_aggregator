@@ -13,7 +13,6 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Publication.InfoSpecies
   alias DataAggregator.Records.Record
-  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
   describe "notify infospecies tests" do
     setup do
@@ -21,22 +20,12 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
 
       collection = collection_fixture(%{name: "Collection One"})
 
-      SwissSpecies.create!(%{
-        taxon_id_ch: 70_740,
-        acceptedd_name: "Vespertilionidae",
-        usage_key: 9368,
-        accepted_usage_key: nil,
-        scientific_name: "Vespertilionidae",
-        rank: "FAMILY",
-        center: :infofauna
-      })
-
       record1 =
         record_fixture(%{
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          approval_status: :not_published,
+          approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
           tax_taxon_id: 9368
@@ -47,7 +36,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          approval_status: :not_published,
+          approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
           tax_taxon_id: 9368
@@ -58,7 +47,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          approval_status: :not_published,
+          approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
           tax_taxon_id: 9368
@@ -69,7 +58,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          approval_status: :not_published,
+          approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
           tax_taxon_id: 9368
@@ -80,7 +69,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "My Kingdom",
-          approval_status: :not_published,
+          approval_status: :not_approved,
           last_imported_at: nil,
           last_approval_started_at: nil,
           tax_taxon_id: 9368
@@ -100,14 +89,11 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
         Records.load!(record5, [:encoded_record])
       ]
 
-      query = %{
-        collection: %{id: %{eq: collection.id}},
-        tax_kingdom: %{is_nil: false}
-      }
+      query = %{collection: %{id: %{eq: collection.id}}, tax_kingdom: %{is_nil: false}}
 
       publication =
         Publication.create!(%{
-          name: "Publication Fast Track ",
+          name: "Publication Fast Track 1",
           channel: :approval,
           records_query: query,
           collection: collection
@@ -120,7 +106,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       publication: publication,
       collection: collection
     } do
-      {:ok, _publication} = Collection.approve(collection, publication.records_query)
+      {:ok, _approval} = Collection.approve(collection, publication.records_query)
 
       assert records = Record.read!()
 

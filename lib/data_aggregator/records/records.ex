@@ -17,6 +17,7 @@ defmodule DataAggregator.Records do
   @default_env [
     import_timeout: :timer.minutes(60),
     import_batch_size: 1000,
+    approval_batch_size: 1000,
     async_import_progress?: true,
     export_timeout: :timer.minutes(60),
     approval_timeout: :timer.minutes(60),
@@ -49,6 +50,7 @@ defmodule DataAggregator.Records do
   def get_env(key, default \\ nil), do: Keyword.get(get_all_env(), key, default)
   def import_timeout, do: get_env(:import_timeout)
   def import_batch_size, do: get_env(:import_batch_size)
+  def approval_batch_size, do: get_env(:approval_batch_size)
   def async_import_progress?, do: get_env(:async_import_progress?)
   def execute_async?, do: get_env(:execute_async)
 

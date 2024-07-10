@@ -21,5 +21,6 @@ defmodule DataAggregator.Records.Registry do
     entry DataAggregator.Records.Record.Version
     entry DataAggregator.Records.EncodedRecord.Version
     entry DataAggregator.Records.Approval
+    entry DataAggregator.Records.ApprovedRecord
   end
 end

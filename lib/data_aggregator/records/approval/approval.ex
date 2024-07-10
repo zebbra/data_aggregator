@@ -5,8 +5,7 @@ defmodule DataAggregator.Records.Approval do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
-    notifiers: [Ash.Notifier.PubSub]
+    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine]
 
   alias __MODULE__
   alias DataAggregator.Files.Attachment
@@ -20,8 +19,12 @@ defmodule DataAggregator.Records.Approval do
     uuid_attribute :id, prefix: "app"
 
     attribute :file_url, :string, allow_nil?: false
-    attribute :records_count, :integer, allow_nil?: true, default: 0
-    attribute :records_approved, :integer, allow_nil?: true, default: 0
+
+    attribute :rows_count, :integer, allow_nil?: true
+    attribute :rows_invalid_count, :integer, allow_nil?: true
+    attribute :rows_approved_count, :integer, allow_nil?: true
+    attribute :rows_error_count, :integer, allow_nil?: true
+
     attribute :started_at, :utc_datetime, allow_nil?: true
     attribute :finished_at, :utc_datetime, allow_nil?: true
 
@@ -38,6 +41,10 @@ defmodule DataAggregator.Records.Approval do
       attribute_type :integer
       attribute_writable? true
       allow_nil? true
+    end
+
+    belongs_to :error_log, Attachment do
+      api DataAggregator.Files
     end
   end
 
@@ -72,18 +79,6 @@ defmodule DataAggregator.Records.Approval do
   actions do
     defaults [:read, :destroy, :update]
 
-    read :by_collection do
-      argument :collection_id, :string, allow_nil?: false
-      argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true,
-                 countable: true,
-                 required?: false,
-                 keyset?: true
-
-      filter expr(collection_id == ^arg(:collection_id))
-    end
-
     create :create do
       primary? true
 
@@ -101,6 +96,9 @@ defmodule DataAggregator.Records.Approval do
       change transition_state(:running)
       change set_attribute(:started_at, &DateTime.utc_now/0)
       change set_attribute(:finished_at, nil)
+      change set_attribute(:rows_approved_count, 0)
+      change set_attribute(:rows_invalid_count, 0)
+      change set_attribute(:rows_error_count, 0)
     end
 
     update :set_failed do
@@ -113,7 +111,6 @@ defmodule DataAggregator.Records.Approval do
       accept []
       change Changes.SetTimeout
       change Changes.SetRunningBeforeTransaction
-      change transition_state(:running)
       change set_attribute(:started_at, &DateTime.utc_now/0)
       change Changes.ApproveRecords
       change Changes.SetDoneAfterAction
@@ -124,7 +121,6 @@ defmodule DataAggregator.Records.Approval do
       accept []
       change transition_state(:done)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
-      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :update_attachment do
@@ -132,6 +128,36 @@ defmodule DataAggregator.Records.Approval do
       argument :attachment, Attachment, allow_nil?: false
       change manage_relationship(:attachment, :attachment, type: :append)
       change load(:attachment)
+    end
+
+    update :add_validation_progress do
+      accept []
+      argument :valid, :integer, allow_nil?: false
+      argument :invalid, :integer, allow_nil?: false
+      change atomic_update(:rows_valid_count, expr(rows_valid_count + ^arg(:valid)))
+      change atomic_update(:rows_invalid_count, expr(rows_invalid_count + ^arg(:invalid)))
+      change ensure_selected(:rows_valid_count)
+      change ensure_selected(:rows_invalid_count)
+    end
+
+    update :add_approval_progress do
+      accept []
+
+      argument :approved, :integer, allow_nil?: false
+      argument :invalid, :integer, allow_nil?: false
+
+      change atomic_update(:rows_approved_count, expr(rows_approved_count + ^arg(:approved)))
+      change atomic_update(:rows_invalid_count, expr(rows_invalid_count + ^arg(:invalid)))
+
+      change ensure_selected(:rows_approved_count)
+      change ensure_selected(:rows_invalid_count)
+    end
+
+    update :update_error_log do
+      accept []
+      argument :error_log, Attachment, allow_nil?: false
+      change manage_relationship(:error_log, :error_log, type: :append)
+      change load(:error_log)
     end
   end
 
@@ -148,6 +174,8 @@ defmodule DataAggregator.Records.Approval do
     define :set_running
     define :set_failed
     define :update_attachment, action: :update_attachment, args: [:attachment]
+    define :add_approval_progress, args: [:approved, :invalid]
+    define :update_error_log, args: [:error_log]
   end
 
   postgres do

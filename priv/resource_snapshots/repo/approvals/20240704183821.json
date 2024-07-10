@@ -21,26 +21,6 @@
       "generated?": false
     },
     {
-      "default": "0",
-      "size": null,
-      "type": "bigint",
-      "source": "records_count",
-      "references": null,
-      "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
-    },
-    {
-      "default": "0",
-      "size": null,
-      "type": "bigint",
-      "source": "records_approved",
-      "references": null,
-      "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
-    },
-    {
       "default": "nil",
       "size": null,
       "type": "utc_datetime",

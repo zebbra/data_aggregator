@@ -379,7 +379,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   defp not_published?(activity) do
-    activity.content["approval_status"] == "not_published" or
+    activity.content["approval_status"] == "not_approved" or
       activity.content["fast_track_status"] == "not_published"
   end
 

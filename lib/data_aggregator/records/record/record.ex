@@ -25,6 +25,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Jobs.Job
+  alias DataAggregator.Records.ApprovalStatusType
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding
@@ -65,7 +66,7 @@ defmodule DataAggregator.Records.Record do
       allow_nil?: false,
       default: :not_published
 
-    attribute :approval_status, PublicationStatusType, allow_nil?: false, default: :not_published
+    attribute :approval_status, ApprovalStatusType, allow_nil?: false, default: :not_approved
     attribute :iucn_redlist_category, :string, allow_nil?: true
 
     attribute :last_approval_started_at, :utc_datetime, allow_nil?: true
@@ -371,6 +372,7 @@ defmodule DataAggregator.Records.Record do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
+    define :get_by_mte_catalog_number, action: :read, get_by: [:mte_catalog_number]
     define :encode, args: [:record, :catalog]
     define :set_imported
     define :set_encoding

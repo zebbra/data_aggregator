@@ -6,6 +6,8 @@ defmodule DataAggregator.ApprovalFixtures do
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Approval
+  alias DataAggregator.Records.ApprovedRecord
+  alias DataAggregator.RecordsFixtures
 
   @doc """
   Generate a approval
@@ -18,5 +20,18 @@ defmodule DataAggregator.ApprovalFixtures do
     %{file_url: attachment.url}
     |> Map.merge(attrs)
     |> Approval.create!()
+  end
+
+  @doc """
+  Generate an approved_record
+  """
+  def approved_record_fixture(attrs \\ %{}) do
+    record = RecordsFixtures.record_fixture()
+
+    record
+    |> Map.from_struct()
+    |> Map.merge(attrs)
+    |> Map.put_new_lazy(:record, fn -> record end)
+    |> ApprovedRecord.create!()
   end
 end

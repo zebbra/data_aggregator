@@ -11,8 +11,6 @@ defmodule DataAggregator.Repo.Migrations.CreateApprovalResource do
     create table(:approvals, primary_key: false) do
       add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
       add :file_url, :text, null: false
-      add :records_count, :bigint, default: 0
-      add :records_approved, :bigint, default: 0
       add :started_at, :utc_datetime
       add :finished_at, :utc_datetime
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
