@@ -128,12 +128,9 @@ defmodule DataAggregator.Records.Actions.Publish do
 
   defp update_status!(:approval, status, record), do: Record.update_approval_status!(record, translate_status(status))
 
-  defp translate_status(:not_published), do: :not_approved
   defp translate_status(:publishing), do: :approving
   defp translate_status(:in_publication), do: :in_approval
-  defp translate_status(:published), do: :approved
   defp translate_status(:publication_failed), do: :approval_failed
-  defp translate_status(:stale), do: :stale
 
   defp register(%Publication{channel: :approval} = publication, query) do
     case InfoSpecies.notify(publication, query) do
