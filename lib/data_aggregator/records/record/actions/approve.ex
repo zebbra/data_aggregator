@@ -6,8 +6,6 @@ defmodule DataAggregator.Records.Actions.Approve do
   """
   use Ash.Resource.Actions.Implementation
 
-  import Ash.Expr
-
   alias DataAggregator.Records
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
@@ -26,7 +24,7 @@ defmodule DataAggregator.Records.Actions.Approve do
     center_and_record_counts =
       Enum.map(infospecies_centers, fn center ->
         center_query = Map.put(query, :swiss_species, %{center: %{eq: center}})
-        ash_query = get_ash_query(query, center)
+        ash_query = get_ash_query(center_query)
 
         count = Records.count!(ash_query)
 
@@ -52,9 +50,5 @@ defmodule DataAggregator.Records.Actions.Approve do
     {:ok, center_and_record_counts}
   end
 
-  def get_ash_query(query, center) do
-    Record
-    |> Ash.Query.filter_input(query)
-    |> Ash.Query.filter(expr(swiss_species.center == ^center))
-  end
+  def get_ash_query(query), do: Ash.Query.filter_input(Record, query)
 end

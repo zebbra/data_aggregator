@@ -25,11 +25,12 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
           dwca_file_link: publication.attachment.url,
           institution: institution_name,
           date: get_date_time_now(),
+          # for now we use institution_name as owner, because we don't have this
+          # on the grscicoll collection
           owner: institution_name,
           center: publication.center
         }
 
-      # for now we use institution_name as owner, because we don't have this grscicoll collection
       notify_infospecies(query, notification)
 
       {:ok, publication}
@@ -75,12 +76,14 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
   defp notify_infospecies(query, notification) do
     Logger.info("Notifying infospecies center: #{inspect(notification)}")
 
-    {:ok, to_mails} = InfospeciesCenters.get_center_emails(notification.center)
+    {:ok, _to_mails} = InfospeciesCenters.get_center_emails(notification.center)
 
     email =
       new()
-      |> from(System.get_env("MAILBOX_FROM"))
-      |> to(to_mails)
+      |> from(System.get_env("MAILBOX_FROM") || "museums.toapprove@gbif.ch")
+      # |> to(to_mails) TODO: uncomment this line (and remove the next one) if you
+      #    want to send the email to the infospecies centers directly
+      |> to(["data@gbif.ch"])
       |> subject("New records available for approval")
       |> text_body(get_message_body(notification))
 
