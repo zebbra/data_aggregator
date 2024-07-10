@@ -138,7 +138,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
   end
 
   json_api do
-    type "approved_records"
+    type "approved_record"
 
     primary_key do
       keys [:id]

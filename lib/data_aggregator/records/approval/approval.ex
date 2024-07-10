@@ -80,6 +80,7 @@ defmodule DataAggregator.Records.Approval do
     defaults [:read, :destroy, :update]
 
     create :create do
+      accept [:file_url]
       primary? true
 
       change Changes.SetCount
@@ -214,6 +215,8 @@ defmodule DataAggregator.Records.Approval do
       post :create
       patch :update
       delete :destroy
+
+      patch :enqueue, route: "/:id/enqueue"
     end
   end
 end
