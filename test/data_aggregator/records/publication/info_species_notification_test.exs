@@ -7,10 +7,9 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
   import DataAggregator.EncodingFixtures
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Files.Attachment
   alias DataAggregator.Gbif
   alias DataAggregator.Records
-  alias DataAggregator.Records.Actions.Approve
-  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Publication.InfoSpecies
   alias DataAggregator.Records.Record
@@ -92,26 +91,26 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
 
       query = %{collection: %{id: %{eq: collection.id}}, tax_kingdom: %{is_nil: false}}
 
-      [collection: collection, records: records, query: query]
+      publication =
+        %{
+          name: "Publication 1",
+          channel: :approval,
+          records_query: query,
+          collection: collection,
+          center: :infofauna
+        }
+        |> Publication.create!()
+        |> Publication.update_attachment!(Attachment.import_from_path!("test/support/fixtures/files/approval_dwca.zip"))
+
+      [collection: collection, records: records, query: query, publication: publication]
     end
 
     test "Collection.approve/2 publication has the published dwca file attached", %{
-      query: query,
-      collection: collection
+      collection: collection,
+      publication: publication
     } do
-      # stub the query of the approval method, because swiss_species records are not present on CI
-      # without this all queries asking for swiss_species related records would return 0 records
-      stub(Approve, :get_queries, fn _, _ ->
-        {query, Ash.Query.filter_input(Record, query)}
-      end)
-
-      {:ok, _} = Collection.approve(collection, query)
-
-      {:ok, publications} = Publication.read()
-
-      assert length(publications) == 1
-
-      assert publication = Enum.at(publications, 0)
+      {:ok, publication} =
+        InfoSpecies.notify(publication, Ash.Query.filter_input(Record, publication.records_query))
 
       assert publication.channel == :approval
       assert publication.collection_id == collection.id
@@ -119,16 +118,10 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
     end
 
     test "Collection.approve/2 all records have an updated last_approval_started_at date", %{
-      query: query,
-      collection: collection
+      publication: publication
     } do
-      # stub the query of the approval method, because swiss_species records are not present on CI
-      # without this all queries asking for swiss_species related records would return 0 records
-      stub(Approve, :get_queries, fn _, _ ->
-        {query, Ash.Query.filter_input(Record, query)}
-      end)
-
-      {:ok, _} = Collection.approve(collection, query)
+      {:ok, _publication} =
+        InfoSpecies.notify(publication, Ash.Query.filter_input(Record, publication.records_query))
 
       assert {:ok, records} = Record.read()
       assert length(records) == 5
@@ -139,16 +132,9 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
     end
 
     test "notify/2 should fail, wrong channel: :fast_track", %{
-      query: query,
-      collection: collection
+      publication: publication
     } do
-      publication =
-        Publication.create!(%{
-          name: "Publication 1",
-          channel: :fast_track,
-          records_query: query,
-          collection: collection
-        })
+      publication = Publication.update!(publication, %{channel: :fast_track})
 
       {:error, "Channel has to be :approval to be published to infospecies"} =
         InfoSpecies.notify(publication, publication.records_query)
