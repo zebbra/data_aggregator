@@ -164,6 +164,8 @@ An API endpoint is available to import the approved data from Infospecies into t
 
 `for_coders:` The approval process is handled by the `DataAggregator.Records.Actions.Approve` Ash Action. There we collect the neccessary records according to the users selection, create Darwin Core Archives and notify the Infospecies team about the approval by mail.
 
+#### Inform the Data Aggregator about approved Records
+
 Once the Infospecies team has approved the data, the data will be published to the GBIF portal AND the data aggregator can be called by Rest API `POST /api/json/approvals` containing the link to the DWC-Archive to inform us, that the data is approved and was published. The endpoint expects a JSON object in the following structure:
 
 ```json
@@ -194,8 +196,25 @@ this will return a json object like bellow to the calling client to indicate tha
 }
 ```
 
+#### Update Approval status of the Records within the Data Aggregator
+
 Now the client has to call the `PATCH /api/json/approvals/{id}/enqueue` endpoint to enqueue and start the approval process.
 
 By calling `GET /api/json/approvals/{id}` the client can check the status of the approval process at any time.
+
+#### Notification
+
+As soon as the data processing within the aggregator is finished, the Infospecies team will be notified by Rest API call `POST https://the-infospecies-domain.org/api/approval/notification` with the JSON body:
+
+```json
+{
+  "source_file": "https://s3.cloud.zebbra.ch/data-aggregator-stag/files/fat_02wlChzH8FcfF3L9VIXXY1/AY_qEyOtfpS2yzRehd1Ddg.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=data-aggregator-stag%2F20240710%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240710T141305Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=46e0768b97d5a72e5d4414e55fcc6aa0d7a3df5e1a6d261765a64bbc2e97cb44",
+  "success_count": 98,
+  "error_count": 2,
+  "error_log_url": "http://s3.bla.org/files/error-log-102838728371.zip"
+}
+```
+
+`error_log_url` will contain an url which points to the error log of the internal processing of the data. The `success_count` and `error_count` will contain the amount of successfully processed and approved records and the amount of records which failed during the processing.
 
 All the code necessary to handle the approval process is located in the `lib/data_aggregator/records/approval` modules.

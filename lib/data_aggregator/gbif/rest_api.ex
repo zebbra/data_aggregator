@@ -187,6 +187,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   @spec notify_infospecies_with_approval_result_params(Approval.t()) :: map()
   defp notify_infospecies_with_approval_result_params(%Approval{error_log_id: nil} = approval),
     do: %{
+      "source_file" => approval.file_url,
       "success_count" => approval.rows_approved_count,
       "error_count" => approval.rows_invalid_count,
       "error_log_url" => ""
