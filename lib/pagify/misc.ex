@@ -57,26 +57,26 @@ defmodule Pagify.Misc do
 
   def atomize_keys(not_a_map, _), do: not_a_map
 
-  defp walk_map(map, keys, depth, existing?, current_depth \\ 1)
+  defp walk_map(map, keys, depth, existing?, current_depth \\ 1, func \\ &atomize_key/3)
 
-  defp walk_map(%{} = map, keys, depth, existing?, current_depth) do
+  defp walk_map(%{} = map, keys, depth, existing?, current_depth, func) do
     Map.new(map, fn {k, v} ->
       if is_nil(depth) == false and current_depth >= depth do
-        {atomize_key(k, keys, existing?), v}
+        {func.(k, keys, existing?), v}
       else
-        {atomize_key(k, keys, existing?), walk_map(v, keys, depth, existing?, current_depth + 1)}
+        {func.(k, keys, existing?), walk_map(v, keys, depth, existing?, current_depth + 1, func)}
       end
     end)
   end
 
-  defp walk_map([head | rest], keys, depth, existing?, current_depth) do
+  defp walk_map([head | rest], keys, depth, existing?, current_depth, func) do
     [
-      walk_map(head, keys, depth, existing?, current_depth)
-      | walk_map(rest, keys, depth, existing?, current_depth)
+      walk_map(head, keys, depth, existing?, current_depth, func)
+      | walk_map(rest, keys, depth, existing?, current_depth, func)
     ]
   end
 
-  defp walk_map(not_a_map, _, _, _, _), do: not_a_map
+  defp walk_map(not_a_map, _, _, _, _, _), do: not_a_map
 
   defp atomize_key(key, [], existing?) when is_binary(key) do
     if existing? do
@@ -95,6 +95,75 @@ defmodule Pagify.Misc do
   end
 
   defp atomize_key(key, _, _), do: key
+
+  @doc """
+  Convert map :atom keys to string keys.
+
+  You can specify a list of keys to convert or a depth to which
+  to convert keys. If you specify a depth of 1, only the top
+  level keys will be converted. If you specify a depth of 2, the
+  top level keys and the keys of any maps in the top level will
+  be converted. And so on.
+
+  List of options:
+
+  - `keys`: A list of keys to convert. If a key is not in the list,
+    it will not be converted. Default is an empty list and all keys
+    will be converted.
+  - `depth`: The depth to which to convert keys. Default is nil and
+    all keys will be converted.
+
+  ## Example
+
+      iex> Pagify.Misc.stringify_keys(%{a: 1, b: 2})
+      %{"a" => 1, "b" => 2}
+
+      iex> Pagify.Misc.stringify_keys(%{a: 1, b: %{c: 3}})
+      %{"a" => 1, "b" => %{"c" => 3}}
+
+      iex> Pagify.Misc.stringify_keys(%{a: 1, b: %{c: 3}}, keys: [:b])
+      %{:a => 1, "b" => %{c: 3}}
+
+      iex> Pagify.Misc.stringify_keys(%{a: 1, b: %{c: 3}}, keys: [:b, :c])
+      %{:a => 1, "b" => %{"c" => 3}}
+
+      iex> Pagify.Misc.stringify_keys(%{a: 1, b: %{c: 3}}, keys: [:b, :d], depth: 1)
+      %{:a => 1, "b" => %{c: 3}}
+
+      iex> Pagify.Misc.stringify_keys(%{a: 1, b: %{c: 3}}, keys: [:b, :c], depth: 2)
+      %{:a => 1, "b" => %{"c" => 3}}
+  """
+  @spec stringify_keys(map() | struct(), Keyword.t()) :: map() | struct()
+  def stringify_keys(map_or_struct, opts \\ [])
+  def stringify_keys(nil, _), do: nil
+  def stringify_keys(%{__struct__: _} = struct, _), do: struct
+
+  def stringify_keys(%{} = map, opts),
+    do:
+      walk_map(
+        map,
+        Keyword.get(opts, :keys, []),
+        Keyword.get(opts, :depth, nil),
+        Keyword.get(opts, :existing?, false),
+        1,
+        &stringify_key/3
+      )
+
+  def stringify_keys(not_a_map, _), do: not_a_map
+
+  defp stringify_key(key, [], _existing?) when is_atom(key) do
+    Atom.to_string(key)
+  end
+
+  defp stringify_key(key, keys, existing?) when is_atom(key) and is_list(keys) do
+    if Enum.member?(keys, key) do
+      stringify_key(key, [], existing?)
+    else
+      key
+    end
+  end
+
+  defp stringify_key(key, _, _), do: key
 
   @doc """
   Returns a list of unique keywords from a list of keywords while

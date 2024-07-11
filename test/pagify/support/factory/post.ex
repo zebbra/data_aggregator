@@ -41,6 +41,22 @@ defmodule Pagify.Factory.Post do
     has_many :comments, Pagify.Factory.Comment
   end
 
+  calculations do
+    calculate :full_text_search,
+              :boolean,
+              expr(fragment("(to_tsvector(?) @@ ?)", title, ^arg(:search))) do
+      argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
+    end
+
+    calculate :tsquery, AshPostgres.Tsquery, expr(fragment("to_tsquery(?)", ^arg(:search))) do
+      argument :search, :string, allow_expr?: true, allow_nil?: false
+    end
+
+    calculate :add_age, :integer, expr(fragment("age + ?", ^arg(:add))) do
+      argument :add, :integer, allow_nil?: false
+    end
+  end
+
   aggregates do
     count :comments_count, :comments
   end

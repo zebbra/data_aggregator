@@ -1,13 +1,18 @@
 defmodule Pagify.Validation do
   @moduledoc """
-  Utilities for validating and transforming scoping, filtering, ordering and pagination parameters.
+  Utilities for validating and transforming search, scoping, filtering, ordering,
+  and pagination parameters.
   """
 
   alias Ash.Error.Query.InvalidLimit
   alias Ash.Error.Query.InvalidOffset
+  alias Ash.Resource.Info
+  alias Pagify.Error.Query.InvalidFilterFormParameter
   alias Pagify.Error.Query.InvalidOrderByParameter
   alias Pagify.Error.Query.InvalidScopesParameter
+  alias Pagify.Error.Query.InvalidSearchParameter
   alias Pagify.Error.Query.NoSuchScope
+  alias Pagify.Error.Query.SearchNotImplemented
   alias Pagify.Misc
 
   @spec validate_params(Ash.Query.t() | Ash.Resource.t(), map(), Keyword.t()) ::
@@ -19,7 +24,10 @@ defmodule Pagify.Validation do
   end
 
   def validate_params(resource, %{} = params, opts) do
-    replace_invalid_params? = Keyword.get(opts, :replace_invalid_params?, false)
+    opts =
+      opts
+      |> Keyword.put_new(:for, resource)
+      |> Keyword.put_new(:replace_invalid_params?, false)
 
     opts = Misc.maybe_put_compiled_pagify_scopes(resource, opts)
     pagify_scopes = Keyword.get(opts, :__compiled_pagify_scopes)
@@ -28,21 +36,102 @@ defmodule Pagify.Validation do
     maybe_valid_params =
       params
       |> Misc.atomize_keys(
-        keys: ["scopes", "filter_form", "filters", "order_by", "limit", "offset"],
+        keys: ["search", "scopes", "filter_form", "filters", "order_by", "limit", "offset"],
         depth: 1,
         existing?: true
       )
       |> Map.put(:errors, [])
-      |> validate_scopes(pagify_scopes, default_scopes, replace_invalid_params?)
-      |> validate_filter_form(resource, replace_invalid_params?)
-      |> validate_filters(resource, replace_invalid_params?)
-      |> validate_order_by(resource, replace_invalid_params?)
-      |> validate_pagination(resource, replace_invalid_params?, opts)
+      |> validate_search(opts)
+      |> validate_scopes(pagify_scopes, default_scopes, opts)
+      |> validate_filter_form(opts)
+      |> validate_filters(opts)
+      |> validate_order_by(opts)
+      |> validate_pagination(opts)
 
     case maybe_valid_params do
       %{errors: []} -> {:ok, struct(%Pagify{}, maybe_valid_params)}
       %{errors: errors} -> {:error, errors, Map.delete(maybe_valid_params, :errors)}
     end
+  end
+
+  # Search validation
+
+  @doc """
+  Validates the search attribute in the given parameters.
+
+  In case full_text_search is configured, we validate if the given search
+  attribute is a valid full text search attribute.
+
+  If `replace_invalid_params?` is `true`, invalid
+  search parameters are removed and an error is added to the `:errors` key in the returned map. If
+  `replace_invalid_params?` is `false`, invalid search parameters are not removed and an error is added to
+  the `:errors` key in the returned map. Only the first error is added to the `:errors` key.
+
+  If the `:search` key is `nil` or an empty string, it is returned as is.
+  """
+  @spec validate_search(map(), Keyword.t()) :: map()
+  def validate_search(params, opts)
+
+  def validate_search(%{search: nil} = params, _), do: params
+  def validate_search(%{search: ""} = params, _), do: params
+
+  def validate_search(%{search: search} = params, opts) when is_binary(search) do
+    validate_full_text_search(params, opts)
+  end
+
+  def validate_search(params, opts) do
+    if Map.get(params, :search) == nil do
+      params
+    else
+      params =
+        add_error(params, :search, InvalidSearchParameter.exception(search: params[:search]))
+
+      if Keyword.get(opts, :replace_invalid_params?) do
+        Map.put(params, :search, nil)
+      else
+        params
+      end
+    end
+  end
+
+  @spec validate_full_text_search(map(), Keyword.t()) :: map()
+  defp validate_full_text_search(params, opts) do
+    valid = valid_full_text_search?(:tsquery, Keyword.get(opts, :for))
+    valid = valid && valid_full_text_search?(:full_text_search, Keyword.get(opts, :for))
+
+    if valid do
+      params
+    else
+      params =
+        add_error(
+          params,
+          :search,
+          SearchNotImplemented.exception(resource: Keyword.get(opts, :for))
+        )
+
+      if Keyword.get(opts, :replace_invalid_params?) do
+        Map.put(params, :search, nil)
+      else
+        params
+      end
+    end
+  end
+
+  defp valid_full_text_search?(calculation, resource) do
+    resource
+    |> valid_full_text_search_fields()
+    |> Enum.member?(calculation)
+  end
+
+  defp valid_full_text_search_fields(resource) do
+    filterable_calculations(resource, [AshPostgres.Tsquery, Ash.Type.Boolean])
+  end
+
+  defp filterable_calculations(resource, types) do
+    resource
+    |> Info.public_calculations()
+    |> Enum.filter(&(&1.filterable? and &1.type in types))
+    |> Enum.map(& &1.name)
   end
 
   # Scopes validation
@@ -84,7 +173,7 @@ defmodule Pagify.Validation do
       ]
 
       iex> pagify_scopes = %{}
-      iex> %{scopes: scopes, errors: errors} = Pagify.Validation.validate_scopes(%{scopes: %{role: :non_existent}}, pagify_scopes, nil, true)
+      iex> %{scopes: scopes, errors: errors} = Pagify.Validation.validate_scopes(%{scopes: %{role: :non_existent}}, pagify_scopes, nil, replace_invalid_params?: true)
       iex> scopes
       nil
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -106,7 +195,7 @@ defmodule Pagify.Validation do
       ]
 
       iex> pagify_scopes = %{}
-      iex> %{scopes: scopes, errors: errors} = Pagify.Validation.validate_scopes(%{scopes: %{non_existent: :admin}}, pagify_scopes, nil, true)
+      iex> %{scopes: scopes, errors: errors} = Pagify.Validation.validate_scopes(%{scopes: %{non_existent: :admin}}, pagify_scopes, nil, replace_invalid_params?: true)
       iex> scopes
       nil
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -116,13 +205,12 @@ defmodule Pagify.Validation do
         ]
       ]
   """
-  @spec validate_scopes(map(), map(), map() | nil, boolean()) :: map()
-  def validate_scopes(params, pagify_scopes, default_scopes \\ nil, replace_invalid_params? \\ false)
+  @spec validate_scopes(map(), map(), map() | nil, Keyword.t()) :: map()
+  def validate_scopes(params, pagify_scopes, default_scopes \\ nil, opts \\ [])
 
   def validate_scopes(%{scopes: nil} = params, _, default_scopes, _), do: maybe_put_default_scopes(params, default_scopes)
 
-  def validate_scopes(%{scopes: scopes} = params, pagify_scopes, default_scopes, replace_invalid_params?)
-      when is_map(scopes) do
+  def validate_scopes(%{scopes: scopes} = params, pagify_scopes, default_scopes, opts) when is_map(scopes) do
     case parse_scopes(scopes, pagify_scopes, default_scopes) do
       {:ok, scopes} ->
         Map.put(params, :scopes, scopes)
@@ -130,7 +218,7 @@ defmodule Pagify.Validation do
       {:error, errors, valid_scopes} ->
         params = add_errors(params, :scopes, errors)
 
-        if replace_invalid_params? do
+        if Keyword.get(opts, :replace_invalid_params?) do
           Map.put(params, :scopes, valid_scopes)
         else
           params
@@ -138,14 +226,14 @@ defmodule Pagify.Validation do
     end
   end
 
-  def validate_scopes(params, _, default_scopes, replace_invalid_params?) do
+  def validate_scopes(params, _, default_scopes, opts) do
     if Map.get(params, :scopes) == nil do
       maybe_put_default_scopes(params, default_scopes)
     else
       params =
         add_error(params, :scopes, InvalidScopesParameter.exception(scopes: params[:scopes]))
 
-      if replace_invalid_params? do
+      if Keyword.get(opts, :replace_invalid_params?) do
         params
         |> Map.put(:scopes, nil)
         |> maybe_put_default_scopes(default_scopes)
@@ -241,40 +329,42 @@ defmodule Pagify.Validation do
 
   ## Examples
 
-      iex> Pagify.Validation.validate_filter_form(%{}, Post)
+      iex> Pagify.Validation.validate_filter_form(%{}, for: Post)
       %{}
 
-      iex> Pagify.Validation.validate_filter_form(%{filter_form: nil}, Post)
+      iex> Pagify.Validation.validate_filter_form(%{filter_form: nil}, for: Post)
       %{filter_form: nil}
 
-      iex> %{filter_form: filter_form} = Pagify.Validation.validate_filter_form(%{filter_form: %{}}, Post)
+      iex> %{filter_form: filter_form} = Pagify.Validation.validate_filter_form(%{filter_form: %{}}, for: Post)
       iex> filter_form
       %{}
 
-      iex> %{filter_form: filter_form} = Pagify.Validation.validate_filter_form(%{filter_form: %{}}, Post, true)
+      iex> %{filter_form: filter_form} = Pagify.Validation.validate_filter_form(%{filter_form: %{}}, for: Post, replace_invalid_params?: true)
       iex> filter_form
       %{}
 
-      iex> %{filter_form: filter_form, errors: errors} = Pagify.Validation.validate_filter_form(%{filter_form:  %{"field" => "non_existent", "operator" => "eq", "value" => "Post 1"}}, Post)
+      iex> %{filter_form: filter_form, errors: errors} = Pagify.Validation.validate_filter_form(%{filter_form:  %{"field" => "non_existent", "operator" => "eq", "value" => "Post 1"}}, for: Post)
       iex> filter_form
       %{"field" => "non_existent", "operator" => "eq", "value" => "Post 1"}
       iex> errors
       [filter_form: [{:field, {"No such field non_existent", []}}]]
 
-      iex> %{filter_form: filter_form, errors: errors} = Pagify.Validation.validate_filter_form(%{filter_form:  %{"field" => "non_existent", "operator" => "eq", "value" => "Post 1"}}, Post, true)
+      iex> %{filter_form: filter_form, errors: errors} = Pagify.Validation.validate_filter_form(%{filter_form:  %{"field" => "non_existent", "operator" => "eq", "value" => "Post 1"}}, for: Post, replace_invalid_params?: true)
       iex> filter_form
       %{}
       iex> errors
       [filter_form: [{:field, {"No such field non_existent", []}}]]
   """
-  def validate_filter_form(params, resource, replace_invalid_params? \\ false)
-  def validate_filter_form(%{filter_form: nil} = params, _, _), do: params
+  @spec validate_filter_form(map(), Keyword.t()) :: map()
+  def validate_filter_form(params, opts)
+  def validate_filter_form(%{filter_form: nil} = params, _), do: params
 
-  def validate_filter_form(%{filter_form: %{} = filter_form} = params, _, _) when filter_form == %{}, do: params
+  def validate_filter_form(%{filter_form: %{} = filter_form} = params, _) when filter_form == %{}, do: params
 
-  def validate_filter_form(params, resource, replace_invalid_params?) do
+  def validate_filter_form(%{filter_form: %{}} = params, opts) do
     filter_form =
-      resource
+      opts
+      |> Keyword.get(:for)
       |> Pagify.FilterForm.new()
       |> Pagify.FilterForm.validate(Map.get(params, :filter_form, %{}))
 
@@ -283,7 +373,7 @@ defmodule Pagify.Validation do
         errors = Pagify.FilterForm.errors(filter_form)
         params = add_errors(params, :filter_form, errors)
 
-        if replace_invalid_params? do
+        if Keyword.get(opts, :replace_invalid_params?) do
           valid_components = Enum.filter(filter_form.components, & &1.valid?)
 
           filter_form =
@@ -296,6 +386,25 @@ defmodule Pagify.Validation do
 
       _ ->
         params
+    end
+  end
+
+  def validate_filter_form(params, opts) do
+    if Map.get(params, :filter_form) == nil do
+      params
+    else
+      params =
+        add_error(
+          params,
+          :filter_form,
+          InvalidFilterFormParameter.exception(filter_form: params[:filter_form])
+        )
+
+      if Keyword.get(opts, :replace_invalid_params?) do
+        Map.put(params, :filter_form, nil)
+      else
+        params
+      end
     end
   end
 
@@ -313,17 +422,17 @@ defmodule Pagify.Validation do
 
   ## Examples
 
-      iex> Pagify.Validation.validate_filters(%{}, Post)
+      iex> Pagify.Validation.validate_filters(%{}, for: Post)
       %{}
 
-      iex> Pagify.Validation.validate_filters(%{filters: nil}, Post)
+      iex> Pagify.Validation.validate_filters(%{filters: nil}, for: Post)
       %{filters: nil}
 
-      iex> %{filters: filters} = Pagify.Validation.validate_filters(%{filters: [%{name: "Post 1"}]}, Post)
+      iex> %{filters: filters} = Pagify.Validation.validate_filters(%{filters: [%{name: "Post 1"}]}, for: Post)
       iex> filters
       #Ash.Filter<name == "Post 1">
 
-      iex> %{filters: filters, errors: errors} = Pagify.Validation.validate_filters(%{filters: 1}, Post, true)
+      iex> %{filters: filters, errors: errors} = Pagify.Validation.validate_filters(%{filters: 1}, for: Post, replace_invalid_params?: true)
       iex> filters
       nil
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -333,7 +442,7 @@ defmodule Pagify.Validation do
         ]
       ]
 
-      iex> %{filters: filters, errors: errors} = Pagify.Validation.validate_filters(%{filters: 1}, Post)
+      iex> %{filters: filters, errors: errors} = Pagify.Validation.validate_filters(%{filters: 1}, for: Post)
       iex> filters
       1
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -343,39 +452,33 @@ defmodule Pagify.Validation do
         ]
       ]
   """
-  @spec validate_filters(map(), Ash.Resource.t(), boolean()) :: map()
-  def validate_filters(params, resource, replace_invalid_params? \\ false)
-  def validate_filters(%{filters: nil} = params, _, _), do: params
+  @spec validate_filters(map(), Keyword.t()) :: map()
+  def validate_filters(params, opts)
+  def validate_filters(%{filters: nil} = params, _), do: params
 
-  def validate_filters(%{filters: filters} = params, resource, false) when is_map(filters) or is_list(filters) do
-    case Ash.Filter.parse_input(resource, filters) do
+  def validate_filters(%{filters: filters} = params, opts) when is_map(filters) or is_list(filters) do
+    case Ash.Filter.parse_input(Keyword.get(opts, :for), filters) do
       {:ok, filters} ->
         Map.put(params, :filters, filters)
 
       {:error, error} ->
-        add_error(params, :filters, error)
+        if Keyword.get(opts, :replace_invalid_params?) do
+          replace_invalid_filters(filters, params, Keyword.get(opts, :for))
+        else
+          add_error(params, :filters, error)
+        end
     end
   end
 
-  def validate_filters(%{filters: filters} = params, resource, true) when is_map(filters) or is_list(filters) do
-    case Ash.Filter.parse_input(resource, filters) do
-      {:ok, filters} ->
-        Map.put(params, :filters, filters)
-
-      {:error, _} ->
-        replace_invalid_filters(filters, params, resource)
-    end
-  end
-
-  def validate_filters(%{filters: filters} = params, resource, replace_invalid_params?) do
-    case Ash.Filter.parse_input(resource, filters) do
+  def validate_filters(%{filters: filters} = params, opts) do
+    case Ash.Filter.parse_input(Keyword.get(opts, :for), filters) do
       {:ok, filters} ->
         Map.put(params, :filters, filters)
 
       {:error, error} ->
         params = add_error(params, :filters, error)
 
-        if replace_invalid_params? do
+        if Keyword.get(opts, :replace_invalid_params?) do
           Map.put(params, :filters, nil)
         else
           params
@@ -383,7 +486,7 @@ defmodule Pagify.Validation do
     end
   end
 
-  def validate_filters(params, _, _), do: params
+  def validate_filters(params, _), do: params
 
   defp replace_invalid_filters(filters, params, resource) do
     case Ash.Filter.parse_input(resource, filters) do
@@ -433,25 +536,25 @@ defmodule Pagify.Validation do
 
   ## Examples
 
-      iex> Pagify.Validation.validate_order_by(%{}, Post)
+      iex> Pagify.Validation.validate_order_by(%{}, for: Post)
       %{}
 
-      iex> Pagify.Validation.validate_order_by(%{order_by: nil}, Post)
+      iex> Pagify.Validation.validate_order_by(%{order_by: nil}, for: Post)
       %{order_by: nil}
 
-      iex> %{order_by: order_by} = Pagify.Validation.validate_order_by(%{order_by: ["name"]}, Post)
+      iex> %{order_by: order_by} = Pagify.Validation.validate_order_by(%{order_by: ["name"]}, for: Post)
       iex> order_by
       [name: :asc]
 
-      iex> %{order_by: order_by} = Pagify.Validation.validate_order_by(%{order_by: "++name"}, Post)
+      iex> %{order_by: order_by} = Pagify.Validation.validate_order_by(%{order_by: "++name"}, for: Post)
       iex> order_by
       [name: :asc_nils_first]
 
-      iex> %{order_by: order_by} = Pagify.Validation.validate_order_by(%{order_by: "name,--comments_count"}, Post)
+      iex> %{order_by: order_by} = Pagify.Validation.validate_order_by(%{order_by: "name,--comments_count"}, for: Post)
       iex> order_by
       [name: :asc, comments_count: :desc_nils_last]
 
-      iex> %{order_by: order_by, errors: errors} = Pagify.Validation.validate_order_by(%{order_by: "--name,non_existent"}, Post, true)
+      iex> %{order_by: order_by, errors: errors} = Pagify.Validation.validate_order_by(%{order_by: "--name,non_existent"}, for: Post, replace_invalid_params?: true)
       iex> order_by
       [name: :desc_nils_last]
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -461,61 +564,43 @@ defmodule Pagify.Validation do
         ]
       ]
   """
-  @spec validate_order_by(map(), Ash.Resource.t(), boolean()) :: map()
-  def validate_order_by(params, resource, replace_invalid_params? \\ false)
-  def validate_order_by(%{order_by: nil} = params, _, _), do: params
+  @spec validate_order_by(map(), Keyword.t()) :: map()
+  def validate_order_by(params, opts)
+  def validate_order_by(%{order_by: nil} = params, _), do: params
 
-  def validate_order_by(%{order_by: order_by} = params, resource, replace_invalid_params?) when is_atom(order_by) do
-    params = Map.update!(params, :order_by, &Atom.to_string(&1))
-    validate_order_by(params, resource, replace_invalid_params?)
+  def validate_order_by(%{order_by: order_by} = params, opts) when is_atom(order_by) do
+    validate_order_by(%{params | order_by: Atom.to_string(order_by)}, opts)
   end
 
-  def validate_order_by(%{order_by: order_by} = params, resource, false) when is_list(order_by) do
-    case Ash.Sort.parse_input(resource, order_by) do
+  def validate_order_by(%{order_by: order_by} = params, opts) when is_binary(order_by) do
+    validate_order_by(%{params | order_by: String.split(order_by, ",")}, opts)
+  end
+
+  def validate_order_by(%{order_by: order_by} = params, opts) when is_list(order_by) do
+    case Ash.Sort.parse_input(Keyword.get(opts, :for), order_by) do
       {:ok, order_by} ->
         Map.put(params, :order_by, order_by)
 
       {:error, error} ->
-        add_error(params, :order_by, error)
+        if Keyword.get(opts, :replace_invalid_params?) do
+          replace_invalid_order_by(order_by, params, Keyword.get(opts, :for))
+        else
+          add_error(params, :order_by, error)
+        end
     end
   end
 
-  def validate_order_by(%{order_by: order_by} = params, resource, true) when is_list(order_by) do
-    case Ash.Sort.parse_input(resource, order_by) do
-      {:ok, order_by} ->
-        Map.put(params, :order_by, order_by)
-
-      {:error, _} ->
-        replace_invalid_order_by(order_by, params, resource)
-    end
-  end
-
-  def validate_order_by(%{order_by: order_by} = params, resource, replace_invalid_params?) when is_binary(order_by) do
-    validate_order_by(
-      %{params | order_by: String.split(order_by, ",")},
-      resource,
-      replace_invalid_params?
-    )
-  end
-
-  def validate_order_by(%{order_by: order_by} = params, _, false) when is_map(order_by) do
-    add_error(params, :order_by, InvalidOrderByParameter.exception(order_by: order_by))
-  end
-
-  def validate_order_by(%{order_by: order_by} = params, _, true) when is_map(order_by) do
+  def validate_order_by(%{order_by: order_by} = params, opts) when is_map(order_by) do
     params = add_error(params, :order_by, InvalidOrderByParameter.exception(order_by: order_by))
-    Map.put(params, :order_by, nil)
-  end
 
-  def validate_order_by(params, _, false) do
-    if Map.get(params, :order_by) == nil do
-      params
+    if Keyword.get(opts, :replace_invalid_params?) do
+      Map.put(params, :order_by, nil)
     else
-      add_error(params, :order_by, InvalidOrderByParameter.exception(order_by: params[:order_by]))
+      params
     end
   end
 
-  def validate_order_by(params, _, true) do
+  def validate_order_by(params, opts) do
     if Map.get(params, :order_by) == nil do
       params
     else
@@ -526,7 +611,11 @@ defmodule Pagify.Validation do
           InvalidOrderByParameter.exception(order_by: params[:order_by])
         )
 
-      Map.put(params, :order_by, nil)
+      if Keyword.get(opts, :replace_invalid_params?) do
+        Map.put(params, :order_by, nil)
+      else
+        params
+      end
     end
   end
 
@@ -562,17 +651,17 @@ defmodule Pagify.Validation do
 
   ## Examples
 
-      iex> Pagify.Validation.validate_pagination(%{}, Post)
+      iex> Pagify.Validation.validate_pagination(%{}, for: Post)
       %{limit: 15, offset: 0}
 
-      iex> Pagify.Validation.validate_pagination(%{limit: nil}, Post)
+      iex> Pagify.Validation.validate_pagination(%{limit: nil}, for: Post)
       %{limit: 15, offset: 0}
 
-      iex> %{limit: limit} = Pagify.Validation.validate_pagination(%{limit: 10}, Post)
+      iex> %{limit: limit} = Pagify.Validation.validate_pagination(%{limit: 10}, for: Post)
       iex> limit
       10
 
-      iex> %{limit: limit, errors: errors} = Pagify.Validation.validate_pagination(%{limit: 0}, Post, true)
+      iex> %{limit: limit, errors: errors} = Pagify.Validation.validate_pagination(%{limit: 0}, for: Post, replace_invalid_params?: true)
       iex> limit
       15
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -582,11 +671,11 @@ defmodule Pagify.Validation do
         ]
       ]
 
-      iex> %{limit: limit} = Pagify.Validation.validate_pagination(%{limit: 100}, Post)
+      iex> %{limit: limit} = Pagify.Validation.validate_pagination(%{limit: 100}, for: Post)
       iex> limit
       100
 
-      iex> %{limit: limit, errors: errors} = Pagify.Validation.validate_pagination(%{limit: -1}, Post, true)
+      iex> %{limit: limit, errors: errors} = Pagify.Validation.validate_pagination(%{limit: -1}, for: Post, replace_invalid_params?: true)
       iex> limit
       15
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -596,11 +685,11 @@ defmodule Pagify.Validation do
         ]
       ]
 
-      iex> %{offset: offset} = Pagify.Validation.validate_pagination(%{offset: 10}, Post)
+      iex> %{offset: offset} = Pagify.Validation.validate_pagination(%{offset: 10}, for: Post)
       iex> offset
       10
 
-      iex> %{offset: offset, errors: errors} = Pagify.Validation.validate_pagination(%{offset: -1}, Post, true)
+      iex> %{offset: offset, errors: errors} = Pagify.Validation.validate_pagination(%{offset: -1}, for: Post, replace_invalid_params?: true)
       iex> offset
       0
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -610,7 +699,7 @@ defmodule Pagify.Validation do
         ]
       ]
 
-      iex> %{offset: offset, errors: errors} = Pagify.Validation.validate_pagination(%{offset: -1}, Post)
+      iex> %{offset: offset, errors: errors} = Pagify.Validation.validate_pagination(%{offset: -1}, for: Post)
       iex> offset
       -1
       iex> Pagify.Error.clear_stacktrace(errors)
@@ -620,11 +709,13 @@ defmodule Pagify.Validation do
         ]
       ]
   """
-  @spec validate_pagination(map(), Ash.Resource.t(), boolean(), Keyword.t()) :: map()
-  def validate_pagination(params, resource, replace_invalid_params? \\ false, opts \\ []) do
+  @spec validate_pagination(map(), Keyword.t()) :: map()
+  def validate_pagination(params, opts) do
+    replace_invalid_params? = Keyword.get(opts, :replace_invalid_params?, false)
+
     params
     |> validate_and_maybe_delete(:limit, &validate_limit/2, opts, replace_invalid_params?)
-    |> put_default_limit(resource, opts)
+    |> put_default_limit(opts)
     |> validate_and_maybe_delete(:offset, &validate_offset/2, opts, replace_invalid_params?)
     |> put_default_offset()
   end
@@ -680,19 +771,18 @@ defmodule Pagify.Validation do
     end
   end
 
-  defp put_default_limit(%{limit: nil} = params, resource, opts) do
-    Map.put(params, :limit, default_limit(resource, opts))
+  defp put_default_limit(%{limit: nil} = params, opts) do
+    Map.put(params, :limit, default_limit(opts))
   end
 
-  defp put_default_limit(params, resource, opts) do
-    Map.put_new_lazy(params, :limit, fn -> default_limit(resource, opts) end)
+  defp put_default_limit(params, opts) do
+    Map.put_new_lazy(params, :limit, fn -> default_limit(opts) end)
   end
 
-  defp default_limit(resource, opts) do
+  defp default_limit(opts) do
     if Keyword.get(opts, :default_limit) == false do
       nil
     else
-      opts = Keyword.put(opts, :for, resource)
       Pagify.get_option(:default_limit, opts)
     end
   end

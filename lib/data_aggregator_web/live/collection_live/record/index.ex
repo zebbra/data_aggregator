@@ -746,11 +746,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
     fast_track_query =
       Record
-      |> Pagify.compile_filters(pagify)
+      |> Pagify.compile_filters(pagify, include_full_text_search?: true)
       |> Pagify.merge_filters(collection.fast_track_query)
       |> Map.get(:filters)
 
-    count_query = Ash.Query.filter_input(Record, fast_track_query)
+    count_query =
+      Pagify.compiled_filters_to_query(Record, fast_track_query, include_full_text_search?: true)
 
     case create_and_enqueue(collection, fast_track_query, count_query, :fast_track) do
       {:ok, _} ->
@@ -771,11 +772,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
     approval_query =
       Record
-      |> Pagify.compile_filters(pagify)
+      |> Pagify.compile_filters(pagify, include_full_text_search?: true)
       |> Pagify.merge_filters(collection.approval_query)
       |> Map.get(:filters)
 
-    count_query = Ash.Query.filter_input(Record, approval_query)
+    count_query =
+      Pagify.compiled_filters_to_query(Record, approval_query, include_full_text_search?: true)
 
     case create_and_enqueue(collection, approval_query, count_query, :approval) do
       {:ok, _} ->

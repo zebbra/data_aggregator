@@ -882,6 +882,8 @@ classDiagram
         Boolean mids_level_two
         Boolean mids_level_three
         Boolean mids_level_four
+        Boolean full_text_search
+        Tsquery tsquery
         Version[] paper_trail_versions
         Collection collection
         Import[] imports
@@ -1679,6 +1681,8 @@ erDiagram
         Boolean mids_level_two
         Boolean mids_level_three
         Boolean mids_level_four
+        Boolean full_text_search
+        Tsquery tsquery
     }
     Image {
         UUID id

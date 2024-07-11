@@ -1,7 +1,7 @@
 defmodule Pagify.Components do
   @moduledoc """
-  Phoenix components for scoping, pagination, sortable tables and filter forms with
-  `Pagify`.
+  Phoenix components for full-text search, scoping, pagination, sortable
+  tables and filter forms with `Pagify`.
 
   ## Introduction
 
@@ -898,6 +898,7 @@ defmodule Pagify.Components do
 
   The following parameters are encoded as strings:
 
+  - `:search`
   - `:scopes`
   - `:filter_form`
   - `:order_by`
@@ -940,6 +941,10 @@ defmodule Pagify.Components do
       iex> to_query(f, for: Pagify.Factory.Post)
       [scopes: %{status: :active}]
 
+      iex> f = %Pagify{search: "foo"}
+      iex> to_query(f, for: Pagify.Factory.Post)
+      [search: "foo"]
+
   Encoding the query as a string:
 
       iex> f = %Pagify{order_by: [name: :desc, age: :asc]}
@@ -959,6 +964,12 @@ defmodule Pagify.Components do
       [scopes: %{status: :active}]
       iex> f |> to_query |> Plug.Conn.Query.encode()
       "scopes[status]=active"
+
+      iex> f = %Pagify{search: "foo"}
+      iex> to_query(f)
+      [search: "foo"]
+      iex> f |> to_query |> Plug.Conn.Query.encode()
+      "search=foo"
   """
   @spec to_query(Pagify.t(), Keyword.t()) :: Keyword.t()
   def to_query(%Pagify{} = pagify, opts \\ []) do
@@ -972,6 +983,7 @@ defmodule Pagify.Components do
     |> Misc.maybe_put(:limit, pagify.limit, default_limit)
     |> Misc.maybe_put(:order_by, current_order, default_order)
     |> Misc.maybe_put(:filter_form, pagify.filter_form)
+    |> Misc.maybe_put(:search, pagify.search)
     |> Misc.maybe_put_scopes(pagify, opts)
   end
 

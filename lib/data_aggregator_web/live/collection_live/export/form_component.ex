@@ -144,7 +144,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
 
     records_to_export_query =
       Record
-      |> Pagify.compile_filters(pagify)
+      |> Pagify.compile_filters(pagify, include_full_text_search?: true)
       |> Pagify.merge_filters(collection.records_to_export_query)
       |> Map.get(:filters)
 
@@ -171,11 +171,12 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
 
     records_to_export_query =
       Record
-      |> Pagify.compile_filters(pagify)
+      |> Pagify.compile_filters(pagify, include_full_text_search?: true)
       |> Pagify.merge_filters(collection.records_to_export_query)
       |> Map.get(:filters)
 
-    count_query = Ash.Query.filter_input(Record, records_to_export_query)
+    count_query =
+      Pagify.compiled_filters_to_query(Record, records_to_export_query, include_full_text_search?: true)
 
     rows_count = Records.count!(count_query)
 

@@ -1007,4 +1007,33 @@ defmodule Pagify.FilterFormTest do
              }
     end
   end
+
+  describe "custom serializer" do
+    test "apply custom serializer to the form" do
+      params = build(:simple_empty_predicate)
+      form = FilterForm.new(Post, params: params, serializer: &custom_serializer/2)
+
+      assert FilterForm.params_for_query(form) == %{
+               "components" => %{
+                 "0" => %{
+                   "field" => :title,
+                   "negated?" => false,
+                   "operator" => :eq,
+                   "path" => "",
+                   "value" => "test"
+                 }
+               },
+               "negated" => false,
+               "operator" => "and"
+             }
+    end
+  end
+
+  defp custom_serializer(_value, %{"field" => "title", "operator" => "eq"}) do
+    "test"
+  end
+
+  defp custom_serializer(value, _params) do
+    value
+  end
 end

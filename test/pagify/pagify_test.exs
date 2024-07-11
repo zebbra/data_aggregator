@@ -7,6 +7,8 @@ defmodule PagifyTest do
   alias Pagify.Factory.Post
   alias Pagify.Meta
 
+  require Ash.Query
+
   doctest Pagify, import: true
 
   setup do
@@ -577,7 +579,7 @@ defmodule PagifyTest do
 
   describe "validate_and_run!/4" do
     test "raises if pagify is invalid" do
-      assert_raise Pagify.Error.InvalidParamsError, fn ->
+      assert_raise Pagify.Error.Query.InvalidParamsError, fn ->
         Pagify.validate_and_run!(Post, %Pagify{
           limit: -1,
           filters: %{name: "Post 1", other: "John"}
@@ -675,7 +677,7 @@ defmodule PagifyTest do
 
     test "raises if params are invalid" do
       error =
-        assert_raise Pagify.Error.InvalidParamsError, fn ->
+        assert_raise Pagify.Error.Query.InvalidParamsError, fn ->
           Pagify.validate!(Post, %{limit: -1, filters: %{name: "Post 1", other: "John"}})
         end
 
@@ -725,7 +727,7 @@ defmodule PagifyTest do
     test "raises error if invalid directions option is passed" do
       for pagify <- [%Pagify{}, %Pagify{order_by: [:name]}],
           directions <- [{:up, :down}, "up,down"] do
-        assert_raise Pagify.Error.InvalidDirectionsError, fn ->
+        assert_raise Pagify.Error.Query.InvalidDirectionsError, fn ->
           Pagify.push_order(pagify, :name, directions: directions)
         end
       end
@@ -829,6 +831,247 @@ defmodule PagifyTest do
                  %{name: :active, filter: %{age: %{lt: 10}}}
                ]
              }
+    end
+  end
+
+  describe "compile_filters/2" do
+    test "compiles scopes into filters" do
+      assert %Pagify{
+               filters: %{"and" => [%{"author" => "John"}]},
+               scopes: [role: :admin]
+             } ==
+               Pagify.compile_filters(Post, %Pagify{
+                 scopes: [{:role, :admin}]
+               })
+    end
+
+    test "compiles filter_form into filters" do
+      assert %Pagify{
+               filters: %{"and" => [%{"name" => %{"eq" => "Post 1"}}]},
+               filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"}
+             } ==
+               Pagify.compile_filters(Post, %Pagify{
+                 filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"}
+               })
+    end
+
+    test "compiles filters into filters" do
+      assert %Pagify{
+               filters: %{"and" => [%{"author" => "Author 1"}]}
+             } ==
+               Pagify.compile_filters(Post, %Pagify{
+                 filters: %{author: "Author 1"}
+               })
+    end
+
+    test "accounts for and base filter" do
+      assert %Pagify{
+               filters: %{"and" => [%{"author" => "Author 1"}]}
+             } ==
+               Pagify.compile_filters(Post, %Pagify{
+                 filters: %{"and" => [%{author: "Author 1"}]}
+               })
+    end
+
+    test "accounts for or base filter" do
+      assert %Pagify{
+               filters: %{"or" => [%{"author" => "Author 1"}]}
+             } ==
+               Pagify.compile_filters(Post, %Pagify{
+                 filters: %{"or" => [%{author: "Author 1"}]}
+               })
+    end
+
+    test "merges filters from scope, filter_form, and filters into filters" do
+      assert %Pagify{
+               filters: %{
+                 "and" => [
+                   %{"comments_count" => %{"gt" => 2}},
+                   %{"name" => %{"eq" => "Post 1"}},
+                   %{"author" => "John"}
+                 ]
+               },
+               filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"},
+               scopes: [role: :admin]
+             } ==
+               Pagify.compile_filters(Post, %Pagify{
+                 filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"},
+                 scopes: [{:role, :admin}],
+                 filters: %{comments_count: %{gt: 2}}
+               })
+    end
+
+    test "filter_form overrides filters" do
+      assert %Pagify{
+               filters: %{
+                 "and" => [
+                   %{"name" => %{"eq" => "Post 2"}}
+                 ]
+               },
+               filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 2"}
+             } ==
+               Pagify.compile_filters(Post, %Pagify{
+                 filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 2"},
+                 filters: %{"and" => %{"name" => "Post 1"}}
+               })
+    end
+
+    test "stores full-text search under __full_text_search" do
+      assert %Pagify{
+               filters: %{
+                 "__full_text_search" => "Post 1"
+               },
+               search: "Post 1"
+             } ==
+               Pagify.compile_filters(
+                 Post,
+                 %Pagify{
+                   search: "Post 1"
+                 },
+                 include_full_text_search?: true
+               )
+    end
+
+    test "stores full-text search under __full_text_search in combinatino with other filters" do
+      assert %Pagify{
+               filters: %{
+                 "and" => [
+                   %{"comments_count" => %{"gt" => 2}},
+                   %{"name" => %{"eq" => "Post 1"}},
+                   %{"author" => "John"}
+                 ],
+                 "__full_text_search" => "Post 1"
+               },
+               filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"},
+               scopes: [role: :admin],
+               search: "Post 1"
+             } ==
+               Pagify.compile_filters(
+                 Post,
+                 %Pagify{
+                   filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"},
+                   scopes: [{:role, :admin}],
+                   filters: %{comments_count: %{gt: 2}},
+                   search: "Post 1"
+                 },
+                 include_full_text_search?: true
+               )
+    end
+
+    test "does not store full-text search under __full_text_search" do
+      assert %Pagify{
+               filters: %{},
+               search: "Post 1"
+             } ==
+               Pagify.compile_filters(Post, %Pagify{
+                 search: "Post 1"
+               })
+    end
+
+    test "does not raise and not store in case of invalid full-text search" do
+      assert %{
+               filters: %{},
+               search: "Comment 1",
+               errors: [
+                 search: [
+                   %Pagify.Error.Query.SearchNotImplemented{resource: Pagify.Factory.Comment}
+                 ]
+               ]
+             } =
+               Pagify.compile_filters(
+                 Comment,
+                 %Pagify{
+                   search: "Comment 1"
+                 },
+                 include_full_text_search?: true,
+                 raise_on_invalid_search?: false
+               )
+    end
+
+    test "raises and does not store in case of invalid full-text search" do
+      assert_raise Pagify.Error.Query.SearchNotImplemented, fn ->
+        Pagify.compile_filters(
+          Comment,
+          %Pagify{
+            search: "Comment 1"
+          },
+          include_full_text_search?: true
+        )
+      end
+    end
+
+    test "scope overrides filters" do
+      assert %Pagify{
+               filters: %{
+                 "and" => [
+                   %{"author" => "John"}
+                 ]
+               },
+               scopes: [role: :admin]
+             } ==
+               Pagify.compile_filters(Post, %Pagify{
+                 filters: %{"author" => "Author 1"},
+                 scopes: [{:role, :admin}]
+               })
+    end
+  end
+
+  describe "compiled_filters_to_map/2" do
+    test "converts compiled filters to map" do
+      assert Pagify.compiled_filters_to_query(Post, %{"and" => [%{"name" => "foo"}]}) ==
+               Ash.Query.filter(Post, %{name: "foo"})
+    end
+
+    test "does not include full_text_search per default" do
+      assert Pagify.compiled_filters_to_query(
+               Post,
+               %{"and" => [%{"name" => "foo"}], "__full_text_search" => "bar"}
+             ) ==
+               Ash.Query.filter(Post, %{name: "foo"})
+    end
+
+    test "includes full_text_search if include_full_text_search? is true" do
+      assert Pagify.compiled_filters_to_query(
+               Post,
+               %{"__full_text_search" => "bar"},
+               include_full_text_search?: true
+             ) ==
+               Ash.Query.filter(
+                 Post,
+                 full_text_search(search: Ash.Query.expr(tsquery(search: "bar")))
+               )
+    end
+
+    test "does not include full_text_search if include_full_text_search? is true but none is provided" do
+      assert Pagify.compiled_filters_to_query(
+               Post,
+               %{"name" => "bar"},
+               include_full_text_search?: true
+             ) ==
+               Ash.Query.filter(
+                 Post,
+                 name: "bar"
+               )
+    end
+
+    test "does not include full_text_search if none is configured and does not raise" do
+      assert Pagify.compiled_filters_to_query(
+               Comment,
+               %{"and" => [%{"body" => "foo"}], "__full_text_search" => "bar"},
+               include_full_text_search?: true,
+               raise_on_invalid_search?: false
+             ) ==
+               Ash.Query.filter(Comment, %{body: "foo"})
+    end
+
+    test "does not include full_text_search if none is configured and raises" do
+      assert_raise Pagify.Error.Query.SearchNotImplemented, fn ->
+        Pagify.compiled_filters_to_query(
+          Comment,
+          %{"and" => [%{"body" => "foo"}], "__full_text_search" => "bar"},
+          include_full_text_search?: true
+        )
+      end
     end
   end
 

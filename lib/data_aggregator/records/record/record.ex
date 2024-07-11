@@ -33,6 +33,8 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.Record.Calculations.IucnRedlist
   alias DataAggregator.Records.Record.Calculations.Mids
 
+  require Ash.Query
+
   @type t :: %Record{}
 
   @pagify_scopes %{
@@ -138,6 +140,22 @@ defmodule DataAggregator.Records.Record do
     calculate :mids_level_four,
               :boolean,
               Mids.LevelFour
+
+    calculate :full_text_search,
+              :boolean,
+              expr(fragment("(to_tsvector(?) @@ ?)", tax_scientific_name, ^arg(:search))) do
+      argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
+    end
+
+    # calculate :generated_full_text_search,
+    #           :boolean,
+    #           expr(fragment("(? @@ ?)", generated_tsvector, ^arg(:search))) do
+    #   argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
+    # end
+
+    calculate :tsquery, AshPostgres.Tsquery, expr(fragment("to_tsquery(?)", ^arg(:search))) do
+      argument :search, :string, allow_expr?: true, allow_nil?: false
+    end
   end
 
   paper_trail do

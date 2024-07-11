@@ -110,7 +110,8 @@ defmodule DataAggregator.MixProject do
       DataAggregator,
       DataAggregatorWeb,
       DataAggregatorApi,
-      Pagify
+      Pagify,
+      Pagify.Error
     ]
   end
 

@@ -220,7 +220,8 @@ defmodule Pagify.FilterForm do
     params: %{},
     components: [],
     operator: :and,
-    remove_empty_groups?: false
+    remove_empty_groups?: false,
+    serializer: nil
   ]
 
   @type t :: %__MODULE__{
@@ -234,7 +235,8 @@ defmodule Pagify.FilterForm do
           params: map(),
           components: [term() | t()],
           operator: :and | :or,
-          remove_empty_groups?: boolean()
+          remove_empty_groups?: boolean(),
+          serializer: (term() -> term()) | nil
         }
 
   @new_opts [
@@ -288,6 +290,15 @@ defmodule Pagify.FilterForm do
 
       This is usefully if you want to enforce a specific structure for the form and then merge in the params.
       """
+    ],
+    serializer: [
+      type: :any,
+      default: nil,
+      doc: """
+      A function that will be called on the predicate param during new predicate initialization.
+
+      This is useful for custom serialization of the form input values.
+      """
     ]
   ]
 
@@ -331,7 +342,8 @@ defmodule Pagify.FilterForm do
       resource: resource,
       params: params,
       remove_empty_groups?: opts[:remove_empty_groups?],
-      operator: to_existing_atom(params["operator"] || :and)
+      operator: to_existing_atom(params["operator"] || :and),
+      serializer: opts[:serializer]
     }
 
     set_validity(%{
@@ -778,20 +790,31 @@ defmodule Pagify.FilterForm do
           []
       end
 
+    serializer =
+      if form.serializer do
+        form.serializer
+      else
+        &default_serializer/2
+      end
+
+    operator = to_existing_atom(params["operator"] || :eq)
+
     predicate = %Predicate{
       id: params["id"],
       field: field,
-      value: params["value"],
+      value: serializer.(params["value"], params),
       path: path,
       transform_errors: form.transform_errors,
       arguments: Arguments.new(params["arguments"] || %{}, arguments),
       params: params,
       negated?: negated?(params),
-      operator: to_existing_atom(params["operator"] || :eq)
+      operator: operator
     }
 
     %{predicate | errors: predicate_errors(predicate, form.resource)}
   end
+
+  defp default_serializer(value, _params), do: value
 
   defp parse_path_and_field(params, form) do
     path = parse_path(params)

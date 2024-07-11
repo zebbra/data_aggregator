@@ -2431,6 +2431,7 @@ defmodule Pagify.ComponentsTest do
       refute %Pagify{filters: %{}} |> to_query() |> Keyword.has_key?(:filters)
       refute %Pagify{filter_form: %{}} |> to_query() |> Keyword.has_key?(:filter_form)
       refute %Pagify{scopes: %{}} |> to_query() |> Keyword.has_key?(:scopes)
+      refute %Pagify{search: %{}} |> to_query() |> Keyword.has_key?(:search)
     end
 
     test "does not add params for first page/offset" do
