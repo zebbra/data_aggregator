@@ -8,6 +8,7 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
   alias Ash.BulkResult
   alias Ash.Changeset
   alias DataAggregator.DarwinCore.Schema
+  alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records
   alias DataAggregator.Records.Approval
   alias DataAggregator.Records.Approval.Helpers
@@ -19,6 +20,7 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
     Changeset.before_action(changeset, &approve_records/1, append?: true)
   end
 
+  @spec approve_records(Changeset.t()) :: Changeset.t()
   defp approve_records(%Changeset{data: _approval} = changeset) do
     file_url = Changeset.get_attribute(changeset, :file_url)
 
@@ -36,10 +38,9 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
 
         add_error(changeset, error)
     end
-
-    changeset
   end
 
+  @spec approve_in_chunks(Changeset.t(), Enum.t()) :: Changeset.t()
   defp approve_in_chunks(%Changeset{} = changeset, rows) do
     chunk_size = Records.approval_batch_size()
 
@@ -55,6 +56,7 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
     |> Stream.map(&Helpers.add_raw_record_to_chunk/1)
     |> Stream.map(&approve_chunk(&1))
     |> reduce_approval_results(changeset)
+    |> notify_infospecies()
   end
 
   @spec approve_chunk({[map()], integer()}) ::
@@ -86,22 +88,56 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
     {res, valid, invalid}
   end
 
-  def reduce_approval_results(results, changeset) do
-    Enum.reduce_while(results, changeset, fn
-      {%BulkResult{status: :success}, approved, invalid}, changeset ->
-        changeset = report_progress(changeset, length(approved), length(invalid))
-        {:cont, changeset}
+  defp reduce_approval_results(results, %Changeset{data: approval} = changeset) do
+    {path, error_log_file} = Helpers.open_error_log_file(approval)
 
-      {%BulkResult{errors: errors}, approved, invalid}, changeset ->
-        changeset = report_progress(changeset, length(approved), length(invalid))
+    changeset =
+      Enum.reduce_while(results, changeset, fn
+        {%BulkResult{status: :success}, approved, invalid}, changeset ->
+          changeset = report_progress(changeset, length(approved), length(invalid))
 
-        # TODO: extract errors from results --> looks like: {%BulkResult{status: :success}, {approved_rows, errors}, {invalid_rows, errors}}, write to error log file and upload it as in validate_rows.ex done
+          Helpers.write_error_log_file(error_log_file, invalid)
 
-        changeset = Enum.reduce(errors, changeset, &add_error(&1, &2))
-        {:halt, changeset}
-    end)
+          {:cont, changeset}
+
+        {%BulkResult{errors: errors}, approved, invalid}, changeset ->
+          changeset = report_progress(changeset, length(approved), length(invalid))
+
+          changeset = Enum.reduce(errors, changeset, &add_error(&1, &2))
+          {:halt, changeset}
+      end)
+
+    approval = Helpers.upload_error_log_file!(path, changeset.data)
+
+    %{changeset | data: approval}
   end
 
+  @spec notify_infospecies(Changeset.t()) :: Changeset.t()
+  defp notify_infospecies(changeset) do
+    with {:ok, response} <-
+           RestAPI.notify_infospecies_with_approval_result(changeset.data),
+         :ok <- ensure_status(response) do
+      changeset
+    else
+      {:error, error} ->
+        Logger.warning("Could not notify Infospecies about approval result: #{inspect(error)}")
+
+        # For now we just log the error and return the changeset without adding an error
+        # add_error(changeset, error)
+        changeset
+    end
+  end
+
+  defp ensure_status(%Req.Response{status: 200}), do: :ok
+
+  defp ensure_status(response) do
+    msg =
+      "No valid response (status #{response.status}) from Infospecies API while notifying about processed approval: #{inspect(response.body)}"
+
+    {:error, msg}
+  end
+
+  @spec report_progress(Changeset.t(), non_neg_integer(), non_neg_integer()) :: Changeset.t()
   defp report_progress(changeset, approved, invalid) do
     Logger.debug("Batch successful (#{approved} approved, #{invalid} skipped)")
 
@@ -121,6 +157,7 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
 
   defp stream_from_dataframe(df), do: {:ok, Explorer.DataFrame.to_rows_stream(df)}
 
+  @spec ensure_records(Enum.t()) :: {:ok, Enum.t()} | {:error, String.t()}
   defp ensure_records(stream) do
     if Enum.empty?(stream) do
       {:error, "No records found in the CSV file"}
@@ -129,6 +166,7 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
     end
   end
 
+  @spec add_error(Changeset.t(), Ash.Error.t() | String.t()) :: Changeset.t()
   defp add_error(changeset, error) do
     Logger.warning("Error while approving records: #{inspect(error)}")
 

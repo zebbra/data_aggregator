@@ -4,10 +4,25 @@ defmodule DataAggregator.Records.Approval.Helpers do
   """
 
   alias Ash.Changeset
+  alias DataAggregator.Misc.FlatFileUtils
+  alias DataAggregator.Records
+  alias DataAggregator.Records.Approval
   alias DataAggregator.Records.ApprovedRecord
   alias DataAggregator.Records.Record
 
   require Logger
+
+  @type approval_result ::
+          [{map(), [Ash.Error.t()]}]
+
+  @type approval_error :: %{
+          catalog_number: String.t(),
+          occurrence_id: String.t(),
+          scientific_name: String.t(),
+          field: atom(),
+          value: String.t(),
+          message: String.t()
+        }
 
   @doc """
   Fetches a file from a given URL
@@ -107,5 +122,128 @@ defmodule DataAggregator.Records.Approval.Helpers do
     {db_attribute, _dwc_field} = Enum.find(pairs, fn {_k, v} -> v == dwc_field end)
 
     db_attribute
+  end
+
+  @doc """
+  Opens a new error log file for the given approval resource and returns a
+    tuple with the path and the file.
+  """
+  @spec open_error_log_file(Approval.t()) :: {String.t(), any()}
+  def open_error_log_file(approval) do
+    directory_path = FlatFileUtils.create_directory!("approval_errors_#{approval.id}")
+
+    path = directory_path <> "/approval_error_log-#{approval.id}-#{Uniq.UUID.uuid7(:slug)}.csv"
+
+    {path,
+     File.open!(path, [
+       :write,
+       :utf8
+     ])}
+  end
+
+  @doc """
+  Writes the errors to a CSV file.
+  """
+  @spec write_error_log_file(any(), approval_result()) :: :ok
+  def write_error_log_file(file, approval_result) do
+    errors =
+      approval_result
+      |> Enum.map(fn {row, approval_errors} ->
+        Enum.map(approval_errors, &map_to_normalized_error(&1, row))
+      end)
+      |> List.flatten()
+
+    FlatFileUtils.store_local_file(file, errors,
+      catalog_number: "catalogNumber",
+      scientific_name: "scientificName",
+      occurrence_id: "occurrenceID",
+      field: "field",
+      value: "value",
+      message: "message"
+    )
+
+    :ok
+  end
+
+  @doc """
+  Uploads the error log file to S3 and updates the approval with the attachment.
+  """
+  @spec upload_error_log_file!(String.t(), Approval.t()) :: Approval.t()
+  def upload_error_log_file!(path, approval) do
+    upload_fn = fn ->
+      attachment = FlatFileUtils.store_on_s3!(path)
+
+      case Explorer.DataFrame.from_csv(path) do
+        {:ok, df} ->
+          amount_of_errors = Explorer.DataFrame.n_rows(df)
+
+          Logger.warning(
+            "#{amount_of_errors} errors occured while approving. Adding errors as file to `approval.error_log`"
+          )
+
+          approval =
+            approval
+            |> Approval.update!(%{rows_error_count: amount_of_errors})
+            |> Approval.update_error_log!(attachment)
+
+          # remove file from local tmp dir, as it is now stored on s3
+          File.rm!(path)
+
+          approval
+
+        {:error, _} ->
+          Logger.debug("CSV could not be read or - more likely - it was empty, so no errors were found.")
+
+          approval
+      end
+    end
+
+    if Records.execute_async?() do
+      upload_fn
+      |> Task.async()
+      |> Task.await()
+    else
+      upload_fn.()
+    end
+  end
+
+  @spec map_to_normalized_error(Ash.Error.t(), map()) :: approval_error()
+  defp map_to_normalized_error(error, row) do
+    case_result =
+      case error do
+        %Ash.Error.Changes.Required{field: :record} ->
+          %{
+            field: :record,
+            value: nil,
+            message: "There is no record for the given catalog number in the database."
+          }
+
+        %Ash.Error.Changes.Required{} = error ->
+          %{
+            field: Map.get(error, :field),
+            value: nil,
+            message: "Field is required but was empty."
+          }
+
+        %Ash.Error.Changes.InvalidAttribute{} = error ->
+          %{
+            field: Map.get(error, :field),
+            value: Map.get(error, :value),
+            message: Map.get(error, :message)
+          }
+
+        _ ->
+          %{
+            field: Map.get(error, :field) || "",
+            value: Map.get(error, :value) || "",
+            message: Map.get(error, :message) || "unknown error"
+          }
+      end
+
+    Map.merge(case_result, %{
+      catalog_number: row["mte_catalog_number"],
+      scientific_name: row["tax_scientific_name"],
+      occurrence_id: row["occ_occurrence_id"]
+    })
   end
 end

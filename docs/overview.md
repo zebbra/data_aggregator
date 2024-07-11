@@ -91,9 +91,9 @@ While for the user, the whole encoding process is abstracted and manageable over
 
 <img src="images/encode.png" alt="Encoding">
 
-`for_coders:` The encoding process is handled by the `lib/data_aggregator/records/encoding` modules. This modules contains the logic for enriching the data with information from the catalogs/thesauri.
+`for_coders:` The encoding process is handled by the `lib/data_aggregator/records/encoding` modules. This modules contain the logic for enriching the data with information from the catalogs/thesauri.
 
-The overlaying `lib/data_aggregator/records/encoding/strategies/strategy.ex` module contains the logic for selecting the correct encoding strategy and provides some abstration and common used helper functions for the encoding process.
+The overlaying `lib/data_aggregator/records/encoding/strategies/strategy.ex` module contains the logic for selecting the correct encoding strategy and provides some abstraction and common used helper functions for the encoding process.
 
 Each encoding strategy is a module that implements the `encode/1` function, which takes the data and returns the enriched data.
 
@@ -161,3 +161,41 @@ To have the data published on the GBIF portal, it must be approved by the Infosp
 To start the approval process, the user must click the `approve` button in the UI on the collection.
 
 An API endpoint is available to import the approved data from Infospecies into the application. The data will be imported into the application and can records will be indicated as `approved`.
+
+`for_coders:` The approval process is handled by the `DataAggregator.Records.Actions.Approve` Ash Action. There we collect the neccessary records according to the users selection, create Darwin Core Archives and notify the Infospecies team about the approval by mail.
+
+Once the Infospecies team has approved the data, the data will be published to the GBIF portal AND the data aggregator can be called by Rest API `POST /api/json/approvals` containing the link to the DWC-Archive to inform us, that the data is approved and was published. The endpoint expects a JSON object in the following structure:
+
+```json
+{
+  "data": {
+    "attributes": {
+      "file_url": "https://s3.cloud.zebbra.ch/data-aggregator-stag/files/fat_02wlChzH8FcfF3L9VIXXY1/AY_qEyOtfpS2yzRehd1Ddg.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=data-aggregator-stag%2F20240710%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240710T141305Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=46e0768b97d5a72e5d4414e55fcc6aa0d7a3df5e1a6d261765a64bbc2e97cb44"
+    }
+  }
+}
+```
+
+this will return a json object like bellow to the calling client to indicate that the approval was successfully created:
+
+```json
+{
+  "data": {
+    "attributes": {
+      "state": "pending",
+      "rows_count": 18,
+      "inserted_at": "2024-07-10T14:32:47.282217Z",
+      "updated_at": "2024-07-10T14:32:47.282217Z",
+      "file_url": "https://s3.cloud.zebbra.ch/data-aggregator-stag/files/fat_02wlChzH8FcfF3L9VIXXY1/AY_qEyOtfpS2yzRehd1Ddg.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=data-aggregator-stag%2F20240710%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240710T141305Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=46e0768b97d5a72e5d4414e55fcc6aa0d7a3df5e1a6d261765a64bbc2e97cb44"
+    },
+    "id": "app_02x50wRhsNSm3e9aTd2p4B",
+    "type": "approval"
+  }
+}
+```
+
+Now the client has to call the `PATCH /api/json/approvals/{id}/enqueue` endpoint to enqueue and start the approval process.
+
+By calling `GET /api/json/approvals/{id}` the client can check the status of the approval process at any time.
+
+All the code necessary to handle the approval process is located in the `lib/data_aggregator/records/approval` modules.

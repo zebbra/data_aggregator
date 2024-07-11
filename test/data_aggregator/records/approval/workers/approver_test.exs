@@ -7,11 +7,15 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
   import DataAggregator.ApprovalFixtures
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Gbif
+  alias DataAggregator.Records
   alias DataAggregator.Records.Approval
   alias DataAggregator.Records.ApprovedRecord
 
   describe "DataAggregator.Records.Approval.Workers.Approver.perform/1" do
     setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       collection = collection_fixture(%{name: "Collection NumberO!+ne"})
 
       records = [
@@ -95,6 +99,24 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
       end)
 
       assert approval.state == :done
+    end
+
+    test "Approver.perform/1 check if error log is present and correct", %{approval: approval} do
+      {:ok, approval} = perform_job(Approval.Workers.Approver, %{id: approval.id})
+
+      assert {:ok, approval} = approval.id |> Approval.get_by_id() |> Records.load([:error_log])
+
+      assert approval.rows_count == 23
+      assert approval.rows_invalid_count == 18
+      assert approval.rows_approved_count == 5
+      assert approval.rows_error_count == 19
+
+      assert approval.error_log != nil
+
+      assert {:ok, data_frame} = Explorer.DataFrame.from_csv(approval.error_log.url)
+
+      assert Explorer.DataFrame.n_columns(data_frame) == 6
+      assert Explorer.DataFrame.n_rows(data_frame) == 19
     end
   end
 end
