@@ -66,6 +66,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         |> stream(:results, records, reset: true)
         |> assign(:layer, layer)
         |> assign(:filters_count, meta |> Pagify.active_filter_form_fields() |> length())
+        |> assign_search(meta)
         |> apply_action(socket.assigns.live_action, params)
         |> noreply()
 
@@ -133,32 +134,49 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       <div :if={@collection.records_count > 0} class="flex justify-between px-6 pb-6 lg:px-8">
         <%!-- Search and filter --%>
         <div class="join">
-          <%!-- <div>
+          <div>
             <div>
-              <input
-                class="input input-bordered join-item max-sm:max-w-32"
-                placeholder={~t"Search"m}
-                disabled
-              />
+              <.simple_form
+                for={@search}
+                class="w-full"
+                phx-change="search:reset"
+                phx-submit="search:apply"
+                phx-window-keydown={JS.focus(to: "#search_query")}
+                phx-key="/"
+                phx-debounce="300"
+              >
+                <.custom_field
+                  type="search"
+                  field={@search[:query]}
+                  placeholder={~t"Search"}
+                  class="input input-bordered join-item max-sm:text-base sm:inline-flex items-center flex-row gap-2"
+                >
+                  <:content :let={field}>
+                    <.icon name="hero-magnifying-glass" class="size-5 text-base-content/50" />
+                    <.input {field} icon_start="hero-magnifying-glass" class="" inside />
+                    <kbd class="kbd kbd-sm">/</kbd>
+                  </:content>
+                </.custom_field>
+              </.simple_form>
             </div>
           </div>
-          <button
+          <%!-- <button
             data-tip={~t"Columns"m}
             class="join-item btn btn-outline border-base-content/20 btn-disabled border-y max-sm:btn-square sm:max-md:tooltip"
           >
             <.icon name="hero-table-cells" />
             <span class="max-md:hidden"><%= ~t"Columns"m %></span>
           </button> --%>
-          <.dropdown id="layer" class="dropdown-start">
+          <.dropdown id="layer" class="dropdown-end">
             <:summary>
               <summary
-                class="join-item btn btn-outline border-base-content/20 rounded-l-lg border-y max-sm:btn-square max-sm:inline-flex sm:max-sm:tooltip"
+                class="join-item btn btn-outline border-base-content/20 rounded-l-lg border-y max-lg:btn-square max-lg:inline-flex sm:max-lg:tooltip"
                 data-tip={current_layer_label(@layer)}
               >
                 <.icon :if={@layer == "import"} name="hero-arrow-up-tray" />
                 <.icon :if={@layer == "encoding"} name="hero-puzzle-piece" />
                 <.icon :if={@layer == "approval"} name="hero-check-badge" />
-                <span class="max-sm:hidden"><%= current_layer_label(@layer) %></span>
+                <span class="max-lg:hidden"><%= current_layer_label(@layer) %></span>
               </summary>
             </:summary>
             <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-56 gap-1 border p-2 shadow-2xl">
@@ -202,18 +220,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   do: "border-base-content/20",
                   else: "border-primary sm:outline-primary sm:outline sm:hover:outline-none"
                 ),
-                "join-item btn btn-outline border-y max-sm:btn-square sm:max-sm:tooltip"
+                "join-item btn btn-outline border-y max-lg:btn-square sm:max-lg:tooltip"
               ]}
               data-tip={~t"Filters"m}
             >
               <.icon name="hero-adjustments-vertical" />
-              <span class="max-sm:hidden"><%= ~t"Filters"m %></span>
+              <span class="max-lg:hidden"><%= ~t"Filters"m %></span>
             </button>
           </div>
         </div>
 
         <%!-- Action buttons --%>
-        <.dropdown id="actions" class="dropdown-end lg:hidden">
+        <.dropdown id="actions" class="dropdown-end xl:hidden">
           <:summary>
             <summary
               disabled={@busy}
@@ -238,7 +256,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </ul>
         </.dropdown>
 
-        <div class="join max-lg:hidden">
+        <div class="join max-xl:hidden">
           <button
             :for={{label, icon, action, alert} <- @actions}
             class="join-item btn btn-outline border-base-content/20"
@@ -249,7 +267,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           >
             <.icon :if={busy?(action, @busy_action) == false} name={icon} />
             <.icon :if={busy?(action, @busy_action)} name="hero-cog-6-tooth-solid animate-spin" />
-            <span class="max-md:hidden"><%= action_label(label) %></span>
+            <span class="max-sm:hidden"><%= action_label(label) %></span>
           </button>
         </div>
       </div>
@@ -746,12 +764,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
     fast_track_query =
       Record
-      |> Pagify.compile_filters(pagify, include_full_text_search?: true)
+      |> Pagify.compile_filters(pagify)
       |> Pagify.merge_filters(collection.fast_track_query)
       |> Map.get(:filters)
 
     count_query =
-      Pagify.compiled_filters_to_query(Record, fast_track_query, include_full_text_search?: true)
+      Pagify.compiled_filters_to_query(Record, fast_track_query)
 
     case create_and_enqueue(collection, fast_track_query, count_query, :fast_track) do
       {:ok, _} ->
@@ -772,12 +790,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
     approval_query =
       Record
-      |> Pagify.compile_filters(pagify, include_full_text_search?: true)
+      |> Pagify.compile_filters(pagify)
       |> Pagify.merge_filters(collection.approval_query)
       |> Map.get(:filters)
 
     count_query =
-      Pagify.compiled_filters_to_query(Record, approval_query, include_full_text_search?: true)
+      Pagify.compiled_filters_to_query(Record, approval_query)
 
     case create_and_enqueue(collection, approval_query, count_query, :approval) do
       {:ok, _} ->
@@ -800,6 +818,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   def handle_event("filter_form:toggle", _, socket) do
     socket = update(socket, :show_filters, &(!&1))
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("search:reset", %{"search" => params}, socket) do
+    if params["query"] == "" do
+      update_and_patch_search(socket, params["query"])
+    else
+      {:noreply, socket}
+    end
+  end
+
+  @impl true
+  def handle_event("search:apply", %{"search" => params}, socket) do
+    update_and_patch_search(socket, params["query"])
   end
 
   @impl true
@@ -829,6 +861,25 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   defp get_record(id) do
     Record.get_by_id!(id, load: @load)
+  end
+
+  defp assign_search(socket, %Pagify.Meta{current_search: search}) do
+    search = to_form(%{"query" => search}, as: :search)
+    assign(socket, :search, search)
+  end
+
+  defp update_and_patch_search(socket, query) do
+    %{meta: %{pagify: pagify} = meta, layer: layer, collection: collection} =
+      socket.assigns
+
+    pagify = Pagify.set_search(pagify, query)
+    meta = %{meta | pagify: pagify}
+
+    path = path_helper(collection, layer, meta)
+
+    socket
+    |> push_patch(to: path)
+    |> noreply()
   end
 
   attr :collection_id, :string

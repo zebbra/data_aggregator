@@ -59,6 +59,8 @@ defmodule Pagify.Misc do
 
   defp walk_map(map, keys, depth, existing?, current_depth \\ 1, func \\ &atomize_key/3)
 
+  defp walk_map(%{__struct__: _} = struct, _, _, _, _, _), do: struct
+
   defp walk_map(%{} = map, keys, depth, existing?, current_depth, func) do
     Map.new(map, fn {k, v} ->
       if is_nil(depth) == false and current_depth >= depth do

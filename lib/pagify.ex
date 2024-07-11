@@ -823,13 +823,14 @@ defmodule Pagify do
     if count = opts[:count] do
       count
     else
-      pagify = compile_filters(r, pagify, Keyword.put_new(opts, :for, r))
+      compile_options = Keyword.put_new(opts, :for, r)
+      pagify = compile_filters(r, pagify, compile_options)
 
       q =
         if count_query = opts[:count_query] do
           count_query
         else
-          filter(q, pagify)
+          compiled_filters_to_query(q, pagify.filters, compile_options)
         end
 
       opts = Keyword.delete(opts, :count_query)
@@ -995,6 +996,7 @@ defmodule Pagify do
     total_pages = get_total_pages(total_count, page_size)
     current_offset = get_current_offset(page.offset)
     current_page = get_current_page(page, total_pages)
+    current_search = pagify.search
 
     {has_previous_page?, previous_offset} = get_previous(current_offset, page_size)
     {has_next_page?, next_offset} = get_next(current_offset, page_size, total_count)
@@ -1007,6 +1009,7 @@ defmodule Pagify do
       current_limit: page_size,
       current_offset: current_offset,
       current_page: current_page,
+      current_search: current_search,
       default_scopes: default_scopes,
       has_next_page?: has_next_page?,
       has_previous_page?: has_previous_page?,
@@ -1841,6 +1844,42 @@ defmodule Pagify do
   end
 
   @doc """
+  Sets the search of a Pagify struct.
+
+  If the reset option is set to false, the offset will not be reset to 0.
+
+  ## Examples
+
+      iex> set_search(%Pagify{offset: 10}, "term")
+      %Pagify{search: "term"}
+
+      iex> set_search(%Pagify{offset: 10, search: "old"}, "new")
+      %Pagify{search: "new"}
+
+      iex> set_search(%Pagify{offset: 10, search: "old"}, nil)
+      %Pagify{search: nil}
+
+  Or without reset offset:
+
+      iex> set_search(%Pagify{offset: 10}, "term", reset_on_filter?: false)
+      %Pagify{search: "term", offset: 10}
+  """
+  @spec set_search(Pagify.t(), String.t() | nil, Keyword.t()) :: Pagify.t()
+  def set_search(pagify, search, opts \\ [])
+
+  def set_search(%Pagify{} = pagify, search, opts) do
+    pagify = %{pagify | search: search}
+
+    reset_on_filter = get_option(:reset_on_filter?, opts, true)
+
+    if reset_on_filter do
+      %{pagify | offset: nil}
+    else
+      pagify
+    end
+  end
+
+  @doc """
   Sets the scope of a Pagify struct.
 
   If the scope already exists, it will be replaced with the new value. If the
@@ -2119,10 +2158,10 @@ defmodule Pagify do
   have been validated.
 
   > #### Full-text search {: .info}
-  > Per default we do not store the full-text search term in the compiled filters
-  map. If you need to include the full-text search term in the compiled filters
-  map, you can set the `include_full_text_search?` option to `true`. In this case,
-  the full-text search term is stored under the key `"__full_text_search"` in the
+  > Per default we do store the full-text search term in the compiled filters
+  map. If you do not need to include the full-text search term in the compiled filters
+  map, you can set the `include_full_text_search?` option to `false`.
+  The full-text search term is stored under the key `"__full_text_search"` in the
   resulting filters map. This can be handy if you want to store the current filter
   state including the full-text search term and retrieve it later. See
   `Pagify.compiled_filters_to_query/2` for an example.
@@ -2155,7 +2194,7 @@ defmodule Pagify do
         filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"}
       }
 
-      # Or if you want to include the full-text search term
+      # Or with a full-text search term
 
       iex> compile_filters(
       ...>   Post,
@@ -2164,8 +2203,7 @@ defmodule Pagify do
       ...>     filters: %{author: "Author 1"},
       ...>     filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"},
       ...>     scopes: [{:role, :admin}]
-      ...>   },
-      ...>   include_full_text_search?: true
+      ...>   }
       ...> )
       %Pagify{
         scopes: [role: :admin],
@@ -2223,7 +2261,7 @@ defmodule Pagify do
   defp maybe_store_full_text_search(%Pagify{search: ""} = pagify, _resource, _opts), do: pagify
 
   defp maybe_store_full_text_search(%Pagify{search: search} = pagify, resource, opts) do
-    if search != nil and Keyword.get(opts, :include_full_text_search?, false) do
+    if search != nil and Keyword.get(opts, :include_full_text_search?, true) do
       store_full_text_search(pagify, resource, opts)
     else
       pagify
@@ -2256,9 +2294,8 @@ defmodule Pagify do
   Creates an `Ash.Query` from a filter map. Ideally, the filter map was previously
   compiled with `Pagify.compile_filters/2`.
 
-  Optionally, you can pass the `include_full_text_search?: true` option to also
-  include the full-text search term in the query. This can be handy if you stored
-  the full-text search term in the compiled filters map.
+  Optionally, you can pass the `include_full_text_search?: false` option to disable
+  the full-text search term inclusion in the query.
 
   If the full-text search term is included in the compiled filters map, it will be
   removed from the filters map before the query is created. Further, the full-text
@@ -2274,7 +2311,7 @@ defmodule Pagify do
       #Ash.Query<resource: Pagify.Factory.Post, filter: #Ash.Filter<name == "foo">>
 
       iex> compiled_filters = %{"and" => [%{"name" => "foo"}], "__full_text_search" => "search term"}
-      iex> compiled_filters_to_query(Post, compiled_filters, include_full_text_search?: true)
+      iex> compiled_filters_to_query(Post, compiled_filters)
       #Ash.Query<resource: Pagify.Factory.Post, filter: #Ash.Filter<name == "foo" and full_text_search(%{search: type(tsquery([search: \"search term\"]),  AshPostgres.Tsquery,  [])})>>
   """
   @spec compiled_filters_to_query(Ash.Query.t() | Ash.Resource.t(), map(), Keyword.t()) ::
@@ -2295,7 +2332,7 @@ defmodule Pagify do
   defp maybe_apply_full_text_search(%Ash.Query{} = query, "", _opts), do: query
 
   defp maybe_apply_full_text_search(%Ash.Query{} = query, full_text_search, opts) do
-    if Keyword.get(opts, :include_full_text_search?, false) do
+    if Keyword.get(opts, :include_full_text_search?, true) do
       apply_full_text_search(%Ash.Query{} = query, full_text_search, opts)
     else
       query

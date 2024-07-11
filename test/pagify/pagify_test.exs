@@ -927,8 +927,7 @@ defmodule PagifyTest do
                  Post,
                  %Pagify{
                    search: "Post 1"
-                 },
-                 include_full_text_search?: true
+                 }
                )
     end
 
@@ -953,19 +952,22 @@ defmodule PagifyTest do
                    scopes: [{:role, :admin}],
                    filters: %{comments_count: %{gt: 2}},
                    search: "Post 1"
-                 },
-                 include_full_text_search?: true
+                 }
                )
     end
 
-    test "does not store full-text search under __full_text_search" do
+    test "does not store full-text search under __full_text_search if disabled" do
       assert %Pagify{
                filters: %{},
                search: "Post 1"
              } ==
-               Pagify.compile_filters(Post, %Pagify{
-                 search: "Post 1"
-               })
+               Pagify.compile_filters(
+                 Post,
+                 %Pagify{
+                   search: "Post 1"
+                 },
+                 include_full_text_search?: false
+               )
     end
 
     test "does not raise and not store in case of invalid full-text search" do
@@ -983,7 +985,6 @@ defmodule PagifyTest do
                  %Pagify{
                    search: "Comment 1"
                  },
-                 include_full_text_search?: true,
                  raise_on_invalid_search?: false
                )
     end
@@ -994,8 +995,7 @@ defmodule PagifyTest do
           Comment,
           %Pagify{
             search: "Comment 1"
-          },
-          include_full_text_search?: true
+          }
         )
       end
     end
@@ -1022,19 +1022,19 @@ defmodule PagifyTest do
                Ash.Query.filter(Post, %{name: "foo"})
     end
 
-    test "does not include full_text_search per default" do
+    test "does not include full_text_search if disabled" do
       assert Pagify.compiled_filters_to_query(
                Post,
-               %{"and" => [%{"name" => "foo"}], "__full_text_search" => "bar"}
+               %{"and" => [%{"name" => "foo"}], "__full_text_search" => "bar"},
+               include_full_text_search?: false
              ) ==
                Ash.Query.filter(Post, %{name: "foo"})
     end
 
-    test "includes full_text_search if include_full_text_search? is true" do
+    test "includes full_text_search per default" do
       assert Pagify.compiled_filters_to_query(
                Post,
-               %{"__full_text_search" => "bar"},
-               include_full_text_search?: true
+               %{"__full_text_search" => "bar"}
              ) ==
                Ash.Query.filter(
                  Post,
@@ -1045,8 +1045,7 @@ defmodule PagifyTest do
     test "does not include full_text_search if include_full_text_search? is true but none is provided" do
       assert Pagify.compiled_filters_to_query(
                Post,
-               %{"name" => "bar"},
-               include_full_text_search?: true
+               %{"name" => "bar"}
              ) ==
                Ash.Query.filter(
                  Post,
@@ -1058,7 +1057,6 @@ defmodule PagifyTest do
       assert Pagify.compiled_filters_to_query(
                Comment,
                %{"and" => [%{"body" => "foo"}], "__full_text_search" => "bar"},
-               include_full_text_search?: true,
                raise_on_invalid_search?: false
              ) ==
                Ash.Query.filter(Comment, %{body: "foo"})
@@ -1068,8 +1066,7 @@ defmodule PagifyTest do
       assert_raise Pagify.Error.Query.SearchNotImplemented, fn ->
         Pagify.compiled_filters_to_query(
           Comment,
-          %{"and" => [%{"body" => "foo"}], "__full_text_search" => "bar"},
-          include_full_text_search?: true
+          %{"and" => [%{"body" => "foo"}], "__full_text_search" => "bar"}
         )
       end
     end

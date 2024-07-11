@@ -25,7 +25,7 @@ defmodule DataAggregator.Records.Actions.Publish do
     publication = input.arguments.publication
 
     query =
-      Pagify.compiled_filters_to_query(Record, publication.records_query, include_full_text_search?: true)
+      Pagify.compiled_filters_to_query(Record, publication.records_query)
 
     set_publication_status(
       query,
@@ -77,7 +77,7 @@ defmodule DataAggregator.Records.Actions.Publish do
       publication = input.arguments.publication
 
       query =
-        Pagify.compiled_filters_to_query(Record, publication.records_query, include_full_text_search?: true)
+        Pagify.compiled_filters_to_query(Record, publication.records_query)
 
       Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(e)}")
 
