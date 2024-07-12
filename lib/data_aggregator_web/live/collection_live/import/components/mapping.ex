@@ -216,7 +216,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       >
         <:content :let={field}>
           <.icon name="hero-magnifying-glass" class="size-5 text-base-content/50" />
-          <.input {field} icon_start="hero-magnifying-glass" class="" inside />
+          <.input {field} class="" inside />
           <kbd class="kbd kbd-sm max-sm:hidden">/</kbd>
         </:content>
       </.custom_field>

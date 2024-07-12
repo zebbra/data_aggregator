@@ -834,13 +834,13 @@ defmodule PagifyTest do
     end
   end
 
-  describe "compile_filters/2" do
+  describe "query_to_filters_map/2" do
     test "compiles scopes into filters" do
       assert %Pagify{
                filters: %{"and" => [%{"author" => "John"}]},
                scopes: [role: :admin]
              } ==
-               Pagify.compile_filters(Post, %Pagify{
+               Pagify.query_to_filters_map(Post, %Pagify{
                  scopes: [{:role, :admin}]
                })
     end
@@ -850,7 +850,7 @@ defmodule PagifyTest do
                filters: %{"and" => [%{"name" => %{"eq" => "Post 1"}}]},
                filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"}
              } ==
-               Pagify.compile_filters(Post, %Pagify{
+               Pagify.query_to_filters_map(Post, %Pagify{
                  filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"}
                })
     end
@@ -859,7 +859,7 @@ defmodule PagifyTest do
       assert %Pagify{
                filters: %{"and" => [%{"author" => "Author 1"}]}
              } ==
-               Pagify.compile_filters(Post, %Pagify{
+               Pagify.query_to_filters_map(Post, %Pagify{
                  filters: %{author: "Author 1"}
                })
     end
@@ -868,7 +868,7 @@ defmodule PagifyTest do
       assert %Pagify{
                filters: %{"and" => [%{"author" => "Author 1"}]}
              } ==
-               Pagify.compile_filters(Post, %Pagify{
+               Pagify.query_to_filters_map(Post, %Pagify{
                  filters: %{"and" => [%{author: "Author 1"}]}
                })
     end
@@ -877,7 +877,7 @@ defmodule PagifyTest do
       assert %Pagify{
                filters: %{"or" => [%{"author" => "Author 1"}]}
              } ==
-               Pagify.compile_filters(Post, %Pagify{
+               Pagify.query_to_filters_map(Post, %Pagify{
                  filters: %{"or" => [%{author: "Author 1"}]}
                })
     end
@@ -894,7 +894,7 @@ defmodule PagifyTest do
                filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"},
                scopes: [role: :admin]
              } ==
-               Pagify.compile_filters(Post, %Pagify{
+               Pagify.query_to_filters_map(Post, %Pagify{
                  filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"},
                  scopes: [{:role, :admin}],
                  filters: %{comments_count: %{gt: 2}}
@@ -910,7 +910,7 @@ defmodule PagifyTest do
                },
                filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 2"}
              } ==
-               Pagify.compile_filters(Post, %Pagify{
+               Pagify.query_to_filters_map(Post, %Pagify{
                  filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 2"},
                  filters: %{"and" => %{"name" => "Post 1"}}
                })
@@ -923,7 +923,7 @@ defmodule PagifyTest do
                },
                search: "Post 1"
              } ==
-               Pagify.compile_filters(
+               Pagify.query_to_filters_map(
                  Post,
                  %Pagify{
                    search: "Post 1"
@@ -945,7 +945,7 @@ defmodule PagifyTest do
                scopes: [role: :admin],
                search: "Post 1"
              } ==
-               Pagify.compile_filters(
+               Pagify.query_to_filters_map(
                  Post,
                  %Pagify{
                    filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"},
@@ -961,7 +961,7 @@ defmodule PagifyTest do
                filters: %{},
                search: "Post 1"
              } ==
-               Pagify.compile_filters(
+               Pagify.query_to_filters_map(
                  Post,
                  %Pagify{
                    search: "Post 1"
@@ -980,7 +980,7 @@ defmodule PagifyTest do
                  ]
                ]
              } =
-               Pagify.compile_filters(
+               Pagify.query_to_filters_map(
                  Comment,
                  %Pagify{
                    search: "Comment 1"
@@ -991,7 +991,7 @@ defmodule PagifyTest do
 
     test "raises and does not store in case of invalid full-text search" do
       assert_raise Pagify.Error.Query.SearchNotImplemented, fn ->
-        Pagify.compile_filters(
+        Pagify.query_to_filters_map(
           Comment,
           %Pagify{
             search: "Comment 1"
@@ -1009,21 +1009,21 @@ defmodule PagifyTest do
                },
                scopes: [role: :admin]
              } ==
-               Pagify.compile_filters(Post, %Pagify{
+               Pagify.query_to_filters_map(Post, %Pagify{
                  filters: %{"author" => "Author 1"},
                  scopes: [{:role, :admin}]
                })
     end
   end
 
-  describe "compiled_filters_to_map/2" do
+  describe "query_for_filters_map/2" do
     test "converts compiled filters to map" do
-      assert Pagify.compiled_filters_to_query(Post, %{"and" => [%{"name" => "foo"}]}) ==
+      assert Pagify.query_for_filters_map(Post, %{"and" => [%{"name" => "foo"}]}) ==
                Ash.Query.filter(Post, %{name: "foo"})
     end
 
     test "does not include full_text_search if disabled" do
-      assert Pagify.compiled_filters_to_query(
+      assert Pagify.query_for_filters_map(
                Post,
                %{"and" => [%{"name" => "foo"}], "__full_text_search" => "bar"},
                include_full_text_search?: false
@@ -1032,7 +1032,7 @@ defmodule PagifyTest do
     end
 
     test "includes full_text_search per default" do
-      assert Pagify.compiled_filters_to_query(
+      assert Pagify.query_for_filters_map(
                Post,
                %{"__full_text_search" => "bar"}
              ) ==
@@ -1043,7 +1043,7 @@ defmodule PagifyTest do
     end
 
     test "does not include full_text_search if include_full_text_search? is true but none is provided" do
-      assert Pagify.compiled_filters_to_query(
+      assert Pagify.query_for_filters_map(
                Post,
                %{"name" => "bar"}
              ) ==
@@ -1054,7 +1054,7 @@ defmodule PagifyTest do
     end
 
     test "does not include full_text_search if none is configured and does not raise" do
-      assert Pagify.compiled_filters_to_query(
+      assert Pagify.query_for_filters_map(
                Comment,
                %{"and" => [%{"body" => "foo"}], "__full_text_search" => "bar"},
                raise_on_invalid_search?: false
@@ -1064,7 +1064,7 @@ defmodule PagifyTest do
 
     test "does not include full_text_search if none is configured and raises" do
       assert_raise Pagify.Error.Query.SearchNotImplemented, fn ->
-        Pagify.compiled_filters_to_query(
+        Pagify.query_for_filters_map(
           Comment,
           %{"and" => [%{"body" => "foo"}], "__full_text_search" => "bar"}
         )

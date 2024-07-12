@@ -144,7 +144,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
 
     records_to_export_query =
       Record
-      |> Pagify.compile_filters(pagify)
+      |> Pagify.query_to_filters_map(pagify)
       |> Pagify.merge_filters(collection.records_to_export_query)
       |> Map.get(:filters)
 
@@ -171,12 +171,11 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
 
     records_to_export_query =
       Record
-      |> Pagify.compile_filters(pagify)
+      |> Pagify.query_to_filters_map(pagify)
       |> Pagify.merge_filters(collection.records_to_export_query)
       |> Map.get(:filters)
 
-    count_query =
-      Pagify.compiled_filters_to_query(Record, records_to_export_query)
+    count_query = Pagify.query_for_filters_map(Record, records_to_export_query)
 
     rows_count = Records.count!(count_query)
 

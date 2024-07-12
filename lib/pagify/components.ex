@@ -148,10 +148,10 @@ defmodule Pagify.Components do
 
   use Phoenix.Component
 
-  alias Pagify.Components.Misc
   alias Pagify.Components.Pagination
   alias Pagify.Components.Table
   alias Pagify.Meta
+  alias Pagify.Misc
   alias Phoenix.LiveView.JS
   alias Plug.Conn.Query
 

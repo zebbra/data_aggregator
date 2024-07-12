@@ -2,8 +2,8 @@ defmodule Pagify.Components.Pagination do
   @moduledoc false
 
   alias Pagify.Components
-  alias Pagify.Components.Misc
   alias Pagify.Meta
+  alias Pagify.Misc
 
   @spec default_opts() :: [Components.pagination_option()]
   def default_opts do
@@ -38,8 +38,8 @@ defmodule Pagify.Components.Pagination do
 
   def merge_opts(opts) do
     default_opts()
-    |> Misc.deep_merge(Misc.get_global_opts(:pagination))
-    |> Misc.deep_merge(opts)
+    |> Misc.list_merge(Misc.get_global_opts(:pagination))
+    |> Misc.list_merge(opts)
   end
 
   def max_pages(:all, total_pages), do: total_pages

@@ -146,15 +146,30 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 phx-debounce="300"
               >
                 <.custom_field
-                  type="search"
                   field={@search[:query]}
                   placeholder={~t"Search"}
                   class="input input-bordered join-item max-sm:text-base sm:inline-flex items-center flex-row gap-2"
                 >
                   <:content :let={field}>
-                    <.icon name="hero-magnifying-glass" class="size-5 text-base-content/50" />
-                    <.input {field} icon_start="hero-magnifying-glass" class="" inside />
-                    <kbd class="kbd kbd-sm">/</kbd>
+                    <input
+                      :if={@search[:query].value != ""}
+                      value=""
+                      type="reset"
+                      class="text-base-content/50 hero-x-mark size-5 !bg-current cursor-pointer hover:text-base-content/90 phx-submit-loading:hidden phx-change-loading:hidden"
+                      aria-hidden="true"
+                    />
+                    <input
+                      :if={@search[:query].value == ""}
+                      value=""
+                      type="submit"
+                      name="hero-magnifying-glass"
+                      class="text-base-content/50 hero-magnifying-glass size-5 !bg-current cursor-pointer hover:text-base-content/90 phx-submit-loading:hidden phx-change-loading:hidden"
+                    />
+                    <.icon
+                      name="hero-cog-6-tooth animate-spin"
+                      class="size-5 text-base-content/50 hidden phx-change-loading:block phx-submit-loading:block"
+                    />
+                    <.input {field} class="" inside />
                   </:content>
                 </.custom_field>
               </.simple_form>
@@ -764,12 +779,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
     fast_track_query =
       Record
-      |> Pagify.compile_filters(pagify)
+      |> Pagify.query_to_filters_map(pagify)
       |> Pagify.merge_filters(collection.fast_track_query)
       |> Map.get(:filters)
 
-    count_query =
-      Pagify.compiled_filters_to_query(Record, fast_track_query)
+    count_query = Pagify.query_for_filters_map(Record, fast_track_query)
 
     case create_and_enqueue(collection, fast_track_query, count_query, :fast_track) do
       {:ok, _} ->
@@ -790,12 +804,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
     approval_query =
       Record
-      |> Pagify.compile_filters(pagify)
+      |> Pagify.query_to_filters_map(pagify)
       |> Pagify.merge_filters(collection.approval_query)
       |> Map.get(:filters)
 
-    count_query =
-      Pagify.compiled_filters_to_query(Record, approval_query)
+    count_query = Pagify.query_for_filters_map(Record, approval_query)
 
     case create_and_enqueue(collection, approval_query, count_query, :approval) do
       {:ok, _} ->
@@ -822,8 +835,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("search:reset", %{"search" => params}, socket) do
-    if params["query"] == "" do
-      update_and_patch_search(socket, params["query"])
+    if (params["query"] == "" and coalesce_search(socket.assigns.meta.current_search) != "") or
+         params["_unused_query"] == "" do
+      update_and_patch_search(socket, "")
     else
       {:noreply, socket}
     end
@@ -831,7 +845,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("search:apply", %{"search" => params}, socket) do
-    update_and_patch_search(socket, params["query"])
+    if params["query"] == coalesce_search(socket.assigns.meta.current_search) do
+      {:noreply, socket}
+    else
+      update_and_patch_search(socket, params["query"])
+    end
   end
 
   @impl true
@@ -864,23 +882,30 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   defp assign_search(socket, %Pagify.Meta{current_search: search}) do
-    search = to_form(%{"query" => search}, as: :search)
+    search = to_form(%{"query" => coalesce_search(search)}, as: :search)
     assign(socket, :search, search)
   end
 
   defp update_and_patch_search(socket, query) do
-    %{meta: %{pagify: pagify} = meta, layer: layer, collection: collection} =
-      socket.assigns
+    if String.length(query) > 0 && String.length(query) < 3 do
+      {:noreply, socket}
+    else
+      %{meta: %{pagify: pagify} = meta, layer: layer, collection: collection} =
+        socket.assigns
 
-    pagify = Pagify.set_search(pagify, query)
-    meta = %{meta | pagify: pagify}
+      pagify = Pagify.set_search(pagify, query)
+      meta = %{meta | pagify: pagify}
 
-    path = path_helper(collection, layer, meta)
+      path = path_helper(collection, layer, meta)
 
-    socket
-    |> push_patch(to: path)
-    |> noreply()
+      socket
+      |> push_patch(to: path)
+      |> noreply()
+    end
   end
+
+  defp coalesce_search(nil), do: ""
+  defp coalesce_search(search), do: search
 
   attr :collection_id, :string
 
