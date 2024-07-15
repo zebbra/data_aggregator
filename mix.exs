@@ -192,11 +192,11 @@ defmodule DataAggregator.MixProject do
       {:phoenix_storybook, "~> 0.6.3"},
 
       # Ash Framework
-      {:ash, "~> 3.0.16"},
+      {:ash, "~> 3.1.0", override: true},
       {:ash_graphql, "~> 1.2.0"},
-      {:ash_json_api, "~> 1.2.2"},
+      {:ash_json_api, "~> 1.3.6"},
       {:ash_phoenix, "~> 2.0.4"},
-      {:ash_postgres, "~> 2.0.12"},
+      {:ash_postgres, "~> 2.1.4", override: true},
       {:ash_state_machine, "~> 0.2.4"},
       {:ash_uuid, "~> 1.1.0"},
       {:ash_paper_trail, "~> 0.1.2"},
