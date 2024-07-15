@@ -843,6 +843,14 @@ classDiagram
         Integer encoder_job_id
         Integer fast_track_checker_job_id
         Atom state
+        Boolean iucn_redlist
+        Boolean encoded
+        Integer mids_level
+        Boolean mids_level_one
+        Boolean mids_level_two
+        Boolean mids_level_three
+        Boolean mids_level_four
+        Version[] paper_trail_versions
         Collection collection
         Import[] imports
         Image[] images
@@ -1602,6 +1610,13 @@ erDiagram
         Integer encoder_job_id
         Integer fast_track_checker_job_id
         Atom state
+        Boolean iucn_redlist
+        Boolean encoded
+        Integer mids_level
+        Boolean mids_level_one
+        Boolean mids_level_two
+        Boolean mids_level_three
+        Boolean mids_level_four
     }
     Image {
         UUID id
@@ -2791,5 +2806,3 @@ erDiagram
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
 | **read** | _read_ | <ul></ul> |  |
-
-

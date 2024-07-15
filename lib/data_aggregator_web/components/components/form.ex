@@ -221,6 +221,10 @@ defmodule DataAggregatorWeb.Components.Form do
 
   slot :inner_block, required: true
 
+  slot :legend_actions, doc: "the slot for fieldset legend actions" do
+    attr :class, :string, doc: "the class to apply to the actions container"
+  end
+
   slot :actions, doc: "the slot for form actions, such as a submit button" do
     attr :class, :string, doc: "the class to apply to the actions container"
 
@@ -249,6 +253,10 @@ defmodule DataAggregatorWeb.Components.Form do
   defp fieldset_class(false), do: "[&>*+[data-slot=control]]:mt-6"
   defp fieldset_class(true), do: "contents"
 
+  slot :legend_actions, doc: "the slot for fieldset legend actions" do
+    attr :class, :string, doc: "the class to apply to the actions container"
+  end
+
   defp fieldset_legend(%{modal: true} = assigns) do
     assigns = assign(assigns, :modal, false)
 
@@ -261,7 +269,17 @@ defmodule DataAggregatorWeb.Components.Form do
 
   defp fieldset_legend(%{modal: false} = assigns) do
     ~H"""
-    <.section_heading as="legend" text={@legend} description={@text} size={@legend_size} />
+    <.section_heading
+      as="legend"
+      text={@legend}
+      description={@text}
+      size={@legend_size}
+      align_items="center"
+    >
+      <:actions :for={action <- @legend_actions} class={action[:class]}>
+        <%= render_slot(action) %>
+      </:actions>
+    </.section_heading>
     """
   end
 

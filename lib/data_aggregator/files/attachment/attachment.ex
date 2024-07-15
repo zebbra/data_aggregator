@@ -14,6 +14,9 @@ defmodule DataAggregator.Files.Attachment do
 
   @type t :: %Attachment{}
 
+  @hour 3600
+  @day 24 * @hour
+
   attributes do
     uuid_attribute :id, prefix: "fat", public?: true
     attribute :filename, :string, allow_nil?: false, public?: true
@@ -24,7 +27,7 @@ defmodule DataAggregator.Files.Attachment do
   calculations do
     calculate :url, :string, Attachment.Calculations.Url do
       argument :signed, :boolean, default: true
-      argument :expires_in, :integer, default: 3600
+      argument :expires_in, :integer, default: @day
     end
 
     calculate :cached_file, :string, Attachment.Calculations.CachedFile

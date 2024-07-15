@@ -470,6 +470,45 @@ defmodule Pagify.FilterFormTest do
                contains(text, "new")
              )
     end
+
+    test "all predicates within a nested form can be updated" do
+      form =
+        Post
+        |> FilterForm.new()
+        |> FilterForm.add_group(return_id?: true, key: "age_range")
+        |> then(fn {form, age_range_id} ->
+          form
+          |> FilterForm.add_predicate(:age, :equals, 20, to: age_range_id)
+          |> FilterForm.add_predicate(:age, :not_equals, 30, to: age_range_id)
+          |> FilterForm.add_group(
+            return_id?: true,
+            key: "nested_age_range",
+            to: age_range_id
+          )
+          |> then(fn {form, nested_age_range_id} ->
+            FilterForm.add_predicate(form, :age, :less_than, 40, to: nested_age_range_id)
+          end)
+        end)
+
+      assert Ash.Query.equivalent_to?(
+               FilterForm.filter!(Post, form),
+               age == 20 and age != 30 and age < 40
+             )
+
+      updated_form =
+        FilterForm.update_group(form, "age_range", fn predicate ->
+          case predicate.operator do
+            :equals -> %{predicate | value: 10}
+            :not_equals -> %{predicate | value: 20}
+            _ -> %{predicate | value: 30}
+          end
+        end)
+
+      assert Ash.Query.equivalent_to?(
+               FilterForm.filter!(Post, updated_form),
+               age == 10 and age != 20 and age < 30
+             )
+    end
   end
 
   describe "form_data implementation" do
