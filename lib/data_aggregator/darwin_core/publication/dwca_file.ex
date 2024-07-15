@@ -131,7 +131,7 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   end
 
   defp get_encoded_layer(record, record_attributes) do
-    case EncodedRecord.get_by_record(record) do
+    case EncodedRecord.get_by_record(record.id) do
       {:ok, encoded_record} -> encoded_record |> Map.from_struct() |> Map.take(record_attributes)
       {:error, _} -> Map.new()
     end

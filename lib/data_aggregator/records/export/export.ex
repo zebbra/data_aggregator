@@ -143,13 +143,15 @@ defmodule DataAggregator.Records.Export do
 
     update :set_running do
       accept []
+      require_atomic? false
 
       change transition_state(:running)
-      change atomic_update(:started_at, &DateTime.utc_now/0)
-      change atomic_update(:finished_at, nil)
+      change set_attribute(:started_at, &DateTime.utc_now/0)
+      change set_attribute(:finished_at, nil)
     end
 
     update :set_failed do
+      accept []
       require_atomic? false
 
       change transition_state(:failed)

@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Actions.Publish do
+defmodule DataAggregator.Records.Collection.Actions.Publish do
   @moduledoc """
   Custom action to publish records of a collection through the fast track as DarwinCoreArchive (dwca) file.
   """

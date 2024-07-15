@@ -8,6 +8,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     to keep this module clean, the actual encoding logic is delegated to a
     strategy module like we do with the `DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy` or the `DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy` module
   """
+  alias DataAggregator.DarwinCore
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.RecordEncodingResult
@@ -122,7 +123,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
 
   defp create_error_result(attrs, catalog, old_record, error) do
     record = Ash.load!(old_record, [:record], lazy?: true).record
-    new_record = EncodedRecord.get_by_record!(record)
+    new_record = EncodedRecord.get_by_record!(record.id)
 
     err_msg = get_err_msg(error)
 
@@ -178,14 +179,21 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   #  create an encoded record if it does not exist yet
   @spec create_encoded_record(Record.t()) :: EncodedRecord.t()
   defp create_encoded_record(record) do
-    case EncodedRecord.get_by_record(record) do
+    case EncodedRecord.get_by_record(record.id) do
       {:ok, result} ->
         result
 
       {:error, %Ash.Error.Query.NotFound{}} ->
+        attributes =
+          [
+            :extra_data,
+            :iucn_redlist_category
+          ] ++ DarwinCore.Schema.prefixed_attribute_names()
+
         EncodedRecord.create!(
           record
           |> Map.from_struct()
+          |> Map.take(attributes)
           |> Map.put_new_lazy(:record, fn -> record end)
         )
     end

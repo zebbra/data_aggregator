@@ -200,6 +200,7 @@ defmodule DataAggregator.Records.Import do
       accept []
       argument :valid, :integer, allow_nil?: false
       argument :invalid, :integer, allow_nil?: false
+      require_atomic? false
 
       change atomic_update(:rows_valid_count, expr(rows_valid_count + ^arg(:valid)))
       change atomic_update(:rows_invalid_count, expr(rows_invalid_count + ^arg(:invalid)))
@@ -245,6 +246,8 @@ defmodule DataAggregator.Records.Import do
 
     update :add_import_progress do
       accept []
+      require_atomic? false
+
       argument :imported, :integer, allow_nil?: false
 
       change atomic_update(:rows_imported_count, expr(rows_imported_count + ^arg(:imported)))

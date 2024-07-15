@@ -55,7 +55,6 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
           name: "publication-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
           channel: :fast_track,
           collection: collection,
-          mapping: nil,
           records_query: query
         })
 

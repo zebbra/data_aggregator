@@ -37,6 +37,9 @@ defmodule DataAggregator.Records.Record.Changes.RelateImport do
     batch
     |> Stream.map(import_record_args)
     |> bulk_create_import_records()
+    |> Stream.run()
+
+    :ok
   end
 
   defp bulk_create_import_records(stream) do

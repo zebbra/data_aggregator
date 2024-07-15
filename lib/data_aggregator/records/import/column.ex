@@ -8,7 +8,7 @@ defmodule DataAggregator.Records.Import.Column do
 
   attributes do
     attribute :name, :string, primary_key?: true, allow_nil?: false, public?: true
-    attribute :type, :atom, allow_nil?: false, public?: true
+    attribute :type, :atom, allow_nil?: false, public?: true, default: :string
     attribute :mapped_to, :string, allow_nil?: true, public?: true
   end
 

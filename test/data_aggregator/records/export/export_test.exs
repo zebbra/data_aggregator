@@ -58,7 +58,6 @@ defmodule DataAggregator.ExportTest do
 
       updated_export = %{
         name: "gbif.org_2",
-        collection: collection_fixture(),
         records: [
           record_fixture(),
           record_fixture()
@@ -85,7 +84,7 @@ defmodule DataAggregator.ExportTest do
     end
 
     test "destroy/1 with invalid id fails and returns an error changeset" do
-      assert {:error, %Ash.Error.Unknown{}} = Export.destroy(%Export{id: "invalid"})
+      assert {:error, %Ash.Error.Invalid{}} = Export.destroy(%Export{id: "invalid"})
     end
   end
 

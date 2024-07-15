@@ -90,7 +90,7 @@ defmodule DataAggregator.Records.EncodedRecord do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
-    define :get_by_record, action: :read, get_by: [:record]
+    define :get_by_record, action: :read, get_by: [:record_id]
   end
 
   postgres do

@@ -30,7 +30,7 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
 
       assert encoded_record !== nil
 
-      lookedup_encoded_record = EncodedRecord.get_by_record!(encoded_record)
+      lookedup_encoded_record = EncodedRecord.get_by_record!(encoded_record.id)
 
       assert lookedup_encoded_record !== nil
 

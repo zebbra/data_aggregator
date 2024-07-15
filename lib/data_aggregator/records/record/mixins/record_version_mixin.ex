@@ -20,6 +20,7 @@ defmodule DataAggregator.Records.RecordVersionMixin do
 
       actions do
         defaults [:create, :read, :update, :destroy]
+        default_accept :*
       end
 
       code_interface do

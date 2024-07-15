@@ -12,6 +12,7 @@ defmodule DataAggregator.Records.Collection do
   alias __MODULE__
   alias DataAggregator.Records
   alias DataAggregator.Records.Calculations
+  alias DataAggregator.Records.Collection.Actions
   alias DataAggregator.Records.Collection.Changes
   alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.Validations
@@ -217,12 +218,14 @@ defmodule DataAggregator.Records.Collection do
 
     update :set_importing do
       accept []
+      require_atomic? false
 
       change transition_state(:importing)
     end
 
     update :set_exporting do
       accept []
+      require_atomic? false
 
       change transition_state(:exporting)
     end
@@ -237,24 +240,28 @@ defmodule DataAggregator.Records.Collection do
 
     update :set_fast_track_publishing do
       accept []
+      require_atomic? false
 
       change transition_state(:fast_track_publishing)
     end
 
     update :set_approving do
       accept []
+      require_atomic? false
 
       change transition_state(:approving)
     end
 
     update :set_idle do
       accept []
+      require_atomic? false
 
       change transition_state(:idle)
     end
 
     update :set_idle_encoding do
       accept []
+      require_atomic? false
 
       change transition_state(:idle)
     end
@@ -268,7 +275,7 @@ defmodule DataAggregator.Records.Collection do
     action :publish, :map do
       argument :publication, :struct, allow_nil?: false
 
-      run Records.Actions.Publish
+      run Actions.Publish
     end
   end
 
