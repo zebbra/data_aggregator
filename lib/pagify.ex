@@ -6,6 +6,44 @@ defmodule Pagify do
   It takes concepts from `Flop`, `Flop.Phoenix`, `Ash` and `AshPhoenix.FilterForm` and
   combines them into a single library.
 
+  It's main purpose is to provide functions to convert user input for full-text search, scoping,
+  filtering, ordering, and pagination into the following data structures:
+  1. a struct holding information of a db query result.
+  2. query parameters for url building and to restore the query parameters from the url.
+  3. a basic map syntax which for example can be stored in a session or database (and restore
+    the information from it).
+
+  ### Examples
+
+  ```elixir
+  pagify = %Pagify{
+    search: "Post 1",
+    scopes: %{role: :admin},
+    filters: %{"comments_count" => %{"gt" => 2}},
+    filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"},
+    order_by: :name,
+    limit: 10,
+    offset: 0
+  }
+  opts = [full_text_search: [tsvector: :custom_tsvector]]
+
+  Pagify.query_to_filters_map(Post, pagify, opts).filters
+  %{
+    "__full_text_search" => %{
+      "search" => "Post 1",
+      "tsvector" => "custom_tsvector"
+    },
+    "and" => [
+      %{"comments_count" => %{"gt" => 2}},
+      %{"name" => %{"eq" => "Post 1"}},
+      %{"author" => "John"}
+    ]
+  }
+
+  Pagify.Components.build_path("/posts", pagify, opts)
+  "/posts?search=Post+1&limit=10&scopes[role]=admin&filter_form[field]=name&filter_form[operator]=eq&filter_form[value]=Post+1&order_by[]=name"
+  ```
+
   ## Features
 
   - **Full-text search**: Pagify supports full-text search using the `tsvector` column in
@@ -18,10 +56,9 @@ defmodule Pagify do
   - **Sorting**: Sort your queries by multiple fields and any directions.
   - **UI helpers and URL builders**: Pagify provides a `Pagify.Meta` struct with information about
     the current page, total pages, and more. This information can be used to build pagination links
-    in your UI. Further, `Pagify` provides the `Pagify.Components` module with a table and pagination
-    component to easily build sortable tables and pagination links in your Phoenix LiveView. The
-    `Pagify.Components` module also provides a URL builder to generate URLs with the correct
-    full-text search, pagination, scoping, filtering, and sorting parameters.
+    in your UI. Further, `Pagify` provides the `Pagify.Components` module with headless table and
+    pagination components to easily build sortable tables and pagination links in your Phoenix LiveView.
+    The `Pagify.FilterForm` module provides a simple way to build filter forms for your LiveView.
 
   ## Installation
 
@@ -84,7 +121,12 @@ defmodule Pagify do
             %{name: :user, filter: %{role: "user"}}
           ]
         },
-        reset_on_filter?: true
+        reset_on_filter?: true,
+        full_text_search: [
+          negation: true,
+          prefix: true,
+          any_word: false
+        ]
 
   See `t:Pagify.option/0` for a description of all available options.
 
@@ -103,12 +145,15 @@ defmodule Pagify do
   Furthermore, you can define scopes in the resource module. Scopes are predefined
   filters that can be applied to the query.
 
-  If you want to use full-text search in your resource, you need to implement the
-  `full_text_search` and `tsvector` calculations as described below.
+  We allow full-text search using the `tsvector` column in PostgreSQL. To enable full-text search,
+  you need to either `use Pagify.Tsearch` in your module or implement the `full_text_search`,
+  `full_text_search_rankg`, `tsquery`, and `tsvector` calculations as described in `Pagify.Tsearch`
+  (tsvector calculation  is always mandatory).
 
   ```elixir
   defmodule YourApp.Resource.Post
     # only required if you want to implement full-text search
+    use Pagify.Tsearch
     require Ash.Query
 
     @default_limit 15
@@ -134,33 +179,15 @@ defmodule Pagify do
     end
 
     calculations do
-      # on the fly tsvector generation
-      calculate :full_text_search,
-                :boolean,
-                expr(fragment("(to_tsvector(?) @@ ?)", field, ^arg(:search))) do
-        argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
-      end
-
-      # or with a generated tsvector
-      calculate :full_text_search,
-                :boolean,
-                expr(fragment("(? @@ ?)", generated_tsvector, ^arg(:search))) do
-        argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
-      end
-
-      # mandatory so that you can search with Ash.Query.filter(Post, full_text_search(search: expr(tsquery(search: "post 1"))))
-      calculate :tsquery,
-                AshPostgres.Tsquery,
-                expr(fragment("to_tsquery(?)", ^arg(:search))) do
-        argument :search, :string, allow_expr?: true, allow_nil?: false
-      end
-
-      # or with dictionary and unaccent (needs unaccent extension installed)
-      calculate :tsquery,
-                AshPostgres.Tsquery,
-                expr(fragment("to_tsquery('simple', unaccent(?))", ^arg(:search))) do
-        argument :search, :string, allow_expr?: true, allow_nil?: false
-      end
+      # provide the default tsvector calculation for full-text search
+      calculate :tsvector,
+        AshPostgres.Tsvector,
+          expr(
+            fragment("to_tsvector('simple', coalesce(?, '')) || to_tsvector('simple', coalesce(?, ''))",
+            name,
+            title
+          )
+        )
     end
     #...
   end
@@ -232,49 +259,32 @@ defmodule Pagify do
   ## Full-text search
 
   We allow full-text search using the `tsvector` column in PostgreSQL. To enable full-text search,
-  you need to implement the `full_text_search` and `tsquery` calculations in your resource module.
-
-  First, you need to provide the `tsquery` calculation in the resource module. The calculation should
-  always look like this:
-
-  ```elixir
-    # mandatory so that you can search with Ash.Query.filter(Post, full_text_search(search: expr(tsquery(search: "post 1"))))
-    calculate :tsquery,
-              AshPostgres.Tsquery,
-              expr(fragment("to_tsquery(?)", ^arg(:search))) do
-      argument :search, :string, allow_expr?: true, allow_nil?: false
-    end
-
-    # or with dictionary and unaccent (needs unaccent extension installed)
-    calculate :tsquery,
-              AshPostgres.Tsquery,
-              expr(fragment("to_tsquery('simple', unaccent(?))", ^arg(:search))) do
-      argument :search, :string, allow_expr?: true, allow_nil?: false
-    end
-  ```
-
-  Afterwards, you need to provide the `full_text_search` calculation. This calculation should look as
-  following, wherease you can replace the `field` parameter with your field you want to include
-  in the full-text search (or you a generated tsvector column):
+  you need to either `use Pagify.Tsearch` in your module or implement the `full_text_search`,
+  `full_text_search_rankg`, `tsquery`, and `tsvector` calculations as described in `Pagify.Tsearch`
+  (tsvector calculation  is always mandatory).
 
   ```elixir
-    calculate :full_text_search,
-              :boolean,
-              expr(fragment("(to_tsvector(?) @@ ?)", field, ^arg(:search))) do
-      argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
-    end
+    # provide the default tsvector calculation for full-text search
+    calculate :tsvector,
+      AshPostgres.Tsvector,
+        expr(
+          fragment("to_tsvector('simple', coalesce(?, '')) || to_tsvector('simple', coalesce(?, ''))",
+          name,
+          title
+        )
+      )
   ```
 
   Or if you want to use a generated tsvector column, you can replace the fields
   part with the name of your generated tsvector column:
 
   ```elixir
-    calculate :full_text_search,
-              :boolean,
-              expr(fragment("(? @@ ?)", generated_tsvector, ^arg(:search))) do
-      argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
-    end
+    # use a tsvector column from the database
+    calculate :tsvector, AshPostgres.Tsvector, expr(fragment("?", tsv))
   ```
+
+  You can also configure `dynamic` tsvectors based on user input. Have a look at the
+  `Pagify.Tsearch` module for more information.
 
   Once configured, you can use the `search` parameter to apply full-text search.
 
@@ -548,15 +558,17 @@ defmodule Pagify do
     entry itself is a group (list) of `t:Pagify.scope/0` entries.
   - `:reset_on_filter?` - If set to `true`, the offset will be reset to 0 when
     a filter is applied. Defaults to `true`.
+  - `:full_text_search` - A list of options for full-text search. See
+    `t:Pagify.Tsearch.tsearch_option/0`.
 
   ## Look-up order
 
   Options are looked up in the following order:
 
-  1. Function arguments
-  2. Resource-level options
-  3. Global options in the application environment
-  4. Library defaults
+  1. Function arguments (highest priority)
+  2. Resource-level options (set in the resource module)
+  3. Global options in the application environment (set in config files)
+  4. Library defaults (lowest priority)
 
   """
   @type option ::
@@ -565,6 +577,7 @@ defmodule Pagify do
           | {replace_invalid_params? :: boolean()}
           | {pagify_scopes :: map()}
           | {reset_on_filter? :: boolean()}
+          | {full_text_search :: list(Pagify.Tsearch.tsearch_option())}
 
   @typedoc """
   A scope is a predefined filter that is merged with the user-provided filters.
@@ -628,6 +641,7 @@ defmodule Pagify do
   We take the keyword list `opts` and return a keyword list callback according to
   `Ash.read/2` but with the __:query__ keyword also within the list.
 
+  - `Pagify.search` is used to apply full-text search to the query.
   - `Paigfy.scopes` are used to apply predefined filters to the query.
   - `Pagify.filter_form` is used to apply filters generated by the `AshPhoenix.FilterForm` module.
   - `Pagify.filters` and `Pagify.order_by` are used to filter and order the query.
@@ -721,6 +735,7 @@ defmodule Pagify do
   The `opts` keyword list is used to pass additional options to the query engine.
   It should conform to the list of valid options at `Ash.read/2`.
 
+  - `Pagify.search` is used to apply full-text search to the query.
   - `Paigfy.scopes` are used to apply predefined filters to the query.
   - `Pagify.filter_form` is used to apply filters generated by the `AshPhoenix.FilterForm` module.
   - `Pagify.filters` and `Pagify.order_by` are used to filter and order the query.
@@ -982,7 +997,7 @@ defmodule Pagify do
   Returns meta information for the given query and pagify that can be used for
   building the pagination links.
 
-  # Examples
+  ## Examples
 
       iex> alias Pagify.Factory.Post
       iex> pagify = %Pagify{limit: 2, offset: 1, order_by: [name: :asc, comments_count: :desc_nils_last]}
@@ -1178,34 +1193,9 @@ defmodule Pagify do
   Used by `Pagify.query/2`. Pagify allows you to perform full-text searches on resources. It uses the
   built-in [PostgreSQL full-text search functionality](https://www.postgresql.org/docs/current/textsearch.html).
 
-  ```elixir
-    # on the fly tsvector generation
-    calculate :full_text_search,
-              :boolean,
-              expr(fragment("(to_tsvector(?) @@ ?)", field, ^arg(:search))) do
-      argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
-    end
+  Have a look at the `t:Pagify.Tsearch.tsearch_option/0` type for a list of available options.
 
-    # or with a generated tsvector
-    calculate :full_text_search,
-              :boolean,
-              expr(fragment("(? @@ ?)", generated_tsvector, ^arg(:search))) do
-      argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
-    end
-
-    calculate :tsquery,
-              AshPostgres.Tsquery,
-              expr(fragment("to_tsquery(?)", ^arg(:search))) do
-      argument :search, :string, allow_expr?: true, allow_nil?: false
-    end
-
-    # or with dictionary and unaccent (needs extension installed)
-    calculate :tsquery,
-              AshPostgres.Tsquery,
-              expr(fragment("to_tsquery('simple', unaccent(?))", ^arg(:search))) do
-      argument :search, :string, allow_expr?: true, allow_nil?: false
-    end
-  ```
+  If search is provided and there is no order_by, the query will be sorted by the rank of the search.
 
   This function does _not_ validate or apply default parameters to the given
   Pagify struct. Be sure to validate any user-generated parameters with
@@ -1616,43 +1606,6 @@ defmodule Pagify do
   resource. Thus the function is able to validate that only allowed fields are
   used for scoping, ordering and filtering. The function will also apply the
   default_limit and scoping if the resource provides one.
-
-  > #### Resource pagination macro {: .info}
-  >
-  > As of Ash >= 3.0 you do not need to use the `pagination` macro in your default read actions as
-  > default read actions are now paginatable with keyset and offset pagination
-  > (but pagination is not required)
-
-  You need to add the pagination macro call to the action of the resource that you
-  want to be paginated. The macro call is used to set the default limit, offset and
-  other options for the pagination.
-
-  Furthermore, you can define scopes in the resource module. Scopes are predefined
-  filters that can be applied to the query.
-
-      defmodule Your.Ash.Resource
-        @default_limit 15
-        def default_limit, do: @default_limit
-
-        @pagify_scopes %{
-          role: [
-            %{name: :all, filter: nil},
-            %{name: :admin, filter: %{author: "John"}},
-            %{name: :user, filter: %{author: "Doe"}}
-          ]
-        }
-        def pagify_scopes, do: @pagify_scopes
-
-        actions do
-          read :read do
-            ...
-            pagination offset?: true,
-                      default_limit: @default_limit,
-                      countable: true,
-                      required?: false
-          end
-        end
-      end
   """
   @spec validate(Ash.Query.t() | Ash.Resource.t(), map() | Pagify.t(), Keyword.t()) ::
           {:ok, Pagify.t()} | {:error, Meta.t()}
@@ -1729,7 +1682,7 @@ defmodule Pagify do
   If the full_text_search clause does not exist, it will be created. If the tsvector
   value already exists, it will be updated.
 
-  # Examples
+  ## Examples
 
       iex> set_tsvector("bar", [full_text_search: [tsvector: "foo"]])
       [full_text_search: [tsvector: "bar"]]
@@ -2201,19 +2154,20 @@ defmodule Pagify do
   end
 
   @doc """
-  Takes the Pagify.scopes and Pagify.form_filtetr and compiles them into a
+  Takes the Pagify.scopes and Pagify.form_filter and compiles them into a
   map of filters. The filters are merged with the base filters of the Pagify struct.
 
   At this stage we assume that the filters, filter_form, and scopes have been validated
   and are valid.
 
   > #### Full-text search {: .info}
-  > Per default we do store the full-text search term in the compiled filters
-  map. If you do not need to include the full-text search term in the compiled filters
+  > Per default we do store the full-text search term along with the user
+  provided full-text search options  in the compiled filters map. If
+  you do not need to include the full-text search setting in the compiled filters
   map, you can set the `include_full_text_search?` option to `false`.
-  The full-text search term is stored under the key `"__full_text_search"` in the
+  The full-text search setting is stored under the key `"__full_text_search"` in the
   resulting filters map. This can be handy if you want to store the current filter
-  state including the full-text search term and retrieve it later. See
+  state including the full-text search setting and retrieve it later. See
   `Pagify.query_for_filters_map/2` for an example.
 
   Precedence:
@@ -2402,12 +2356,12 @@ defmodule Pagify do
   end
 
   @doc """
-  Extracts the full-text search term from the filters map and returns a tuple of the filters map
-  without the full-text search term and the full-text search term.
+  Extracts the full-text search setting from the filters map and returns a tuple of the filters map
+  without the full-text search setting and the full-text search setting.
 
-  The full-text search term is stored under the key `"__full_text_search"` in the
+  The full-text search setting is stored under the key `"__full_text_search"` in the
   filters map (on in the `and` or `or` base of the filters_map). If the full-text
-  search term is not found, the function will return the filters map as is.
+  search setting is not found, the function will return the filters map as is.
   """
   @spec extract_full_text_search(map()) :: {map(), map() | nil}
   def extract_full_text_search(%{"__full_text_search" => full_text_search} = filters_map) do
@@ -2652,7 +2606,7 @@ defmodule Pagify do
   def push_order(pagify, field, opts) when is_binary(field) do
     push_order(pagify, String.to_existing_atom(field), opts)
   rescue
-    _e in ArgumentError -> pagify
+    ArgumentError -> pagify
   end
 
   defp limit_order_by(order_by, opts) do
@@ -2827,39 +2781,39 @@ defmodule Pagify do
 
   ## Examples for `:pagify_scopes`
 
-    iex> alias Pagify.Factory.Post
-    iex> opts = [
-    ...>   pagify_scopes: %{
-    ...>     role: [
-    ...>       %{name: :user, filter: %{name: "changed"}},
-    ...>       %{name: :other, filter: %{name: "other"}}
-    ...>     ],
-    ...>     status: [
-    ...>       %{name: :all, filter: nil, default?: true},
-    ...>       %{name: :active, filter: %{age: %{lt: 10}}},
-    ...>       %{name: :inactive, filter: %{age: %{gte: 10}}}
-    ...>     ]
-    ...>   },
-    ...>   for: Post
-    ...> ]
-    iex> get_option(:pagify_scopes, opts, %{
-    ...>   role: [
-    ...>     %{name: :default, filter: %{author: "Default"}}
-    ...>   ]
-    ...> })
-    %{
-      role: [
-        %{name: :admin, filter: %{author: "John"}},
-        %{name: :user, filter: %{name: "changed"}},
-        %{name: :other, filter: %{name: "other"}},
-        %{name: :default, filter: %{author: "Default"}}
-      ],
-      status: [
-        %{name: :inactive, filter: %{age: %{gte: 10}}},
-        %{name: :all, filter: nil, default?: true},
-        %{name: :active, filter: %{age: %{lt: 10}}}
-      ]
-    }
+      iex> alias Pagify.Factory.Post
+      iex> opts = [
+      ...>   pagify_scopes: %{
+      ...>     role: [
+      ...>       %{name: :user, filter: %{name: "changed"}},
+      ...>       %{name: :other, filter: %{name: "other"}}
+      ...>     ],
+      ...>     status: [
+      ...>       %{name: :all, filter: nil, default?: true},
+      ...>       %{name: :active, filter: %{age: %{lt: 10}}},
+      ...>       %{name: :inactive, filter: %{age: %{gte: 10}}}
+      ...>     ]
+      ...>   },
+      ...>   for: Post
+      ...> ]
+      iex> get_option(:pagify_scopes, opts, %{
+      ...>   role: [
+      ...>     %{name: :default, filter: %{author: "Default"}}
+      ...>   ]
+      ...> })
+      %{
+        role: [
+          %{name: :admin, filter: %{author: "John"}},
+          %{name: :user, filter: %{name: "changed"}},
+          %{name: :other, filter: %{name: "other"}},
+          %{name: :default, filter: %{author: "Default"}}
+        ],
+        status: [
+          %{name: :inactive, filter: %{age: %{gte: 10}}},
+          %{name: :all, filter: nil, default?: true},
+          %{name: :active, filter: %{age: %{lt: 10}}}
+        ]
+      }
   """
   @spec get_option(atom(), Keyword.t(), any()) :: any()
   def get_option(key, opts \\ [], default \\ nil)

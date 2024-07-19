@@ -1,11 +1,20 @@
 defmodule Pagify.Components do
   @moduledoc """
-  Phoenix components for full-text search, scoping, pagination, sortable
-  tables and filter forms with `Pagify`.
+  Phoenix headless components for pagination and sortable tables with `Pagify`.
 
   ## Introduction
 
   Please refere to the _Usage_ section in `Pagify` for more information.
+
+  This module provides two components: `Pagination` and `Table`. The components
+  are designed to work with `Pagify` and `Ash.Resource` structs. They are by
+  default unstyled components which add basic classes and attributes to the
+  elements they render. However, you can customize the components by passing
+  options.
+
+  Further, `Pagify.Components` provides helper functions to build paths for
+  pagination and sorting links. The paths are built based on the current query
+  parameters and the new parameters that are passed to the function.
 
   ## Customization
 

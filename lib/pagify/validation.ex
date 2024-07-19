@@ -1,7 +1,7 @@
 defmodule Pagify.Validation do
   @moduledoc """
-  Utilities for validating and transforming search, scoping, filtering, ordering,
-  and pagination parameters.
+  Utilities for validating and transforming full-text search, scoping,
+  filtering, ordering, and pagination parameters.
   """
 
   alias Ash.Error.Query.InvalidLimit

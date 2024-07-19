@@ -1,0 +1,235 @@
+defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
+  @moduledoc false
+  use Phoenix.Component
+
+  import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [busy?: 2, path_helper: 3]
+  import DataAggregatorWeb.Components.Dropdown, only: [dropdown: 1]
+  import DataAggregatorWeb.Components.Field, only: [custom_field: 1]
+  import DataAggregatorWeb.Components.Form, only: [simple_form: 1]
+  import DataAggregatorWeb.Components.Icon, only: [icon: 1]
+  import DataAggregatorWeb.Components.Input, only: [input: 1]
+  import DataAggregatorWeb.Gettext
+
+  alias Phoenix.LiveView.JS
+
+  @actions [
+    {"export", "hero-arrow-down-tray", "collection:export", nil},
+    {"encode", "hero-puzzle-piece", "collection:encode", "confirm_encoding_alert"},
+    {"publish", "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"}
+    # at the moment there is no approval process, so we just remove the button to avoid confusion
+    # {~t"Approve"m, "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
+  ]
+
+  attr :search, Phoenix.HTML.Form, required: true, doc: "The search form"
+  attr :meta, Pagify.Meta, required: true, doc: "The pagify meta object"
+  attr :collection_id, :string, required: true, doc: "The collection id"
+  attr :records_count, :integer, required: true, doc: "The total number of records"
+  attr :filters_count, :integer, required: true, doc: "The number of active filters"
+  attr :busy, :boolean, required: true, doc: "Whether the actions are busy"
+  attr :busy_action, :string, required: true, doc: "The busy action"
+  attr :layer, :string, required: true, doc: "The current layer"
+
+  def toolbar(assigns) do
+    assigns = assign(assigns, :actions, @actions)
+
+    ~H"""
+    <div :if={@records_count > 0} class="flex justify-between px-6 pb-6 lg:px-8">
+      <%!-- Search and filter --%>
+      <div class="join max-sm:w-full">
+        <%!-- Full-text search  --%>
+        <div class="flex-1">
+          <div>
+            <.simple_form
+              for={@search}
+              class="w-full"
+              phx-change="search:reset"
+              phx-submit="search:apply"
+              phx-window-keydown={JS.focus(to: "#search_query")}
+              phx-key="/"
+              phx-debounce="300"
+            >
+              <.custom_field
+                field={@search[:query]}
+                placeholder={~t"Search"}
+                class="input input-bordered join-item max-sm:text-base sm:inline-flex items-center flex-row gap-2"
+              >
+                <:content :let={field}>
+                  <input
+                    :if={@search[:query].value != ""}
+                    value=""
+                    type="reset"
+                    class="text-base-content/50 hero-x-mark size-5 !bg-current cursor-pointer hover:text-base-content/90 phx-submit-loading:hidden phx-change-loading:hidden"
+                    aria-hidden="true"
+                  />
+                  <input
+                    :if={@search[:query].value == ""}
+                    value=""
+                    type="submit"
+                    name="hero-magnifying-glass"
+                    class="text-base-content/50 hero-magnifying-glass size-5 !bg-current cursor-pointer hover:text-base-content/90 phx-submit-loading:hidden phx-change-loading:hidden"
+                  />
+                  <.icon
+                    name="hero-cog-6-tooth animate-spin"
+                    class="size-5 text-base-content/50 hidden phx-change-loading:block phx-submit-loading:block"
+                  />
+                  <.input {field} class="max-sm:w-0" inside />
+                </:content>
+              </.custom_field>
+            </.simple_form>
+          </div>
+        </div>
+
+        <%!-- Column select --%>
+        <%!-- <button
+            data-tip={~t"Columns"m}
+            class="join-item btn btn-outline border-base-content/20 btn-disabled border-y max-sm:btn-square sm:max-md:tooltip"
+          >
+            <.icon name="hero-table-cells" />
+            <span class="max-md:hidden"><%= ~t"Columns"m %></span>
+          </button> --%>
+
+        <%!-- Layers --%>
+        <.dropdown id="layer" class="dropdown-end">
+          <:summary>
+            <summary
+              class="join-item btn btn-outline border-base-content/20 max-lg:btn-square max-lg:inline-flex sm:max-lg:tooltip"
+              data-tip={current_layer_label(@layer)}
+            >
+              <.icon :if={@layer == "import"} name="hero-arrow-up-tray" />
+              <.icon :if={@layer == "encoding"} name="hero-puzzle-piece" />
+              <.icon :if={@layer == "approval"} name="hero-check-badge" />
+              <span class="max-lg:hidden"><%= current_layer_label(@layer) %></span>
+            </summary>
+          </:summary>
+          <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-56 gap-1 border p-2 shadow-2xl">
+            <li>
+              <.link
+                patch={path_helper(@collection_id, "approval", @meta)}
+                class={@layer == "approval" && "active"}
+              >
+                <.icon name="hero-check-badge" class="size-5" />
+                <span class="font-[sans-serif]"><%= current_layer_label("approval") %></span>
+              </.link>
+            </li>
+            <li>
+              <.link
+                patch={path_helper(@collection_id, "encoding", @meta)}
+                class={@layer == "encoding" && "active"}
+              >
+                <.icon name="hero-puzzle-piece" class="size-5" />
+                <span class="font-[sans-serif]"><%= current_layer_label("encoding") %></span>
+              </.link>
+            </li>
+            <li>
+              <.link
+                patch={path_helper(@collection_id, "import", @meta)}
+                class={@layer == "import" && "active"}
+              >
+                <.icon name="hero-arrow-up-tray" class="size-5" />
+                <span class="font-[sans-serif]"><%= current_layer_label("import") %></span>
+              </.link>
+            </li>
+          </ul>
+        </.dropdown>
+
+        <%!-- Filter --%>
+        <div class="indicator">
+          <span :if={@filters_count > 0} class="indicator-item badge badge-primary">
+            <%= @filters_count %>
+          </span>
+          <button
+            phx-click="filter_form:toggle"
+            class={[
+              if(@filters_count == 0,
+                do: "border-base-content/20",
+                else: "border-primary sm:outline-primary sm:outline sm:hover:outline-none"
+              ),
+              "join-item btn btn-outline border-y max-lg:btn-square sm:!rounded-e-lg sm:max-lg:tooltip"
+            ]}
+            data-tip={~t"Filters"m}
+          >
+            <.icon name="hero-adjustments-vertical" />
+            <span class="max-lg:hidden"><%= ~t"Filters"m %></span>
+          </button>
+        </div>
+
+        <%!-- Join actions buttons (< sm) --%>
+        <.dropdown id="actions-sm" class="dropdown-end sm:hidden">
+          <:summary>
+            <summary
+              disabled={@busy}
+              class="join-item btn btn-outline border-base-content/20 !rounded-e-lg btn-square sm:hidden"
+              data-tip={~t"Actions"m}
+            >
+              <.icon name={if @busy, do: "hero-cog-6-tooth-solid animate-spin", else: "hero-bars-3"} />
+            </summary>
+          </:summary>
+          <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-44 gap-1 border p-2 shadow-2xl">
+            <li :for={{label, icon, action, alert} <- @actions}>
+              <button
+                phx-click={action}
+                data-confirm={alert && ~t"Are you sure?"m}
+                data-confirm_id={alert}
+              >
+                <.icon name={icon} class="size-5" />
+                <span class="font-[sans-serif]"><%= action_label(label) %></span>
+              </button>
+            </li>
+          </ul>
+        </.dropdown>
+      </div>
+
+      <%!-- Dropdown action buttons (sm-lg) --%>
+      <.dropdown id="actions-md" class="dropdown-end max-sm:hidden xl:hidden">
+        <:summary>
+          <summary
+            disabled={@busy}
+            class="btn btn-outline border-base-content/20 max-lg:inline-flex max-sm:btn-square sm:max-sm:tooltip"
+            data-tip={~t"Actions"m}
+          >
+            <.icon name={if @busy, do: "hero-cog-6-tooth-solid animate-spin", else: "hero-bars-3"} />
+            <span class="max-sm:hidden"><%= ~t"Actions"m %></span>
+          </summary>
+        </:summary>
+        <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-20 mt-14 w-44 gap-1 border p-2 shadow-2xl">
+          <li :for={{label, icon, action, alert} <- @actions}>
+            <button
+              phx-click={action}
+              data-confirm={alert && ~t"Are you sure?"m}
+              data-confirm_id={alert}
+            >
+              <.icon name={icon} class="size-5" />
+              <span class="font-[sans-serif]"><%= action_label(label) %></span>
+            </button>
+          </li>
+        </ul>
+      </.dropdown>
+
+      <%!-- Inline action buttons (> xl) --%>
+      <div id="actions-xl" class="join max-xl:hidden">
+        <button
+          :for={{label, icon, action, alert} <- @actions}
+          class="join-item btn btn-outline border-base-content/20"
+          phx-click={action}
+          data-confirm={alert && ~t"Are you sure?"m}
+          data-confirm_id={alert}
+          disabled={@busy}
+        >
+          <.icon :if={busy?(action, @busy_action) == false} name={icon} />
+          <.icon :if={busy?(action, @busy_action)} name="hero-cog-6-tooth-solid animate-spin" />
+          <span class="max-sm:hidden"><%= action_label(label) %></span>
+        </button>
+      </div>
+    </div>
+    """
+  end
+
+  defp current_layer_label("approval"), do: ~t"Approval Layer"m
+  defp current_layer_label("encoding"), do: ~t"Encoding Layer"m
+  defp current_layer_label("import"), do: ~t"Import Layer"m
+
+  defp action_label("export"), do: ~t"Export"m
+  defp action_label("encode"), do: ~t"Encode"m
+  defp action_label("publish"), do: ~t"Publish"m
+  defp action_label("approve"), do: ~t"Approve"m
+end
