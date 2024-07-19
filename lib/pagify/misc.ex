@@ -8,18 +8,23 @@ defmodule Pagify.Misc do
   environment.
   """
   @spec get_global_opts(atom) :: keyword
-  def get_global_opts(component) when component in [:pagination, :table] do
-    case opts_func(component) do
+  def get_global_opts(component, module \\ :pagify_phoenix) when component in [:pagination, :table, :full_text_search] do
+    case opts_func(component, module) do
       nil -> []
       {module, func} -> apply(module, func, [])
+      config -> config
     end
   end
 
-  defp opts_func(component) do
+  defp opts_func(component, module) do
     :data_aggregator
-    |> Application.get_env(:pagify_phoenix, [])
+    |> Application.get_env(module, [])
     |> Keyword.get(component, [])
-    |> Keyword.get(:opts)
+    |> maybe_get_opts()
+  end
+
+  defp maybe_get_opts(config) do
+    Keyword.get(config, :opts, config)
   end
 
   @doc """

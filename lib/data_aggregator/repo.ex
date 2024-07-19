@@ -29,6 +29,6 @@ defmodule DataAggregator.Repo do
 
   # Installs Postgres extensions that ash commonly uses
   def installed_extensions do
-    ["ash-functions", "uuid-ossp", "citext", AshUUID.PostgresExtension]
+    ["ash-functions", "uuid-ossp", "citext", "unaccent", AshUUID.PostgresExtension]
   end
 end

@@ -6,6 +6,7 @@ defmodule Pagify.ValidationTest do
 
   alias Pagify.Factory.Comment
   alias Pagify.Factory.Post
+  alias Pagify.Factory.User
   alias Pagify.Validation
 
   doctest Pagify.Validation, import: true
@@ -187,12 +188,12 @@ defmodule Pagify.ValidationTest do
 
     test "does not allow full-text search if calculations are not provided" do
       assert %{
-               search: "Post 1",
+               search: "User 1",
                errors: [
-                 search: [%Pagify.Error.Query.SearchNotImplemented{resource: Comment}]
+                 search: [%Pagify.Error.Query.SearchNotImplemented{resource: User}]
                ]
              } =
-               Validation.validate_search(%{search: "Post 1"}, for: Comment)
+               Validation.validate_search(%{search: "User 1"}, for: User)
     end
   end
 

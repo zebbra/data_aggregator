@@ -21,6 +21,8 @@ defmodule DataAggregator.Records.Record do
     ],
     notifiers: [Ash.Notifier.PubSub]
 
+  use Pagify.Tsearch
+
   alias __MODULE__
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
@@ -47,6 +49,13 @@ defmodule DataAggregator.Records.Record do
     ]
   }
   def pagify_scopes, do: @pagify_scopes
+
+  @full_text_search [
+    tsvector_column: [
+      encoded_tsvector: Ash.Query.expr(encoded_tsvector)
+    ]
+  ]
+  def full_text_search, do: @full_text_search
 
   attributes do
     uuid_attribute :id, prefix: "rec"
@@ -141,21 +150,25 @@ defmodule DataAggregator.Records.Record do
               :boolean,
               Mids.LevelFour
 
-    calculate :full_text_search,
-              :boolean,
-              expr(fragment("(to_tsvector(?) @@ ?)", tax_scientific_name, ^arg(:search))) do
-      argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
-    end
+    calculate :tsvector,
+              AshPostgres.Tsvector,
+              expr(
+                fragment(
+                  "to_tsvector('simple', coalesce(?, '')) || to_tsvector('simple', coalesce(?, ''))",
+                  tax_scientific_name,
+                  occ_occurrence_id
+                )
+              )
 
-    # calculate :generated_full_text_search,
-    #           :boolean,
-    #           expr(fragment("(? @@ ?)", generated_tsvector, ^arg(:search))) do
-    #   argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
-    # end
-
-    calculate :tsquery, AshPostgres.Tsquery, expr(fragment("to_tsquery(?)", ^arg(:search))) do
-      argument :search, :string, allow_expr?: true, allow_nil?: false
-    end
+    calculate :encoded_tsvector,
+              AshPostgres.Tsvector,
+              expr(
+                fragment(
+                  "to_tsvector('simple', coalesce(?, '')) || to_tsvector('simple', coalesce(?, ''))",
+                  encoded_record.tax_scientific_name,
+                  encoded_record.occ_occurrence_id
+                )
+              )
   end
 
   paper_trail do

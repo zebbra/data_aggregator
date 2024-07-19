@@ -96,8 +96,10 @@ defmodule Pagify.Validation do
 
   @spec validate_full_text_search(map(), Keyword.t()) :: map()
   defp validate_full_text_search(params, opts) do
-    valid = valid_full_text_search?(:tsquery, Keyword.get(opts, :for))
-    valid = valid && valid_full_text_search?(:full_text_search, Keyword.get(opts, :for))
+    resource = Keyword.get(opts, :for)
+    valid = valid_full_text_search?(:tsquery, resource)
+    valid = valid && valid_full_text_search?(:full_text_search_rank, resource)
+    valid = valid && valid_full_text_search?(:full_text_search, resource)
 
     if valid do
       params
@@ -106,7 +108,7 @@ defmodule Pagify.Validation do
         add_error(
           params,
           :search,
-          SearchNotImplemented.exception(resource: Keyword.get(opts, :for))
+          SearchNotImplemented.exception(resource: resource)
         )
 
       if Keyword.get(opts, :replace_invalid_params?) do
@@ -124,7 +126,11 @@ defmodule Pagify.Validation do
   end
 
   defp valid_full_text_search_fields(resource) do
-    filterable_calculations(resource, [AshPostgres.Tsquery, Ash.Type.Boolean])
+    filterable_calculations(resource, [
+      AshPostgres.Tsquery,
+      Ash.Type.Boolean,
+      Ash.Type.Float
+    ])
   end
 
   defp filterable_calculations(resource, types) do

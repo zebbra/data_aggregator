@@ -5,6 +5,8 @@ defmodule Pagify.Factory.Post do
     api: Pagify.Factory.Api,
     extensions: [AshUUID]
 
+  use Pagify.Tsearch
+
   @default_limit 15
   def default_limit, do: @default_limit
 
@@ -42,15 +44,9 @@ defmodule Pagify.Factory.Post do
   end
 
   calculations do
-    calculate :full_text_search,
-              :boolean,
-              expr(fragment("(to_tsvector(?) @@ ?)", title, ^arg(:search))) do
-      argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
-    end
-
-    calculate :tsquery, AshPostgres.Tsquery, expr(fragment("to_tsquery(?)", ^arg(:search))) do
-      argument :search, :string, allow_expr?: true, allow_nil?: false
-    end
+    calculate :tsvector,
+              AshPostgres.Tsvector,
+              expr(fragment("to_tsvector('simple', coalesce(?, ''))", title))
 
     calculate :add_age, :integer, expr(fragment("age + ?", ^arg(:add))) do
       argument :add, :integer, allow_nil?: false

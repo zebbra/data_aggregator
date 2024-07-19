@@ -5,6 +5,8 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
 
   use DataAggregatorWeb, :live_component
 
+  import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [filter_map: 3]
+
   alias DataAggregator.Records
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
@@ -138,15 +140,12 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
   end
 
   defp create_and_enqueue(socket, params) do
-    %{collection: collection, meta: %{pagify: pagify}, rows_count: rows_count} = socket.assigns
+    %{collection: collection, meta: %{pagify: pagify}, rows_count: rows_count, layer: layer} =
+      socket.assigns
 
     collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
 
-    records_to_export_query =
-      Record
-      |> Pagify.query_to_filters_map(pagify)
-      |> Pagify.merge_filters(collection.records_to_export_query)
-      |> Map.get(:filters)
+    records_to_export_query = filter_map(pagify, collection.records_to_export_query, layer)
 
     %{
       name: "export-#{collection.name}-#{:os.system_time()}",
@@ -166,15 +165,10 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
   end
 
   defp assign_rows_count(socket) do
-    %{collection: collection, meta: %{pagify: pagify}} = socket.assigns
+    %{collection: collection, meta: %{pagify: pagify}, layer: layer} = socket.assigns
     collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
 
-    records_to_export_query =
-      Record
-      |> Pagify.query_to_filters_map(pagify)
-      |> Pagify.merge_filters(collection.records_to_export_query)
-      |> Map.get(:filters)
-
+    records_to_export_query = filter_map(pagify, collection.records_to_export_query, layer)
     count_query = Pagify.query_for_filters_map(Record, records_to_export_query)
 
     rows_count = Records.count!(count_query)

@@ -5,6 +5,7 @@ defmodule PagifyTest do
   alias Pagify.Factory.Api
   alias Pagify.Factory.Comment
   alias Pagify.Factory.Post
+  alias Pagify.Factory.User
   alias Pagify.Meta
 
   require Ash.Query
@@ -248,6 +249,45 @@ defmodule PagifyTest do
       ])
 
       assert_comment_page_opts(pagify, [limit: 25, offset: 0, count: true], [])
+    end
+  end
+
+  describe "query/2" do
+    test "uses default resource order_by if no order_by is provided" do
+      pagify = %Pagify{}
+      query = Ash.Query.new(Post)
+      assert Pagify.query(query, pagify) == %Ash.Query{resource: Pagify.Factory.Post}
+    end
+
+    test "applies ts_rank order if search is provided and no order_by is provided" do
+      pagify = %Pagify{search: "Post 1"}
+      query = Ash.Query.new(Post)
+
+      tsvector = Pagify.Tsearch.tsvector()
+      tsquery = Ash.Query.expr(tsquery(search: Pagify.Tsearch.tsquery("Post 1")))
+
+      assert Pagify.query(query, pagify) == %Ash.Query{
+               resource: Pagify.Factory.Post,
+               filter: Ash.Query.filter(Post, full_text_search(tsvector: tsvector, tsquery: tsquery)).filter,
+               sort:
+                 Ash.Query.sort(Post,
+                   full_text_search_rank: {:desc, %{tsvector: tsvector, tsquery: tsquery}}
+                 ).sort
+             }
+    end
+
+    test "applies order_by and not ts_rank if search and order_by is provided" do
+      pagify = %Pagify{search: "Post 1", order_by: :name}
+      query = Ash.Query.new(Post)
+
+      tsvector = Pagify.Tsearch.tsvector()
+      tsquery = Ash.Query.expr(tsquery(search: Pagify.Tsearch.tsquery("Post 1")))
+
+      assert Pagify.query(query, pagify) == %Ash.Query{
+               resource: Pagify.Factory.Post,
+               filter: Ash.Query.filter(Post, full_text_search(tsvector: tsvector, tsquery: tsquery)).filter,
+               sort: Ash.Query.sort(Post, name: :asc).sort
+             }
     end
   end
 
@@ -919,7 +959,9 @@ defmodule PagifyTest do
     test "stores full-text search under __full_text_search" do
       assert %Pagify{
                filters: %{
-                 "__full_text_search" => "Post 1"
+                 "__full_text_search" => %{
+                   "search" => "Post 1"
+                 }
                },
                search: "Post 1"
              } ==
@@ -931,6 +973,52 @@ defmodule PagifyTest do
                )
     end
 
+    test "stores user provided full-text search opts alongside the search term under __full_text_search" do
+      assert %Pagify{
+               filters: %{
+                 "__full_text_search" => %{
+                   "search" => "Post 1",
+                   "any_word" => true,
+                   "negation" => true,
+                   "prefix" => true,
+                   "tsvector" => "custom_tsvector"
+                 }
+               },
+               search: "Post 1"
+             } ==
+               Pagify.query_to_filters_map(
+                 Post,
+                 %Pagify{
+                   search: "Post 1"
+                 },
+                 full_text_search: [
+                   negation: true,
+                   prefix: true,
+                   any_word: true,
+                   tsvector: "custom_tsvector"
+                 ]
+               )
+    end
+
+    test "removes invalid full-text search opts" do
+      assert %Pagify{
+               filters: %{
+                 "__full_text_search" => %{
+                   "search" => "Post 1",
+                   "any_word" => true
+                 }
+               },
+               search: "Post 1"
+             } ==
+               Pagify.query_to_filters_map(
+                 Post,
+                 %Pagify{
+                   search: "Post 1"
+                 },
+                 full_text_search: [foo: :bar, any_word: true]
+               )
+    end
+
     test "stores full-text search under __full_text_search in combinatino with other filters" do
       assert %Pagify{
                filters: %{
@@ -939,7 +1027,7 @@ defmodule PagifyTest do
                    %{"name" => %{"eq" => "Post 1"}},
                    %{"author" => "John"}
                  ],
-                 "__full_text_search" => "Post 1"
+                 "__full_text_search" => %{"search" => "Post 1"}
                },
                filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"},
                scopes: [role: :admin],
@@ -973,17 +1061,17 @@ defmodule PagifyTest do
     test "does not raise and not store in case of invalid full-text search" do
       assert %{
                filters: %{},
-               search: "Comment 1",
+               search: "User 1",
                errors: [
                  search: [
-                   %Pagify.Error.Query.SearchNotImplemented{resource: Pagify.Factory.Comment}
+                   %Pagify.Error.Query.SearchNotImplemented{resource: User}
                  ]
                ]
              } =
                Pagify.query_to_filters_map(
-                 Comment,
+                 User,
                  %Pagify{
-                   search: "Comment 1"
+                   search: "User 1"
                  },
                  raise_on_invalid_search?: false
                )
@@ -992,7 +1080,7 @@ defmodule PagifyTest do
     test "raises and does not store in case of invalid full-text search" do
       assert_raise Pagify.Error.Query.SearchNotImplemented, fn ->
         Pagify.query_to_filters_map(
-          Comment,
+          User,
           %Pagify{
             search: "Comment 1"
           }
@@ -1031,15 +1119,37 @@ defmodule PagifyTest do
                Ash.Query.filter(Post, %{name: "foo"})
     end
 
-    test "includes full_text_search per default" do
-      assert Pagify.query_for_filters_map(
-               Post,
-               %{"__full_text_search" => "bar"}
-             ) ==
-               Ash.Query.filter(
-                 Post,
-                 full_text_search(search: Ash.Query.expr(tsquery(search: "bar")))
-               )
+    test "includes full_text_search per default and orders by ts_rank if no order_by is provided" do
+      assert_map_query_equals_full_text_search(
+        %{"__full_text_search" => %{"search" => "bar"}},
+        "bar:*"
+      )
+    end
+
+    test "includes user provided search settings as well" do
+      assert_map_query_equals_full_text_search(
+        %{
+          "__full_text_search" => %{
+            "search" => "!bar blub",
+            "any_word" => true,
+            "negation" => false,
+            "prefix" => false
+          }
+        },
+        "!bar | blub"
+      )
+    end
+
+    test "falls back to default tsvector if an invalid tsvector is stored" do
+      assert_map_query_equals_full_text_search(
+        %{
+          "__full_text_search" => %{
+            "search" => "bar",
+            "tsvector" => "invalid_tsvector"
+          }
+        },
+        "bar:*"
+      )
     end
 
     test "does not include full_text_search if include_full_text_search? is true but none is provided" do
@@ -1047,29 +1157,65 @@ defmodule PagifyTest do
                Post,
                %{"name" => "bar"}
              ) ==
-               Ash.Query.filter(
-                 Post,
-                 name: "bar"
-               )
+               Ash.Query.filter(Post, name: "bar")
     end
 
     test "does not include full_text_search if none is configured and does not raise" do
       assert Pagify.query_for_filters_map(
-               Comment,
-               %{"and" => [%{"body" => "foo"}], "__full_text_search" => "bar"},
+               User,
+               %{"and" => [%{"name" => "foo"}], "__full_text_search" => %{"search" => "bar"}},
                raise_on_invalid_search?: false
              ) ==
-               Ash.Query.filter(Comment, %{body: "foo"})
+               Ash.Query.filter(User, %{name: "foo"})
     end
 
     test "does not include full_text_search if none is configured and raises" do
       assert_raise Pagify.Error.Query.SearchNotImplemented, fn ->
         Pagify.query_for_filters_map(
-          Comment,
-          %{"and" => [%{"body" => "foo"}], "__full_text_search" => "bar"}
+          User,
+          %{"and" => [%{"name" => "foo"}], "__full_text_search" => %{"search" => "bar"}}
         )
       end
     end
+  end
+
+  describe "extract_full_text_search/1" do
+    test "extracts full_text_search from filters" do
+      assert Pagify.extract_full_text_search(%{"__full_text_search" => "bar"}) ==
+               {%{}, "bar"}
+    end
+
+    test "does not extract full_text_search if none is provided" do
+      assert Pagify.extract_full_text_search(%{"name" => "bar"}) ==
+               {%{"name" => "bar"}, nil}
+    end
+
+    test "extracts the full_text_search term from the and base filter with multiple entries" do
+      assert Pagify.extract_full_text_search(%{
+               :foo => :bar,
+               "and" => [%{"__full_text_search" => "bar"}, %{"name" => "foo"}],
+               "or" => [%{"age" => "12"}]
+             }) ==
+               {%{:foo => :bar, "and" => [%{"name" => "foo"}], "or" => [%{"age" => "12"}]}, "bar"}
+    end
+
+    test "extracts the full_text_search term from the or base filter with multiple entries" do
+      assert Pagify.extract_full_text_search(%{
+               :foo => :bar,
+               "or" => [%{"__full_text_search" => "bar"}, %{"name" => "foo"}]
+             }) ==
+               {%{:foo => :bar, "or" => [%{"name" => "foo"}]}, "bar"}
+    end
+  end
+
+  defp assert_map_query_equals_full_text_search(map_query, search) do
+    tsvector = Pagify.Tsearch.tsvector()
+    tsquery = Ash.Query.expr(tsquery(search: search))
+
+    assert Pagify.query_for_filters_map(Post, map_query) ==
+             Post
+             |> Ash.Query.filter(full_text_search(tsvector: tsvector, tsquery: tsquery))
+             |> Ash.Query.sort(full_text_search_rank: {:desc, %{tsvector: tsvector, tsquery: tsquery}})
   end
 
   defp assert_post_names(pagify, names, opts \\ []) do

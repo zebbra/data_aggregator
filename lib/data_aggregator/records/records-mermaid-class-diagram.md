@@ -786,6 +786,9 @@ classDiagram
         Integer encoder_job_id
         Integer fast_track_checker_job_id
         Atom state
+        Boolean full_text_search
+        Float full_text_search_rank
+        Tsquery tsquery
         Boolean iucn_redlist
         Boolean encoded
         Integer mids_level
@@ -793,8 +796,8 @@ classDiagram
         Boolean mids_level_two
         Boolean mids_level_three
         Boolean mids_level_four
-        Boolean full_text_search
-        Tsquery tsquery
+        Tsvector tsvector
+        Tsvector encoded_tsvector
         Version[] paper_trail_versions
         Collection collection
         Import[] imports

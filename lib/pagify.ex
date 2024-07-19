@@ -134,14 +134,14 @@ defmodule Pagify do
     end
 
     calculations do
-      # on the fly tsvector calculation
+      # on the fly tsvector generation
       calculate :full_text_search,
-              :boolean,
-              expr(fragment("(to_tsvector(?) @@ ?)", tax_scientific_name, ^arg(:search))) do
+                :boolean,
+                expr(fragment("(to_tsvector(?) @@ ?)", field, ^arg(:search))) do
         argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
       end
 
-      # or use a generated tsvector column
+      # or with a generated tsvector
       calculate :full_text_search,
                 :boolean,
                 expr(fragment("(? @@ ?)", generated_tsvector, ^arg(:search))) do
@@ -149,7 +149,16 @@ defmodule Pagify do
       end
 
       # mandatory so that you can search with Ash.Query.filter(Post, full_text_search(search: expr(tsquery(search: "post 1"))))
-      calculate :tsquery, AshPostgres.Tsquery, expr(fragment("to_tsquery(?)", ^arg(:search))) do
+      calculate :tsquery,
+                AshPostgres.Tsquery,
+                expr(fragment("to_tsquery(?)", ^arg(:search))) do
+        argument :search, :string, allow_expr?: true, allow_nil?: false
+      end
+
+      # or with dictionary and unaccent (needs unaccent extension installed)
+      calculate :tsquery,
+                AshPostgres.Tsquery,
+                expr(fragment("to_tsquery('simple', unaccent(?))", ^arg(:search))) do
         argument :search, :string, allow_expr?: true, allow_nil?: false
       end
     end
@@ -229,19 +238,29 @@ defmodule Pagify do
   always look like this:
 
   ```elixir
-    calculate :tsquery, AshPostgres.Tsquery, expr(fragment("to_tsquery(?)", ^arg(:search))) do
+    # mandatory so that you can search with Ash.Query.filter(Post, full_text_search(search: expr(tsquery(search: "post 1"))))
+    calculate :tsquery,
+              AshPostgres.Tsquery,
+              expr(fragment("to_tsquery(?)", ^arg(:search))) do
+      argument :search, :string, allow_expr?: true, allow_nil?: false
+    end
+
+    # or with dictionary and unaccent (needs unaccent extension installed)
+    calculate :tsquery,
+              AshPostgres.Tsquery,
+              expr(fragment("to_tsquery('simple', unaccent(?))", ^arg(:search))) do
       argument :search, :string, allow_expr?: true, allow_nil?: false
     end
   ```
 
   Afterwards, you need to provide the `full_text_search` calculation. This calculation should look as
-  following, wherease you can replace the `fields` parameter with your fields you want to include
-  in the full-text search:
+  following, wherease you can replace the `field` parameter with your field you want to include
+  in the full-text search (or you a generated tsvector column):
 
   ```elixir
     calculate :full_text_search,
               :boolean,
-              expr(fragment("(to_tsvector(?) @@ ?)", fields, ^arg(:search))) do
+              expr(fragment("(to_tsvector(?) @@ ?)", field, ^arg(:search))) do
       argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
     end
   ```
@@ -492,7 +511,12 @@ defmodule Pagify do
   ]
   @default_opts_keys Enum.map(@default_opts, fn {k, _} -> k end)
 
-  @internal_opts [:__compiled_pagify_scopes, :__compiled_pagify_default_scopes, :for]
+  @internal_opts [
+    :__compiled_pagify_scopes,
+    :__compiled_pagify_default_scopes,
+    :for,
+    :full_text_search
+  ]
   @resource_options [:default_limit, :pagify_scopes]
 
   defstruct limit: nil,
@@ -1169,7 +1193,16 @@ defmodule Pagify do
       argument :search, AshPostgres.Tsquery, allow_expr?: true, allow_nil?: false
     end
 
-    calculate :tsquery, AshPostgres.Tsquery, expr(fragment("to_tsquery(?)", ^arg(:search))) do
+    calculate :tsquery,
+              AshPostgres.Tsquery,
+              expr(fragment("to_tsquery(?)", ^arg(:search))) do
+      argument :search, :string, allow_expr?: true, allow_nil?: false
+    end
+
+    # or with dictionary and unaccent (needs extension installed)
+    calculate :tsquery,
+              AshPostgres.Tsquery,
+              expr(fragment("to_tsquery('simple', unaccent(?))", ^arg(:search))) do
       argument :search, :string, allow_expr?: true, allow_nil?: false
     end
   ```
@@ -1186,9 +1219,22 @@ defmodule Pagify do
   def search(%Ash.Query{} = q, %Pagify{search: nil}, _opts), do: q
   def search(%Ash.Query{} = q, %Pagify{search: ""}, _opts), do: q
 
-  def search(%Ash.Query{} = q, %Pagify{search: search}, _opts) do
-    Ash.Query.filter(q, full_text_search(search: Ash.Query.expr(tsquery(search: search))))
+  def search(%Ash.Query{} = q, %Pagify{search: search} = pagify, opts) do
+    tsquery = Pagify.Tsearch.tsquery(search, opts)
+    tsquery = Ash.Query.expr(tsquery(search: tsquery))
+    tsvector = Pagify.Tsearch.tsvector(opts)
+
+    q
+    |> Ash.Query.filter(full_text_search(tsvector: tsvector, tsquery: tsquery))
+    |> maybe_put_ts_rank(pagify, tsvector, tsquery)
   end
+
+  defp maybe_put_ts_rank(%Ash.Query{} = q, %Pagify{order_by: order_by}, tsvector, tsquery)
+       when is_nil(order_by) or order_by == [] do
+    Ash.Query.sort(q, full_text_search_rank: {:desc, %{tsvector: tsvector, tsquery: tsquery}})
+  end
+
+  defp maybe_put_ts_rank(%Ash.Query{} = q, _, _, _), do: q
 
   ## Scope
 
@@ -1678,6 +1724,34 @@ defmodule Pagify do
   end
 
   @doc """
+  Sets the tsvector value in the full_text_search clause of the `Keyword.t` opts parameter.
+
+  If the full_text_search clause does not exist, it will be created. If the tsvector
+  value already exists, it will be updated.
+
+  # Examples
+
+      iex> set_tsvector("bar", [full_text_search: [tsvector: "foo"]])
+      [full_text_search: [tsvector: "bar"]]
+
+      iex> set_tsvector("bar")
+      [full_text_search: [tsvector: "bar"]]
+
+      iex> set_tsvector("foo", [full_text_search: [tsvector: "foo"]])
+      [full_text_search: [tsvector: "foo"]]
+  """
+  def set_tsvector(tsvector, opts \\ []) do
+    Keyword.update(
+      opts,
+      :full_text_search,
+      [tsvector: tsvector],
+      fn full_text_search ->
+        Keyword.put(full_text_search, :tsvector, tsvector)
+      end
+    )
+  end
+
+  @doc """
   Sets the limit value of a `Pagify` struct.
 
       iex> set_limit(%Pagify{limit: 10, offset: 10}, 20)
@@ -2058,6 +2132,12 @@ defmodule Pagify do
 
       iex> merge_filters(%Pagify{filters: %{name: "foo"}}, %{age: 10})
       %Pagify{filters: %{"and" => [%{"name" => "foo"}, %{"age" => 10}]}}
+
+      iex> merge_filters(%Pagify{filters: %{"or" => [%{name: "foo"}]}}, %{age: 10})
+      %Pagify{filters: %{"or" => [%{"name" => "foo"}], "and" => [%{"age" => 10}]}}
+
+      iex> merge_filters(%Pagify{filters: %{"or" => [%{name: "foo"}]}}, %{"or" => [%{age: 10}]})
+      %Pagify{filters: %{"or" => [%{"name" => "foo"}, %{"age" => 10}]}}
   """
   @spec merge_filters(Pagify.t(), map() | true) :: Pagify.t()
   def merge_filters(pagify, nil), do: pagify
@@ -2182,7 +2262,9 @@ defmodule Pagify do
             %{"author" => "John"},
             %{"name" => %{"eq" => "Post 1"}}
           ],
-          "__full_text_search" => "search term"
+          "__full_text_search" => %{
+            "search" => "search term"
+          }
         },
         filter_form: %{"field" => "name", "operator" => "eq", "value" => "Post 1"},
         search: "search term"
@@ -2247,7 +2329,24 @@ defmodule Pagify do
 
   defp maybe_raise_on_invalid_search(pagify, search, opts) do
     if Map.get(pagify, :errors) == nil do
-      %{pagify | filters: Map.put(pagify.filters || %{}, "__full_text_search", search)}
+      user_provided_full_text_search_opts =
+        opts
+        |> Keyword.get(:full_text_search, [])
+        |> Keyword.put(:search, search)
+        |> maybe_put_tsvector(get_in(opts, [:full_text_search, :tsvector]))
+        |> Enum.filter(fn {key, _} -> key in Pagify.Tsearch.option_keys() end)
+        |> Map.new()
+        |> Misc.stringify_keys(keys: Pagify.Tsearch.option_keys(), depth: 1)
+
+      %{
+        pagify
+        | filters:
+            Map.put(
+              pagify.filters || %{},
+              "__full_text_search",
+              user_provided_full_text_search_opts
+            )
+      }
     else
       if Keyword.get(opts, :raise_on_invalid_search?, true) do
         pagify
@@ -2260,6 +2359,15 @@ defmodule Pagify do
       end
     end
   end
+
+  defp maybe_put_tsvector(opts, nil), do: opts
+
+  defp maybe_put_tsvector(opts, tsvector) when is_binary(tsvector), do: Keyword.put(opts, :tsvector, tsvector)
+
+  defp maybe_put_tsvector(opts, tsvector) when is_atom(tsvector),
+    do: Keyword.put(opts, :tsvector, Atom.to_string(tsvector))
+
+  defp maybe_put_tsvector(opts, _), do: opts
 
   @doc """
   Creates an `Ash.Query` from a filter map. Ideally, the filter map was previously
@@ -2280,41 +2388,95 @@ defmodule Pagify do
       iex> filters_map = %{"and" => [%{"name" => "foo"}]}
       iex> query_for_filters_map(Post, filters_map)
       #Ash.Query<resource: Pagify.Factory.Post, filter: #Ash.Filter<name == "foo">>
-
-      iex> filters_map = %{"and" => [%{"name" => "foo"}], "__full_text_search" => "search term"}
-      iex> query_for_filters_map(Post, filters_map)
-      #Ash.Query<resource: Pagify.Factory.Post, filter: #Ash.Filter<name == "foo" and full_text_search(%{search: type(tsquery([search: \"search term\"]),  AshPostgres.Tsquery,  [])})>>
   """
   @spec query_for_filters_map(Ash.Query.t() | Ash.Resource.t(), map(), Keyword.t()) ::
           Ash.Query.t()
   def query_for_filters_map(query_or_resource, filters_map, opts \\ [])
 
   def query_for_filters_map(query_or_resource, %{} = filters_map, opts) do
-    full_text_search = Map.get(filters_map, "__full_text_search")
-    filters_map = Map.delete(filters_map, "__full_text_search")
+    {filters_map, full_text_search} = extract_full_text_search(filters_map)
 
     query_or_resource
     |> Ash.Query.filter_input(filters_map)
     |> maybe_apply_full_text_search(full_text_search, opts)
   end
 
-  defp maybe_apply_full_text_search(query, full_text_search, opts)
+  @doc """
+  Extracts the full-text search term from the filters map and returns a tuple of the filters map
+  without the full-text search term and the full-text search term.
+
+  The full-text search term is stored under the key `"__full_text_search"` in the
+  filters map (on in the `and` or `or` base of the filters_map). If the full-text
+  search term is not found, the function will return the filters map as is.
+  """
+  @spec extract_full_text_search(map()) :: {map(), map() | nil}
+  def extract_full_text_search(%{"__full_text_search" => full_text_search} = filters_map) do
+    {Map.delete(filters_map, "__full_text_search"), full_text_search}
+  end
+
+  def extract_full_text_search(%{"and" => filters} = filters_map) do
+    split_and_combine(filters_map, filters, "and")
+  end
+
+  def extract_full_text_search(%{"or" => filters} = filters_map) do
+    split_and_combine(filters_map, filters, "or")
+  end
+
+  def extract_full_text_search(filters_map), do: {filters_map, nil}
+
+  defp split_and_combine(filters_map, combinator_filters, combinator) do
+    {full_text_search, combinator_filters} =
+      Enum.split_with(combinator_filters, &Map.has_key?(&1, "__full_text_search"))
+
+    filters_map =
+      cond do
+        combinator_filters == [] && full_text_search == [] -> filters_map
+        combinator_filters == [] -> Map.delete(filters_map, combinator)
+        true -> Map.put(filters_map, combinator, combinator_filters)
+      end
+
+    full_text_search =
+      if full_text_search == [] do
+        nil
+      else
+        full_text_search
+        |> hd()
+        |> Map.get("__full_text_search", nil)
+      end
+
+    {filters_map, full_text_search}
+  end
+
+  @spec maybe_apply_full_text_search(Ash.Query.t(), map(), Keyword.t()) :: Ash.Query.t()
   defp maybe_apply_full_text_search(%Ash.Query{} = query, nil, _opts), do: query
-  defp maybe_apply_full_text_search(%Ash.Query{} = query, "", _opts), do: query
+  defp maybe_apply_full_text_search(query, %{"search" => nil}, _opts), do: query
+  defp maybe_apply_full_text_search(query, %{"search" => ""}, _opts), do: query
 
   defp maybe_apply_full_text_search(%Ash.Query{} = query, full_text_search, opts) do
     if Keyword.get(opts, :include_full_text_search?, true) do
-      apply_full_text_search(%Ash.Query{} = query, full_text_search, opts)
+      apply_full_text_search(query, full_text_search, opts)
     else
       query
     end
   end
 
-  defp apply_full_text_search(%Ash.Query{resource: r} = query, full_text_search, opts) do
-    pagify = %Pagify{search: full_text_search}
+  @spec apply_full_text_search(Ash.Query.t(), map(), Keyword.t()) :: Ash.Query.t()
+  defp apply_full_text_search(%Ash.Query{resource: r} = query, %{"search" => search} = full_text_search, opts) do
+    pagify = %Pagify{search: search}
+
+    full_text_search =
+      full_text_search
+      |> Map.delete("search")
+      |> Enum.map(fn {key, value} -> {String.to_existing_atom(key), value} end)
+      |> Enum.filter(fn {key, _} -> key in Pagify.Tsearch.option_keys() end)
+
+    opts =
+      opts
+      |> Keyword.put(:full_text_search, full_text_search)
+      |> Keyword.put_new(:for, r)
 
     pagify
-    |> Validation.validate_search(Keyword.put_new(opts, :for, r))
+    |> Validation.validate_search(opts)
     |> maybe_raise_on_invalid_search_apply(query, opts)
   end
 

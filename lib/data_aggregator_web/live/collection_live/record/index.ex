@@ -133,8 +133,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       <%!-- Search, filter and actions toolbar --%>
       <div :if={@collection.records_count > 0} class="flex justify-between px-6 pb-6 lg:px-8">
         <%!-- Search and filter --%>
-        <div class="join">
-          <div>
+        <div class="join max-sm:w-full">
+          <%!-- Full-text search  --%>
+          <div class="flex-1">
             <div>
               <.simple_form
                 for={@search}
@@ -169,12 +170,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                       name="hero-cog-6-tooth animate-spin"
                       class="size-5 text-base-content/50 hidden phx-change-loading:block phx-submit-loading:block"
                     />
-                    <.input {field} class="" inside />
+                    <.input {field} class="max-sm:w-0" inside />
                   </:content>
                 </.custom_field>
               </.simple_form>
             </div>
           </div>
+
+          <%!-- Column select --%>
           <%!-- <button
             data-tip={~t"Columns"m}
             class="join-item btn btn-outline border-base-content/20 btn-disabled border-y max-sm:btn-square sm:max-md:tooltip"
@@ -182,10 +185,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <.icon name="hero-table-cells" />
             <span class="max-md:hidden"><%= ~t"Columns"m %></span>
           </button> --%>
+
+          <%!-- Layers --%>
           <.dropdown id="layer" class="dropdown-end">
             <:summary>
               <summary
-                class="join-item btn btn-outline border-base-content/20 rounded-l-lg border-y max-lg:btn-square max-lg:inline-flex sm:max-lg:tooltip"
+                class="join-item btn btn-outline border-base-content/20 max-lg:btn-square max-lg:inline-flex sm:max-lg:tooltip"
                 data-tip={current_layer_label(@layer)}
               >
                 <.icon :if={@layer == "import"} name="hero-arrow-up-tray" />
@@ -224,6 +229,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               </li>
             </ul>
           </.dropdown>
+
+          <%!-- Filter --%>
           <div class="indicator">
             <span :if={@filters_count > 0} class="indicator-item badge badge-primary">
               <%= @filters_count %>
@@ -235,7 +242,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   do: "border-base-content/20",
                   else: "border-primary sm:outline-primary sm:outline sm:hover:outline-none"
                 ),
-                "join-item btn btn-outline border-y max-lg:btn-square sm:max-lg:tooltip"
+                "join-item btn btn-outline border-y max-lg:btn-square sm:!rounded-e-lg sm:max-lg:tooltip"
               ]}
               data-tip={~t"Filters"m}
             >
@@ -243,10 +250,35 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               <span class="max-lg:hidden"><%= ~t"Filters"m %></span>
             </button>
           </div>
+
+          <%!-- Join actions buttons (< sm) --%>
+          <.dropdown id="actions-sm" class="dropdown-end sm:hidden">
+            <:summary>
+              <summary
+                disabled={@busy}
+                class="join-item btn btn-outline border-base-content/20 !rounded-e-lg btn-square sm:hidden"
+                data-tip={~t"Actions"m}
+              >
+                <.icon name={if @busy, do: "hero-cog-6-tooth-solid animate-spin", else: "hero-bars-3"} />
+              </summary>
+            </:summary>
+            <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-44 gap-1 border p-2 shadow-2xl">
+              <li :for={{label, icon, action, alert} <- @actions}>
+                <button
+                  phx-click={action}
+                  data-confirm={alert && ~t"Are you sure?"m}
+                  data-confirm_id={alert}
+                >
+                  <.icon name={icon} class="size-5" />
+                  <span class="font-[sans-serif]"><%= action_label(label) %></span>
+                </button>
+              </li>
+            </ul>
+          </.dropdown>
         </div>
 
-        <%!-- Action buttons --%>
-        <.dropdown id="actions" class="dropdown-end xl:hidden">
+        <%!-- Dropdown action buttons (sm-lg) --%>
+        <.dropdown id="actions-md" class="dropdown-end max-sm:hidden xl:hidden">
           <:summary>
             <summary
               disabled={@busy}
@@ -271,7 +303,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </ul>
         </.dropdown>
 
-        <div class="join max-xl:hidden">
+        <%!-- Inline action buttons (> xl) --%>
+        <div id="actions-xl" class="join max-xl:hidden">
           <button
             :for={{label, icon, action, alert} <- @actions}
             class="join-item btn btn-outline border-base-content/20"
@@ -626,6 +659,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             collection={@collection}
             meta={@meta}
             busy={@busy}
+            layer={@layer}
           />
         </.modal>
 
@@ -744,16 +778,21 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("collection:encode", _params, socket) do
-    %{collection: collection} = socket.assigns
+    %{collection: collection, layer: layer} = socket.assigns
 
     collection = Collection.get_by_id!(collection.id, load: [:encoding])
 
     case Collection.set_encoding(collection) do
       {:ok, %{id: id}} ->
+        opts =
+          layer
+          |> maybe_put_tsvector()
+          |> Keyword.put(:for, Record)
+
         enqueue_encoder_fn = fn ->
           Record
           |> Ash.Query.filter(collection.id == ^id)
-          |> Pagify.validated_query(socket.assigns.meta.pagify)
+          |> Pagify.validated_query(socket.assigns.meta.pagify, opts)
           |> Records.stream!(page: false)
           |> Stream.map(&Record.enqueue_encoder!/1)
           |> Stream.run()
@@ -777,12 +816,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     %{collection: collection, meta: %{pagify: pagify}} = socket.assigns
     collection = Records.load!(collection, [:fast_track_query], lazy?: true)
 
-    fast_track_query =
-      Record
-      |> Pagify.query_to_filters_map(pagify)
-      |> Pagify.merge_filters(collection.fast_track_query)
-      |> Map.get(:filters)
-
+    fast_track_query = filter_map(pagify, collection.fast_track_query, socket.assigns.layer)
     count_query = Pagify.query_for_filters_map(Record, fast_track_query)
 
     case create_and_enqueue(collection, fast_track_query, count_query, :fast_track) do
@@ -802,12 +836,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     %{collection: collection, meta: %{pagify: pagify}} = socket.assigns
     collection = Records.load!(collection, [:approval_query], lazy?: true)
 
-    approval_query =
-      Record
-      |> Pagify.query_to_filters_map(pagify)
-      |> Pagify.merge_filters(collection.approval_query)
-      |> Map.get(:filters)
-
+    approval_query = filter_map(pagify, collection.approval_query, socket.assigns.layer)
     count_query = Pagify.query_for_filters_map(Record, approval_query)
 
     case create_and_enqueue(collection, approval_query, count_query, :approval) do
@@ -874,6 +903,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   defp list_records(params, opts \\ [load: @load, action: :by_collection]) do
+    opts = maybe_put_tsvector(Map.get(params, "layer"), opts)
+
     Pagify.validate_and_run(Record, params, opts, params["id"])
   end
 

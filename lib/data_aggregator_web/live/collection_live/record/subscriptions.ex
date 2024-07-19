@@ -7,6 +7,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
   use DataAggregatorWeb, :verified_routes
 
   import DataAggregatorWeb.CollectionLive.Helpers
+  import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [maybe_put_tsvector: 2]
   import DataAggregatorWeb.Gettext
 
   alias Ash.Notifier.Notification
@@ -92,7 +93,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
   end
 
   defp refresh(socket) do
-    %{assigns: %{collection: %{id: id}, meta: %{pagify: pagify, opts: opts}}} = socket
+    %{assigns: %{collection: %{id: id}, meta: %{pagify: pagify, opts: opts}, layer: layer}} =
+      socket
+
+    opts = maybe_put_tsvector(layer, opts)
 
     case Pagify.validate_and_run(Record, pagify, opts, id) do
       {:ok, {records, meta}} ->
