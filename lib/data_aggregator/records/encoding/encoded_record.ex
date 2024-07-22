@@ -74,6 +74,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
       change Encoding.Changes.SetMandatoryAttributes
       change Encoding.Changes.SetOptionalAttributes
+
       change manage_relationship(:record, :record, type: :append)
     end
   end

@@ -31,9 +31,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @actions [
     {"export", "hero-arrow-down-tray", "collection:export", nil},
     {"encode", "hero-puzzle-piece", "collection:encode", "confirm_encoding_alert"},
-    {"publish", "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"}
-    # at the moment there is no approval process, so we just remove the button to avoid confusion
-    # {~t"Approve"m, "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
+    {"publish", "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"},
+    {"approve", "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
   ]
 
   @impl true
@@ -805,16 +804,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     {:noreply, assign(socket, :show_filters, false)}
   end
 
-  defp create_and_enqueue(collection, query, count_query, channel) do
+  defp create_and_enqueue(collection, query, count_query, :fast_track) do
     %{
       name: "pub-#{collection.name}-#{:os.system_time()}",
-      channel: channel,
+      channel: :fast_track,
       records_query: query,
       collection: collection,
       rows_count: Records.count!(count_query)
     }
     |> Publication.create!()
     |> Publication.enqueue()
+  end
+
+  defp create_and_enqueue(collection, query, _count_query, :approval) do
+    Collection.approve(collection, query)
   end
 
   defp apply_action(socket, :index, _params) do

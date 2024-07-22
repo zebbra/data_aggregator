@@ -18,6 +18,7 @@ checkout our notes on [`miro`](https://miro.com/app/board/uXjVMBLi0fk=/)
 
 ## To read
 
+- [Overview](./docs/overview.md)
 - [Development](./docs/development.md)
 - [Deployment](./docs/deployment.md)
 - [API](./docs/api.md)

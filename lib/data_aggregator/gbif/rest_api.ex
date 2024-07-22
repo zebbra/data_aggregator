@@ -6,6 +6,9 @@ defmodule DataAggregator.Gbif.RestAPI do
   import DataAggregator.Helpers, only: [distinct: 2]
 
   alias DataAggregator.Cache.HttpDiskCache
+  alias DataAggregator.Files
+  alias DataAggregator.Records
+  alias DataAggregator.Records.Approval
   alias DataAggregator.Records.Collection
   alias DataAggregator.Types.Api
 
@@ -60,7 +63,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   @doc """
   Get a single entity (collection or institution) from the GrSciColl API, according to its key
   """
-  @spec get_grscicoll_entity(String.t(), atom()) :: Api.response_body()
+  @spec get_grscicoll_entity(String.t(), :collection | :institution) :: Api.response_body()
   def get_grscicoll_entity(key, kind) do
     req = HttpDiskCache.attach(Req.new())
 
@@ -166,6 +169,41 @@ defmodule DataAggregator.Gbif.RestAPI do
       url: gbif_api_base_url() <> "/species/" <> key <> "/iucnRedListCategory",
       max_cache_age_seconds: @month
     )
+  end
+
+  @doc """
+  We notify infospecies about the processed approval and its result
+  """
+  @spec notify_infospecies_with_approval_result(Approval.t()) :: Api.response()
+  def notify_infospecies_with_approval_result(approval) do
+    Logger.info("Notifying infospecies about approval result")
+
+    Req.post(
+      url: infospecies_approval_notification_url(),
+      json: notify_infospecies_with_approval_result_params(approval)
+    )
+  end
+
+  @spec notify_infospecies_with_approval_result_params(Approval.t()) :: map()
+  defp notify_infospecies_with_approval_result_params(%Approval{error_log_id: nil} = approval),
+    do: %{
+      "source_file" => approval.file_url,
+      "success_count" => approval.rows_approved_count,
+      "error_count" => approval.rows_invalid_count,
+      "error_log_url" => ""
+    }
+
+  @spec notify_infospecies_with_approval_result_params(Approval.t()) :: map()
+  defp notify_infospecies_with_approval_result_params(approval) do
+    approval = Records.load!(approval, [:error_log], lazy?: true)
+
+    error_log = Files.load!(approval.error_log, [:url], lazy?: true)
+
+    %{
+      "success_count" => approval.rows_approved_count,
+      "error_count" => approval.rows_invalid_count,
+      "error_log_url" => error_log.url
+    }
   end
 
   defp registration_params(collection_name) do

@@ -47,12 +47,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       :in_publication,
       :published,
       :stale,
-      :publication_failed
+      :publication_failed,
+      :not_approved,
+      :approving,
+      :in_approval,
+      :approved,
+      :approval_failed
     ]
 
   def publication_status_badge(assigns) do
-    case assigns.state do
-      :publishing ->
+    cond do
+      assigns.state in [:publishing, :approving] ->
         ~H"""
         <.badge class="tooltip" color="blue" data-tip={~t"Publication in progress"m}>
           <.icon name="hero-cog-6-tooth-solid" class="size-5 shrink-0 animate-spin" />
@@ -60,7 +65,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         </.badge>
         """
 
-      :in_publication ->
+      assigns.state in [:in_publication, :in_approval] ->
         ~H"""
         <.badge
           class="tooltip"
@@ -72,7 +77,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         </.badge>
         """
 
-      :published ->
+      assigns.state in [:published, :approved] ->
         ~H"""
         <.badge class="tooltip" color="green" data-tip={~t"Record was successful published"m}>
           <.icon name="hero-check-circle-solid" class="size-5 shrink-0" />
@@ -80,7 +85,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         </.badge>
         """
 
-      :stale ->
+      assigns.state == :stale ->
         ~H"""
         <.badge
           class="tooltip"
@@ -92,7 +97,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         </.badge>
         """
 
-      :publication_failed ->
+      assigns.state in [:publication_failed, :approval_failed] ->
         ~H"""
         <.badge
           class="tooltip"
@@ -104,7 +109,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         </.badge>
         """
 
-      _ ->
+      true ->
         ~H"""
         <.badge
           class="tooltip"

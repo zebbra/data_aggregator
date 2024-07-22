@@ -25,6 +25,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Jobs.Job
+  alias DataAggregator.Records.ApprovalStatusType
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding
@@ -32,6 +33,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.PublicationStatusType
   alias DataAggregator.Records.Record.Calculations.IucnRedlist
   alias DataAggregator.Records.Record.Calculations.Mids
+  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
   @type t :: %Record{}
 
@@ -56,8 +58,11 @@ defmodule DataAggregator.Records.Record do
       allow_nil?: false,
       default: :not_published
 
-    attribute :approval_status, PublicationStatusType, allow_nil?: false, default: :not_published
+    attribute :approval_status, ApprovalStatusType, allow_nil?: false, default: :not_approved
     attribute :iucn_redlist_category, :string, allow_nil?: true
+
+    attribute :last_approval_started_at, :utc_datetime, allow_nil?: true
+    attribute :last_imported_at, :utc_datetime, allow_nil?: true
 
     timestamps private?: false, writable?: false
   end
@@ -99,6 +104,18 @@ defmodule DataAggregator.Records.Record do
 
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
+    end
+
+    belongs_to :swiss_species, SwissSpecies do
+      api DataAggregator.Taxonomy
+
+      source_attribute :tax_taxon_id
+      destination_attribute :usage_key
+
+      allow_nil? true
+      attribute_writable? false
+      attribute_type :integer
+      define_attribute? false
     end
   end
 
@@ -219,6 +236,8 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.SetOccurrenceID
       change Record.Changes.SetBasisOfRecord
       change Record.Changes.SetImportedAfterAction
+      change Record.Changes.CreateEncodedRecordAfterAction
+
       change manage_relationship(:collection, :collection, type: :append)
     end
 
@@ -239,6 +258,7 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.SetBasisOfRecord
       change Record.Changes.SetPublicationStale
       change Record.Changes.SetImportedAfterAction
+      change Record.Changes.CreateEncodedRecordAfterAction
 
       upsert? true
       upsert_identity :collection_mte_catalog_number
@@ -284,6 +304,7 @@ defmodule DataAggregator.Records.Record do
 
     update :set_imported do
       change transition_state(:imported)
+      change set_attribute(:last_imported_at, &DateTime.utc_now/0)
     end
 
     update :set_encoding do
@@ -308,6 +329,12 @@ defmodule DataAggregator.Records.Record do
       argument :status, :atom, allow_nil?: false
 
       change set_attribute(:approval_status, expr(^arg(:status)))
+    end
+
+    update :update_last_approval_started_at do
+      accept []
+
+      change set_attribute(:last_approval_started_at, &DateTime.utc_now/0)
     end
 
     destroy :destroy do
@@ -338,16 +365,18 @@ defmodule DataAggregator.Records.Record do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
+    define :get_by_mte_catalog_number, action: :read, get_by: [:mte_catalog_number]
     define :encode, args: [:record, :catalog]
     define :set_imported
     define :set_encoding
     define :set_encoded
     define :set_encoding_failed
     define :enqueue_encoder
-    define :update_fast_track_status, action: :update_fast_track_status, args: [:status]
-    define :update_approval_status, action: :update_approval_status, args: [:status]
-    define :check_if_fast_track_pubished, action: :check_if_fast_track_pubished
+    define :update_fast_track_status, args: [:status]
+    define :update_approval_status, args: [:status]
+    define :check_if_fast_track_pubished
     define :enqueue_fast_track_checker
+    define :update_last_approval_started_at
   end
 
   postgres do

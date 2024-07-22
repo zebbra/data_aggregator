@@ -253,6 +253,7 @@ defmodule DataAggregator.MixProject do
 
       # Mailing
       {:swoosh, "~> 1.3"},
+      {:gen_smtp, "~> 1.1"},
 
       # Data Processing and Parsing
       {:explorer, "~> 0.8.3"},
