@@ -700,16 +700,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     {:noreply, assign(socket, :show_filters, false)}
   end
 
-  defp create_and_enqueue(collection, query, count_query, channel) do
+  defp create_and_enqueue(collection, query, count_query, :fast_track) do
     %{
       name: "pub-#{collection.name}-#{:os.system_time()}",
-      channel: channel,
+      channel: :fast_track,
       records_query: query,
       collection: collection,
       rows_count: Records.count!(count_query)
     }
     |> Publication.create!()
     |> Publication.enqueue()
+  end
+
+  defp create_and_enqueue(collection, query, _count_query, :approval) do
+    Collection.approve(collection, query)
   end
 
   defp apply_action(socket, :index, _params) do

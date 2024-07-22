@@ -15,9 +15,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
   @actions [
     {"export", "hero-arrow-down-tray", "collection:export", nil},
     {"encode", "hero-puzzle-piece", "collection:encode", "confirm_encoding_alert"},
-    {"publish", "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"}
-    # at the moment there is no approval process, so we just remove the button to avoid confusion
-    # {~t"Approve"m, "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
+    {"publish", "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"},
+    {"approve", "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
   ]
 
   attr :search, Phoenix.HTML.Form, required: true, doc: "The search form"

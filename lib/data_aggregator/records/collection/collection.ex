@@ -259,10 +259,19 @@ defmodule DataAggregator.Records.Collection do
       run Records.Actions.ExportRecords
     end
 
+    # starts the publication process to the svnhc portal for the given query of records
     action :publish, :map do
       argument :publication, :struct, allow_nil?: false
 
       run Records.Actions.Publish
+    end
+
+    # starts the approval process towards infospecies for the given query of records
+    action :approve, :map do
+      argument :collection, :struct, allow_nil?: false
+      argument :query, :map, allow_nil?: false
+
+      run Records.Actions.Approve
     end
   end
 
@@ -294,7 +303,8 @@ defmodule DataAggregator.Records.Collection do
     define :get_by_id, action: :read, get_by: [:id]
     define :touch
     define :export, action: :export, args: [:export]
-    define :publish, action: :publish, args: [:publication]
+    define :publish, args: [:publication]
+    define :approve, args: [:collection, :query]
     define :register_at_gbif, args: [:dwca_file_url]
 
     define :set_importing

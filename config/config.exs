@@ -79,14 +79,8 @@ config :ex_cldr,
 # Configure Oban job queues
 config :data_aggregator, Oban,
   repo: DataAggregator.Repo,
-  plugins: [{Oban.Plugins.Pruner, max_age: 5, limit: 2000, interval: 5_000}],
-  queues: [
-    imports: 1,
-    encoders: 1,
-    exports: 1,
-    publications: 1,
-    publication_verifications: [limit: 1, paused: true]
-  ]
+  plugins: [{Oban.Plugins.Pruner, max_age: 5, limit: 1000, interval: 5_000}],
+  queues: [imports: 1, encoders: 1, exports: 1, publications: 1, publication_verifications: 1]
 
 # Configures the mailer
 #

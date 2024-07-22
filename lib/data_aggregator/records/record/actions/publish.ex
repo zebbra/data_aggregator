@@ -15,6 +15,7 @@ defmodule DataAggregator.Records.Actions.Publish do
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.Publication.InfoSpecies
   alias DataAggregator.Records.Record
 
   require Ash.Query
@@ -44,7 +45,8 @@ defmodule DataAggregator.Records.Actions.Publish do
 
     MetaFile.create(publication.collection, path)
 
-    # TODO: implement the following files, they contain of attributes from json data
+    # TODO: implement the following files, they contain of attributes from json fields,
+    # and therefore need to be implemented in a different way
 
     # ChronometricAgeFile.create(query, path)
     # DistributionFile.create(query, path)
@@ -70,7 +72,7 @@ defmodule DataAggregator.Records.Actions.Publish do
       |> Publication.update_attachment(attachment)
       |> Records.load!([:collection, :attachment])
 
-    register_at_gbif(publication, query)
+    register(publication, query)
   rescue
     e ->
       publication = input.arguments.publication
@@ -110,18 +112,36 @@ defmodule DataAggregator.Records.Actions.Publish do
 
   @spec update_record!(Record.t(), atom(), Publication.t()) :: :ok
   defp update_record!(record, status, publication) do
-    Publication.add_publication_progress!(publication, 1)
+    if Records.execute_async?() do
+      Task.start(fn -> Publication.add_publication_progress!(publication, 1) end)
+    else
+      Publication.add_publication_progress!(publication, 1)
+    end
 
     update_status!(publication.channel, status, record)
   end
 
   defp update_status!(:fast_track, status, record), do: Record.update_fast_track_status!(record, status)
 
-  defp update_status!(:approval, status, record), do: Record.update_approval_status!(record, status)
+  defp update_status!(:approval, status, record), do: Record.update_approval_status!(record, translate_status(status))
 
-  defp register_at_gbif(%Publication{channel: :approval} = publication, _query), do: {:ok, publication}
+  defp translate_status(:publishing), do: :approving
+  defp translate_status(:in_publication), do: :in_approval
+  defp translate_status(:publication_failed), do: :approval_failed
 
-  defp register_at_gbif(publication, query) do
+  defp register(%Publication{channel: :approval} = publication, query) do
+    case InfoSpecies.notify(publication, query) do
+      {:ok, publication} ->
+        {:ok, publication}
+
+      {:error, error} ->
+        Logger.warning("Error while informing infospecies about new available records for review: #{inspect(error)}")
+
+        {:error, error}
+    end
+  end
+
+  defp register(%Publication{channel: :fast_track} = publication, query) do
     with {:ok, _collection} <-
            Collection.register_at_gbif(publication.collection, publication.attachment.url),
          :ok <- queue_records_for_verification(query) do

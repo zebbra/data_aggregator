@@ -57,7 +57,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
     element(
       :dataset,
       [
-        title: meta_data["name"]
+        title: meta_data["institutionCode"] <> " - " <> meta_data["name"] <> " - " <> meta_data["code"]
       ] ++
         creators(meta_data) ++
         [

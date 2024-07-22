@@ -18,6 +18,7 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpecies do
     attribute :accepted_usage_key, :integer, allow_nil?: true
     attribute :scientific_name, :string, allow_nil?: true
     attribute :rank, :string, allow_nil?: true
+    attribute :center, :atom, allow_nil?: true
 
     timestamps private?: false, writable?: false
   end

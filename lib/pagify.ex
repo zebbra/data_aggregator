@@ -2112,14 +2112,15 @@ defmodule Pagify do
   defp prepare_filters(%{} = filters) do
     keys = Map.keys(filters)
 
-    if length(keys) > 1 do
-      filters
-    else
-      if keys == [] or Enum.member?(~w(and or), Enum.at(keys, 0)) == false do
-        %{"and" => [Misc.stringify_keys(filters)]}
-      else
+    cond do
+      keys == [] ->
+        %{"and" => []}
+
+      Enum.member?(keys, "and") or Enum.member?(keys, "or") ->
         Misc.stringify_keys(filters)
-      end
+
+      true ->
+        %{"and" => [Misc.stringify_keys(filters)]}
     end
   end
 
