@@ -71,7 +71,7 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.20.1",
+  version: "0.23.0",
   data_aggregator: [
     args:
       ~w(js/app.ts js/storybook.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
