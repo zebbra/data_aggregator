@@ -8,6 +8,7 @@ classDiagram
         Integer accepted_usage_key
         String scientific_name
         String rank
+        Atom center
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         destroy()
