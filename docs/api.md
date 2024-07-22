@@ -2731,6 +2731,7 @@ erDiagram
 | **id** | UUID |  |
 | **extra_data** | Map |  |
 | **iucn_redlist_category** | String |  |
+| **tsv** | String |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
 | **record_id** | UUID |  |
@@ -3219,6 +3220,7 @@ erDiagram
 | **iucn_redlist_category** | String |  |
 | **last_approval_started_at** | UtcDatetime |  |
 | **last_imported_at** | UtcDatetime |  |
+| **tsv** | String |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
 | **collection_id** | UUID |  |
