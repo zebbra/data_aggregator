@@ -75,6 +75,8 @@ defmodule DataAggregator.Records.Record do
     attribute :last_approval_started_at, :utc_datetime, allow_nil?: true
     attribute :last_imported_at, :utc_datetime, allow_nil?: true
 
+    attribute :tsv, :string, allow_nil?: true, private?: true, writable?: false
+
     timestamps private?: false, writable?: false
   end
 
@@ -167,25 +169,9 @@ defmodule DataAggregator.Records.Record do
               :boolean,
               Mids.LevelFour
 
-    calculate :tsvector,
-              AshPostgres.Tsvector,
-              expr(
-                fragment(
-                  "to_tsvector('simple', coalesce(?, '')) || to_tsvector('simple', coalesce(?, ''))",
-                  tax_scientific_name,
-                  occ_occurrence_id
-                )
-              )
+    calculate :tsvector, AshPostgres.Tsvector, expr(tsv)
 
-    calculate :encoded_tsvector,
-              AshPostgres.Tsvector,
-              expr(
-                fragment(
-                  "to_tsvector('simple', coalesce(?, '')) || to_tsvector('simple', coalesce(?, ''))",
-                  encoded_record.tax_scientific_name,
-                  encoded_record.occ_occurrence_id
-                )
-              )
+    calculate :encoded_tsvector, AshPostgres.Tsvector, expr(encoded_record.tsv)
   end
 
   paper_trail do

@@ -2708,46 +2708,45 @@ msgid "Search"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:161
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:187
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:190
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:186
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Actions"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:226
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:222
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Approval Layer"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:233
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:229
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Approve"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:170
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:197
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:213
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:193
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:209
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:231
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:227
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Encode"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:227
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:223
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Encoding Layer"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:230
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:226
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Export"
@@ -2760,13 +2759,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Filters"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:228
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:224
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Import Layer"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:232
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:228
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Publish"

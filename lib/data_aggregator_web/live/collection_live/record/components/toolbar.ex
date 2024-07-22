@@ -178,14 +178,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
         </.dropdown>
       </div>
 
-      <%!-- Dropdown action buttons (sm-lg) --%>
-      <.dropdown id="actions-md" class="dropdown-end max-sm:hidden xl:hidden">
+      <%!-- Dropdown action buttons (sm-xl) --%>
+      <.dropdown id="actions-md" class="dropdown-end max-sm:hidden 2xl:hidden">
         <:summary>
-          <summary
-            disabled={@busy}
-            class="btn btn-outline border-base-content/20 max-lg:inline-flex max-sm:btn-square sm:max-sm:tooltip"
-            data-tip={~t"Actions"m}
-          >
+          <summary disabled={@busy} class="btn btn-outline border-base-content/20 max-sm:btn-square">
             <.icon name={if @busy, do: "hero-cog-6-tooth-solid animate-spin", else: "hero-bars-3"} />
             <span class="max-sm:hidden"><%= ~t"Actions"m %></span>
           </summary>
@@ -204,8 +200,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
         </ul>
       </.dropdown>
 
-      <%!-- Inline action buttons (> xl) --%>
-      <div id="actions-xl" class="join max-xl:hidden">
+      <%!-- Inline action buttons (> 2xl) --%>
+      <div id="actions-xl" class="join max-2xl:hidden">
         <button
           :for={{label, icon, action, alert} <- @actions}
           class="join-item btn btn-outline border-base-content/20"

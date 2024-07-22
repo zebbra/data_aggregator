@@ -3,7 +3,8 @@
     "ash-functions",
     "uuid-ossp",
     "citext",
-    "unaccent",
+    "pg_trgm",
+    "btree_gin",
     "ash-uuid_v1"
   ],
   "ash_functions_version": 3
