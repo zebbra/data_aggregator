@@ -7,12 +7,14 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
   import DataAggregator.EncodingFixtures
 
   alias DataAggregator.Gbif
+  alias DataAggregator.Opencage
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.Record.Workers.Encoder
 
   describe "DataAggregator.Records.Record.Workers.Encoder.perform/1" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
 
       correct_record = record_fixture_for_encoding()
       invalid_record = record_fixture_for_encoding_gbif_taxonomy_invalid()

@@ -32,10 +32,12 @@ config :data_aggregator, dev_routes: true
 http_cache_path = System.get_env("HTTP_CACHE_PATH") || "priv/cache/prod/http"
 
 config :data_aggregator,
+  # Enable http file cache
+  http_cache_enabled: true,
   # Cache http requests in the a directory on disk (this will be overwritten in runtime.exs)
   # But we need to define it here as otherwise the application will complain about
   # different value set for key :http_cache_path during runtime compared to compile time.
-  http_cache_path: "priv/cache/prod/http"
+  http_cache_path: http_cache_path
 
 # Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier`
 config :data_aggregator, publication_verification_scheduler_active: true

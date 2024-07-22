@@ -102,6 +102,10 @@ config :tailwind,
 # Enable dev routes for dashboard and mailbox
 config :data_aggregator, dev_routes: true
 
+# Enable http file cache
+config :data_aggregator,
+  http_cache_enabled: true
+
 # Serve uploaded files from the priv/storage directory
 config :data_aggregator, serve_files_from: "priv/storage/dev/files"
 
