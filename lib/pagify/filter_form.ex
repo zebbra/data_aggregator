@@ -1409,6 +1409,52 @@ defmodule Pagify.FilterForm do
     Pagify.set_filter_form(meta, params)
   end
 
+  @doc """
+  Helper function to extract all active filter form fields from a Pagify.Meta struct.
+  """
+  @spec active_filter_form_fields(Meta.t()) :: list()
+  def active_filter_form_fields(meta)
+
+  def active_filter_form_fields(%Meta{pagify: %Pagify{filter_form: nil}}), do: []
+
+  def active_filter_form_fields(%Meta{pagify: %Pagify{filter_form: filter_form}}) do
+    extract_filter_form_fields(filter_form)
+  end
+
+  @doc """
+  Helper function to extract all filter form fields from a AshPhoenix.FilterForm parameter.
+  """
+  @spec extract_filter_form_fields(map() | nil) :: list()
+  def extract_filter_form_fields(nil), do: []
+
+  def extract_filter_form_fields(data) do
+    data
+    |> Map.get("components")
+    |> do_extract_filter_form_fields([])
+    |> Enum.uniq()
+  end
+
+  defp do_extract_filter_form_fields(nil, acc), do: acc
+
+  defp do_extract_filter_form_fields(components, acc) do
+    Enum.reduce(components, acc, fn {_key, value}, acc ->
+      acc =
+        case value do
+          %{"operator" => "is_nil", "field" => field} -> [field | acc]
+          %{"value" => nil} -> acc
+          %{"value" => ""} -> acc
+          %{"value" => []} -> acc
+          %{"field" => field} -> [field | acc]
+          _ -> acc
+        end
+
+      case Map.get(value, "components") do
+        nil -> acc
+        nested_form_parameter -> do_extract_filter_form_fields(nested_form_parameter, acc)
+      end
+    end)
+  end
+
   defimpl Phoenix.HTML.FormData do
     @impl true
     def to_form(form, opts) do

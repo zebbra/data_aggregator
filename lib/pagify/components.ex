@@ -6,11 +6,11 @@ defmodule Pagify.Components do
 
   Please refere to the _Usage_ section in `Pagify` for more information.
 
-  This module provides two components: `Pagination` and `Table`. The components
-  are designed to work with `Pagify` and `Ash.Resource` structs. They are by
-  default unstyled components which add basic classes and attributes to the
-  elements they render. However, you can customize the components by passing
-  options.
+  This module provides two components: `Pagify.Components.Pagination` and
+  `Pagify.Components.Table`. The components are designed to work with
+  `Pagify` and `Ash.Resource` structs. They are by default unstyled components
+  which add basic classes and attributes to the elements they render. However,
+  you can customize the components by passing options.
 
   Further, `Pagify.Components` provides helper functions to build paths for
   pagination and sorting links. The paths are built based on the current query
@@ -83,7 +83,7 @@ defmodule Pagify.Components do
   module/function tuple in `config/config.exs`.
 
   ```elixir
-  config :my_app :pagify_phoenix,
+  config :my_app :pagify,
     pagination: [opts: {MyAppWeb.CoreComponents, :pagination_opts}],
     table: [opts: {MyAppWeb.CoreComponents, :table_opts}]
   ```

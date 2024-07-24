@@ -81,7 +81,7 @@ defmodule Pagify.Tsearch do
 
   Have a look at `t:tsearch_option/0` for a list of available options.
 
-  ## Featurs
+  ## Features
 
   ### :prefix (PostgreSQL 8.4 and newer only)
 
@@ -253,7 +253,7 @@ defmodule Pagify.Tsearch do
   """
   def merge_opts(opts \\ []) do
     default_opts()
-    |> Misc.list_merge(Misc.get_global_opts(:full_text_search, :pagify))
+    |> Misc.list_merge(Misc.get_global_opts(:full_text_search))
     |> Misc.list_merge(resource_option(Keyword.get(opts, :for)))
     |> Misc.list_merge(Keyword.get(opts, :full_text_search, []))
   end

@@ -170,10 +170,8 @@ config :data_aggregator, :logger, [
 ]
 
 # Pagify global configuration
-config :data_aggregator, :pagify, default_limit: 15
-
-# Pagify Phoenix configuration
-config :data_aggregator, :pagify_phoenix,
+config :data_aggregator, :pagify,
+  default_limit: 15,
   pagination: [opts: {DataAggregatorWeb.Components, :pagination_opts}],
   table: [opts: {DataAggregatorWeb.Components, :table_opts}]
 

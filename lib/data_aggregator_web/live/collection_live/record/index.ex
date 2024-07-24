@@ -57,7 +57,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         |> assign(meta: meta)
         |> stream(:results, records, reset: true)
         |> assign(:layer, layer)
-        |> assign(:filters_count, meta |> Pagify.active_filter_form_fields() |> length())
+        |> assign(
+          :filters_count,
+          meta |> Pagify.FilterForm.active_filter_form_fields() |> length()
+        )
         |> assign_search(meta)
         |> apply_action(socket.assigns.live_action, params)
         |> noreply()

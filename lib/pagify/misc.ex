@@ -8,7 +8,7 @@ defmodule Pagify.Misc do
   environment.
   """
   @spec get_global_opts(atom) :: keyword
-  def get_global_opts(component, module \\ :pagify_phoenix) when component in [:pagination, :table, :full_text_search] do
+  def get_global_opts(component, module \\ :pagify) when component in [:pagination, :table, :full_text_search] do
     case opts_func(component, module) do
       nil -> []
       {module, func} -> apply(module, func, [])
