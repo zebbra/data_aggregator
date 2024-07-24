@@ -5,6 +5,10 @@ defmodule Pagify.Factory.Post do
     api: Pagify.Factory.Api,
     extensions: [AshUUID]
 
+  use Pagify.Tsearch
+
+  require Ash.Query
+
   @default_limit 15
   def default_limit, do: @default_limit
 
@@ -20,6 +24,14 @@ defmodule Pagify.Factory.Post do
     ]
   }
   def pagify_scopes, do: @pagify_scopes
+
+  def full_text_search do
+    [
+      tsvector_column: [
+        custom_tsvector: Ash.Query.expr(custom_tsvector)
+      ]
+    ]
+  end
 
   ets do
     private? true
@@ -39,6 +51,26 @@ defmodule Pagify.Factory.Post do
 
   relationships do
     has_many :comments, Pagify.Factory.Comment
+  end
+
+  calculations do
+    calculate :tsvector,
+              AshPostgres.Tsvector,
+              expr(fragment("to_tsvector('simple', coalesce(?, ''))", title))
+
+    calculate :custom_tsvector,
+              AshPostgres.Tsvector,
+              expr(
+                fragment(
+                  "setweight(to_tsvector('english', unaccent(coalesce(?, ''))), 'A') || setweight(to_tsvector('english', unaccent(coalesce(?, ''))), 'B')",
+                  name,
+                  text
+                )
+              )
+
+    calculate :add_age, :integer, expr(fragment("age + ?", ^arg(:add))) do
+      argument :add, :integer, allow_nil?: false
+    end
   end
 
   aggregates do

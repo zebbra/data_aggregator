@@ -2,9 +2,11 @@ defmodule DataAggregator.CollectionTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
+  use Mimic
 
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
 
   describe "collections" do
@@ -16,10 +18,7 @@ defmodule DataAggregator.CollectionTest do
     }
 
     setup do
-      # we may not wanna stub the API here, because we wanna actually test the whole
-      # integration with the Gbif API in place to validate if the referenced
-      # collection, instead we can stub the API in other tests
-      # stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       []
     end

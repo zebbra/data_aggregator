@@ -206,6 +206,7 @@ defmodule Pagify.FilterForm do
   alias AshPhoenix.FilterForm.Arguments
   alias AshPhoenix.FilterForm.Predicate
   alias Pagify.Meta
+  alias Pagify.Misc
 
   require Ash.Query
 
@@ -220,7 +221,8 @@ defmodule Pagify.FilterForm do
     params: %{},
     components: [],
     operator: :and,
-    remove_empty_groups?: false
+    remove_empty_groups?: false,
+    serializer: nil
   ]
 
   @type t :: %__MODULE__{
@@ -234,7 +236,8 @@ defmodule Pagify.FilterForm do
           params: map(),
           components: [term() | t()],
           operator: :and | :or,
-          remove_empty_groups?: boolean()
+          remove_empty_groups?: boolean(),
+          serializer: (term() -> term()) | nil
         }
 
   @new_opts [
@@ -288,6 +291,15 @@ defmodule Pagify.FilterForm do
 
       This is usefully if you want to enforce a specific structure for the form and then merge in the params.
       """
+    ],
+    serializer: [
+      type: :any,
+      default: nil,
+      doc: """
+      A function that will be called on the predicate param during new predicate initialization.
+
+      This is useful for custom serialization of the form input values.
+      """
     ]
   ]
 
@@ -305,7 +317,7 @@ defmodule Pagify.FilterForm do
       case opts[:initial_form] do
         %__MODULE__{} = form ->
           initial_params = params_for_query(form, nillify_blanks?: false, keep_keys?: true)
-          deep_merge(initial_params, params || %{})
+          Misc.map_merge(initial_params, params || %{})
 
         _ ->
           params
@@ -331,7 +343,8 @@ defmodule Pagify.FilterForm do
       resource: resource,
       params: params,
       remove_empty_groups?: opts[:remove_empty_groups?],
-      operator: to_existing_atom(params["operator"] || :and)
+      operator: to_existing_atom(params["operator"] || :and),
+      serializer: opts[:serializer]
     }
 
     set_validity(%{
@@ -778,20 +791,31 @@ defmodule Pagify.FilterForm do
           []
       end
 
+    serializer =
+      if form.serializer do
+        form.serializer
+      else
+        &default_serializer/2
+      end
+
+    operator = to_existing_atom(params["operator"] || :eq)
+
     predicate = %Predicate{
       id: params["id"],
       field: field,
-      value: params["value"],
+      value: serializer.(params["value"], params),
       path: path,
       transform_errors: form.transform_errors,
       arguments: Arguments.new(params["arguments"] || %{}, arguments),
       params: params,
       negated?: negated?(params),
-      operator: to_existing_atom(params["operator"] || :eq)
+      operator: operator
     }
 
     %{predicate | errors: predicate_errors(predicate, form.resource)}
   end
+
+  defp default_serializer(value, _params), do: value
 
   defp parse_path_and_field(params, form) do
     path = parse_path(params)
@@ -1386,58 +1410,49 @@ defmodule Pagify.FilterForm do
   end
 
   @doc """
-  Deeply merges two maps, preferring values from the right map.
-
-  If a key exists in both maps, and both values are maps as well,
-  these can be merged recursively. If a key exists in both maps,
-  but at least one of the values is NOT a map, we fall back to
-  standard merge behavior, preferring the value on the right.
-
-  Example:
-
-      iex> Pagify.FilterForm.deep_merge(%{a: 1, b: %{c: 2}}, %{b: %{d: 3}})
-      %{a: 1, b: %{c: 2, d: 3}}
-
-  one level of maps without conflict
-      iex> Pagify.FilterForm.deep_merge(%{a: 1}, %{b: 2})
-      %{a: 1, b: 2}
-
-  two levels of maps without conflict
-      iex> Pagify.FilterForm.deep_merge(%{a: %{b: 1}}, %{a: %{c: 3}})
-      %{a: %{b: 1, c: 3}}
-
-  three levels of maps without conflict
-      iex> Pagify.FilterForm.deep_merge(%{a: %{b: %{c: 1}}}, %{a: %{b: %{d: 2}}})
-      %{a: %{b: %{c: 1, d: 2}}}
-
-  non-map value in left
-      iex> Pagify.FilterForm.deep_merge(%{a: 1}, %{a: %{b: 2}})
-      %{a: %{b:  2}}
-
-  non-map value in right
-      iex> Pagify.FilterForm.deep_merge(%{a: %{b: 1}}, %{a: 2})
-      %{a: 2}
-
-  non-map value in both
-      iex> Pagify.FilterForm.deep_merge(%{a: 1}, %{a: 2})
-      %{a: 2}
+  Helper function to extract all active filter form fields from a Pagify.Meta struct.
   """
-  @spec deep_merge(map(), map()) :: map()
-  def deep_merge(left, right) do
-    Map.merge(left, right, &deep_resolve/3)
+  @spec active_filter_form_fields(Meta.t()) :: list()
+  def active_filter_form_fields(meta)
+
+  def active_filter_form_fields(%Meta{pagify: %Pagify{filter_form: nil}}), do: []
+
+  def active_filter_form_fields(%Meta{pagify: %Pagify{filter_form: filter_form}}) do
+    extract_filter_form_fields(filter_form)
   end
 
-  # Key exists in both maps, and both values are maps as well.
-  # These can be merged recursively.
-  defp deep_resolve(_key, %{} = left, %{} = right) do
-    deep_merge(left, right)
+  @doc """
+  Helper function to extract all filter form fields from a AshPhoenix.FilterForm parameter.
+  """
+  @spec extract_filter_form_fields(map() | nil) :: list()
+  def extract_filter_form_fields(nil), do: []
+
+  def extract_filter_form_fields(data) do
+    data
+    |> Map.get("components")
+    |> do_extract_filter_form_fields([])
+    |> Enum.uniq()
   end
 
-  # Key exists in both maps, but at least one of the values is
-  # NOT a map. We fall back to standard merge behavior, preferring
-  # the value on the right.
-  defp deep_resolve(_key, _left, right) do
-    right
+  defp do_extract_filter_form_fields(nil, acc), do: acc
+
+  defp do_extract_filter_form_fields(components, acc) do
+    Enum.reduce(components, acc, fn {_key, value}, acc ->
+      acc =
+        case value do
+          %{"operator" => "is_nil", "field" => field} -> [field | acc]
+          %{"value" => nil} -> acc
+          %{"value" => ""} -> acc
+          %{"value" => []} -> acc
+          %{"field" => field} -> [field | acc]
+          _ -> acc
+        end
+
+      case Map.get(value, "components") do
+        nil -> acc
+        nested_form_parameter -> do_extract_filter_form_fields(nested_form_parameter, acc)
+      end
+    end)
   end
 
   defimpl Phoenix.HTML.FormData do

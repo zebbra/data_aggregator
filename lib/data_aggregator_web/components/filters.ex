@@ -359,7 +359,7 @@ defmodule DataAggregatorWeb.Filters do
     end
 
     defp assign_collapsible_state(socket) do
-      active_filter_form_fields = Pagify.active_filter_form_fields(socket.assigns.meta)
+      active_filter_form_fields = Pagify.FilterForm.active_filter_form_fields(socket.assigns.meta)
 
       active_taxonomy =
         Enum.any?(

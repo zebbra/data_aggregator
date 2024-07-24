@@ -31,6 +31,8 @@ defmodule DataAggregator.Records.EncodedRecord do
     attribute :extra_data, :map
     attribute :iucn_redlist_category, :string, allow_nil?: true
 
+    attribute :tsv, :string, allow_nil?: true, private?: true, writable?: false
+
     timestamps private?: false, writable?: false
   end
 

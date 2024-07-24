@@ -6,8 +6,6 @@ defmodule DataAggregator.Records.Actions.Approve do
   """
   use Ash.Resource.Actions.Implementation
 
-  import Ash.Expr
-
   alias DataAggregator.Records
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
@@ -25,38 +23,30 @@ defmodule DataAggregator.Records.Actions.Approve do
 
     center_and_record_counts =
       Enum.map(infospecies_centers, fn center ->
-        {center_query, ash_query} = get_queries(query, center)
+        records_query =
+          Pagify.merge_filters(%Pagify{filters: query}, %{swiss_species: %{center: %{eq: center}}}).filters
 
-        count = Records.count!(ash_query)
+        count_query = Pagify.query_for_filters_map(Record, records_query)
+
+        rows_count = Records.count!(count_query)
 
         # do only publish dwc file to infospecies center if there are records
-        if count > 0 do
+        if rows_count > 0 do
           %{
             name: "pub-#{collection.name}-#{:os.system_time()}",
             channel: :approval,
-            records_query: center_query,
+            records_query: records_query,
             collection: collection,
-            rows_count: Records.count!(ash_query),
+            rows_count: rows_count,
             center: center
           }
           |> Publication.create!()
           |> Publication.enqueue()
         end
 
-        {center, count}
+        {center, rows_count}
       end)
 
     {:ok, center_and_record_counts}
-  end
-
-  def get_queries(query, center) do
-    center_query = Map.put(query, :swiss_species, %{center: %{eq: center}})
-
-    ash_query =
-      Record
-      |> Ash.Query.filter_input(query)
-      |> Ash.Query.filter(expr(swiss_species.center == ^center))
-
-    {center_query, ash_query}
   end
 end

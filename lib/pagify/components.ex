@@ -1,11 +1,20 @@
 defmodule Pagify.Components do
   @moduledoc """
-  Phoenix components for scoping, pagination, sortable tables and filter forms with
-  `Pagify`.
+  Phoenix headless components for pagination and sortable tables with `Pagify`.
 
   ## Introduction
 
   Please refere to the _Usage_ section in `Pagify` for more information.
+
+  This module provides two components: `Pagify.Components.Pagination` and
+  `Pagify.Components.Table`. The components are designed to work with
+  `Pagify` and `Ash.Resource` structs. They are by default unstyled components
+  which add basic classes and attributes to the elements they render. However,
+  you can customize the components by passing options.
+
+  Further, `Pagify.Components` provides helper functions to build paths for
+  pagination and sorting links. The paths are built based on the current query
+  parameters and the new parameters that are passed to the function.
 
   ## Customization
 
@@ -74,7 +83,7 @@ defmodule Pagify.Components do
   module/function tuple in `config/config.exs`.
 
   ```elixir
-  config :my_app :pagify_phoenix,
+  config :my_app :pagify,
     pagination: [opts: {MyAppWeb.CoreComponents, :pagination_opts}],
     table: [opts: {MyAppWeb.CoreComponents, :table_opts}]
   ```
@@ -148,10 +157,10 @@ defmodule Pagify.Components do
 
   use Phoenix.Component
 
-  alias Pagify.Components.Misc
   alias Pagify.Components.Pagination
   alias Pagify.Components.Table
   alias Pagify.Meta
+  alias Pagify.Misc
   alias Phoenix.LiveView.JS
   alias Plug.Conn.Query
 
@@ -898,6 +907,7 @@ defmodule Pagify.Components do
 
   The following parameters are encoded as strings:
 
+  - `:search`
   - `:scopes`
   - `:filter_form`
   - `:order_by`
@@ -940,6 +950,10 @@ defmodule Pagify.Components do
       iex> to_query(f, for: Pagify.Factory.Post)
       [scopes: %{status: :active}]
 
+      iex> f = %Pagify{search: "foo"}
+      iex> to_query(f, for: Pagify.Factory.Post)
+      [search: "foo"]
+
   Encoding the query as a string:
 
       iex> f = %Pagify{order_by: [name: :desc, age: :asc]}
@@ -959,6 +973,12 @@ defmodule Pagify.Components do
       [scopes: %{status: :active}]
       iex> f |> to_query |> Plug.Conn.Query.encode()
       "scopes[status]=active"
+
+      iex> f = %Pagify{search: "foo"}
+      iex> to_query(f)
+      [search: "foo"]
+      iex> f |> to_query |> Plug.Conn.Query.encode()
+      "search=foo"
   """
   @spec to_query(Pagify.t(), Keyword.t()) :: Keyword.t()
   def to_query(%Pagify{} = pagify, opts \\ []) do
@@ -972,6 +992,7 @@ defmodule Pagify.Components do
     |> Misc.maybe_put(:limit, pagify.limit, default_limit)
     |> Misc.maybe_put(:order_by, current_order, default_order)
     |> Misc.maybe_put(:filter_form, pagify.filter_form)
+    |> Misc.maybe_put(:search, pagify.search)
     |> Misc.maybe_put_scopes(pagify, opts)
   end
 

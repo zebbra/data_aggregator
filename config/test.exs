@@ -27,6 +27,10 @@ config :data_aggregator, serve_files_from: "priv/storage/test/files"
 # Cache files in the test environment
 config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/test/cache"
 
+config :data_aggregator,
+  # Disabled http file cache
+  http_cache_enabled: false
+
 # Use small batches to allow small datasets
 config :data_aggregator, DataAggregator.Records,
   import_batch_size: 3,
@@ -61,9 +65,8 @@ config :junit_formatter,
   report_dir: Path.expand("../test/reports", __DIR__),
   include_filename?: true
 
-config :data_aggregator, :pagify, default_limit: 25
-
-config :data_aggregator, :pagify_phoenix,
+config :data_aggregator, :pagify,
+  default_limit: 25,
   pagination: [opts: {Pagify.Components.Pagination, :default_opts}],
   table: [opts: {Pagify.Components.Table, :default_opts}]
 

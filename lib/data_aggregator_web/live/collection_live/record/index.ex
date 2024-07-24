@@ -11,6 +11,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   import DataAggregatorWeb.CollectionLive.Record.ActivityFeed
   import DataAggregatorWeb.CollectionLive.Record.Components
+  import DataAggregatorWeb.CollectionLive.Record.Components.Toolbar, only: [toolbar: 1]
   import DataAggregatorWeb.CollectionLive.Record.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
@@ -28,13 +29,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @load [:collection, :encoded_record, :mids_level, :iucn_redlist]
 
-  @actions [
-    {"export", "hero-arrow-down-tray", "collection:export", nil},
-    {"encode", "hero-puzzle-piece", "collection:encode", "confirm_encoding_alert"},
-    {"publish", "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"},
-    {"approve", "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
-  ]
-
   @impl true
   def mount(%{"id" => id}, _session, socket) do
     collection = get_collection(id)
@@ -46,7 +40,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       |> assign(:selected_record, nil)
       |> assign(:busy, collection.busy)
       |> assign(:busy_action, busy_action(collection))
-      |> assign(:actions, @actions)
       |> assign(:show_filters, false)
       |> assign(:record_tab, "data")
       |> subscribe_for_record_updates(connected?(socket))
@@ -64,7 +57,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         |> assign(meta: meta)
         |> stream(:results, records, reset: true)
         |> assign(:layer, layer)
-        |> assign(:filters_count, meta |> Pagify.active_filter_form_fields() |> length())
+        |> assign(
+          :filters_count,
+          meta |> Pagify.FilterForm.active_filter_form_fields() |> length()
+        )
+        |> assign_search(meta)
         |> apply_action(socket.assigns.live_action, params)
         |> noreply()
 
@@ -129,129 +126,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       </div>
 
       <%!-- Search, filter and actions toolbar --%>
-      <div :if={@collection.records_count > 0} class="flex justify-between px-6 pb-6 lg:px-8">
-        <%!-- Search and filter --%>
-        <div class="join">
-          <%!-- <div>
-            <div>
-              <input
-                class="input input-bordered join-item max-sm:max-w-32"
-                placeholder={~t"Search"m}
-                disabled
-              />
-            </div>
-          </div>
-          <button
-            data-tip={~t"Columns"m}
-            class="join-item btn btn-outline border-base-content/20 btn-disabled border-y max-sm:btn-square sm:max-md:tooltip"
-          >
-            <.icon name="hero-table-cells" />
-            <span class="max-md:hidden"><%= ~t"Columns"m %></span>
-          </button> --%>
-          <.dropdown id="layer" class="dropdown-start">
-            <:summary>
-              <summary
-                class="join-item btn btn-outline border-base-content/20 rounded-l-lg border-y max-sm:btn-square max-sm:inline-flex sm:max-sm:tooltip"
-                data-tip={current_layer_label(@layer)}
-              >
-                <.icon :if={@layer == "import"} name="hero-arrow-up-tray" />
-                <.icon :if={@layer == "encoding"} name="hero-puzzle-piece" />
-                <.icon :if={@layer == "approval"} name="hero-check-badge" />
-                <span class="max-sm:hidden"><%= current_layer_label(@layer) %></span>
-              </summary>
-            </:summary>
-            <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-56 gap-1 border p-2 shadow-2xl">
-              <li>
-                <.link
-                  patch={path_helper(@collection, "approval", @meta)}
-                  class={@layer == "approval" && "active"}
-                >
-                  <.icon name="hero-check-badge" class="size-5" />
-                  <span class="font-[sans-serif]"><%= current_layer_label("approval") %></span>
-                </.link>
-              </li>
-              <li>
-                <.link
-                  patch={path_helper(@collection, "encoding", @meta)}
-                  class={@layer == "encoding" && "active"}
-                >
-                  <.icon name="hero-puzzle-piece" class="size-5" />
-                  <span class="font-[sans-serif]"><%= current_layer_label("encoding") %></span>
-                </.link>
-              </li>
-              <li>
-                <.link
-                  patch={path_helper(@collection, "import", @meta)}
-                  class={@layer == "import" && "active"}
-                >
-                  <.icon name="hero-arrow-up-tray" class="size-5" />
-                  <span class="font-[sans-serif]"><%= current_layer_label("import") %></span>
-                </.link>
-              </li>
-            </ul>
-          </.dropdown>
-          <div class="indicator">
-            <span :if={@filters_count > 0} class="indicator-item badge badge-primary">
-              <%= @filters_count %>
-            </span>
-            <button
-              phx-click="filter_form:toggle"
-              class={[
-                if(@filters_count == 0,
-                  do: "border-base-content/20",
-                  else: "border-primary sm:outline-primary sm:outline sm:hover:outline-none"
-                ),
-                "join-item btn btn-outline border-y max-sm:btn-square sm:max-sm:tooltip"
-              ]}
-              data-tip={~t"Filters"m}
-            >
-              <.icon name="hero-adjustments-vertical" />
-              <span class="max-sm:hidden"><%= ~t"Filters"m %></span>
-            </button>
-          </div>
-        </div>
-
-        <%!-- Action buttons --%>
-        <.dropdown id="actions" class="dropdown-end lg:hidden">
-          <:summary>
-            <summary
-              disabled={@busy}
-              class="btn btn-outline border-base-content/20 max-lg:inline-flex max-sm:btn-square sm:max-sm:tooltip"
-              data-tip={~t"Actions"m}
-            >
-              <.icon name={if @busy, do: "hero-cog-6-tooth-solid animate-spin", else: "hero-bars-3"} />
-              <span class="max-sm:hidden"><%= ~t"Actions"m %></span>
-            </summary>
-          </:summary>
-          <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-20 mt-14 w-44 gap-1 border p-2 shadow-2xl">
-            <li :for={{label, icon, action, alert} <- @actions}>
-              <button
-                phx-click={action}
-                data-confirm={alert && ~t"Are you sure?"m}
-                data-confirm_id={alert}
-              >
-                <.icon name={icon} class="size-5" />
-                <span class="font-[sans-serif]"><%= action_label(label) %></span>
-              </button>
-            </li>
-          </ul>
-        </.dropdown>
-
-        <div class="join max-lg:hidden">
-          <button
-            :for={{label, icon, action, alert} <- @actions}
-            class="join-item btn btn-outline border-base-content/20"
-            phx-click={action}
-            data-confirm={alert && ~t"Are you sure?"m}
-            data-confirm_id={alert}
-            disabled={@busy}
-          >
-            <.icon :if={busy?(action, @busy_action) == false} name={icon} />
-            <.icon :if={busy?(action, @busy_action)} name="hero-cog-6-tooth-solid animate-spin" />
-            <span class="max-md:hidden"><%= action_label(label) %></span>
-          </button>
-        </div>
-      </div>
+      <.toolbar
+        search={@search}
+        meta={@meta}
+        collection_id={@collection.id}
+        records_count={@collection.records_count}
+        filters_count={@filters_count}
+        busy={@busy}
+        busy_action={@busy_action}
+        layer={@layer}
+      />
 
       <.table
         opts={[
@@ -592,6 +476,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             collection={@collection}
             meta={@meta}
             busy={@busy}
+            layer={@layer}
           />
         </.modal>
 
@@ -710,16 +595,21 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("collection:encode", _params, socket) do
-    %{collection: collection} = socket.assigns
+    %{collection: collection, layer: layer} = socket.assigns
 
     collection = Collection.get_by_id!(collection.id, load: [:encoding])
 
     case Collection.set_encoding(collection) do
       {:ok, %{id: id}} ->
+        opts =
+          layer
+          |> maybe_put_tsvector()
+          |> Keyword.put(:for, Record)
+
         enqueue_encoder_fn = fn ->
           Record
           |> Ash.Query.filter(collection.id == ^id)
-          |> Pagify.validated_query(socket.assigns.meta.pagify)
+          |> Pagify.validated_query(socket.assigns.meta.pagify, opts)
           |> Records.stream!(page: false)
           |> Stream.map(&Record.enqueue_encoder!/1)
           |> Stream.run()
@@ -743,13 +633,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     %{collection: collection, meta: %{pagify: pagify}} = socket.assigns
     collection = Records.load!(collection, [:fast_track_query], lazy?: true)
 
-    fast_track_query =
-      Record
-      |> Pagify.compile_filters(pagify)
-      |> Pagify.merge_filters(collection.fast_track_query)
-      |> Map.get(:filters)
-
-    count_query = Ash.Query.filter_input(Record, fast_track_query)
+    fast_track_query = filter_map(pagify, collection.fast_track_query, socket.assigns.layer)
+    count_query = Pagify.query_for_filters_map(Record, fast_track_query)
 
     case create_and_enqueue(collection, fast_track_query, count_query, :fast_track) do
       {:ok, _} ->
@@ -768,13 +653,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     %{collection: collection, meta: %{pagify: pagify}} = socket.assigns
     collection = Records.load!(collection, [:approval_query], lazy?: true)
 
-    approval_query =
-      Record
-      |> Pagify.compile_filters(pagify)
-      |> Pagify.merge_filters(collection.approval_query)
-      |> Map.get(:filters)
-
-    count_query = Ash.Query.filter_input(Record, approval_query)
+    approval_query = filter_map(pagify, collection.approval_query, socket.assigns.layer)
+    count_query = Pagify.query_for_filters_map(Record, approval_query)
 
     case create_and_enqueue(collection, approval_query, count_query, :approval) do
       {:ok, _} ->
@@ -797,6 +677,25 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   def handle_event("filter_form:toggle", _, socket) do
     socket = update(socket, :show_filters, &(!&1))
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("search:reset", %{"search" => params}, socket) do
+    if (params["query"] == "" and coalesce_search(socket.assigns.meta.current_search) != "") or
+         params["_unused_query"] == "" do
+      update_and_patch_search(socket, "")
+    else
+      {:noreply, socket}
+    end
+  end
+
+  @impl true
+  def handle_event("search:apply", %{"search" => params}, socket) do
+    if params["query"] == coalesce_search(socket.assigns.meta.current_search) do
+      {:noreply, socket}
+    else
+      update_and_patch_search(socket, params["query"])
+    end
   end
 
   @impl true
@@ -825,12 +724,40 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   defp list_records(params, opts \\ [load: @load, action: :by_collection]) do
+    opts = maybe_put_tsvector(Map.get(params, "layer"), opts)
+
     Pagify.validate_and_run(Record, params, opts, params["id"])
   end
 
   defp get_record(id) do
     Record.get_by_id!(id, load: @load)
   end
+
+  defp assign_search(socket, %Pagify.Meta{current_search: search}) do
+    search = to_form(%{"query" => coalesce_search(search)}, as: :search)
+    assign(socket, :search, search)
+  end
+
+  defp update_and_patch_search(socket, query) do
+    if String.length(query) > 0 && String.length(query) < 3 do
+      {:noreply, socket}
+    else
+      %{meta: %{pagify: pagify} = meta, layer: layer, collection: collection} =
+        socket.assigns
+
+      pagify = Pagify.set_search(pagify, query)
+      meta = %{meta | pagify: pagify}
+
+      path = path_helper(collection, layer, meta)
+
+      socket
+      |> push_patch(to: path)
+      |> noreply()
+    end
+  end
+
+  defp coalesce_search(nil), do: ""
+  defp coalesce_search(search), do: search
 
   attr :collection_id, :string
 
@@ -856,35 +783,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     """
   end
 
-  defp path_helper(collection, layer, meta, scope \\ nil)
-
-  defp path_helper(collection, "approval", meta, nil) do
-    build_path(~p"/collections/#{collection}/records", meta)
-  end
-
-  defp path_helper(collection, layer, meta, nil) do
-    build_path(~p"/collections/#{collection}/records?layer=#{layer}", meta)
-  end
-
-  defp path_helper(collection, "approval", meta, scope) do
-    build_scope_path(~p"/collections/#{collection}/records", meta, scope)
-  end
-
-  defp path_helper(collection, layer, meta, scope) do
-    build_scope_path(~p"/collections/#{collection}/records?layer=#{layer}", meta, scope)
-  end
-
-  defp current_layer_label("approval"), do: ~t"Approval Layer"m
-  defp current_layer_label("encoding"), do: ~t"Encoding Layer"m
-  defp current_layer_label("import"), do: ~t"Import Layer"m
-
   defp coalesce_layer(layer) when layer in ~w(approval encoding import), do: layer
   defp coalesce_layer(_), do: "approval"
-
-  defp action_label("export"), do: ~t"Export"m
-  defp action_label("encode"), do: ~t"Encode"m
-  defp action_label("publish"), do: ~t"Publish"m
-  defp action_label("approve"), do: ~t"Approve"m
 
   defp picture_th_label(assigns \\ %{}) do
     ~H"""

@@ -71,7 +71,7 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.20.1",
+  version: "0.23.0",
   data_aggregator: [
     args:
       ~w(js/app.ts js/storybook.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
@@ -101,6 +101,10 @@ config :tailwind,
 
 # Enable dev routes for dashboard and mailbox
 config :data_aggregator, dev_routes: true
+
+# Enable http file cache
+config :data_aggregator,
+  http_cache_enabled: true
 
 # Serve uploaded files from the priv/storage directory
 config :data_aggregator, serve_files_from: "priv/storage/dev/files"

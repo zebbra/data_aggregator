@@ -5,5 +5,6 @@ defmodule Pagify.Factory.Registry do
   entries do
     entry Pagify.Factory.Post
     entry Pagify.Factory.Comment
+    entry Pagify.Factory.User
   end
 end

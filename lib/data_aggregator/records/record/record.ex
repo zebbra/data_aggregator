@@ -21,6 +21,8 @@ defmodule DataAggregator.Records.Record do
     ],
     notifiers: [Ash.Notifier.PubSub]
 
+  use Pagify.Tsearch
+
   alias __MODULE__
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
@@ -35,6 +37,8 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.Record.Calculations.Mids
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
+  require Ash.Query
+
   @type t :: %Record{}
 
   @pagify_scopes %{
@@ -47,6 +51,13 @@ defmodule DataAggregator.Records.Record do
     ]
   }
   def pagify_scopes, do: @pagify_scopes
+
+  @full_text_search [
+    tsvector_column: [
+      encoded_tsvector: Ash.Query.expr(encoded_tsvector)
+    ]
+  ]
+  def full_text_search, do: @full_text_search
 
   attributes do
     uuid_attribute :id, prefix: "rec"
@@ -63,6 +74,8 @@ defmodule DataAggregator.Records.Record do
 
     attribute :last_approval_started_at, :utc_datetime, allow_nil?: true
     attribute :last_imported_at, :utc_datetime, allow_nil?: true
+
+    attribute :tsv, :string, allow_nil?: true, private?: true, writable?: false
 
     timestamps private?: false, writable?: false
   end
@@ -155,6 +168,10 @@ defmodule DataAggregator.Records.Record do
     calculate :mids_level_four,
               :boolean,
               Mids.LevelFour
+
+    calculate :tsvector, AshPostgres.Tsvector, expr(tsv)
+
+    calculate :encoded_tsvector, AshPostgres.Tsvector, expr(encoded_record.tsv)
   end
 
   paper_trail do

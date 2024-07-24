@@ -879,6 +879,9 @@ classDiagram
         Integer encoder_job_id
         Integer fast_track_checker_job_id
         Atom state
+        Boolean full_text_search
+        Float full_text_search_rank
+        Tsquery tsquery
         Boolean iucn_redlist
         Boolean encoded
         Integer mids_level
@@ -886,6 +889,8 @@ classDiagram
         Boolean mids_level_two
         Boolean mids_level_three
         Boolean mids_level_four
+        Tsvector tsvector
+        Tsvector encoded_tsvector
         Version[] paper_trail_versions
         Collection collection
         Import[] imports
@@ -2009,6 +2014,9 @@ erDiagram
         Integer encoder_job_id
         Integer fast_track_checker_job_id
         Atom state
+        Boolean full_text_search
+        Float full_text_search_rank
+        Tsquery tsquery
         Boolean iucn_redlist
         Boolean encoded
         Integer mids_level
@@ -2016,6 +2024,8 @@ erDiagram
         Boolean mids_level_two
         Boolean mids_level_three
         Boolean mids_level_four
+        Tsvector tsvector
+        Tsvector encoded_tsvector
     }
     Image {
         UUID id
@@ -2721,6 +2731,7 @@ erDiagram
 | **id** | UUID |  |
 | **extra_data** | Map |  |
 | **iucn_redlist_category** | String |  |
+| **tsv** | String |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
 | **record_id** | UUID |  |
@@ -3209,6 +3220,7 @@ erDiagram
 | **iucn_redlist_category** | String |  |
 | **last_approval_started_at** | UtcDatetime |  |
 | **last_imported_at** | UtcDatetime |  |
+| **tsv** | String |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
 | **collection_id** | UUID |  |

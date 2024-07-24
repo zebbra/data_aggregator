@@ -4,8 +4,8 @@ defmodule Pagify.Components.Table do
   use Phoenix.Component
 
   alias Pagify.Components
-  alias Pagify.Components.Misc
   alias Pagify.Meta
+  alias Pagify.Misc
   alias Phoenix.LiveView.JS
 
   @spec default_opts() :: [Components.table_option()]
@@ -32,8 +32,8 @@ defmodule Pagify.Components.Table do
 
   def merge_opts(opts) do
     default_opts()
-    |> Misc.deep_merge(Misc.get_global_opts(:table))
-    |> Misc.deep_merge(opts)
+    |> Misc.list_merge(Misc.get_global_opts(:table))
+    |> Misc.list_merge(opts)
   end
 
   attr :id, :string, required: true

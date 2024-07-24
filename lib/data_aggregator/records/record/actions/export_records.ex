@@ -16,7 +16,8 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   def run(input, _opts, _context) do
     export = Records.load!(input.arguments.export, [:collection])
 
-    query = Ash.Query.filter_input(Record, export.records_query)
+    query = Pagify.query_for_filters_map(Record, export.records_query)
+
     data_layer = export.data_layer
     header_source = export.header_source
 

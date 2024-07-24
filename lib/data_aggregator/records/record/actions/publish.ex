@@ -25,7 +25,7 @@ defmodule DataAggregator.Records.Actions.Publish do
   def run(input, _opts, _context) do
     publication = input.arguments.publication
 
-    query = get_ash_query(publication)
+    query = Pagify.query_for_filters_map(Record, publication.records_query)
 
     set_publication_status(
       query,
@@ -76,7 +76,8 @@ defmodule DataAggregator.Records.Actions.Publish do
   rescue
     e ->
       publication = input.arguments.publication
-      query = get_ash_query(publication)
+
+      query = Pagify.query_for_filters_map(Record, publication.records_query)
 
       Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(e)}")
 
@@ -87,10 +88,6 @@ defmodule DataAggregator.Records.Actions.Publish do
       )
 
       {:error, e}
-  end
-
-  def get_ash_query(publication) do
-    Ash.Query.filter_input(Record, publication.records_query)
   end
 
   @spec queue_records_for_verification(Ash.Query.t()) :: :ok

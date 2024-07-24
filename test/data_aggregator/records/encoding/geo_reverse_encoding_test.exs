@@ -7,12 +7,14 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
   import DataAggregator.EncodingFixtures
 
   alias DataAggregator.Gbif
+  alias DataAggregator.Opencage
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
   describe "reward encoding of records with " do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
 
       record_fixture = record_fixture_for_reverse_geo_encoding_correct()
 

@@ -3,5 +3,45 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   This module contains helper functions for the collection > record live view.
   """
 
+  use DataAggregatorWeb, :verified_routes
+
+  import Pagify.Components, only: [build_path: 2, build_scope_path: 3]
+
+  alias DataAggregator.Records.Record
+
   def busy?(action, busy_action), do: action == busy_action
+
+  def filter_map(pagify, query, layer) do
+    opts = maybe_put_tsvector(layer)
+
+    Record
+    |> Pagify.query_to_filters_map(pagify, opts)
+    |> Pagify.merge_filters(query)
+    |> Map.get(:filters)
+  end
+
+  def maybe_put_tsvector(layer, opts \\ [])
+  def maybe_put_tsvector("import", opts), do: opts
+
+  def maybe_put_tsvector(_, opts) do
+    Pagify.set_tsvector(:encoded_tsvector, opts)
+  end
+
+  def path_helper(collection, layer, meta, scope \\ nil)
+
+  def path_helper(collection, "approval", meta, nil) do
+    build_path(~p"/collections/#{collection}/records", meta)
+  end
+
+  def path_helper(collection, layer, meta, nil) do
+    build_path(~p"/collections/#{collection}/records?layer=#{layer}", meta)
+  end
+
+  def path_helper(collection, "approval", meta, scope) do
+    build_scope_path(~p"/collections/#{collection}/records", meta, scope)
+  end
+
+  def path_helper(collection, layer, meta, scope) do
+    build_scope_path(~p"/collections/#{collection}/records?layer=#{layer}", meta, scope)
+  end
 end

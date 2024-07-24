@@ -5,6 +5,17 @@ defmodule Pagify.Factory.Comment do
     api: Pagify.Factory.Api,
     extensions: [AshUUID]
 
+  use Pagify.Tsearch, only: [:full_text_search]
+
+  require Ash.Query
+
+  @full_text_search [
+    prefix: false,
+    any_word: true,
+    tsvector_column: Ash.Query.expr(custom_tsvector)
+  ]
+  def full_text_search, do: @full_text_search
+
   ets do
     private? true
   end
@@ -19,6 +30,24 @@ defmodule Pagify.Factory.Comment do
     belongs_to :post, Pagify.Factory.Post do
       allow_nil? false
     end
+  end
+
+  calculations do
+    calculate :tsquery,
+              AshPostgres.Tsquery,
+              expr(fragment("to_tsquery('simple', unaccent(?))", ^arg(:search))) do
+      argument :search, :string, allow_expr?: true, allow_nil?: false
+    end
+
+    calculate :custom_tsvector,
+              AshPostgres.Tsvector,
+              expr(
+                fragment(
+                  "setweight(to_tsvector('english', unaccent(coalesce(?, ''))), 'A') || setweight(to_tsvector('english', unaccent(coalesce(?, ''))), 'B')",
+                  body,
+                  text
+                )
+              )
   end
 
   preparations do

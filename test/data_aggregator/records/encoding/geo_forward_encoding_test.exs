@@ -7,6 +7,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
   import DataAggregator.EncodingFixtures
 
   alias DataAggregator.Gbif
+  alias DataAggregator.Opencage
   alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
@@ -14,6 +15,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
   describe "forward encoding of records with " do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
 
       record_fixture = record_fixture_for_forward_geo_encoding_correct()
 

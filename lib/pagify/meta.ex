@@ -6,6 +6,7 @@ defmodule Pagify.Meta do
   defstruct current_limit: nil,
             current_offset: nil,
             current_page: nil,
+            current_search: nil,
             default_scopes: nil,
             errors: [],
             has_next_page?: false,
@@ -26,6 +27,7 @@ defmodule Pagify.Meta do
   - `:current_offset` - The `:offset` value used in the query
   - `:current_page` - A derived value when using offset-based pagination. Note that
     the value will be rounded if the offset lies between pages.
+  - `:current_search` - The current full-text search term.
   - `:default_scopes` - Default scopes loaded for this resource and query.
   - `:errors` - Any validation errors that occurred.
   - `:has_previous_page?`, `:has_next_page?` - Whether there are previous or next
@@ -44,6 +46,7 @@ defmodule Pagify.Meta do
           current_limit: pos_integer() | nil,
           current_offset: non_neg_integer() | nil,
           current_page: pos_integer() | nil,
+          current_search: String.t() | nil,
           default_scopes: map() | nil,
           errors: [{atom(), term()}] | nil,
           has_next_page?: boolean(),

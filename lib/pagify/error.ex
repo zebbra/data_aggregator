@@ -21,7 +21,7 @@ defmodule Pagify.Error do
   end
 end
 
-defmodule Pagify.Error.InvalidParamsError do
+defmodule Pagify.Error.Query.InvalidParamsError do
   @moduledoc """
   Raised when parameter validation fails.
 
@@ -62,7 +62,7 @@ defmodule Pagify.Error.InvalidParamsError do
   end
 end
 
-defmodule Pagify.Error.InvalidDirectionsError do
+defmodule Pagify.Error.Query.InvalidDirectionsError do
   @moduledoc """
   An error that is raised when invalid directions are passed.
   """
@@ -108,6 +108,42 @@ defmodule Pagify.Error.Query.InvalidScopesParameter do
 
   def message(%{scopes: scopes}) do
     "#{inspect(scopes)} is not a valid scopes parameter"
+  end
+end
+
+defmodule Pagify.Error.Query.InvalidSearchParameter do
+  @moduledoc """
+  Used when an invalid search is provided
+  """
+  use Ash.Error.Exception
+  use Splode.Error, fields: [:search], class: :invalid
+
+  def message(%{search: search}) do
+    "#{inspect(search)} is not a valid search parameter"
+  end
+end
+
+defmodule Pagify.Error.Query.InvalidFilterFormParameter do
+  @moduledoc """
+  Used when an invalid filter_form is provided
+  """
+  use Ash.Error.Exception
+  use Splode.Error, fields: [:filter_form], class: :invalid
+
+  def message(%{filter_form: filter_form}) do
+    "#{inspect(filter_form)} is not a valid filter_form parameter"
+  end
+end
+
+defmodule Pagify.Error.Query.SearchNotImplemented do
+  @moduledoc """
+  Used when a search is requested but not implemented
+  """
+  use Ash.Error.Exception
+  use Splode.Error, fields: [:resource], class: :invalid
+
+  def message(%{resource: resource}) do
+    "#{inspect(resource)} does not implement search"
   end
 end
 

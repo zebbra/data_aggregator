@@ -51,6 +51,7 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
       [approval: approval, records: records]
     end
 
+    @tag capture_log: true
     test "Approver.perform/1 approval run success", %{approval: approval} do
       perform_job(Approval.Workers.Approver, %{id: approval.id})
 
@@ -59,6 +60,7 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
       assert approval.state == :done
     end
 
+    @tag capture_log: true
     test "Approver.perform/1 all ApprovedRecords are created correctly and have the changed values",
          %{approval: approval} do
       {:ok, approval} = perform_job(Approval.Workers.Approver, %{id: approval.id})
@@ -75,6 +77,7 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
       assert approval.state == :done
     end
 
+    @tag capture_log: true
     test "Approver.perform/1 only create ApprovedRecords if the input data is valid",
          %{approval: approval} do
       {{:ok, _approval}, logs} =
@@ -88,6 +91,7 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
       assert logs =~ "18 invalid row(s) dropped from chunk!"
     end
 
+    @tag capture_log: true
     test "Approver.perform/1 all affected records are in state :approved", %{approval: approval} do
       {:ok, approval} = perform_job(Approval.Workers.Approver, %{id: approval.id})
 
@@ -101,6 +105,7 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
       assert approval.state == :done
     end
 
+    @tag capture_log: true
     test "Approver.perform/1 check if error log is present and correct", %{approval: approval} do
       {:ok, approval} = perform_job(Approval.Workers.Approver, %{id: approval.id})
 

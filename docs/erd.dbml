@@ -628,6 +628,7 @@ Table encoded_records {
   id uuid [pk]
   extra_data jsonb
   iucn_redlist_category varchar
+  tsv varchar
   inserted_at timestamp
   updated_at timestamp
   record_id uuid
@@ -1006,6 +1007,7 @@ Table records {
   iucn_redlist_category varchar
   last_approval_started_at timestamp
   last_imported_at timestamp
+  tsv varchar
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid

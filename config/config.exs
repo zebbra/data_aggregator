@@ -93,7 +93,7 @@ config :data_aggregator, DataAggregator.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.20.1",
+  version: "0.23.0",
   data_aggregator: [
     args: ~w(js/app.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
@@ -170,10 +170,8 @@ config :data_aggregator, :logger, [
 ]
 
 # Pagify global configuration
-config :data_aggregator, :pagify, default_limit: 15
-
-# Pagify Phoenix configuration
-config :data_aggregator, :pagify_phoenix,
+config :data_aggregator, :pagify,
+  default_limit: 15,
   pagination: [opts: {DataAggregatorWeb.Components, :pagination_opts}],
   table: [opts: {DataAggregatorWeb.Components, :table_opts}]
 
