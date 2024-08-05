@@ -59,7 +59,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         |> assign(:layer, layer)
         |> assign(
           :filters_count,
-          meta |> Pagify.FilterForm.active_filter_form_fields() |> length()
+          meta |> AshPagify.FilterForm.active_filter_form_fields() |> length()
         )
         |> assign_search(meta)
         |> apply_action(socket.assigns.live_action, params)
@@ -109,7 +109,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             title={~t"All records"m}
             value={1.0}
             desc={@collection.records_count}
-            active={Pagify.active_scope?(@meta.pagify, %{status: :all})}
+            active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :all})}
           />
           <.scope_stat
             href={path_helper(@collection, @layer, @meta, %{status: :not_encoded})}
@@ -120,7 +120,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 else: @collection.records_count_not_encoded / @collection.records_count
             }
             desc={@collection.records_count_not_encoded}
-            active={Pagify.active_scope?(@meta.pagify, %{status: :not_encoded})}
+            active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_encoded})}
           />
         </div>
       </div>
@@ -609,7 +609,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         enqueue_encoder_fn = fn ->
           Record
           |> Ash.Query.filter(collection.id == ^id)
-          |> Pagify.validated_query(socket.assigns.meta.pagify, opts)
+          |> AshPagify.validated_query(socket.assigns.meta.ash_pagify, opts)
           |> Records.stream!(page: false)
           |> Stream.map(&Record.enqueue_encoder!/1)
           |> Stream.run()
@@ -630,11 +630,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("collection:fast_track_pub", _params, socket) do
-    %{collection: collection, meta: %{pagify: pagify}} = socket.assigns
+    %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
     collection = Records.load!(collection, [:fast_track_query], lazy?: true)
 
-    fast_track_query = filter_map(pagify, collection.fast_track_query, socket.assigns.layer)
-    count_query = Pagify.query_for_filters_map(Record, fast_track_query)
+    fast_track_query = filter_map(ash_pagify, collection.fast_track_query, socket.assigns.layer)
+    count_query = AshPagify.query_for_filters_map(Record, fast_track_query)
 
     case create_and_enqueue(collection, fast_track_query, count_query, :fast_track) do
       {:ok, _} ->
@@ -650,11 +650,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("collection:approval_pub", _params, socket) do
-    %{collection: collection, meta: %{pagify: pagify}} = socket.assigns
+    %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
     collection = Records.load!(collection, [:approval_query], lazy?: true)
 
-    approval_query = filter_map(pagify, collection.approval_query, socket.assigns.layer)
-    count_query = Pagify.query_for_filters_map(Record, approval_query)
+    approval_query = filter_map(ash_pagify, collection.approval_query, socket.assigns.layer)
+    count_query = AshPagify.query_for_filters_map(Record, approval_query)
 
     case create_and_enqueue(collection, approval_query, count_query, :approval) do
       {:ok, _} ->
@@ -726,14 +726,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   defp list_records(params, opts \\ [load: @load, action: :by_collection]) do
     opts = maybe_put_tsvector(Map.get(params, "layer"), opts)
 
-    Pagify.validate_and_run(Record, params, opts, params["id"])
+    AshPagify.validate_and_run(Record, params, opts, params["id"])
   end
 
   defp get_record(id) do
     Record.get_by_id!(id, load: @load)
   end
 
-  defp assign_search(socket, %Pagify.Meta{current_search: search}) do
+  defp assign_search(socket, %AshPagify.Meta{current_search: search}) do
     search = to_form(%{"query" => coalesce_search(search)}, as: :search)
     assign(socket, :search, search)
   end
@@ -742,11 +742,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     if String.length(query) > 0 && String.length(query) < 3 do
       {:noreply, socket}
     else
-      %{meta: %{pagify: pagify} = meta, layer: layer, collection: collection} =
+      %{meta: %{ash_pagify: ash_pagify} = meta, layer: layer, collection: collection} =
         socket.assigns
 
-      pagify = Pagify.set_search(pagify, query)
-      meta = %{meta | pagify: pagify}
+      ash_pagify = AshPagify.set_search(ash_pagify, query)
+      meta = %{meta | ash_pagify: ash_pagify}
 
       path = path_helper(collection, layer, meta)
 

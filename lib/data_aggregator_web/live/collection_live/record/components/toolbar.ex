@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
   ]
 
   attr :search, Phoenix.HTML.Form, required: true, doc: "The search form"
-  attr :meta, Pagify.Meta, required: true, doc: "The pagify meta object"
+  attr :meta, AshPagify.Meta, required: true, doc: "The ash_pagify meta object"
   attr :collection_id, :string, required: true, doc: "The collection id"
   attr :records_count, :integer, required: true, doc: "The total number of records"
   attr :filters_count, :integer, required: true, doc: "The number of active filters"

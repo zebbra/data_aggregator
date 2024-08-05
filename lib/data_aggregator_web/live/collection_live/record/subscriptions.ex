@@ -93,12 +93,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
   end
 
   defp refresh(socket) do
-    %{assigns: %{collection: %{id: id}, meta: %{pagify: pagify, opts: opts}, layer: layer}} =
+    %{
+      assigns: %{collection: %{id: id}, meta: %{ash_pagify: ash_pagify, opts: opts}, layer: layer}
+    } =
       socket
 
     opts = maybe_put_tsvector(layer, opts)
 
-    case Pagify.validate_and_run(Record, pagify, opts, id) do
+    case AshPagify.validate_and_run(Record, ash_pagify, opts, id) do
       {:ok, {records, meta}} ->
         socket =
           socket

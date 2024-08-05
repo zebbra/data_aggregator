@@ -45,7 +45,7 @@ defmodule DataAggregator.MixProject do
   defp extra_applications(_), do: [:logger, :runtime_tools, :ssl, :os_mon]
 
   # Specifies which paths to compile per environment.
-  defp elixirc_paths(:test), do: ["lib", "test/support", "test/pagify/support"]
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
   defp docs do
@@ -109,9 +109,7 @@ defmodule DataAggregator.MixProject do
     [
       DataAggregator,
       DataAggregatorWeb,
-      DataAggregatorApi,
-      Pagify,
-      Pagify.Error
+      DataAggregatorApi
     ]
   end
 
@@ -171,10 +169,6 @@ defmodule DataAggregator.MixProject do
       ],
       Plugs: [
         ~r/^DataAggregatorWeb\.Plug/
-      ],
-      Pagify: [
-        Pagify,
-        ~r/^Pagify\./
       ]
     ]
   end
@@ -202,6 +196,7 @@ defmodule DataAggregator.MixProject do
       {:ash_state_machine, "~> 0.2.2"},
       {:ash_uuid, "~> 0.7"},
       {:ash_paper_trail, "~> 0.1"},
+      {:ash_pagify, "~> 0.1"},
 
       # Database and Ecto
       {:ecto, "~> 3.11.0"},
@@ -238,7 +233,7 @@ defmodule DataAggregator.MixProject do
       # Internationalization and Localization
       {:gettext, "~> 0.20"},
       {:ex_cldr, "~> 2.37"},
-      {:ex_cldr_dates_times, "~> 2.19.2"},
+      {:ex_cldr_dates_times, "~> 2.20"},
       {:ex_cldr_numbers, "~> 2.31"},
       {:ex_cldr_units, "~> 3.16"},
       {:ex_cldr_plugs, "~> 1.3"},

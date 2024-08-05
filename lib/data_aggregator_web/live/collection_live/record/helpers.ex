@@ -5,18 +5,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
 
   use DataAggregatorWeb, :verified_routes
 
-  import Pagify.Components, only: [build_path: 2, build_scope_path: 3]
+  import AshPagify.Components, only: [build_path: 2, build_scope_path: 3]
 
   alias DataAggregator.Records.Record
 
   def busy?(action, busy_action), do: action == busy_action
 
-  def filter_map(pagify, query, layer) do
+  def filter_map(ash_pagify, query, layer) do
     opts = maybe_put_tsvector(layer)
 
     Record
-    |> Pagify.query_to_filters_map(pagify, opts)
-    |> Pagify.merge_filters(query)
+    |> AshPagify.query_to_filters_map(ash_pagify, opts)
+    |> AshPagify.merge_filters(query)
     |> Map.get(:filters)
   end
 
@@ -24,7 +24,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   def maybe_put_tsvector("import", opts), do: opts
 
   def maybe_put_tsvector(_, opts) do
-    Pagify.set_tsvector(:encoded_tsvector, opts)
+    AshPagify.set_tsvector(:encoded_tsvector, opts)
   end
 
   def path_helper(collection, layer, meta, scope \\ nil)

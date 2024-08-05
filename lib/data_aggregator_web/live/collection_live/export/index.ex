@@ -280,7 +280,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
   end
 
   defp list_exports(params, opts \\ [load: @load, action: :by_collection]) do
-    Pagify.validate_and_run(Export, params, opts, params["id"])
+    AshPagify.validate_and_run(Export, params, opts, params["id"])
   end
 
   attr :collection, :any

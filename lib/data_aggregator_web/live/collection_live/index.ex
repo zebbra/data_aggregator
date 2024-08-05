@@ -195,7 +195,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   end
 
   defp list_collections(params, opts \\ [load: @load]) do
-    Pagify.validate_and_run(Collection, params, opts)
+    AshPagify.validate_and_run(Collection, params, opts)
   end
 
   defp no_results_content(assigns) do

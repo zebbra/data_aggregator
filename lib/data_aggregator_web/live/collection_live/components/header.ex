@@ -18,7 +18,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
     default: :records,
     values: ~w(records imports encodings exports publications)a
 
-  attr :meta, Pagify.Meta, default: nil
+  attr :meta, AshPagify.Meta, default: nil
 
   def collection_header(%{collection: nil} = assigns) do
     assigns

@@ -129,9 +129,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
   end
 
   defp refresh(socket) do
-    %{assigns: %{collection: %{id: id}, meta: %{pagify: pagify, opts: opts}}} = socket
+    %{assigns: %{collection: %{id: id}, meta: %{ash_pagify: ash_pagify, opts: opts}}} = socket
 
-    case Pagify.validate_and_run(Import, pagify, opts, id) do
+    case AshPagify.validate_and_run(Import, ash_pagify, opts, id) do
       {:ok, {records, meta}} ->
         socket =
           socket

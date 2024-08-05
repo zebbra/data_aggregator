@@ -10,8 +10,8 @@ defmodule DataAggregatorWeb.Filters.ClearLink do
 
   import DataAggregatorWeb.Gettext
 
+  alias AshPagify.FilterForm
   alias AshPhoenix.FilterForm.Predicate
-  alias Pagify.FilterForm
 
   attr :component, :map, required: true, doc: "Could be a FilterForm (group) or a Predicate"
 
