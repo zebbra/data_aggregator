@@ -16,7 +16,7 @@ env:
   WAFFLE_ASSET_HOST: https://${AWS_S3_HOST}/${WAFFLE_S3_BUCKET}
 
 ingress:
-  enabled: true
+  enabled: false
   className: nginx
   annotations:
     kubernetes.io/tls-acme: "true"
