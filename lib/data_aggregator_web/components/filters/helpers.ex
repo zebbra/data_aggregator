@@ -1,13 +1,13 @@
 defmodule DataAggregatorWeb.Filters.Helpers do
   @moduledoc """
-  Provides helper functions for filters with the `Pagify.FilterForm` and
+  Provides helper functions for filters with the `AshPagify.FilterForm` and
   `AshPhoenix.FilterForm` module.
   """
 
   import DataAggregatorWeb.Helpers, only: [format_number: 1]
 
+  alias AshPagify.FilterForm
   alias AshPhoenix.FilterForm.Predicate
-  alias Pagify.FilterForm
 
   @doc """
   Returns true if the value is present, false otherwise.

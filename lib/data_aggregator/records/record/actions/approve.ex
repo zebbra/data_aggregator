@@ -24,9 +24,11 @@ defmodule DataAggregator.Records.Actions.Approve do
     center_and_record_counts =
       Enum.map(infospecies_centers, fn center ->
         records_query =
-          Pagify.merge_filters(%Pagify{filters: query}, %{swiss_species: %{center: %{eq: center}}}).filters
+          AshPagify.merge_filters(%AshPagify{filters: query}, %{
+            swiss_species: %{center: %{eq: center}}
+          }).filters
 
-        count_query = Pagify.query_for_filters_map(Record, records_query)
+        count_query = AshPagify.query_for_filters_map(Record, records_query)
 
         rows_count = Records.count!(count_query)
 

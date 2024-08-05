@@ -302,7 +302,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   end
 
   defp list_publications(params, opts \\ [load: @load, action: :by_collection]) do
-    Pagify.validate_and_run(Publication, params, opts, params["id"])
+    AshPagify.validate_and_run(Publication, params, opts, params["id"])
   end
 
   attr :collection, :any

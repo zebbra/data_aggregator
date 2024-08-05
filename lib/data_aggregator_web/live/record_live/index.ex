@@ -195,7 +195,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   end
 
   defp list_records(params, opts \\ [load: @load]) do
-    Pagify.validate_and_run(Record, params, opts)
+    AshPagify.validate_and_run(Record, params, opts)
   end
 
   defp get_record(id) do

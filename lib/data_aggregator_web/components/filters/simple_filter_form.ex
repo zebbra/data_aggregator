@@ -36,7 +36,7 @@ defmodule DataAggregatorWeb.Filters.SimpleFilterForm do
   import DataAggregatorWeb.Components.Notification, only: [collapsible_notification: 1]
   import DataAggregatorWeb.Gettext
 
-  alias Pagify.FilterForm
+  alias AshPagify.FilterForm
 
   attr :filter_form, FilterForm, required: true, doc: "The initial filter form"
   attr :count, :integer, required: true, doc: "The count of the items"

@@ -44,7 +44,6 @@ The project is structured in a way that the code is separated into different fol
 │   ├── data_aggregator     # Backend application code, each folder represents a dedicated module of the backend
 │   ├── data_aggregator_api # Definitions of interfaces for the application
 │   ├── data_aggregator_web # Frontend application code, the views and event handlers for the UI
-│   └── pagify              # Pagination library, to paginate, search, sort and filter data
 ├── priv
 │   ├── cache               # Caches for various usecases within the application
 │   ├── cldr                # Location specific formatting of units, data, and time
@@ -63,7 +62,6 @@ The project is structured in a way that the code is separated into different fol
     ├── data_aggregator
     ├── data_aggregator_api
     ├── data_aggregator_web
-    └── pagify
 ```
 
 ## Start coding

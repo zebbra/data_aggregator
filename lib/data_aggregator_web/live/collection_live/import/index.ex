@@ -549,7 +549,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   end
 
   defp list_imports(params, opts \\ [load: @load, action: :by_collection]) do
-    Pagify.validate_and_run(Import, params, opts, params["id"])
+    AshPagify.validate_and_run(Import, params, opts, params["id"])
   end
 
   attr :collection, :any

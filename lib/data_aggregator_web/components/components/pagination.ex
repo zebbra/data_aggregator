@@ -1,6 +1,6 @@
 defmodule DataAggregatorWeb.Components.Pagination do
   @moduledoc """
-  Pagination components. Wrapper around `Pagify.Components.pagination/1`.
+  Pagination components. Wrapper around `AshPagify.Components.pagination/1`.
   """
 
   use Phoenix.Component
@@ -8,7 +8,7 @@ defmodule DataAggregatorWeb.Components.Pagination do
   import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
-  alias Pagify.Meta
+  alias AshPagify.Meta
 
   @doc """
   Renders a pagination component.
@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.Components.Pagination do
   attr :meta, Meta,
     required: true,
     doc: """
-    The meta information of the query as returned by the `Pagify` query functions
+    The meta information of the query as returned by the `AshPagify` query functions
     """
 
   attr :position, :string,
@@ -40,13 +40,13 @@ defmodule DataAggregatorWeb.Components.Pagination do
 
     The value must be either a URI string (Phoenix verified route), an MFA or FA
     tuple (Phoenix route helper), or a 1-ary path builder function. See
-    `Pagify.Components.build_path/3` for details.
+    `AshPagify.Components.build_path/3` for details.
     """
 
   def pagination(assigns) do
     ~H"""
     <div
-      :if={Pagify.Components.Pagination.show_pagination?(@meta)}
+      :if={AshPagify.Components.Pagination.show_pagination?(@meta)}
       class={[
         "border-black-white/10 flex items-baseline justify-between space-x-3 px-6 lg:px-8",
         @position == "top" && "border-y pb-4",
@@ -99,7 +99,9 @@ defmodule DataAggregatorWeb.Components.Pagination do
               <.link
                 :for={limit <- [15, 25, 50, 75, 100]}
                 patch={
-                  Pagify.Components.build_path(@path, @meta.pagify |> Pagify.set_limit(limit),
+                  AshPagify.Components.build_path(
+                    @path,
+                    @meta.ash_pagify |> AshPagify.set_limit(limit),
                     for: @meta.resource,
                     default_scopes: @meta.default_scopes
                   )
@@ -111,7 +113,7 @@ defmodule DataAggregatorWeb.Components.Pagination do
             </li>
           </ul>
         </DataAggregatorWeb.Components.Dropdown.dropdown>
-        <Pagify.Components.pagination meta={@meta} path={@path} />
+        <AshPagify.Components.pagination meta={@meta} path={@path} />
       </div>
     </div>
     """
@@ -121,12 +123,12 @@ defmodule DataAggregatorWeb.Components.Pagination do
     if number == current_limit, do: "active"
   end
 
-  defp showing_to(%Pagify.Meta{current_limit: limit, current_offset: offset, total_count: total})
+  defp showing_to(%AshPagify.Meta{current_limit: limit, current_offset: offset, total_count: total})
        when limit + offset > total do
     total
   end
 
-  defp showing_to(%Pagify.Meta{current_limit: limit, current_offset: offset}) do
+  defp showing_to(%AshPagify.Meta{current_limit: limit, current_offset: offset}) do
     limit + offset
   end
 end

@@ -7,10 +7,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
 
   import DataAggregator.Helpers, only: [distinct: 2]
 
+  alias AshPagify.FilterForm
   alias AshPhoenix.FilterForm.Predicate
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
-  alias Pagify.FilterForm
 
   @impl true
   def mount(socket) do

@@ -82,6 +82,9 @@ defmodule DataAggregatorWeb.Components do
 
   defmacro __using__(_) do
     quote do
+      import AshPagify.Components,
+        only: [table: 1, build_path: 2, build_path: 3, build_scope_path: 3]
+
       import DataAggregatorWeb.Components.Alert
       import DataAggregatorWeb.Components.Attachment
       import DataAggregatorWeb.Components.Badge
@@ -104,9 +107,6 @@ defmodule DataAggregatorWeb.Components do
       import DataAggregatorWeb.Components.Tab
       import DataAggregatorWeb.Components.Transitions
       import DataAggregatorWeb.LiveComponents.ThemeSelect
-
-      import Pagify.Components,
-        only: [table: 1, build_path: 2, build_path: 3, build_scope_path: 3]
     end
   end
 

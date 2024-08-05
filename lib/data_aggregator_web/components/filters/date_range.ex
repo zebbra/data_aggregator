@@ -33,7 +33,7 @@ defmodule DataAggregatorWeb.Filters.DateRange do
   import DataAggregatorWeb.Filters.ClearLink, only: [clear_link: 1]
   import DataAggregatorWeb.Filters.Helpers, only: [present?: 1]
 
-  alias Pagify.FilterForm
+  alias AshPagify.FilterForm
 
   attr :title, :string,
     required: true,

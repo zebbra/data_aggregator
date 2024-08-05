@@ -169,8 +169,8 @@ config :data_aggregator, :logger, [
    }}
 ]
 
-# Pagify global configuration
-config :data_aggregator, :pagify,
+# AshPagify global configuration
+config :ash_pagify,
   default_limit: 15,
   pagination: [opts: {DataAggregatorWeb.Components, :pagination_opts}],
   table: [opts: {DataAggregatorWeb.Components, :table_opts}]

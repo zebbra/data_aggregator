@@ -21,7 +21,7 @@ defmodule DataAggregator.Records.Record do
     ],
     notifiers: [Ash.Notifier.PubSub]
 
-  use Pagify.Tsearch
+  use AshPagify.Tsearch
 
   alias __MODULE__
   alias DataAggregator.DarwinCore
@@ -41,7 +41,7 @@ defmodule DataAggregator.Records.Record do
 
   @type t :: %Record{}
 
-  @pagify_scopes %{
+  @ash_pagify_scopes %{
     status: [
       %{name: :all, filter: nil, default?: true},
       %{
@@ -50,7 +50,7 @@ defmodule DataAggregator.Records.Record do
       }
     ]
   }
-  def pagify_scopes, do: @pagify_scopes
+  def ash_pagify_scopes, do: @ash_pagify_scopes
 
   @full_text_search [
     tsvector_column: [

@@ -4,7 +4,7 @@ defmodule DataAggregatorWeb.Filters do
 
   ## Introduction
 
-  Filters are built in conjunction with the `Pagify.FilterForm` module and the
+  Filters are built in conjunction with the `AshPagify.FilterForm` module and the
   `DataAggregatorWeb.Components` library. This module provides filters for different
   types of data, such as date ranges, text search, select, radio and checkbox groups
   filters.
@@ -20,12 +20,12 @@ defmodule DataAggregatorWeb.Filters do
   `@behaviour DataAggregatorWeb.Filters` macro.
 
   You have to at least add the default `filter_form_component/1` implementations
-  for `AshPhoenix.FilterForm.Predicate` and `Pagify.FilterForm`. See below for an example.
+  for `AshPhoenix.FilterForm.Predicate` and `AshPagify.FilterForm`. See below for an example.
   The easiest way is to simply copy&paste the code below into your LiveView module.
 
   Then you can add your custom filter components by implementing the `filter_form_component/1`
   and match them with the `source` field of the `AshPhoenix.FilterForm.Predicate` or
-  `Pagify.FilterForm` struct.
+  `AshPagify.FilterForm` struct.
 
   ## Example
 
@@ -41,7 +41,7 @@ defmodule DataAggregatorWeb.Filters do
     alias AshPhoenix.FilterForm.Predicate
     alias DataAggregator.Records.EncodedRecord
     alias DataAggregator.Records.Record
-    alias Pagify.FilterForm
+    alias AshPagify.FilterForm
 
     @impl true
     def mount(socket) do
@@ -359,7 +359,7 @@ defmodule DataAggregatorWeb.Filters do
     end
 
     defp assign_collapsible_state(socket) do
-      active_filter_form_fields = Pagify.FilterForm.active_filter_form_fields(socket.assigns.meta)
+      active_filter_form_fields = AshPagify.FilterForm.active_filter_form_fields(socket.assigns.meta)
 
       active_taxonomy =
         Enum.any?(
@@ -394,7 +394,7 @@ defmodule DataAggregatorWeb.Filters do
   ```
   """
 
-  alias Pagify.FilterForm
+  alias AshPagify.FilterForm
 
   @callback filter_form_component(assigns :: Phoenix.LiveView.Socket.assigns()) ::
               Phoenix.LiveView.Rendered.t()
@@ -441,7 +441,7 @@ defmodule DataAggregatorWeb.Filters do
           filter_form_params =
             FilterForm.params_for_query(filter_form)
 
-          meta = Pagify.set_filter_form(meta, filter_form_params)
+          meta = AshPagify.set_filter_form(meta, filter_form_params)
           path = build_path(path, meta)
 
           send(self(), {"filter_form:submit", meta})
@@ -511,7 +511,7 @@ defmodule DataAggregatorWeb.Filters do
       end
 
       defp assign_form(socket) do
-        %{meta: %{pagify: %{filter_form: params}, resource: resource}} = socket.assigns
+        %{meta: %{ash_pagify: %{filter_form: params}, resource: resource}} = socket.assigns
         filter_form = FilterForm.new(resource, params: params, initial_form: init_form(resource))
 
         assign(socket, :filter_form, filter_form)
