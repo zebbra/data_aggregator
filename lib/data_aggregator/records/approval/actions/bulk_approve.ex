@@ -22,7 +22,7 @@ defmodule DataAggregator.Records.Approval.Actions.BulkApprove do
     result =
       rows
       |> Stream.map(& &1)
-      |> DataAggregator.Records.bulk_create!(ApprovedRecord, :approve,
+      |> Ash.bulk_create!(ApprovedRecord, :approve,
         return_errors?: true,
         return_records?: true,
         max_concurrency: max_concurrency,

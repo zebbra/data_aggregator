@@ -9,7 +9,6 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Gbif
-  alias DataAggregator.Records
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Publication.InfoSpecies
   alias DataAggregator.Records.Record
@@ -82,11 +81,11 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       encoded_record_fixture(%{record: record5})
 
       records = [
-        Records.load!(record1, [:encoded_record]),
-        Records.load!(record2, [:encoded_record]),
-        Records.load!(record3, [:encoded_record]),
-        Records.load!(record4, [:encoded_record]),
-        Records.load!(record5, [:encoded_record])
+        Ash.load!(record1, [:encoded_record]),
+        Ash.load!(record2, [:encoded_record]),
+        Ash.load!(record3, [:encoded_record]),
+        Ash.load!(record4, [:encoded_record]),
+        Ash.load!(record5, [:encoded_record])
       ]
 
       query = %{collection: %{id: %{eq: collection.id}}, tax_kingdom: %{is_nil: false}}

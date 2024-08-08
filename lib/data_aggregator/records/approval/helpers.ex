@@ -64,7 +64,7 @@ defmodule DataAggregator.Records.Approval.Helpers do
   end
 
   @doc """
-  Creates a chanageset, validates the data and returns the changeset
+  Creates a changeset, validates the data and returns the changeset
   """
   @spec valid_approval_row(map()) :: {boolean(), [Ash.Error.t()]}
   def valid_approval_row(row) do

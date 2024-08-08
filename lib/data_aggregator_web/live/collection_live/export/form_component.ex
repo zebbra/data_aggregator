@@ -7,7 +7,6 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
 
   import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [filter_map: 3]
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
 
@@ -148,7 +147,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
     } =
       socket.assigns
 
-    collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
+    collection = Ash.load!(collection, [:records_to_export_query], lazy?: true)
 
     records_to_export_query = filter_map(ash_pagify, collection.records_to_export_query, layer)
 
@@ -171,12 +170,12 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
 
   defp assign_rows_count(socket) do
     %{collection: collection, meta: %{ash_pagify: ash_pagify}, layer: layer} = socket.assigns
-    collection = Records.load!(collection, [:records_to_export_query], lazy?: true)
+    collection = Ash.load!(collection, [:records_to_export_query], lazy?: true)
 
     records_to_export_query = filter_map(ash_pagify, collection.records_to_export_query, layer)
     count_query = AshPagify.query_for_filters_map(Record, records_to_export_query)
 
-    rows_count = Records.count!(count_query)
+    rows_count = Ash.count!(count_query)
 
     assign(socket, :rows_count, rows_count)
   end

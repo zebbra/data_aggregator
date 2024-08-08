@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.Record.Changes.SetGrSciCollInstitution do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     set_grscicoll_institution_attributes(changeset)
   end

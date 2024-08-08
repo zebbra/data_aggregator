@@ -10,6 +10,7 @@ defmodule DataAggregator.Records.Approval.Changes.SetRunningBeforeTransaction do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.before_transaction(changeset, &set_running/1)
   end

@@ -610,7 +610,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           Record
           |> Ash.Query.filter(collection.id == ^id)
           |> AshPagify.validated_query(socket.assigns.meta.ash_pagify, opts)
-          |> Records.stream!(page: false)
+          |> Ash.stream!(page: false)
           |> Stream.map(&Record.enqueue_encoder!/1)
           |> Stream.run()
         end
@@ -631,7 +631,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_event("collection:fast_track_pub", _params, socket) do
     %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
-    collection = Records.load!(collection, [:fast_track_query], lazy?: true)
+    collection = Ash.load!(collection, [:fast_track_query], lazy?: true)
 
     fast_track_query = filter_map(ash_pagify, collection.fast_track_query, socket.assigns.layer)
     count_query = AshPagify.query_for_filters_map(Record, fast_track_query)
@@ -651,7 +651,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_event("collection:approval_pub", _params, socket) do
     %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
-    collection = Records.load!(collection, [:approval_query], lazy?: true)
+    collection = Ash.load!(collection, [:approval_query], lazy?: true)
 
     approval_query = filter_map(ash_pagify, collection.approval_query, socket.assigns.layer)
     count_query = AshPagify.query_for_filters_map(Record, approval_query)
@@ -709,7 +709,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       channel: :fast_track,
       records_query: query,
       collection: collection,
-      rows_count: Records.count!(count_query)
+      rows_count: Ash.count!(count_query)
     }
     |> Publication.create!()
     |> Publication.enqueue()

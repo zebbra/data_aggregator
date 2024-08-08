@@ -9,7 +9,6 @@ defmodule DataAggregator.RecordTest do
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.Gbif
-  alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
@@ -59,7 +58,7 @@ defmodule DataAggregator.RecordTest do
 
       assert {:ok, %Record{} = record} = Record.create(attrs)
 
-      record = Records.load!(record, [:paper_trail_versions, :encoded_record])
+      record = Ash.load!(record, [:paper_trail_versions, :encoded_record])
 
       assert length(record.paper_trail_versions) == 2
       assert record.occ_occurrence_id === record.mte_catalog_number
@@ -92,7 +91,7 @@ defmodule DataAggregator.RecordTest do
 
       assert {:ok, %Record{} = _record} = Record.update(record, update_attrs)
 
-      record = Records.load!(record, [:paper_trail_versions])
+      record = Ash.load!(record, [:paper_trail_versions])
 
       assert length(record.paper_trail_versions) == 3
     end
@@ -111,7 +110,7 @@ defmodule DataAggregator.RecordTest do
     end
 
     test "destroy/1 deletes the record and it's encoded_record" do
-      encoded_record = Records.load!(encoded_record_fixture(), [:record])
+      encoded_record = Ash.load!(encoded_record_fixture(), [:record])
       record = encoded_record.record
 
       assert :ok = Record.destroy(record)
@@ -121,7 +120,7 @@ defmodule DataAggregator.RecordTest do
     end
 
     test "destroy/1 deletes the record and it's record_encoding_results" do
-      record_encoding_result = Records.load!(record_encoding_result_fixture(), [:record])
+      record_encoding_result = Ash.load!(record_encoding_result_fixture(), [:record])
       record = record_encoding_result.record
 
       assert :ok = Record.destroy(record)
@@ -142,17 +141,18 @@ defmodule DataAggregator.RecordTest do
       record =
         record_fixture()
         |> Record.update!(update_attrs)
-        |> Records.load!([:paper_trail_versions])
+        |> Ash.load!([:paper_trail_versions])
 
       assert :ok = Record.destroy(record)
 
       assert_raise Ash.Error.Query.NotFound, fn -> Record.get_by_id!(record.id) end
 
       # ensure only one Version is left
-      assert length(Record.Version.read!(%{version_source_id: record.id})) == 1
+      record = Ash.load!(record, [:paper_trail_versions])
+      assert [last_version] = record.paper_trail_versions
 
       # ensure the last version is created from the destroy action, so we keep track of deletions
-      assert_map_includes(hd(Record.Version.read!(%{version_source_id: record.id})), %{
+      assert_map_includes(last_version, %{
         version_source_id: record.id,
         tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc042",
         mte_catalog_number: "record42",
@@ -163,7 +163,7 @@ defmodule DataAggregator.RecordTest do
     end
 
     test "destroy/1 with invalid id returns error" do
-      assert {:error, %Ash.Error.Unknown{}} = Record.destroy(%Record{id: "invalid"})
+      assert {:error, %Ash.Error.Invalid{}} = Record.destroy(%Record{id: "invalid"})
     end
   end
 
@@ -196,7 +196,7 @@ defmodule DataAggregator.RecordTest do
       }
 
       assert {:ok, record} = Record.import(import, params)
-      {:ok, record} = DataAggregator.Records.load(record, [:imports])
+      {:ok, record} = Ash.load(record, [:imports])
 
       assert_lists_equal(
         record.imports,
@@ -218,7 +218,7 @@ defmodule DataAggregator.RecordTest do
         }
       })
 
-      record = Records.load!(record, [:paper_trail_versions])
+      record = Ash.load!(record, [:paper_trail_versions])
 
       assert length(record.paper_trail_versions) == 3
     end
@@ -239,7 +239,7 @@ defmodule DataAggregator.RecordTest do
       }
 
       assert {:ok, updated_record} = Record.import(import, updated_params)
-      {:ok, updated_record} = DataAggregator.Records.load(updated_record, :imports)
+      {:ok, updated_record} = Ash.load(updated_record, :imports)
 
       assert_lists_equal(
         updated_record.imports,
@@ -257,7 +257,7 @@ defmodule DataAggregator.RecordTest do
         }
       })
 
-      record = Records.load!(record, [:paper_trail_versions])
+      record = Ash.load!(record, [:paper_trail_versions])
 
       assert length(record.paper_trail_versions) == 4
     end
@@ -280,7 +280,7 @@ defmodule DataAggregator.RecordTest do
       other_import = Import.create!(record.collection)
 
       assert {:ok, updated_record} = Record.import(other_import, updated_params)
-      {:ok, updated_record} = DataAggregator.Records.load(updated_record, :imports)
+      {:ok, updated_record} = Ash.load(updated_record, :imports)
 
       assert_lists_equal(
         updated_record.imports,
@@ -294,7 +294,7 @@ defmodule DataAggregator.RecordTest do
         "some_other_extra_data" => "Other Extra"
       })
 
-      record = Records.load!(record, [:paper_trail_versions])
+      record = Ash.load!(record, [:paper_trail_versions])
 
       # changed publication states in after_action hook leads to one additional change per record
       assert length(record.paper_trail_versions) == 4
@@ -344,7 +344,7 @@ defmodule DataAggregator.RecordTest do
         oth_institution_code: nil
       }
 
-      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+      record = record |> Record.update!(params) |> Ash.load!(:mids_level)
 
       assert record.mids_level == 0
     end
@@ -356,7 +356,7 @@ defmodule DataAggregator.RecordTest do
         oth_institution_code: "Baaa"
       }
 
-      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+      record = record |> Record.update!(params) |> Ash.load!(:mids_level)
 
       assert record.mids_level == 1
     end
@@ -370,7 +370,7 @@ defmodule DataAggregator.RecordTest do
         tax_taxon_id: 42
       }
 
-      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+      record = record |> Record.update!(params) |> Ash.load!(:mids_level)
 
       assert record.mids_level == 2
     end
@@ -400,7 +400,7 @@ defmodule DataAggregator.RecordTest do
         occ_occurrence_id: "bla"
       }
 
-      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+      record = record |> Record.update!(params) |> Ash.load!(:mids_level)
 
       assert record.mids_level == 3
     end
@@ -431,7 +431,7 @@ defmodule DataAggregator.RecordTest do
         mte_verbatim_label: "bla"
       }
 
-      record = record |> Record.update!(params) |> Records.load!(:mids_level)
+      record = record |> Record.update!(params) |> Ash.load!(:mids_level)
 
       assert record.mids_level == 4
     end

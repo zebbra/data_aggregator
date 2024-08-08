@@ -11,6 +11,7 @@ defmodule DataAggregator.Records.Import.Changes.UpdateMapping do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     case Changeset.fetch_change(changeset, :columns) do
       :error ->

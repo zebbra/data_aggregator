@@ -70,7 +70,7 @@ defmodule DataAggregator.Records.Actions.Publish do
     publication =
       publication
       |> Publication.update_attachment(attachment)
-      |> Records.load!([:collection, :attachment])
+      |> Ash.load!([:collection, :attachment])
 
     register(publication, query)
   rescue
@@ -93,7 +93,7 @@ defmodule DataAggregator.Records.Actions.Publish do
   @spec queue_records_for_verification(Ash.Query.t()) :: :ok
   defp queue_records_for_verification(query) do
     query
-    |> Records.stream!(page: false)
+    |> Ash.stream!(page: false)
     |> Stream.map(&Record.enqueue_fast_track_checker/1)
     |> Stream.run()
   end
@@ -105,12 +105,12 @@ defmodule DataAggregator.Records.Actions.Publish do
         ) :: :ok
   defp set_publication_status(query, status, publication) do
     query
-    |> Records.stream!(page: false)
+    |> Ash.stream!(page: false)
     |> Stream.map(&update_record!(&1, status, publication))
     |> Stream.run()
   end
 
-  @spec update_record!(Record.t(), atom(), Publication.t()) :: :ok
+  @spec update_record!(Record.t(), atom(), Publication.t()) :: any()
   defp update_record!(record, status, publication) do
     if Records.execute_async?() do
       Task.start(fn -> Publication.add_publication_progress!(publication, 1) end)

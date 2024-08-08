@@ -44,7 +44,6 @@ Each `Import` is assigned to a `Collection`, so lets create one first:
 
 ```elixir
 # Define some aliases
-alias DataAggregator.Records
 alias DataAggregator.Records.Collection
 alias DataAggregator.Records.Import
 alias DataAggregator.Records.Record
@@ -55,7 +54,7 @@ Logger.configure(level: :info)
 {:ok, collection} = Collection.create(%{name: "My Collection", owner: "John Doe", grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"})
 
 collection
-|> Records.load!([:records_count])
+|> Ash.load!([:records_count])
 |> render_struct(keys: [:id, :name, :records_count])
 ```
 
@@ -146,6 +145,6 @@ import |> render_struct(keys: [:id, :state, :imported_at, :records_count])
 ```
 
 ```elixir
-{:ok, import} = Records.reload(import, load: [:records_count])
+{:ok, import} = Ash.reload(import, load: [:records_count])
 import |> render_struct(keys: [:id, :state, :imported_at, :records_count])
 ```

@@ -60,6 +60,11 @@ defmodule DataAggregatorWeb.Filters.SimpleFilterForm do
             <%= ~t"Show more"m %>
           </:action>
           <%= @error %>
+          <ul class="mt-2">
+            <li :for={{_, {message, _}} <- FilterForm.errors(@filter_form)}>
+              <%= message %>
+            </li>
+          </ul>
         </.collapsible_notification>
       </div>
       <.simple_form

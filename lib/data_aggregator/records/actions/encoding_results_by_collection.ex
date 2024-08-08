@@ -5,7 +5,6 @@ defmodule DataAggregator.Records.Actions.EncodingResultsByCollection do
 
   use Ash.Resource.ManualRead
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Encoding.RecordEncodingResult
 
   require Ash.Query
@@ -16,6 +15,6 @@ defmodule DataAggregator.Records.Actions.EncodingResultsByCollection do
     RecordEncodingResult
     |> Ash.Query.for_read(:read)
     |> Ash.Query.filter(record.collection_id == ^collection_id)
-    |> Records.read()
+    |> Ash.read()
   end
 end

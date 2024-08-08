@@ -6,7 +6,6 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
 
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
-  alias DataAggregator.Records
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
 
@@ -14,7 +13,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
 
   @impl true
   def run(input, _opts, _context) do
-    export = Records.load!(input.arguments.export, [:collection])
+    export = Ash.load!(input.arguments.export, [:collection])
 
     query = AshPagify.query_for_filters_map(Record, export.records_query)
 
@@ -32,7 +31,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
 
     attachment =
       query
-      |> Records.stream!(page: false)
+      |> Ash.stream!(page: false)
       |> Stream.map(&map_record(&1, mapping, export, data_layer))
       |> Stream.map(&FlatFileUtils.map_data_to_headers(&1, get_header_labels(mapping)))
       |> create_file!(headers)
@@ -66,7 +65,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   defp map_record(record, mapping, export, :encoded) do
     Export.add_export_progress(export, 1)
 
-    record = Records.load!(record, [:encoded_record])
+    record = Ash.load!(record, [:encoded_record])
 
     map_layers(record, mapping)
   end

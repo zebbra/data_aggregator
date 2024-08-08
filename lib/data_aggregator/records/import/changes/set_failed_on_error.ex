@@ -10,6 +10,7 @@ defmodule DataAggregator.Records.Import.Changes.SetFailedOnError do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.after_transaction(changeset, &handle_error/2)
   end

@@ -9,7 +9,7 @@ defmodule DataAggregator.Records do
   #{File.read!(class_diagram)}
   """
 
-  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api, AshPaperTrail.Api]
+  use Ash.Domain, extensions: [AshJsonApi.Domain, AshPaperTrail.Domain]
 
   # ensure module is recompiled when the class diagram changes
   @external_resource class_diagram
@@ -28,11 +28,19 @@ defmodule DataAggregator.Records do
   ]
 
   resources do
-    registry DataAggregator.Records.Registry
-  end
-
-  graphql do
-    authorize? false
+    resource DataAggregator.Records.Collection
+    resource DataAggregator.Records.EncodedRecord
+    resource DataAggregator.Records.Encoding.RecordEncodingResult
+    resource DataAggregator.Records.Export
+    resource DataAggregator.Records.Import
+    resource DataAggregator.Records.Import.Record
+    resource DataAggregator.Records.Publication
+    resource DataAggregator.Records.Record
+    resource DataAggregator.Records.Record.Image
+    resource DataAggregator.Records.Record.Version
+    resource DataAggregator.Records.EncodedRecord.Version
+    resource DataAggregator.Records.Approval
+    resource DataAggregator.Records.ApprovedRecord
   end
 
   json_api do

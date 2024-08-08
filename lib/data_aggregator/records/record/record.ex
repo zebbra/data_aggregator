@@ -10,10 +10,9 @@ defmodule DataAggregator.Records.Record do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    api: DataAggregator.Records,
+    domain: DataAggregator.Records,
     extensions: [
       AshUUID,
-      AshGraphql.Resource,
       AshJsonApi.Resource,
       DataAggregator.DarwinCore.Resource,
       AshStateMachine,
@@ -37,6 +36,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.Record.Calculations.Mids
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
+  require Ash.Expr
   require Ash.Query
 
   @type t :: %Record{}
@@ -54,88 +54,91 @@ defmodule DataAggregator.Records.Record do
 
   @full_text_search [
     tsvector_column: [
-      encoded_tsvector: Ash.Query.expr(encoded_tsvector)
+      encoded_tsvector: Ash.Expr.expr(encoded_tsvector)
     ]
   ]
   def full_text_search, do: @full_text_search
 
   attributes do
-    uuid_attribute :id, prefix: "rec"
-    attribute :import_data, :map
-    attribute :extra_data, :map
-    attribute :errors, :map
+    uuid_attribute :id, prefix: "rec", public?: true
+    attribute :import_data, :map, public?: true
+    attribute :extra_data, :map, public?: true
+    attribute :errors, :map, public?: true
 
     attribute :fast_track_status, PublicationStatusType,
       allow_nil?: false,
-      default: :not_published
+      default: :not_published,
+      public?: true
 
-    attribute :approval_status, ApprovalStatusType, allow_nil?: false, default: :not_approved
-    attribute :iucn_redlist_category, :string, allow_nil?: true
+    attribute :approval_status, ApprovalStatusType,
+      allow_nil?: false,
+      default: :not_approved,
+      public?: true
 
-    attribute :last_approval_started_at, :utc_datetime, allow_nil?: true
-    attribute :last_imported_at, :utc_datetime, allow_nil?: true
+    attribute :iucn_redlist_category, :string, allow_nil?: true, public?: true
 
-    attribute :tsv, :string, allow_nil?: true, private?: true, writable?: false
+    attribute :last_approval_started_at, :utc_datetime, allow_nil?: true, public?: true
+    attribute :last_imported_at, :utc_datetime, allow_nil?: true, public?: true
 
-    timestamps private?: false, writable?: false
+    attribute :tsv, :string, allow_nil?: true
+
+    timestamps public?: true, writable?: false
   end
 
   relationships do
     belongs_to :collection, Collection do
-      api DataAggregator.Records
       allow_nil? false
+      public? true
     end
 
     many_to_many :imports, Import do
-      api DataAggregator.Records
       through Import.Record
+      public? true
     end
 
-    has_many :images, Record.Image
+    has_many :images, Record.Image, public?: true
 
     many_to_many :image_attachments, Attachment do
-      api DataAggregator.Files
       through Record.Image
       source_attribute_on_join_resource :record_id
       destination_attribute_on_join_resource :attachment_id
       join_relationship :images
+      public? true
     end
 
     belongs_to :encoder_job, Job do
-      api DataAggregator.Jobs
       attribute_type :integer
-      attribute_writable? true
       allow_nil? true
+      public? true
     end
 
     belongs_to :fast_track_checker_job, Job do
-      api DataAggregator.Jobs
       attribute_type :integer
-      attribute_writable? true
       allow_nil? true
+      public? true
     end
 
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
+      public? true
     end
 
     belongs_to :swiss_species, SwissSpecies do
-      api DataAggregator.Taxonomy
-
       source_attribute :tax_taxon_id
       destination_attribute :usage_key
 
       allow_nil? true
-      attribute_writable? false
       attribute_type :integer
       define_attribute? false
+      public? true
     end
   end
 
   calculations do
     calculate :iucn_redlist,
               :boolean,
-              IucnRedlist
+              IucnRedlist,
+              public?: true
 
     calculate :encoded,
               :boolean,
@@ -151,7 +154,8 @@ defmodule DataAggregator.Records.Record do
                   mids_level_one -> 1
                   true -> 0
                 end
-              )
+              ),
+              public?: true
 
     calculate :mids_level_one,
               :boolean,
@@ -221,6 +225,7 @@ defmodule DataAggregator.Records.Record do
   end
 
   actions do
+    default_accept :*
     defaults [:update]
 
     read :read do
@@ -247,7 +252,7 @@ defmodule DataAggregator.Records.Record do
 
     create :create do
       primary? true
-      argument :collection, Collection, allow_nil?: false
+      argument :collection, :struct, allow_nil?: false
 
       change Record.Changes.SetGrSciCollInstitution
       change Record.Changes.SetOccurrenceID
@@ -266,7 +271,7 @@ defmodule DataAggregator.Records.Record do
       its `DataAggregator.Records.Collection`.
       """
 
-      argument :import, Import, allow_nil?: false
+      argument :import, :struct, allow_nil?: false
       argument :params, :map, allow_nil?: false
       change Record.Changes.RelateImport
       change Record.Changes.RelateCollectionFromImport
@@ -284,6 +289,8 @@ defmodule DataAggregator.Records.Record do
 
     update :enqueue_encoder do
       accept []
+      require_atomic? false
+
       change transition_state(:queued)
       change Record.Changes.EnqueueEncoder
       change load(:encoder_job)
@@ -291,19 +298,21 @@ defmodule DataAggregator.Records.Record do
 
     update :enqueue_fast_track_checker do
       accept []
+      require_atomic? false
+
       change Record.Changes.EnqueueFastTrackChecker
       change load(:fast_track_checker_job)
     end
 
     action :bulk_import, :map do
       description """
-      Imports multiple records using `DataAggregator.Records.bulk_create/3`.
+      Imports multiple records using `Ash.bulk_create/3`.
 
       The `rows` can be any enumberable, where each item which will be used as `params` for
       the `DataAggregator.Records.Record.import/2` action.
       """
 
-      argument :import, Import, allow_nil?: false
+      argument :import, :struct, allow_nil?: false
       argument :rows, :term, allow_nil?: false
       run Record.Actions.BulkImport
     end
@@ -316,48 +325,67 @@ defmodule DataAggregator.Records.Record do
     end
 
     update :check_if_fast_track_pubished do
+      require_atomic? false
+
       change Record.Changes.CheckIfFastTrackPublished
     end
 
     update :set_imported do
+      require_atomic? false
+
       change transition_state(:imported)
       change set_attribute(:last_imported_at, &DateTime.utc_now/0)
     end
 
     update :set_encoding do
+      require_atomic? false
+
       change transition_state(:encoding)
     end
 
     update :set_encoded do
+      require_atomic? false
+
       change transition_state(:encoded)
     end
 
     update :set_encoding_failed do
+      require_atomic? false
+
       change transition_state(:failed)
     end
 
     update :update_fast_track_status do
       argument :status, :atom, allow_nil?: false
+      require_atomic? false
 
       change set_attribute(:fast_track_status, expr(^arg(:status)))
     end
 
     update :update_approval_status do
       argument :status, :atom, allow_nil?: false
+      require_atomic? false
 
       change set_attribute(:approval_status, expr(^arg(:status)))
     end
 
     update :update_last_approval_started_at do
       accept []
+      require_atomic? false
 
       change set_attribute(:last_approval_started_at, &DateTime.utc_now/0)
     end
 
     destroy :destroy do
       primary? true
+      require_atomic? false
+
       change Record.Changes.DestroyVersions
     end
+  end
+
+  identities do
+    identity :collection_mte_catalog_number, [:collection_id, :mte_catalog_number]
   end
 
   pub_sub do
@@ -367,13 +395,7 @@ defmodule DataAggregator.Records.Record do
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
   end
 
-  identities do
-    identity :collection_mte_catalog_number, [:collection_id, :mte_catalog_number]
-  end
-
   code_interface do
-    define_for DataAggregator.Records
-
     define :read
     define :by_collection, args: [:collection_id]
     define :create
@@ -403,20 +425,6 @@ defmodule DataAggregator.Records.Record do
     references do
       reference :collection, on_delete: :delete, on_update: :update
       reference :fast_track_checker_job, on_delete: :nilify, on_update: :update
-    end
-  end
-
-  graphql do
-    type :record
-
-    queries do
-      get :get_record, :read
-      list :list_records, :read
-    end
-
-    mutations do
-      update :update_record, :update
-      destroy :destroy_record, :destroy
     end
   end
 

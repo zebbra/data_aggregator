@@ -7,7 +7,6 @@ defmodule DataAggregator.ApprovedRecordTest do
   import DataAggregator.ApprovalFixtures
   import DataAggregator.RecordsFixtures
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.ApprovedRecord
 
   describe "approved_records" do
@@ -51,7 +50,7 @@ defmodule DataAggregator.ApprovedRecordTest do
 
       assert {:ok, %ApprovedRecord{} = result} = ApprovedRecord.create(attrs)
 
-      approved_record = Records.load!(result, [:record])
+      approved_record = Ash.load!(result, [:record])
 
       assert approved_record.record.id == record.id
     end
@@ -95,7 +94,7 @@ defmodule DataAggregator.ApprovedRecordTest do
     end
 
     test "destroy/1 with invalid id returns error" do
-      assert {:error, %Ash.Error.Unknown{}} =
+      assert {:error, %Ash.Error.Invalid{}} =
                ApprovedRecord.destroy(%ApprovedRecord{id: "invalid"})
     end
   end

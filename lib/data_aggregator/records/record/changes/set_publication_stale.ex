@@ -12,6 +12,7 @@ defmodule DataAggregator.Records.Record.Changes.SetPublicationStale do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.after_action(changeset, &set_publication_stale/2)
   end

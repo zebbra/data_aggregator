@@ -113,7 +113,7 @@ defmodule DataAggregator.CollectionTest do
     end
 
     test "destroy/1 with invalid id returns error" do
-      assert {:error, %Ash.Error.Unknown{}} = Collection.destroy(%Collection{id: "invalid"})
+      assert {:error, %Ash.Error.Invalid{}} = Collection.destroy(%Collection{id: "invalid"})
     end
   end
 end

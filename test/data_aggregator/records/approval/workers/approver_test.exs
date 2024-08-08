@@ -8,7 +8,6 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.Gbif
-  alias DataAggregator.Records
   alias DataAggregator.Records.Approval
   alias DataAggregator.Records.ApprovedRecord
 
@@ -109,7 +108,7 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
     test "Approver.perform/1 check if error log is present and correct", %{approval: approval} do
       {:ok, approval} = perform_job(Approval.Workers.Approver, %{id: approval.id})
 
-      assert {:ok, approval} = approval.id |> Approval.get_by_id() |> Records.load([:error_log])
+      assert {:ok, approval} = approval.id |> Approval.get_by_id() |> Ash.load([:error_log])
 
       assert approval.rows_count == 23
       assert approval.rows_invalid_count == 18

@@ -5,7 +5,8 @@ defmodule DataAggregator.Records.Export do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
+    domain: DataAggregator.Records,
+    extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
@@ -19,34 +20,35 @@ defmodule DataAggregator.Records.Export do
   @type t :: %Export{}
 
   attributes do
-    uuid_attribute :id, prefix: "exp"
+    uuid_attribute :id, prefix: "exp", public?: true
 
-    attribute :name, :string, allow_nil?: false
-    attribute :exported_at, :utc_datetime, allow_nil?: true
-    attribute :started_at, :utc_datetime, allow_nil?: true
-    attribute :finished_at, :utc_datetime, allow_nil?: true
-    attribute :mapping, :map, allow_nil?: true
-    attribute :records_query, :map, allow_nil?: false
-    attribute :exported_count, :integer, allow_nil?: false, default: 0
-    attribute :rows_count, :integer, allow_nil?: false, default: 0
-    attribute :header_source, HeaderSourceType, allow_nil?: false, default: :collection_mapping
-    attribute :data_layer, DataLayerType, allow_nil?: false, default: :raw
+    attribute :name, :string, allow_nil?: false, public?: true
+    attribute :exported_at, :utc_datetime, allow_nil?: true, public?: true
+    attribute :started_at, :utc_datetime, allow_nil?: true, public?: true
+    attribute :finished_at, :utc_datetime, allow_nil?: true, public?: true
+    attribute :mapping, :map, allow_nil?: true, public?: true
+    attribute :records_query, :map, allow_nil?: false, public?: true
+    attribute :exported_count, :integer, allow_nil?: false, default: 0, public?: true
+    attribute :rows_count, :integer, allow_nil?: false, default: 0, public?: true
 
-    timestamps private?: false, writable?: false
+    attribute :header_source, HeaderSourceType,
+      allow_nil?: false,
+      default: :collection_mapping,
+      public?: true
+
+    attribute :data_layer, DataLayerType, allow_nil?: false, default: :raw, public?: true
+
+    timestamps public?: true, writable?: false
   end
 
   relationships do
-    belongs_to :collection, Collection
-
-    belongs_to :attachment, Attachment do
-      api DataAggregator.Files
-    end
+    belongs_to :collection, Collection, public?: true
+    belongs_to :attachment, Attachment, public?: true
 
     belongs_to :job, Job do
-      api DataAggregator.Jobs
       attribute_type :integer
-      attribute_writable? true
       allow_nil? true
+      public? true
     end
   end
 
@@ -57,7 +59,10 @@ defmodule DataAggregator.Records.Export do
     calculate :collection_name, :string, expr(collection.name)
 
     calculate :attachment_url, :string do
-      calculation fn export, _opts -> export.attachment.url end
+      calculation fn exports, _opts ->
+        Enum.map(exports, fn export -> export.attachment.url end)
+      end
+
       load attachment: :url
     end
 
@@ -84,6 +89,7 @@ defmodule DataAggregator.Records.Export do
   end
 
   actions do
+    default_accept :*
     defaults [:read, :destroy]
 
     read :by_collection do
@@ -100,13 +106,14 @@ defmodule DataAggregator.Records.Export do
 
     create :create do
       primary? true
-      argument :collection, Collection, allow_nil?: false
+      argument :collection, :struct, allow_nil?: false
 
       change manage_relationship(:collection, :collection, type: :append)
     end
 
     update :update_mapping do
       argument :mapping, :map, allow_nil?: true
+      require_atomic? false
 
       change Changes.UpdateMapping
       change load(:attachment)
@@ -119,6 +126,8 @@ defmodule DataAggregator.Records.Export do
 
     update :enqueue do
       accept []
+      require_atomic? false
+
       change Changes.SetCollectionExportingBeforeTransaction
       change transition_state(:queued)
       change Changes.EnqueueExporter
@@ -133,12 +142,17 @@ defmodule DataAggregator.Records.Export do
 
     update :set_running do
       accept []
+      require_atomic? false
+
       change transition_state(:running)
       change set_attribute(:started_at, &DateTime.utc_now/0)
       change set_attribute(:finished_at, nil)
     end
 
     update :set_failed do
+      accept []
+      require_atomic? false
+
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change Collection.Changes.SetCollectionIdleAfterTransaction
@@ -146,6 +160,8 @@ defmodule DataAggregator.Records.Export do
 
     update :run do
       accept []
+      require_atomic? false
+
       change Changes.SetTimeout
       change Changes.SetRunningBeforeTransaction
       change transition_state(:running)
@@ -157,6 +173,8 @@ defmodule DataAggregator.Records.Export do
 
     update :set_exported do
       accept []
+      require_atomic? false
+
       change transition_state(:exported)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:exported_at, &DateTime.utc_now/0)
@@ -165,7 +183,9 @@ defmodule DataAggregator.Records.Export do
 
     update :update_attachment do
       accept []
-      argument :attachment, Attachment, allow_nil?: false
+      argument :attachment, :struct, allow_nil?: false
+      require_atomic? false
+
       change manage_relationship(:attachment, :attachment, type: :append)
       change load(:attachment)
     end
@@ -183,7 +203,6 @@ defmodule DataAggregator.Records.Export do
   end
 
   code_interface do
-    define_for DataAggregator.Records
     define :read
     define :by_collection, args: [:collection_id]
     define :create
@@ -208,21 +227,6 @@ defmodule DataAggregator.Records.Export do
       reference :collection, on_delete: :delete, on_update: :update
       reference :attachment, on_delete: :delete, on_update: :update
       reference :job, on_delete: :nilify, on_update: :update
-    end
-  end
-
-  graphql do
-    type :export
-
-    queries do
-      get :get_export, :read
-      list :list_exports, :read
-    end
-
-    mutations do
-      create :create_export, :create
-      update :update_export, :update
-      destroy :destroy_export, :destroy
     end
   end
 

@@ -31,7 +31,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record)
+      encoded_record = EncodedRecord.get_by_record!(record.id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: 46.946660986374766,
@@ -65,7 +65,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record)
+      encoded_record = EncodedRecord.get_by_record!(record.id)
 
       assert_map_includes(encoded_record, %{
         loc_swiss_coordinates_x: nil,
@@ -99,7 +99,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record)
+      encoded_record = EncodedRecord.get_by_record!(record.id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: 46.946659297095934,
@@ -133,7 +133,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record)
+      encoded_record = EncodedRecord.get_by_record!(record.id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: nil,
@@ -167,7 +167,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record)
+      encoded_record = EncodedRecord.get_by_record!(record.id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: 46.946659297095934,
@@ -215,7 +215,15 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
       })
 
       assert encoded_record.state === :failed
-      assert error === "No valid response (status 400) from geo api"
+
+      assert %Ash.Error.Unknown{
+               errors: [
+                 %Ash.Error.Unknown.UnknownError{
+                   error: "No valid response (status 400) from geo api"
+                 }
+               ]
+             } = error
+
       assert logs =~ "No valid response (status 400) from geo api"
     end
   end

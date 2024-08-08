@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.Record.Changes.SetOccurrenceID do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     set_occurrence_id(changeset)
   end

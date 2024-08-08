@@ -9,17 +9,13 @@ defmodule DataAggregator.Platform do
   #{File.read!(class_diagram)}
   """
 
-  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api]
+  use Ash.Domain, extensions: [AshJsonApi.Domain]
 
   # ensure module is recompiled when the class diagram changes
   @external_resource class_diagram
 
   resources do
-    registry DataAggregator.Platform.Registry
-  end
-
-  graphql do
-    authorize? false
+    resource DataAggregator.Platform.Institution
   end
 
   json_api do

@@ -9,7 +9,6 @@ defmodule DataAggregator.ExportTest do
 
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Gbif
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Export
   alias Explorer.DataFrame
@@ -59,7 +58,6 @@ defmodule DataAggregator.ExportTest do
 
       updated_export = %{
         name: "gbif.org_2",
-        collection: collection_fixture(),
         records: [
           record_fixture(),
           record_fixture()
@@ -69,7 +67,7 @@ defmodule DataAggregator.ExportTest do
       assert {:ok, %Export{} = export} =
                export
                |> Export.update(updated_export)
-               |> Records.load([:collection])
+               |> Ash.load([:collection])
 
       assert export.name == "gbif.org_2"
     end
@@ -86,7 +84,7 @@ defmodule DataAggregator.ExportTest do
     end
 
     test "destroy/1 with invalid id fails and returns an error changeset" do
-      assert {:error, %Ash.Error.Unknown{}} = Export.destroy(%Export{id: "invalid"})
+      assert {:error, %Ash.Error.Invalid{}} = Export.destroy(%Export{id: "invalid"})
     end
   end
 
@@ -98,7 +96,7 @@ defmodule DataAggregator.ExportTest do
 
     setup do
       collection =
-        Records.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
+        Ash.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
           :records_to_export_query
         ])
 
@@ -209,7 +207,7 @@ defmodule DataAggregator.ExportTest do
 
     setup %{mapping: mapping, data_layer: data_layer, header_source: header_source} do
       collection =
-        Records.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
+        Ash.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
           :records_to_export_query
         ])
 
