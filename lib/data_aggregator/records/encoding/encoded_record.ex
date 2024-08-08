@@ -10,7 +10,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    api: DataAggregator.Records,
+    domain: DataAggregator.Records,
     extensions: [
       AshUUID,
       AshGraphql.Resource,
@@ -27,18 +27,19 @@ defmodule DataAggregator.Records.EncodedRecord do
   @type t :: %EncodedRecord{}
 
   attributes do
-    uuid_attribute :id, prefix: "enr"
-    attribute :extra_data, :map
-    attribute :iucn_redlist_category, :string, allow_nil?: true
+    uuid_attribute :id, prefix: "enr", public?: true
+    attribute :extra_data, :map, public?: true
+    attribute :iucn_redlist_category, :string, allow_nil?: true, public?: true
 
-    attribute :tsv, :string, allow_nil?: true, private?: true, writable?: false
+    attribute :tsv, :string, allow_nil?: true
 
-    timestamps private?: false, writable?: false
+    timestamps public?: true, writable?: false
   end
 
   relationships do
     belongs_to :record, Record do
       allow_nil? false
+      public? true
     end
   end
 
@@ -58,6 +59,7 @@ defmodule DataAggregator.Records.EncodedRecord do
   end
 
   actions do
+    default_accept :*
     defaults [:update, :destroy]
 
     read :read do
@@ -68,7 +70,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
     create :create do
       primary? true
-      argument :record, Record, allow_nil?: false
+      argument :record, :struct, allow_nil?: false
 
       upsert? true
       upsert_fields [:extra_data | DarwinCore.Schema.prefixed_attribute_names()]
@@ -86,13 +88,12 @@ defmodule DataAggregator.Records.EncodedRecord do
   end
 
   code_interface do
-    define_for DataAggregator.Records
     define :read
     define :create
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
-    define :get_by_record, action: :read, get_by: [:record]
+    define :get_by_record, action: :read, get_by: [:record_id]
   end
 
   postgres do

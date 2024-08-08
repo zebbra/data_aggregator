@@ -32,7 +32,7 @@ config :mime, :extensions, %{
 }
 
 config :data_aggregator,
-  ash_apis: [
+  ash_domains: [
     DataAggregator.Platform,
     DataAggregator.Records,
     DataAggregator.Taxonomy,

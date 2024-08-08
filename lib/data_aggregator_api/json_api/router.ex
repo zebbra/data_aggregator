@@ -1,9 +1,9 @@
 defmodule DataAggregatorApi.JsonApi.Router do
   @moduledoc false
 
-  use AshJsonApi.Api.Router,
+  use AshJsonApi.Router,
     # The api modules you want to serve
-    apis: [
+    domains: [
       DataAggregator.Platform,
       DataAggregator.Records,
       DataAggregator.Taxonomy

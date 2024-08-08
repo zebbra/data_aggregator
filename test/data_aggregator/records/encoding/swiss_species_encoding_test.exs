@@ -33,7 +33,7 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
 
       assert encoded_record !== nil
 
-      lookedup_encoded_record = EncodedRecord.get_by_record!(encoded_record)
+      lookedup_encoded_record = EncodedRecord.get_by_record!(encoded_record.id)
 
       assert lookedup_encoded_record !== nil
       assert lookedup_encoded_record.tax_taxon_id_ch === 15_311
@@ -80,7 +80,14 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       {{:error, error}, logs} =
         with_log(fn -> Record.encode(correct_record, :unknown) end)
 
-      assert error === "no encoding strategy found for catalog: :unknown"
+      assert %Ash.Error.Unknown{
+               errors: [
+                 %Ash.Error.Unknown.UnknownError{
+                   error: "no encoding strategy found for catalog: :unknown"
+                 }
+               ]
+             } = error
+
       assert logs =~ "no encoding strategy found for catalog: :unknown"
     end
   end

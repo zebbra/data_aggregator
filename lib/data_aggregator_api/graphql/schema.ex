@@ -6,7 +6,7 @@ defmodule DataAggregatorApi.GraphQL.Schema do
   use Absinthe.Schema
 
   use AshGraphql,
-    apis: [
+    domains: [
       DataAggregator.Platform,
       DataAggregator.Taxonomy,
       DataAggregator.Records

@@ -11,6 +11,7 @@ defmodule DataAggregator.Records.Import do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
+    domain: DataAggregator.Records,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub]
 
@@ -30,47 +31,44 @@ defmodule DataAggregator.Records.Import do
   @external_resource flow_chart
 
   attributes do
-    uuid_attribute :id, prefix: "if"
+    uuid_attribute :id, prefix: "if", public?: true
 
     attribute :columns, {:array, Column} do
       constraints load: [:mapped?]
+      public? true
     end
 
-    timestamps private?: false, writable?: false
+    timestamps public?: true, writable?: false
 
-    attribute :started_at, :utc_datetime, allow_nil?: true
-    attribute :finished_at, :utc_datetime, allow_nil?: true
+    attribute :started_at, :utc_datetime, allow_nil?: true, public?: true
+    attribute :finished_at, :utc_datetime, allow_nil?: true, public?: true
 
-    attribute :rows_count, :integer, allow_nil?: true
-    attribute :rows_valid_count, :integer, allow_nil?: true
-    attribute :rows_invalid_count, :integer, allow_nil?: true
-    attribute :rows_imported_count, :integer, allow_nil?: true
-    attribute :rows_error_count, :integer, allow_nil?: true
+    attribute :rows_count, :integer, allow_nil?: true, public?: true
+    attribute :rows_valid_count, :integer, allow_nil?: true, public?: true
+    attribute :rows_invalid_count, :integer, allow_nil?: true, public?: true
+    attribute :rows_imported_count, :integer, allow_nil?: true, public?: true
+    attribute :rows_error_count, :integer, allow_nil?: true, public?: true
   end
 
   relationships do
     belongs_to :collection, Collection do
       allow_nil? false
+      public? true
     end
 
-    belongs_to :attachment, Attachment do
-      api DataAggregator.Files
-    end
-
-    belongs_to :error_log, Attachment do
-      api DataAggregator.Files
-    end
+    belongs_to :attachment, Attachment, public?: true
+    belongs_to :error_log, Attachment, public?: true
 
     many_to_many :records, Record do
       through ImportRecord
       join_relationship :import_records
+      public? true
     end
 
     belongs_to :job, Job do
-      api DataAggregator.Jobs
       attribute_type :integer
-      attribute_writable? true
       allow_nil? true
+      public? true
     end
   end
 
@@ -89,7 +87,10 @@ defmodule DataAggregator.Records.Import do
     calculate :collection_name, :string, expr(collection.name)
 
     calculate :attachment_url, :string do
-      calculation fn import, _opts -> import.attachment.url end
+      calculation fn imports, _opts ->
+        Enum.map(imports, fn import -> import.attachment.url end)
+      end
+
       load attachment: :url
     end
 
@@ -109,7 +110,7 @@ defmodule DataAggregator.Records.Import do
 
       argument :mapped, :boolean, default: false
 
-      load attachment: :url
+      load attachment: [:filename, :url]
     end
 
     calculate :mappings, {:array, Column}, Import.Calculations.Mappings
@@ -117,7 +118,7 @@ defmodule DataAggregator.Records.Import do
   end
 
   aggregates do
-    count :records_count, :records
+    count :records_count, :records, public?: true
   end
 
   state_machine do
@@ -141,6 +142,7 @@ defmodule DataAggregator.Records.Import do
   end
 
   actions do
+    default_accept :*
     defaults [:destroy, :update]
 
     read :read do
@@ -167,13 +169,13 @@ defmodule DataAggregator.Records.Import do
 
     create :create do
       primary? true
-      argument :collection, Collection, allow_nil?: false
+      argument :collection, :struct, allow_nil?: false
       change manage_relationship(:collection, :collection, type: :append)
     end
 
     create :create_from_path do
       accept []
-      argument :collection, Collection, allow_nil?: false
+      argument :collection, :struct, allow_nil?: false
       argument :path, :string, allow_nil?: false
       argument :filename, :string, allow_nil?: true
       change manage_relationship(:collection, :collection, type: :append)
@@ -185,6 +187,8 @@ defmodule DataAggregator.Records.Import do
 
     update :update_mapping do
       accept [:columns]
+      require_atomic? false
+
       change Import.Changes.UpdateMapping
       change transition_state(:pending)
       change load([:missing_mappings, :mappings])
@@ -194,6 +198,8 @@ defmodule DataAggregator.Records.Import do
       accept []
       argument :valid, :integer, allow_nil?: false
       argument :invalid, :integer, allow_nil?: false
+      require_atomic? false
+
       change atomic_update(:rows_valid_count, expr(rows_valid_count + ^arg(:valid)))
       change atomic_update(:rows_invalid_count, expr(rows_invalid_count + ^arg(:invalid)))
       change ensure_selected(:rows_valid_count)
@@ -202,6 +208,8 @@ defmodule DataAggregator.Records.Import do
 
     update :enqueue_import do
       accept []
+      require_atomic? false
+
       change Import.Changes.SetCollectionImportingBeforeTransaction
       change transition_state(:import_queued)
       change Import.Changes.EnqueueImporter
@@ -210,6 +218,8 @@ defmodule DataAggregator.Records.Import do
 
     update :import do
       accept []
+      require_atomic? false
+
       change Import.Changes.SetTimeout
       change Import.Changes.SetImportingBeforeTransaction
       change Import.Changes.ValidateRows
@@ -221,6 +231,8 @@ defmodule DataAggregator.Records.Import do
 
     update :set_importing do
       accept []
+      require_atomic? false
+
       change transition_state(:importing)
       change set_attribute(:started_at, &DateTime.utc_now/0)
       change set_attribute(:finished_at, nil)
@@ -239,6 +251,8 @@ defmodule DataAggregator.Records.Import do
 
     update :set_failed do
       accept []
+      require_atomic? false
+
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:rows_imported_count, 0)
@@ -247,6 +261,8 @@ defmodule DataAggregator.Records.Import do
 
     update :set_imported do
       accept []
+      require_atomic? false
+
       change transition_state(:imported)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change Collection.Changes.SetCollectionIdleAfterTransaction
@@ -254,7 +270,9 @@ defmodule DataAggregator.Records.Import do
 
     update :update_error_log do
       accept []
-      argument :error_log, Attachment, allow_nil?: false
+      argument :error_log, :struct, allow_nil?: false
+      require_atomic? false
+
       change manage_relationship(:error_log, :error_log, type: :append)
       change load(:error_log)
     end
@@ -273,7 +291,6 @@ defmodule DataAggregator.Records.Import do
   end
 
   code_interface do
-    define_for DataAggregator.Records
     define :read
     define :update
     define :get_by_id, action: :read, get_by: [:id]

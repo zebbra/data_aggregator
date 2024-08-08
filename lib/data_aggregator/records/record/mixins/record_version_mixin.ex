@@ -19,11 +19,12 @@ defmodule DataAggregator.Records.RecordVersionMixin do
       end
 
       actions do
+        default_accept :*
         defaults [:create, :read, :update, :destroy]
       end
 
       code_interface do
-        define_for DataAggregator.Records
+        domain DataAggregator.Records
 
         define :read
         define :destroy

@@ -11,6 +11,7 @@ defmodule DataAggregator.Files.Attachment.Changes.StoreFile do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     changeset
     |> validate_path()

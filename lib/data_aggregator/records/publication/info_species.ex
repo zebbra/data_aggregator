@@ -16,12 +16,12 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
 
   @spec notify(Publication.t(), Ash.Query.t()) :: {:ok, Publication.t()} | {:error, any()}
   def notify(%Publication{channel: :approval} = publication, query) do
-    with {:ok, publication} <- Records.load(publication, [:collection, :attachment]),
+    with {:ok, publication} <- Ash.load(publication, [:collection, :attachment]),
          {:ok, institution_name} <-
            get_institution_name(publication.collection.grscicoll_institution_key) do
       notification =
         %{
-          count: to_string(Records.count!(query)),
+          count: to_string(Ash.count!(query)),
           dwca_file_link: publication.attachment.url,
           institution: institution_name,
           date: get_date_time_now(),
@@ -100,7 +100,7 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
 
   defp update_records_approval_started_at(query) do
     query
-    |> Records.stream!(page: false)
+    |> Ash.stream!(page: false)
     |> Stream.map(&process_record(&1))
     |> Stream.run()
   end

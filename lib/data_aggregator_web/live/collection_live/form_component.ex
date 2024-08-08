@@ -93,13 +93,13 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
 
   defp build_form(%{action: :new}) do
     Collection
-    |> Form.for_create(:create, api: DataAggregator.Records, as: "collection")
+    |> Form.for_create(:create, domain: DataAggregator.Records, as: "collection")
     |> to_form()
   end
 
   defp build_form(%{action: :edit, collection: collection}) do
     collection
-    |> Form.for_update(:update, api: DataAggregator.Records, as: "collection")
+    |> Form.for_update(:update, domain: DataAggregator.Records, as: "collection")
     |> to_form()
   end
 

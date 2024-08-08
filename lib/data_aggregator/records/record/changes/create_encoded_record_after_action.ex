@@ -11,6 +11,7 @@ defmodule DataAggregator.Records.Record.Changes.CreateEncodedRecordAfterAction d
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.after_action(changeset, &create_encoded_record/2)
   end
@@ -18,8 +19,15 @@ defmodule DataAggregator.Records.Record.Changes.CreateEncodedRecordAfterAction d
   defp create_encoded_record(_changeset, record) do
     Logger.debug("Create EncodedRecord ...")
 
+    attributes =
+      [
+        :extra_data,
+        :iucn_redlist_category
+      ] ++ DataAggregator.DarwinCore.Schema.prefixed_attribute_names()
+
     record
     |> Map.from_struct()
+    |> Map.take(attributes)
     |> Map.put_new_lazy(:record, fn -> record end)
     |> EncodedRecord.create!()
 

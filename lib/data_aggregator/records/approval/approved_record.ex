@@ -10,7 +10,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    api: DataAggregator.Records,
+    domain: DataAggregator.Records,
     extensions: [
       AshUUID,
       AshGraphql.Resource,
@@ -26,15 +26,16 @@ defmodule DataAggregator.Records.ApprovedRecord do
   @type t :: %ApprovedRecord{}
 
   attributes do
-    uuid_attribute :id, prefix: "apr"
-    attribute :extra_data, :map
+    uuid_attribute :id, prefix: "apr", public?: true
+    attribute :extra_data, :map, public?: true
 
-    timestamps private?: false, writable?: false
+    timestamps public?: true, writable?: false
   end
 
   relationships do
     belongs_to :record, Record do
       allow_nil? false
+      public? true
     end
   end
 
@@ -44,6 +45,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
   end
 
   actions do
+    default_accept :*
     defaults [:update, :destroy]
 
     read :read do
@@ -54,7 +56,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
 
     create :create do
       primary? true
-      argument :record, Record, allow_nil?: false
+      argument :record, :struct, allow_nil?: false
 
       upsert? true
       upsert_identity :record_mte_catalog_number
@@ -73,7 +75,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
       The record is associated with the given `DataAggregator.Records.Approval`
       """
 
-      argument :record, Record, allow_nil?: false
+      argument :record, :struct, allow_nil?: true
 
       change Approval.Changes.SetMandatoryAttributes
       change Approval.Changes.UpdateRawRecordStateAfterAction
@@ -87,7 +89,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
 
     action :bulk_approve, :map do
       description """
-      Approves multiple records using `DataAggregator.Records.bulk_create/3`.
+      Approves multiple records using `Ash.bulk_create/3`.
 
       The `rows` can be any enumberable, where each item which will be used as `params` for
       the `DataAggregator.Records.ApprovedRecord.approve/1` action.
@@ -103,7 +105,6 @@ defmodule DataAggregator.Records.ApprovedRecord do
   end
 
   code_interface do
-    define_for DataAggregator.Records
     define :read
     define :create
     define :update
@@ -111,7 +112,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
     define :bulk_approve, args: [:rows]
     define :approve
     define :get_by_id, action: :read, get_by: [:id]
-    define :get_by_record, action: :read, get_by: [:record]
+    define :get_by_record, action: :read, get_by: [:record_id]
   end
 
   postgres do

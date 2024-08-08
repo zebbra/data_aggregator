@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.Record.Changes.SetBasisOfRecord do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     set_base_of_record(changeset)
   end

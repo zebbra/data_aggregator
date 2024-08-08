@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.Publication do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
+    domain: DataAggregator.Records,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub]
 
@@ -17,33 +18,29 @@ defmodule DataAggregator.Records.Publication do
   @type t :: %Publication{}
 
   attributes do
-    uuid_attribute :id, prefix: "pub"
+    uuid_attribute :id, prefix: "pub", public?: true
 
-    attribute :name, :string, allow_nil?: false
-    attribute :channel, :atom, allow_nil?: false
-    attribute :published_at, :utc_datetime, allow_nil?: true
-    attribute :started_at, :utc_datetime, allow_nil?: true
-    attribute :finished_at, :utc_datetime, allow_nil?: true
-    attribute :records_query, :map, allow_nil?: false
-    attribute :published_count, :integer, allow_nil?: false, default: 0
-    attribute :rows_count, :integer, allow_nil?: false, default: 0
-    attribute :center, :atom, allow_nil?: true
+    attribute :name, :string, allow_nil?: false, public?: true
+    attribute :channel, :atom, allow_nil?: false, public?: true
+    attribute :published_at, :utc_datetime, allow_nil?: true, public?: true
+    attribute :started_at, :utc_datetime, allow_nil?: true, public?: true
+    attribute :finished_at, :utc_datetime, allow_nil?: true, public?: true
+    attribute :records_query, :map, allow_nil?: false, public?: true
+    attribute :published_count, :integer, allow_nil?: false, default: 0, public?: true
+    attribute :rows_count, :integer, allow_nil?: false, default: 0, public?: true
+    attribute :center, :atom, allow_nil?: true, public?: true
 
-    timestamps private?: false, writable?: false
+    timestamps public?: true, writable?: false
   end
 
   relationships do
-    belongs_to :collection, Collection
-
-    belongs_to :attachment, Attachment do
-      api DataAggregator.Files
-    end
+    belongs_to :collection, Collection, public?: true
+    belongs_to :attachment, Attachment, public?: true
 
     belongs_to :job, Job do
-      api DataAggregator.Jobs
       attribute_type :integer
-      attribute_writable? true
       allow_nil? true
+      public? true
     end
   end
 
@@ -57,7 +54,10 @@ defmodule DataAggregator.Records.Publication do
     calculate :collection_name, :string, expr(collection.name)
 
     calculate :attachment_url, :string do
-      calculation fn publication, _opts -> publication.attachment.url end
+      calculation fn publications, _opts ->
+        Enum.map(publications, fn publication -> publication.attachment.url end)
+      end
+
       load attachment: :url
     end
 
@@ -84,6 +84,7 @@ defmodule DataAggregator.Records.Publication do
   end
 
   actions do
+    default_accept :*
     defaults [:read, :destroy, :update]
 
     read :by_collection do
@@ -100,13 +101,15 @@ defmodule DataAggregator.Records.Publication do
 
     create :create do
       primary? true
-      argument :collection, Collection, allow_nil?: false
+      argument :collection, :struct, allow_nil?: false
 
       change manage_relationship(:collection, :collection, type: :append)
     end
 
     update :enqueue do
       accept []
+      require_atomic? false
+
       change Changes.SetCollectionPublishingBeforeTransaction
       change transition_state(:queued)
       change Changes.EnqueuePublisher
@@ -122,12 +125,16 @@ defmodule DataAggregator.Records.Publication do
 
     update :set_running do
       accept []
+      require_atomic? false
+
       change transition_state(:running)
       change set_attribute(:started_at, &DateTime.utc_now/0)
       change set_attribute(:finished_at, nil)
     end
 
     update :set_failed do
+      require_atomic? false
+
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change Collection.Changes.SetCollectionIdleAfterTransaction
@@ -135,6 +142,8 @@ defmodule DataAggregator.Records.Publication do
 
     update :run do
       accept []
+      require_atomic? false
+
       change Changes.SetTimeout
       change Changes.SetRunningBeforeTransaction
       change transition_state(:running)
@@ -146,6 +155,8 @@ defmodule DataAggregator.Records.Publication do
 
     update :set_done do
       accept []
+      require_atomic? false
+
       change transition_state(:done)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:published_at, &DateTime.utc_now/0)
@@ -154,7 +165,9 @@ defmodule DataAggregator.Records.Publication do
 
     update :update_attachment do
       accept []
-      argument :attachment, Attachment, allow_nil?: false
+      require_atomic? false
+
+      argument :attachment, :struct, allow_nil?: false
       change manage_relationship(:attachment, :attachment, type: :append)
       change load(:attachment)
     end
@@ -172,7 +185,6 @@ defmodule DataAggregator.Records.Publication do
   end
 
   code_interface do
-    define_for DataAggregator.Records
     define :read
     define :by_collection, args: [:collection_id]
     define :create

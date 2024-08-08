@@ -28,9 +28,12 @@ defmodule DataAggregator.ApprovalFixtures do
   def approved_record_fixture(attrs \\ %{}) do
     record = RecordsFixtures.record_fixture()
 
+    attributes = [:extra_data] ++ DataAggregator.DarwinCore.Schema.prefixed_attribute_names()
+
     record
     |> Map.from_struct()
     |> Map.merge(attrs)
+    |> Map.take(attributes)
     |> Map.put_new_lazy(:record, fn -> record end)
     |> ApprovedRecord.create!()
   end

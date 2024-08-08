@@ -15,37 +15,21 @@ classDiagram
         CollectionType type
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        UUID institution_id
         Atom state
         Float digitizing_progress
-        Atom encoding_state
-        Map records_to_export_query
-        Map fast_track_query
-        Map approval_query
-        Boolean importing
-        Boolean exporting
-        Boolean encoding
-        Boolean publishing
-        Boolean approving
-        Boolean busy
         Integer records_count
-        Integer imports_count
-        Integer records_count_not_encoded
-        Integer records_count_imported
-        Integer records_count_encoding_queued
-        Integer records_count_encoding
-        Integer records_count_encoded
-        Integer records_count_failed
         Institution institution
         Import[] imports
         Export[] exports
         Record[] records
         destroy()
-        update(UUID id, Integer items_to_digitize, String owner, String name, ...)
+        update(Integer items_to_digitize, String owner, String name, String code, ...)
         read(String sort)
-        create(UUID id, Integer items_to_digitize, String owner, String name, ...)
+        create(Integer items_to_digitize, String owner, String name, String code, ...)
         update_import_mapping(Map[] import_mapping)
-        touch(UUID id, Integer items_to_digitize, String owner, String name, ...)
-        register_at_gbif(String dwca_file_url, UUID id, Integer items_to_digitize, String owner, ...)
+        touch(Integer items_to_digitize, String owner, String name, String code, ...)
+        register_at_gbif(String dwca_file_url, Integer items_to_digitize, String owner, String name, ...)
         set_importing()
         set_exporting()
         set_encoding()
@@ -341,12 +325,12 @@ classDiagram
         String iucn_redlist_category
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
-        Version[] paper_trail_versions
+        UUID record_id
         Record record
         destroy()
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read(String sort)
-        create(Record record, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        create(Struct record, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
     }
     class RecordEncodingResult {
         UUID id
@@ -357,13 +341,14 @@ classDiagram
         EncodingResultState state
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        UUID record_id
         Record record
         destroy()
         read()
         filter_by_record(String record_id)
         filter_by_collection(String collection_id)
-        create(Record record, UUID id, Map input, Map output, ...)
-        update(Record record, UUID id, Map input, Map output, ...)
+        create(Struct record, Map input, Map output, String message, ...)
+        update(Struct record, Map input, Map output, String message, ...)
     }
     class Export {
         UUID id
@@ -379,30 +364,26 @@ classDiagram
         DataLayerType data_layer
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        UUID collection_id
+        UUID attachment_id
         Integer job_id
         Atom state
-        Float export_progress
-        Time duration
-        String collection_name
-        String attachment_url
-        Integer attachment_byte_size
-        String attachment_filename
         Collection collection
         Attachment attachment
         Job job
         destroy()
         read()
         by_collection(String collection_id, String sort)
-        create(Collection collection, UUID id, String name, UtcDatetime exported_at, ...)
-        update_mapping(Map mapping, UUID id, String name, UtcDatetime exported_at, ...)
-        update(Struct[] records, UUID id, String name, UtcDatetime exported_at, ...)
+        create(Struct collection, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
+        update_mapping(Map mapping, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
+        update(Struct[] records, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
         enqueue()
         add_export_progress(Integer exported)
         set_running()
-        set_failed(UUID id, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
+        set_failed()
         run()
         set_exported()
-        update_attachment(Attachment attachment)
+        update_attachment(Struct attachment)
     }
     class Import {
         UUID id
@@ -416,32 +397,23 @@ classDiagram
         Integer rows_invalid_count
         Integer rows_imported_count
         Integer rows_error_count
+        UUID collection_id
+        UUID attachment_id
+        UUID error_log_id
         Integer job_id
         Atom state
-        Float import_progress
-        Integer rows_validated_count
-        Float rows_valid_ratio
-        Float validation_progress
-        Time duration
-        String collection_name
-        String attachment_url
-        Integer attachment_byte_size
-        String attachment_filename
-        Term attachment_data
-        Column[] mappings
-        Map missing_mappings
         Integer records_count
         Collection collection
         Attachment attachment
         Attachment error_log
         Record[] records
         Job job
-        update(UUID id, Column[] columns, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at, ...)
+        update(Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, Integer rows_count, ...)
         destroy()
         read(String sort)
         by_collection(String collection_id, String sort)
-        create(Collection collection, UUID id, Column[] columns, UtcDatetimeUsec inserted_at, ...)
-        create_from_path(Collection collection, String path, String filename)
+        create(Struct collection, Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, ...)
+        create_from_path(Struct collection, String path, String filename)
         update_mapping(Column[] columns)
         add_validation_progress(Integer valid, Integer invalid)
         enqueue_import()
@@ -450,15 +422,17 @@ classDiagram
         add_import_progress(Integer imported)
         set_failed()
         set_imported()
-        update_error_log(Attachment error_log)
+        update_error_log(Struct error_log)
     }
     class Record {
+        UUID import_id
+        UUID record_id
         Import import
         Record record
-        update()
+        update(UUID import_id, UUID record_id)
         destroy()
         read()
-        create(Import import, Record record)
+        create(Struct import, Struct record, UUID import_id, UUID record_id)
     }
     class Publication {
         UUID id
@@ -473,29 +447,25 @@ classDiagram
         Atom center
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        UUID collection_id
+        UUID attachment_id
         Integer job_id
         Atom state
-        Float publication_progress
-        Time duration
-        String collection_name
-        String attachment_url
-        Integer attachment_byte_size
-        String attachment_filename
         Collection collection
         Attachment attachment
         Job job
-        update(UUID id, String name, Atom channel, UtcDatetime published_at, ...)
+        update(String name, Atom channel, UtcDatetime published_at, UtcDatetime started_at, ...)
         destroy()
         read()
         by_collection(String collection_id, String sort)
-        create(Collection collection, UUID id, String name, Atom channel, ...)
+        create(Struct collection, String name, Atom channel, UtcDatetime published_at, ...)
         enqueue()
         add_publication_progress(Integer published)
         set_running()
-        set_failed(UUID id, String name, Atom channel, UtcDatetime published_at, ...)
+        set_failed(String name, Atom channel, UtcDatetime published_at, UtcDatetime started_at, ...)
         run()
         set_done()
-        update_attachment(Attachment attachment)
+        update_attachment(Struct attachment)
     }
     class Record {
         Map ext_vernacular_names
@@ -787,6 +757,7 @@ classDiagram
         UtcDatetime last_imported_at
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        UUID collection_id
         Integer encoder_job_id
         Integer fast_track_checker_job_id
         Atom state
@@ -794,15 +765,7 @@ classDiagram
         Float full_text_search_rank
         Tsquery tsquery
         Boolean iucn_redlist
-        Boolean encoded
         Integer mids_level
-        Boolean mids_level_one
-        Boolean mids_level_two
-        Boolean mids_level_three
-        Boolean mids_level_four
-        Tsvector tsvector
-        Tsvector encoded_tsvector
-        Version[] paper_trail_versions
         Collection collection
         Import[] imports
         Image[] images
@@ -814,11 +777,11 @@ classDiagram
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read(String sort)
         by_collection(String collection_id, String sort)
-        create(Collection collection, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
-        import(Import import, Map params, Map ext_vernacular_names, Map ext_species_profile, ...)
+        create(Struct collection, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        import(Struct import, Map params, Map ext_vernacular_names, Map ext_species_profile, ...)
         enqueue_encoder()
         enqueue_fast_track_checker()
-        bulk_import(Import import, Term rows)
+        bulk_import(Struct import, Term rows)
         encode(Term record, Atom catalog)
         check_if_fast_track_pubished(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         set_imported(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
@@ -835,12 +798,14 @@ classDiagram
         Integer size
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        UUID attachment_id
+        UUID record_id
         Attachment attachment
         Record record
         destroy()
-        update(UUID id, Integer size, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
+        update(Integer size, UUID attachment_id, UUID record_id)
         read()
-        create(UUID id, Integer size, UtcDatetimeUsec inserted_at, UtcDatetimeUsec updated_at)
+        create(Integer size, UUID attachment_id, UUID record_id)
     }
     class Version {
         UUID id
@@ -852,9 +817,9 @@ classDiagram
         Map changes
         Record version_source
         destroy()
-        update(UUID id, Atom version_action_type, Atom version_action_name, String mte_catalog_number, ...)
+        update(Atom version_action_type, Atom version_action_name, String mte_catalog_number, String tax_scientific_name, ...)
         read()
-        create(UUID id, Atom version_action_type, Atom version_action_name, String mte_catalog_number, ...)
+        create(Atom version_action_type, Atom version_action_name, String mte_catalog_number, String tax_scientific_name, ...)
     }
     class Version {
         UUID id
@@ -864,9 +829,9 @@ classDiagram
         Map changes
         EncodedRecord version_source
         destroy()
-        update(UUID id, Atom version_action_type, Atom version_action_name, UUID version_source_id, ...)
+        update(Atom version_action_type, Atom version_action_name, UUID version_source_id, Map changes)
         read()
-        create(UUID id, Atom version_action_type, Atom version_action_name, UUID version_source_id, ...)
+        create(Atom version_action_type, Atom version_action_name, UUID version_source_id, Map changes)
     }
     class Approval {
         UUID id
@@ -879,27 +844,26 @@ classDiagram
         UtcDatetime finished_at
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        UUID attachment_id
+        UUID error_log_id
         Integer job_id
         Atom state
-        String attachment_url
-        Integer attachment_byte_size
-        String attachment_filename
         Attachment attachment
         Job job
         Attachment error_log
-        update(UUID id, String file_url, Integer rows_count, Integer rows_invalid_count, ...)
+        update(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_approved_count, ...)
         destroy()
         read()
         create(String file_url)
         enqueue()
         set_running()
-        set_failed(UUID id, String file_url, Integer rows_count, Integer rows_invalid_count, ...)
+        set_failed(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_approved_count, ...)
         run()
         set_done()
-        update_attachment(Attachment attachment)
+        update_attachment(Struct attachment)
         add_validation_progress(Integer valid, Integer invalid)
         add_approval_progress(Integer approved, Integer invalid)
-        update_error_log(Attachment error_log)
+        update_error_log(Struct error_log)
     }
     class ApprovedRecord {
         Map ext_vernacular_names
@@ -1184,12 +1148,13 @@ classDiagram
         Map extra_data
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
+        UUID record_id
         Record record
         destroy()
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read(String sort)
-        create(Record record, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
-        approve(Record record, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        create(Struct record, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        approve(Struct record, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         bulk_approve(Term rows)
     }
 

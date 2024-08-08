@@ -16,6 +16,7 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.before_action(changeset, &approve_records/1, append?: true)
   end

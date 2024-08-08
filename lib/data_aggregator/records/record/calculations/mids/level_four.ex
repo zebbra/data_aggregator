@@ -2,7 +2,7 @@ defmodule DataAggregator.Records.Record.Calculations.Mids.LevelFour do
   @moduledoc """
     Calculation for MIDS level four to indicate if a record fulfills the requirements for MIDS level four.
   """
-  use Ash.Calculation
+  use Ash.Resource.Calculation
 
   import Ash.Expr
 

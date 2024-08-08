@@ -14,7 +14,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   alias AshPhoenix.Form
   alias DataAggregator.DarwinCore
-  alias DataAggregator.Records
   alias DataAggregator.Records.Import
 
   require Logger
@@ -549,7 +548,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   end
 
   defp build_form(%{import: import}, reset) do
-    import_with_mappings = Records.load!(import, [:mappings, :missing_mappings], lazy?: true)
+    import_with_mappings = Ash.load!(import, [:mappings, :missing_mappings], lazy?: true)
 
     mappings =
       import_with_mappings.mappings
@@ -559,7 +558,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     import
     |> Form.for_update(
       :update_mapping,
-      api: DataAggregator.Records,
+      domain: DataAggregator.Records,
       as: "import",
       forms: [
         columns: [

@@ -11,6 +11,7 @@ defmodule DataAggregator.Records.Import.Changes.CountRows do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, ctx) do
     field = Map.get(ctx, :from, :path)
     filename = Changeset.get_argument_or_attribute(changeset, field)

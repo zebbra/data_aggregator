@@ -463,7 +463,14 @@ defmodule DataAggregatorWeb.Filters do
         filter_form = socket.assigns.filter_form
         filter_form = FilterForm.validate(filter_form, params)
 
-        assign_and_update(socket, filter_form)
+        if filter_form.valid? do
+          assign_and_update(socket, filter_form)
+        else
+          socket
+          |> assign(:filter_form, filter_form)
+          |> assign(:error, ~t"Please review the form and try again")
+          |> noreply()
+        end
       end
 
       @impl true
@@ -514,7 +521,13 @@ defmodule DataAggregatorWeb.Filters do
         %{meta: %{ash_pagify: %{filter_form: params}, resource: resource}} = socket.assigns
         filter_form = FilterForm.new(resource, params: params, initial_form: init_form(resource))
 
-        assign(socket, :filter_form, filter_form)
+        if filter_form.valid? do
+          assign(socket, :filter_form, filter_form)
+        else
+          socket
+          |> assign(:filter_form, filter_form)
+          |> assign(:error, ~t"Please review the form and try again")
+        end
       end
     end
   end

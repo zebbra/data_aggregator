@@ -72,7 +72,7 @@ defmodule DataAggregator.ApprovalTest do
     end
 
     test "destroy/1 with invalid id returns error" do
-      assert {:error, %Ash.Error.Unknown{}} = Approval.destroy(%Approval{id: "invalid"})
+      assert {:error, %Ash.Error.Invalid{}} = Approval.destroy(%Approval{id: "invalid"})
     end
   end
 end

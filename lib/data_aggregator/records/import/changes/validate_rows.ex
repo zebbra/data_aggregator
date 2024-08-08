@@ -13,6 +13,7 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.before_action(changeset, &validate_rows/1, append?: true)
   end
@@ -31,7 +32,7 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
     Logger.debug("Validating rows in chunks of #{chunk_size} rows ...")
 
     # make sure collection is loaded to avoid N+1 queries
-    import = Records.load!(import, [:collection], lazy?: true)
+    import = Ash.load!(import, [:collection], lazy?: true)
 
     rows
     |> Stream.chunk_every(chunk_size)
@@ -107,7 +108,7 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
   end
 
   defp rows_stream(import) do
-    with {:ok, import} <- DataAggregator.Records.load(import, attachment_data: [mapped: true]) do
+    with {:ok, import} <- Ash.load(import, attachment_data: [mapped: true]) do
       stream = Explorer.DataFrame.to_rows_stream(import.attachment_data)
       {:ok, stream}
     end

@@ -5,31 +5,29 @@ defmodule DataAggregator.Records.Record.Image do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
+    domain: DataAggregator.Records,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Record
 
   attributes do
-    uuid_attribute :id, prefix: "img"
-    attribute :size, :integer
-    timestamps private?: false, writable?: false
+    uuid_attribute :id, prefix: "img", public?: true
+    attribute :size, :integer, public?: true
+    timestamps public?: true, writable?: false
   end
 
   relationships do
-    belongs_to :attachment, Attachment do
-      api DataAggregator.Files
-    end
-
-    belongs_to :record, Record
+    belongs_to :attachment, Attachment, public?: true
+    belongs_to :record, Record, public?: true
   end
 
   actions do
+    default_accept :*
     defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do
-    define_for DataAggregator.Records
     define :read
     define :create
     define :update

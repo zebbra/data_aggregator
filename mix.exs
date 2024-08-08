@@ -56,7 +56,10 @@ defmodule DataAggregator.MixProject do
       groups_for_extras: groups_for_extras(),
       nest_modules_by_prefix: nest_modules_by_prefix(),
       before_closing_body_tag: &before_closing_body_tag/1,
-      output: "priv/static/docs"
+      output: "priv/static/docs",
+      skip_undefined_reference_warnings_on: [
+        "docs/overview.md"
+      ]
     ]
   end
 
@@ -188,15 +191,15 @@ defmodule DataAggregator.MixProject do
       {:phoenix_storybook, "~> 0.6.3"},
 
       # Ash Framework
-      {:ash, "~> 2.13"},
-      {:ash_graphql, "~> 0.28.0"},
-      {:ash_json_api, "~> 0.34.0"},
-      {:ash_phoenix, "~> 1.3"},
-      {:ash_postgres, "~> 1.3"},
-      {:ash_state_machine, "~> 0.2.2"},
-      {:ash_uuid, "~> 0.7"},
+      {:ash, "~> 3.3", override: true},
+      {:ash_graphql, "~> 1.3"},
+      {:ash_json_api, "~> 1.4"},
+      {:ash_phoenix, "~> 2.1"},
+      {:ash_postgres, "~> 2.1", override: true},
+      {:ash_state_machine, "~> 0.2"},
+      {:ash_uuid, "~> 1.1"},
       {:ash_paper_trail, "~> 0.1"},
-      {:ash_pagify, "~> 0.1"},
+      {:ash_pagify, "~> 1.0"},
 
       # Database and Ecto
       {:ecto, "~> 3.11.0"},
@@ -276,7 +279,7 @@ defmodule DataAggregator.MixProject do
 
       # Utilities and Helpers
       {:envy, "~> 1.1.1"},
-      {:splode, "~> 0.2.2"},
+      {:picosat_elixir, "~> 0.2"},
 
       # Documentation
       {:ecto_erd, "~> 0.5", only: :dev},

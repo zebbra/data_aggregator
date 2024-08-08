@@ -352,7 +352,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   def update_count(socket, filter_form_params, reset) do
     %{collection_id: collection_id, meta: meta} = socket.assigns
 
-    query = Record.query_to_by_collection(collection_id)
+    query =
+      Ash.Query.filter_input(Record, %{"collection_id" => collection_id})
+
     count = FilterForm.count(meta, filter_form_params, reset, query)
 
     assign(socket, :count, format_count(count))

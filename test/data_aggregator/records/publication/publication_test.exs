@@ -9,7 +9,6 @@ defmodule DataAggregator.PublicationTest do
 
   alias DataAggregator.DarwinCore.Publication.DwcaFile
   alias DataAggregator.Gbif
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
   alias Explorer.DataFrame
@@ -64,11 +63,11 @@ defmodule DataAggregator.PublicationTest do
       encoded_record_fixture(%{record: record5})
 
       records = [
-        Records.load!(record1, [:encoded_record]),
-        Records.load!(record2, [:encoded_record]),
-        Records.load!(record3, [:encoded_record]),
-        Records.load!(record4, [:encoded_record]),
-        Records.load!(record5, [:encoded_record])
+        Ash.load!(record1, [:encoded_record]),
+        Ash.load!(record2, [:encoded_record]),
+        Ash.load!(record3, [:encoded_record]),
+        Ash.load!(record4, [:encoded_record]),
+        Ash.load!(record5, [:encoded_record])
       ]
 
       query = %{

@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.Export.Changes.UpdateMapping do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     mapping = Changeset.get_argument(changeset, :mapping)
 

@@ -6,8 +6,6 @@ defmodule DataAggregator.Gbif.RestAPI do
   import DataAggregator.Helpers, only: [distinct: 2]
 
   alias DataAggregator.Cache.HttpDiskCache
-  alias DataAggregator.Files
-  alias DataAggregator.Records
   alias DataAggregator.Records.Approval
   alias DataAggregator.Records.Collection
   alias DataAggregator.Types.Api
@@ -195,9 +193,8 @@ defmodule DataAggregator.Gbif.RestAPI do
 
   @spec notify_infospecies_with_approval_result_params(Approval.t()) :: map()
   defp notify_infospecies_with_approval_result_params(approval) do
-    approval = Records.load!(approval, [:error_log], lazy?: true)
-
-    error_log = Files.load!(approval.error_log, [:url], lazy?: true)
+    approval = Ash.load!(approval, [:error_log], lazy?: true)
+    error_log = Ash.load!(approval.error_log, [:url], lazy?: true)
 
     %{
       "success_count" => approval.rows_approved_count,

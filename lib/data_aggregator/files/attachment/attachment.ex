@@ -7,6 +7,7 @@ defmodule DataAggregator.Files.Attachment do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
+    domain: DataAggregator.Files,
     extensions: [AshUUID]
 
   alias __MODULE__
@@ -17,10 +18,10 @@ defmodule DataAggregator.Files.Attachment do
   @day 24 * @hour
 
   attributes do
-    uuid_attribute :id, prefix: "fat"
-    attribute :filename, :string, allow_nil?: false
-    attribute :byte_size, :integer, allow_nil?: false
-    timestamps()
+    uuid_attribute :id, prefix: "fat", public?: true
+    attribute :filename, :string, allow_nil?: false, public?: true
+    attribute :byte_size, :integer, allow_nil?: false, public?: true
+    timestamps public?: true, writable?: false
   end
 
   calculations do
@@ -33,6 +34,8 @@ defmodule DataAggregator.Files.Attachment do
   end
 
   actions do
+    default_accept :*
+
     read :read do
       primary? true
       prepare build(load: [:url])
@@ -47,12 +50,12 @@ defmodule DataAggregator.Files.Attachment do
 
     destroy :destroy do
       primary? true
+      require_atomic? false
       change Attachment.Changes.DeleteFile
     end
   end
 
   code_interface do
-    define_for DataAggregator.Files
     define :read
     define :get_by_id, action: :read, get_by: :id
     define :import_from_path, args: [:path]

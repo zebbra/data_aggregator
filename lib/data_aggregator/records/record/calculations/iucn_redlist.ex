@@ -2,7 +2,7 @@ defmodule DataAggregator.Records.Record.Calculations.IucnRedlist do
   @moduledoc """
   Calculation for IUCN Redlist to indicate if a record fulfills the requirements for IUCN Redlist.
   """
-  use Ash.Calculation
+  use Ash.Resource.Calculation
 
   import Ash.Expr
 

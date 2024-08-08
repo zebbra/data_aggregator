@@ -6,7 +6,6 @@ defmodule DataAggregator.Records.Actions.Approve do
   """
   use Ash.Resource.Actions.Implementation
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
@@ -30,7 +29,7 @@ defmodule DataAggregator.Records.Actions.Approve do
 
         count_query = AshPagify.query_for_filters_map(Record, records_query)
 
-        rows_count = Records.count!(count_query)
+        rows_count = Ash.count!(count_query)
 
         # do only publish dwc file to infospecies center if there are records
         if rows_count > 0 do
