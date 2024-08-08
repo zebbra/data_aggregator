@@ -1,4 +1,4 @@
-defmodule DataAggregator.Repo.Migrations.Install2Extensions20240807160513 do
+defmodule DataAggregator.Repo.Migrations.InstallAshFunctionsExtension420240807160513 do
   @moduledoc """
   Installs any extensions that are mentioned in the repo's `installed_extensions/0` callback
 

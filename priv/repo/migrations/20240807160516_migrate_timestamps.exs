@@ -1,4 +1,4 @@
-defmodule DataAggregator.Repo.Migrations.MigrateResources1 do
+defmodule DataAggregator.Repo.Migrations.MigrateTimestamps do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
