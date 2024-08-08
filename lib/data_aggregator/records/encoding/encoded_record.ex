@@ -13,7 +13,6 @@ defmodule DataAggregator.Records.EncodedRecord do
     domain: DataAggregator.Records,
     extensions: [
       AshUUID,
-      AshGraphql.Resource,
       AshJsonApi.Resource,
       DataAggregator.DarwinCore.Resource,
       AshPaperTrail.Resource
@@ -102,20 +101,6 @@ defmodule DataAggregator.Records.EncodedRecord do
 
     references do
       reference :record, on_delete: :delete, on_update: :update
-    end
-  end
-
-  graphql do
-    type :encoded_record
-
-    queries do
-      get :get_encoded_record, :read
-      list :list_encoded_records, :read
-    end
-
-    mutations do
-      update :update_encoded_record, :update
-      destroy :destroy_encoded_record, :destroy
     end
   end
 

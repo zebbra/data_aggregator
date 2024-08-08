@@ -6,7 +6,7 @@ defmodule DataAggregator.Records.Export do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Records,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
+    extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
@@ -227,21 +227,6 @@ defmodule DataAggregator.Records.Export do
       reference :collection, on_delete: :delete, on_update: :update
       reference :attachment, on_delete: :delete, on_update: :update
       reference :job, on_delete: :nilify, on_update: :update
-    end
-  end
-
-  graphql do
-    type :export
-
-    queries do
-      get :get_export, :read
-      list :list_exports, :read
-    end
-
-    mutations do
-      create :create_export, :create
-      update :update_export, :update
-      destroy :destroy_export, :destroy
     end
   end
 

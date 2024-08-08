@@ -6,7 +6,7 @@ defmodule DataAggregator.Records.Collection do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Records,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
+    extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
@@ -328,30 +328,15 @@ defmodule DataAggregator.Records.Collection do
     define :set_idle_encoding
   end
 
-  postgres do
-    table "collections"
-    repo DataAggregator.Repo
-  end
-
   validations do
     validate {Validations.GrSciCollValidator, [attribute: :grscicoll_reference, kind: :collection]} do
       on [:create]
     end
   end
 
-  graphql do
-    type :collection
-
-    queries do
-      get :get_collection, :read
-      list :list_collections, :read
-    end
-
-    mutations do
-      create :create_collection, :create
-      update :update_collection, :update
-      destroy :destroy_collection, :destroy
-    end
+  postgres do
+    table "collections"
+    repo DataAggregator.Repo
   end
 
   json_api do

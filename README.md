@@ -27,7 +27,6 @@ checkout our notes on [`miro`](https://miro.com/app/board/uXjVMBLi0fk=/)
 
 - [Swagger](https://staging.aggregator.scnat.zebbra.ch/api/json/swagger)
 - [Redoc](https://staging.aggregator.scnat.zebbra.ch/api/json/redoc)
-- [Graphql](https://staging.aggregator.scnat.zebbra.ch/api/graphql/playground)
 - [HexDocs](https://staging.aggregator.scnat.zebbra.ch/docs/index.html)
 
 change the url to see the versions on dev, test, and production systems

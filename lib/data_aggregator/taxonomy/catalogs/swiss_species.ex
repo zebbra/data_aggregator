@@ -4,7 +4,7 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpecies do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Taxonomy,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
+    extensions: [AshUUID, AshJsonApi.Resource]
 
   alias __MODULE__
 
@@ -44,21 +44,6 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpecies do
   postgres do
     table "swiss_species"
     repo DataAggregator.Repo
-  end
-
-  graphql do
-    type :catalog
-
-    queries do
-      get :get_swiss_species, :read
-      list :list_swiss_species, :read
-    end
-
-    mutations do
-      create :create_swiss_species, :create
-      update :update_swiss_species, :update
-      destroy :destroy_swiss_species, :destroy
-    end
   end
 
   json_api do

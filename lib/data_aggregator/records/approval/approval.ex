@@ -6,7 +6,7 @@ defmodule DataAggregator.Records.Approval do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Records,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine]
+    extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine]
 
   alias __MODULE__
   alias DataAggregator.Files.Attachment
@@ -199,21 +199,6 @@ defmodule DataAggregator.Records.Approval do
     references do
       reference :attachment, on_delete: :delete, on_update: :update
       reference :job, on_delete: :nilify, on_update: :update
-    end
-  end
-
-  graphql do
-    type :approval
-
-    queries do
-      get :get_approval, :read
-      list :list_approvals, :read
-    end
-
-    mutations do
-      create :create_approval, :create
-      update :update_approval, :update
-      destroy :destroy_approval, :destroy
     end
   end
 

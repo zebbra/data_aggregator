@@ -6,7 +6,7 @@ defmodule DataAggregator.Platform.Institution do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Platform,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
+    extensions: [AshUUID, AshJsonApi.Resource]
 
   alias DataAggregator.Records.Validations
 
@@ -50,30 +50,15 @@ defmodule DataAggregator.Platform.Institution do
     define :get_by_id, action: :read, get_by: [:id]
   end
 
-  postgres do
-    table "institutions"
-    repo DataAggregator.Repo
-  end
-
   validations do
     validate {Validations.GrSciCollValidator, [attribute: :grscicoll_reference, kind: :institution]} do
       on [:create, :update]
     end
   end
 
-  graphql do
-    type :institution
-
-    queries do
-      get :get_institution, :read
-      list :list_institutions, :read
-    end
-
-    mutations do
-      create :create_institution, :create
-      update :update_institution, :update
-      destroy :destroy_institution, :destroy
-    end
+  postgres do
+    table "institutions"
+    repo DataAggregator.Repo
   end
 
   json_api do

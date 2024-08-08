@@ -192,7 +192,6 @@ defmodule DataAggregator.MixProject do
 
       # Ash Framework
       {:ash, "~> 3.3", override: true},
-      {:ash_graphql, "~> 1.3"},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
       {:ash_postgres, "~> 2.1", override: true},
@@ -243,7 +242,6 @@ defmodule DataAggregator.MixProject do
       {:timex, "~> 3.0"},
 
       # HTTP and API Utilities
-      {:absinthe_plug, "~> 1.5.8"},
       {:hackney, "~> 1.18"},
       {:jason, "~> 1.4"},
       {:open_api_spex, "~> 3.18"},

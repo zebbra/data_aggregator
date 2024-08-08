@@ -6,7 +6,7 @@ defmodule DataAggregator.Records.Publication do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Records,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
+    extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
@@ -208,21 +208,6 @@ defmodule DataAggregator.Records.Publication do
       reference :collection, on_delete: :delete, on_update: :update
       reference :attachment, on_delete: :delete, on_update: :update
       reference :job, on_delete: :nilify, on_update: :update
-    end
-  end
-
-  graphql do
-    type :publication
-
-    queries do
-      get :get_publication, :read
-      list :list_publications, :read
-    end
-
-    mutations do
-      create :create_publication, :create
-      update :update_publication, :update
-      destroy :destroy_publication, :destroy
     end
   end
 

@@ -13,7 +13,6 @@ defmodule DataAggregator.Records.ApprovedRecord do
     domain: DataAggregator.Records,
     extensions: [
       AshUUID,
-      AshGraphql.Resource,
       AshJsonApi.Resource,
       DataAggregator.DarwinCore.Resource
     ]
@@ -121,20 +120,6 @@ defmodule DataAggregator.Records.ApprovedRecord do
 
     references do
       reference :record, on_delete: :delete, on_update: :update
-    end
-  end
-
-  graphql do
-    type :approved_record
-
-    queries do
-      get :get_approved_record, :read
-      list :list_approved_records, :read
-    end
-
-    mutations do
-      update :update_approved_record, :update
-      destroy :destroy_approved_record, :destroy
     end
   end
 

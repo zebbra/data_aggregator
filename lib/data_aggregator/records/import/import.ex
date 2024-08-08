@@ -12,7 +12,7 @@ defmodule DataAggregator.Records.Import do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Records,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
+    extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
@@ -316,19 +316,6 @@ defmodule DataAggregator.Records.Import do
     references do
       reference :collection, on_delete: :delete, on_update: :update
       reference :error_log, on_delete: :delete, on_update: :update
-    end
-  end
-
-  graphql do
-    type :import
-
-    queries do
-      get :get_import, :read
-      list :list_imports, :read
-    end
-
-    mutations do
-      create :create_import, :create_from_path
     end
   end
 

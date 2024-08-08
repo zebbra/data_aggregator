@@ -13,7 +13,6 @@ defmodule DataAggregator.Records.Record do
     domain: DataAggregator.Records,
     extensions: [
       AshUUID,
-      AshGraphql.Resource,
       AshJsonApi.Resource,
       DataAggregator.DarwinCore.Resource,
       AshStateMachine,
@@ -385,15 +384,15 @@ defmodule DataAggregator.Records.Record do
     end
   end
 
+  identities do
+    identity :collection_mte_catalog_number, [:collection_id, :mte_catalog_number]
+  end
+
   pub_sub do
     module DataAggregator.PubSub
     prefix "record"
 
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
-  end
-
-  identities do
-    identity :collection_mte_catalog_number, [:collection_id, :mte_catalog_number]
   end
 
   code_interface do
@@ -426,20 +425,6 @@ defmodule DataAggregator.Records.Record do
     references do
       reference :collection, on_delete: :delete, on_update: :update
       reference :fast_track_checker_job, on_delete: :nilify, on_update: :update
-    end
-  end
-
-  graphql do
-    type :record
-
-    queries do
-      get :get_record, :read
-      list :list_records, :read
-    end
-
-    mutations do
-      update :update_record, :update
-      destroy :destroy_record, :destroy
     end
   end
 

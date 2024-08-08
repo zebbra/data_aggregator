@@ -6,7 +6,7 @@ defmodule DataAggregator.Records.Record.Image do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Records,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
+    extensions: [AshUUID, AshJsonApi.Resource]
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Record
@@ -42,21 +42,6 @@ defmodule DataAggregator.Records.Record.Image do
     references do
       reference :record, on_delete: :delete, on_update: :update
       reference :attachment, on_delete: :delete, on_update: :update
-    end
-  end
-
-  graphql do
-    type :record_image
-
-    queries do
-      get :get_record_image, :read
-      list :list_record_images, :read
-    end
-
-    mutations do
-      create :create_record_image, :create
-      update :update_record_image, :update
-      destroy :destroy_record_image, :destroy
     end
   end
 

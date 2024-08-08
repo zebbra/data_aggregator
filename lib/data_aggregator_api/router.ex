@@ -20,19 +20,4 @@ defmodule DataAggregatorApi.Router do
 
     forward "/", DataAggregatorApi.JsonApi.Router
   end
-
-  pipeline :graphql do
-    plug AshGraphql.Plug
-  end
-
-  scope "/graphql" do
-    pipe_through :graphql
-
-    forward "/playground",
-            Absinthe.Plug.GraphiQL,
-            schema: DataAggregatorApi.GraphQL.Schema,
-            interface: :playground
-
-    forward "/", Absinthe.Plug, schema: DataAggregatorApi.GraphQL.Schema
-  end
 end

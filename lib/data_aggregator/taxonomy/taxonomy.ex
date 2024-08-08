@@ -9,17 +9,13 @@ defmodule DataAggregator.Taxonomy do
   #{File.read!(class_diagram)}
   """
 
-  use Ash.Domain, extensions: [AshGraphql.Domain, AshJsonApi.Domain]
+  use Ash.Domain, extensions: [AshJsonApi.Domain]
 
   # ensure module is recompiled when the class diagram changes
   @external_resource class_diagram
 
   resources do
     resource DataAggregator.Taxonomy.Catalogs.SwissSpecies
-  end
-
-  graphql do
-    authorize? false
   end
 
   json_api do
