@@ -111,6 +111,14 @@ defmodule DataAggregator.Gbif.RestAPI do
   end
 
   @doc """
+  Get all institutions from the GrsciCol API and parse them to have options for UI Select Options
+  """
+  @spec get_institution_options() :: [{String.t(), String.t()}]
+  def get_institution_options do
+    Enum.map(lookup_all_institutions(), &{"#{&1["code"]} - #{&1["name"]}", &1["key"]})
+  end
+
+  @doc """
   Get a single species out of the GBIF API according to its key
   """
   @spec get_species(String.t()) :: Api.response()
@@ -209,6 +217,18 @@ defmodule DataAggregator.Gbif.RestAPI do
 
   defp lookup_all_collections do
     url = grscicoll_entities_url(:collection)
+
+    %{body: body} =
+      [params: %{country: "CH", limit: 1000}]
+      |> Req.new()
+      |> HttpDiskCache.attach()
+      |> Req.get!(url: url, max_cache_age_seconds: @hour)
+
+    body["results"]
+  end
+
+  defp lookup_all_institutions do
+    url = grscicoll_entities_url(:institution)
 
     %{body: body} =
       [params: %{country: "CH", limit: 1000}]

@@ -103,12 +103,11 @@ defmodule DataAggregatorWeb.Components.Input do
       assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", assigns[:value]) end)
 
     ~H"""
-    <.input type="hidden" name={@name} value="false" />
     <input
       type="checkbox"
       id={@id}
       name={@name}
-      value="true"
+      value={@value}
       checked={@checked}
       class={["toggle", @class, @errors != [] && "phx-feedback:checkbox-error"]}
       aria-invalid={@errors != []}

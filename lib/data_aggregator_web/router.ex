@@ -48,6 +48,9 @@ defmodule DataAggregatorWeb.Router do
       live "/", DashboardLive.Index, :index
 
       live "/administration", AdministrationLive.Index, :index
+      live "/administration/new", AdministrationLive.Index, :new
+      live "/administration/:user_id/edit", AdministrationLive.Index, :edit
+      live "/administration/:user_id/summary", AdministrationLive.Index, :summary
 
       live "/collections", CollectionLive.Index, :index
       live "/collections/new", CollectionLive.Index, :new

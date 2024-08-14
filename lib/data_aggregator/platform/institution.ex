@@ -5,6 +5,7 @@ defmodule DataAggregator.Platform.Institution do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
+    api: DataAggregator.Platform,
     extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
 
   alias DataAggregator.Records.Validations
