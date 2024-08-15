@@ -19,15 +19,15 @@ defmodule DataAggregator.Records.Record.Changes.SetOccurrenceID do
   defp set_occurrence_id(changeset) do
     occ_occurrence_id = Changeset.get_argument_or_attribute(changeset, :occ_occurrence_id)
 
-    if occ_occurrence_id != nil do
-      Logger.debug("occurrence_id already set, skipping ...")
-
-      changeset
-    else
+    if occ_occurrence_id == nil do
       Logger.debug("Setting occurrence_id ...")
 
       mte_catalog_number = Changeset.get_argument_or_attribute(changeset, :mte_catalog_number)
       Changeset.change_attribute(changeset, :occ_occurrence_id, mte_catalog_number)
+    else
+      Logger.debug("occurrence_id already set, skipping ...")
+
+      changeset
     end
   end
 end

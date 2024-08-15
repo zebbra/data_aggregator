@@ -28,6 +28,7 @@ defmodule DataAggregatorWeb.Filters.CheckboxGroup do
   import DataAggregatorWeb.Gettext
 
   alias AshPhoenix.FilterForm.Predicate
+  alias Phoenix.HTML.FormField
 
   attr :title, :string,
     required: true,
@@ -83,7 +84,7 @@ defmodule DataAggregatorWeb.Filters.CheckboxGroup do
   attr :label, :string, default: nil
   attr :value, :any
 
-  attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
+  attr :field, FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
   attr :description, :string, default: nil, doc: "the description for the input"
 
@@ -99,7 +100,7 @@ defmodule DataAggregatorWeb.Filters.CheckboxGroup do
   slot :inner_block
   slot :custom_label, doc: "the slot for the label text (if you need to customize it)"
 
-  def checkbox_group_field(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+  def checkbox_group_field(%{field: %FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
 
     assigns
@@ -122,10 +123,10 @@ defmodule DataAggregatorWeb.Filters.CheckboxGroup do
       <.description :if={@description} description={@description} class="mb-2" />
       <.description :if={length(@options) == 0} description={~t"No entries found"m} class="mb-2" />
       <.errors errors={@errors} id={@id} class={is_nil(@description) && "mb-2"} />
-      <div class="grid grid-flow-row sm:grid-cols-2">
+      <div class="grid grid-flow-row sm:grid-cols-2 sm:gap-x-2">
         <div
           :for={{label, value} <- options_for_group(@options)}
-          class="flex cursor-pointer justify-between gap-4 py-2 sm:flex-row-reverse sm:justify-end"
+          class="flex cursor-pointer justify-between gap-4 truncate py-2 sm:flex-row-reverse sm:justify-end"
         >
           <.label for={"#{@name}-#{value}"} label={label} class="cursor-pointer min-w-0 flex-1" />
           <input

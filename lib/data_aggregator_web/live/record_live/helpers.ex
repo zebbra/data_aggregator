@@ -33,10 +33,10 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
 
   @spec imported_attribute(Record.t(), atom()) :: any()
   def imported_attribute(record, attribute) do
-    if record != nil do
-      record |> Map.get(attribute) |> value_for_record_attribute()
-    else
+    if record == nil do
       "-"
+    else
+      record |> Map.get(attribute) |> value_for_record_attribute()
     end
   end
 
@@ -45,10 +45,10 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
   def encoded_attribute(record, attribute, "original"), do: Map.get(record, attribute)
 
   def encoded_attribute(record, attribute, _) do
-    if record.encoded_record != nil do
-      record.encoded_record |> Map.get(attribute) |> value_for_record_attribute()
-    else
+    if record.encoded_record == nil do
       Map.get(record, attribute)
+    else
+      record.encoded_record |> Map.get(attribute) |> value_for_record_attribute()
     end
   end
 

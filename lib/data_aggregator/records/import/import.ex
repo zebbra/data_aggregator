@@ -19,6 +19,7 @@ defmodule DataAggregator.Records.Import do
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
   alias DataAggregator.Records.Import.Column
   alias DataAggregator.Records.Import.Record, as: ImportRecord
   alias DataAggregator.Records.Record
@@ -256,7 +257,7 @@ defmodule DataAggregator.Records.Import do
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:rows_imported_count, 0)
-      change Collection.Changes.SetCollectionIdleAfterTransaction
+      change SetCollectionIdleAfterTransaction
     end
 
     update :set_imported do
@@ -265,7 +266,7 @@ defmodule DataAggregator.Records.Import do
 
       change transition_state(:imported)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
-      change Collection.Changes.SetCollectionIdleAfterTransaction
+      change SetCollectionIdleAfterTransaction
     end
 
     update :update_error_log do
@@ -288,6 +289,7 @@ defmodule DataAggregator.Records.Import do
     publish :set_imported, [[:collection_id, nil], "updated", [:id, nil]]
     publish :set_failed, [[:collection_id, nil], "updated", [:id, nil]]
     publish :update_mapping, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :add_import_progress, [[:collection_id, nil], "updated", [:id, nil]]
   end
 
   code_interface do

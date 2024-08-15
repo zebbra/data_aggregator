@@ -8,6 +8,8 @@ defmodule DataAggregator.RecordTest do
   import DataAggregator.RecordEncodingResultFixture
   import DataAggregator.RecordsFixtures
 
+  alias Ash.Error.Invalid
+  alias Ash.Error.Query.NotFound
   alias DataAggregator.Gbif
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.RecordEncodingResult
@@ -77,7 +79,7 @@ defmodule DataAggregator.RecordTest do
     end
 
     test "create/1 with invalid data returns error changeset" do
-      assert {:error, %Ash.Error.Invalid{}} =
+      assert {:error, %Invalid{}} =
                Record.create(Map.put(@invalid_attrs, :collection, collection_fixture()))
     end
 
@@ -99,14 +101,14 @@ defmodule DataAggregator.RecordTest do
     test "update/2 with invalid data returns error changeset" do
       record = record_fixture()
 
-      assert {:error, %Ash.Error.Invalid{}} =
+      assert {:error, %Invalid{}} =
                Record.update(record, Map.put(@invalid_attrs, :collection, collection_fixture()))
     end
 
     test "destroy/1 deletes the record" do
       record = record_fixture()
       assert :ok = Record.destroy(record)
-      assert_raise Ash.Error.Query.NotFound, fn -> Record.get_by_id!(record.id) end
+      assert_raise NotFound, fn -> Record.get_by_id!(record.id) end
     end
 
     test "destroy/1 deletes the record and it's encoded_record" do
@@ -115,8 +117,8 @@ defmodule DataAggregator.RecordTest do
 
       assert :ok = Record.destroy(record)
 
-      assert_raise Ash.Error.Query.NotFound, fn -> Record.get_by_id!(record.id) end
-      assert_raise Ash.Error.Query.NotFound, fn -> EncodedRecord.get_by_id!(encoded_record.id) end
+      assert_raise NotFound, fn -> Record.get_by_id!(record.id) end
+      assert_raise NotFound, fn -> EncodedRecord.get_by_id!(encoded_record.id) end
     end
 
     test "destroy/1 deletes the record and it's record_encoding_results" do
@@ -125,9 +127,9 @@ defmodule DataAggregator.RecordTest do
 
       assert :ok = Record.destroy(record)
 
-      assert_raise Ash.Error.Query.NotFound, fn -> Record.get_by_id!(record.id) end
+      assert_raise NotFound, fn -> Record.get_by_id!(record.id) end
 
-      assert_raise Ash.Error.Query.NotFound, fn ->
+      assert_raise NotFound, fn ->
         RecordEncodingResult.get_by_id!(record_encoding_result.id)
       end
     end
@@ -145,7 +147,7 @@ defmodule DataAggregator.RecordTest do
 
       assert :ok = Record.destroy(record)
 
-      assert_raise Ash.Error.Query.NotFound, fn -> Record.get_by_id!(record.id) end
+      assert_raise NotFound, fn -> Record.get_by_id!(record.id) end
 
       # ensure only one Version is left
       record = Ash.load!(record, [:paper_trail_versions])
@@ -163,7 +165,7 @@ defmodule DataAggregator.RecordTest do
     end
 
     test "destroy/1 with invalid id returns error" do
-      assert {:error, %Ash.Error.Invalid{}} = Record.destroy(%Record{id: "invalid"})
+      assert {:error, %Invalid{}} = Record.destroy(%Record{id: "invalid"})
     end
   end
 

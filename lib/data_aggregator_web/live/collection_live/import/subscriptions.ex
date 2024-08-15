@@ -19,7 +19,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
 
   @load_all load_all()
 
-  @import_update_events ~w(set_importing set_imported set_failed update_mapping)
+  @import_update_events ~w(set_importing set_imported set_failed update_mapping add_import_progress)
   @collection_action_events ~w(
     set_exporting
     set_encoding

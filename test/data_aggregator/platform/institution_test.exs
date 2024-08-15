@@ -6,6 +6,7 @@ defmodule DataAggregator.InstitutionTest do
 
   import DataAggregator.PlatformFixtures
 
+  alias Ash.Error.Invalid
   alias DataAggregator.Gbif
   alias DataAggregator.Platform.Institution
 
@@ -53,20 +54,20 @@ defmodule DataAggregator.InstitutionTest do
     end
 
     test "create/1 with invalid data returns error changeset" do
-      assert {:error, %Ash.Error.Invalid{}} = Institution.create(@invalid_attrs)
+      assert {:error, %Invalid{}} = Institution.create(@invalid_attrs)
     end
 
     test "create/1 with missing :grscicoll_reference data returns error changeset" do
       attrs = Map.delete(@invalid_attrs, :grscicoll_reference)
 
-      assert {:error, %Ash.Error.Invalid{}} = Institution.create(attrs)
+      assert {:error, %Invalid{}} = Institution.create(attrs)
     end
 
     test "create/1 with ivalid :grscicoll_reference data returns error changeset" do
       attrs =
         Map.put(@invalid_attrs, :grscicoll_reference, "this-is-super-wrong")
 
-      assert {:error, %Ash.Error.Invalid{}} = Institution.create(attrs)
+      assert {:error, %Invalid{}} = Institution.create(attrs)
     end
 
     test "update/2 with valid data updates the institution" do
@@ -81,7 +82,7 @@ defmodule DataAggregator.InstitutionTest do
 
     test "update/2 with invalid data returns error changeset" do
       institution = institution_fixture()
-      assert {:error, %Ash.Error.Invalid{}} = Institution.update(institution, @invalid_attrs)
+      assert {:error, %Invalid{}} = Institution.update(institution, @invalid_attrs)
     end
 
     test "destroy/1 deletes the institution" do
@@ -91,7 +92,7 @@ defmodule DataAggregator.InstitutionTest do
     end
 
     test "destroy/1 with invalid id returns error" do
-      assert {:error, %Ash.Error.Invalid{}} = Institution.destroy(%Institution{id: "invalid"})
+      assert {:error, %Invalid{}} = Institution.destroy(%Institution{id: "invalid"})
     end
   end
 end

@@ -13,6 +13,7 @@ defmodule DataAggregator.Records.Export do
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
   alias DataAggregator.Records.DataLayerType
   alias DataAggregator.Records.Export.Changes
   alias DataAggregator.Records.HeaderSourceType
@@ -155,7 +156,7 @@ defmodule DataAggregator.Records.Export do
 
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
-      change Collection.Changes.SetCollectionIdleAfterTransaction
+      change SetCollectionIdleAfterTransaction
     end
 
     update :run do
@@ -178,7 +179,7 @@ defmodule DataAggregator.Records.Export do
       change transition_state(:exported)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:exported_at, &DateTime.utc_now/0)
-      change Collection.Changes.SetCollectionIdleAfterTransaction
+      change SetCollectionIdleAfterTransaction
     end
 
     update :update_attachment do
@@ -226,7 +227,7 @@ defmodule DataAggregator.Records.Export do
     references do
       reference :collection, on_delete: :delete, on_update: :update
       reference :attachment, on_delete: :delete, on_update: :update
-      reference :job, on_delete: :nilify, on_update: :update
+      reference :job, on_delete: :nilify, on_update: :update, index?: true
     end
   end
 

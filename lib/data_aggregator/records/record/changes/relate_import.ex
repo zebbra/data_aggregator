@@ -6,25 +6,26 @@ defmodule DataAggregator.Records.Record.Changes.RelateImport do
   use Ash.Resource.Change
 
   alias Ash.Changeset
+  alias Ash.Resource.Change
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.Record
 
-  @impl Ash.Resource.Change
+  @impl Change
   def batch_change(changesets, _opts, _ctx) do
     changesets
   end
 
-  @impl Ash.Resource.Change
+  @impl Change
   def change(%Changeset{} = changeset, _opts, %{bulk?: true}) do
     changeset
   end
 
-  @impl Ash.Resource.Change
+  @impl Change
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.after_action(changeset, &create_import_record/2)
   end
 
-  @impl Ash.Resource.Change
+  @impl Change
   def after_batch(batch, _opts, _ctx) do
     import_record_args = fn {changeset, record} ->
       import = Changeset.get_argument(changeset, :import)

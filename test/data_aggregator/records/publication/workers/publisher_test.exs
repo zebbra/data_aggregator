@@ -8,6 +8,7 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
 
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.Publication.Workers.Publisher
 
   require Ash.Query
 
@@ -62,7 +63,7 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
     end
 
     test "publication :fast_track success", %{publication: publication} do
-      perform_job(Publication.Workers.Publisher, %{id: publication.id})
+      perform_job(Publisher, %{id: publication.id})
 
       publication = Publication.get_by_id!(publication.id)
 
@@ -72,7 +73,7 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
     end
 
     test "publication :approval success", %{publication: publication} do
-      perform_job(Publication.Workers.Publisher, %{id: publication.id})
+      perform_job(Publisher, %{id: publication.id})
 
       publication = Publication.get_by_id!(publication.id)
       publication = Publication.update!(publication, %{channel: :approval})

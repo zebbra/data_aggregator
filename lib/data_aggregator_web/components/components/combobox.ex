@@ -287,9 +287,9 @@ defmodule DataAggregatorWeb.Components.Combobox do
 
   defp remove_nil_keys(map) do
     Enum.reduce(map, %{}, fn {key, value}, acc ->
-      if value != nil,
-        do: Map.put_new(acc, key, value),
-        else: acc
+      if value == nil,
+        do: acc,
+        else: Map.put_new(acc, key, value)
     end)
   end
 end

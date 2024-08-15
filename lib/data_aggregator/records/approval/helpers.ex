@@ -4,6 +4,7 @@ defmodule DataAggregator.Records.Approval.Helpers do
   """
 
   alias Ash.Changeset
+  alias Ash.Error.Changes.Required
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
   alias DataAggregator.Records.Approval
@@ -211,14 +212,14 @@ defmodule DataAggregator.Records.Approval.Helpers do
   defp map_to_normalized_error(error, row) do
     case_result =
       case error do
-        %Ash.Error.Changes.Required{field: :record} ->
+        %Required{field: :record} ->
           %{
             field: :record,
             value: nil,
             message: "There is no record for the given catalog number in the database."
           }
 
-        %Ash.Error.Changes.Required{} = error ->
+        %Required{} = error ->
           %{
             field: Map.get(error, :field),
             value: nil,
