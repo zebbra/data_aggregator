@@ -60,13 +60,10 @@ case System.get_env("WAFFLE_STORAGE") do
   "s3" ->
     waffle_s3_bucket = get_env!.("WAFFLE_S3_BUCKET")
 
-    config :waffle,
-      storage: Waffle.Storage.S3,
-      bucket: waffle_s3_bucket
-
     aws_s3_scheme = System.get_env("AWS_S3_SCHEME", "https://")
     aws_s3_host = System.get_env("AWS_S3_HOST", "s3.amazonaws.com")
     aws_s3_port = "AWS_S3_PORT" |> System.get_env("443") |> String.to_integer()
+    waffle_s3_uri = URI.new!("#{aws_s3_scheme}#{aws_s3_host}:#{aws_s3_port}/#{waffle_s3_bucket}")
 
     config :ex_aws,
       debug_requests: System.get_env("AWS_DEBUG_REQUESTS") in ~w(true 1),
@@ -78,7 +75,10 @@ case System.get_env("WAFFLE_STORAGE") do
         port: aws_s3_port
       ]
 
-    waffle_s3_uri = URI.new!("#{aws_s3_scheme}#{aws_s3_host}:#{aws_s3_port}/#{waffle_s3_bucket}")
+    config :waffle,
+      storage: Waffle.Storage.S3,
+      bucket: waffle_s3_bucket
+
     Logger.info("Waffle configured to use S3 storage: #{waffle_s3_uri}")
 
   _ ->
@@ -103,15 +103,6 @@ if config_env() == :prod do
 
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
-  config :data_aggregator, DataAggregator.Repo,
-    url: database_url,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
-    connect_timeout: String.to_integer(System.get_env("CONNECT_TIMEOUT") || "60000"),
-    socket_options: maybe_ipv6
-
-  ## Configure Erlang clustering using DNS cluster
-  config :data_aggregator, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
-
   ## Configure the Endpoint
 
   # Listen IP supports IPv4 and IPv6 addresses.
@@ -131,6 +122,15 @@ if config_env() == :prod do
     |> System.get_env("http://localhost:4000")
     |> URI.parse()
 
+  config :data_aggregator, DataAggregator.Repo,
+    url: database_url,
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    connect_timeout: String.to_integer(System.get_env("CONNECT_TIMEOUT") || "60000"),
+    socket_options: maybe_ipv6
+
+  ## Configure Erlang clustering using DNS cluster
+  config :data_aggregator, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
+
   unless base_url.scheme in ["http", "https"] do
     raise "BASE_URL must start with `http` or `https`. Currently configured as `#{System.get_env("BASE_URL")}`"
   end
@@ -147,16 +147,6 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  config :data_aggregator, DataAggregatorWeb.Endpoint,
-    url: [scheme: base_url.scheme, host: base_url.host, path: base_url.path, port: base_url.port],
-    http: [
-      port: port,
-      ip: listen_ip
-
-      # transport_options: [max_connections: :infinity] # not valid for bandit
-    ],
-    secret_key_base: secret_key_base
-
   config :data_aggregator, DataAggregator.Mailer,
     adapter: Swoosh.Adapters.SMTP,
     relay: "smtp.office365.com",
@@ -168,6 +158,16 @@ if config_env() == :prod do
     port: 587,
     retries: 2,
     no_mx_lookups: false
+
+  config :data_aggregator, DataAggregatorWeb.Endpoint,
+    url: [scheme: base_url.scheme, host: base_url.host, path: base_url.path, port: base_url.port],
+    http: [
+      port: port,
+      ip: listen_ip
+
+      # transport_options: [max_connections: :infinity] # not valid for bandit
+    ],
+    secret_key_base: secret_key_base
 
   # ## SSL Support
   #

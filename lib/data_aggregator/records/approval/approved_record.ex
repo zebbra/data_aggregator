@@ -20,6 +20,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
   alias __MODULE__
   alias DataAggregator.DarwinCore
   alias DataAggregator.Records.Approval
+  alias DataAggregator.Records.Approval.Changes.SetMandatoryAttributes
   alias DataAggregator.Records.Record
 
   @type t :: %ApprovedRecord{}
@@ -61,7 +62,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
       upsert_identity :record_mte_catalog_number
       upsert_fields [:extra_data | DarwinCore.Schema.prefixed_attribute_names()]
 
-      change Approval.Changes.SetMandatoryAttributes
+      change SetMandatoryAttributes
       change Approval.Changes.SetOptionalAttributes
 
       change manage_relationship(:record, :record, type: :append)
@@ -76,7 +77,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
 
       argument :record, :struct, allow_nil?: true
 
-      change Approval.Changes.SetMandatoryAttributes
+      change SetMandatoryAttributes
       change Approval.Changes.UpdateRawRecordStateAfterAction
 
       upsert? true

@@ -3,17 +3,19 @@ import Config
 # Configure your database
 database_url = "ecto://postgres:postgres@localhost:5432/data-aggregator-dev"
 
+# Cache files in the priv/storage directory
+config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/dev/cache"
+
 config :data_aggregator, DataAggregator.Repo,
   url: System.get_env("DATABASE_URL") || database_url,
   pool_size: 20,
   queue_target: 100,
   log: false,
   stacktrace: true,
+  # backoff_max: 120_000,
+  # ownership_timeout: 60_000
   show_sensitive_data_on_connection_error: true,
   timeout: 10 * 60 * 1000
-
-# backoff_max: 120_000,
-# ownership_timeout: 60_000
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -69,6 +71,19 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
     ]
   ]
 
+# Enable dev routes for dashboard and mailbox
+config :data_aggregator, dev_routes: true
+
+# Enable http file cache
+config :data_aggregator,
+  http_cache_enabled: true
+
+# Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier`
+config :data_aggregator, publication_verification_scheduler_active: false
+
+# Serve uploaded files from the priv/storage directory
+config :data_aggregator, serve_files_from: "priv/storage/dev/files"
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.23.0",
@@ -78,6 +93,48 @@ config :esbuild,
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
+
+# Configure git hooks. They can be installed manuallu by running `mix git_hooks.install`
+config :git_hooks,
+  auto_install: true,
+  verbose: true,
+  hooks: [
+    pre_commit: [
+      tasks: [
+        {:cmd, "mix lint"}
+      ]
+    ],
+    pre_push: [
+      tasks: [
+        {:cmd, "mix test --color"}
+      ]
+    ]
+  ]
+
+# Do not include metadata nor timestamps in development logs
+config :logger, :console, format: "[$level] $message\n"
+
+# Disable debug logs
+config :logger, level: :debug
+
+# Initialize plugs at runtime for faster development compilation
+config :phoenix, :plug_init_mode, :runtime
+
+# Set a higher stacktrace during development. Avoid configuring such
+# in production as building large stacktraces may be expensive.
+config :phoenix, :stacktrace_depth, 20
+
+config :phoenix_live_view,
+  # Include HEEx debug annotations as HTML comments in rendered markup
+  debug_heex_annotations: true,
+  # Enable helpful, but potentially expensive runtime checks
+  enable_expensive_runtime_checks: true
+
+# Disable swoosh api client as it is only required for production adapters.
+config :swoosh, :api_client, false
+
+# Log ash pubsub messages for debugging
+# config :ash, :pub_sub, debug?: true
 
 # Configure tailwind (the version is required)
 config :tailwind,
@@ -98,61 +155,3 @@ config :tailwind,
         ),
     cd: Path.expand("../assets", __DIR__)
   ]
-
-# Enable dev routes for dashboard and mailbox
-config :data_aggregator, dev_routes: true
-
-# Enable http file cache
-config :data_aggregator,
-  http_cache_enabled: true
-
-# Serve uploaded files from the priv/storage directory
-config :data_aggregator, serve_files_from: "priv/storage/dev/files"
-
-# Cache files in the priv/storage directory
-config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/dev/cache"
-
-# Log ash pubsub messages for debugging
-# config :ash, :pub_sub, debug?: true
-
-# Do not include metadata nor timestamps in development logs
-config :logger, :console, format: "[$level] $message\n"
-
-# Disable debug logs
-config :logger, level: :debug
-
-# Set a higher stacktrace during development. Avoid configuring such
-# in production as building large stacktraces may be expensive.
-config :phoenix, :stacktrace_depth, 20
-
-# Initialize plugs at runtime for faster development compilation
-config :phoenix, :plug_init_mode, :runtime
-
-# Disable swoosh api client as it is only required for production adapters.
-config :swoosh, :api_client, false
-
-config :phoenix_live_view,
-  # Include HEEx debug annotations as HTML comments in rendered markup
-  debug_heex_annotations: true,
-  # Enable helpful, but potentially expensive runtime checks
-  enable_expensive_runtime_checks: true
-
-# Configure git hooks. They can be installed manuallu by running `mix git_hooks.install`
-config :git_hooks,
-  auto_install: true,
-  verbose: true,
-  hooks: [
-    pre_commit: [
-      tasks: [
-        {:cmd, "mix lint"}
-      ]
-    ],
-    pre_push: [
-      tasks: [
-        {:cmd, "mix test --color"}
-      ]
-    ]
-  ]
-
-# Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier`
-config :data_aggregator, publication_verification_scheduler_active: false

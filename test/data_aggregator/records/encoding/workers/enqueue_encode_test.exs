@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.Record.Workers.Encoder
 
   describe "DataAggregator.Records.Record.enqueue_encode/2" do
     setup do
@@ -32,7 +33,7 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
 
         assert record.state == :queued
 
-        assert_enqueued(worker: Record.Workers.Encoder, args: %{id: correct_record.id})
+        assert_enqueued(worker: Encoder, args: %{id: correct_record.id})
       end)
     end
 
@@ -42,7 +43,7 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
 
         assert record.state == :queued
 
-        assert_enqueued(worker: Record.Workers.Encoder, args: %{id: record.id})
+        assert_enqueued(worker: Encoder, args: %{id: record.id})
       end)
     end
 

@@ -7,6 +7,7 @@ defmodule DataAggregator.EncodedRecordTest do
   import DataAggregator.EncodingFixtures
   import DataAggregator.RecordsFixtures
 
+  alias Ash.Error.Invalid
   alias DataAggregator.Gbif
   alias DataAggregator.Records.EncodedRecord
 
@@ -59,7 +60,7 @@ defmodule DataAggregator.EncodedRecordTest do
     end
 
     test "create/1 with invalid data returns error changeset" do
-      assert {:error, %Ash.Error.Invalid{}} = EncodedRecord.create(@invalid_attrs)
+      assert {:error, %Invalid{}} = EncodedRecord.create(@invalid_attrs)
     end
 
     test "update/2 with valid data updates the encoded_record" do
@@ -79,7 +80,7 @@ defmodule DataAggregator.EncodedRecordTest do
 
     test "update/2 with invalid data returns error changeset" do
       encoded_record = encoded_record_fixture()
-      assert {:error, %Ash.Error.Invalid{}} = EncodedRecord.update(encoded_record, @invalid_attrs)
+      assert {:error, %Invalid{}} = EncodedRecord.update(encoded_record, @invalid_attrs)
     end
 
     test "destroy/1 deletes the encoded_record" do
@@ -89,7 +90,7 @@ defmodule DataAggregator.EncodedRecordTest do
     end
 
     test "destroy/1 with invalid id returns error" do
-      assert {:error, %Ash.Error.Invalid{}} = EncodedRecord.destroy(%EncodedRecord{id: "invalid"})
+      assert {:error, %Invalid{}} = EncodedRecord.destroy(%EncodedRecord{id: "invalid"})
     end
   end
 end

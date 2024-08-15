@@ -395,21 +395,22 @@ defmodule DataAggregatorWeb.Filters do
   """
 
   alias AshPagify.FilterForm
+  alias Phoenix.LiveView.Socket
 
-  @callback filter_form_component(assigns :: Phoenix.LiveView.Socket.assigns()) ::
+  @callback filter_form_component(assigns :: Socket.assigns()) ::
               Phoenix.LiveView.Rendered.t()
   @callback init_form(resource :: :term) :: FilterForm.t()
   @callback handle_preset(
               filter_form :: FilterForm.t(),
               key :: String.t(),
               preset :: String.t(),
-              socket :: Phoenix.LiveView.Socket.t()
-            ) :: {:noreply, Phoenix.LiveView.Socket.t()}
+              socket :: Socket.t()
+            ) :: {:noreply, Socket.t()}
   @callback update_count(
-              socket :: Phoenix.LiveView.Socket.t(),
+              socket :: Socket.t(),
               filter_form_params :: map(),
               reset :: boolean
-            ) :: Phoenix.LiveView.Socket.t()
+            ) :: Socket.t()
 
   defmacro __using__(_) do
     quote do

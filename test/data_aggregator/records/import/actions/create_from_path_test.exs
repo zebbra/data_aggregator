@@ -4,6 +4,7 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
   use DataAggregator.DataCase, async: true
   use Mimic
 
+  alias Ash.Error.Invalid
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
@@ -93,7 +94,7 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
     defp assert_invalid_path(error, message) when is_binary(message) do
       assert_has_error(
         error.changeset,
-        Ash.Error.Invalid,
+        Invalid,
         &(&1.field == :path && &1.message == message)
       )
     end
@@ -101,7 +102,7 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
     defp assert_invalid_path(error, message) when is_struct(message, Regex) do
       assert_has_error(
         error.changeset,
-        Ash.Error.Invalid,
+        Invalid,
         &(&1.field == :path && String.match?(&1.message, message))
       )
     end

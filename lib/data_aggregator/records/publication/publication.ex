@@ -13,6 +13,7 @@ defmodule DataAggregator.Records.Publication do
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
   alias DataAggregator.Records.Publication.Changes
 
   @type t :: %Publication{}
@@ -137,7 +138,7 @@ defmodule DataAggregator.Records.Publication do
 
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
-      change Collection.Changes.SetCollectionIdleAfterTransaction
+      change SetCollectionIdleAfterTransaction
     end
 
     update :run do
@@ -160,7 +161,7 @@ defmodule DataAggregator.Records.Publication do
       change transition_state(:done)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change set_attribute(:published_at, &DateTime.utc_now/0)
-      change Collection.Changes.SetCollectionIdleAfterTransaction
+      change SetCollectionIdleAfterTransaction
     end
 
     update :update_attachment do

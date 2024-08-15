@@ -33,6 +33,7 @@ defmodule DataAggregatorWeb.Filters.RadioGroup do
   import DataAggregatorWeb.Gettext
 
   alias AshPhoenix.FilterForm.Predicate
+  alias Phoenix.HTML.FormField
 
   attr :title, :string,
     required: true,
@@ -97,7 +98,7 @@ defmodule DataAggregatorWeb.Filters.RadioGroup do
   attr :label, :string, default: nil
   attr :value, :any
 
-  attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
+  attr :field, FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
   attr :description, :string, default: nil, doc: "the description for the input"
 
@@ -114,7 +115,7 @@ defmodule DataAggregatorWeb.Filters.RadioGroup do
   slot :inner_block
   slot :custom_label, doc: "the slot for the label text (if you need to customize it)"
 
-  def radio_group_field(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+  def radio_group_field(%{field: %FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
 
     assigns

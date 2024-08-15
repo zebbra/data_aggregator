@@ -41,12 +41,12 @@ defmodule DataAggregator.Records.Collection.Workers.EncodingStatePoller do
     collection = Collection.get_by_id!(id, load: [:encoding_state])
     state = collection.encoding_state
 
-    if state != :encoding do
-      Logger.info("Collection #{id} is done encoding (#{state}), setting to idle ...")
-      Collection.set_idle_encoding(collection)
-    else
+    if state == :encoding do
       Logger.info("Collection #{id} is still encoding, snoozing for 5 seconds...")
       {:snooze, 5}
+    else
+      Logger.info("Collection #{id} is done encoding (#{state}), setting to idle ...")
+      Collection.set_idle_encoding(collection)
     end
   end
 end

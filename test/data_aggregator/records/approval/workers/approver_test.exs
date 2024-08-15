@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
 
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Approval
+  alias DataAggregator.Records.Approval.Workers.Approver
   alias DataAggregator.Records.ApprovedRecord
 
   describe "DataAggregator.Records.Approval.Workers.Approver.perform/1" do
@@ -52,7 +53,7 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
 
     @tag capture_log: true
     test "Approver.perform/1 approval run success", %{approval: approval} do
-      perform_job(Approval.Workers.Approver, %{id: approval.id})
+      perform_job(Approver, %{id: approval.id})
 
       approval = Approval.get_by_id!(approval.id)
 
@@ -62,7 +63,7 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
     @tag capture_log: true
     test "Approver.perform/1 all ApprovedRecords are created correctly and have the changed values",
          %{approval: approval} do
-      {:ok, approval} = perform_job(Approval.Workers.Approver, %{id: approval.id})
+      {:ok, approval} = perform_job(Approver, %{id: approval.id})
 
       {:ok, approved_records} = ApprovedRecord.read(page: false)
 
@@ -80,7 +81,7 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
     test "Approver.perform/1 only create ApprovedRecords if the input data is valid",
          %{approval: approval} do
       {{:ok, _approval}, logs} =
-        with_log(fn -> perform_job(Approval.Workers.Approver, %{id: approval.id}) end)
+        with_log(fn -> perform_job(Approver, %{id: approval.id}) end)
 
       {:ok, approved_records} = ApprovedRecord.read(page: false)
 
@@ -92,7 +93,7 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
 
     @tag capture_log: true
     test "Approver.perform/1 all affected records are in state :approved", %{approval: approval} do
-      {:ok, approval} = perform_job(Approval.Workers.Approver, %{id: approval.id})
+      {:ok, approval} = perform_job(Approver, %{id: approval.id})
 
       {:ok, approved_records} = ApprovedRecord.read(page: false, load: [:record])
 
@@ -106,7 +107,7 @@ defmodule DataAggregator.Records.Approval.Workers.ApproverTest do
 
     @tag capture_log: true
     test "Approver.perform/1 check if error log is present and correct", %{approval: approval} do
-      {:ok, approval} = perform_job(Approval.Workers.Approver, %{id: approval.id})
+      {:ok, approval} = perform_job(Approver, %{id: approval.id})
 
       assert {:ok, approval} = approval.id |> Approval.get_by_id() |> Ash.load([:error_log])
 

@@ -11,6 +11,7 @@ defmodule DataAggregator.PublicationTest do
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.Publication.Workers.Publisher
   alias Explorer.DataFrame
 
   require Ash.Query
@@ -118,7 +119,7 @@ defmodule DataAggregator.PublicationTest do
         assert {:ok, publication} = Publication.enqueue(publication)
 
         assert publication.state == :queued
-        assert_enqueued(worker: Publication.Workers.Publisher, args: %{id: publication.id})
+        assert_enqueued(worker: Publisher, args: %{id: publication.id})
 
         collection = Collection.get_by_id!(collection.id)
         assert collection.state == :fast_track_publishing
@@ -179,7 +180,7 @@ defmodule DataAggregator.PublicationTest do
       assert {:error, %Ash.Error.Invalid{}} = Publication.enqueue(publication)
       publication = Publication.get_by_id!(publication.id)
       assert publication.state == :pending
-      refute_enqueued(worker: Publication.Workers.Publisher, args: %{id: publication.id})
+      refute_enqueued(worker: Publisher, args: %{id: publication.id})
     end
   end
 end

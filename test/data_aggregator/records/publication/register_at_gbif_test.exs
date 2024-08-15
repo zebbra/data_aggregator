@@ -7,6 +7,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
   import DataAggregator.EncodingFixtures
   import DataAggregator.RecordsFixtures
 
+  alias Ash.Error.Invalid
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
@@ -123,7 +124,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
         with_log(fn -> Collection.register_at_gbif(collection, publication.attachment.url) end)
 
       assert collection.gbif_dataset_key === nil
-      assert %Ash.Error.Invalid{} = error
+      assert %Invalid{} = error
 
       assert logs =~ "Failed due to bla"
     end
@@ -140,7 +141,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
         with_log(fn -> Collection.register_at_gbif(collection, publication.attachment.url) end)
 
       assert collection.gbif_dataset_key === nil
-      assert %Ash.Error.Invalid{} = error
+      assert %Invalid{} = error
 
       assert logs =~ "I'm a teapot"
     end
@@ -178,7 +179,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
       record = Record.get_by_id!(record_to_check.id)
 
       assert record.fast_track_status === :in_publication
-      assert %Ash.Error.Invalid{} = error
+      assert %Invalid{} = error
 
       assert logs =~
                "Error while checking if record is published: \"No valid response (status 500) from GBIF API while searching for occurrences"
@@ -199,7 +200,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
       record = Record.get_by_id!(record_to_check.id)
 
       assert record.fast_track_status === :in_publication
-      assert %Ash.Error.Invalid{} = error
+      assert %Invalid{} = error
 
       assert logs =~
                "More than one occurrence found on GBIF"

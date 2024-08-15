@@ -2619,7 +2619,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Safe"
 msgstr "Sicher"
 
-#: lib/data_aggregator_web/components/filters/checkbox_group.ex:123
+#: lib/data_aggregator_web/components/filters/checkbox_group.ex:124
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Filters.CheckboxGroup"
 msgid "No entries found"
@@ -2632,7 +2632,7 @@ msgctxt "DataAggregatorWeb.Filters.ClearLink"
 msgid "Clear"
 msgstr "Löschen"
 
-#: lib/data_aggregator_web/components/filters/radio_group.ex:137
+#: lib/data_aggregator_web/components/filters/radio_group.ex:138
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Filters.RadioGroup"
 msgid "No entries found"

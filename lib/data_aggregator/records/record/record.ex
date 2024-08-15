@@ -35,6 +35,10 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.Record.Calculations.IucnRedlist
   alias DataAggregator.Records.Record.Calculations.Mids
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
+  alias Record.Changes.CreateEncodedRecordAfterAction
+  alias Record.Changes.SetBasisOfRecord
+  alias Record.Changes.SetImportedAfterAction
+  alias Record.Changes.SetOccurrenceID
 
   require Ash.Expr
   require Ash.Query
@@ -255,10 +259,10 @@ defmodule DataAggregator.Records.Record do
       argument :collection, :struct, allow_nil?: false
 
       change Record.Changes.SetGrSciCollInstitution
-      change Record.Changes.SetOccurrenceID
-      change Record.Changes.SetBasisOfRecord
-      change Record.Changes.SetImportedAfterAction
-      change Record.Changes.CreateEncodedRecordAfterAction
+      change SetOccurrenceID
+      change SetBasisOfRecord
+      change SetImportedAfterAction
+      change CreateEncodedRecordAfterAction
 
       change manage_relationship(:collection, :collection, type: :append)
     end
@@ -276,11 +280,11 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.RelateImport
       change Record.Changes.RelateCollectionFromImport
       change Record.Changes.ExtractAttributes
-      change Record.Changes.SetOccurrenceID
-      change Record.Changes.SetBasisOfRecord
+      change SetOccurrenceID
+      change SetBasisOfRecord
       change Record.Changes.SetPublicationStale
-      change Record.Changes.SetImportedAfterAction
-      change Record.Changes.CreateEncodedRecordAfterAction
+      change SetImportedAfterAction
+      change CreateEncodedRecordAfterAction
 
       upsert? true
       upsert_identity :collection_mte_catalog_number

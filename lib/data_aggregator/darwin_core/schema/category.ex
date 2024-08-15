@@ -33,9 +33,9 @@ defmodule DataAggregator.DarwinCore.Schema.Category do
       dwc_field = Map.get(dwc_attribute, :dwc_field)
 
       dwc_field =
-        if dwc_field != nil,
-          do: dwc_field,
-          else: dwc_attribute.attribute.name
+        if dwc_field == nil,
+          do: dwc_attribute.attribute.name,
+          else: dwc_field
 
       {prefixed_name, dwc_field}
     end

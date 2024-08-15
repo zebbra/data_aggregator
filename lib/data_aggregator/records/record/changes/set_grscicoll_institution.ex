@@ -35,16 +35,16 @@ defmodule DataAggregator.Records.Record.Changes.SetGrSciCollInstitution do
   defp set_institution_identifier(changeset, attribute_on_record, attribute_on_collection) do
     identifier_value = Changeset.get_argument_or_attribute(changeset, attribute_on_record)
 
-    if identifier_value != nil do
-      Logger.debug("#{attribute_on_record} already set, skipping ...")
-
-      {:ok, changeset}
-    else
+    if identifier_value == nil do
       Logger.debug("Setting #{attribute_on_record} ...")
 
       identifier_value = identifier_from_collection(changeset, attribute_on_collection)
 
       {:ok, Changeset.change_attribute(changeset, attribute_on_record, identifier_value)}
+    else
+      Logger.debug("#{attribute_on_record} already set, skipping ...")
+
+      {:ok, changeset}
     end
   end
 

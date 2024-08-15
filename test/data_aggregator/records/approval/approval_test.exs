@@ -6,6 +6,7 @@ defmodule DataAggregator.ApprovalTest do
 
   import DataAggregator.ApprovalFixtures
 
+  alias Ash.Error.Invalid
   alias DataAggregator.Records.Approval
 
   require Logger
@@ -43,7 +44,7 @@ defmodule DataAggregator.ApprovalTest do
     end
 
     test "create/1 with invalid data returns error changeset" do
-      assert {:error, %Ash.Error.Invalid{}} = Approval.create(@invalid_attrs)
+      assert {:error, %Invalid{}} = Approval.create(@invalid_attrs)
     end
 
     test "update/2 with valid data updates the approval" do
@@ -61,7 +62,7 @@ defmodule DataAggregator.ApprovalTest do
     test "update/2 with invalid data returns error changeset" do
       approval = approval_fixture()
 
-      assert {:error, %Ash.Error.Invalid{}} =
+      assert {:error, %Invalid{}} =
                Approval.update(approval, @invalid_attrs)
     end
 
@@ -72,7 +73,7 @@ defmodule DataAggregator.ApprovalTest do
     end
 
     test "destroy/1 with invalid id returns error" do
-      assert {:error, %Ash.Error.Invalid{}} = Approval.destroy(%Approval{id: "invalid"})
+      assert {:error, %Invalid{}} = Approval.destroy(%Approval{id: "invalid"})
     end
   end
 end

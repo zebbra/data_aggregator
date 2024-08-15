@@ -6,6 +6,7 @@ defmodule DataAggregator.CollectionTest do
 
   import DataAggregator.RecordsFixtures
 
+  alias Ash.Error.Invalid
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
 
@@ -60,19 +61,19 @@ defmodule DataAggregator.CollectionTest do
     end
 
     test "create/1 with invalid data returns error changeset" do
-      assert {:error, %Ash.Error.Invalid{}} = Collection.create(@invalid_attrs)
+      assert {:error, %Invalid{}} = Collection.create(@invalid_attrs)
     end
 
     test "create/1 with missing :grscicoll_reference data returns error changeset" do
       attrs = Map.delete(@invalid_attrs, :grscicoll_reference)
 
-      assert {:error, %Ash.Error.Invalid{}} = Collection.create(attrs)
+      assert {:error, %Invalid{}} = Collection.create(attrs)
     end
 
     test "create/1 with ivalid :grscicoll_reference data returns error changeset" do
       attrs = Map.put(@invalid_attrs, :grscicoll_reference, "this-is-super-wrong")
 
-      assert {:error, %Ash.Error.Invalid{}} = Collection.create(attrs)
+      assert {:error, %Invalid{}} = Collection.create(attrs)
     end
 
     test "update/2 with valid data updates the collection" do
@@ -103,7 +104,7 @@ defmodule DataAggregator.CollectionTest do
 
     test "update/2 with invalid data returns error changeset" do
       collection = collection_fixture()
-      assert {:error, %Ash.Error.Invalid{}} = Collection.update(collection, @invalid_attrs)
+      assert {:error, %Invalid{}} = Collection.update(collection, @invalid_attrs)
     end
 
     test "destroy/1 deletes the collection" do
@@ -113,7 +114,7 @@ defmodule DataAggregator.CollectionTest do
     end
 
     test "destroy/1 with invalid id returns error" do
-      assert {:error, %Ash.Error.Invalid{}} = Collection.destroy(%Collection{id: "invalid"})
+      assert {:error, %Invalid{}} = Collection.destroy(%Collection{id: "invalid"})
     end
   end
 end
