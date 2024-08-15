@@ -122,10 +122,10 @@ defmodule DataAggregatorWeb.Filters.CheckboxGroup do
       <.description :if={@description} description={@description} class="mb-2" />
       <.description :if={length(@options) == 0} description={~t"No entries found"m} class="mb-2" />
       <.errors errors={@errors} id={@id} class={is_nil(@description) && "mb-2"} />
-      <div class="grid grid-flow-row sm:grid-cols-2">
+      <div class="grid grid-flow-row sm:grid-cols-2 sm:gap-x-2">
         <div
           :for={{label, value} <- options_for_group(@options)}
-          class="flex cursor-pointer justify-between gap-4 py-2 sm:flex-row-reverse sm:justify-end"
+          class="flex cursor-pointer justify-between gap-4 truncate py-2 sm:flex-row-reverse sm:justify-end"
         >
           <.label for={"#{@name}-#{value}"} label={label} class="cursor-pointer min-w-0 flex-1" />
           <input
