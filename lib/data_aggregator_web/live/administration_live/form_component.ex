@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.AdministrationLive.New do
+defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
   @moduledoc false
   use DataAggregatorWeb, :live_component
 
@@ -335,9 +335,15 @@ defmodule DataAggregatorWeb.AdministrationLive.New do
     assign(socket, :form, build_form(assigns))
   end
 
-  defp build_form(_assigns) do
+  defp build_form(%{action: :new}) do
     User
     |> Form.for_create(:register_with_password, api: DataAggregator.Accounts, as: "user")
+    |> to_form()
+  end
+
+  defp build_form(%{action: :edit, user: user}) do
+    user
+    |> Form.for_update(:update, api: DataAggregator.Accounts, as: "user")
     |> to_form()
   end
 

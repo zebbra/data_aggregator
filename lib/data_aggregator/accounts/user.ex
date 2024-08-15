@@ -1,6 +1,7 @@
 defmodule DataAggregator.Accounts.User do
   @moduledoc false
   use Ash.Resource,
+    authorizers: [Ash.Policy.Authorizer],
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAuthentication, AshUUID]
 
@@ -40,10 +41,6 @@ defmodule DataAggregator.Accounts.User do
     attribute :institution_id, :uuid, allow_nil?: true
   end
 
-  identities do
-    identity :unique_email, [:email]
-  end
-
   actions do
     read :read do
       primary? true
@@ -56,8 +53,21 @@ defmodule DataAggregator.Accounts.User do
     end
 
     update :update do
-      accept [:roles]
+      change set_context(%{strategy_name: :password})
+
+      accept [:roles, :first_name, :last_name, :email, :phone, :institution_id]
+
+      argument :password, :string do
+        sensitive? true
+        constraints min_length: 8
+      end
+
+      change AshAuthentication.Strategy.Password.HashPasswordChange
     end
+  end
+
+  identities do
+    identity :unique_email, [:email]
   end
 
   code_interface do
@@ -66,15 +76,20 @@ defmodule DataAggregator.Accounts.User do
     define :get_by_id, action: :read, get_by: [:id]
   end
 
+  # If using policies, add the following bypass:
+  policies do
+    bypass AshAuthentication.Checks.AshAuthenticationInteraction do
+      authorize_if always()
+    end
+
+    policy action_type(:read) do
+      authorize_if DataAggregator.Checks.IsAdmin
+      authorize_if DataAggregator.Checks.UserMatchesInstitution
+    end
+  end
+
   postgres do
     table "users"
     repo DataAggregator.Repo
   end
-
-  # If using policies, add the following bypass:
-  # policies do
-  #   bypass AshAuthentication.Checks.AshAuthenticationInteraction do
-  #     authorize_if always()
-  #   end
-  # end
 end

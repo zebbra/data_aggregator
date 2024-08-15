@@ -5,7 +5,6 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
 
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
-  alias AshPhoenix.Form
   alias DataAggregator.Accounts.User
   alias DataAggregator.Gbif
 
@@ -19,7 +18,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    case list_users(params) do
+    case list_users(params, socket.assigns.current_user) do
       {:ok, {users, meta}} ->
         socket
         |> assign(meta: meta)
@@ -82,6 +81,18 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
             <%= get_institution_name(user.institution_id) %>
           <% end %>
         </:col>
+        <:action
+          :let={{_id, user}}
+          tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
+          col_class="bg-base-300/10 border-l border-black-white/5"
+          label={~t"Actions"m}
+        >
+          <.table_action_button
+            patch={build_path(~p"/administration/#{user}/edit", @meta)}
+            data-tip={~t"Edit"m}
+            icon="hero-pencil-square-mini"
+          />
+        </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/administration"} />
       <:secondary>
@@ -140,23 +151,16 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
             </dl>
             <%!-- Roles --%>
             <dl class="pb-8">
-              <.simple_form for={@form} id="user_roles" phx-change="user:save" phx-submit="user:save">
-                <.fieldset>
-                  <.fieldgroup>
-                    <.field
-                      field={@form[:roles]}
-                      id="roles_edit"
-                      label="Checkgroup"
-                      type="togglegroup"
-                      options={[
-                        "Collection Digitizer": "collection_digitizer",
-                        "Data Administrator": "data_administrator"
-                      ]}
-                      multiple
-                    />
-                  </.fieldgroup>
-                </.fieldset>
-              </.simple_form>
+              <div class="py-1 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt class="text-base-content/90 text-sm/6 font-medium">
+                  <%= ~t"Roles"m %>
+                </dt>
+                <dd class="text-base-content/60 text-sm/6 mt-1 sm:col-span-2 sm:mt-0">
+                  <%= for role <- @selected_user.roles do %>
+                    <%= role %>
+                  <% end %>
+                </dd>
+              </div>
             </dl>
           </div>
         </.slideover>
@@ -164,23 +168,16 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
       <:portal>
         <.modal
           id="user_modal"
-          show={@live_action in [:new]}
+          show={@live_action in [:new, :edit]}
           size="2xl"
           responsive
           backdrop={false}
           on_cancel={JS.patch(build_path(~p"/administration", @meta))}
           overflow="manual"
         >
-          <%!-- <.live_component
-            :if={@live_action in [:new, :edit, :summary]}
-            module={DataAggregatorWeb.AdministrationLive.FormComponent}
-            id={@user.id || :new}
-            action={@live_action}
-            user={@user}
-          /> --%>
           <.live_component
-            :if={@live_action in [:new]}
-            module={DataAggregatorWeb.AdministrationLive.New}
+            :if={@live_action in [:new, :edit]}
+            module={DataAggregatorWeb.AdministrationLive.FormComponent}
             id={@user.id || :new}
             action={@live_action}
             user={@user}
@@ -196,8 +193,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
     {:noreply,
      socket
      |> assign(:selected_user, nil)
-     |> assign(:selected_user_institution, nil)
-     |> assign(:form, nil)}
+     |> assign(:selected_user_institution, nil)}
   end
 
   @impl true
@@ -207,28 +203,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
     {:noreply,
      socket
      |> assign(:selected_user, user)
-     |> assign(:selected_user_institution, get_institution(user))
-     |> assign_form()}
-  end
-
-  @impl true
-  def handle_event("user:save", %{"user" => params}, socket) do
-    roles = params["roles"] || []
-    roles = Enum.reject(roles, &(&1 == ""))
-    params = Map.put(params, "roles", roles)
-
-    socket =
-      case Form.submit(socket.assigns.form, params: params) do
-        {:ok, _user} ->
-          push_patch(socket, to: build_path(~p"/administration", nil))
-
-        {:error, form} ->
-          socket
-          |> put_flash(:info, ~t"An error occurred"m)
-          |> assign(:form, form)
-      end
-
-    {:noreply, socket}
+     |> assign(:selected_user_institution, get_institution(user))}
   end
 
   defp user_name(nil), do: ""
@@ -270,33 +245,14 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
     |> assign(:user, %User{})
   end
 
-  defp assign_form(socket) do
-    assign(socket, :form, build_form(socket.assigns))
+  defp apply_action(socket, :edit, %{"user_id" => id}) do
+    socket
+    |> assign(:page_title, ~t"Edit User"m)
+    |> assign(:user, User.get_by_id!(id))
   end
 
-  defp build_form(%{selected_user: user}) do
-    user
-    |> Form.for_update(:update, api: DataAggregator.Accounts, as: "user")
-    |> to_form()
-  end
-
-  # defp apply_action(socket, :edit, %{"user_id" => id}) do
-  #   user = User.get_by_id!(id)
-
-  #   socket
-  #   |> assign(:page_title, ~t"Add Roles"m)
-  #   |> assign(:user, user)
-  # end
-
-  # defp apply_action(socket, :summary, %{"user_id" => id}) do
-  #   user = User.get_by_id!(id)
-
-  #   socket
-  #   |> assign(:page_title, ~t"Summary"m)
-  #   |> assign(:user, user)
-  # end
-
-  defp list_users(params, opts \\ []) do
+  defp list_users(params, actor, opts \\ []) do
+    opts = Keyword.merge(opts, authorize?: true, actor: actor)
     Pagify.validate_and_run(User, params, opts)
   end
 
