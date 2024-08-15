@@ -106,6 +106,7 @@ if config_env() == :prod do
   config :data_aggregator, DataAggregator.Repo,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    connect_timeout: String.to_integer(System.get_env("CONNECT_TIMEOUT") || "60000"),
     socket_options: maybe_ipv6
 
   ## Configure Erlang clustering using DNS cluster

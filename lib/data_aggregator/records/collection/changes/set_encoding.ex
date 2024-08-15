@@ -25,7 +25,7 @@ defmodule DataAggregator.Records.Collection.Changes.SetEncoding do
 
   defp schedule_poller(_changeset, collection) do
     if Records.execute_async?() do
-      Task.start(fn -> await_encoded(collection.id) end)
+      Task.start(fn -> insert_job(collection) end)
     else
       Logger.debug("not executing if execute_async is false (likely in tests), skipping")
     end
@@ -33,14 +33,9 @@ defmodule DataAggregator.Records.Collection.Changes.SetEncoding do
     {:ok, collection}
   end
 
-  defp await_encoded(id) do
-    :timer.sleep(5_000)
-    collection = Collection.get_by_id!(id, load: [:records_count_encoding])
-
-    if collection.records_count_encoding == 0 do
-      Collection.set_idle_encoding(collection)
-    else
-      await_encoded(id)
-    end
+  defp insert_job(%Collection{id: id}) do
+    %{id: id}
+    |> Collection.Workers.EncodingStatePoller.new()
+    |> Oban.insert()
   end
 end
