@@ -198,7 +198,7 @@ defmodule DataAggregator.Records.Approval do
 
     references do
       reference :attachment, on_delete: :delete, on_update: :update
-      reference :job, on_delete: :nilify, on_update: :update
+      reference :job, on_delete: :nilify, on_update: :update, index?: true
     end
   end
 
