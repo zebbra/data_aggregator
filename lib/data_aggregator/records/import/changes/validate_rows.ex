@@ -34,11 +34,42 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
     # make sure collection is loaded to avoid N+1 queries
     import = Ash.load!(import, [:collection], lazy?: true)
 
+    duplicates_result = detect_duplicates(rows)
+
     rows
+    |> Stream.uniq_by(&Map.get(&1, "mte_catalog_number"))
     |> Stream.chunk_every(chunk_size)
     |> Enum.with_index()
     |> Stream.map(&validate_chunk(import, &1))
+    |> Stream.concat([duplicates_result])
     |> reduce_validation_results(changeset)
+  end
+
+  defp detect_duplicates(rows) do
+    duplicates =
+      rows
+      |> Enum.reduce(%{}, fn row, counts ->
+        case Map.get(row, "mte_catalog_number") do
+          nil -> counts
+          catalog_number -> Map.update(counts, catalog_number, 1, &(&1 + 1))
+        end
+      end)
+      |> Enum.filter(fn {_, count} -> count > 1 end)
+
+    removed = Enum.sum(Enum.map(duplicates, fn {_, count} -> count - 1 end))
+
+    errore_messages =
+      Enum.map(duplicates, fn {catalog_number, count} ->
+        %{
+          catalog_number: catalog_number,
+          scientific_name: nil,
+          field: :mte_catalog_number,
+          value: catalog_number,
+          message: "Found #{count} duplicates for catalog number #{catalog_number}"
+        }
+      end)
+
+    {{0, removed}, errore_messages}
   end
 
   defp validate_chunk(import, {chunk, index}) do

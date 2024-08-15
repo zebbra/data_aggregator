@@ -288,6 +288,7 @@ defmodule DataAggregator.Records.Import do
     publish :set_imported, [[:collection_id, nil], "updated", [:id, nil]]
     publish :set_failed, [[:collection_id, nil], "updated", [:id, nil]]
     publish :update_mapping, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :add_import_progress, [[:collection_id, nil], "updated", [:id, nil]]
   end
 
   code_interface do

@@ -60,7 +60,7 @@ defmodule DataAggregator.Records.Import.Workers.ImporterTest do
       assert import.state == :failed
       assert import.records_count == 0
 
-      assert logs =~ "Found 2/2 invalid rows"
+      assert logs =~ "Found 1/1 invalid rows"
     end
   end
 end
