@@ -46,22 +46,31 @@ defmodule DataAggregatorWeb.Router do
 
     ash_authentication_live_session :default, on_mount: default_hooks do
       live "/", DashboardLive.Index, :index
-      live "/administration", AdministrationLive.Index, :index
-      live "/administration/new", AdministrationLive.Index, :new
-      live "/administration/:user_id/edit", AdministrationLive.Index, :edit
 
       live "/collections", CollectionLive.Index, :index
-      live "/collections/new", CollectionLive.Index, :new
-      live "/collections/:id/edit", CollectionLive.Index, :edit
       live "/collections/:id/records", CollectionLive.Record.Index, :index
       live "/collections/:id/imports", CollectionLive.Import.Index, :index
-      live "/collections/:id/imports/new", CollectionLive.Import.Index, :new
-      live "/collections/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit
-      live "/collections/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary
       live "/collections/:id/exports", CollectionLive.Export.Index, :index
       live "/collections/:id/publications", CollectionLive.Publication.Index, :index
 
       live "/records", RecordLive.Index, :index
+    end
+
+    ash_authentication_live_session :collection_digitizer_required,
+      on_mount: default_hooks ++ [{DataAggregatorWeb.LiveUserAuth, :live_collection_digitizer_required}] do
+      live "/administration", AdministrationLive.Index, :index
+      live "/administration/new", AdministrationLive.Index, :new
+      live "/administration/:user_id/edit", AdministrationLive.Index, :edit
+
+      live "/collections/new", CollectionLive.Index, :new
+      live "/collections/:id/edit", CollectionLive.Index, :edit
+    end
+
+    ash_authentication_live_session :data_administrator_required,
+      on_mount: default_hooks ++ [{DataAggregatorWeb.LiveUserAuth, :live_data_administrator_required}] do
+      live "/collections/:id/imports/new", CollectionLive.Import.Index, :new
+      live "/collections/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit
+      live "/collections/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary
     end
 
     sign_in_route on_mount: [{DataAggregatorWeb.LiveUserAuth, :live_no_user}],
