@@ -15,7 +15,6 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Helpers do
   def load_all do
     load() ++
       [
-        :job,
         :export_progress
       ]
   end

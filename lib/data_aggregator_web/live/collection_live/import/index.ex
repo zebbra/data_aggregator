@@ -293,12 +293,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               </div>
               <%= @selected_import.duration %>
             </:item>
-
-            <:item title={~t"Job"m}>
-              <div :if={@selected_import.job}>
-                <%= @selected_import.job.id %> <%= @selected_import.job.state %>
-              </div>
-            </:item>
           </.list>
 
           <.table id="import_mapping_table" items={@selected_import.mappings}>

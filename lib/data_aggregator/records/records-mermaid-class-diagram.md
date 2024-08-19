@@ -366,11 +366,9 @@ classDiagram
         UtcDatetimeUsec updated_at
         UUID collection_id
         UUID attachment_id
-        Integer job_id
         Atom state
         Collection collection
         Attachment attachment
-        Job job
         destroy()
         read()
         by_collection(String collection_id, String sort)
@@ -400,14 +398,12 @@ classDiagram
         UUID collection_id
         UUID attachment_id
         UUID error_log_id
-        Integer job_id
         Atom state
         Integer records_count
         Collection collection
         Attachment attachment
         Attachment error_log
         Record[] records
-        Job job
         update(Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, Integer rows_count, ...)
         destroy()
         read(String sort)
@@ -449,11 +445,9 @@ classDiagram
         UtcDatetimeUsec updated_at
         UUID collection_id
         UUID attachment_id
-        Integer job_id
         Atom state
         Collection collection
         Attachment attachment
-        Job job
         update(String name, Atom channel, UtcDatetime published_at, UtcDatetime started_at, ...)
         destroy()
         read()
@@ -758,8 +752,6 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID collection_id
-        Integer encoder_job_id
-        Integer fast_track_checker_job_id
         Atom state
         Boolean full_text_search
         Float full_text_search_rank
@@ -770,8 +762,6 @@ classDiagram
         Import[] imports
         Image[] images
         Attachment[] image_attachments
-        Job encoder_job
-        Job fast_track_checker_job
         EncodedRecord encoded_record
         SwissSpecies swiss_species
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
@@ -846,10 +836,8 @@ classDiagram
         UtcDatetimeUsec updated_at
         UUID attachment_id
         UUID error_log_id
-        Integer job_id
         Atom state
         Attachment attachment
-        Job job
         Attachment error_log
         update(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_approved_count, ...)
         destroy()
@@ -1164,11 +1152,6 @@ classDiagram
     Attachment -- Publication
     Attachment -- Record
     Attachment -- Image
-    Job -- Approval
-    Job -- Export
-    Job -- Import
-    Job -- Publication
-    Job -- Record
     Institution -- Collection
     ApprovedRecord -- Record
     Collection -- Export

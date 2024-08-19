@@ -20,7 +20,7 @@ defmodule DataAggregator.Records.Record.Changes.EnqueueFastTrackChecker do
     case insert_job(record) do
       {:ok, job} ->
         Logger.debug("Enqueued record fast_track_checker job #{inspect(job.id)}")
-        Changeset.change_attribute(changeset, :fast_track_checker_job_id, job.id)
+        changeset
 
       {:error, error} ->
         Logger.error("Failed to enqueue record fast_track_checker job: #{inspect(error)}")

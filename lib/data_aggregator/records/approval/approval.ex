@@ -10,7 +10,6 @@ defmodule DataAggregator.Records.Approval do
 
   alias __MODULE__
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Approval.Changes
   alias DataAggregator.Records.Collection
 
@@ -34,12 +33,6 @@ defmodule DataAggregator.Records.Approval do
 
   relationships do
     belongs_to :attachment, Attachment, public?: true
-
-    belongs_to :job, Job do
-      attribute_type :integer
-      allow_nil? true
-      public? true
-    end
 
     belongs_to :error_log, Attachment, public?: true
   end
@@ -198,7 +191,6 @@ defmodule DataAggregator.Records.Approval do
 
     references do
       reference :attachment, on_delete: :delete, on_update: :update
-      reference :job, on_delete: :nilify, on_update: :update, index?: true
     end
   end
 

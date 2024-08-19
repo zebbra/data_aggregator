@@ -198,12 +198,6 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
               </div>
               <%= @selected_export.duration %>
             </:item>
-
-            <:item title={~t"Job"m}>
-              <div :if={@selected_export.job}>
-                <%= @selected_export.job.id %> <%= @selected_export.job.state %>
-              </div>
-            </:item>
           </.list>
 
           <:footer>

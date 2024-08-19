@@ -37,7 +37,6 @@ Table approvals {
   updated_at timestamp
   attachment_id uuid
   error_log_id uuid
-  job_id integer
   state varchar
 }
 
@@ -672,7 +671,6 @@ Table exports {
   updated_at timestamp
   collection_id uuid
   attachment_id uuid
-  job_id integer
   state varchar
 }
 
@@ -691,7 +689,6 @@ Table imports {
   collection_id uuid
   attachment_id uuid
   error_log_id uuid
-  job_id integer
   state varchar
 }
 
@@ -715,7 +712,6 @@ Table publications {
   updated_at timestamp
   collection_id uuid
   attachment_id uuid
-  job_id integer
   state varchar
 }
 
@@ -1011,8 +1007,6 @@ Table records {
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid
-  encoder_job_id integer
-  fast_track_checker_job_id integer
   state varchar
 }
 
@@ -1097,12 +1091,6 @@ Ref: file_attachments.id < publications.attachment_id
 Ref: file_attachments.id < record_images.attachment_id
 Ref: imports.id < import_records.import_id
 Ref: institutions.id < collections.institution_id
-Ref: oban_jobs.id < approvals.job_id
-Ref: oban_jobs.id < exports.job_id
-Ref: oban_jobs.id < imports.job_id
-Ref: oban_jobs.id < publications.job_id
-Ref: oban_jobs.id < records.encoder_job_id
-Ref: oban_jobs.id < records.fast_track_checker_job_id
 Ref: records.id < approved_records.record_id
 Ref: records.id - encoded_records.record_id
 Ref: records.id < import_records.record_id

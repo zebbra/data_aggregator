@@ -44,7 +44,6 @@ defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
         assert {:ok, import} = Import.enqueue_import(import)
 
         assert import.state == :import_queued
-        assert import.job != nil
 
         assert_enqueued(worker: Importer, args: %{id: import.id})
       end)

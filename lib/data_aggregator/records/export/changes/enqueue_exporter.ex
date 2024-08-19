@@ -19,7 +19,7 @@ defmodule DataAggregator.Records.Export.Changes.EnqueueExporter do
     case insert_job(export) do
       {:ok, job} ->
         Logger.debug("Enqueued export job #{inspect(job.id)}")
-        Changeset.change_attribute(changeset, :job_id, job.id)
+        changeset
 
       {:error, error} ->
         Logger.warning("Failed to enqueue export job: #{inspect(error)}")
