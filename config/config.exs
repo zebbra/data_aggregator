@@ -13,11 +13,12 @@ config :appsignal, :config,
   name: "data_aggregator",
   env: Mix.env()
 
+config :ash, :default_belongs_to_type, AshUUID.UUID
+
 # `config` supports a list, so this can be combined with other tracers
 config :ash, :tracer, [AshAppsignal]
 
 # Ash: Default belongs_to type, not required
-config :ash, :default_belongs_to_type, AshUUID.UUID
 
 # For backwards compatibility, the following configuration is required.
 # see https://ash-hq.org/docs/guides/ash/latest/get-started#temporary-config for more details
