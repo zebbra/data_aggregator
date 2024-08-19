@@ -308,7 +308,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Import dataset"
 msgstr "Datensatz importieren"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:517
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:511
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Collection Imports"
@@ -493,7 +493,7 @@ msgstr "Datei"
 
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:123
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:198
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:334
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:328
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Mapping is invalid"
@@ -580,13 +580,13 @@ msgctxt "DataAggregatorWeb.Blocks.EmptyState"
 msgid "No entries"
 msgstr "Keine Einträge"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:531
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:525
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Edit Import"
 msgstr "Import bearbeiten"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:523
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:517
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "New Import"
@@ -652,26 +652,26 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Please provide your collection file holding your records."
 msgstr "Bitte gib deine Sammlungsdatei an, die deine Einträge enthält."
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:560
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:554
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Get started by importing a new dataset."
 msgstr "Beginne, indem Du einen neuen Datensatz importierst"
 
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:169
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:561
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:555
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Import"
 msgstr "Import"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:541
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:535
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Import Summary"
 msgstr "Importzusammenfassung"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:559
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:553
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "No imports"
@@ -762,21 +762,21 @@ msgid "close"
 msgstr "schließen"
 
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:151
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:362
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:444
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:356
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:438
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Are you sure?"
 msgstr "Bist Du sicher?"
 
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:150
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:367
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:361
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Delete"
 msgstr "Löschen"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:470
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:464
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Import deleted successfully"
@@ -901,7 +901,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.FormComponent"
 msgid "You are not allowed to process an import twice. Please start again by uploading a new import dataset."
 msgstr "Wir dürfen einen Import nicht zweimal verarbeiten. Bitte fahre fort, indem Du einen neuen Importdatensatz hochlädst."
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:329
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:323
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Column"
@@ -914,7 +914,7 @@ msgid "Created at"
 msgstr "Erstellt am"
 
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:141
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:324
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:318
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Edit"
@@ -932,19 +932,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Imported"
 msgstr "Importiert"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:297
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
-msgid "Job"
-msgstr "Job"
-
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:337
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:331
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Mapped to"
 msgstr "Gemappt auf"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:307
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:301
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Mapping"
@@ -988,7 +982,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "rows"
 msgstr "Zeilen"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:343
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:337
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Unmapped columns"
@@ -1218,14 +1212,14 @@ msgid "Unknown"
 msgstr "Unbekannt"
 
 #: lib/data_aggregator_web/live/collection_live/export/index.ex:117
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:214
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:229
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:208
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:223
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Are you sure?"
 msgstr "Bist Du sicher?"
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:278
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:272
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Collection Exports"
@@ -1238,7 +1232,7 @@ msgid "Created at"
 msgstr "Erstellt am"
 
 #: lib/data_aggregator_web/live/collection_live/export/index.ex:116
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:219
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:213
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Delete"
@@ -1251,7 +1245,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Export"
 msgstr "Exportieren"
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:255
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:249
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Export deleted successfully"
@@ -1270,19 +1264,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "File"
 msgstr "Datei"
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:292
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:286
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Get started by exporting records."
 msgstr "Beginne, indem Du einen Datensatz exportierst"
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:202
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
-msgid "Job"
-msgstr "Job"
-
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:291
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:285
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "No exports"
@@ -1382,14 +1370,14 @@ msgid "Unknown"
 msgstr "Unbekannt"
 
 #: lib/data_aggregator_web/live/collection_live/publication/index.ex:129
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:237
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:251
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:231
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:245
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Are you sure?"
 msgstr "Bist Du sicher?"
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:300
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:294
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Collection Publications"
@@ -1402,7 +1390,7 @@ msgid "Created at"
 msgstr "Erstellt am"
 
 #: lib/data_aggregator_web/live/collection_live/publication/index.ex:128
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:241
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:235
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Delete"
@@ -1421,7 +1409,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "File"
 msgstr "Datei"
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:314
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:308
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Get started by publishing records."
@@ -1433,13 +1421,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Imports"
 msgstr "Importe"
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:225
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
-msgid "Job"
-msgstr "Job"
-
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:313
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:307
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "No publications"
@@ -1452,7 +1434,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Publication"
 msgstr "Veröffentlichung"
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:277
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:271
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Publication deleted successfully"
@@ -2098,22 +2080,22 @@ msgstr "Standort"
 msgid "Download error log"
 msgstr "Fehlerprotokoll runterladen"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:403
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:397
 #, elixir-autogen, elixir-format
 msgid "Error message"
 msgstr "Fehlermeldung"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:397
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:391
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Field"
 msgstr "Feld"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:378
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:372
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Import Errors"
 msgstr "Import Fehler"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:412
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:406
 #, elixir-autogen, elixir-format
 msgid "Only the first 100 rows will be shown. Download the file to have the complete log"
 msgstr "Nur die ersten 100 Zeilen werden angezeigt. Für eine komplette Liste, lade das Fehlerlog runter"
@@ -2123,7 +2105,7 @@ msgstr "Nur die ersten 100 Zeilen werden angezeigt. Für eine komplette Liste, l
 msgid "The selected mapping used by a previous import on this collection is not compatible with the current import file. Please create a new mapping or upload a compatible file."
 msgstr "Das ausgewählte Mapping, das für einen früheren Import verwendet wurde, ist nicht mit dieser Datei kompatibel. Bitte erstelle ein neues Mapping oder lade eine kompatible Datei hoch."
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:400
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:394
 #, elixir-autogen, elixir-format
 msgid "Value"
 msgstr "Wert"
@@ -2237,12 +2219,12 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Components"
 msgid "Publication to the Gbif Switzerland Portal"
 msgstr "Veröffentlichung in das Gbif Switzerland Portal"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:459
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:453
 #, elixir-autogen, elixir-format
 msgid "An import for this collection is already in process"
 msgstr "Ein Import für diese Sammlung ist bereits im Gange"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:456
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:450
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Import started in background"
 msgstr "Import im Hintergrund gestartet"
@@ -2295,19 +2277,19 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.FormComponent"
 msgid "required to choose an option"
 msgstr "obligatorisch, wähle eine Option"
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:244
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:238
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "An export for this collection is already in process"
 msgstr "Ein Export für diese Sammlung ist bereits im Gange"
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:241
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:235
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Export started in background"
 msgstr "Export im Hintergrund gestartet"
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:230
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:224
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Yes, delete export"
@@ -2355,7 +2337,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Summary"
 msgid "An import for this collection is already in process"
 msgstr "Ein Import für diese Sammlung ist bereits im Gange"
 
-#: lib/data_aggregator_web/live/collection_live/import/index.ex:445
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:439
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Yes, delete import"
@@ -2379,25 +2361,25 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Yes, delete collection"
 msgstr "Ja, Sammlung löschen"
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:266
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:260
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "A publication for this collection is already in process"
 msgstr "Eine Veröffentlichung für diese Sammlung ist bereits im Gange"
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:321
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:315
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Approval started in background"
 msgstr "Genehmigung im Hintergrund gestartet"
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:324
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:318
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Publication started in background"
 msgstr "Veröffentlichung im Hintergrund gestartet"
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:252
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:246
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Yes, delete publication"

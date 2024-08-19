@@ -34,7 +34,6 @@ erDiagram
     timestamp updated_at
     uuid attachment_id
     uuid error_log_id
-    integer job_id
     varchar state
   }
   approved_records {
@@ -663,7 +662,6 @@ erDiagram
     timestamp updated_at
     uuid collection_id
     uuid attachment_id
-    integer job_id
     varchar state
   }
   imports {
@@ -681,7 +679,6 @@ erDiagram
     uuid collection_id
     uuid attachment_id
     uuid error_log_id
-    integer job_id
     varchar state
   }
   import_records {
@@ -703,7 +700,6 @@ erDiagram
     timestamp updated_at
     uuid collection_id
     uuid attachment_id
-    integer job_id
     varchar state
   }
   records {
@@ -998,8 +994,6 @@ erDiagram
     timestamp inserted_at
     timestamp updated_at
     uuid collection_id
-    integer encoder_job_id
-    integer fast_track_checker_job_id
     varchar state
   }
   record_images {
@@ -1071,12 +1065,6 @@ erDiagram
   file_attachments ||--|{ record_images : ""
   imports ||--|{ import_records : ""
   institutions ||--|{ collections : ""
-  oban_jobs ||--|{ approvals : ""
-  oban_jobs ||--|{ exports : ""
-  oban_jobs ||--|{ imports : ""
-  oban_jobs ||--|{ publications : ""
-  oban_jobs ||--|{ records : ""
-  oban_jobs ||--|{ records : ""
   records ||--|{ approved_records : ""
   records ||--o| encoded_records : ""
   records ||--|{ import_records : ""

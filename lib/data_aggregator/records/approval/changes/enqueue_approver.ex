@@ -19,7 +19,7 @@ defmodule DataAggregator.Records.Approval.Changes.EnqueueApprover do
     case insert_job(approval) do
       {:ok, job} ->
         Logger.debug("Enqueued approval job #{inspect(job.id)}")
-        Changeset.change_attribute(changeset, :job_id, job.id)
+        changeset
 
       {:error, error} ->
         Logger.error("Failed to enqueue approval job: #{inspect(error)}")

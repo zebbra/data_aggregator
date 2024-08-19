@@ -11,7 +11,6 @@ defmodule DataAggregator.Records.Publication do
 
   alias __MODULE__
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
   alias DataAggregator.Records.Publication.Changes
@@ -37,12 +36,6 @@ defmodule DataAggregator.Records.Publication do
   relationships do
     belongs_to :collection, Collection, public?: true
     belongs_to :attachment, Attachment, public?: true
-
-    belongs_to :job, Job do
-      attribute_type :integer
-      allow_nil? true
-      public? true
-    end
   end
 
   calculations do
@@ -208,7 +201,6 @@ defmodule DataAggregator.Records.Publication do
     references do
       reference :collection, on_delete: :delete, on_update: :update
       reference :attachment, on_delete: :delete, on_update: :update
-      reference :job, on_delete: :nilify, on_update: :update, index?: true
     end
   end
 

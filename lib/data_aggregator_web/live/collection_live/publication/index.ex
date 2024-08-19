@@ -221,12 +221,6 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
               </div>
               <%= @selected_publication.duration %>
             </:item>
-
-            <:item title={~t"Job"m}>
-              <div :if={@selected_publication.job}>
-                <%= @selected_publication.job.id %> <%= @selected_publication.job.state %>
-              </div>
-            </:item>
           </.list>
 
           <:footer :if={can_delete?(@selected_publication)}>

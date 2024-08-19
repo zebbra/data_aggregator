@@ -17,7 +17,6 @@ defmodule DataAggregator.Records.Import do
 
   alias __MODULE__
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
   alias DataAggregator.Records.Import.Column
@@ -63,12 +62,6 @@ defmodule DataAggregator.Records.Import do
     many_to_many :records, Record do
       through ImportRecord
       join_relationship :import_records
-      public? true
-    end
-
-    belongs_to :job, Job do
-      attribute_type :integer
-      allow_nil? true
       public? true
     end
   end
@@ -214,7 +207,6 @@ defmodule DataAggregator.Records.Import do
       change Import.Changes.SetCollectionImportingBeforeTransaction
       change transition_state(:import_queued)
       change Import.Changes.EnqueueImporter
-      change load(:job)
     end
 
     update :import do

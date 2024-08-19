@@ -25,7 +25,6 @@ defmodule DataAggregator.Records.Record do
   alias __MODULE__
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.ApprovalStatusType
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
@@ -107,18 +106,6 @@ defmodule DataAggregator.Records.Record do
       source_attribute_on_join_resource :record_id
       destination_attribute_on_join_resource :attachment_id
       join_relationship :images
-      public? true
-    end
-
-    belongs_to :encoder_job, Job do
-      attribute_type :integer
-      allow_nil? true
-      public? true
-    end
-
-    belongs_to :fast_track_checker_job, Job do
-      attribute_type :integer
-      allow_nil? true
       public? true
     end
 
@@ -297,7 +284,6 @@ defmodule DataAggregator.Records.Record do
 
       change transition_state(:queued)
       change Record.Changes.EnqueueEncoder
-      change load(:encoder_job)
     end
 
     update :enqueue_fast_track_checker do
@@ -305,7 +291,6 @@ defmodule DataAggregator.Records.Record do
       require_atomic? false
 
       change Record.Changes.EnqueueFastTrackChecker
-      change load(:fast_track_checker_job)
     end
 
     action :bulk_import, :map do
@@ -428,7 +413,6 @@ defmodule DataAggregator.Records.Record do
 
     references do
       reference :collection, on_delete: :delete, on_update: :update
-      reference :fast_track_checker_job, on_delete: :nilify, on_update: :update, index?: true
     end
   end
 
