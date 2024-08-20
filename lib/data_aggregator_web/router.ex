@@ -41,8 +41,20 @@ defmodule DataAggregatorWeb.Router do
       DataAggregatorWeb.LiveLogger,
       DataAggregatorWeb.LiveLocale,
       Sentry.LiveViewHook,
+      {DataAggregatorWeb.LiveUserAuth, :live_user_required},
+      {DataAggregatorWeb.LiveUserAuth, :password_set_required}
+    ]
+
+    no_password_required_hooks = [
+      DataAggregatorWeb.LiveLogger,
+      DataAggregatorWeb.LiveLocale,
+      Sentry.LiveViewHook,
       {DataAggregatorWeb.LiveUserAuth, :live_user_required}
     ]
+
+    ash_authentication_live_session :no_password_set, on_mount: no_password_required_hooks do
+      live "/set_password", AdministrationLive.SetPassword, :index
+    end
 
     ash_authentication_live_session :default, on_mount: default_hooks do
       live "/", DashboardLive.Index, :index
@@ -81,7 +93,11 @@ defmodule DataAggregatorWeb.Router do
 
     sign_out_route AuthController
     auth_routes_for DataAggregator.Accounts.User, to: AuthController
-    reset_route []
+
+    reset_route overrides: [
+                  DataAggregatorWeb.AuthOverrides,
+                  AshAuthentication.Phoenix.Overrides.Default
+                ]
   end
 
   scope "/api" do

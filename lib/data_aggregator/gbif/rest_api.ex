@@ -119,6 +119,15 @@ defmodule DataAggregator.Gbif.RestAPI do
   end
 
   @doc """
+  Get one institution from the GrsciCol Api and parse it to have options for UI Select Options
+  """
+  @spec get_institution_option(String.t()) :: {String.t(), String.t()}
+  def get_institution_option(id) do
+    {:ok, institution} = get_grscicoll_entity(id, :institution)
+    {"#{institution["code"]} - #{institution["name"]}", institution["key"]}
+  end
+
+  @doc """
   Get a single species out of the GBIF API according to its key
   """
   @spec get_species(String.t()) :: Api.response()

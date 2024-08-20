@@ -2,7 +2,6 @@ defmodule DataAggregator.Accounts.Emails do
   @moduledoc """
   Delivers emails.
   """
-
   import Swoosh.Email
 
   def deliver_reset_password_instructions(user, url) do
@@ -22,6 +21,24 @@ defmodule DataAggregator.Accounts.Emails do
 
       <p>
         If you didn't request this change, please ignore this.
+      </p>
+    <html>
+    """)
+  end
+
+  def deliver_magic_link(user, url) do
+    unless url do
+      raise "Cannot deliver reset instructions without a url"
+    end
+
+    deliver(user.email, "Magic Link", """
+    <html>
+      <p>
+        Hi #{user.email},
+      </p>
+
+      <p>
+        <a href="#{url}">Click here</a> to login.
       </p>
     <html>
     """)

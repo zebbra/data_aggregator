@@ -3,7 +3,8 @@ defmodule DataAggregator.Accounts.User do
   use Ash.Resource,
     authorizers: [Ash.Policy.Authorizer],
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshAuthentication, AshUUID]
+    extensions: [AshAuthentication, AshUUID],
+    api: DataAggregator.Accounts
 
   authentication do
     api DataAggregator.Accounts
@@ -14,10 +15,18 @@ defmodule DataAggregator.Accounts.User do
         confirmation_required? false
         sign_in_tokens_enabled? true
         register_action_accept [:first_name, :last_name, :phone, :institution_id, :roles]
+        registration_enabled? false
 
-        resettable do
-          sender DataAggregator.Accounts.User.Senders.SendPasswordResetEmail
-        end
+        # TODO: change once mail is implemented
+        # resettable do
+        #   sender DataAggregator.Accounts.User.Senders.SendPasswordResetEmail
+        # end
+      end
+
+      magic_link do
+        identity_field :email
+        token_lifetime 60 * 24 * 2
+        sender(DataAggregator.Accounts.SendMagicLink)
       end
     end
 
@@ -35,10 +44,14 @@ defmodule DataAggregator.Accounts.User do
     attribute :first_name, :string, allow_nil?: false
     attribute :last_name, :string, allow_nil?: false
     attribute :phone, :string, allow_nil?: true
-    attribute :hashed_password, :string, allow_nil?: false, sensitive?: true
+    attribute :hashed_password, :string, allow_nil?: true, sensitive?: true
     attribute :roles, {:array, :string}, default: []
 
     attribute :institution_id, :uuid, allow_nil?: true
+  end
+
+  calculations do
+    calculate :password_set?, :boolean, expr(not is_nil(hashed_password))
   end
 
   actions do
@@ -64,6 +77,50 @@ defmodule DataAggregator.Accounts.User do
 
       change AshAuthentication.Strategy.Password.HashPasswordChange
     end
+
+    update :set_password do
+      change set_context(%{strategy_name: :password})
+
+      argument :password, :string do
+        allow_nil? false
+        sensitive? true
+        constraints min_length: 8
+      end
+
+      change AshAuthentication.Strategy.Password.HashPasswordChange
+    end
+
+    create :register_with_password do
+      change set_context(%{strategy_name: :password})
+
+      accept [:roles, :first_name, :last_name, :email, :phone, :institution_id]
+
+      argument :password, :string do
+        allow_nil? false
+        sensitive? true
+        constraints min_length: 8
+      end
+
+      change AshAuthentication.Strategy.Password.HashPasswordChange
+      change AshAuthentication.GenerateTokenChange
+    end
+
+    # create :register_without_password do
+    #   change set_context(%{strategy_name: :password})
+
+    #   accept [:roles, :first_name, :last_name, :email, :phone, :institution_id]
+
+    #   change after_action(fn _changeset, user ->
+    #            {:ok, strategy} = AshAuthentication.Info.strategy(__MODULE__, :magic_link)
+
+    #            {:ok, token} =
+    #              AshAuthentication.Strategy.MagicLink.request_token_for(strategy, user)
+
+    #            DataAggregator.Accounts.SendMagicLink.send(user, token, nil)
+
+    #            {:ok, user}
+    #          end)
+    # end
   end
 
   identities do

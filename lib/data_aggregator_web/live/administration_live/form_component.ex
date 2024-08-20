@@ -13,12 +13,16 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
     {:ok,
      socket
      |> assign(step: :user)
-     |> assign_institution_options()}
+     |> assign(password_hidden?: true)}
   end
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket |> assign(assigns) |> assign_form()}
+    {:ok,
+     socket
+     |> assign(assigns)
+     |> assign_institution_options()
+     |> assign_form()}
   end
 
   @impl true
@@ -79,10 +83,13 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
 
               <div class="grid grid-cols-2 gap-8">
                 <.field
-                  type="password"
+                  type={password_type(@password_hidden?)}
                   field={@form[:password]}
                   label={~t"Password"m}
                   placeholder={~t"Enter password"m}
+                  icon_end={password_icon(@password_hidden?)}
+                  icon_event="toggle_password"
+                  icon_event_target={@myself}
                 />
                 <button
                   type="button"
@@ -93,34 +100,12 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                   <%= ~t"Generate Password"m %>
                 </button>
               </div>
-
-              <div class="grid grid-cols-1 gap-8">
-                <.field
-                  type="checkbox"
-                  field={@form[:send_password_by_mail]}
-                  label={~t"Send password to user by e-mail"m}
-                />
-                <.field
-                  type="checkbox"
-                  field={@form[:password_reset_required]}
-                  label={~t"User has to change password upon login"m}
-                />
-              </div>
             </.fieldgroup>
           </.fieldset>
           <%!-- roles --%>
           <.fieldset class={unless @step == :role, do: "hidden"}>
             <.fieldgroup>
               <div class="grid grid-cols-1 gap-8">
-                <%!-- <.field
-                  field={@form[:roles]}
-                  required
-                  id="field-basic-inputs-toggle"
-                  label="Toggle input"
-                  type="toggle"
-                  description="Toggle input description"
-                  autocomplete="toggle"
-                /> --%>
                 <.field
                   field={@form[:roles]}
                   id="roles_checkgroup"
@@ -188,11 +173,14 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
               <div class="grid grid-cols-2 gap-8">
                 <.field
                   id="password_summary"
-                  type="password"
+                  type={password_type(@password_hidden?)}
                   field={@form[:password]}
                   label={~t"Password"m}
                   placeholder={~t"Enter password"m}
                   disabled={true}
+                  icon_end={password_icon(@password_hidden?)}
+                  icon_event="toggle_password"
+                  icon_event_target={@myself}
                 />
               </div>
             </.fieldgroup>
@@ -277,9 +265,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
           |> push_patch(to: build_path(~p"/administration", nil))
 
         {:error, form} ->
-          socket
-          |> put_flash(:info, ~t"An error occurred"m)
-          |> assign(:form, form)
+          assign(socket, :form, form)
       end
 
     {:noreply, socket}
@@ -319,9 +305,20 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
     {:noreply, assign(socket, step: :user)}
   end
 
+  @impl true
+  def handle_event("toggle_password", _, socket) do
+    {:noreply, assign(socket, :password_hidden?, not socket.assigns.password_hidden?)}
+  end
+
   defp generate_password(length) do
     length |> :crypto.strong_rand_bytes() |> Base.encode64() |> binary_part(0, length)
   end
+
+  defp password_type(true), do: "password"
+  defp password_type(false), do: "text"
+
+  defp password_icon(true), do: "hero-eye"
+  defp password_icon(false), do: "hero-eye-slash"
 
   defp current_step(:user), do: 1
   defp current_step(:role), do: 2
@@ -348,6 +345,13 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
   end
 
   defp assign_institution_options(socket) do
-    assign(socket, :grscicoll_institutions, Gbif.RestAPI.get_institution_options())
+    options =
+      if "admin" in socket.assigns.current_user.roles do
+        Gbif.RestAPI.get_institution_options()
+      else
+        [Gbif.RestAPI.get_institution_option(socket.assigns.current_user.institution_id)]
+      end
+
+    assign(socket, :grscicoll_institutions, options)
   end
 end

@@ -62,6 +62,8 @@ defmodule DataAggregatorWeb.Components.Input do
   attr :inside, :boolean, default: false, doc: "whether the field is inside"
   attr :icon_start, :string, default: nil, doc: "icon name for the start of the input"
   attr :icon_end, :string, default: nil, doc: "icon name for the end of the input"
+  attr :icon_event, :string, default: nil, doc: "phx-click event for the icon"
+  attr :icon_event_target, :string, default: nil, doc: "phx-target for the icon event"
 
   attr :rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
                 multiple pattern placeholder readonly required rows size step
@@ -319,11 +321,34 @@ defmodule DataAggregatorWeb.Components.Input do
     """
   end
 
-  def input(%{icon_start: nil, icon_end: _} = assigns) do
+  def input(%{icon_start: nil, icon_end: _, icon_event: nil} = assigns) do
     ~H"""
     <div class={["relative w-full", @inline && @class]}>
       <%= input(%{assigns | icon_end: nil, class: class_names(["w-full pr-10", @class])}) %>
       <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+        <.icon
+          name={@icon_end}
+          class={
+            class_names([
+              "size-5 text-base-content/50 sm:text-sm/6",
+              @errors != [] && "phx-feedback:text-error"
+            ])
+          }
+        />
+      </div>
+    </div>
+    """
+  end
+
+  def input(%{icon_start: nil, icon_end: _, icon_event: _} = assigns) do
+    ~H"""
+    <div class={["relative w-full", @inline && @class]}>
+      <%= input(%{assigns | icon_end: nil, class: class_names(["w-full pr-10", @class])}) %>
+      <div
+        phx-click={@icon_event}
+        phx-target={@icon_event_target}
+        class="absolute inset-y-0 right-0 flex items-center pr-3"
+      >
         <.icon
           name={@icon_end}
           class={

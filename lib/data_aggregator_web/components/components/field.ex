@@ -66,6 +66,8 @@ defmodule DataAggregatorWeb.Components.Field do
   attr :hidden, :boolean, default: false, doc: "whether the field is hidden"
   attr :icon_start, :string, default: nil, doc: "icon name for the start of the input"
   attr :icon_end, :string, default: nil, doc: "icon name for the end of the input"
+  attr :icon_event, :string, default: nil, doc: "phx-click event for the icon"
+  attr :icon_event_target, :string, default: nil, doc: "phx-target for the icon event"
 
   attr :rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
                 multiple pattern placeholder readonly required rows size step

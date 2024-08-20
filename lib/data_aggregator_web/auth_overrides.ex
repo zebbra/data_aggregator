@@ -4,6 +4,12 @@ defmodule DataAggregatorWeb.AuthOverrides do
 
   alias AshAuthentication.Phoenix.Components
 
+  override Components.MagicLink do
+    # lets hide the magic link in the sign in page
+    # we only use magic links for first time login
+    set :root_class, "hidden"
+  end
+
   override Components.Banner do
     set :image_url, "/images/sign_in_logo.png"
   end
@@ -14,6 +20,14 @@ defmodule DataAggregatorWeb.AuthOverrides do
     set :form_class, nil
     set :slot_class, "my-4"
     set :disable_button_text, "Signing in ..."
+  end
+
+  override Components.Password.Reset do
+    set :root_class, nil
+    set :label_class, "mt-2 mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white"
+    set :form_class, nil
+    set :slot_class, "my-4"
+    set :disable_button_text, "Reset password ..."
   end
 
   override Components.Password.Input do

@@ -74,7 +74,11 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
           <%= user.phone %>
         </:col>
         <:col :let={{_id, user}} label={~t"Roles"m}>
-          <%= user.roles %>
+          <%= for role <- user.roles do %>
+            <.badge color="gray">
+              <span class="px-1.5"><%= role %></span>
+            </.badge>
+          <% end %>
         </:col>
         <:col :let={{_id, user}} field={:institution_id} label={~t"Institution"m}>
           <%= if user.institution_id do %>
@@ -157,7 +161,9 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
                 </dt>
                 <dd class="text-base-content/60 text-sm/6 mt-1 sm:col-span-2 sm:mt-0">
                   <%= for role <- @selected_user.roles do %>
-                    <%= role %>
+                    <.badge color="gray">
+                      <span class="px-1.5"><%= role %></span>
+                    </.badge>
                   <% end %>
                 </dd>
               </div>
@@ -181,6 +187,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
             id={@user.id || :new}
             action={@live_action}
             user={@user}
+            current_user={@current_user}
           />
         </.modal>
       </:portal>
