@@ -4,9 +4,9 @@ defmodule DataAggregatorWeb.Blocks.EmptyState do
   """
 
   use Phoenix.Component
+  use DataAggregatorWeb.Gettext
 
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
-  import DataAggregatorWeb.Gettext
 
   @doc """
   Renders an empty state block.

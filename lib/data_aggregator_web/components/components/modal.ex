@@ -4,10 +4,10 @@ defmodule DataAggregatorWeb.Components.Modal do
   """
 
   use Phoenix.Component
+  use DataAggregatorWeb.Gettext
 
   import DataAggregatorWeb.Blocks.Header, only: [section_heading: 1]
   import DataAggregatorWeb.Components.Button, only: [close_button: 1]
-  import DataAggregatorWeb.Gettext
 
   alias Phoenix.LiveView.JS
 

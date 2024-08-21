@@ -128,25 +128,25 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Updated At"
 msgstr "Aktualisiert am"
 
-#: lib/data_aggregator_web/components/components/alert.ex:87
+#: lib/data_aggregator_web/components/components/alert.ex:86
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Alert"
 msgid "Are you sure?"
 msgstr "Bist Du sicher?"
 
-#: lib/data_aggregator_web/components/components/alert.ex:94
+#: lib/data_aggregator_web/components/components/alert.ex:93
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Alert"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: lib/data_aggregator_web/components/components/alert.ex:102
+#: lib/data_aggregator_web/components/components/alert.ex:101
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Alert"
 msgid "OK"
 msgstr ""
 
-#: lib/data_aggregator_web/components/components/alert.ex:109
+#: lib/data_aggregator_web/components/components/alert.ex:108
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Alert"
 msgid "close"
@@ -1117,17 +1117,17 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Add"
 msgstr "Neu"
 
-#: lib/data_aggregator_web/components/components/combobox.ex:251
+#: lib/data_aggregator_web/components/components/combobox.ex:250
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Add"
 msgstr "Neu"
 
-#: lib/data_aggregator_web/components/components/combobox.ex:252
+#: lib/data_aggregator_web/components/components/combobox.ex:251
 #, elixir-autogen, elixir-format
 msgid "No results found for"
 msgstr "Keine Ergebnisse gefunden für"
 
-#: lib/data_aggregator_web/components/components/combobox.ex:266
+#: lib/data_aggregator_web/components/components/combobox.ex:265
 #, elixir-autogen, elixir-format
 msgid "Remove this item"
 msgstr "Diesen Eintrag entfernen"
@@ -2607,8 +2607,8 @@ msgctxt "DataAggregatorWeb.Filters.CheckboxGroup"
 msgid "No entries found"
 msgstr "Keine Einträge vorhanden"
 
-#: lib/data_aggregator_web/components/filters/clear_link.ex:30
-#: lib/data_aggregator_web/components/filters/clear_link.ex:43
+#: lib/data_aggregator_web/components/filters/clear_link.ex:29
+#: lib/data_aggregator_web/components/filters/clear_link.ex:42
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Filters.ClearLink"
 msgid "Clear"
@@ -2754,3 +2754,15 @@ msgstr "Import Layer"
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Publish"
 msgstr "Veröffentlichen"
+
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:385
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
+msgid "Catalog Number"
+msgstr "Katalognummer"
+
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:388
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
+msgid "Scientific Name"
+msgstr "Wissenschaftlicher Name"

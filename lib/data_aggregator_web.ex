@@ -42,7 +42,8 @@ defmodule DataAggregatorWeb do
         formats: [:html, :json],
         layouts: [html: DataAggregatorWeb.Layouts]
 
-      import DataAggregatorWeb.Gettext
+      use DataAggregatorWeb.Gettext
+
       import Plug.Conn
 
       unquote(verified_routes())
@@ -86,7 +87,7 @@ defmodule DataAggregatorWeb do
       use DataAggregatorWeb.Blocks
 
       # Translation
-      import DataAggregatorWeb.Gettext
+      use DataAggregatorWeb.Gettext
 
       # Formatters
       import DataAggregatorWeb.Helpers

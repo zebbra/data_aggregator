@@ -4,9 +4,9 @@ defmodule DataAggregatorWeb.Components.Button do
   """
 
   use Phoenix.Component
+  use DataAggregatorWeb.Gettext
 
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
-  import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
   alias Phoenix.LiveView.JS

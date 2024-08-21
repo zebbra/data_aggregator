@@ -4,11 +4,11 @@ defmodule DataAggregatorWeb.Components.Flash do
   """
 
   use Phoenix.Component
+  use DataAggregatorWeb.Gettext
 
   import DataAggregatorWeb.Components.Button, only: [close_button: 1]
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Components.Transitions, only: [show: 1, hide: 1, hide: 2]
-  import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
   alias Phoenix.LiveView.JS
