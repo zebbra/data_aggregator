@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
+    domain: DataAggregator.Records,
     extensions: [AshUUID]
 
   alias DataAggregator.Records.Actions
@@ -13,31 +14,42 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
   alias DataAggregator.Taxonomy.Catalog
 
   attributes do
-    uuid_attribute :id, prefix: "rer"
+    uuid_attribute :id, prefix: "rer", public?: true
 
-    attribute :input, :map, allow_nil?: false, description: "The input data for the encoding"
-    attribute :output, :map, allow_nil?: false, description: "The output data of the encoding"
+    attribute :input, :map,
+      allow_nil?: false,
+      description: "The input data for the encoding",
+      public?: true
+
+    attribute :output, :map,
+      allow_nil?: false,
+      description: "The output data of the encoding",
+      public?: true
 
     attribute :message, :string,
       allow_nil?: true,
-      description: "A message describing the result of the encoding"
+      description: "A message describing the result of the encoding",
+      public?: true
 
     attribute :catalog, Catalog,
       allow_nil?: false,
-      description: "The catalog used for the encoding"
+      description: "The catalog used for the encoding",
+      public?: true
 
     attribute :state, EncodingResultState,
       allow_nil?: false,
-      description: "The state of the encoding result"
+      description: "The state of the encoding result",
+      public?: true
 
-    timestamps private?: false, writable?: false
+    timestamps public?: true, writable?: false
   end
 
   relationships do
-    belongs_to :record, Record
+    belongs_to :record, Record, public?: true
   end
 
   actions do
+    default_accept :*
     defaults [:read, :destroy]
 
     read :filter_by_record do
@@ -55,21 +67,21 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
 
     create :create do
       primary? true
-      argument :record, Record
+      argument :record, :struct
 
       change manage_relationship(:record, :record, type: :append)
     end
 
     update :update do
       primary? true
-      argument :record, Record
+      argument :record, :struct
+      require_atomic? false
 
       change manage_relationship(:record, :record, type: :append)
     end
   end
 
   code_interface do
-    define_for DataAggregator.Records
     define :read
     define :create
     define :update

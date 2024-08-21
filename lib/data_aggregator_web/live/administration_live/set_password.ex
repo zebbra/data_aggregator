@@ -39,12 +39,6 @@ defmodule DataAggregatorWeb.AdministrationLive.SetPassword do
               label={~t"Password"m}
               placeholder={~t"Enter your password"m}
             />
-            <.field
-              type="password"
-              field={@form[:password_confirmation]}
-              label={~t"Password Confirmation"m}
-              placeholder={~t"Enter your password again"m}
-            />
             <div>
               <button
                 type="submit"

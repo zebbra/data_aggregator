@@ -144,7 +144,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
 
   defp build_form(%{action: :new}) do
     Collection
-    |> Form.for_create(:create, api: DataAggregator.Records, as: "collection")
+    |> Form.for_create(:create, domain: DataAggregator.Records, as: "collection")
     |> to_form()
   end
 

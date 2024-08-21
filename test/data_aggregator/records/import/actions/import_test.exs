@@ -125,5 +125,28 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       assert column_names == column_order
     end
+
+    @tag path: "test/support/fixtures/files/duplicated_key_constraint_import.csv"
+    test "detects duplicated key constrainst and adds error to import", %{import: import} do
+      custom_mapping = [
+        %{name: "verbatimIdentification", mapped_to: "tax_scientific_name"},
+        %{name: "catalogNumber", mapped_to: "mte_catalog_number"}
+      ]
+
+      import = Import.update_mapping!(import, custom_mapping)
+
+      assert {result, logs} = with_log(fn -> Import.import(import) end)
+      assert {:ok, import} = result
+
+      assert logs =~ "Found 1/2 invalid rows. Adding error to changeset"
+
+      assert logs =~
+               "1 errors occured while importing. Adding errors as file to `import.error_log`"
+
+      assert import.state == :failed
+      assert import.records_count == 0
+      assert import.rows_imported_count == 0
+      assert import.rows_invalid_count == 0
+    end
   end
 end

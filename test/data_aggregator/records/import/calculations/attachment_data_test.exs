@@ -5,7 +5,6 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentDataTest do
   use Mimic
 
   alias DataAggregator.Gbif
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
 
@@ -40,7 +39,7 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentDataTest do
   end
 
   test "original data", %{import: import} do
-    {:ok, import} = Records.load(import, :attachment_data)
+    {:ok, import} = Ash.load(import, :attachment_data)
 
     columns =
       Explorer.DataFrame.dtypes(import.attachment_data)
@@ -53,7 +52,7 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentDataTest do
   end
 
   test "mapped data", %{import: import} do
-    {:ok, import} = Records.load(import, attachment_data: [mapped: true])
+    {:ok, import} = Ash.load(import, attachment_data: [mapped: true])
 
     columns =
       Explorer.DataFrame.dtypes(import.attachment_data)

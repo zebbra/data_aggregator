@@ -19,7 +19,7 @@ defmodule DataAggregator.Records.Record.Changes.EnqueueEncoder do
     case insert_job(record) do
       {:ok, job} ->
         Logger.debug("Enqueued record encoding job #{inspect(job.id)}")
-        Changeset.manage_relationship(changeset, :encoder_job, job)
+        changeset
 
       {:error, error} ->
         Logger.error("Failed to enqueue record encoding job: #{inspect(error)}")

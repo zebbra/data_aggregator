@@ -50,15 +50,6 @@ module.exports = {
     //     <div class="phx-click-loading:animate-ping">
     //
     plugin(({ addVariant }) =>
-      addVariant("phx-no-feedback", [".phx-no-feedback&", ".phx-no-feedback &"])
-    ),
-    plugin(({ addVariant }) =>
-      addVariant("phx-feedback", [
-        ".form-control:not(.phx-no-feedback)&",
-        ".form-control:not(.phx-no-feedback) &",
-      ])
-    ),
-    plugin(({ addVariant }) =>
       addVariant("phx-click-loading", [
         ".phx-click-loading&",
         ".phx-click-loading &",

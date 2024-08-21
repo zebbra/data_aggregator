@@ -5,7 +5,6 @@ defmodule DataAggregator.Records.Import.Calculations.MappingsTest do
   use Mimic
 
   alias DataAggregator.Gbif
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
 
@@ -33,7 +32,7 @@ defmodule DataAggregator.Records.Import.Calculations.MappingsTest do
   end
 
   test "with missing mappings", %{import: import} do
-    {:ok, import} = Records.load(import, :mappings, lazy?: true)
+    {:ok, import} = Ash.load(import, :mappings, lazy?: true)
 
     expected = [
       {nil, "mte_catalog_number"},
@@ -44,7 +43,7 @@ defmodule DataAggregator.Records.Import.Calculations.MappingsTest do
   end
 
   test "with all mandatory attributes mapped", %{import: import} do
-    {:ok, import} = Records.load(import, :mappings, lazy?: true)
+    {:ok, import} = Ash.load(import, :mappings, lazy?: true)
 
     import =
       Import.update_mapping!(import, [

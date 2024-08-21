@@ -12,6 +12,7 @@ defmodule DataAggregator.Records.Record.Changes.SetPublicationStale do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.after_action(changeset, &set_publication_stale/2)
   end
@@ -31,8 +32,15 @@ defmodule DataAggregator.Records.Record.Changes.SetPublicationStale do
     {:ok, record}
   end
 
-  defp target_status(record, attribute) do
-    case Map.get(record, attribute) do
+  defp target_status(record, :approval_status) do
+    case Map.get(record, :approval_status) do
+      :not_published -> :not_published
+      _ -> :stale
+    end
+  end
+
+  defp target_status(record, :fast_track_status) do
+    case Map.get(record, :fast_track_status) do
       :not_published -> :not_published
       _ -> :stale
     end

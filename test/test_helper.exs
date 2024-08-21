@@ -1,10 +1,12 @@
-alias DataAggregator.Gbif.RestAPI
+alias DataAggregator.Gbif
+alias DataAggregator.Opencage
 alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
 ExUnit.configure(formatters: [JUnitFormatter, ExUnit.CLIFormatter], exclude: [pending: true])
 
 Mimic.copy(SwissSpecies)
-Mimic.copy(RestAPI)
+Mimic.copy(Gbif.RestAPI)
+Mimic.copy(Opencage.RestAPI)
 
 ExUnit.start()
 Ecto.Adapters.SQL.Sandbox.mode(DataAggregator.Repo, :manual)

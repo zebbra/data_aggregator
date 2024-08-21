@@ -225,12 +225,6 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
               </div>
               <%= @selected_publication.duration %>
             </:item>
-
-            <:item title={~t"Job"m}>
-              <div :if={@selected_publication.job}>
-                <%= @selected_publication.job.id %> <%= @selected_publication.job.state %>
-              </div>
-            </:item>
           </.list>
 
           <:footer :if={can_delete?(@selected_publication)}>
@@ -306,7 +300,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   end
 
   defp list_publications(params, opts \\ [load: @load, action: :by_collection]) do
-    Pagify.validate_and_run(Publication, params, opts, params["id"])
+    AshPagify.validate_and_run(Publication, params, opts, params["id"])
   end
 
   attr :collection, :any

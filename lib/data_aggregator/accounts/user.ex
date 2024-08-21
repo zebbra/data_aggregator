@@ -4,11 +4,11 @@ defmodule DataAggregator.Accounts.User do
     authorizers: [Ash.Policy.Authorizer],
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAuthentication, AshUUID],
-    api: DataAggregator.Accounts
+    domain: DataAggregator.Accounts
+
+  alias AshAuthentication.Strategy.Password.HashPasswordChange
 
   authentication do
-    api DataAggregator.Accounts
-
     strategies do
       password :password do
         identity_field :email
@@ -40,7 +40,12 @@ defmodule DataAggregator.Accounts.User do
 
   attributes do
     uuid_attribute :id, prefix: "usr"
-    attribute :email, :ci_string, allow_nil?: false
+
+    attribute :email, :ci_string do
+      allow_nil? false
+      public? true
+    end
+
     attribute :first_name, :string, allow_nil?: false
     attribute :last_name, :string, allow_nil?: false
     attribute :phone, :string, allow_nil?: true
@@ -68,6 +73,8 @@ defmodule DataAggregator.Accounts.User do
     update :update do
       change set_context(%{strategy_name: :password})
 
+      require_atomic? false
+
       accept [:roles, :first_name, :last_name, :email, :phone, :institution_id]
 
       argument :password, :string do
@@ -75,11 +82,13 @@ defmodule DataAggregator.Accounts.User do
         constraints min_length: 8
       end
 
-      change AshAuthentication.Strategy.Password.HashPasswordChange
+      change HashPasswordChange
     end
 
     update :set_password do
       change set_context(%{strategy_name: :password})
+
+      require_atomic? false
 
       argument :password, :string do
         allow_nil? false
@@ -87,7 +96,7 @@ defmodule DataAggregator.Accounts.User do
         constraints min_length: 8
       end
 
-      change AshAuthentication.Strategy.Password.HashPasswordChange
+      change HashPasswordChange
     end
 
     create :register_with_password do
@@ -101,7 +110,7 @@ defmodule DataAggregator.Accounts.User do
         constraints min_length: 8
       end
 
-      change AshAuthentication.Strategy.Password.HashPasswordChange
+      change HashPasswordChange
       change AshAuthentication.GenerateTokenChange
     end
 
@@ -128,9 +137,9 @@ defmodule DataAggregator.Accounts.User do
   end
 
   code_interface do
-    define_for DataAggregator.Accounts
     define :read
     define :get_by_id, action: :read, get_by: [:id]
+    define :register_with_password
   end
 
   # If using policies, add the following bypass:
@@ -141,7 +150,7 @@ defmodule DataAggregator.Accounts.User do
 
     policy action_type(:read) do
       authorize_if DataAggregator.Checks.IsAdmin
-      authorize_if DataAggregator.Checks.UserMatchesInstitution
+      authorize_if expr(institution_id == ^actor(:institution_id))
     end
   end
 

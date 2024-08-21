@@ -13,7 +13,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   import DataAggregatorWeb.CollectionLive.Import.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
-  alias DataAggregator.Files
   alias DataAggregator.Records.Import
 
   @load load()
@@ -297,12 +296,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               </div>
               <%= @selected_import.duration %>
             </:item>
-
-            <:item title={~t"Job"m}>
-              <div :if={@selected_import.job}>
-                <%= @selected_import.job.id %> <%= @selected_import.job.state %>
-              </div>
-            </:item>
           </.list>
 
           <.table id="import_mapping_table" items={@selected_import.mappings}>
@@ -552,7 +545,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   end
 
   defp list_imports(params, opts \\ [load: @load, action: :by_collection]) do
-    Pagify.validate_and_run(Import, params, opts, params["id"])
+    AshPagify.validate_and_run(Import, params, opts, params["id"])
   end
 
   attr :collection, :any
@@ -572,7 +565,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   end
 
   defp error_log_preview_data(error_log) do
-    error_log = Files.load!(error_log, [:url], lazy?: true)
+    error_log = Ash.load!(error_log, [:url], lazy?: true)
 
     error_log.url
     |> Explorer.DataFrame.from_csv!(max_rows: 100)

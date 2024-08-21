@@ -6,18 +6,18 @@ defmodule DataAggregator.Records.Export.Changes.ExportRecords do
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Export
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.before_action(changeset, &export_records/1, append?: true)
   end
 
   defp export_records(%Changeset{data: original_export} = changeset) do
-    export = Records.load!(original_export, [:collection])
+    export = Ash.load!(original_export, [:collection])
 
     case Collection.export(export) do
       {:ok, export} -> add_success(changeset, export)

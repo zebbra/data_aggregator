@@ -6,6 +6,7 @@ defmodule DataAggregatorWeb.Router do
   import PhoenixStorybook.Router
 
   # Browser
+  alias AshAuthentication.Phoenix.Overrides.Default
 
   pipeline :locale do
     plug :fetch_session
@@ -85,18 +86,21 @@ defmodule DataAggregatorWeb.Router do
       live "/collections/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary
     end
 
-    sign_in_route on_mount: [{DataAggregatorWeb.LiveUserAuth, :live_no_user}],
-                  overrides: [
-                    DataAggregatorWeb.AuthOverrides,
-                    AshAuthentication.Phoenix.Overrides.Default
-                  ]
+    sign_in_route(
+      register_path: "/register",
+      on_mount: [{DataAggregatorWeb.LiveUserAuth, :live_no_user}],
+      overrides: [
+        DataAggregatorWeb.AuthOverrides,
+        Default
+      ]
+    )
 
     sign_out_route AuthController
     auth_routes_for DataAggregator.Accounts.User, to: AuthController
 
     reset_route overrides: [
                   DataAggregatorWeb.AuthOverrides,
-                  AshAuthentication.Phoenix.Overrides.Default
+                  Default
                 ]
   end
 

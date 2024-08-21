@@ -11,10 +11,9 @@ defmodule DataAggregator.Records.Record do
   use Ash.Resource,
     authorizers: [Ash.Policy.Authorizer],
     data_layer: AshPostgres.DataLayer,
-    api: DataAggregator.Records,
+    domain: DataAggregator.Records,
     extensions: [
       AshUUID,
-      AshGraphql.Resource,
       AshJsonApi.Resource,
       DataAggregator.DarwinCore.Resource,
       AshStateMachine,
@@ -22,102 +21,120 @@ defmodule DataAggregator.Records.Record do
     ],
     notifiers: [Ash.Notifier.PubSub]
 
+  use AshPagify.Tsearch
+
   alias __MODULE__
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Jobs.Job
+  alias DataAggregator.Records.ApprovalStatusType
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.PublicationStatusType
+  alias DataAggregator.Records.Record.Calculations.IucnRedlist
   alias DataAggregator.Records.Record.Calculations.Mids
+  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
+  alias Record.Changes.CreateEncodedRecordAfterAction
+  alias Record.Changes.SetBasisOfRecord
+  alias Record.Changes.SetImportedAfterAction
+  alias Record.Changes.SetOccurrenceID
+
+  require Ash.Expr
+  require Ash.Query
 
   @type t :: %Record{}
 
-  @iucn_redlist_categories ["EX", "EW", "RE", "CR(PE)", "CR", "EN"]
-
-  @pagify_scopes %{
+  @ash_pagify_scopes %{
     status: [
       %{name: :all, filter: nil, default?: true},
       %{
         name: :not_encoded,
-        filter: %{
-          or: [
-            %{state: :imported},
-            %{state: :queued},
-            %{state: :encoding},
-            %{state: :failed}
-          ]
-        }
+        filter: %{state: %{not_equals: :encoded}}
       }
     ]
   }
-  def pagify_scopes, do: @pagify_scopes
+  def ash_pagify_scopes, do: @ash_pagify_scopes
+
+  @full_text_search [
+    tsvector_column: [
+      encoded_tsvector: Ash.Expr.expr(encoded_tsvector)
+    ]
+  ]
+  def full_text_search, do: @full_text_search
 
   attributes do
-    uuid_attribute :id, prefix: "rec"
-    attribute :import_data, :map
-    attribute :extra_data, :map
-    attribute :errors, :map
+    uuid_attribute :id, prefix: "rec", public?: true
+    attribute :import_data, :map, public?: true
+    attribute :extra_data, :map, public?: true
+    attribute :errors, :map, public?: true
 
     attribute :fast_track_status, PublicationStatusType,
       allow_nil?: false,
-      default: :not_published
+      default: :not_published,
+      public?: true
 
-    attribute :approval_status, PublicationStatusType, allow_nil?: false, default: :not_published
-    attribute :iucn_redlist_category, :string, allow_nil?: true
+    attribute :approval_status, ApprovalStatusType,
+      allow_nil?: false,
+      default: :not_approved,
+      public?: true
 
-    timestamps private?: false, writable?: false
+    attribute :iucn_redlist_category, :string, allow_nil?: true, public?: true
+
+    attribute :last_approval_started_at, :utc_datetime, allow_nil?: true, public?: true
+    attribute :last_imported_at, :utc_datetime, allow_nil?: true, public?: true
+
+    attribute :tsv, :string, allow_nil?: true
+
+    timestamps public?: true, writable?: false
   end
 
   relationships do
     belongs_to :collection, Collection do
-      api DataAggregator.Records
       allow_nil? false
+      public? true
     end
 
     many_to_many :imports, Import do
-      api DataAggregator.Records
       through Import.Record
+      public? true
     end
 
-    has_many :images, Record.Image
+    has_many :images, Record.Image, public?: true
 
     many_to_many :image_attachments, Attachment do
-      api DataAggregator.Files
       through Record.Image
       source_attribute_on_join_resource :record_id
       destination_attribute_on_join_resource :attachment_id
       join_relationship :images
-    end
-
-    belongs_to :encoder_job, Job do
-      api DataAggregator.Jobs
-      attribute_type :integer
-      attribute_writable? true
-      allow_nil? true
-    end
-
-    belongs_to :fast_track_checker_job, Job do
-      api DataAggregator.Jobs
-      attribute_type :integer
-      attribute_writable? true
-      allow_nil? true
+      public? true
     end
 
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
+      public? true
+    end
+
+    belongs_to :swiss_species, SwissSpecies do
+      source_attribute :tax_taxon_id
+      destination_attribute :usage_key
+
+      allow_nil? true
+      attribute_type :integer
+      define_attribute? false
+      public? true
     end
   end
 
   calculations do
     calculate :iucn_redlist,
               :boolean,
-              expr(
-                :iucn_redlist_category in @iucn_redlist_categories or
-                  encoded_record.iucn_redlist_category in @iucn_redlist_categories
-              )
+              IucnRedlist,
+              public?: true
+
+    calculate :encoded,
+              :boolean,
+              expr(state == :encoded)
 
     calculate :mids_level,
               :integer,
@@ -129,7 +146,8 @@ defmodule DataAggregator.Records.Record do
                   mids_level_one -> 1
                   true -> 0
                 end
-              )
+              ),
+              public?: true
 
     calculate :mids_level_one,
               :boolean,
@@ -146,26 +164,10 @@ defmodule DataAggregator.Records.Record do
     calculate :mids_level_four,
               :boolean,
               Mids.LevelFour
-  end
 
-  state_machine do
-    initial_states [:imported]
-    default_initial_state :imported
+    calculate :tsvector, AshPostgres.Tsvector, expr(tsv)
 
-    transitions do
-      transition :set_imported, from: [:encoded, :failed, :encoding, :imported], to: :imported
-
-      transition :enqueue_encoder,
-        from: [:imported, :encoded, :failed, :encoding],
-        to: :queued
-
-      transition :set_encoding,
-        from: [:queued, :imported, :failed, :encoded],
-        to: :encoding
-
-      transition :set_encoded, from: :encoding, to: :encoded
-      transition :set_encoding_failed, from: :encoding, to: :failed
-    end
+    calculate :encoded_tsvector, AshPostgres.Tsvector, expr(encoded_record.tsv)
   end
 
   paper_trail do
@@ -189,12 +191,33 @@ defmodule DataAggregator.Records.Record do
     version_extensions extensions: [AshJsonApi.Resource]
   end
 
+  state_machine do
+    initial_states [:imported]
+    default_initial_state :imported
+
+    transitions do
+      transition :set_imported, from: [:encoded, :failed, :encoding, :imported], to: :imported
+
+      transition :enqueue_encoder,
+        from: [:imported, :encoded, :failed, :encoding],
+        to: :queued
+
+      transition :set_encoding,
+        from: [:queued, :imported, :failed, :encoded],
+        to: :encoding
+
+      transition :set_encoded, from: :encoding, to: :encoded
+      transition :set_encoding_failed, from: :encoding, to: :failed
+    end
+  end
+
   preparations do
     prepare build(sort: [id: :asc])
     prepare DataAggregator.Preparations.Sort
   end
 
   actions do
+    default_accept :*
     defaults [:update]
 
     read :read do
@@ -221,12 +244,14 @@ defmodule DataAggregator.Records.Record do
 
     create :create do
       primary? true
-      argument :collection, Collection, allow_nil?: false
+      argument :collection, :struct, allow_nil?: false
 
       change Record.Changes.SetGrSciCollInstitution
-      change Record.Changes.SetOccurrenceID
-      change Record.Changes.SetBasisOfRecord
-      change Record.Changes.SetImportedAfterAction
+      change SetOccurrenceID
+      change SetBasisOfRecord
+      change SetImportedAfterAction
+      change CreateEncodedRecordAfterAction
+
       change manage_relationship(:collection, :collection, type: :append)
     end
 
@@ -238,15 +263,16 @@ defmodule DataAggregator.Records.Record do
       its `DataAggregator.Records.Collection`.
       """
 
-      argument :import, Import, allow_nil?: false
+      argument :import, :struct, allow_nil?: false
       argument :params, :map, allow_nil?: false
       change Record.Changes.RelateImport
       change Record.Changes.RelateCollectionFromImport
       change Record.Changes.ExtractAttributes
-      change Record.Changes.SetOccurrenceID
-      change Record.Changes.SetBasisOfRecord
+      change SetOccurrenceID
+      change SetBasisOfRecord
       change Record.Changes.SetPublicationStale
-      change Record.Changes.SetImportedAfterAction
+      change SetImportedAfterAction
+      change CreateEncodedRecordAfterAction
 
       upsert? true
       upsert_identity :collection_mte_catalog_number
@@ -255,26 +281,28 @@ defmodule DataAggregator.Records.Record do
 
     update :enqueue_encoder do
       accept []
+      require_atomic? false
+
       change transition_state(:queued)
       change Record.Changes.EnqueueEncoder
-      change load(:encoder_job)
     end
 
     update :enqueue_fast_track_checker do
       accept []
+      require_atomic? false
+
       change Record.Changes.EnqueueFastTrackChecker
-      change load(:fast_track_checker_job)
     end
 
     action :bulk_import, :map do
       description """
-      Imports multiple records using `DataAggregator.Records.bulk_create/3`.
+      Imports multiple records using `Ash.bulk_create/3`.
 
       The `rows` can be any enumberable, where each item which will be used as `params` for
       the `DataAggregator.Records.Record.import/2` action.
       """
 
-      argument :import, Import, allow_nil?: false
+      argument :import, :struct, allow_nil?: false
       argument :rows, :term, allow_nil?: false
       run Record.Actions.BulkImport
     end
@@ -287,39 +315,61 @@ defmodule DataAggregator.Records.Record do
     end
 
     update :check_if_fast_track_pubished do
+      require_atomic? false
+
       change Record.Changes.CheckIfFastTrackPublished
     end
 
     update :set_imported do
+      require_atomic? false
+
       change transition_state(:imported)
+      change set_attribute(:last_imported_at, &DateTime.utc_now/0)
     end
 
     update :set_encoding do
+      require_atomic? false
+
       change transition_state(:encoding)
     end
 
     update :set_encoded do
+      require_atomic? false
+
       change transition_state(:encoded)
     end
 
     update :set_encoding_failed do
+      require_atomic? false
+
       change transition_state(:failed)
     end
 
     update :update_fast_track_status do
       argument :status, :atom, allow_nil?: false
+      require_atomic? false
 
       change set_attribute(:fast_track_status, expr(^arg(:status)))
     end
 
     update :update_approval_status do
       argument :status, :atom, allow_nil?: false
+      require_atomic? false
 
       change set_attribute(:approval_status, expr(^arg(:status)))
     end
 
+    update :update_last_approval_started_at do
+      accept []
+      require_atomic? false
+
+      change set_attribute(:last_approval_started_at, &DateTime.utc_now/0)
+    end
+
     destroy :destroy do
       primary? true
+      require_atomic? false
+
       change Record.Changes.DestroyVersions
     end
   end
@@ -331,9 +381,11 @@ defmodule DataAggregator.Records.Record do
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
   end
 
-  code_interface do
-    define_for DataAggregator.Records
+  identities do
+    identity :collection_mte_catalog_number, [:collection_id, :mte_catalog_number]
+  end
 
+  code_interface do
     define :read
     define :by_collection, args: [:collection_id]
     define :create
@@ -342,25 +394,24 @@ defmodule DataAggregator.Records.Record do
     define :update
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
+    define :get_by_mte_catalog_number, action: :read, get_by: [:mte_catalog_number]
     define :encode, args: [:record, :catalog]
     define :set_imported
     define :set_encoding
     define :set_encoded
     define :set_encoding_failed
     define :enqueue_encoder
-    define :update_fast_track_status, action: :update_fast_track_status, args: [:status]
-    define :update_approval_status, action: :update_approval_status, args: [:status]
-    define :check_if_fast_track_pubished, action: :check_if_fast_track_pubished
+    define :update_fast_track_status, args: [:status]
+    define :update_approval_status, args: [:status]
+    define :check_if_fast_track_pubished
     define :enqueue_fast_track_checker
-  end
-
-  identities do
-    identity :collection_mte_catalog_number, [:collection_id, :mte_catalog_number]
+    define :update_last_approval_started_at
   end
 
   policies do
     policy action_type(:read) do
-      authorize_if DataAggregator.Checks.RecordMatchesInstitution
+      # authorize_if DataAggregator.Checks.RecordMatchesInstitution
+      authorize_if expr(collection.grscicoll_institution_key == ^actor(:institution_id))
     end
   end
 
@@ -370,21 +421,6 @@ defmodule DataAggregator.Records.Record do
 
     references do
       reference :collection, on_delete: :delete, on_update: :update
-      reference :fast_track_checker_job, on_delete: :nilify, on_update: :update
-    end
-  end
-
-  graphql do
-    type :record
-
-    queries do
-      get :get_record, :read
-      list :list_records, :read
-    end
-
-    mutations do
-      update :update_record, :update
-      destroy :destroy_record, :destroy
     end
   end
 

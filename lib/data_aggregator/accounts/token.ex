@@ -2,11 +2,8 @@ defmodule DataAggregator.Accounts.Token do
   @moduledoc false
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshAuthentication.TokenResource]
-
-  token do
-    api DataAggregator.Accounts
-  end
+    extensions: [AshAuthentication.TokenResource],
+    domain: DataAggregator.Accounts
 
   postgres do
     table "tokens"

@@ -45,8 +45,7 @@ defmodule DataAggregatorWeb.Components.Flash do
       :if={msg = render_slot(@inner_block) || Phoenix.Flash.get(@flash, @kind)}
       id={@id}
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
-      phx-click-away={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
-      phx-hook="FlashHook"
+      phx-hook={@timeout && "FlashHook"}
       data-timeout={@timeout}
       role="alert"
       class={[
@@ -68,7 +67,7 @@ defmodule DataAggregatorWeb.Components.Flash do
         <progress
           :if={@timeout}
           class={[
-            "progress absolute inset-0 h-2 w-0 opacity-100 ease-linear",
+            "progress absolute inset-0 w-0 ease-linear",
             @kind == :info && "progress-success",
             @kind == :error && "progress-error"
           ]}
@@ -124,8 +123,8 @@ defmodule DataAggregatorWeb.Components.Flash do
         class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6"
       >
         <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
-          <.flash kind={:info} title={~t"Success!"m} flash={@flash} timeout={5000} />
-          <.flash kind={:error} title={~t"Error!"m} flash={@flash} timeout={5000} />
+          <.flash kind={:info} title={~t"Success!"m} flash={@flash} timeout={2000} />
+          <.flash kind={:error} title={~t"Error!"m} flash={@flash} timeout={2000} />
           <.flash
             id="client-error"
             kind={:error}

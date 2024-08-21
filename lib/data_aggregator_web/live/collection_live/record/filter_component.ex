@@ -1,13 +1,32 @@
 defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   @moduledoc false
+  @behaviour DataAggregatorWeb.Filters
+
   use DataAggregatorWeb, :live_component
+  use DataAggregatorWeb.Filters
 
   import DataAggregator.Helpers, only: [distinct: 2]
 
+  alias AshPagify.FilterForm
   alias AshPhoenix.FilterForm.Predicate
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
-  alias Pagify.FilterForm
+
+  @impl true
+  def mount(socket) do
+    distinct_options = %{
+      loc_continent: loc_continent_options(),
+      tax_kingdom: tax_kingdom_options(),
+      tax_phylum: tax_phylum_options()
+    }
+
+    socket =
+      socket
+      |> assign(:distinct_options, distinct_options)
+      |> assign(:error, nil)
+
+    {:ok, socket}
+  end
 
   @impl true
   def update(assigns, socket) do
@@ -16,9 +35,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       |> assign(assigns)
       |> assign_form()
       |> assign_collapsible_state()
-      |> format_count(assigns.meta.total_count)
+      |> assign(:count, format_count(assigns.meta.total_count))
       |> assign(:label, Map.get(assigns, :label, ~t"entries"m))
-      |> assign(:error, nil)
 
     {:ok, socket}
   end
@@ -27,45 +45,23 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   def render(assigns) do
     ~H"""
     <div class="contents">
-      <div :if={@error} class="px-6 pt-8">
-        <.collapsible_notification title="An error has occurred" color="red">
-          <:action>
-            <%= ~t"Show more"m %>
-          </:action>
-          <%= @error %>
-        </.collapsible_notification>
-      </div>
-      <.simple_form
-        :let={filter_form}
-        for={@filter_form}
-        phx-target={@myself}
-        phx-change="filter_form:validate"
-        phx-submit="filter_form:submit"
-        onkeydown="return event.key != 'Enter';"
-        class="contents"
+      <.simple_filter_form
+        filter_form={@filter_form}
+        count={@count}
+        label={@label}
+        target={@myself}
+        error={@error}
       >
-        <div class="h-full overflow-y-auto">
+        <:components :let={filter_form}>
           <.filter_form_component
             component={filter_form}
             resource={@meta.resource}
             collapsible_state={@collapsible_state}
+            distinct_options={@distinct_options}
             target={@myself}
           />
-        </div>
-        <:actions class="justify-between" modal>
-          <button disabled={@filter_form.valid? == false} type="submit" class="btn btn-primary">
-            <%= mgettext("Show %{count} %{label}", count: @count, label: @label) %>
-          </button>
-          <button
-            type="button"
-            phx-click="filter_form:reset"
-            phx-target={@myself}
-            class="btn btn-ghost !-mx-4"
-          >
-            <%= ~t"Clear all"m %>
-          </button>
-        </:actions>
-      </.simple_form>
+        </:components>
+      </.simple_filter_form>
     </div>
     """
   end
@@ -74,304 +70,240 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   attr :resource, :atom, required: true, doc: "The resource to filter"
   attr :collapsible_state, :map, required: true, doc: "The state of the collapsible components"
 
+  attr :distinct_options, :map,
+    default: %{},
+    doc: "The map of list of options for the various select filters"
+
   attr :target, :string,
     required: true,
     doc: "The PID of the component that will receive the event"
 
-  defp filter_form_component(%{component: %{source: %Predicate{field: :tax_scientific_name}}} = assigns) do
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :iucn_redlist}}} = assigns) do
     ~H"""
     <div class="px-6">
-      <.fieldset
-        legend={~t"Scientific Name"m}
-        text={~t"Search your records by scientifc name"m}
-        legend_size="xl"
-        class="border-black-white/10 border-b py-8"
-      >
-        <.fieldgroup>
-          <.input type="hidden" field={@component[:field]} />
-          <.input type="hidden" field={@component[:operator]} />
-          <.field field={@component[:value]} class="w-full" phx-debounce="300" />
-        </.fieldgroup>
-      </.fieldset>
+      <.radio_group
+        component={@component}
+        title={~t"IUCN Red List"m}
+        description={~t"Search your records by IUCN Red List of Threatened Speciese"m}
+        target={@target}
+        options={[
+          [key: ~t"Any"m, value: ""],
+          [key: ~t"Endangered"m, value: "true"],
+          [key: ~t"Safe"m, value: "false"]
+        ]}
+        option_descriptions={
+          %{
+            "true" => ~t"Endangered species according to IUCN Red List"m,
+            "false" => ~t"Safe species according to IUCN Red List"m
+          }
+        }
+        top_level
+      />
     </div>
     """
   end
 
-  defp filter_form_component(%{component: %{source: %FilterForm{key: "eve_event_date_range"}}} = assigns) do
+  @impl true
+  def filter_form_component(%{component: %{source: %FilterForm{key: "eve_event_date_range"}}} = assigns) do
     ~H"""
     <div class="px-6">
-      <.fieldset
-        legend={~t"Date"m}
-        text={~t"Search your records by occurrence date"m}
-        legend_size="xl"
-        class="border-black-white/10 border-b py-8"
-      >
-        <.fieldgroup class="flex flex-col gap-8 sm:flex-row">
-          <.inputs_for :let={component} field={@component[:components]}>
-            <.filter_form_component
-              component={component}
-              resource={@resource}
-              collapsible_state={@collapsible_state}
-              target={@target}
-            />
-          </.inputs_for>
-        </.fieldgroup>
-      </.fieldset>
+      <.date_range
+        component={@component}
+        title={~t"Date"m}
+        description={~t"Search your records by occurrence date"m}
+        min_date={Cldr.Calendar.date_from_tuple({1800, 1, 1})}
+        max_date={Cldr.Calendar.current(Date.utc_today(), :day)}
+        presets={[
+          months: ~t"Last Month"m,
+          years: ~t"Last Year"m,
+          century: ~t"Last Century"m
+        ]}
+        target={@target}
+        top_level
+      />
     </div>
     """
   end
 
-  defp filter_form_component(
-         %{component: %{source: %Predicate{field: :eve_event_date, operator: :greater_than_or_equal}}} = assigns
-       ) do
-    assigns =
-      assigns
-      |> assign(:date_min, Cldr.Calendar.date_from_tuple({1800, 1, 1}))
-      |> assign(:date_max, Cldr.Calendar.current(Date.utc_today(), :day))
-
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :mids_level}}} = assigns) do
     ~H"""
-    <.input type="hidden" field={@component[:field]} />
-    <.input type="hidden" field={@component[:operator]} />
-    <.field
-      type="date"
-      field={@component[:value]}
-      label={~t"From"}
-      min={Date.to_string(@date_min)}
-      max={Date.to_string(@date_max)}
-      description={mgettext("From %{date}", date: format_date(@date_min))}
-      phx-debounce="300"
-    />
+    <div class="px-6">
+      <.radio_group
+        component={@component}
+        title={~t"Mids Level"m}
+        description={~t"Search your records by data mids level"m}
+        target={@target}
+        options={[
+          [key: ~t"Any"m, value: ""],
+          [key: 1, value: "1"],
+          [key: 2, value: "2"],
+          [key: 3, value: "3"],
+          [key: 4, value: "4"]
+        ]}
+        option_descriptions={
+          %{
+            "1" => ~t"Records with a Mids Level of at least 1"m,
+            "2" => ~t"Records with a Mids Level of at least 2"m,
+            "3" => ~t"Records with a Mids Level of at least 3"m,
+            "4" => ~t"Records with a Mids Level of at least 4"m
+          }
+        }
+        pills
+        top_level
+      />
+    </div>
     """
   end
 
-  defp filter_form_component(
-         %{component: %{source: %Predicate{field: :eve_event_date, operator: :less_than_or_equal}}} = assigns
-       ) do
-    assigns =
-      assigns
-      |> assign(:date_min, Cldr.Calendar.date_from_tuple({1800, 1, 1}))
-      |> assign(:date_max, Cldr.Calendar.current(Date.utc_today(), :day))
-
-    ~H"""
-    <.input type="hidden" field={@component[:field]} />
-    <.input type="hidden" field={@component[:operator]} />
-    <.field
-      type="date"
-      field={@component[:value]}
-      label={~t"To"}
-      min={Date.to_string(@date_min)}
-      max={Date.to_string(@date_max)}
-      description={mgettext("To %{date}", date: format_date(@date_max))}
-      phx-debounce="300"
-    />
-    """
-  end
-
-  defp filter_form_component(%{component: %{source: %FilterForm{key: "taxonomy"}}} = assigns) do
+  @impl true
+  def filter_form_component(%{component: %{source: %FilterForm{key: "taxonomy"}}} = assigns) do
     ~H"""
     <div class="pt-4">
-      <details
-        class="collapse collapse-arrow rounded-none px-6"
+      <.collapsible_group
+        title={~t"Taxonomy"m}
+        key="taxonomy"
+        target={@target}
         open={open_collapsible?(@collapsible_state, "taxonomy")}
       >
-        <summary
-          class="collapse-title text-base-content text-xl/6 max-w-4xl px-0 font-bold text-inherit max-sm:line-clamp-2 after:!end-1 sm:truncate"
-          phx-click="collapsible_state:toggle"
-          phx-value-key="taxonomy"
-          phx-target={@target}
-        >
-          <%= ~t"Taxonomy"m %>
-        </summary>
-        <div class="collapse-content space-y-6 px-0">
-          <.inputs_for :let={component} field={@component[:components]}>
-            <.filter_form_component
-              component={component}
-              resource={@resource}
-              collapsible_state={@collapsible_state}
-              target={@target}
-            />
-          </.inputs_for>
-        </div>
-      </details>
-      <div class="px-6">
-        <div class="border-black-white/10 border-b pt-4" />
-      </div>
+        <.inputs_for :let={component} field={@component[:components]}>
+          <.filter_form_component
+            component={component}
+            resource={@resource}
+            collapsible_state={@collapsible_state}
+            distinct_options={@distinct_options}
+            target={@target}
+          />
+        </.inputs_for>
+      </.collapsible_group>
     </div>
     """
   end
 
-  defp filter_form_component(%{component: %{source: %Predicate{field: :tax_kingdom}}} = assigns) do
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :tax_scientific_name}}} = assigns) do
     ~H"""
-    <.fieldset legend={~t"Kingdom"m} legend_size="md">
-      <.fieldgroup class="!mt-3">
-        <.input type="hidden" field={@component[:field]} />
-        <.input type="hidden" field={@component[:operator]} />
-        <.input type="hidden" field={@component[:path]} />
-        <.field type="checkgroup" field={@component[:value]} multiple options={tax_kingdom_options()} />
-      </.fieldgroup>
-    </.fieldset>
+    <.text_search
+      component={@component}
+      title={~t"Scientific Name"m}
+      description={~t"Search your records by scientifc name"m}
+      target={@target}
+      legend_size="md"
+    />
     """
   end
 
-  defp filter_form_component(%{component: %{source: %Predicate{field: :tax_phylum}}} = assigns) do
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :tax_kingdom}}} = assigns) do
     ~H"""
-    <.fieldset legend={~t"Phylum"m} legend_size="md">
-      <.fieldgroup class="!mt-3">
-        <.input type="hidden" field={@component[:field]} />
-        <.input type="hidden" field={@component[:operator]} />
-        <.input type="hidden" field={@component[:path]} />
-        <.field type="checkgroup" field={@component[:value]} multiple options={tax_phylum_options()} />
-      </.fieldgroup>
-    </.fieldset>
+    <.checkbox_group
+      component={@component}
+      title={~t"Kingdom"m}
+      target={@target}
+      options={@distinct_options[:tax_kingdom]}
+      legend_size="md"
+    />
     """
   end
 
-  defp filter_form_component(%{component: %{source: %FilterForm{key: "location"}}} = assigns) do
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :tax_phylum}}} = assigns) do
+    ~H"""
+    <.checkbox_group
+      component={@component}
+      title={~t"Phylum"m}
+      target={@target}
+      options={@distinct_options[:tax_phylum]}
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %FilterForm{key: "location"}}} = assigns) do
     ~H"""
     <div class="py-4">
-      <details
-        class="collapse collapse-arrow rounded-none px-6"
+      <.collapsible_group
+        title={~t"Location"m}
+        key="location"
+        target={@target}
         open={open_collapsible?(@collapsible_state, "location")}
+        border_bottom={false}
       >
-        <summary
-          class="collapse-title text-base-content text-xl/6 max-w-4xl px-0 font-bold text-inherit max-sm:line-clamp-2 after:!end-1 sm:truncate"
-          phx-click="collapsible_state:toggle"
-          phx-value-key="location"
-          phx-target={@target}
-        >
-          <%= ~t"Location"m %>
-        </summary>
-        <div class="collapse-content space-y-6 px-0">
-          <.inputs_for :let={component} field={@component[:components]}>
-            <.filter_form_component
-              component={component}
-              resource={@resource}
-              collapsible_state={@collapsible_state}
-              target={@target}
-            />
-          </.inputs_for>
-        </div>
-      </details>
+        <.inputs_for :let={component} field={@component[:components]}>
+          <.filter_form_component
+            component={component}
+            resource={@resource}
+            collapsible_state={@collapsible_state}
+            distinct_options={@distinct_options}
+            target={@target}
+          />
+        </.inputs_for>
+      </.collapsible_group>
     </div>
     """
   end
 
-  defp filter_form_component(%{component: %{source: %Predicate{field: :loc_continent}}} = assigns) do
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :loc_continent}}} = assigns) do
     ~H"""
-    <.fieldset legend={~t"Continent"m} legend_size="md">
-      <.fieldgroup class="!mt-3">
-        <.input type="hidden" field={@component[:field]} />
-        <.input type="hidden" field={@component[:operator]} />
-        <.input type="hidden" field={@component[:path]} />
-        <.field
-          type="checkgroup"
-          field={@component[:value]}
-          multiple
-          options={loc_continent_options()}
-        />
-      </.fieldgroup>
-    </.fieldset>
+    <.checkbox_group
+      component={@component}
+      title={~t"Continent"m}
+      target={@target}
+      options={@distinct_options[:loc_continent]}
+      legend_size="md"
+    />
     """
   end
 
-  defp filter_form_component(%{component: %{source: %FilterForm{}}} = assigns) do
+  # Default implementation for groups
+  @impl true
+  def filter_form_component(%{component: %{source: %FilterForm{}}} = assigns) do
     ~H"""
     <.inputs_for :let={component} field={@component[:components]}>
       <.filter_form_component
         component={component}
         resource={@resource}
         collapsible_state={@collapsible_state}
+        distinct_options={@distinct_options}
         target={@target}
       />
     </.inputs_for>
     """
   end
 
-  defp filter_form_component(%{component: %{source: %Predicate{}}} = assigns) do
+  # Default implementation for predicates
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{}}} = assigns) do
     ~H"""
     <.input type="hidden" field={@component[:field]} />
     <.input type="hidden" field={@component[:operator]} />
+    <.input type="hidden" field={@component[:path]} />
     <.input type="hidden" field={@component[:value]} />
     """
   end
 
   @impl true
-  def handle_event("filter_form:submit", %{"filter" => params}, socket) do
-    %{filter_form: filter_form, path: path, meta: meta} = socket.assigns
-    filter_form = FilterForm.validate(filter_form, params)
-
-    if filter_form.valid? do
-      filter_form_params =
-        FilterForm.params_for_query(filter_form)
-
-      meta = Pagify.set_filter_form(meta, filter_form_params)
-      path = build_path(path, meta)
-
-      send(self(), {"filter_form:submit", meta})
-
-      socket
-      |> push_patch(to: path)
-      |> noreply()
-    else
-      socket
-      |> assign(:filter_form, filter_form)
-      |> assign(:error, ~t"Please review the form and try again")
-      |> noreply()
-    end
-  end
-
-  @impl true
-  def handle_event("filter_form:validate", %{"filter" => params}, socket) do
-    filter_form = socket.assigns.filter_form
-    filter_form = FilterForm.validate(filter_form, params)
-
-    socket
-    |> assign(:filter_form, filter_form)
-    |> assign(:error, nil)
-    |> update_count(FilterForm.params_for_query(filter_form))
-    |> noreply()
-  end
-
-  @impl true
-  def handle_event("filter_form:reset", _, socket) do
-    filter_form = init_form(socket.assigns.meta.resource)
-
-    socket
-    |> assign(:filter_form, filter_form)
-    |> update_count(FilterForm.params_for_query(filter_form), true)
-    |> noreply()
-  end
-
-  @impl true
-  def handle_event("collapsible_state:toggle", %{"key" => key}, socket) do
-    collapsible_state = socket.assigns.collapsible_state
-    collapsible_state = Map.update(collapsible_state, key, false, &(!&1))
-
-    socket
-    |> assign(:collapsible_state, collapsible_state)
-    |> noreply()
-  end
-
-  defp assign_form(socket) do
-    %{meta: %{pagify: %{filter_form: params}, resource: resource}} = socket.assigns
-    filter_form = FilterForm.new(resource, params: params, initial_form: init_form(resource))
-
-    assign(socket, :filter_form, filter_form)
-  end
-
-  defp init_form(resource) do
+  def init_form(resource) do
     resource
     |> FilterForm.new()
-    |> FilterForm.add_predicate(:tax_scientific_name, :contains, nil)
+    |> FilterForm.add_predicate(:iucn_redlist, :eq, "")
     |> FilterForm.add_group(return_id?: true, key: "eve_event_date_range")
     |> then(fn {form, date_range_group_id} ->
       form
       |> FilterForm.add_predicate(:eve_event_date, :greater_than_or_equal, nil, to: date_range_group_id)
       |> FilterForm.add_predicate(:eve_event_date, :less_than_or_equal, nil, to: date_range_group_id)
     end)
+    |> FilterForm.add_predicate(:mids_level, :greater_than_or_equal, "")
     |> FilterForm.add_group(return_id?: true, key: "taxonomy")
     |> then(fn {form, taxonomy_group_id} ->
       form
+      |> FilterForm.add_predicate(:tax_scientific_name, :contains, nil,
+        to: taxonomy_group_id,
+        path: "encoded_record"
+      )
       |> FilterForm.add_predicate(:tax_kingdom, :in, [],
         to: taxonomy_group_id,
         path: "encoded_record"
@@ -390,17 +322,42 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     end)
   end
 
-  defp update_count(%{assigns: %{filter_form: %{valid?: false}}} = socket, _params) do
+  @impl true
+  def handle_preset(filter_form, "eve_event_date_range", preset, socket) do
+    filter_form =
+      FilterForm.update_group(filter_form, "eve_event_date_range", fn predicate ->
+        case predicate.operator do
+          :greater_than_or_equal ->
+            %{predicate | value: shift_date(preset)}
+
+          :less_than_or_equal ->
+            %{predicate | value: Date.utc_today()}
+        end
+      end)
+
+    assign_and_update(socket, filter_form)
+  end
+
+  @impl true
+  def handle_preset(_filter_form, _key, _preset, socket) do
+    {:noreply, socket}
+  end
+
+  @impl true
+  def update_count(%{assigns: %{filter_form: %{valid?: false}}} = socket, _params, _reset) do
     socket
   end
 
-  defp update_count(socket, filter_form_params, reset \\ false) do
+  @impl true
+  def update_count(socket, filter_form_params, reset) do
     %{collection_id: collection_id, meta: meta} = socket.assigns
 
-    query = Record.query_to_by_collection(collection_id)
+    query =
+      Ash.Query.filter_input(Record, %{"collection_id" => collection_id})
+
     count = FilterForm.count(meta, filter_form_params, reset, query)
 
-    format_count(socket, count)
+    assign(socket, :count, format_count(count))
   rescue
     _ ->
       filter_form = init_form(socket.assigns.meta.resource)
@@ -410,20 +367,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       |> assign(:error, ~t"Something went wrong, please try again.")
   end
 
-  defp format_count(socket, count) do
-    if count > 1000 do
-      count = format_number(1000)
-      count = "#{count}+"
-      assign(socket, :count, count)
-    else
-      count = format_number(count)
-      assign(socket, :count, count)
-    end
-  end
-
   defp assign_collapsible_state(socket) do
-    active_filter_form_fields = Pagify.active_filter_form_fields(socket.assigns.meta)
-    active_taxonomy = Enum.any?(~w[tax_kingdom tax_phylum], &(&1 in active_filter_form_fields))
+    active_filter_form_fields = FilterForm.active_filter_form_fields(socket.assigns.meta)
+
+    active_taxonomy =
+      Enum.any?(
+        ~w[tax_scientific_name tax_kingdom tax_phylum],
+        &(&1 in active_filter_form_fields)
+      )
+
     active_location = Enum.any?(~w[loc_continent], &(&1 in active_filter_form_fields))
 
     assign(socket, :collapsible_state, %{
@@ -432,7 +384,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     })
   end
 
-  def open_collapsible?(collapsible_state, key) do
+  defp open_collapsible?(collapsible_state, key) do
     Map.get(collapsible_state, key, false)
   end
 

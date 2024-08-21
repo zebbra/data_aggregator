@@ -5,41 +5,43 @@ defmodule DataAggregator.Platform.Institution do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    api: DataAggregator.Platform,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource]
+    domain: DataAggregator.Platform,
+    extensions: [AshUUID, AshJsonApi.Resource]
 
   alias DataAggregator.Records.Validations
 
   attributes do
-    uuid_attribute :id, prefix: "ins"
-    attribute :name, :string, allow_nil?: false
+    uuid_attribute :id, prefix: "ins", public?: true
+    attribute :name, :string, allow_nil?: false, public?: true
 
     attribute :code, :string do
+      public? true
       description "an iternationally valid code to identify the institution"
     end
 
-    attribute :address, :string
-    attribute :zip_code, :string
-    attribute :city, :string
-    attribute :country, :string
-    attribute :mail, :string
-    attribute :tel, :string
-    attribute :contact_person, :string
+    attribute :address, :string, public?: true
+    attribute :zip_code, :string, public?: true
+    attribute :city, :string, public?: true
+    attribute :country, :string, public?: true
+    attribute :mail, :string, public?: true
+    attribute :tel, :string, public?: true
+    attribute :contact_person, :string, public?: true
 
     attribute :grscicoll_reference, :string do
       description "a code to identify the institution in the GrSciColl database"
       allow_nil? false
+      public? true
     end
 
-    timestamps private?: false, writable?: false
+    timestamps public?: true, writable?: false
   end
 
   actions do
+    default_accept :*
     defaults [:create, :read, :update, :destroy]
   end
 
   code_interface do
-    define_for DataAggregator.Platform
     define :read
     define :create, action: :create
     define :read_all, action: :read
@@ -48,30 +50,15 @@ defmodule DataAggregator.Platform.Institution do
     define :get_by_id, action: :read, get_by: [:id]
   end
 
-  postgres do
-    table "institutions"
-    repo DataAggregator.Repo
-  end
-
   validations do
     validate {Validations.GrSciCollValidator, [attribute: :grscicoll_reference, kind: :institution]} do
       on [:create, :update]
     end
   end
 
-  graphql do
-    type :institution
-
-    queries do
-      get :get_institution, :read
-      list :list_institutions, :read
-    end
-
-    mutations do
-      create :create_institution, :create
-      update :update_institution, :update
-      destroy :destroy_institution, :destroy
-    end
+  postgres do
+    table "institutions"
+    repo DataAggregator.Repo
   end
 
   json_api do

@@ -45,7 +45,7 @@ defmodule DataAggregator.MixProject do
   defp extra_applications(_), do: [:logger, :runtime_tools, :ssl, :os_mon]
 
   # Specifies which paths to compile per environment.
-  defp elixirc_paths(:test), do: ["lib", "test/support", "test/pagify/support"]
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
   defp docs do
@@ -56,7 +56,10 @@ defmodule DataAggregator.MixProject do
       groups_for_extras: groups_for_extras(),
       nest_modules_by_prefix: nest_modules_by_prefix(),
       before_closing_body_tag: &before_closing_body_tag/1,
-      output: "priv/static/docs"
+      output: "priv/static/docs",
+      skip_undefined_reference_warnings_on: [
+        "docs/overview.md"
+      ]
     ]
   end
 
@@ -109,8 +112,7 @@ defmodule DataAggregator.MixProject do
     [
       DataAggregator,
       DataAggregatorWeb,
-      DataAggregatorApi,
-      Pagify
+      DataAggregatorApi
     ]
   end
 
@@ -154,8 +156,9 @@ defmodule DataAggregator.MixProject do
       Components: [
         ~r/^DataAggregatorWeb\.Blocks/,
         ~r/^DataAggregatorWeb\.Components/,
-        ~r/^DataAggregatorWeb\.LiveComponents/,
-        ~r/^DataAggregatorWeb\.Layouts/
+        ~r/^DataAggregatorWeb\.Filters/,
+        ~r/^DataAggregatorWeb\.Layouts/,
+        ~r/^DataAggregatorWeb\.LiveComponents/
       ],
       "Live Hooks": [
         DataAggregatorWeb.LiveLocale,
@@ -169,10 +172,6 @@ defmodule DataAggregator.MixProject do
       ],
       Plugs: [
         ~r/^DataAggregatorWeb\.Plug/
-      ],
-      Pagify: [
-        Pagify,
-        ~r/^Pagify\./
       ]
     ]
   end
@@ -183,52 +182,52 @@ defmodule DataAggregator.MixProject do
   defp deps do
     [
       # Phoenix Framework
-      {:bandit, "~> 1.5.0"},
-      {:phoenix, "~> 1.7.12"},
-      {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_html, "~> 4.0"},
+      {:bandit, "~> 1.5.5"},
+      {:phoenix, "~> 1.7.14"},
+      {:phoenix_ecto, "~> 4.6"},
+      {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
-      {:phoenix_live_view, "~> 0.20.11"},
-      {:phoenix_storybook, "~> 0.6.0"},
+      {:phoenix_live_view, "~> 1.0.0-rc.5", override: true},
+      {:phoenix_storybook, "~> 0.6.3"},
 
       # Ash Framework
-      {:ash, "~> 2.13"},
-      {:ash_graphql, "~> 0.28.0"},
-      {:ash_json_api, "~> 0.34.0"},
-      {:ash_phoenix, "~> 1.2"},
-      {:ash_postgres, "~> 1.3"},
-      {:ash_state_machine, "~> 0.2.2"},
-      {:ash_uuid, "~> 0.7"},
+      {:ash, "~> 3.3", override: true},
+      {:ash_json_api, "~> 1.4"},
+      {:ash_phoenix, "~> 2.1"},
+      {:ash_postgres, "~> 2.1", override: true},
+      {:ash_state_machine, "~> 0.2"},
+      {:ash_uuid, "~> 1.1"},
       {:ash_paper_trail, "~> 0.1"},
-      {:ash_authentication, "~> 3.11"},
-      {:ash_authentication_phoenix, "~> 1.9.4"},
+      {:ash_pagify, "~> 1.0"},
+      {:ash_authentication, "~> 4.0"},
+      {:ash_authentication_phoenix, "~> 2.0"},
 
       # Database and Ecto
       {:ecto, "~> 3.11.0"},
-      {:ecto_sql, "~> 3.11.0"},
-      {:ecto_dev_logger, "~> 0.9"},
+      {:ecto_sql, "~> 3.11.3"},
+      {:ecto_dev_logger, "~> 0.11"},
       {:ecto_psql_extras, "~> 0.7"},
       {:postgrex, ">= 0.0.0"},
 
       # Testing and Linting
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:assertions, "~> 0.19", only: :test},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
-      {:mimic, "~> 1.7", only: :test},
-      {:styler, "~> 0.11", only: [:dev, :test], runtime: false},
+      {:mimic, "~> 1.8", only: :test},
+      {:styler, "~> 1.0", only: [:dev, :test], runtime: false},
       {:junit_formatter, "~> 3.3", only: :test},
-      {:ex_machina, "~> 2.7.0", only: :test},
+      {:ex_machina, "~> 2.8.0", only: :test},
 
       # Assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.2.3", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
-       tag: "v2.1.1",
+       tag: "v2.1.5",
        sparse: "optimized",
        app: false,
        compile: false,
@@ -238,40 +237,43 @@ defmodule DataAggregator.MixProject do
       # Internationalization and Localization
       {:gettext, "~> 0.20"},
       {:ex_cldr, "~> 2.37"},
-      {:ex_cldr_dates_times, "~> 2.14"},
+      {:ex_cldr_dates_times, "~> 2.20"},
       {:ex_cldr_numbers, "~> 2.31"},
       {:ex_cldr_units, "~> 3.16"},
       {:ex_cldr_plugs, "~> 1.3"},
       {:timex, "~> 3.0"},
 
       # HTTP and API Utilities
-      {:absinthe_plug, "~> 1.5.8"},
       {:hackney, "~> 1.18"},
-      {:jason, "~> 1.2"},
+      {:jason, "~> 1.4"},
       {:open_api_spex, "~> 3.18"},
       {:redoc_ui_plug, "~> 0.2.1"},
       {:req, "~> 0.5.0"},
 
       # Mailing
       {:swoosh, "~> 1.3"},
+      {:gen_smtp, "~> 1.1"},
 
       # Data Processing and Parsing
-      {:explorer, "~> 0.8.0"},
+      {:explorer, "~> 0.8.3"},
       {:csv, "~> 3.2"},
-      {:waffle, "~> 1.1"},
-      {:ex_aws, "~> 2.5.0"},
+      {:waffle, "~> 1.1.9"},
+      {:ex_aws, "~> 2.5.4"},
       {:ex_aws_s3, "~> 2.0"},
       {:floki, ">= 0.30.0", only: :test},
       {:sweet_xml, "~> 0.6"},
       {:xml_builder, "~> 2.3"},
 
       # Background Jobs
-      {:oban, "~> 2.16"},
+      {:oban, "~> 2.17"},
       {:oban_live_dashboard, "~> 0.1.0"},
 
       # Monitoring and Tracing
-      {:phoenix_live_dashboard, "~> 0.8.1"},
-      {:sentry, "~> 10.0"},
+      {:appsignal, "~> 2.8"},
+      {:appsignal_phoenix, "~> 2.0"},
+      {:ash_appsignal, "~> 0.1.2"},
+      {:phoenix_live_dashboard, "~> 0.8.4"},
+      {:sentry, "~> 10.6"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
 
@@ -280,11 +282,11 @@ defmodule DataAggregator.MixProject do
 
       # Utilities and Helpers
       {:envy, "~> 1.1.1"},
-      {:splode, "~> 0.2.2"},
+      {:picosat_elixir, "~> 0.2"},
 
       # Documentation
       {:ecto_erd, "~> 0.5", only: :dev},
-      {:ex_doc, "~> 0.27", runtime: false},
+      {:ex_doc, "~> 0.34.1", runtime: false},
 
       # Livebook Widgets
       {:kino, "~> 0.12.0", only: :dev},

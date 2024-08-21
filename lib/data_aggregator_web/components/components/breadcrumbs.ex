@@ -56,8 +56,8 @@ defmodule DataAggregatorWeb.Components.Breadcrumbs do
   end
 
   defp li_class(index, length) do
-    if index != length - 2,
-      do: "!hidden sm:!flex",
-      else: "max-sm:text-primary max-sm:before:!content-[] max-sm:font-bold"
+    if index == length - 2,
+      do: "max-sm:text-primary max-sm:before:!content-[] max-sm:font-bold",
+      else: "!hidden sm:!flex"
   end
 end

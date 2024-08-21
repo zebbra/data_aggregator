@@ -9,7 +9,6 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Subscriptions do
 
   alias Ash.Notifier.Notification
   alias DataAggregator.PubSub
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
   alias Phoenix.LiveView.Socket
@@ -61,7 +60,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Subscriptions do
   end
 
   defp handle_publication_created(%Notification{data: publication}, socket) do
-    publication = Records.load!(publication, @load, lazy?: true)
+    publication = Ash.load!(publication, @load, lazy?: true)
     {:noreply, stream_insert(socket, :results, publication, at: 0)}
   end
 

@@ -57,7 +57,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
     element(
       :dataset,
       [
-        title: meta_data["name"]
+        title: meta_data["institutionCode"] <> " - " <> meta_data["name"] <> " - " <> meta_data["code"]
       ] ++
         creators(meta_data) ++
         [
@@ -110,7 +110,9 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
   defp persons(meta_data, type) do
     persons = meta_data["contactPersons"]
 
-    if persons != nil do
+    if persons == nil do
+      []
+    else
       Enum.map(meta_data["contactPersons"], fn person ->
         element(
           type,
@@ -123,8 +125,6 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
           ]
         )
       end)
-    else
-      []
     end
   end
 
@@ -156,9 +156,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
   defp concat_strings(enum, attribute) do
     value = Enum.join(enum, ", ")
 
-    if value != nil do
-      element(attribute, value)
-    end
+    element(attribute, value)
   end
 
   defp pub_date do

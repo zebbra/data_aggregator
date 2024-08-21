@@ -16,6 +16,15 @@ defmodule DataAggregator.Application do
     # Attach default Oban logger
     :ok = Oban.Telemetry.attach_default_logger(encode: false)
 
+    # Make sure AppSignal app is started
+    {:ok, _} = Application.ensure_all_started(:appsignal)
+
+    # Appsignal telemetry for LiveView
+    Appsignal.Phoenix.LiveView.attach()
+
+    # Send logs to app signal
+    Appsignal.Logger.Handler.add("application")
+
     children = [
       # Start the Telemetry supervisor
       DataAggregatorWeb.Telemetry,

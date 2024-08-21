@@ -5,8 +5,8 @@ defmodule DataAggregator.Records.Collection do
 
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    api: DataAggregator.Records,
-    extensions: [AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshStateMachine],
+    domain: DataAggregator.Records,
+    extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub],
     authorizers: [Ash.Policy.Authorizer]
 
@@ -20,65 +20,61 @@ defmodule DataAggregator.Records.Collection do
   @type t :: %Collection{}
 
   attributes do
-    uuid_attribute :id, prefix: "col"
+    uuid_attribute :id, prefix: "col", public?: true
 
-    attribute :items_to_digitize, :integer, allow_nil?: false, default: 0
-    attribute :owner, :string, allow_nil?: true
+    attribute :items_to_digitize, :integer, allow_nil?: false, default: 0, public?: true
+    attribute :owner, :string, allow_nil?: true, public?: true
 
     attribute :name, :string do
       allow_nil? false
+      public? true
     end
 
     attribute :code, :string do
       description "an iternationally valid code to identify the collection"
+      public? true
     end
 
     attribute :grscicoll_reference, :string do
       description "a code to identify the collection in the GrSciColl database"
       allow_nil? false
+      public? true
     end
 
     attribute :grscicoll_institution_key, :string do
       description "the key to identify the institution in the GrSciColl database"
       allow_nil? true
+      public? true
     end
 
     attribute :grscicoll_institution_code, :string do
       description "the code to identify the institution in the GrSciColl database"
       allow_nil? true
+      public? true
     end
 
-    attribute :description, :string
+    attribute :description, :string, public?: true
 
     attribute :gbif_dataset_key, :string do
       description "the key of the dataset (to publish) in the GBIF database"
       allow_nil? true
+      public? true
     end
 
-    attribute :import_mapping, {:array, :map}
+    attribute :import_mapping, {:array, :map}, public?: true
 
-    attribute :type, CollectionType, allow_nil?: false
+    attribute :type, CollectionType, allow_nil?: false, public?: true
 
     # allow sorting by inserted_at/updated_at
-    timestamps private?: false, writable?: false
+    timestamps public?: true, writable?: false
   end
 
   relationships do
-    belongs_to :institution, DataAggregator.Platform.Institution do
-      api DataAggregator.Platform
-    end
+    belongs_to :institution, DataAggregator.Platform.Institution, public?: true
 
-    has_many :imports, DataAggregator.Records.Import do
-      api DataAggregator.Records
-    end
-
-    has_many :exports, DataAggregator.Records.Export do
-      api DataAggregator.Records
-    end
-
-    has_many :records, DataAggregator.Records.Record do
-      api DataAggregator.Records
-    end
+    has_many :imports, DataAggregator.Records.Import, public?: true
+    has_many :exports, DataAggregator.Records.Export, public?: true
+    has_many :records, DataAggregator.Records.Record, public?: true
   end
 
   calculations do
@@ -90,7 +86,8 @@ defmodule DataAggregator.Records.Collection do
                   do: 100 * records_count / items_to_digitize,
                   else: 0
                 )
-              )
+              ),
+              public?: true
 
     calculate :encoding_state,
               :atom,
@@ -126,7 +123,7 @@ defmodule DataAggregator.Records.Collection do
   end
 
   aggregates do
-    count :records_count, :records
+    count :records_count, :records, public?: true
     count :imports_count, :imports
 
     count :records_count_not_encoded, :records do
@@ -186,6 +183,7 @@ defmodule DataAggregator.Records.Collection do
   end
 
   actions do
+    default_accept :*
     defaults [:update, :destroy]
 
     read :read do
@@ -214,43 +212,58 @@ defmodule DataAggregator.Records.Collection do
 
     update :register_at_gbif do
       argument :dwca_file_url, :string, allow_nil?: false
+      require_atomic? false
 
       change Records.Collection.Changes.RegisterAtGbif
     end
 
     update :set_importing do
       accept []
+      require_atomic? false
+
       change transition_state(:importing)
     end
 
     update :set_exporting do
       accept []
+      require_atomic? false
+
       change transition_state(:exporting)
     end
 
     update :set_encoding do
       accept []
+      require_atomic? false
+
       change transition_state(:encoding)
       change Changes.SetEncoding
     end
 
     update :set_fast_track_publishing do
       accept []
+      require_atomic? false
+
       change transition_state(:fast_track_publishing)
     end
 
     update :set_approving do
       accept []
+      require_atomic? false
+
       change transition_state(:approving)
     end
 
     update :set_idle do
       accept []
+      require_atomic? false
+
       change transition_state(:idle)
     end
 
     update :set_idle_encoding do
       accept []
+      require_atomic? false
+
       change transition_state(:idle)
     end
 
@@ -260,10 +273,19 @@ defmodule DataAggregator.Records.Collection do
       run Records.Actions.ExportRecords
     end
 
+    # starts the publication process to the svnhc portal for the given query of records
     action :publish, :map do
       argument :publication, :struct, allow_nil?: false
 
       run Records.Actions.Publish
+    end
+
+    # starts the approval process towards infospecies for the given query of records
+    action :approve, :map do
+      argument :collection, :struct, allow_nil?: false
+      argument :query, :map, allow_nil?: false
+
+      run Records.Actions.Approve
     end
   end
 
@@ -285,7 +307,6 @@ defmodule DataAggregator.Records.Collection do
   end
 
   code_interface do
-    define_for DataAggregator.Records
     define :read
     define :create, action: :create
     define :read_all, action: :read
@@ -295,7 +316,8 @@ defmodule DataAggregator.Records.Collection do
     define :get_by_id, action: :read, get_by: [:id]
     define :touch
     define :export, action: :export, args: [:export]
-    define :publish, action: :publish, args: [:publication]
+    define :publish, args: [:publication]
+    define :approve, args: [:collection, :query]
     define :register_at_gbif, args: [:dwca_file_url]
 
     define :set_importing
@@ -309,34 +331,27 @@ defmodule DataAggregator.Records.Collection do
 
   policies do
     policy action_type(:read) do
-      authorize_if DataAggregator.Checks.CollectionMatchesInstitution
+      # authorize_if DataAggregator.Checks.CollectionMatchesInstitution
+      authorize_if DataAggregator.Checks.IsAdmin
+      # authorize_if expr(is_nil(grscicoll_institution_key))
+      # authorize_if always()
+      authorize_if expr(grscicoll_institution_key == ^actor(:institution_id))
+    end
+
+    policy action_type([:create, :update, :destroy]) do
+      authorize_if always()
+    end
+  end
+
+  validations do
+    validate {Validations.GrSciCollValidator, [attribute: :grscicoll_reference, kind: :collection]} do
+      on [:create]
     end
   end
 
   postgres do
     table "collections"
     repo DataAggregator.Repo
-  end
-
-  validations do
-    validate {Validations.GrSciCollValidator, [attribute: :grscicoll_reference, kind: :collection]} do
-      on [:create, :update]
-    end
-  end
-
-  graphql do
-    type :collection
-
-    queries do
-      get :get_collection, :read
-      list :list_collections, :read
-    end
-
-    mutations do
-      create :create_collection, :create
-      update :update_collection, :update
-      destroy :destroy_collection, :destroy
-    end
   end
 
   json_api do

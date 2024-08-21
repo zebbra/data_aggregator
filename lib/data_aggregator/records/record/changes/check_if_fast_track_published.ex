@@ -16,9 +16,9 @@ defmodule DataAggregator.Records.Record.Changes.CheckIfFastTrackPublished do
     catalog_number = Changeset.get_attribute(changeset, :mte_catalog_number)
     collection_id = Changeset.get_attribute(changeset, :collection_id)
 
-    %{grscicoll_reference: grscicoll_reference} = Collection.get_by_id!(collection_id)
+    %{gbif_dataset_key: gbif_dataset_key} = Collection.get_by_id!(collection_id)
 
-    case check_if_fast_track_published(catalog_number, grscicoll_reference) do
+    case check_if_fast_track_published(catalog_number, gbif_dataset_key) do
       {:ok, nil} ->
         Logger.debug("Record is not published on GBIF yet. We do nothing.")
 
@@ -31,7 +31,7 @@ defmodule DataAggregator.Records.Record.Changes.CheckIfFastTrackPublished do
 
       {:error, error} ->
         msg =
-          "Error while checking if record is published: #{inspect(error)}. Params were: catalog_number: #{catalog_number}, grscicoll_reference: #{grscicoll_reference}"
+          "Error while checking if record is published: #{inspect(error)}. Params were: catalog_number: #{catalog_number}, gbif_dataset_key: #{gbif_dataset_key}"
 
         Logger.error(msg)
 
@@ -42,8 +42,6 @@ defmodule DataAggregator.Records.Record.Changes.CheckIfFastTrackPublished do
   # checks if the record is published on the GBIF portal
   @spec check_if_fast_track_published(String.t(), String.t()) ::
           {:ok, String.t() | nil} | {:error, any()}
-  defp check_if_fast_track_published(_catalog_number, nil), do: {:error, "Collection's :grscicoll_reference is missing"}
-
   defp check_if_fast_track_published(nil, _dataset_key), do: {:error, "Record's :mte_catalog_number is missing"}
 
   defp check_if_fast_track_published(catalog_number, dataset_key) do

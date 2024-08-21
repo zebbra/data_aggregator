@@ -6,7 +6,6 @@ defmodule DataAggregator.ExportFixtures do
 
   import DataAggregator.RecordsFixtures
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
 
@@ -20,7 +19,7 @@ defmodule DataAggregator.ExportFixtures do
   Generate an export.
   """
   def export_fixture(attrs \\ %{}) do
-    collection = Records.load!(collection_fixture(), [:records_to_export_query])
+    collection = Ash.load!(collection_fixture(), [:records_to_export_query])
 
     @export_defaults
     |> Map.merge(attrs)

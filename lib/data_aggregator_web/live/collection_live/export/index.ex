@@ -198,12 +198,6 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
               </div>
               <%= @selected_export.duration %>
             </:item>
-
-            <:item title={~t"Job"m}>
-              <div :if={@selected_export.job}>
-                <%= @selected_export.job.id %> <%= @selected_export.job.state %>
-              </div>
-            </:item>
           </.list>
 
           <:footer>
@@ -280,7 +274,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
   end
 
   defp list_exports(params, opts \\ [load: @load, action: :by_collection]) do
-    Pagify.validate_and_run(Export, params, opts, params["id"])
+    AshPagify.validate_and_run(Export, params, opts, params["id"])
   end
 
   attr :collection, :any

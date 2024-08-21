@@ -123,7 +123,7 @@ defmodule DataAggregator.Records.Import.Helpers do
       end
     end
 
-    if Records.async_import_progress?() do
+    if Records.execute_async?() do
       upload_fn
       |> Task.async()
       |> Task.await()

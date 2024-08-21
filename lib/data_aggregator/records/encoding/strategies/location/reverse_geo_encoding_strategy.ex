@@ -5,7 +5,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
 
   alias DataAggregator.Misc.Coordinates
   alias DataAggregator.Opencage
-  alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.GeoCoordResult
@@ -24,7 +23,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
   """
   @spec apply_strategy(EncodedRecord.t()) :: EncodingResult.t()
   def apply_strategy(encoded_record) do
-    encoded_record = Records.load!(encoded_record, [:record])
+    encoded_record = Ash.load!(encoded_record, [:record])
 
     case process_record(encoded_record) do
       {:ok, encoded_record} ->

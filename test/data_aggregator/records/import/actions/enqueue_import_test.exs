@@ -7,6 +7,7 @@ defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
+  alias DataAggregator.Records.Import.Workers.Importer
 
   describe "DataAggregator.Records.Import.enqueue_import/1" do
     setup do
@@ -43,9 +44,8 @@ defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
         assert {:ok, import} = Import.enqueue_import(import)
 
         assert import.state == :import_queued
-        assert import.job != nil
 
-        assert_enqueued(worker: Import.Workers.Importer, args: %{id: import.id})
+        assert_enqueued(worker: Importer, args: %{id: import.id})
       end)
     end
 
@@ -108,7 +108,7 @@ defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
       assert {:error, %Ash.Error.Invalid{}} = Import.enqueue_import(import)
       import = Import.get_by_id!(import.id)
       assert import.state == :pending
-      refute_enqueued(worker: Import.Workers.Importer, args: %{id: import.id})
+      refute_enqueued(worker: Importer, args: %{id: import.id})
     end
   end
 end

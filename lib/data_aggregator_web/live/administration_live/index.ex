@@ -260,7 +260,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
 
   defp list_users(params, actor, opts \\ []) do
     opts = Keyword.merge(opts, authorize?: true, actor: actor)
-    Pagify.validate_and_run(User, params, opts)
+    AshPagify.validate_and_run(User, params, opts)
   end
 
   def no_results_content(assigns) do

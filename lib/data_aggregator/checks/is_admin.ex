@@ -8,7 +8,7 @@ defmodule DataAggregator.Checks.IsAdmin do
   end
 
   def match?(%{roles: roles} = _actor, _context, _opts) do
-    Enum.member?(roles, "admin")
+    "admin" in roles
   end
 
   def match?(_, _, _), do: false

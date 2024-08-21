@@ -50,7 +50,7 @@ jobs:
           version-type: strict
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4.0.3
         with:
           node-version-file: .tool-versions
           cache: npm
@@ -139,7 +139,7 @@ jobs:
         id: versions
 
       - name: Build image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           load: true
@@ -154,7 +154,7 @@ jobs:
 
       - name: Push image to quay.io
         if: github.ref == 'refs/heads/main' || github.ref_type == 'tag'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true

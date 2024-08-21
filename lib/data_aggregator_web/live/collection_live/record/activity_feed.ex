@@ -2,7 +2,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   @moduledoc false
   use DataAggregatorWeb, :html
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Activity
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
@@ -340,7 +339,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   defp assign_activities(assigns) do
-    assign(assigns, :record, Records.load!(assigns.record, :encoded_record, lazy?: true))
+    assign(assigns, :record, Ash.load!(assigns.record, :encoded_record, lazy?: true))
 
     record_versions = record_versions(assigns)
     encoded_record_versions = encoded_record_versions(assigns)
@@ -379,7 +378,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   defp not_published?(activity) do
-    activity.content["approval_status"] == "not_published" or
+    activity.content["approval_status"] == "not_approved" or
       activity.content["fast_track_status"] == "not_published"
   end
 
@@ -414,12 +413,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
         :import
       ]
     )
-    |> Records.read!()
+    |> Ash.read!()
   end
 
   defp encoded_record_versions(assigns) do
     encoded_record_id =
-      if assigns.record.encoded_record != nil, do: assigns.record.encoded_record.id
+      unless assigns.record.encoded_record == nil, do: assigns.record.encoded_record.id
 
     EncodedRecord.Version
     |> Ash.Query.for_read(:read)
@@ -430,7 +429,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
         :update
       ]
     )
-    |> Records.read!()
+    |> Ash.read!()
   end
 
   defp map_to_string(map) when is_map(map) do

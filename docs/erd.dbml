@@ -1,5 +1,26 @@
 
 
+Table tokens {
+  updated_at timestamp
+  created_at timestamp
+  extra_data jsonb
+  purpose varchar
+  expires_at timestamp
+  subject varchar
+  jti varchar [pk]
+}
+
+Table users {
+  id uuid [pk]
+  email ci_string
+  first_name varchar
+  last_name varchar
+  phone varchar
+  hashed_password varchar
+  roles array
+  institution_id uuid
+}
+
 Table file_attachments {
   id uuid [pk]
   filename varchar
@@ -22,6 +43,308 @@ Table institutions {
   grscicoll_reference varchar
   inserted_at timestamp
   updated_at timestamp
+}
+
+Table approvals {
+  id uuid [pk]
+  file_url varchar
+  rows_count integer
+  rows_invalid_count integer
+  rows_approved_count integer
+  rows_error_count integer
+  started_at timestamp
+  finished_at timestamp
+  inserted_at timestamp
+  updated_at timestamp
+  attachment_id uuid
+  error_log_id uuid
+  state varchar
+}
+
+Table approved_records {
+  ext_vernacular_names jsonb
+  ext_species_profile jsonb
+  ext_species_distribution jsonb
+  ext_references jsonb
+  ext_resource_relationship jsonb
+  ext_permit jsonb
+  ext_chronometric jsonb
+  ext_assertions jsonb
+  ext_amplification jsonb
+  oth_specify_author_of_record varchar
+  oth_specify_event varchar
+  oth_specify_locality varchar
+  oth_specify_organism_name varchar
+  oth_specify_person varchar
+  oth_type varchar
+  oth_rights_holder varchar
+  oth_owner_institution_code varchar
+  oth_modified_by varchar
+  oth_license varchar
+  oth_language varchar
+  oth_institution_id varchar
+  oth_institution_code varchar
+  oth_information_withheld varchar
+  oth_date_available varchar
+  oth_dataset_name varchar
+  oth_dataset_id varchar
+  oth_data_generalizations varchar
+  oth_collection_id varchar
+  oth_collection_code varchar
+  oth_bibliographic_citation varchar
+  oth_basis_of_record varchar
+  oth_access_rights varchar
+  pvn_tissue_bank_institution varchar
+  pvn_storage_name varchar
+  pvn_preservation_type varchar
+  pvn_sequence varchar
+  pvn_preservation_temperature varchar
+  pvn_preservation_special_mode varchar
+  pvn_preservation_quality varchar
+  pvn_preservation_mode_text varchar
+  pvn_preservation_mode_keywords varchar
+  pvn_preservation_method varchar
+  pvn_preservation_id varchar
+  pvn_preservation_date_begin varchar
+  pvn_preservation_alteration_text varchar
+  pvn_dna_storage_code varchar
+  pvn_dna_bank_institution varchar
+  occ_occurrence_id varchar
+  org_organism_remarks varchar
+  org_organism_scope varchar
+  org_organism_name varchar
+  org_organism_id varchar
+  org_pathway varchar
+  org_degree_of_establishment varchar
+  org_establishment_means varchar
+  org_sex varchar
+  gec_place_of_origin varchar
+  gec_member varchar
+  gec_group varchar
+  gec_formation varchar
+  gec_lithostratigraphic_terms varchar
+  gec_highest_biostratigraphic_zone varchar
+  gec_lowest_biostratigraphic_zone varchar
+  gec_latest_age_or_highest_stage varchar
+  gec_latest_epoch_or_highest_series varchar
+  gec_latest_period_or_highest_system varchar
+  gec_latest_era_or_highest_erathem varchar
+  gec_latest_eon_or_highest_eonothem varchar
+  gec_earliest_period_or_lowest_system varchar
+  gec_earliest_era_or_lowest_erathem varchar
+  gec_earliest_epoch_or_lowest_series varchar
+  gec_earliest_eon_or_lowest_eonothem varchar
+  gec_earliest_age_or_lowest_stage varchar
+  gec_bed varchar
+  gec_geological_context_id varchar
+  mts_material_sample_type varchar
+  mts_material_sample_id varchar
+  mte_original_biominerals varchar
+  mte_orig_col_author varchar
+  mte_year_collection_entrance integer
+  mte_tissue_bank_id varchar
+  mte_taphonomy varchar
+  mte_sample_designation varchar
+  mte_orientation varchar
+  mte_organism_quantity_method varchar
+  mte_mineralization varchar
+  mte_matrix varchar
+  mte_gbif_doi varchar
+  mte_form varchar
+  mte_feeding_predation_traces varchar
+  mte_extraction_temporary_id varchar
+  mte_encrustation varchar
+  mte_dna_stable_id varchar
+  mte_dna_bank_id varchar
+  mte_depositional_environment_type varchar
+  mte_depositional_environment_text varchar
+  mte_completeness varchar
+  mte_paleo_completeness varchar
+  mte_catalog_number varchar
+  mte_bioerosion varchar
+  mte_assemblage_origin varchar
+  mte_articulation varchar
+  mte_permit_id varchar
+  mte_replacement_minerals varchar
+  mte_barcode_label varchar
+  mte_references varchar
+  mte_other_catalog_numbers varchar
+  mte_associated_media varchar
+  mte_occurrence_status varchar
+  mte_behavior varchar
+  mte_reproductive_condition varchar
+  mte_life_stage varchar
+  mte_organism_quantity_type varchar
+  mte_organism_quantity varchar
+  mte_recorded_by_id varchar
+  mte_recorded_by varchar
+  mte_record_number varchar
+  mte_material_entity_remarks varchar
+  mte_preparations varchar
+  mte_verbatim_label varchar
+  mte_post_burial_transportation varchar
+  mte_part_of_organism varchar
+  mte_parent_material_entity_id varchar
+  mte_anatomical_description varchar
+  mte_material_entity_id varchar
+  loc_swiss_coordinates_y float
+  loc_swiss_coordinates_x float
+  loc_georeference_verification_status varchar
+  loc_georeference_remarks varchar
+  loc_georeference_sources varchar
+  loc_georeference_protocol varchar
+  loc_georeferenced_date date
+  loc_georeferenced_by varchar
+  loc_footprint_spatial_fit float
+  loc_footprint_srs varchar
+  loc_footprint_wkt varchar
+  loc_verbatim_srs varchar
+  loc_verbatim_coordinate_system varchar
+  loc_verbatim_longitude varchar
+  loc_verbatim_latitude varchar
+  loc_verbatim_coordinates varchar
+  loc_point_radius_spatial_fit float
+  loc_coordinate_precision float
+  loc_coordinate_uncertainty_in_meters integer
+  loc_geodetic_datum varchar
+  loc_location_remarks varchar
+  loc_location_according_to varchar
+  loc_maximum_distance_above_surface_in_meters integer
+  loc_minimum_distance_above_surface_in_meters integer
+  loc_verbatim_depth integer
+  loc_maximum_depth_in_meters integer
+  loc_minimum_depth_in_meters integer
+  loc_vertical_datum varchar
+  loc_verbatim_elevation varchar
+  loc_maximum_elevation_in_meters integer
+  loc_minimum_elevation_in_meters integer
+  loc_country_code varchar
+  loc_municipality varchar
+  loc_county varchar
+  loc_decimal_latitude float
+  loc_decimal_longitude float
+  loc_state_province varchar
+  loc_verbatim_locality varchar
+  loc_locality varchar
+  loc_country varchar
+  loc_island varchar
+  loc_island_group varchar
+  loc_continent varchar
+  loc_higher_geography varchar
+  loc_water_body_id varchar
+  loc_water_body varchar
+  loc_higher_geography_id varchar
+  loc_location_id varchar
+  tax_taxon_remarks varchar
+  tax_nomenclatural_status varchar
+  tax_taxonomic_status varchar
+  tax_nomenclatural_code varchar
+  tax_vernacular_name varchar
+  tax_verbatim_taxon_rank varchar
+  tax_taxon_rank varchar
+  tax_accepted_name_usage_id varchar
+  tax_accepted_name_usage varchar
+  tax_taxon_id_ch integer
+  tax_cultivar_epithet varchar
+  tax_specific_epithet varchar
+  tax_infraspecific_epithet varchar
+  tax_infrageneric_epithet varchar
+  tax_scientific_name_authorship varchar
+  tax_generic_name varchar
+  tax_scientific_name varchar
+  tax_sub_tribe varchar
+  tax_tribe varchar
+  tax_sub_genus varchar
+  tax_genus varchar
+  tax_subfamily varchar
+  tax_family varchar
+  tax_order varchar
+  tax_class varchar
+  tax_superfamily varchar
+  tax_phylum varchar
+  tax_kingdom varchar
+  tax_taxon_concept_id varchar
+  tax_higher_classification varchar
+  tax_name_published_in_year varchar
+  tax_name_published_in varchar
+  tax_name_published_in_id varchar
+  tax_name_according_to varchar
+  tax_name_according_to_id varchar
+  tax_original_name_usage varchar
+  tax_original_name_usage_id varchar
+  tax_parent_name_usage varchar
+  tax_parent_name_usage_id varchar
+  tax_scientific_name_id varchar
+  tax_identifier integer
+  tax_taxon_id integer
+  idf_last_verified_by_id varchar
+  idf_last_verified_by varchar
+  idf_verbatim_identification varchar
+  idf_previous_identifications varchar
+  idf_identified_by_id varchar
+  idf_identification_verification_status varchar
+  idf_identification_remarks varchar
+  idf_identification_reference varchar
+  idf_identification_qualifier varchar
+  idf_evidence_type varchar
+  idf_type_status varchar
+  idf_identified_by varchar
+  idf_date_identified date
+  eve_shrub_layer_height_in_meters float
+  eve_start_day_of_year varchar
+  eve_sampling_effort varchar
+  eve_sample_size_unit integer
+  eve_sample_size_value integer
+  eve_sampling_protocol varchar
+  eve_substratum_state varchar
+  eve_substratum varchar
+  eve_micro_structure varchar
+  eve_landscape_structure varchar
+  eve_influence varchar
+  eve_habitat_ref varchar
+  eve_habitat_inclusion varchar
+  eve_habitat_contact varchar
+  eve_habitat_code varchar
+  eve_end_of_period_year integer
+  eve_end_of_period_month integer
+  eve_end_of_period_day integer
+  eve_tree_layer_height_in_meters integer
+  eve_syntaxon_name varchar
+  eve_project varchar
+  eve_mosses_identified boolean
+  eve_lichens_identified boolean
+  eve_inclination_in_degrees integer
+  eve_herb_layer_height_in_centimeters integer
+  eve_event_remarks varchar
+  eve_field_notes varchar
+  eve_habitat varchar
+  eve_verbatim_event_date varchar
+  eve_year integer
+  eve_month integer
+  eve_day integer
+  eve_end_day_of_year integer
+  eve_event_time varchar
+  eve_event_date date
+  eve_field_number varchar
+  eve_parent_event_id varchar
+  eve_event_id varchar
+  eve_cover_water_in_percentage float
+  eve_cover_trees_in_percentage float
+  eve_cover_total_in_percentage float
+  eve_cover_shrubs_in_percentage float
+  eve_cover_rock_in_percentage float
+  eve_cover_mosses_in_percentage float
+  eve_cover_litter_in_percentage float
+  eve_cover_lychens_in_percentage float
+  eve_cover_herbs_in_percentage float
+  eve_cover_cryptogams_in_percentage float
+  eve_cover_algae_in_percentage float
+  eve_aspect varchar
+  id uuid [pk]
+  extra_data jsonb
+  inserted_at timestamp
+  updated_at timestamp
+  record_id uuid
 }
 
 Table collections {
@@ -325,6 +648,7 @@ Table encoded_records {
   id uuid [pk]
   extra_data jsonb
   iucn_redlist_category varchar
+  tsv varchar
   inserted_at timestamp
   updated_at timestamp
   record_id uuid
@@ -368,7 +692,6 @@ Table exports {
   updated_at timestamp
   collection_id uuid
   attachment_id uuid
-  job_id integer
   state varchar
 }
 
@@ -387,7 +710,6 @@ Table imports {
   collection_id uuid
   attachment_id uuid
   error_log_id uuid
-  job_id integer
   state varchar
 }
 
@@ -406,11 +728,11 @@ Table publications {
   records_query jsonb
   published_count integer
   rows_count integer
+  center varchar
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid
   attachment_id uuid
-  job_id integer
   state varchar
 }
 
@@ -700,11 +1022,12 @@ Table records {
   fast_track_status varchar
   approval_status varchar
   iucn_redlist_category varchar
+  last_approval_started_at timestamp
+  last_imported_at timestamp
+  tsv varchar
   inserted_at timestamp
   updated_at timestamp
   collection_id uuid
-  encoder_job_id integer
-  fast_track_checker_job_id integer
   state varchar
 }
 
@@ -737,6 +1060,7 @@ Table swiss_species {
   accepted_usage_key integer
   scientific_name varchar
   rank varchar
+  center varchar
   inserted_at timestamp
   updated_at timestamp
 }
@@ -747,7 +1071,6 @@ Table schema_migrations {
 }
 
 Table "" {
-  autogenerated_id uuid [pk]
   value bytea
   name varchar [pk]
   type varchar
@@ -780,6 +1103,8 @@ Ref: collections.id < imports.collection_id
 Ref: collections.id < publications.collection_id
 Ref: collections.id < records.collection_id
 Ref: encoded_records.id < encoded_records_versions.version_source_id
+Ref: file_attachments.id < approvals.attachment_id
+Ref: file_attachments.id < approvals.error_log_id
 Ref: file_attachments.id < exports.attachment_id
 Ref: file_attachments.id < imports.attachment_id
 Ref: file_attachments.id < imports.error_log_id
@@ -787,13 +1112,10 @@ Ref: file_attachments.id < publications.attachment_id
 Ref: file_attachments.id < record_images.attachment_id
 Ref: imports.id < import_records.import_id
 Ref: institutions.id < collections.institution_id
-Ref: oban_jobs.id < exports.job_id
-Ref: oban_jobs.id < imports.job_id
-Ref: oban_jobs.id < publications.job_id
-Ref: oban_jobs.id < records.encoder_job_id
-Ref: oban_jobs.id < records.fast_track_checker_job_id
+Ref: records.id < approved_records.record_id
 Ref: records.id - encoded_records.record_id
 Ref: records.id < import_records.record_id
 Ref: records.id < record_encoding_results.record_id
 Ref: records.id < record_images.record_id
 Ref: records.id < records_versions.version_source_id
+Ref: swiss_species.usage_key < records.tax_taxon_id

@@ -7,6 +7,7 @@ defmodule DataAggregator.Records.Import.Changes.CreateAttachment do
 
   alias Ash.Changeset
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     path = Changeset.get_argument(changeset, :path)
     filename = Changeset.get_argument(changeset, :filename)

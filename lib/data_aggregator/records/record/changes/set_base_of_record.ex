@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.Record.Changes.SetBasisOfRecord do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     set_base_of_record(changeset)
   end
@@ -18,13 +19,13 @@ defmodule DataAggregator.Records.Record.Changes.SetBasisOfRecord do
   defp set_base_of_record(changeset) do
     oth_basis_of_record = Changeset.get_argument_or_attribute(changeset, :oth_basis_of_record)
 
-    if oth_basis_of_record != nil do
+    if oth_basis_of_record == nil do
+      Logger.debug("Setting basis_of_record ...")
+      Changeset.change_attribute(changeset, :oth_basis_of_record, "PreservedSpecimen")
+    else
       Logger.debug("basis_of_record already set, skipping ...")
 
       changeset
-    else
-      Logger.debug("Setting basis_of_record ...")
-      Changeset.change_attribute(changeset, :oth_basis_of_record, "PreservedSpecimen")
     end
   end
 end

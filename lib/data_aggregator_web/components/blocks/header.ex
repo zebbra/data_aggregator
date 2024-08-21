@@ -39,6 +39,10 @@ defmodule DataAggregatorWeb.Blocks.Header do
     values: ~w(sm md lg xl 2xl),
     doc: "the size of the title"
 
+  attr :fixed_min_height, :boolean,
+    default: true,
+    doc: "force the min-height of the section heading"
+
   attr :break_at, :string,
     default: "none",
     values: ~w(none sm md lg),
@@ -76,6 +80,7 @@ defmodule DataAggregatorWeb.Blocks.Header do
         class={@title_class}
         align_actions={@align_actions}
         size={@size}
+        fixed_min_height={@fixed_min_height}
         break_at={@break_at}
       >
         <%= render_slot(@inner_block) %>
@@ -134,6 +139,10 @@ defmodule DataAggregatorWeb.Blocks.Header do
     values: ~w(sm md lg xl 2xl),
     doc: "the size of the title"
 
+  attr :fixed_min_height, :boolean,
+    default: false,
+    doc: "force the min-height of the section heading"
+
   attr :break_at, :string,
     default: "none",
     values: ~w(none sm md lg),
@@ -155,7 +164,12 @@ defmodule DataAggregatorWeb.Blocks.Header do
 
   def section_heading(assigns) do
     ~H"""
-    <div class={["w-full", break_size_class(@break_at, @align_items), @class]}>
+    <div class={[
+      "w-full",
+      @fixed_min_height && "min-h-[33px] sm:min-h-[50px]",
+      break_size_class(@break_at, @align_items),
+      @class
+    ]}>
       <div class={["min-w-0 flex-1", @align_actions && "sm:mt-2"]}>
         <.dynamic_tag
           :if={@title == []}

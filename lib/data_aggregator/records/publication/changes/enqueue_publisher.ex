@@ -19,7 +19,7 @@ defmodule DataAggregator.Records.Publication.Changes.EnqueuePublisher do
     case insert_job(publication) do
       {:ok, job} ->
         Logger.debug("Enqueued publication job #{inspect(job.id)}")
-        Changeset.change_attribute(changeset, :job_id, job.id)
+        changeset
 
       {:error, error} ->
         Logger.error("Failed to enqueue publication job: #{inspect(error)}")

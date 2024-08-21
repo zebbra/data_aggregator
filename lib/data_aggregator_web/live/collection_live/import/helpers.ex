@@ -18,7 +18,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Helpers do
   def load_all do
     load() ++
       [
-        :job,
         :import_progress,
         :rows_validated_count,
         :rows_invalid_count,
