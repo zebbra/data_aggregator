@@ -139,6 +139,7 @@ defmodule DataAggregator.Accounts.User do
   code_interface do
     define :read
     define :get_by_id, action: :read, get_by: [:id]
+    define :register_with_password
   end
 
   # If using policies, add the following bypass:

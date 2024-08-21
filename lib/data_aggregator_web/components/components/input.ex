@@ -357,29 +357,6 @@ defmodule DataAggregatorWeb.Components.Input do
     """
   end
 
-  def input(%{icon_start: nil, icon_end: _, icon_event: _} = assigns) do
-    ~H"""
-    <div class={["relative w-full", @inline && @class]}>
-      <%= input(%{assigns | icon_end: nil, class: class_names(["w-full pr-10", @class])}) %>
-      <div
-        phx-click={@icon_event}
-        phx-target={@icon_event_target}
-        class="absolute inset-y-0 right-0 flex items-center pr-3"
-      >
-        <.icon
-          name={@icon_end}
-          class={
-            class_names([
-              "size-5 text-base-content/50 sm:text-sm/6",
-              @errors != [] && "phx-feedback:text-error"
-            ])
-          }
-        />
-      </div>
-    </div>
-    """
-  end
-
   def input(%{icon_start: _, icon_end: _} = assigns) do
     ~H"""
     <div class={["relative w-full", @inline && @class]}>

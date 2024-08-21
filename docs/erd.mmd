@@ -1,4 +1,23 @@
 erDiagram
+  tokens {
+    timestamp updated_at
+    timestamp created_at
+    jsonb extra_data
+    varchar purpose
+    timestamp expires_at
+    varchar subject
+    varchar jti PK
+  }
+  users {
+    uuid id PK
+    ci_string email
+    varchar first_name
+    varchar last_name
+    varchar phone
+    varchar hashed_password
+    array roles
+    uuid institution_id
+  }
   file_attachments {
     uuid id PK
     varchar filename
