@@ -1,25 +1,26 @@
 defmodule DataAggregator.Records.Import.Calculations.Mappings do
   @moduledoc """
-  This `Ash.Calculation` calculates the mappings.
+  This `Ash.Resource.Calculation` calculates the mappings.
   """
 
-  use Ash.Calculation
+  use Ash.Resource.Calculation
 
   alias DataAggregator.DarwinCore.Schema.Category
+  alias DataAggregator.Records
   alias DataAggregator.Records.Import
 
   require Logger
 
-  @impl Ash.Calculation
-  def calculate(imports, opts, ctx) do
+  @impl Ash.Resource.Calculation
+  def calculate(imports, _opts, _ctx) do
     imports
-    |> DataAggregator.Records.load!([:missing_mappings], lazy?: true)
-    |> Enum.map(&mappings(&1, opts, ctx))
+    |> Ash.load!([:missing_mappings], lazy?: true)
+    |> Enum.map(&mappings(&1))
   end
 
-  defp mappings(%Import{columns: nil}, _opts, _context), do: []
+  defp mappings(%Import{columns: nil}), do: []
 
-  defp mappings(%Import{columns: columns, missing_mappings: missing_mappings}, _opts, _context) do
+  defp mappings(%Import{columns: columns, missing_mappings: missing_mappings}) do
     missing_mandatory_mapping_columns =
       missing_mappings
       |> Enum.flat_map(&Category.prefixed_attributes/1)
@@ -27,7 +28,7 @@ defmodule DataAggregator.Records.Import.Calculations.Mappings do
 
     columns =
       columns
-      |> DataAggregator.Records.load!([:mapped?], lazy?: true)
+      |> Ash.load!([:mapped?], lazy?: true, domain: Records)
       |> Enum.filter(& &1.mapped?)
 
     columns ++ missing_mandatory_mapping_columns

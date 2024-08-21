@@ -4,7 +4,6 @@ defmodule DataAggregator.RecordsFixtures do
   entities via the `DataAggregator.Records` context.
   """
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
 
@@ -37,6 +36,6 @@ defmodule DataAggregator.RecordsFixtures do
       |> Map.merge(attrs)
       |> Collection.create!()
 
-    Records.load!(collection, [:records_to_export_query])
+    Ash.load!(collection, [:records_to_export_query])
   end
 end

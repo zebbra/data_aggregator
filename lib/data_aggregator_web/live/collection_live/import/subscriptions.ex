@@ -19,7 +19,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
 
   @load_all load_all()
 
-  @import_update_events ~w(set_importing set_imported set_failed update_mapping)
+  @import_update_events ~w(set_importing set_imported set_failed update_mapping add_import_progress)
   @collection_action_events ~w(
     set_exporting
     set_encoding
@@ -129,9 +129,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
   end
 
   defp refresh(socket) do
-    %{assigns: %{collection: %{id: id}, meta: %{pagify: pagify, opts: opts}}} = socket
+    %{assigns: %{collection: %{id: id}, meta: %{ash_pagify: ash_pagify, opts: opts}}} = socket
 
-    case Pagify.validate_and_run(Import, pagify, opts, id) do
+    case AshPagify.validate_and_run(Import, ash_pagify, opts, id) do
       {:ok, {records, meta}} ->
         socket =
           socket

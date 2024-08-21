@@ -4,7 +4,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   """
 
   alias DataAggregator.Gbif
-  alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
@@ -54,7 +53,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     |> Enum.map(fn {record_attribute, request_attribute} ->
       request_value = Map.get(record, record_attribute)
 
-      if request_value != nil do
+      unless request_value == nil do
         {request_attribute, request_value}
       end
     end)
@@ -166,8 +165,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   end
 
   defp check_parameters(params, encoded_record) do
-    encoded_record = Records.load!(encoded_record, [:record], lazy?: true)
-    record = Records.load!(encoded_record.record, [:collection], lazy?: true)
+    encoded_record = Ash.load!(encoded_record, [:record], lazy?: true)
+    record = Ash.load!(encoded_record.record, [:collection], lazy?: true)
 
     # check if there is at least a kingdom parameter set
     case add_kingdom_fallback(params, record) do

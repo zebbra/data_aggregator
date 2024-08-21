@@ -4,7 +4,6 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   """
   use Ash.Resource.Actions.Implementation
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingActionResult
   alias DataAggregator.Records.Encoding.EncodingResult
@@ -60,7 +59,7 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   # returns the encoded record from the result, or nil, if there was an error
   @spec get_record(EncodedRecord.t()) :: Record.t()
   defp get_record(encoded_record) do
-    with_record = Records.load!(encoded_record, [:record], lazy?: true)
+    with_record = Ash.load!(encoded_record, [:record], lazy?: true)
     with_record.record
   end
 

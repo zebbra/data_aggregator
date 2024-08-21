@@ -8,4 +8,8 @@
       }
     }
   }
+
+  .table :where(tbody tr:last-child) {
+    border-bottom-width: 0 !important;
+  }
 }

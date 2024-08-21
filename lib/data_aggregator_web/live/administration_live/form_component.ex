@@ -108,14 +108,14 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
               <div class="grid grid-cols-1 gap-8">
                 <.field
                   field={@form[:roles]}
-                  id="roles_checkgroup"
-                  label="Checkgroup"
+                  id="roles_togglegroup"
+                  label="togglegroup"
                   type="togglegroup"
                   options={[
                     "Collection Digitizer": "collection_digitizer",
                     "Data Administrator": "data_administrator"
                   ]}
-                  description="Checkgroup input description"
+                  description="togglegroup input description"
                   multiple
                 />
               </div>
@@ -334,13 +334,13 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
 
   defp build_form(%{action: :new}) do
     User
-    |> Form.for_create(:register_with_password, api: DataAggregator.Accounts, as: "user")
+    |> Form.for_create(:register_with_password, domain: DataAggregator.Accounts, as: "user")
     |> to_form()
   end
 
   defp build_form(%{action: :edit, user: user}) do
     user
-    |> Form.for_update(:update, api: DataAggregator.Accounts, as: "user")
+    |> Form.for_update(:update, domain: DataAggregator.Accounts, as: "user")
     |> to_form()
   end
 

@@ -27,7 +27,7 @@ defmodule DataAggregator.GbifIUCNRedlistEncodingTest do
 
       assert record !== nil
 
-      assert {:ok, encoded_record} = EncodedRecord.get_by_record(record)
+      assert {:ok, encoded_record} = EncodedRecord.get_by_record(record.id)
 
       assert {:ok, record} =
                Record.get_by_id(record.id, load: [:iucn_redlist])
@@ -47,7 +47,7 @@ defmodule DataAggregator.GbifIUCNRedlistEncodingTest do
 
       assert record !== nil
 
-      assert {:ok, encoded_record} = EncodedRecord.get_by_record(record)
+      assert {:ok, encoded_record} = EncodedRecord.get_by_record(record.id)
 
       assert {:ok, record} =
                Record.get_by_id(record.id, load: [:iucn_redlist])

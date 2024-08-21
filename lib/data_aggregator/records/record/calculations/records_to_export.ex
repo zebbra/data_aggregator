@@ -1,16 +1,16 @@
 defmodule DataAggregator.Records.Calculations.RecordsToExport do
   @moduledoc """
-  This `Ash.Calculation` calculates the records for exporting the collection and returns an `Ash.Query`.
+  This `Ash.Resource.Calculation` calculates the records for exporting the collection and returns an `Ash.Query`.
   """
 
-  use Ash.Calculation
+  use Ash.Resource.Calculation
 
   alias DataAggregator.Records.Collection
 
   require Ash.Query
   require Logger
 
-  @impl Ash.Calculation
+  @impl Ash.Resource.Calculation
   def calculate(collections, _opts, _ctx) do
     Enum.map(collections, &map_restriction(&1))
   end

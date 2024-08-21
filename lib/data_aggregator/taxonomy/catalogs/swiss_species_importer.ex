@@ -2,6 +2,7 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter do
   @moduledoc """
   Import swiss species catalog from csv file
   """
+  alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
   require Logger
@@ -16,7 +17,9 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter do
 
   defp import_swiss_species_from_csv(attrs) do
     parsed_attrs = parse_csv_attributes(attrs)
+
     Logger.info("importing swiss species: #{inspect(parsed_attrs)}")
+
     SwissSpecies.create!(parsed_attrs)
   rescue
     error ->
@@ -54,6 +57,24 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter do
 
   def parse_attribute({"rank", value}) do
     {"rank", value}
+  end
+
+  def parse_attribute({"center", nil}) do
+    raise("center is nil, but should be a string, please prvide a valid infospecies center for each taxon")
+  end
+
+  def parse_attribute({"center", value}) do
+    case Enum.find(InfospeciesCenters.get_center_names(), fn name ->
+           to_string(name) == String.downcase(value)
+         end) do
+      nil ->
+        raise(
+          "center not found: #{inspect(value)}. eighter provide a valid center or add it to the list of valid centers by adding it to the InfospeciesCenters module"
+        )
+
+      name ->
+        {"center", name}
+    end
   end
 
   def parse_attribute({attribute, _value}), do: raise("unknown attribute: #{inspect(attribute)}")

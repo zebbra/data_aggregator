@@ -6,18 +6,18 @@ defmodule DataAggregator.Records.Publication.Changes.PublishRecords do
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.before_action(changeset, &publish_records/1, append?: true)
   end
 
   defp publish_records(%Changeset{data: original_publication} = changeset) do
-    publication = Records.load!(original_publication, [:collection])
+    publication = Ash.load!(original_publication, [:collection])
 
     case Collection.publish(publication) do
       {:ok, publication} -> add_success(changeset, publication)

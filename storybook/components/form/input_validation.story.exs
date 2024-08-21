@@ -9,9 +9,9 @@ defmodule Storybook.Components.Form.InputValidation do
 
   def template do
     """
-    <.simple_form for={%{}} as={:story} class="w-full">
-      <.fieldgroup class="flex flex-col space-y-8 form-control">
-        <.psb-variation-group field={%Phoenix.HTML.FormField{id: "story_field", name: "story[field]", field: :field, value: nil, errors: ["message", %{}], form: %Phoenix.HTML.Form{source: %{},impl: Phoenix.HTML.FormData.Map,id: "story",name: "story",data: %{},hidden: [],params: %{},errors: [],options: [class: "w-full", multipart: false],index: nil}}} required />
+    <.simple_form :let={f} for={%{"field" => [""]}} as={:story} class="w-full">
+      <.fieldgroup class="flex flex-col space-y-8">
+        <.psb-variation-group field={%{f[:field] | errors: [{"is required", []}]}} required />
       </.fieldgroup>
     </.simple_form>
     """

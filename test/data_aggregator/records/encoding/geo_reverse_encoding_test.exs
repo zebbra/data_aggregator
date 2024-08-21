@@ -7,12 +7,14 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
   import DataAggregator.EncodingFixtures
 
   alias DataAggregator.Gbif
+  alias DataAggregator.Opencage
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
   describe "reward encoding of records with " do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
 
       record_fixture = record_fixture_for_reverse_geo_encoding_correct()
 
@@ -29,7 +31,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record)
+      encoded_record = EncodedRecord.get_by_record!(record.id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: 46.946660986374766,
@@ -63,7 +65,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record)
+      encoded_record = EncodedRecord.get_by_record!(record.id)
 
       assert_map_includes(encoded_record, %{
         loc_swiss_coordinates_x: nil,
@@ -97,7 +99,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record)
+      encoded_record = EncodedRecord.get_by_record!(record.id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: 46.946659297095934,
@@ -131,7 +133,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record)
+      encoded_record = EncodedRecord.get_by_record!(record.id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: nil,
@@ -165,7 +167,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record)
+      encoded_record = EncodedRecord.get_by_record!(record.id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: 46.946659297095934,
@@ -213,7 +215,15 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
       })
 
       assert encoded_record.state === :failed
-      assert error === "No valid response (status 400) from geo api"
+
+      assert %Ash.Error.Unknown{
+               errors: [
+                 %Ash.Error.Unknown.UnknownError{
+                   error: "No valid response (status 400) from geo api"
+                 }
+               ]
+             } = error
+
       assert logs =~ "No valid response (status 400) from geo api"
     end
   end

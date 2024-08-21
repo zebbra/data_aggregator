@@ -25,7 +25,7 @@ defmodule DataAggregator.Records.Validations.GrSciCollValidator do
   end
 
   @impl true
-  def validate(changeset, opts) do
+  def validate(changeset, opts, _ctx) do
     key = Ash.Changeset.get_attribute(changeset, opts[:attribute])
     kind = opts[:kind]
 

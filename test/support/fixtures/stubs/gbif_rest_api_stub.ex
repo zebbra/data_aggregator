@@ -401,4 +401,8 @@ defmodule DataAggregator.Gbif.RestAPIStub do
        private: %{}
      }}
   end
+
+  def notify_infospecies_with_approval_result(_) do
+    {:ok, %{body: "it's all fine", status: 200}}
+  end
 end

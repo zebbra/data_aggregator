@@ -23,8 +23,17 @@ defmodule DataAggregator.Cache.HttpDiskCache do
     request
     |> Req.Request.register_options([:cache_dir, :max_cache_age_seconds])
     |> Req.Request.merge_options(options)
-    |> Req.Request.append_request_steps(custom_cache: &request_cache_step/1)
-    |> Req.Request.prepend_response_steps(custom_cache: &response_cache_step/1)
+    |> then(fn merged_request ->
+      if Application.get_env(:data_aggregator, :http_cache_enabled, false) do
+        merged_request
+        |> Req.Request.append_request_steps(custom_cache: &request_cache_step/1)
+        |> Req.Request.prepend_response_steps(custom_cache: &response_cache_step/1)
+      else
+        Logger.debug("Http cache is disabled, not attaching cache middleware")
+
+        merged_request
+      end
+    end)
   end
 
   defp request_cache_step(request) do

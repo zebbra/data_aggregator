@@ -4,21 +4,22 @@ defmodule DataAggregator.Jobs.Job do
   """
 
   use Ash.Resource,
-    data_layer: AshPostgres.DataLayer
+    data_layer: AshPostgres.DataLayer,
+    domain: DataAggregator.Jobs
 
   attributes do
-    integer_primary_key :id
-    attribute :state, :atom
-    attribute :queue, :string, default: "default"
-    attribute :worker, :string
+    integer_primary_key :id, public?: true
+    attribute :state, :atom, public?: true
+    attribute :queue, :string, default: "default", public?: true
+    attribute :worker, :string, public?: true
 
-    attribute :args, :map
+    attribute :args, :map, public?: true
     # field :meta, :map, default: %{}
     # field :tags, {:array, :string}, default: []
-    attribute :errors, {:array, :map}
-    attribute :attempt, :integer, default: 0
-    attribute :attempted_by, {:array, :string}
-    attribute :max_attempts, :integer
+    attribute :errors, {:array, :map}, public?: true
+    attribute :attempt, :integer, default: 0, public?: true
+    attribute :attempted_by, {:array, :string}, public?: true
+    attribute :max_attempts, :integer, public?: true
 
     # field :priority, :integer
 
@@ -37,11 +38,11 @@ defmodule DataAggregator.Jobs.Job do
   end
 
   actions do
+    default_accept :*
     defaults [:read]
   end
 
   code_interface do
-    define_for DataAggregator.Jobs
     define :read
     define :get_by_id, action: :read, get_by: [:id]
   end

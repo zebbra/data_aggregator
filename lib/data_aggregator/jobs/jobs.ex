@@ -9,12 +9,12 @@ defmodule DataAggregator.Jobs do
   #{File.read!(class_diagram)}
   """
 
-  use Ash.Api
+  use Ash.Domain
 
   # ensure module is recompiled when the class diagram changes
   @external_resource class_diagram
 
   resources do
-    registry DataAggregator.Jobs.Registry
+    resource DataAggregator.Jobs.Job
   end
 end

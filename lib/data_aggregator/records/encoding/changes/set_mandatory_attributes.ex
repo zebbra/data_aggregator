@@ -8,10 +8,12 @@ defmodule DataAggregator.Records.Encoding.Changes.SetMandatoryAttributes do
   alias Ash.Changeset
   alias DataAggregator.DarwinCore
 
+  @impl true
   def batch_change(changesets, opts, ctx) do
     Enum.map(changesets, &change(&1, opts, ctx))
   end
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     case Changeset.get_argument(changeset, :record) do
       nil -> add_missing_record_error(changeset)

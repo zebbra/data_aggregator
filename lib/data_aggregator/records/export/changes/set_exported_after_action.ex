@@ -10,6 +10,7 @@ defmodule DataAggregator.Records.Export.Changes.SetExportedAfterAction do
 
   require Logger
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.after_action(changeset, &set_exported/2)
   end

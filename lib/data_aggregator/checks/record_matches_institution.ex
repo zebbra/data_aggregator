@@ -1,12 +1,13 @@
-defmodule DataAggregator.Checks.RecordMatchesInstitution do
-  @moduledoc false
-  use Ash.Policy.FilterCheck
+# defmodule DataAggregator.Checks.RecordMatchesInstitution do
+#   @moduledoc false
+#   use Ash.Policy.FilterCheck
 
-  import Ash.Filter.TemplateHelpers, only: [actor: 1]
+#   # import Ash.Filter.TemplateHelpers, only: [actor: 1]
 
-  require Ash.Query
+#   # require Ash.Query
 
-  def filter(_options) do
-    Ash.Query.expr(collection.institution_id == ^actor(:institution_id))
-  end
-end
+#   def filter(_options) do
+#     # Ash.Query.expr(collection.institution_id == ^actor(:institution_id))
+#     expr(collection.institution_id == ^actor(:institution_id))
+#   end
+# end

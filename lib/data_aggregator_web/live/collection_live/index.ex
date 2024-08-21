@@ -5,6 +5,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   use DataAggregatorWeb.CollectionLive.Subscriptions
 
   import DataAggregator.Accounts.Helpers
+  import DataAggregatorWeb.CollectionLive.Components, only: [collection_state_badge: 1]
   import DataAggregatorWeb.CollectionLive.Helpers
   import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
 
@@ -74,6 +75,9 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         </:col>
         <:col :let={{_id, collection}} field={:code} label={~t"Code"m}>
           <%= collection.code %>
+        </:col>
+        <:col :let={{_id, collection}} field={:state} label={~t"State"m} class="text-center">
+          <.collection_state_badge collection={collection} />
         </:col>
         <:col :let={{_id, collection}} label={~t"Institution"m}>
           <%= collection.institution %>
@@ -200,7 +204,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
   defp list_collections(params, actor, opts \\ [load: @load]) do
     opts = Keyword.merge(opts, authorize?: true, actor: actor)
-    Pagify.validate_and_run(Collection, params, opts)
+    AshPagify.validate_and_run(Collection, params, opts)
   end
 
   defp no_results_content(assigns) do

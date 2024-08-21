@@ -7,11 +7,12 @@ defmodule DataAggregator.ExportTest do
   import DataAggregator.ExportFixtures
   import DataAggregator.RecordsFixtures
 
+  alias Ash.Error.Invalid
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Gbif
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Export
+  alias DataAggregator.Records.Export.Workers.Exporter
   alias Explorer.DataFrame
 
   describe "export crud tests" do
@@ -51,7 +52,7 @@ defmodule DataAggregator.ExportTest do
     end
 
     test "create/1 with invalid data returns an error changeset" do
-      assert {:error, %Ash.Error.Invalid{}} = Export.create(@invalid_attrs)
+      assert {:error, %Invalid{}} = Export.create(@invalid_attrs)
     end
 
     test "update/2 with valid data updates the export" do
@@ -59,7 +60,6 @@ defmodule DataAggregator.ExportTest do
 
       updated_export = %{
         name: "gbif.org_2",
-        collection: collection_fixture(),
         records: [
           record_fixture(),
           record_fixture()
@@ -69,13 +69,13 @@ defmodule DataAggregator.ExportTest do
       assert {:ok, %Export{} = export} =
                export
                |> Export.update(updated_export)
-               |> Records.load([:collection])
+               |> Ash.load([:collection])
 
       assert export.name == "gbif.org_2"
     end
 
     test "update/2 with invalid data fails and returns an error changeset" do
-      assert {:error, %Ash.Error.Invalid{}} =
+      assert {:error, %Invalid{}} =
                Export.update(export_fixture(), @invalid_attrs)
     end
 
@@ -86,7 +86,7 @@ defmodule DataAggregator.ExportTest do
     end
 
     test "destroy/1 with invalid id fails and returns an error changeset" do
-      assert {:error, %Ash.Error.Unknown{}} = Export.destroy(%Export{id: "invalid"})
+      assert {:error, %Invalid{}} = Export.destroy(%Export{id: "invalid"})
     end
   end
 
@@ -98,7 +98,7 @@ defmodule DataAggregator.ExportTest do
 
     setup do
       collection =
-        Records.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
+        Ash.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
           :records_to_export_query
         ])
 
@@ -129,7 +129,7 @@ defmodule DataAggregator.ExportTest do
         assert {:ok, export} = Export.enqueue(export)
 
         assert export.state == :queued
-        assert_enqueued(worker: Export.Workers.Exporter, args: %{id: export.id})
+        assert_enqueued(worker: Exporter, args: %{id: export.id})
 
         collection = Collection.get_by_id!(collection.id)
         assert collection.state == :exporting
@@ -187,10 +187,10 @@ defmodule DataAggregator.ExportTest do
     end
 
     defp assert_not_enqueued(export) do
-      assert {:error, %Ash.Error.Invalid{}} = Export.enqueue(export)
+      assert {:error, %Invalid{}} = Export.enqueue(export)
       export = Export.get_by_id!(export.id)
       assert export.state == :pending
-      refute_enqueued(worker: Export.Workers.Exporter, args: %{id: export.id})
+      refute_enqueued(worker: Exporter, args: %{id: export.id})
     end
   end
 
@@ -209,7 +209,7 @@ defmodule DataAggregator.ExportTest do
 
     setup %{mapping: mapping, data_layer: data_layer, header_source: header_source} do
       collection =
-        Records.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
+        Ash.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
           :records_to_export_query
         ])
 

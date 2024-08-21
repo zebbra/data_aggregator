@@ -46,10 +46,10 @@ defmodule DataAggregator.Files do
 
   """
 
-  use Ash.Api
+  use Ash.Domain
 
   resources do
-    registry DataAggregator.Files.Registry
+    resource DataAggregator.Files.Attachment
   end
 
   @doc """

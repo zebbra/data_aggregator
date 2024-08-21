@@ -21,7 +21,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   attr :current_user, :map, required: true
 
-  attr :meta, Pagify.Meta, default: nil
+  attr :meta, AshPagify.Meta, default: nil
 
   def collection_header(%{collection: nil} = assigns) do
     assigns

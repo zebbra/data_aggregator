@@ -14,7 +14,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   alias AshPhoenix.Form
   alias DataAggregator.DarwinCore
-  alias DataAggregator.Records
   alias DataAggregator.Records.Import
 
   require Logger
@@ -37,7 +36,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
     form =
       Enum.reduce(name_opts, form, fn name, form ->
-        Form.add_form(form, path, params: %{"name" => name})
+        Form.add_form(form, path, params: %{"name" => name, "mapped_to" => name})
       end)
 
     socket =
@@ -216,7 +215,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       >
         <:content :let={field}>
           <.icon name="hero-magnifying-glass" class="size-5 text-base-content/50" />
-          <.input {field} icon_start="hero-magnifying-glass" class="" inside />
+          <.input {field} class="" inside />
           <kbd class="kbd kbd-sm max-sm:hidden">/</kbd>
         </:content>
       </.custom_field>
@@ -410,7 +409,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
     socket
     |> assign(:name_opts, name_opts -- [name])
-    |> assign(:form, Form.add_form(form, path, params: %{"name" => name}))
+    |> assign(
+      :form,
+      Form.add_form(form, path, params: %{"name" => name, "mapped_to" => name})
+    )
     |> assign_filter()
     |> noreply()
   end
@@ -546,7 +548,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   end
 
   defp build_form(%{import: import}, reset) do
-    import_with_mappings = Records.load!(import, [:mappings, :missing_mappings], lazy?: true)
+    import_with_mappings = Ash.load!(import, [:mappings, :missing_mappings], lazy?: true)
 
     mappings =
       import_with_mappings.mappings
@@ -556,7 +558,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     import
     |> Form.for_update(
       :update_mapping,
-      api: DataAggregator.Records,
+      domain: DataAggregator.Records,
       as: "import",
       forms: [
         columns: [

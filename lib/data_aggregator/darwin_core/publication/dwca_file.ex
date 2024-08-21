@@ -7,7 +7,6 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   alias DataAggregator.DarwinCore.Schema.Category
   alias DataAggregator.DarwinCore.Schema.DwcAttribute
   alias DataAggregator.Misc.FlatFileUtils
-  alias DataAggregator.Records
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
@@ -26,7 +25,7 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
     record_attributes = record_attributes(extension_type)
 
     query
-    |> Records.stream!(page: false)
+    |> Ash.stream!(page: false)
     |> Stream.map(&map_record(&1, record_attributes))
     |> Stream.map(&FlatFileUtils.map_data_to_headers(&1, header_fields))
     |> FlatFileUtils.store_on_disk!(path, headers)
@@ -132,7 +131,7 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   end
 
   defp get_encoded_layer(record, record_attributes) do
-    case EncodedRecord.get_by_record(record) do
+    case EncodedRecord.get_by_record(record.id) do
       {:ok, encoded_record} -> encoded_record |> Map.from_struct() |> Map.take(record_attributes)
       {:error, _} -> Map.new()
     end

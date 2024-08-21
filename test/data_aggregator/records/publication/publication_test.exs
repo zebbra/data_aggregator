@@ -9,9 +9,9 @@ defmodule DataAggregator.PublicationTest do
 
   alias DataAggregator.DarwinCore.Publication.DwcaFile
   alias DataAggregator.Gbif
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.Publication.Workers.Publisher
   alias Explorer.DataFrame
 
   require Ash.Query
@@ -64,11 +64,11 @@ defmodule DataAggregator.PublicationTest do
       encoded_record_fixture(%{record: record5})
 
       records = [
-        Records.load!(record1, [:encoded_record]),
-        Records.load!(record2, [:encoded_record]),
-        Records.load!(record3, [:encoded_record]),
-        Records.load!(record4, [:encoded_record]),
-        Records.load!(record5, [:encoded_record])
+        Ash.load!(record1, [:encoded_record]),
+        Ash.load!(record2, [:encoded_record]),
+        Ash.load!(record3, [:encoded_record]),
+        Ash.load!(record4, [:encoded_record]),
+        Ash.load!(record5, [:encoded_record])
       ]
 
       query = %{
@@ -78,7 +78,7 @@ defmodule DataAggregator.PublicationTest do
 
       publication =
         Publication.create!(%{
-          name: "Publication Fast Track ",
+          name: "Publication Fast Track 2",
           channel: :fast_track,
           records_query: query,
           collection: collection
@@ -87,7 +87,11 @@ defmodule DataAggregator.PublicationTest do
       [collection: collection, records: records, publication: publication]
     end
 
-    test "publish/1", %{collection: _collection, records: _records, publication: publication} do
+    test "publish/1 successful", %{
+      collection: _collection,
+      records: _records,
+      publication: publication
+    } do
       {:ok, publication} = Collection.publish(publication)
 
       %{body: body} = Req.get!(publication.attachment.url)
@@ -115,7 +119,7 @@ defmodule DataAggregator.PublicationTest do
         assert {:ok, publication} = Publication.enqueue(publication)
 
         assert publication.state == :queued
-        assert_enqueued(worker: Publication.Workers.Publisher, args: %{id: publication.id})
+        assert_enqueued(worker: Publisher, args: %{id: publication.id})
 
         collection = Collection.get_by_id!(collection.id)
         assert collection.state == :fast_track_publishing
@@ -176,7 +180,7 @@ defmodule DataAggregator.PublicationTest do
       assert {:error, %Ash.Error.Invalid{}} = Publication.enqueue(publication)
       publication = Publication.get_by_id!(publication.id)
       assert publication.state == :pending
-      refute_enqueued(worker: Publication.Workers.Publisher, args: %{id: publication.id})
+      refute_enqueued(worker: Publisher, args: %{id: publication.id})
     end
   end
 end

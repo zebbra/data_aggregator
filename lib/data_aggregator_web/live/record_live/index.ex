@@ -196,7 +196,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   defp list_records(params, actor, opts \\ [load: @load]) do
     opts = Keyword.merge(opts, authorize?: true, actor: actor)
-    Pagify.validate_and_run(Record, params, opts)
+    AshPagify.validate_and_run(Record, params, opts)
   end
 
   defp get_record(id) do

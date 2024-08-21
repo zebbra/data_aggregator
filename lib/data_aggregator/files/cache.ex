@@ -16,7 +16,7 @@ defmodule DataAggregator.Files.Cache do
   If the file is already cached, the cached file path is returned.
   """
   def store(%Attachment{} = attachment) do
-    with {:ok, attachment} <- Files.load(attachment, [:url], lazy?: true) do
+    with {:ok, attachment} <- Ash.load(attachment, [:url], lazy?: true) do
       maybe_download(attachment)
     end
   end

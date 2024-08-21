@@ -16,6 +16,7 @@ defmodule DataAggregator.Records.Import.Changes.SetImportingBeforeTransaction do
   #   |> Changeset.before_transaction(&set_importing/1)
   # end
 
+  @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     Changeset.before_transaction(changeset, &set_importing/1)
   end

@@ -15,7 +15,6 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Helpers do
   def load_all do
     load() ++
       [
-        :job,
         :publication_progress
       ]
   end

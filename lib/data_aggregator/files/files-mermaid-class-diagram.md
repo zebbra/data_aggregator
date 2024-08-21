@@ -4,8 +4,8 @@ classDiagram
         UUID id
         String filename
         Integer byte_size
-        String url
-        String cached_file
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
         read()
         import_from_path(String path, String filename)
         destroy()
