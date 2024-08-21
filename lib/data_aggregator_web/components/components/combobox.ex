@@ -4,8 +4,7 @@ defmodule DataAggregatorWeb.Components.Combobox do
   """
 
   use Phoenix.Component
-
-  import DataAggregatorWeb.Gettext
+  use DataAggregatorWeb.Gettext
 
   @doc """
   A combobox is a select box that allows you to search for options. It uses the [Tom Select library](https://tom-select.js.org/) under the hood.

@@ -5,7 +5,7 @@ defmodule DataAggregatorWeb.Gettext do
   By using [Gettext](https://hexdocs.pm/gettext),
   your module gains a set of macros for translations, for example:
 
-      import DataAggregatorWeb.Gettext
+      use DataAggregatorWeb.Gettext
 
       # Simple translation
       gettext("Here is the string to translate")
@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.Gettext do
 
   See the [Gettext Docs](https://hexdocs.pm/gettext) for detailed usage.
   """
-  use Gettext, otp_app: :data_aggregator
+  use Gettext.Backend, otp_app: :data_aggregator
 
   defmacro mgettext(text, opts \\ []) do
     context = inspect(__CALLER__.module)
@@ -44,9 +44,9 @@ defmodule DataAggregatorWeb.Gettext do
 
   defmacro __using__(_) do
     quote do
-      import unquote(__MODULE__)
+      use Gettext, backend: unquote(__MODULE__)
 
-      require unquote(__MODULE__)
+      import unquote(__MODULE__)
     end
   end
 end

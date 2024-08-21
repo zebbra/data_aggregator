@@ -382,10 +382,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             ]}
             items={error_log_preview_data(@selected_import.error_log)}
           >
-            <:col :let={error} label="catalogNumber">
+            <:col :let={error} label={~t"Catalog Number"m}>
               <%= error[:catalogNumber] %>
             </:col>
-            <:col :let={error} label="scientificName">
+            <:col :let={error} label={~t"Scientific Name"m}>
               <%= error[:scientificName] %>
             </:col>
             <:col :let={error} label={~t"Field"}>

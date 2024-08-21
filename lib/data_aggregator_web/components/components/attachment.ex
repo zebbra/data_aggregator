@@ -4,9 +4,9 @@ defmodule DataAggregatorWeb.Components.Attachment do
   """
 
   use Phoenix.Component
+  use DataAggregatorWeb.Gettext
 
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
-  import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Helpers, only: [format_bytes: 1, format_number: 1]
 
   alias DataAggregator.Files.Attachment

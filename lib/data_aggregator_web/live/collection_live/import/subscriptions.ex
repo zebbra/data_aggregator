@@ -4,10 +4,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
   """
   use Phoenix.LiveView
   use DataAggregatorWeb, :verified_routes
+  use DataAggregatorWeb.Gettext
 
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1, busy_action: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers
-  import DataAggregatorWeb.Gettext
 
   alias Ash.Notifier.Notification
   alias DataAggregator.PubSub
