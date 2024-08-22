@@ -61,6 +61,9 @@ defmodule DataAggregatorWeb.CollectionLive.Subscriptions do
   defp handle_collection_updated(%Notification{data: %{id: id}}, socket) do
     collection = Collection.get_by_id!(id, load: @load)
     {:noreply, stream_insert(socket, :results, collection, at: 0)}
+  rescue
+    # Ignore if the collection was not found --> it was deleted
+    _error in [Ash.Error.Query.NotFound] -> {:noreply, socket}
   end
 
   defp handle_collection_destroyed(%Notification{data: collection}, socket) do

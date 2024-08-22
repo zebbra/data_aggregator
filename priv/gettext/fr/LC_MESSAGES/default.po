@@ -2534,7 +2534,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Publishing"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/components.ex:65
+#: lib/data_aggregator_web/live/collection_live/components.ex:66
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Ready"
@@ -2777,4 +2777,10 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Uploading..."
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/components.ex:65
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Components"
+msgid "Deleting"
 msgstr ""

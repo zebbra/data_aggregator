@@ -118,6 +118,7 @@ defmodule DataAggregator.Records.Collection do
     calculate :encoding, :boolean, expr(state == :encoding)
     calculate :publishing, :boolean, expr(state == :fast_track_publishing)
     calculate :approving, :boolean, expr(state == :approving)
+    calculate :deleting, :boolean, expr(state == :deleting)
     calculate :busy, :boolean, expr(state != :idle)
   end
 
@@ -165,6 +166,7 @@ defmodule DataAggregator.Records.Collection do
       transition :set_encoding, from: [:idle], to: :encoding
       transition :set_fast_track_publishing, from: [:idle], to: :fast_track_publishing
       transition :set_approving, from: [:idle], to: :approving
+      transition :set_deleting, from: [:idle], to: :deleting
 
       transition :set_idle,
         from: [:importing, :exporting, :fast_track_publishing, :approving],
@@ -183,7 +185,7 @@ defmodule DataAggregator.Records.Collection do
 
   actions do
     default_accept :*
-    defaults [:update, :destroy]
+    defaults [:update]
 
     read :read do
       primary? true
@@ -213,7 +215,7 @@ defmodule DataAggregator.Records.Collection do
       argument :dwca_file_url, :string, allow_nil?: false
       require_atomic? false
 
-      change Records.Collection.Changes.RegisterAtGbif
+      change Changes.RegisterAtGbif
     end
 
     update :set_importing do
@@ -252,6 +254,13 @@ defmodule DataAggregator.Records.Collection do
       change transition_state(:approving)
     end
 
+    update :set_deleting do
+      accept []
+      require_atomic? false
+
+      change transition_state(:deleting)
+    end
+
     update :set_idle do
       accept []
       require_atomic? false
@@ -264,6 +273,14 @@ defmodule DataAggregator.Records.Collection do
       require_atomic? false
 
       change transition_state(:idle)
+    end
+
+    destroy :destroy do
+      accept []
+      primary? true
+      require_atomic? false
+
+      change Changes.SetDeletingBeforeTransaction
     end
 
     action :export, :map do
@@ -303,6 +320,7 @@ defmodule DataAggregator.Records.Collection do
     publish :set_approving, ["updated", [:id, nil]]
     publish :set_idle, ["updated", [:id, nil]]
     publish :set_idle_encoding, ["updated", [:id, nil]]
+    publish :set_deleting, ["updated", [:id, nil]]
   end
 
   code_interface do
@@ -324,6 +342,7 @@ defmodule DataAggregator.Records.Collection do
     define :set_encoding
     define :set_fast_track_publishing
     define :set_approving
+    define :set_deleting
     define :set_idle
     define :set_idle_encoding
   end

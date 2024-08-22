@@ -112,7 +112,6 @@ classDiagram
         Import[] imports
         Export[] exports
         Record[] records
-        destroy()
         update(Integer items_to_digitize, String owner, String name, String code, ...)
         read(String sort)
         create(Integer items_to_digitize, String owner, String name, String code, ...)
@@ -124,8 +123,10 @@ classDiagram
         set_encoding()
         set_fast_track_publishing()
         set_approving()
+        set_deleting()
         set_idle()
         set_idle_encoding()
+        destroy()
         export(Struct export)
         publish(Struct publication)
         approve(Struct collection, Map query)
@@ -2327,7 +2328,6 @@ erDiagram
 
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
-| **destroy** | _destroy_ | <ul></ul> |  |
 | **update** | _update_ | <ul><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
 | **create** | _create_ | <ul><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
@@ -2339,8 +2339,10 @@ erDiagram
 | **set_encoding** | _update_ | <ul></ul> |  |
 | **set_fast_track_publishing** | _update_ | <ul></ul> |  |
 | **set_approving** | _update_ | <ul></ul> |  |
+| **set_deleting** | _update_ | <ul></ul> |  |
 | **set_idle** | _update_ | <ul></ul> |  |
 | **set_idle_encoding** | _update_ | <ul></ul> |  |
+| **destroy** | _destroy_ | <ul></ul> |  |
 | **export** | _action_ | <ul><li><b>export</b> <i>Struct</i> </li></ul> |  |
 | **publish** | _action_ | <ul><li><b>publication</b> <i>Struct</i> </li></ul> |  |
 | **approve** | _action_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>query</b> <i>Map</i> </li></ul> |  |
