@@ -7,8 +7,7 @@ defmodule DataAggregatorWeb.Filters.ClearLink do
   """
 
   use Phoenix.Component
-
-  import DataAggregatorWeb.Gettext
+  use DataAggregatorWeb.Gettext
 
   alias AshPagify.FilterForm
   alias AshPhoenix.FilterForm.Predicate

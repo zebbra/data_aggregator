@@ -5,10 +5,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
 
   use Phoenix.LiveView
   use DataAggregatorWeb, :verified_routes
+  use DataAggregatorWeb.Gettext
 
   import DataAggregatorWeb.CollectionLive.Helpers
   import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [maybe_put_tsvector: 2]
-  import DataAggregatorWeb.Gettext
 
   alias Ash.Notifier.Notification
   alias DataAggregator.PubSub

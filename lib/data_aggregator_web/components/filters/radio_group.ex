@@ -20,6 +20,7 @@ defmodule DataAggregatorWeb.Filters.RadioGroup do
   ```
   """
   use Phoenix.Component
+  use DataAggregatorWeb.Gettext
 
   import DataAggregatorWeb.Blocks.Header, only: [section_heading: 1]
 
@@ -30,7 +31,6 @@ defmodule DataAggregatorWeb.Filters.RadioGroup do
   import DataAggregatorWeb.Components.Input, only: [input: 1]
   import DataAggregatorWeb.Filters.ClearLink, only: [clear_link: 1]
   import DataAggregatorWeb.Filters.Helpers, only: [present?: 1, options_for_group: 1, checked?: 2]
-  import DataAggregatorWeb.Gettext
 
   alias AshPhoenix.FilterForm.Predicate
   alias Phoenix.HTML.FormField

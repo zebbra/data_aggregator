@@ -6,8 +6,7 @@ defmodule DataAggregatorWeb.Layouts.Primary do
   use Phoenix.Component
   use DataAggregatorWeb.Components
   use DataAggregatorWeb, :verified_routes
-
-  import DataAggregatorWeb.Gettext
+  use DataAggregatorWeb.Gettext
 
   embed_templates "shared/*"
 

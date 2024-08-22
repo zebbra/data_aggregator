@@ -52,7 +52,7 @@ defmodule DataAggregator.Records.Import.Helpers do
         scientific_name: row["tax_scientific_name"],
         field: Map.get(error, :field),
         value: Map.get(error, :value),
-        message: Map.get(error, :message)
+        message: Exception.message(error)
       }
     end)
   end
