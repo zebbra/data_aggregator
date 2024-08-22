@@ -178,31 +178,24 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   #  create an encoded record if it does not exist yet
   @spec create_encoded_record(Record.t()) :: EncodedRecord.t()
   defp create_encoded_record(record) do
-    attributes =
-      [
-        :extra_data,
-        :iucn_redlist_category
-      ] ++ DataAggregator.DarwinCore.Schema.prefixed_attribute_names()
+    case EncodedRecord.get_by_record(record.id) do
+      {:ok, encoded_record} ->
+        encoded_record
 
-    EncodedRecord.create!(
-      record
-      |> Map.from_struct()
-      |> Map.take(attributes)
-      |> Map.put_new_lazy(:record, fn -> record end)
-    )
+      {:error, %Ash.Error.Query.NotFound{}} ->
+        attributes =
+          [
+            :extra_data,
+            :iucn_redlist_category
+          ] ++ DataAggregator.DarwinCore.Schema.prefixed_attribute_names()
 
-    # case EncodedRecord.get_by_record(record.id) do
-    #   {:ok, result} ->
-    #     result
-
-    #   {:error, %Ash.Error.Query.NotFound{}} ->
-    #     EncodedRecord.create!(
-    #       record
-    #       |> Map.from_struct()
-    #       |> Map.take(attributes)
-    #       |> Map.put_new_lazy(:record, fn -> record end)
-    #     )
-    # end
+        EncodedRecord.create!(
+          record
+          |> Map.from_struct()
+          |> Map.take(attributes)
+          |> Map.put_new_lazy(:record, fn -> record end)
+        )
+    end
   end
 
   @spec update_encoded_record(map(), EncodedRecord.t(), list()) :: EncodedRecord.t()

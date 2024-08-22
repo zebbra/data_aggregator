@@ -8,6 +8,7 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
 
   alias DataAggregator.Gbif
   alias DataAggregator.Opencage
+  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.Record.Workers.Encoder
 
@@ -33,6 +34,28 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
       {:ok, record} = perform_job(Encoder, %{id: correct_record.id})
 
       assert record.state == :encoded
+
+      encoded_record = EncodedRecord.get_by_record!(record.id)
+
+      assert_map_includes(encoded_record, %{
+        tax_class: "Aves",
+        tax_family: "Muscicapidae",
+        tax_genus: "Oenanthe",
+        tax_kingdom: "Animalia",
+        tax_order: "Passeriformes",
+        tax_phylum: "Chordata",
+        tax_scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
+        tax_taxon_id: 1_012_187,
+        tax_accepted_name_usage: "Enantiulus dentigerus (Verhoeff, 1901)",
+        tax_taxon_id_ch: 15_311,
+        tax_taxon_rank: "SPECIES",
+        loc_country: "Switzerland",
+        loc_municipality: "Bern",
+        loc_state_province: "Bern",
+        loc_continent: "Europe",
+        loc_country_code: "ch",
+        iucn_redlist_category: "EX"
+      })
     end
 
     # at the moment there is no failing matchType, we accept all results

@@ -37,7 +37,7 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
 
       {:error, error, record} ->
         Logger.warning(
-          "Encoding for record #{record.id} with catalog: #{to_string(catalog)} failed, due to: #{inspect(error)}"
+          "[#{catalog}] Encoding for record #{record.id} with catalog: #{to_string(catalog)} failed, due to: #{inspect(error)}"
         )
 
         {:ok, record}

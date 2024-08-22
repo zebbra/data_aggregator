@@ -346,6 +346,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
     sorted_activities =
       (record_versions ++ encoded_record_versions)
+      |> Enum.filter(&(&1.changes != %{}))
       |> activites_from_versions()
       |> sort_activities()
 

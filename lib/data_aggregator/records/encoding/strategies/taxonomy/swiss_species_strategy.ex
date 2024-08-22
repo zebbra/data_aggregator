@@ -50,7 +50,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
          |> Strategy.update_encoded_record(encoded_record, @output_attributes)}
 
       {:error, %Ash.Error.Query.NotFound{}} ->
-        Logger.warning("no matching encoded_record found for taxon_id: #{encoded_record.tax_taxon_id}")
+        Logger.warning(
+          "[swiss_species_strategy] no matching encoded_record found for taxon_id: #{encoded_record.tax_taxon_id}"
+        )
 
         {:ok, encoded_record}
 

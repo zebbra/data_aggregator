@@ -159,7 +159,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
   @spec log_and_throw(map()) :: {:ok, map()} | {:error, any()}
   defp log_and_throw(error) do
-    Logger.warning("Error while fetching gbif taxonomy api: #{inspect(error)}")
+    Logger.warning("[gbif_taxonomy_strategy] Error while fetching gbif taxonomy api: #{inspect(error)}")
 
     throw(error)
   end
@@ -194,7 +194,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
         [kingdom: "Plantae"]
 
       true ->
-        Logger.warning("No fallback kingdom found for record #{record.id} on the collection #{record.collection.name}")
+        Logger.warning(
+          "[gbif_taxonomy_strategy] No fallback kingdom found for record #{record.id} on the collection #{record.collection.name}"
+        )
 
         []
     end
