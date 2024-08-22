@@ -4,8 +4,7 @@ defmodule DataAggregatorWeb.Components.Alert do
   """
 
   use Phoenix.Component
-
-  import DataAggregatorWeb.Gettext
+  use DataAggregatorWeb.Gettext
 
   alias Phoenix.LiveView.JS
 

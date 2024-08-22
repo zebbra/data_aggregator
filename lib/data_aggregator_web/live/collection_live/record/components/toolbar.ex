@@ -1,6 +1,7 @@
 defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
   @moduledoc false
   use Phoenix.Component
+  use DataAggregatorWeb.Gettext
 
   import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [busy?: 2, path_helper: 3]
   import DataAggregatorWeb.Components.Dropdown, only: [dropdown: 1]
@@ -8,7 +9,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
   import DataAggregatorWeb.Components.Form, only: [simple_form: 1]
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Components.Input, only: [input: 1]
-  import DataAggregatorWeb.Gettext
 
   alias Phoenix.LiveView.JS
 

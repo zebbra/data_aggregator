@@ -3,9 +3,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Subscriptions do
   This module contains helper functions for the collection > publication subscriptions.
   """
   use Phoenix.LiveView
+  use DataAggregatorWeb.Gettext
 
   import DataAggregatorWeb.CollectionLive.Publication.Helpers
-  import DataAggregatorWeb.Gettext
 
   alias Ash.Notifier.Notification
   alias DataAggregator.PubSub

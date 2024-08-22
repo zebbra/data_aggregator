@@ -4,8 +4,8 @@ defmodule DataAggregatorWeb.Components.Pagination do
   """
 
   use Phoenix.Component
+  use DataAggregatorWeb.Gettext
 
-  import DataAggregatorWeb.Gettext
   import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
   alias AshPagify.Meta

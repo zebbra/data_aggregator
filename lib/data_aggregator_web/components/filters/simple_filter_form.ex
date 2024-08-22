@@ -30,11 +30,11 @@ defmodule DataAggregatorWeb.Filters.SimpleFilterForm do
   ```
   """
   use Phoenix.Component
+  use DataAggregatorWeb.Gettext
 
   import DataAggregatorWeb.Components.Form, only: [simple_form: 1]
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Components.Notification, only: [collapsible_notification: 1]
-  import DataAggregatorWeb.Gettext
 
   alias AshPagify.FilterForm
 

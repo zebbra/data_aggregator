@@ -74,7 +74,7 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
 # Configure gettext
 config :data_aggregator, DataAggregatorWeb.Gettext,
   default_locale: "en",
-  locales: ~w(de fr)
+  allowed_locales: ~w(de fr)
 
 # Configure Oban job queues
 config :data_aggregator, Oban,

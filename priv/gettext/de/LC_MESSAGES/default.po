@@ -128,25 +128,25 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Updated At"
 msgstr "Aktualisiert am"
 
-#: lib/data_aggregator_web/components/components/alert.ex:87
+#: lib/data_aggregator_web/components/components/alert.ex:86
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Alert"
 msgid "Are you sure?"
 msgstr "Bist Du sicher?"
 
-#: lib/data_aggregator_web/components/components/alert.ex:94
+#: lib/data_aggregator_web/components/components/alert.ex:93
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Alert"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: lib/data_aggregator_web/components/components/alert.ex:102
+#: lib/data_aggregator_web/components/components/alert.ex:101
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Alert"
 msgid "OK"
 msgstr ""
 
-#: lib/data_aggregator_web/components/components/alert.ex:109
+#: lib/data_aggregator_web/components/components/alert.ex:108
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Alert"
 msgid "close"
@@ -646,7 +646,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Summary"
 msgid "Summary"
 msgstr "Zusammenfassung"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:43
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:45
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Please provide your collection file holding your records."
@@ -695,67 +695,61 @@ msgctxt "DataAggregatorWeb.RecordLive.Index"
 msgid "No records"
 msgstr "Keine Einträge"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:81
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:83
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Choose a file"
 msgstr "Wähle eine Datei"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:242
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:260
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "File upload failed"
 msgstr "Dateiupload fehlgeschlagen"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:296
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:316
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Too large"
 msgstr "Zu groß"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:298
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:318
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "You have selected an unacceptable file type"
 msgstr "Du hast einen nicht akzeptablen Dateityp ausgewählt"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:297
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:317
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "You have selected too many files"
 msgstr "Du hast zu viele Dateien ausgewählt"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:84
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:86
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "or drag and drop"
 msgstr "oder drag & drop"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:257
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:275
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "up to %{max_file_size}"
 msgstr "bis zu %{max_file_size}"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:133
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:139
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:295
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:315
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Please select a file"
 msgstr "Bitte wähle eine Datei"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:130
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
-msgid "Upload file"
-msgstr "Datei hochladen"
-
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:107
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:109
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "close"
@@ -824,7 +818,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Required attributes"
 msgstr "Erforderliche Attribute"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:42
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:44
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Import records"
@@ -1118,17 +1112,17 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Add"
 msgstr "Neu"
 
-#: lib/data_aggregator_web/components/components/combobox.ex:251
+#: lib/data_aggregator_web/components/components/combobox.ex:250
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Add"
 msgstr "Neu"
 
-#: lib/data_aggregator_web/components/components/combobox.ex:252
+#: lib/data_aggregator_web/components/components/combobox.ex:251
 #, elixir-autogen, elixir-format
 msgid "No results found for"
 msgstr "Keine Ergebnisse gefunden für"
 
-#: lib/data_aggregator_web/components/components/combobox.ex:266
+#: lib/data_aggregator_web/components/components/combobox.ex:265
 #, elixir-autogen, elixir-format
 msgid "Remove this item"
 msgstr "Diesen Eintrag entfernen"
@@ -1577,8 +1571,8 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Done"
 msgstr "Fertig"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:61
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:299
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:63
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:319
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "An error has occurred"
@@ -1608,7 +1602,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "You're about to publish this collection to Infospecies for approval"
 msgstr "Du bsit dabei diese Sammlung zu Infospecies zum Genehmigen zu publizieren"
 
-#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:65
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:67
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Show more"
@@ -2504,49 +2498,49 @@ msgstr "Gemäss IUCN eine bedrohte Spezies"
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Pagination"
 msgid "Showing %{pagination_from} to %{pagination_to} of %{pagination_total} entries"
-msgstr ""
+msgstr "Zeige %{pagination_from} bis %{pagination_to} von %{pagination_total} Einträgen"
 
 #: lib/data_aggregator_web/components/components/pagination.ex:59
-#, elixir-autogen, elixir-format
+#, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Components.Pagination"
 msgid "%{pagination_from} - %{pagination_to} of %{pagination_total}"
-msgstr ""
+msgstr "%{pagination_from} - %{pagination_to} von %{pagination_total}"
 
 #: lib/data_aggregator_web/live/collection_live/components.ex:64
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Approving"
-msgstr "Genehmigt"
+msgstr "Genehmigend"
 
 #: lib/data_aggregator_web/live/collection_live/components.ex:62
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Encoding"
-msgstr "Enkodierungen"
+msgstr "Enkodierend"
 
 #: lib/data_aggregator_web/live/collection_live/components.ex:61
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Exporting"
-msgstr "Exportieren"
+msgstr "Exportierend"
 
 #: lib/data_aggregator_web/live/collection_live/components.ex:60
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Importing"
-msgstr "Laufend"
+msgstr "Importierend"
 
 #: lib/data_aggregator_web/live/collection_live/components.ex:63
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Publishing"
-msgstr "In Veröffentlichung"
+msgstr "Veröffentlichend"
 
 #: lib/data_aggregator_web/live/collection_live/components.ex:65
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components"
 msgid "Ready"
-msgstr ""
+msgstr "Bereit"
 
 #: lib/data_aggregator_web/live/collection_live/index.ex:79
 #, elixir-autogen, elixir-format, fuzzy
@@ -2558,50 +2552,50 @@ msgstr "Status"
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Last Century"
-msgstr ""
+msgstr "Letztes Jahrhundert"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:118
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Last Month"
-msgstr ""
+msgstr "Letzter Monat"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:119
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Last Year"
-msgstr ""
+msgstr "Letztes Jahr"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:91
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:139
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Any"
-msgstr ""
+msgstr "Alle"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:87
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "IUCN Red List"
-msgstr ""
+msgstr "IUCN Rote Liste"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:88
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Search your records by IUCN Red List of Threatened Speciese"
-msgstr ""
+msgstr "Suche deine Einträge nach bedrohten Arten gemäss IUCN Rote Liste"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:92
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Endangered"
-msgstr ""
+msgstr "Gefährdet"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:93
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Safe"
-msgstr ""
+msgstr "Sicher"
 
 #: lib/data_aggregator_web/components/filters/checkbox_group.ex:124
 #, elixir-autogen, elixir-format, fuzzy
@@ -2609,12 +2603,12 @@ msgctxt "DataAggregatorWeb.Filters.CheckboxGroup"
 msgid "No entries found"
 msgstr "Keine Einträge vorhanden"
 
-#: lib/data_aggregator_web/components/filters/clear_link.ex:30
-#: lib/data_aggregator_web/components/filters/clear_link.ex:43
-#, elixir-autogen, elixir-format
+#: lib/data_aggregator_web/components/filters/clear_link.ex:29
+#: lib/data_aggregator_web/components/filters/clear_link.ex:42
+#, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Filters.ClearLink"
 msgid "Clear"
-msgstr ""
+msgstr "Löschen"
 
 #: lib/data_aggregator_web/components/filters/radio_group.ex:138
 #, elixir-autogen, elixir-format, fuzzy
@@ -2623,16 +2617,16 @@ msgid "No entries found"
 msgstr "Keine Einträge vorhanden"
 
 #: lib/data_aggregator_web/components/filters/simple_filter_form.ex:96
-#, elixir-autogen, elixir-format
+#, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Filters.SimpleFilterForm"
 msgid "Clear all"
-msgstr ""
+msgstr "Alle löschen"
 
 #: lib/data_aggregator_web/components/filters/simple_filter_form.ex:88
-#, elixir-autogen, elixir-format
+#, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Filters.SimpleFilterForm"
 msgid "Show %{count} %{label}"
-msgstr ""
+msgstr "%{count} %{label} anzeigen"
 
 #: lib/data_aggregator_web/components/filters/simple_filter_form.ex:60
 #, elixir-autogen, elixir-format, fuzzy
@@ -2641,57 +2635,57 @@ msgid "Show more"
 msgstr "Zeige mehr"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:97
-#, elixir-autogen, elixir-format
+#, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Endangered species according to IUCN Red List"
-msgstr ""
+msgstr "Gemäss IUCN eine bedrohte Spezies"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:98
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Safe species according to IUCN Red List"
-msgstr ""
+msgstr "Gemäss IUCN eine sichere Spezies"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:135
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Mids Level"
-msgstr ""
+msgstr "Mids Level"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:136
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Search your records by data mids level"
-msgstr "Suche deine Einträge nach wissenschaftlichem Namen"
+msgstr "Suche deine Einträge nach Mids Level Stufe"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:147
-#, elixir-autogen, elixir-format
+#, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Records with a Mids Level of at least 1"
-msgstr ""
+msgstr "Einträge mit einem Mids Level von mind. 1"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:148
-#, elixir-autogen, elixir-format
+#, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Records with a Mids Level of at least 2"
-msgstr ""
+msgstr "Einträge mit einem Mids Level von mind. 2"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:149
-#, elixir-autogen, elixir-format
+#, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Records with a Mids Level of at least 3"
-msgstr ""
+msgstr "Einträge mit einem Mids Level von mind. 3"
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:150
-#, elixir-autogen, elixir-format
+#, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Records with a Mids Level of at least 4"
-msgstr ""
+msgstr "Einträge mit einem Mids Level von mind. 4"
 
 #: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:52
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Search"
-msgstr "Zuordnung suchen"
+msgstr "Suchen"
 
 #: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:161
 #: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:186
@@ -2710,7 +2704,7 @@ msgstr "Genehmigter Layer"
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Approve"
-msgstr "Genehmigt"
+msgstr "Genehmigen"
 
 #: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:170
 #: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:193
@@ -2757,14 +2751,44 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Publish"
 msgstr "Veröffentlichen"
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:328
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:388
 #, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
+msgid "Catalog Number"
+msgstr "Katalognummer"
+
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:391
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
+msgid "Scientific Name"
+msgstr "Wissenschaftlicher Name"
+
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:136
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
+msgid "Next"
+msgstr "Weiter"
+
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:134
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
+msgid "Save..."
+msgstr "Speichern..."
+
+#: lib/data_aggregator_web/live/collection_live/import/components/upload.ex:136
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
+msgid "Uploading..."
+msgstr "Lädt hoch..."
+
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:328
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Add Role"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:327
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Add User"
 msgstr ""
@@ -2783,54 +2807,54 @@ msgstr "Abbrechen"
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:64
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:148
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "E-Mail"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:65
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:150
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Enter E-Mail"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:53
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:134
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Enter first name"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:59
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:142
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Enter last name"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:89
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:179
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Enter password"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:71
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Enter phone number"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:52
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:132
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "First name"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:100
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Generate Password"
 msgstr ""
@@ -2847,24 +2871,24 @@ msgstr ""
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Last name"
-msgstr ""
+msgstr "Letztes Jahr"
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:216
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Next"
-msgstr ""
+msgstr "Weiter"
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:88
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:178
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Password"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:70
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:156
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Phone"
 msgstr ""
@@ -2873,11 +2897,11 @@ msgstr ""
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Save"
-msgstr ""
+msgstr "Speichern..."
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:80
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:170
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Select institutions"
 msgstr ""
@@ -2969,10 +2993,10 @@ msgid "Last Login"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/index.ex:67
-#, elixir-autogen, elixir-format
+#, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Last Name"
-msgstr ""
+msgstr "Letztes Jahr"
 
 #: lib/data_aggregator_web/live/administration_live/index.ex:251
 #: lib/data_aggregator_web/live/administration_live/index.ex:271
@@ -3001,19 +3025,19 @@ msgid "Roles"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/set_password.ex:40
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.SetPassword"
 msgid "Enter your password"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/set_password.ex:39
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.SetPassword"
 msgid "Password"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/set_password.ex:47
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.SetPassword"
 msgid "Set Password"
 msgstr ""
@@ -3031,7 +3055,6 @@ msgid "There are no collections yet for your institution"
 msgstr ""
 
 #: lib/data_aggregator_web/components/components/field.ex:103
-#: lib/data_aggregator_web/components/components/field.ex:138
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Components.Field"
 msgid "No entries found"

@@ -69,6 +69,7 @@ class DialogHook extends Hook {
       // reset the command
       provide(dialog.id, AlertCommandContext, null);
       cmd = undefined;
+      dialog.returnValue = "";
     });
 
     // if we use the phx-submit attribute inside the modal form,
