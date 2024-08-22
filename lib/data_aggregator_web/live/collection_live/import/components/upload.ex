@@ -23,11 +23,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
      |> assign(assigns)
      |> assign(error_message: nil)
      |> assign(:uploaded_files, [])
+     |> assign(:uploading, false)
      |> allow_upload(:file,
        max_entries: 1,
        accept: DataFrame.supported_exts(),
        max_file_size: 200 * 1024 * 1024,
-       auto_upload: true
+       auto_upload: true,
+       progress: &handle_progress/3
      )
      |> assign_form()}
   end
@@ -125,9 +127,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
         <:actions modal>
           <button
             type="submit"
-            class={["btn btn-primary", Enum.any?(@uploads.file.errors) && "btn-disabled"]}
+            class="btn btn-primary"
+            disabled={
+              @uploading || Enum.any?(@uploads.file.errors) || Enum.empty?(@uploads.file.entries)
+            }
+            phx-disable-with={~t"Save..."m}
           >
-            <%= ~t"Upload file"m %>
+            <%= if @uploading, do: ~t"Uploading..."m, else: ~t"Next"m %>
           </button>
           <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
             <%= ~t"Cancel"m %>
@@ -155,7 +161,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
 
   @impl true
   def handle_event("upload:cancel", %{"ref" => ref}, socket) do
-    {:noreply, socket |> cancel_upload(:file, ref) |> validate_max_entries()}
+    {:noreply,
+     socket
+     |> cancel_upload(:file, ref)
+     |> validate_max_entries()
+     |> assign(:uploading, false)}
   end
 
   @impl true
@@ -167,6 +177,14 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
       results = consume(socket, collection)
 
       handle_upload_result(socket, results, collection)
+    end
+  end
+
+  defp handle_progress(:file, entry, socket) do
+    if entry.done? do
+      {:noreply, assign(socket, :uploading, false)}
+    else
+      {:noreply, socket}
     end
   end
 
@@ -279,7 +297,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
         assign(socket, :error_message, socket.assigns.error_message)
 
       true ->
-        assign(socket, :error_message, nil)
+        socket
+        |> assign(:error_message, nil)
+        |> assign(:uploading, true)
     end
   end
 
