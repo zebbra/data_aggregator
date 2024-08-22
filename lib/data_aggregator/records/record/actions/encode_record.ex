@@ -19,7 +19,7 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
           any()
         ) :: EncodingActionResult.t()
   def run(input, _opts, _context) do
-    record = set_encoding_state(input.arguments.record)
+    record = set_encoding_state!(input.arguments.record)
     catalog = input.arguments.catalog
 
     Logger.debug("Encoding record with catalog: #{to_string(catalog)} started")
@@ -28,31 +28,38 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
     case record
          |> Strategy.encode(catalog)
          |> update_state() do
-      {:ok, encoded_record} ->
+      {:ok, record} ->
         Logger.debug(
-          "Encoding for record #{record.id} with catalog: #{to_string(catalog)} finished with result: #{inspect(encoded_record)}"
+          "Encoding for record #{record.id} with catalog: #{to_string(catalog)} finished with result: #{inspect(record)}"
         )
 
-        {:ok, encoded_record}
+        {:ok, record}
 
-      {:error, error} ->
+      {:error, error, record} ->
         Logger.warning(
           "Encoding for record #{record.id} with catalog: #{to_string(catalog)} failed, due to: #{inspect(error)}"
         )
 
-        set_failed_state!(record)
-
-        {:error, error}
+        {:ok, record}
     end
   end
 
   # set the state the processed record to `:encoded` or `:failed` and return it
   @spec update_state(EncodingResult.t()) :: EncodingActionResult.t()
   defp update_state(encoding_result) do
-    with {:ok, encoded_record} <- encoding_result do
-      record = get_record(encoded_record)
+    case encoding_result do
+      {:ok, encoded_record} ->
+        record = get_record(encoded_record)
 
-      {:ok, set_encoded_state(record)}
+        {:ok, set_encoded_state!(record)}
+
+      {:error, error, %Record{} = record} ->
+        {:error, error, set_failed_state!(record)}
+
+      {:error, error, encoded_record} ->
+        record = get_record(encoded_record)
+
+        {:error, error, set_failed_state!(record)}
     end
   end
 
@@ -64,14 +71,14 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   end
 
   # update state of records to `:encoding`
-  @spec set_encoding_state(Record.t()) :: Record.t()
-  defp set_encoding_state(record) do
+  @spec set_encoding_state!(Record.t()) :: Record.t()
+  defp set_encoding_state!(record) do
     Record.set_encoding!(record)
   end
 
   # update state of record to `:encoded`
-  @spec set_encoded_state(Record.t()) :: Record.t()
-  defp set_encoded_state(record) do
+  @spec set_encoded_state!(Record.t()) :: Record.t()
+  defp set_encoded_state!(record) do
     Record.set_encoded!(record)
   end
 

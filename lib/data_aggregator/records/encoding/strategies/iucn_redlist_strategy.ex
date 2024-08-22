@@ -28,10 +28,10 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
       {:ok, encoded_record} ->
         {:ok, encoded_record}
 
-      {:error, error} ->
+      {:error, error, encoded_record} ->
         handle_error(encoded_record.id, error)
 
-        {:error, error}
+        {:error, error, encoded_record}
     end
   rescue
     error ->
@@ -54,6 +54,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
       else
         {:ok, Strategy.update_encoded_record(response.body, encoded_record, @output_attributes)}
       end
+    else
+      error -> {:error, error, encoded_record}
     end
   end
 
@@ -79,7 +81,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
   end
 
   @spec handle_error(String.t(), any()) :: :ok
-  defp handle_error(record_id, error) do
-    Logger.warning("Error while encoding the record #{record_id} with the gbif iucn redlist catalog: #{inspect(error)}")
+  defp handle_error(encoded_record_id, error) do
+    Logger.warning(
+      "Error while encoding the encoded_record #{encoded_record_id} with the gbif iucn redlist catalog: #{inspect(error)}"
+    )
   end
 end

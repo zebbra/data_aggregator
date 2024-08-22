@@ -67,8 +67,8 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     |> handle_encoding_result(encoded_record, catalog)
   end
 
-  def encode(_record, catalog) do
-    {:error, "no encoding strategy found for catalog: #{inspect(catalog)}"}
+  def encode(record, catalog) do
+    {:error, "no encoding strategy found for catalog: #{inspect(catalog)}", record}
   end
 
   @spec handle_encoding_result(EncodingResult.t(), EncodedRecord.t(), atom()) ::
@@ -90,10 +90,10 @@ defmodule DataAggregator.Records.Encoding.Strategy do
 
         {:ok, unchanged_record}
 
-      {:error, error} ->
+      {:error, error, encoding_result} ->
         create_error_result(attrs, catalog, old_record, error)
 
-        {:error, error}
+        {:error, error, encoding_result}
     end
   end
 
@@ -162,8 +162,8 @@ defmodule DataAggregator.Records.Encoding.Strategy do
           {:ok, new_encoded_record}
         end
 
-      {:error, error} ->
-        {:error, error}
+      {:error, error, encoding_result} ->
+        {:error, error, encoding_result}
     end
   end
 

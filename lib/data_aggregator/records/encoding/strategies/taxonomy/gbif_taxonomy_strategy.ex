@@ -28,36 +28,36 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     query the gbif taxanomy api and return the encoded record
   """
   @spec apply_strategy(EncodedRecord.t()) :: EncodingResult.t()
-  def apply_strategy(record) do
-    process_record(record)
+  def apply_strategy(encoded_record) do
+    process_encoded_record(encoded_record)
   end
 
-  @spec process_record(EncodedRecord.t()) :: EncodingResult.t()
-  defp process_record(record) do
+  @spec process_encoded_record(EncodedRecord.t()) :: EncodingResult.t()
+  defp process_encoded_record(encoded_record) do
     {:ok,
-     record
+     encoded_record
      |> build_request_params()
      |> fetch_match_api()
      |> parse_response()
      |> parse_response_body()
      |> handle_synonym()
-     |> Strategy.update_encoded_record(record, @output_attributes)}
+     |> Strategy.update_encoded_record(encoded_record, @output_attributes)}
   catch
     error ->
-      {:error, error}
+      {:error, error, encoded_record}
   end
 
   @spec build_request_params(EncodedRecord.t()) :: list()
-  defp build_request_params(record) do
+  defp build_request_params(encoded_record) do
     @input_attributes
     |> Enum.map(fn {record_attribute, request_attribute} ->
-      request_value = Map.get(record, record_attribute)
+      request_value = Map.get(encoded_record, record_attribute)
 
       unless request_value == nil do
         {request_attribute, request_value}
       end
     end)
-    |> check_parameters(record)
+    |> check_parameters(encoded_record)
     |> Enum.filter(&(&1 !== nil))
     |> Enum.uniq()
   end

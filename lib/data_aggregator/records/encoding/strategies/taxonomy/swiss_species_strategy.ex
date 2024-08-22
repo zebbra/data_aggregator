@@ -23,44 +23,46 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
     lookup the swiss species registry and return the encoded record
   """
   @spec apply_strategy(EncodedRecord.t()) :: EncodingResult.t()
-  def apply_strategy(record) do
-    case process_record(record) do
-      {:ok, record} ->
-        {:ok, record}
+  def apply_strategy(encoded_record) do
+    case process_encoded_record(encoded_record) do
+      {:ok, encoded_record} ->
+        {:ok, encoded_record}
 
-      {:error, error} ->
-        handle_error(record.id, error)
+      {:error, error, encoded_record} ->
+        handle_error(encoded_record.id, error)
 
-        {:error, error}
+        {:error, error, encoded_record}
     end
   rescue
     error ->
-      handle_error(record.id, error)
+      handle_error(encoded_record.id, error)
 
-      {:error, error}
+      {:error, error, encoded_record}
   end
 
-  @spec process_record(EncodedRecord.t()) :: EncodingResult.t()
-  defp process_record(record) do
-    case SwissSpecies.get_by_usage_key(Map.get(record, @input_attribute)) do
+  @spec process_encoded_record(EncodedRecord.t()) :: EncodingResult.t()
+  defp process_encoded_record(encoded_record) do
+    case SwissSpecies.get_by_usage_key(Map.get(encoded_record, @input_attribute)) do
       {:ok, result} ->
         {:ok,
          result
          |> Map.from_struct()
-         |> Strategy.update_encoded_record(record, @output_attributes)}
+         |> Strategy.update_encoded_record(encoded_record, @output_attributes)}
 
       {:error, %Ash.Error.Query.NotFound{}} ->
-        Logger.warning("no matching record found for taxon_id: #{record.tax_taxon_id}")
+        Logger.warning("no matching encoded_record found for taxon_id: #{encoded_record.tax_taxon_id}")
 
-        {:ok, record}
+        {:ok, encoded_record}
 
       {:error, error} ->
-        {:error, error}
+        {:error, error, encoded_record}
     end
   end
 
   @spec handle_error(String.t(), map()) :: :ok
-  defp handle_error(record_id, error) do
-    Logger.warning("Error while encoding the record #{record_id} with the swiss species catalog: #{inspect(error)}")
+  defp handle_error(encoded_record_id, error) do
+    Logger.warning(
+      "Error while encoding the encoded_record #{encoded_record_id} with the swiss species catalog: #{inspect(error)}"
+    )
   end
 end

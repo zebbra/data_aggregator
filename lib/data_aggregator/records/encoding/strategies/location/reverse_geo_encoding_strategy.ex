@@ -25,24 +25,24 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
   def apply_strategy(encoded_record) do
     encoded_record = Ash.load!(encoded_record, [:record])
 
-    case process_record(encoded_record) do
+    case process_encoded_record(encoded_record) do
       {:ok, encoded_record} ->
         {:ok, encoded_record}
 
-      {:error, error} ->
+      {:error, error, encoded_record} ->
         handle_error(encoded_record.id, error)
 
-        {:error, error}
+        {:error, error, encoded_record}
     end
   rescue
     error ->
       handle_error(encoded_record.id, error)
 
-      {:error, error}
+      {:error, error, encoded_record}
   end
 
-  @spec process_record(EncodedRecord.t()) :: EncodingResult.t()
-  defp process_record(encoded_record) do
+  @spec process_encoded_record(EncodedRecord.t()) :: EncodingResult.t()
+  defp process_encoded_record(encoded_record) do
     {
       :ok,
       encoded_record
@@ -55,12 +55,12 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
     }
   catch
     error ->
-      {:error, error}
+      {:error, error, encoded_record}
   end
 
   @spec build_params(EncodedRecord.t()) :: {:ok, list()} | {:error, any()}
-  defp build_params(record) do
-    case convert_coordinates(record) do
+  defp build_params(encoded_record) do
+    case convert_coordinates(encoded_record) do
       {:ok, %{n: lat, e: long}} ->
         {:ok, [{:q, "#{lat},#{long}"}]}
 
@@ -70,12 +70,12 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
   end
 
   @spec convert_coordinates(EncodedRecord.t()) :: GeoCoordResult.t()
-  defp convert_coordinates(record) do
-    intl_lat = record.loc_decimal_latitude
-    intl_long = record.loc_decimal_longitude
+  defp convert_coordinates(encoded_record) do
+    intl_lat = encoded_record.loc_decimal_latitude
+    intl_long = encoded_record.loc_decimal_longitude
 
-    swiss_lat = record.loc_swiss_coordinates_y
-    swiss_long = record.loc_swiss_coordinates_x
+    swiss_lat = encoded_record.loc_swiss_coordinates_y
+    swiss_long = encoded_record.loc_swiss_coordinates_x
 
     cond do
       intl_lat != nil and intl_long != nil ->
@@ -85,7 +85,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
         {:ok, Coordinates.lv95_to_wgs84!(%Coordinates{n: swiss_lat, e: swiss_long})}
 
       true ->
-        {:error, "no coordinates found on record #{record.id}"}
+        {:error, "no coordinates found on encoded_record #{encoded_record.id}"}
     end
   end
 
@@ -232,7 +232,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
   end
 
   @spec handle_error(String.t(), map()) :: :ok
-  defp handle_error(record_id, error) do
-    Logger.warning("Error while encoding the record #{record_id} with the geo api: #{inspect(error)}")
+  defp handle_error(encoded_record_id, error) do
+    Logger.warning("Error while encoding the encoded_record #{encoded_record_id} with the geo api: #{inspect(error)}")
   end
 end

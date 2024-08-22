@@ -4,5 +4,5 @@ defmodule DataAggregator.Records.Encoding.EncodingActionResult do
   """
   alias DataAggregator.Records.Record
 
-  @type t :: {:ok, Record.t()} | {:error, any()}
+  @type t :: {:ok, Record.t()} | {:error, any(), Record.t()}
 end

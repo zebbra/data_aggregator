@@ -197,7 +197,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
           loc_swiss_coordinates_y: nil
         })
 
-      {{:error, error}, logs} =
+      {{:ok, _record}, logs} =
         with_log(fn -> Record.encode(record_fixture, :geo_reverse) end)
 
       encoded_record = Record.get_by_id!(record_fixture.id)
@@ -215,14 +215,6 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
       })
 
       assert encoded_record.state === :failed
-
-      assert %Ash.Error.Unknown{
-               errors: [
-                 %Ash.Error.Unknown.UnknownError{
-                   error: "No valid response (status 400) from geo api"
-                 }
-               ]
-             } = error
 
       assert logs =~ "No valid response (status 400) from geo api"
     end
