@@ -6,6 +6,8 @@ defmodule DataAggregator.Accounts.User do
     extensions: [AshAuthentication, AshUUID],
     domain: DataAggregator.Accounts
 
+  use DataAggregatorWeb.Gettext
+
   alias AshAuthentication.Strategy.Password.HashPasswordChange
 
   authentication do
@@ -46,8 +48,8 @@ defmodule DataAggregator.Accounts.User do
       public? true
     end
 
-    attribute :first_name, :string, allow_nil?: false
-    attribute :last_name, :string, allow_nil?: false
+    attribute :first_name, :string, allow_nil?: true
+    attribute :last_name, :string, allow_nil?: true
     attribute :phone, :string, allow_nil?: true
     attribute :hashed_password, :string, allow_nil?: true, sensitive?: true
     attribute :roles, {:array, :string}, default: []
@@ -139,7 +141,14 @@ defmodule DataAggregator.Accounts.User do
   code_interface do
     define :read
     define :get_by_id, action: :read, get_by: [:id]
+    define :get_by_email, action: :read, get_by: [:email]
     define :register_with_password
+  end
+
+  validations do
+    validate match(:email, ~r/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/) do
+      message ~t"is not a valid email address"m
+    end
   end
 
   # If using policies, add the following bypass:

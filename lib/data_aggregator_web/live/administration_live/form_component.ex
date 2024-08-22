@@ -59,7 +59,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                   placeholder={~t"Enter last name"m}
                 />
                 <.field
-                  type="text"
+                  type="email"
                   field={@form[:email]}
                   label={~t"E-Mail"m}
                   placeholder={~t"Enter E-Mail"m}
@@ -111,10 +111,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                   id="roles_togglegroup"
                   label="togglegroup"
                   type="togglegroup"
-                  options={[
-                    "Collection Digitizer": "collection_digitizer",
-                    "Data Administrator": "data_administrator"
-                  ]}
+                  options={toggle_group_options()}
                   description="togglegroup input description"
                   multiple
                 />
@@ -194,10 +191,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                   disabled={true}
                   label="Roles"
                   type="togglegroup"
-                  options={[
-                    "Collection Digitizer": "collection_digitizer",
-                    "Data Administrator": "data_administrator"
-                  ]}
+                  options={toggle_group_options()}
                   multiple
                 />
               </div>
@@ -244,6 +238,11 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
 
   @impl true
   def handle_event("user:validate", %{"user" => params}, socket) do
+    roles = params["roles"] || []
+    # This line removes empty values
+    roles = Enum.reject(roles, &(&1 == ""))
+    params = Map.put(params, "roles", roles)
+
     form = Form.validate(socket.assigns.form, params)
     {:noreply, assign(socket, :form, form)}
   end
@@ -353,5 +352,13 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
       end
 
     assign(socket, :grscicoll_institutions, options)
+  end
+
+  defp toggle_group_options do
+    [
+      "Collection Digitizer": "collection_digitizer",
+      "Data Administrator": "data_administrator",
+      Admin: "admin"
+    ]
   end
 end

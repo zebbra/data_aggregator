@@ -99,6 +99,7 @@ defmodule DataAggregatorWeb.Components.Field do
       <% else %>
         <.label :if={@label} for={@id} label={@label} {@rest} />
       <% end %>
+      <.input type="hidden" name={@name} value="" disabled={@rest[:disabled]} />
       <.description :if={@description} description={@description} class="mb-2" />
       <.description :if={length(@options) == 0} description={~t"No entries found"m} class="mb-2" />
       <.errors errors={@errors} id={@id} class={is_nil(@description) && "mb-2"} />

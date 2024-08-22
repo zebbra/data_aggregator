@@ -61,14 +61,14 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
           end
         }
       >
+        <:col :let={{_id, user}} field={:email} label={~t"Email"m}>
+          <%= user.email %>
+        </:col>
         <:col :let={{_id, user}} field={:first_name} label={~t"First Name"m}>
           <%= user.first_name %>
         </:col>
         <:col :let={{_id, user}} field={:last_name} label={~t"Last Name"m}>
           <%= user.last_name %>
-        </:col>
-        <:col :let={{_id, user}} field={:email} label={~t"Email"m}>
-          <%= user.email %>
         </:col>
         <:col :let={{_id, user}} field={:phone} label={~t"Phone"m}>
           <%= user.phone %>

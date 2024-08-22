@@ -2,7 +2,6 @@ import Config
 
 # Configure your database
 database_url = "ecto://postgres:postgres@localhost:5432/data-aggregator-dev"
-config :ash_authentication, debug_authentication_failures?: true
 
 # Cache files in the priv/storage directory
 config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/dev/cache"
