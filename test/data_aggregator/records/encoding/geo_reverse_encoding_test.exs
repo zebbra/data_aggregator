@@ -54,7 +54,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
            record_fixture: record_fixture
          } do
       record_fixture =
-        update_fixtures!(record_fixture, %{
+        update_record_fixtures!(record_fixture, %{
           loc_decimal_latitude: 32.117833,
           loc_decimal_longitude: 20.082039,
           loc_swiss_coordinates_x: nil,
@@ -88,7 +88,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
            record_fixture: record_fixture
          } do
       record_fixture =
-        update_fixtures!(record_fixture, %{
+        update_record_fixtures!(record_fixture, %{
           loc_decimal_latitude: nil,
           loc_decimal_longitude: nil,
           loc_swiss_coordinates_x: 2_601_391.156872048,
@@ -122,7 +122,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
            record_fixture: record_fixture
          } do
       record_fixture =
-        update_fixtures!(record_fixture, %{
+        update_record_fixtures!(record_fixture, %{
           loc_decimal_latitude: nil,
           loc_decimal_longitude: nil,
           loc_swiss_coordinates_x: nil,
@@ -156,7 +156,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
            record_fixture: record_fixture
          } do
       record_fixture =
-        update_fixtures!(record_fixture, %{
+        update_record_fixtures!(record_fixture, %{
           loc_decimal_latitude: 46.946659297095934,
           loc_decimal_longitude: nil,
           loc_swiss_coordinates_x: 2_601_391.156872048,
@@ -190,7 +190,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
            record_fixture: record_fixture
          } do
       record_fixture =
-        update_fixtures!(record_fixture, %{
+        update_record_fixtures!(record_fixture, %{
           loc_decimal_latitude: 4242.4242,
           loc_decimal_longitude: 2424.2424,
           loc_swiss_coordinates_x: nil,
@@ -218,12 +218,5 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
 
       assert logs =~ "No valid response (status 400) from geo api"
     end
-  end
-
-  defp update_fixtures!(record_fixture, update_set) do
-    record_fixture = Record.update!(record_fixture, update_set)
-    encoded_record = EncodedRecord.get_by_record!(record_fixture.id)
-    EncodedRecord.update!(encoded_record, update_set)
-    record_fixture
   end
 end

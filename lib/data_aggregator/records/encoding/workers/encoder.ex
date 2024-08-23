@@ -44,8 +44,8 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
         {:ok, record},
         fn catalog, {:ok, acc} ->
           case Record.encode(acc, catalog) do
-            {:ok, encoded_record} ->
-              {:cont, {:ok, encoded_record}}
+            {:ok, record} ->
+              {:cont, {:ok, record}}
 
             {:error, error} ->
               {:halt, {:error, error}}

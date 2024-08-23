@@ -42,6 +42,11 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
 
   @spec process_encoded_record(EncodedRecord.t()) :: EncodingResult.t()
   defp process_encoded_record(encoded_record) do
+    taxon_id = Map.get(encoded_record, @input_attribute)
+
+    # early return if taxon_id is empty
+    if taxon_id === nil, do: raise("taxon_id is empty")
+
     case SwissSpecies.get_by_usage_key(Map.get(encoded_record, @input_attribute)) do
       {:ok, result} ->
         {:ok,
@@ -50,9 +55,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
          |> Strategy.update_encoded_record(encoded_record, @output_attributes)}
 
       {:error, %Ash.Error.Query.NotFound{}} ->
-        Logger.warning(
-          "[swiss_species_strategy] no matching encoded_record found for taxon_id: #{encoded_record.tax_taxon_id}"
-        )
+        Logger.warning("[swiss_species] no matching encoded_record found for taxon_id: #{encoded_record.tax_taxon_id}")
 
         {:ok, encoded_record}
 
@@ -64,7 +67,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
   @spec handle_error(String.t(), map()) :: :ok
   defp handle_error(encoded_record_id, error) do
     Logger.warning(
-      "Error while encoding the encoded_record #{encoded_record_id} with the swiss species catalog: #{inspect(error)}"
+      "[swiss_species] Error while encoding the encoded_record #{encoded_record_id} with the swiss species catalog: #{inspect(error)}"
     )
   end
 end

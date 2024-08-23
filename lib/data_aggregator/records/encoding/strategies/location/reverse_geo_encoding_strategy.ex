@@ -234,7 +234,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
   @spec handle_error(String.t(), map()) :: :ok
   defp handle_error(encoded_record_id, error) do
     Logger.warning(
-      "[reverse_geo_encoding_strategy] Error while encoding the encoded_record #{encoded_record_id} with the geo api: #{inspect(error)}"
+      "[geo_reverse] Error while encoding the encoded_record #{encoded_record_id} with the geo api: #{inspect(error)}"
     )
   end
 end

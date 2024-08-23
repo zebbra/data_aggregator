@@ -44,6 +44,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
   defp process_encoded_record(encoded_record) do
     taxon_id = encoded_record |> Map.get(@input_attribute, "") |> to_string()
 
+    # early return if taxon_id is empty
+    if taxon_id === "", do: raise("taxon_id is empty")
+
     with {:ok, response} <-
            taxon_id
            |> Gbif.RestAPI.get_iucn_redlist_category()
@@ -85,7 +88,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
   @spec handle_error(String.t(), any()) :: :ok
   defp handle_error(encoded_record_id, error) do
     Logger.warning(
-      "[iucn_redlist_strategy] Error while encoding the encoded_record #{encoded_record_id} with the gbif iucn redlist catalog: #{inspect(error)}"
+      "[gbif_iucn_redlist] Error while encoding the encoded_record #{encoded_record_id} with the gbif iucn redlist catalog: #{inspect(error)}"
     )
   end
 end

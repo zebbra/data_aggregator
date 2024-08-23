@@ -1,6 +1,6 @@
 defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   @moduledoc """
-  Encode Record with passed catalog
+  Encode Record with passed catalog. Returns the record itself after encoding.
   """
   use Ash.Resource.Actions.Implementation
 
@@ -19,18 +19,22 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
           any()
         ) :: EncodingActionResult.t()
   def run(input, _opts, _context) do
+    # track if it was failed and set accordingly afterwards
+    previous_state = input.arguments.record.state
     record = set_encoding_state!(input.arguments.record)
     catalog = input.arguments.catalog
 
     Logger.debug("Encoding record with catalog: #{to_string(catalog)} started")
 
-    # process the encoding with the passed catalog
+    # Process the encoding with the passed catalog
+    # Strategy.encode/2 returns an EncodingResult.t() (encoded_record) and
+    # update_state/1 returns an EncodingActionResult.t() (record)
     case record
          |> Strategy.encode(catalog)
-         |> update_state() do
+         |> update_state(previous_state) do
       {:ok, record} ->
         Logger.debug(
-          "Encoding for record #{record.id} with catalog: #{to_string(catalog)} finished with result: #{inspect(record)}"
+          "[#{catalog}] Encoding for record #{record.id} with catalog: #{to_string(catalog)} finished with result: #{inspect(record)}"
         )
 
         {:ok, record}
@@ -45,16 +49,20 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   end
 
   # set the state the processed record to `:encoded` or `:failed` and return it
-  @spec update_state(EncodingResult.t()) :: EncodingActionResult.t()
-  defp update_state(encoding_result) do
+  # keep track if a previous state was failed. In that case, set the state to `:failed`
+  # even if the encoding was successful
+  @spec update_state(EncodingResult.t(), atom()) :: EncodingActionResult.t()
+  defp update_state(encoding_result, previous_state) do
     case encoding_result do
       {:ok, encoded_record} ->
         record = get_record(encoded_record)
 
-        {:ok, set_encoded_state!(record)}
+        record =
+          if previous_state === :failed,
+            do: set_failed_state!(record),
+            else: set_encoded_state!(record)
 
-      {:error, error, %Record{} = record} ->
-        {:error, error, set_failed_state!(record)}
+        {:ok, record}
 
       {:error, error, encoded_record} ->
         record = get_record(encoded_record)

@@ -88,5 +88,19 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
 
       assert logs =~ "no encoding strategy found for catalog: :unknown"
     end
+
+    test "encode/2 for :swiss_species catalog fails if taxon_id is not provided", %{
+      correct_record: record
+    } do
+      record = update_record_fixtures!(record, %{tax_taxon_id: nil})
+      Record.encode(record, :swiss_species)
+
+      {{:ok, record}, logs} =
+        with_log(fn -> Record.encode(record, :swiss_species) end)
+
+      assert record.state === :failed
+
+      assert logs =~ "taxon_id is empty"
+    end
   end
 end
