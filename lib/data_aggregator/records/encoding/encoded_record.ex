@@ -72,7 +72,12 @@ defmodule DataAggregator.Records.EncodedRecord do
       argument :record, :struct, allow_nil?: false
 
       upsert? true
-      upsert_fields [:extra_data | DarwinCore.Schema.prefixed_attribute_names()]
+
+      upsert_fields [
+                      :extra_data,
+                      :iucn_redlist_category
+                    ] ++ DarwinCore.Schema.prefixed_attribute_names()
+
       upsert_identity :record_mte_catalog_number
 
       change Encoding.Changes.SetMandatoryAttributes

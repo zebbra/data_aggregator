@@ -50,7 +50,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
            record_fixture: record_fixture
          } do
       record_fixture =
-        Record.update!(record_fixture, %{
+        update_record_fixtures!(record_fixture, %{
           loc_locality: "Niesen",
           loc_continent: nil,
           loc_country: "Switzerland",
@@ -87,7 +87,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
            record_fixture: record_fixture
          } do
       record_fixture =
-        Record.update!(record_fixture, %{
+        update_record_fixtures!(record_fixture, %{
           loc_locality: "Europe",
           loc_continent: "Europe",
           loc_country: "Switzerland",
@@ -124,7 +124,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
            record_fixture: record_fixture
          } do
       record_fixture =
-        Record.update!(record_fixture, %{
+        update_record_fixtures!(record_fixture, %{
           loc_decimal_latitude: nil,
           loc_decimal_longitude: nil,
           loc_swiss_coordinates_x: nil,
@@ -136,7 +136,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
           loc_municipality: nil
         })
 
-      {{:error, error}, logs} =
+      {{:ok, _record}, logs} =
         with_log(fn -> Record.encode(record_fixture, :geo_forward) end)
 
       encoded_record =
@@ -156,9 +156,10 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
         loc_municipality: nil
       })
 
-      assert error != nil
       assert encoded_record.record.state === :failed
-      assert logs =~ "The attributes necessary to forward geo encode were not found on record"
+
+      assert logs =~
+               "The attributes necessary to forward geo encode were not found on encoded_record"
     end
   end
 end

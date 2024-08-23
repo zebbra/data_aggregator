@@ -400,6 +400,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               phx-value-tab="changes"
               active={@record_tab == "changes"}
             />
+            <.secondary_navigation_item
+              label={~t"Encodings"m}
+              on_click="record:set_tab"
+              phx-value-tab="encodings"
+              active={@record_tab == "encodings"}
+            />
           </.secondary_navigation>
           <div :if={@record_tab == "data"} class="contents">
             <%= for category <- @attrs_in_categories do %>
@@ -431,36 +437,36 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 </div>
               </details>
             <% end %>
-            <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 lg:pl-4">
-              <summary class="collapse-title">
-                <%= ~t"Record encodings"m %>
-              </summary>
-              <div class="collapse-content">
-                <p class="text-base-content/60 text-sm/6 line-clamp-2 max-w-4xl">
-                  <%= ~t"Results by catalog"m %>
-                </p>
-
-                <.table
-                  opts={[
-                    container_attrs: [class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
-                  ]}
-                  id="encoding_result_table"
-                  items={@record_encoding_results}
-                >
-                  <:col :let={result} label={~t"Catalog"} class="font-semibold">
-                    <%= result.catalog %>
-                  </:col>
-                  <:col :let={result} label={~t"State"} class="text-center">
-                    <.encoding_state_badge reason={result.message} state={result.state} />
-                  </:col>
-                  <:col :let={result} label={~t"Created"} class="text-right">
-                    <%= format_datetime(result.inserted_at, format: :short) %>
-                  </:col>
-                </.table>
-              </div>
-            </details>
           </div>
           <.activity_feed :if={@record_tab == "changes"} record={@selected_record} />
+          <div :if={@record_tab == "encodings"} class="px-6 pt-4 lg:px-8">
+            <h2 class="pb-2">
+              <%= ~t"Record encodings"m %>
+            </h2>
+            <div class="">
+              <p class="text-base-content/60 text-sm/6 line-clamp-2 max-w-4xl">
+                <%= ~t"Results by catalog"m %>
+              </p>
+
+              <.table
+                opts={[
+                  container_attrs: [class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
+                ]}
+                id="encoding_result_table"
+                items={@record_encoding_results}
+              >
+                <:col :let={result} label={~t"Catalog"} class="font-semibold">
+                  <%= result.catalog %>
+                </:col>
+                <:col :let={result} label={~t"State"} class="text-center">
+                  <.encoding_state_badge reason={result.message} state={result.state} />
+                </:col>
+                <:col :let={result} label={~t"Created"} class="text-right">
+                  <%= format_datetime(result.inserted_at, format: :short) %>
+                </:col>
+              </.table>
+            </div>
+          </div>
         </.slideover>
       </:secondary>
 

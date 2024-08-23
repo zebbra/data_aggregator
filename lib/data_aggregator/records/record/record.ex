@@ -410,7 +410,8 @@ defmodule DataAggregator.Records.Record do
 
   policies do
     policy action_type(:read) do
-      # authorize_if DataAggregator.Checks.RecordMatchesInstitution
+      # authorize_if DataAggregator.Checks.RecordMatchesInstitutio
+      authorize_if DataAggregator.Checks.IsAdmin
       authorize_if expr(collection.grscicoll_institution_key == ^actor(:institution_id))
     end
   end

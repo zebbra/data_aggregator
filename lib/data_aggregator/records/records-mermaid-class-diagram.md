@@ -23,7 +23,6 @@ classDiagram
         Import[] imports
         Export[] exports
         Record[] records
-        destroy()
         update(Integer items_to_digitize, String owner, String name, String code, ...)
         read(String sort)
         create(Integer items_to_digitize, String owner, String name, String code, ...)
@@ -35,8 +34,10 @@ classDiagram
         set_encoding()
         set_fast_track_publishing()
         set_approving()
+        set_deleting()
         set_idle()
         set_idle_encoding()
+        destroy()
         export(Struct export)
         publish(Struct publication)
         approve(Struct collection, Map query)

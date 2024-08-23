@@ -2,11 +2,16 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   @moduledoc """
     This module is responsible for encoding records with configured catalogs.
 
+    At this point, the encoded_record must already exist in the database. It
+    is created / upserted during the import process. Thus, we simply
+    fetch the encoded_record from the database and pass it to the encoding.
+
     To encode records with a new catalog, add the catalog to the @catalogs list and
     implement the encode/2 function with the corresponding `when` statement
 
     to keep this module clean, the actual encoding logic is delegated to a
-    strategy module like we do with the `DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy` or the `DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy` module
+    strategy module like we do with the `DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy`
+    or the `DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy` module
   """
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
@@ -21,54 +26,72 @@ defmodule DataAggregator.Records.Encoding.Strategy do
 
   require Logger
 
-  @spec encode(Record.t(), atom()) :: EncodingResult.t()
-  def encode(record, catalog) when catalog == :gbif_taxonomy do
-    encoded_record = create_encoded_record(record)
+  @doc """
+  Attention! For the first catalog we reset the encoded_record to the record's value.
+  As of now, the first catalog is the gbif_taxonomy catalog. If this changes, the
+  first catalog must be updated here as well.
+  """
+  @spec encode(Record.t() | EncodedRecord.t(), atom()) :: EncodingResult.t()
+  def encode(%Record{} = record, catalog) when catalog == :gbif_taxonomy do
+    attributes =
+      [
+        :extra_data,
+        :iucn_redlist_category
+      ] ++ DataAggregator.DarwinCore.Schema.prefixed_attribute_names()
 
+    encoded_record =
+      EncodedRecord.create!(
+        record
+        |> Map.from_struct()
+        |> Map.take(attributes)
+        |> Map.put_new_lazy(:record, fn -> record end)
+      )
+
+    encode(encoded_record, catalog)
+  end
+
+  def encode(%Record{} = record, catalog) do
+    encoded_record = EncodedRecord.get_by_record!(record.id)
+    encode(encoded_record, catalog)
+  end
+
+  def encode(%EncodedRecord{} = encoded_record, catalog) when catalog == :gbif_taxonomy do
     encoded_record
     |> GbifTaxonomyStrategy.apply_strategy()
     |> check_for_changes(encoded_record, catalog)
     |> handle_encoding_result(encoded_record, catalog)
   end
 
-  def encode(record, catalog) when catalog == :swiss_species do
-    encoded_record = create_encoded_record(record)
-
+  def encode(%EncodedRecord{} = encoded_record, catalog) when catalog == :swiss_species do
     encoded_record
     |> SwissSpeciesStrategy.apply_strategy()
     |> check_for_changes(encoded_record, catalog)
     |> handle_encoding_result(encoded_record, catalog)
   end
 
-  def encode(record, catalog) when catalog == :geo_reverse do
-    encoded_record = create_encoded_record(record)
-
+  def encode(%EncodedRecord{} = encoded_record, catalog) when catalog == :geo_reverse do
     encoded_record
     |> ReverseGeoEncodingStrategy.apply_strategy()
     |> check_for_changes(encoded_record, catalog)
     |> handle_encoding_result(encoded_record, catalog)
   end
 
-  def encode(record, catalog) when catalog == :geo_forward do
-    encoded_record = create_encoded_record(record)
-
+  def encode(%EncodedRecord{} = encoded_record, catalog) when catalog == :geo_forward do
     encoded_record
     |> ForwardGeoEncodingStrategy.apply_strategy()
     |> check_for_changes(encoded_record, catalog)
     |> handle_encoding_result(encoded_record, catalog)
   end
 
-  def encode(record, catalog) when catalog == :gbif_iucn_redlist do
-    encoded_record = create_encoded_record(record)
-
+  def encode(%EncodedRecord{} = encoded_record, catalog) when catalog == :gbif_iucn_redlist do
     encoded_record
     |> IUCNRedlistStrategy.apply_strategy()
     |> check_for_changes(encoded_record, catalog)
     |> handle_encoding_result(encoded_record, catalog)
   end
 
-  def encode(_record, catalog) do
-    {:error, "no encoding strategy found for catalog: #{inspect(catalog)}"}
+  def encode(%EncodedRecord{} = encoded_record, catalog) do
+    {:error, "no encoding strategy found for catalog: #{inspect(catalog)}", encoded_record}
   end
 
   @spec handle_encoding_result(EncodingResult.t(), EncodedRecord.t(), atom()) ::
@@ -90,10 +113,10 @@ defmodule DataAggregator.Records.Encoding.Strategy do
 
         {:ok, unchanged_record}
 
-      {:error, error} ->
+      {:error, error, encoding_result} ->
         create_error_result(attrs, catalog, old_record, error)
 
-        {:error, error}
+        {:error, error, encoding_result}
     end
   end
 
@@ -162,8 +185,8 @@ defmodule DataAggregator.Records.Encoding.Strategy do
           {:ok, new_encoded_record}
         end
 
-      {:error, error} ->
-        {:error, error}
+      {:error, error, encoding_result} ->
+        {:error, error, encoding_result}
     end
   end
 
@@ -173,36 +196,6 @@ defmodule DataAggregator.Records.Encoding.Strategy do
 
   defp get_values_used_for_encoding(encoded_record, catalog) do
     Map.take(encoded_record, Catalog.get_input_dwc_attributes(catalog))
-  end
-
-  #  create an encoded record if it does not exist yet
-  @spec create_encoded_record(Record.t()) :: EncodedRecord.t()
-  defp create_encoded_record(record) do
-    attributes =
-      [
-        :extra_data,
-        :iucn_redlist_category
-      ] ++ DataAggregator.DarwinCore.Schema.prefixed_attribute_names()
-
-    EncodedRecord.create!(
-      record
-      |> Map.from_struct()
-      |> Map.take(attributes)
-      |> Map.put_new_lazy(:record, fn -> record end)
-    )
-
-    # case EncodedRecord.get_by_record(record.id) do
-    #   {:ok, result} ->
-    #     result
-
-    #   {:error, %Ash.Error.Query.NotFound{}} ->
-    #     EncodedRecord.create!(
-    #       record
-    #       |> Map.from_struct()
-    #       |> Map.take(attributes)
-    #       |> Map.put_new_lazy(:record, fn -> record end)
-    #     )
-    # end
   end
 
   @spec update_encoded_record(map(), EncodedRecord.t(), list()) :: EncodedRecord.t()

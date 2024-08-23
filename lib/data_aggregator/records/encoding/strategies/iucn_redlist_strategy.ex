@@ -28,21 +28,24 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
       {:ok, encoded_record} ->
         {:ok, encoded_record}
 
-      {:error, error} ->
+      {:error, error, encoded_record} ->
         handle_error(encoded_record.id, error)
 
-        {:error, error}
+        {:error, error, encoded_record}
     end
   rescue
     error ->
       handle_error(encoded_record.id, error)
 
-      {:error, error}
+      {:error, error, encoded_record}
   end
 
   @spec process_encoded_record(EncodedRecord.t()) :: EncodingResult.t()
   defp process_encoded_record(encoded_record) do
     taxon_id = encoded_record |> Map.get(@input_attribute, "") |> to_string()
+
+    # early return if taxon_id is empty
+    if taxon_id === "", do: raise("taxon_id is empty")
 
     with {:ok, response} <-
            taxon_id
@@ -54,6 +57,10 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
       else
         {:ok, Strategy.update_encoded_record(response.body, encoded_record, @output_attributes)}
       end
+    else
+      e ->
+        {:error, error} = e
+        {:error, error, encoded_record}
     end
   end
 
@@ -61,9 +68,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
 
   defp ensure_response({:error, error}, taxon_id) do
     msg =
-      "Error while iucn redlist status on gbif api using taxon_id: #{taxon_id}. #{inspect(error)}"
+      "Error while iucn redlist status on gbif api using taxon_id: #{taxon_id}."
 
-    Logger.warning(msg)
+    Logger.warning("#{msg} #{inspect(error)}")
 
     {:error, msg}
   end
@@ -71,15 +78,17 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
   defp ensure_status(response) when response.status == 200 or response.status == 204, do: :ok
 
   defp ensure_status(response) do
-    msg = "Non 200 status code from gbif iucn redlist api with message: #{inspect(response)}"
+    msg = "Non 200 status code from gbif iucn redlist api."
 
-    Logger.warning(msg)
+    Logger.warning("#{msg} Message: #{inspect(response)}")
 
     {:error, msg}
   end
 
   @spec handle_error(String.t(), any()) :: :ok
-  defp handle_error(record_id, error) do
-    Logger.warning("Error while encoding the record #{record_id} with the gbif iucn redlist catalog: #{inspect(error)}")
+  defp handle_error(encoded_record_id, error) do
+    Logger.warning(
+      "[gbif_iucn_redlist] Error while encoding the encoded_record #{encoded_record_id} with the gbif iucn redlist catalog: #{inspect(error)}"
+    )
   end
 end

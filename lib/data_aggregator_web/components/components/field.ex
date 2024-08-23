@@ -91,6 +91,7 @@ defmodule DataAggregatorWeb.Components.Field do
     |> field()
   end
 
+  # TODO: use a custom component like DataAggregatorWeb.Filters.CheckboxGroup
   def field(%{type: "togglegroup"} = assigns) do
     ~H"""
     <div phx-feedback-for={@name} class={["form-control w-full", @class, @hidden && "hidden"]}>

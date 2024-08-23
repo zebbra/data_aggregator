@@ -54,7 +54,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
            record_fixture: record_fixture
          } do
       record_fixture =
-        Record.update!(record_fixture, %{
+        update_record_fixtures!(record_fixture, %{
           loc_decimal_latitude: 32.117833,
           loc_decimal_longitude: 20.082039,
           loc_swiss_coordinates_x: nil,
@@ -88,7 +88,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
            record_fixture: record_fixture
          } do
       record_fixture =
-        Record.update!(record_fixture, %{
+        update_record_fixtures!(record_fixture, %{
           loc_decimal_latitude: nil,
           loc_decimal_longitude: nil,
           loc_swiss_coordinates_x: 2_601_391.156872048,
@@ -122,7 +122,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
            record_fixture: record_fixture
          } do
       record_fixture =
-        Record.update!(record_fixture, %{
+        update_record_fixtures!(record_fixture, %{
           loc_decimal_latitude: nil,
           loc_decimal_longitude: nil,
           loc_swiss_coordinates_x: nil,
@@ -156,7 +156,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
            record_fixture: record_fixture
          } do
       record_fixture =
-        Record.update!(record_fixture, %{
+        update_record_fixtures!(record_fixture, %{
           loc_decimal_latitude: 46.946659297095934,
           loc_decimal_longitude: nil,
           loc_swiss_coordinates_x: 2_601_391.156872048,
@@ -190,14 +190,14 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
            record_fixture: record_fixture
          } do
       record_fixture =
-        Record.update!(record_fixture, %{
+        update_record_fixtures!(record_fixture, %{
           loc_decimal_latitude: 4242.4242,
           loc_decimal_longitude: 2424.2424,
           loc_swiss_coordinates_x: nil,
           loc_swiss_coordinates_y: nil
         })
 
-      {{:error, error}, logs} =
+      {{:ok, _record}, logs} =
         with_log(fn -> Record.encode(record_fixture, :geo_reverse) end)
 
       encoded_record = Record.get_by_id!(record_fixture.id)
@@ -215,14 +215,6 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
       })
 
       assert encoded_record.state === :failed
-
-      assert %Ash.Error.Unknown{
-               errors: [
-                 %Ash.Error.Unknown.UnknownError{
-                   error: "No valid response (status 400) from geo api"
-                 }
-               ]
-             } = error
 
       assert logs =~ "No valid response (status 400) from geo api"
     end

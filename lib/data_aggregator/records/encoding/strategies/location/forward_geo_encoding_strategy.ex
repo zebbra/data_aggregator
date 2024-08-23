@@ -28,30 +28,30 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
 
     if longitude != nil && latitude != nil do
       Logger.debug(
-        "The record #{encoded_record.id} already has coordinates, therefore a forward encoding will not provide better data. We will not forward encode towards the geo api."
+        "The encoded_record #{encoded_record.id} already has coordinates, therefore a forward encoding will not provide better data. We will not forward encode towards the geo api."
       )
 
       {:ok, encoded_record}
     else
-      case process_record(encoded_record) do
+      case process_encoded_record(encoded_record) do
         {:ok, encoded_record} ->
           {:ok, encoded_record}
 
-        {:error, error} ->
+        {:error, error, encoded_record} ->
           handle_error(encoded_record.id, error)
 
-          {:error, error}
+          {:error, error, encoded_record}
       end
     end
   rescue
     error ->
       handle_error(encoded_record.id, error)
 
-      {:error, error}
+      {:error, error, encoded_record}
   end
 
-  @spec process_record(EncodedRecord.t()) :: EncodingResult.t()
-  defp process_record(encoded_record) do
+  @spec process_encoded_record(EncodedRecord.t()) :: EncodingResult.t()
+  defp process_encoded_record(encoded_record) do
     {
       :ok,
       encoded_record
@@ -61,11 +61,11 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
     }
   catch
     error ->
-      {:error, error}
+      {:error, error, encoded_record}
   end
 
   @spec build_params(EncodedRecord.t()) :: {:ok, list()} | {:error, any()}
-  defp build_params(record) do
+  defp build_params(encoded_record) do
     api_key =
       System.get_env("OPEN_CAGE_DATA_API_KEY") ||
         throw("No open cage data api key found in the environment variables. set one under OPEN_CAGE_DATA_API_KEY")
@@ -73,17 +73,19 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
     # we want to encode the location if we have at least one of the following fields,
     # otherwise we would get a way too generic response
     q =
-      if record.loc_locality || record.loc_municipality do
+      if encoded_record.loc_locality || encoded_record.loc_municipality do
         [
-          record.loc_locality,
-          record.loc_municipality,
-          record.loc_state_province,
-          record.loc_country
+          encoded_record.loc_locality,
+          encoded_record.loc_municipality,
+          encoded_record.loc_state_province,
+          encoded_record.loc_country
         ]
         |> Enum.reject(&is_nil/1)
         |> Enum.join(", ")
       else
-        Logger.debug("no record.loc_locality or record.loc_municipality found on record #{record.id}")
+        Logger.debug(
+          "no encoded_record.loc_locality or encoded_record.loc_municipality found on encoded_record #{encoded_record.id}"
+        )
 
         ""
       end
@@ -92,7 +94,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
     case q do
       "" ->
         {:error,
-         "The attributes necessary to forward geo encode were not found on record #{record.id}, we will not encode towards the geo api"}
+         "The attributes necessary to forward geo encode were not found on encoded_record #{encoded_record.id}, we will not encode towards the geo api"}
 
       query ->
         {:ok,
@@ -101,7 +103,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
            {:key, api_key},
            {:language, "en"},
            {:no_annotations, 1},
-           {:countrycode, record.loc_country_code}
+           {:countrycode, encoded_record.loc_country_code}
          ]
          |> Enum.reject(&is_nil/1)
          |> Enum.filter(fn {_, value} ->
@@ -165,7 +167,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
   end
 
   @spec handle_error(String.t(), map()) :: :ok
-  defp handle_error(record_id, error) do
-    Logger.warning("Error while encoding the record #{record_id} with the geo api: #{inspect(error)}")
+  defp handle_error(encoded_record_id, error) do
+    Logger.warning(
+      "[geo_forward] Error while encoding the encoded_record #{encoded_record_id} with the geo api: #{inspect(error)}"
+    )
   end
 end

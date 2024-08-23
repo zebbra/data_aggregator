@@ -267,7 +267,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                   </div>
                 </div>
                 <div :if={@selected_import.rows_invalid_count in [0, nil]} class="text-italic">
-                  <%= ~t"No errors found"m %>
+                  <%= if @selected_import.state == :failed do %>
+                    <div class="text-error">
+                      <%= ~t"An unknown error occurred"m %>
+                    </div>
+                  <% else %>
+                    <%= ~t"No errors found"m %>
+                  <% end %>
                 </div>
               </div>
             </:item>
