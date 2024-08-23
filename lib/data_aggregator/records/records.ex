@@ -64,7 +64,9 @@ defmodule DataAggregator.Records do
 
   def import_max_concurrency do
     num_cpus = :erlang.system_info(:logical_processors_available)
-    get_env(:import_max_concurrency, num_cpus)
+    max_concurrency = get_env(:import_max_concurrency, num_cpus)
+
+    if max_concurrency > 12, do: 12, else: max_concurrency
   end
 
   def encode_timeout, do: get_env(:import_timeout)
