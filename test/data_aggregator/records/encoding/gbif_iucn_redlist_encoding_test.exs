@@ -58,5 +58,19 @@ defmodule DataAggregator.GbifIUCNRedlistEncodingTest do
 
       assert record.state === :encoded
     end
+
+    @tag capture_log: true
+    test "encode/2 for :gbif_iucn_redlist catalog fails if taxon_id is not provided", %{
+      not_evaluated_record: record
+    } do
+      record = update_record_fixtures!(record, %{tax_taxon_id: nil})
+
+      {{:ok, record}, logs} =
+        with_log(fn -> Record.encode(record, :gbif_iucn_redlist) end)
+
+      assert record.state === :failed
+
+      assert logs =~ "taxon_id is empty"
+    end
   end
 end
