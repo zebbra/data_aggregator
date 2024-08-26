@@ -30,7 +30,8 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
         return_errors?: true,
         return_records?: true,
         max_concurrency: max_concurrency,
-        batch_size: batch_size
+        batch_size: batch_size,
+        transaction: false
       )
 
     {:ok, result}
