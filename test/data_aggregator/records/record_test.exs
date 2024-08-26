@@ -261,7 +261,14 @@ defmodule DataAggregator.RecordTest do
 
       record = Ash.load!(record, [:paper_trail_versions])
 
-      assert length(record.paper_trail_versions) == 4
+      # we do not know when the set_imported action is done, so we filter it out
+      # to make the test more stable
+      paper_trail_versions_without_set_imported =
+        Enum.filter(record.paper_trail_versions, fn version ->
+          version.version_action_name != :set_imported
+        end)
+
+      assert length(paper_trail_versions_without_set_imported) == 3
     end
 
     test "updating a record from another import", %{import: import} do

@@ -28,8 +28,10 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
   end
 
   defp validate_in_chunks(%Changeset{data: import} = changeset, rows) do
+    max_concurrency = Records.import_max_concurrency()
     chunk_size = Records.import_batch_size()
-    Logger.debug("Validating rows in chunks of #{chunk_size} rows ...")
+
+    Logger.debug("Validating rows in chunks of #{chunk_size} rows (concurrency: #{max_concurrency}) ...")
 
     # make sure collection is loaded to avoid N+1 queries
     import = Ash.load!(import, [:collection], lazy?: true)
@@ -73,9 +75,9 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
   end
 
   defp validate_chunk(import, {chunk, index}) do
-    Logger.debug("Validating chunk ##{index} with #{length(chunk)} rows ...")
-
     max_concurrency = Records.import_max_concurrency()
+
+    Logger.debug("Validating chunk ##{index} with #{length(chunk)} rows (concurrency: #{max_concurrency})...")
 
     {valid, invalid, errors} =
       chunk
