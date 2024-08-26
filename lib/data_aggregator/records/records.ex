@@ -64,10 +64,7 @@ defmodule DataAggregator.Records do
 
   def import_max_concurrency do
     num_cpus = :erlang.system_info(:logical_processors_available)
-
-    :import_max_concurrency
-    |> get_env(num_cpus)
-    |> Kernel.min(12)
+    get_env(:import_max_concurrency, num_cpus)
   end
 
   def encode_timeout, do: get_env(:import_timeout)
@@ -75,10 +72,7 @@ defmodule DataAggregator.Records do
 
   def encode_max_concurrency do
     num_cpus = :erlang.system_info(:logical_processors_available)
-
-    :encode_max_concurrency
-    |> get_env(num_cpus)
-    |> Kernel.min(12)
+    get_env(:encode_max_concurrency, num_cpus)
   end
 
   def export_timeout, do: get_env(:export_timeout)

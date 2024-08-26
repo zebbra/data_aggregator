@@ -304,8 +304,6 @@ defmodule DataAggregator.Records.Record do
       argument :import, :struct, allow_nil?: false
       argument :rows, :term, allow_nil?: false
 
-      transaction? false
-
       run Record.Actions.BulkImport
     end
 
