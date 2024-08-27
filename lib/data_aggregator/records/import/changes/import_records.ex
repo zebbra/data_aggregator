@@ -36,6 +36,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
 
   defp import_in_chunks(%Changeset{data: import} = changeset, rows) do
     chunk_size = Records.import_batch_size()
+
     Logger.debug("Importing records in chunks of #{chunk_size} rows ...")
 
     # make sure collection is loaded to avoid N+1 queries
@@ -50,9 +51,9 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
   end
 
   defp import_chunk(import, {chunk, index}) do
-    Logger.debug("Importing chunk ##{index} with #{length(chunk)} rows ...")
-
     max_concurrency = Records.import_max_concurrency()
+
+    Logger.debug("Importing chunk ##{index} with #{length(chunk)} rows (concurrency: #{max_concurrency}) ...")
 
     {valid, invalid} =
       chunk
