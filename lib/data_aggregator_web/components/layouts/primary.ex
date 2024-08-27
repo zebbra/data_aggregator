@@ -8,6 +8,8 @@ defmodule DataAggregatorWeb.Layouts.Primary do
   use DataAggregatorWeb, :verified_routes
   use DataAggregatorWeb.Gettext
 
+  alias DataAggregator.Accounts.User
+
   embed_templates "shared/*"
 
   @doc """
@@ -34,7 +36,7 @@ defmodule DataAggregatorWeb.Layouts.Primary do
   ```
   """
   attr :current, :string, required: true, doc: "Current page"
-  attr :current_user, :map, required: true, doc: "Current user"
+  attr :current_user, :map, default: %User{}, doc: "Current user"
 
   slot :inner_block, required: true
   slot :portal, doc: "Portal slot for modal, dialog, etc."

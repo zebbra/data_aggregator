@@ -10,6 +10,8 @@ defmodule DataAggregatorWeb.Layouts.Secondary do
 
   import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
+  alias DataAggregator.Accounts.User
+
   embed_templates "shared/*"
 
   @doc """
@@ -58,7 +60,7 @@ defmodule DataAggregatorWeb.Layouts.Secondary do
   ```
   """
   attr :current, :string, required: true, doc: "Current page"
-  attr :current_user, :map, required: true, doc: "Current user"
+  attr :current_user, :map, default: %User{}, doc: "Current user"
   attr :open, :boolean, default: false, doc: "Whether the secondary column is open or not"
 
   slot :inner_block, required: true

@@ -2,6 +2,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
   @moduledoc false
 
   use DataAggregatorWeb, :live_view
+  use DataAggregatorWeb.AdministrationLive.Subscriptions
 
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
@@ -10,10 +11,12 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok,
-     socket
-     |> assign(selected_user: nil)
-     |> assign(selected_user_institution: nil)}
+    socket =
+      socket
+      |> assign(selected_user: nil)
+      |> assign(selected_user_institution: nil)
+
+    {:ok, subscribe_for_administration_updates(socket, connected?(socket))}
   end
 
   @impl true

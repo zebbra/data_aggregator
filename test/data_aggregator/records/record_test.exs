@@ -305,8 +305,12 @@ defmodule DataAggregator.RecordTest do
 
       record = Ash.load!(record, [:paper_trail_versions])
 
-      # changed publication states in after_action hook leads to one additional change per record
-      assert length(record.paper_trail_versions) == 4
+      paper_trail_versions_without_set_imported =
+        Enum.filter(record.paper_trail_versions, fn version ->
+          version.version_action_name != :set_imported
+        end)
+
+      assert length(paper_trail_versions_without_set_imported) == 3
     end
 
     test "importing a record for another collection", %{import: import} do

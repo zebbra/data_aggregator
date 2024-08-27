@@ -2839,7 +2839,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Encodings"
 msgstr "Enkodierungen"
 
-#: lib/data_aggregator/accounts/user.ex:150
+#: lib/data_aggregator/accounts/user.ex:160
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregator.Accounts.User"
 msgid "is not a valid email address"
@@ -2971,107 +2971,107 @@ msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Summary"
 msgstr "Zusammenfassung"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:92
+#: lib/data_aggregator_web/live/administration_live/index.ex:95
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Actions"
 msgstr "Aktionen"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:44
+#: lib/data_aggregator_web/live/administration_live/index.ex:47
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Add"
 msgstr "Neu"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:43
+#: lib/data_aggregator_web/live/administration_live/index.ex:46
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Add User"
 msgstr "Benutzer hinzufügen"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:116
+#: lib/data_aggregator_web/live/administration_live/index.ex:119
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Address"
 msgstr "Adresse"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:39
-#: lib/data_aggregator_web/live/administration_live/index.ex:208
+#: lib/data_aggregator_web/live/administration_live/index.ex:42
+#: lib/data_aggregator_web/live/administration_live/index.ex:211
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Administration"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:110
+#: lib/data_aggregator_web/live/administration_live/index.ex:113
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "E-Mail"
 msgstr "E-Mail"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:96
+#: lib/data_aggregator_web/live/administration_live/index.ex:99
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:220
+#: lib/data_aggregator_web/live/administration_live/index.ex:223
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Edit User"
 msgstr "Bearbeiten"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:64
+#: lib/data_aggregator_web/live/administration_live/index.ex:67
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Email"
 msgstr "E-Mail"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:67
+#: lib/data_aggregator_web/live/administration_live/index.ex:70
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "First Name"
 msgstr "Vorname"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:233
+#: lib/data_aggregator_web/live/administration_live/index.ex:236
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Get started by adding a new User."
 msgstr "Beginne, indem Du einen neuen Benutzer erstellst."
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:83
-#: lib/data_aggregator_web/live/administration_live/index.ex:113
+#: lib/data_aggregator_web/live/administration_live/index.ex:86
+#: lib/data_aggregator_web/live/administration_live/index.ex:116
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Institution"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:70
+#: lib/data_aggregator_web/live/administration_live/index.ex:73
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Last Name"
 msgstr "Nachname"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:214
-#: lib/data_aggregator_web/live/administration_live/index.ex:234
+#: lib/data_aggregator_web/live/administration_live/index.ex:217
+#: lib/data_aggregator_web/live/administration_live/index.ex:237
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "New User"
 msgstr "Neuer Benutzer"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:232
+#: lib/data_aggregator_web/live/administration_live/index.ex:235
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "No Users"
 msgstr "Keine Benutzer"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:73
+#: lib/data_aggregator_web/live/administration_live/index.ex:76
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Phone"
 msgstr "Telefon"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:76
-#: lib/data_aggregator_web/live/administration_live/index.ex:127
+#: lib/data_aggregator_web/live/administration_live/index.ex:79
+#: lib/data_aggregator_web/live/administration_live/index.ex:130
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Roles"
@@ -3150,3 +3150,21 @@ msgstr "Benutzer erfolgreich aktualisiert"
 msgctxt "DataAggregatorWeb.Components.FieldGroup"
 msgid "No entries found"
 msgstr "Keine Einträge vorhanden"
+
+#: lib/data_aggregator_web/components/layouts/shared/appbar.html.heex:29
+#: lib/data_aggregator_web/components/layouts/shared/appbar.html.heex:29
+#, elixir-autogen, elixir-format
+msgid "Sign out"
+msgstr "Abmelden"
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:82
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Primary"
+msgid "Sign out"
+msgstr "Abmelden"
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:82
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Secondary"
+msgid "Sign out"
+msgstr "Abmelden"

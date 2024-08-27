@@ -4,6 +4,7 @@ defmodule DataAggregator.Accounts.User do
     authorizers: [Ash.Policy.Authorizer],
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAuthentication, AshUUID],
+    notifiers: [Ash.Notifier.PubSub],
     domain: DataAggregator.Accounts
 
   use DataAggregatorWeb.Gettext
@@ -136,6 +137,15 @@ defmodule DataAggregator.Accounts.User do
 
   identities do
     identity :unique_email, [:email]
+  end
+
+  pub_sub do
+    module DataAggregator.PubSub
+    prefix "user"
+
+    publish_all :create, ["created", [:id, nil]]
+    publish_all :update, ["updated", [:id, nil]]
+    publish_all :destroy, ["destroyed", [:id, nil]]
   end
 
   code_interface do
