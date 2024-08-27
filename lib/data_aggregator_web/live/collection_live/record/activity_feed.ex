@@ -5,6 +5,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   alias DataAggregator.Records.Activity
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
+  alias DataAggregator.Taxonomy.Catalog
 
   require Ash.Query
 
@@ -29,23 +30,28 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   defp activity_feed_element(%{activity: activity} = assigns) when activity.name in [:import, :update] do
     ~H"""
-    <div class="grid w-full grid-cols-9 gap-y-2">
+    <div class="grid w-full grid-cols-9 gap-y-4">
       <div class="bg-base-100 size-6 relative flex items-center justify-center">
         <div class="bg-base-100">
           <.activity_icon activity={@activity} />
         </div>
       </div>
-      <div class="text-sm/5 col-span-6 py-0.5 text-gray-500">
-        <span class="font-medium text-gray-600"><%= @activity.actor %></span>
+      <div class="text-sm/5 text-base-content/60 col-span-6 py-0.5">
+        <span class="text-base-content font-medium"><%= @activity.actor %></span>
         - <.activity_text activity={@activity} />
       </div>
       <div class="col-span-2 text-right">
-        <time datetime={@activity.date_time} class="text-xs/5 py-0.5 text-gray-500">
+        <time datetime={@activity.date_time} class="text-xs/5 text-base-content/60 py-0.5">
           <%= format_datetime(@activity.date_time, format: :short) %>
         </time>
       </div>
-      <div class="ring-gray-100/30 col-start-2 col-end-10 rounded-md pt-3 pr-2 pb-2 pl-3 ring-1 hover:ring-2">
-        <.changed_value :for={change <- map_to_string(@activity.content)} value={change} />
+      <div class="indicator col-start-2 col-end-10 w-auto">
+        <span class="indicator-item end-2 badge badge-primary badge-sm translate-x-0">
+          <%= @activity.source %>
+        </span>
+        <div class="ring-base-content/20 w-full rounded-md pt-5 pr-2 pb-4 pl-4 ring-1">
+          <.changed_value :for={change <- map_to_string(@activity.content)} value={change} />
+        </div>
       </div>
     </div>
     """
@@ -60,12 +66,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
           <.activity_icon activity={@activity} />
         </div>
       </div>
-      <div class="text-sm/5 col-span-6 py-0.5 text-gray-500">
-        <span class="font-medium text-gray-600"><%= @activity.actor %></span>
+      <div class="text-sm/5 text-base-content/60 col-span-6 py-0.5">
+        <span class="text-base-content font-medium"><%= @activity.actor %></span>
         - <.activity_text activity={@activity} />
       </div>
       <div class="col-span-2 text-right">
-        <time datetime={@activity.date_time} class="text-xs/5 py-0.5 text-gray-500">
+        <time datetime={@activity.date_time} class="text-xs/5 text-base-content/60 py-0.5">
           <%= format_datetime(@activity.date_time, format: :short) %>
         </time>
       </div>
@@ -76,7 +82,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   # this is just the fallback for unwanted activities, which we do not want to render
   defp activity_feed_element(assigns) do
     ~H"""
-    <span>unknown change: <%= @activity.name %></span>
+    <div class="grid w-full grid-cols-9 gap-y-4">
+      <div class="bg-base-100 size-6 relative flex items-center justify-center">
+        <div class="bg-base-100">
+          <.activity_icon />
+        </div>
+      </div>
+      <div class="text-sm/5 text-base-content/60 col-span-6 py-0.5">
+        <span class="text-base-content font-medium"><%= @activity.actor %></span>
+        - <span>unknown change: <%= @activity.name %></span>
+      </div>
+    </div>
     """
   end
 
@@ -166,11 +182,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
-  defp activity_icon(assigns) do
+  defp activity_icon(%{activity: _activity} = assigns) do
     ~H"""
     <span>
       <%= @activity.name %> - <%= inspect(@activity.content) %>
     </span>
+    """
+  end
+
+  defp activity_icon(assigns) do
+    ~H"""
+    <.badge class="tooltip tooltip-right" data-tip={~t"Unknown activity"m} color="gray">
+      <.icon name="hero-question-mark-circle-solid" class="size-5 shrink-0" />
+    </.badge>
     """
   end
 
@@ -346,10 +370,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
     sorted_activities =
       (record_versions ++ encoded_record_versions)
+      |> Enum.filter(&filter_version/1)
       |> activites_from_versions()
       |> sort_activities()
 
     assign(assigns, :activities, sorted_activities)
+  end
+
+  defp filter_version(version) do
+    version.version_action_name not in [:set_encoding_failed, :set_encoded] or
+      version.changes != %{}
   end
 
   defp published?(activity) do
@@ -395,8 +425,52 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       name: version.version_action_name,
       actor: "Owner",
       date_time: version.version_inserted_at,
-      content: version.changes
+      content: version.changes,
+      source: version_source(version)
     }
+  end
+
+  defp version_source(%{version_action_name: :update_fast_track_status}), do: ~t"Publication"
+  defp version_source(%{version_action_name: :update_approval_status}), do: ~t"Approval"
+  defp version_source(%{version_action_name: :import}), do: ~t"Import"
+
+  defp version_source(%{version_action_name: :update} = version), do: version_source_from_catalog(version.changes)
+
+  defp version_source(_), do: nil
+
+  defp version_source_from_catalog(%{} = changes) when changes == %{}, do: ~t"Unknown"
+
+  defp version_source_from_catalog(%{} = changes) do
+    keys =
+      changes
+      |> Map.keys()
+      |> Enum.map(&String.to_existing_atom/1)
+
+    catalogs = Catalog.get_catalogs()
+
+    catalog_name =
+      Enum.reduce_while(catalogs, nil, fn catalog, _ ->
+        catalog_output_dwc_attributes = Catalog.get_output_dwc_attributes(catalog)
+
+        if Enum.all?(keys, &Enum.member?(catalog_output_dwc_attributes, &1)) do
+          {:halt, catalog}
+        else
+          {:cont, nil}
+        end
+      end)
+
+    translate_catalog_name(catalog_name)
+  end
+
+  defp translate_catalog_name(catalog) do
+    case catalog do
+      :gbif_taxonomy -> ~t"GBIF Taxonomy"
+      :gbif_iucn_redlist -> ~t"GBIF IUCN Redlist"
+      :swiss_species -> ~t"Swiss Species"
+      :geo_reverse -> ~t"Geo Reverse"
+      :geo_forward -> ~t"Geo Forward"
+      _ -> ~t"Unknown"
+    end
   end
 
   defp record_versions(assigns) do
@@ -436,7 +510,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     map
     |> stringify_values()
     |> Map.to_list()
-    |> filter_nil_values()
+    |> map_nil_values()
     |> Enum.map(fn {k, v} -> {k, value_to_list(v)} end)
   end
 
@@ -444,8 +518,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     inspect(map)
   end
 
-  defp filter_nil_values(list) do
-    Enum.filter(list, fn {_, v} -> v != nil end)
+  defp map_nil_values(list) do
+    Enum.map(list, fn {k, v} ->
+      if v == nil do
+        {k, "-"}
+      else
+        {k, v}
+      end
+    end)
   end
 
   defp value_to_list(value) when is_map(value) do
