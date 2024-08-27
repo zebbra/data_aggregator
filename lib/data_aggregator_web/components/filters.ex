@@ -113,7 +113,7 @@ defmodule DataAggregatorWeb.Filters do
     def filter_form_component(%{component: %{source: %Predicate{field: :iucn_redlist}}} = assigns) do
       ~H\"""
       <div class="px-6">
-        <.radio_group
+        <.radio_group_filter
           component={@component}
           title={~t"IUCN Red List"m}
           description={~t"Search your records by IUCN Red List of Threatened Speciese"m}
@@ -191,7 +191,7 @@ defmodule DataAggregatorWeb.Filters do
     @impl true
     def filter_form_component(%{component: %{source: %Predicate{field: :tax_kingdom}}} = assigns) do
       ~H\"""
-      <.checkbox_group
+      <.checkbox_group_filter
         component={@component}
         title={~t"Kingdom"m}
         target={@target}
@@ -204,7 +204,7 @@ defmodule DataAggregatorWeb.Filters do
     @impl true
     def filter_form_component(%{component: %{source: %Predicate{field: :tax_phylum}}} = assigns) do
       ~H\"""
-      <.checkbox_group
+      <.checkbox_group_filter
         component={@component}
         title={~t"Phylum"m}
         target={@target}
@@ -242,7 +242,7 @@ defmodule DataAggregatorWeb.Filters do
     @impl true
     def filter_form_component(%{component: %{source: %Predicate{field: :loc_continent}}} = assigns) do
       ~H\"""
-      <.checkbox_group
+      <.checkbox_group_filter
         component={@component}
         title={~t"Continent"m}
         target={@target}
@@ -414,12 +414,12 @@ defmodule DataAggregatorWeb.Filters do
 
   defmacro __using__(_) do
     quote do
-      import DataAggregatorWeb.Filters.CheckboxGroup
+      import DataAggregatorWeb.Filters.CheckboxGroupFilter
       import DataAggregatorWeb.Filters.CollapsibleGroup
       import DataAggregatorWeb.Filters.ComboboxGroup
       import DataAggregatorWeb.Filters.DateRange
       import DataAggregatorWeb.Filters.Helpers
-      import DataAggregatorWeb.Filters.RadioGroup
+      import DataAggregatorWeb.Filters.RadioGroupFilter
       import DataAggregatorWeb.Filters.SimpleFilterForm
       import DataAggregatorWeb.Filters.TextSearch
 

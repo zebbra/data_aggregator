@@ -107,15 +107,13 @@ defmodule DataAggregatorWeb.Components.Input do
     assigns =
       assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", assigns[:value]) end)
 
-    # TODO: maybe do not use in togglegroup and use a different component so that we can
-    # use the line below
     ~H"""
-    <%!-- <.input type="hidden" name={@name} value="false" disabled={@rest[:disabled]} /> --%>
+    <.input type="hidden" name={@name} value="false" disabled={@rest[:disabled]} />
     <input
       type="checkbox"
       id={@id}
       name={@name}
-      value={@value}
+      value="true"
       checked={@checked}
       class={["toggle", @class, @errors != [] && "checkbox-error"]}
       aria-invalid={@errors != []}

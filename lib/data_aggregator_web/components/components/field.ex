@@ -6,7 +6,6 @@ defmodule DataAggregatorWeb.Components.Field do
   use DataAggregatorWeb.Gettext
 
   import DataAggregatorWeb.Components.Input, only: [input: 1]
-  import DataAggregatorWeb.Filters.Helpers, only: [options_for_group: 1, checked?: 2]
   import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
   alias Phoenix.HTML.Form
@@ -51,7 +50,7 @@ defmodule DataAggregatorWeb.Components.Field do
   attr :type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week combobox togglegroup)
+               range radio search select tel text textarea time url week combobox)
 
   attr :field, FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
@@ -89,42 +88,6 @@ defmodule DataAggregatorWeb.Components.Field do
     |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
     |> assign_new(:value, fn -> field.value end)
     |> field()
-  end
-
-  # TODO: use a custom component like DataAggregatorWeb.Filters.CheckboxGroup
-  def field(%{type: "togglegroup"} = assigns) do
-    ~H"""
-    <div phx-feedback-for={@name} class={["form-control w-full", @class, @hidden && "hidden"]}>
-      <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
-      <% else %>
-        <.label :if={@label} for={@id} label={@label} {@rest} />
-      <% end %>
-      <.input type="hidden" name={@name} value="" disabled={@rest[:disabled]} />
-      <.description :if={@description} description={@description} class="mb-2" />
-      <.description :if={length(@options) == 0} description={~t"No entries found"m} class="mb-2" />
-      <.errors errors={@errors} id={@id} class={is_nil(@description) && "mb-2"} />
-      <div class="grid grid-flow-row sm:grid-cols-2">
-        <div
-          :for={{label, value} <- options_for_group(@options)}
-          class="flex cursor-pointer justify-between gap-4 py-2 sm:flex-row-reverse sm:justify-end"
-        >
-          <.label for={"#{@name}-#{value}"} label={label} class="cursor-pointer min-w-0 flex-1" />
-          <.input
-            field={@field}
-            id={"#{@name}-#{value}"}
-            name={@name}
-            checked={checked?(value, @value)}
-            type="toggle"
-            value={value}
-            placeholder="Enter toggle input"
-            autocomplete="toggle"
-            {@rest}
-          />
-        </div>
-      </div>
-    </div>
-    """
   end
 
   def field(%{type: "toggle"} = assigns) do
