@@ -8,6 +8,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   import DataAggregator.Accounts.Helpers
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
 
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Collection
 
   attr :collection_id, :any, default: nil
@@ -19,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
     default: :records,
     values: ~w(records imports encodings exports publications)a
 
-  attr :current_user, :map, required: true
+  attr :current_user, User, required: true
 
   attr :meta, AshPagify.Meta, default: nil
 

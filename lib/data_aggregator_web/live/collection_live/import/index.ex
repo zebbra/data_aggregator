@@ -558,13 +558,19 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   defp no_results_content(assigns) do
     ~H"""
-    <%= if has_role?(@current_user, ["data_administrator", "admin"]) do %>
+    <%= if has_role?(@current_user, ["data_addministrator", "adamin"]) do %>
       <.empty_state
         title={~t"No imports"m}
         description={~t"Get started by importing a new dataset."m}
         label={~t"Import"m}
         icon="hero-arrow-up-tray"
         href={~p"/collections/#{@collection}/imports/new"}
+      />
+    <% else %>
+      <.empty_state
+        title={~t"No imports"m}
+        description={~t"There are no imports yet for your institution"m}
+        icon="hero-magnifying-glass"
       />
     <% end %>
     """

@@ -283,26 +283,26 @@ msgctxt "DataAggregatorWeb.CollectionLive.Encoding.Components"
 msgid "Unknown"
 msgstr "Unbekannt"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:59
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:60
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Add"
 msgstr "Neu"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:42
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:66
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:43
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:67
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Collections"
 msgstr "Sammlungen"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:43
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:44
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Current"
 msgstr "Aktuell"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:108
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:109
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Import dataset"
@@ -672,6 +672,7 @@ msgid "Import Summary"
 msgstr "Importzusammenfassung"
 
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:563
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:571
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "No imports"
@@ -2422,8 +2423,8 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Encoding started in background"
 msgstr "Enkodierung im Hintergrund gestartet"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:788
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:796
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:789
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:800
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "No records found"
@@ -2435,7 +2436,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Publication started in background"
 msgstr "Veröffentlichung im Hintergrund gestartet"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:797
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:801
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Try with a different filter"
@@ -2477,7 +2478,7 @@ msgctxt "DataAggregatorWeb.Components.Button"
 msgid "close"
 msgstr "schließen"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:81
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:82
 #, elixir-autogen, elixir-format
 msgid "Show on GBIF"
 msgstr "Auf GBIF anzeigen"
@@ -2839,7 +2840,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Encodings"
 msgstr "Enkodierungen"
 
-#: lib/data_aggregator/accounts/user.ex:160
+#: lib/data_aggregator/accounts/user.ex:163
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregator.Accounts.User"
 msgid "is not a valid email address"
@@ -3168,3 +3169,15 @@ msgstr "Abmelden"
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Sign out"
 msgstr "Abmelden"
+
+#: lib/data_aggregator_web/live/collection_live/import/index.ex:572
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
+msgid "There are no imports yet for your institution"
+msgstr "Es gibt noch keine Importe für deine Institution"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:790
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "There are no records yet for your institution"
+msgstr "Es gibt noch keine Einträge für deine Institution"

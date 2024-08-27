@@ -1,5 +1,8 @@
 defmodule DataAggregator.Accounts.User do
-  @moduledoc false
+  @moduledoc """
+  Ash resource representing a user.
+  """
+
   use Ash.Resource,
     authorizers: [Ash.Policy.Authorizer],
     data_layer: AshPostgres.DataLayer,

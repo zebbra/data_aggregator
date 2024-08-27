@@ -221,6 +221,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
       <.empty_state
         title={~t"No collections"m}
         description={~t"There are no collections yet for your institution"m}
+        icon="hero-squares-2x2"
       />
     <% end %>
     """

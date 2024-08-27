@@ -34,7 +34,7 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
   attr :errors, :list, default: []
   attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
 
-  attr :options, :list, doc: "the options to pass to DataAggregatorWeb.Components.FieldGroup.options_for_group/1"
+  attr :options, :list, doc: "the options to pass to `DataAggregatorWeb.Components.FieldGroup.options_for_group/1`"
 
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
   attr :class, :string, default: nil, doc: "additional css class for input"
@@ -110,7 +110,7 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
   attr :errors, :list, default: []
   attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
 
-  attr :options, :list, doc: "the options to pass to DataAggregatorWeb.Components.FieldGroup.options_for_group/1"
+  attr :options, :list, doc: "the options to pass to `DataAggregatorWeb.Components.FieldGroup.options_for_group/1`"
 
   attr :class, :string, default: nil, doc: "additional css class for input"
   attr :hidden, :boolean, default: false, doc: "whether the field is hidden"
@@ -191,7 +191,7 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
   attr :errors, :list, default: []
   attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
 
-  attr :options, :list, doc: "the options to pass to DataAggregatorWeb.Components.FieldGroup.options_for_group/1"
+  attr :options, :list, doc: "the options to pass to `DataAggregatorWeb.Components.FieldGroup.options_for_group/1`"
 
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
   attr :class, :string, default: nil, doc: "additional css class for input"

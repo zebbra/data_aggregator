@@ -785,7 +785,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         href={~p"/collections/#{@collection_id}/imports/new"}
       />
     <% else %>
-      <.empty_state title={~t"No records found"m} icon="hero-magnifying-glass" />
+      <.empty_state
+        title={~t"No records found"m}
+        description={~t"There are no records yet for your institution"m}
+        icon="hero-magnifying-glass"
+      />
     <% end %>
     """
   end
