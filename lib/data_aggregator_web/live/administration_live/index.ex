@@ -75,7 +75,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
         </:col>
         <:col :let={{_id, user}} label={~t"Roles"m}>
           <%= for role <- user.roles do %>
-            <.badge color="gray">
+            <.badge color="gray" class="mt-0.5">
               <span class="px-1.5"><%= role %></span>
             </.badge>
           <% end %>
@@ -106,69 +106,32 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
           on_cancel={JS.push("user:select", value: %{id: nil})}
           size="xl"
         >
-          <div class="pl-8">
-            <%!-- account --%>
-            <dl class="pb-8">
-              <div class="py-1 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-base-content/90 text-sm/6 font-medium">
-                  <%= ~t"E-Mail"m %>
-                </dt>
-                <dd class="text-base-content/60 text-sm/6 mt-1 sm:col-span-2 sm:mt-0">
-                  <%= @selected_user != nil && @selected_user.email %>
-                </dd>
-              </div>
-              <div class="py-1 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-base-content/90 text-sm/6 font-medium">
-                  <%= ~t"Last Login"m %>
-                </dt>
-                <dd class="text-base-content/60 text-sm/6 mt-1 sm:col-span-2 sm:mt-0">
-                  <%= "13.11.1992" %>
-                </dd>
-              </div>
-            </dl>
-            <%!-- institution --%>
-            <dl class="pb-8">
-              <div class="py-1 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-base-content/90 text-sm/6 font-medium">
-                  <%= ~t"Institution"m %>
-                </dt>
-                <dd class="text-base-content/60 text-sm/6 mt-1 sm:col-span-2 sm:mt-0">
-                  <%= @selected_user_institution["name"] %>
-                </dd>
-              </div>
-              <div class="py-1 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-base-content/90 text-sm/6 font-medium">
-                  <%= ~t"Address"m %>
-                </dt>
-                <dd class="text-base-content/60 text-sm/6 mt-1 sm:col-span-2 sm:mt-0">
-                  <p>
-                    <%= @selected_user_institution["address"]["address"] %>
-                  </p>
-                  <p>
-                    <%= @selected_user_institution["address"]["postalCode"] %>
-                  </p>
-                  <p>
-                    <%= @selected_user_institution["address"]["city"] %>
-                  </p>
-                </dd>
-              </div>
-            </dl>
-            <%!-- Roles --%>
-            <dl class="pb-8">
-              <div class="py-1 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-base-content/90 text-sm/6 font-medium">
-                  <%= ~t"Roles"m %>
-                </dt>
-                <dd class="text-base-content/60 text-sm/6 mt-1 sm:col-span-2 sm:mt-0">
-                  <%= for role <- @selected_user.roles do %>
-                    <.badge color="gray">
-                      <span class="px-1.5"><%= role %></span>
-                    </.badge>
-                  <% end %>
-                </dd>
-              </div>
-            </dl>
-          </div>
+          <.list :if={@selected_user}>
+            <:item title={~t"E-Mail"m}>
+              <%= @selected_user.email %>
+            </:item>
+            <:item title={~t"Institution"m}>
+              <%= @selected_user_institution["name"] %>
+            </:item>
+            <:item title={~t"Address"m}>
+              <p>
+                <%= @selected_user_institution["address"]["address"] %>
+              </p>
+              <p>
+                <%= @selected_user_institution["address"]["postalCode"] %>
+              </p>
+              <p>
+                <%= @selected_user_institution["address"]["city"] %>
+              </p>
+            </:item>
+            <:item title={~t"Roles"m}>
+              <%= for role <- @selected_user.roles do %>
+                <.badge color="gray">
+                  <span class="px-1.5"><%= role %></span>
+                </.badge>
+              <% end %>
+            </:item>
+          </.list>
         </.slideover>
       </:secondary>
       <:portal>
