@@ -26,17 +26,17 @@ defmodule DataAggregator.Release do
     Code.eval_file("repo/catalogs/init.exs", "#{DataAggregator.priv_dir()}")
   end
 
-  # def users_init do
-  #   load_app()
+  def users_init do
+    load_app()
 
-  #   for repo < repos() do
-  #     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &eval_users_file(&1))
-  #   end
-  # end
+    for repo <- repos() do
+      {:ok, _, _} = Ecto.Migrator.with_repo(repo, &eval_users_file(&1))
+    end
+  end
 
-  # defp eval_users_file(_repo) do
-  #   Code.eval_file("repo/users/init.exs", "#{DataAggregator.priv_dir()}")
-  # end
+  defp eval_users_file(_repo) do
+    Code.eval_file("repo/users/init.exs", "#{DataAggregator.priv_dir()}")
+  end
 
   def rollback(repo, version) do
     load_app()
