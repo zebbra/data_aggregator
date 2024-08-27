@@ -11,7 +11,8 @@ defmodule DataAggregatorWeb.AuthOverrides do
   end
 
   override Components.Banner do
-    set :image_url, "/images/sign_in_logo.png"
+    set :image_url, "/images/logo.png"
+    set :image_class, "size-12"
   end
 
   override Components.Password.SignInForm do
