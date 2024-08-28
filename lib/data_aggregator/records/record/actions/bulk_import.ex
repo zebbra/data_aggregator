@@ -21,6 +21,9 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
     max_concurrency = Records.import_max_concurrency()
     batch_size = ceil(Records.import_batch_size() / max_concurrency)
 
+    # we have ~280 attributes and PG can handle 65535 params, to we can batch up to ~200 records
+    # batch_size = Enum.min([batch_size, 200])
+
     Logger.info("Bulk importing records with batch size #{batch_size} (concurrency: #{max_concurrency}) ...")
 
     {time, result} =

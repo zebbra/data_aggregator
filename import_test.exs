@@ -4,8 +4,8 @@ alias DataAggregator.Records.Import
 
 Application.put_env(:data_aggregator, DataAggregator.Records,
   import_batch_size: 1000,
-  import_max_concurrency: 1
-  # async_import_progress?: false,
+  import_max_concurrency: 4
+  # async_import_progress?: true,
   # execute_async: true
 )
 
@@ -26,6 +26,8 @@ collection =
     grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
   })
 
+# collection = Collection.get_by_id!("019198f5-20ab-7597-98db-d9cd6d888c02")
+
 import =
   collection
   |> Import.create_from_path!(path)
@@ -36,7 +38,7 @@ import =
 # :fprof.start()
 # :fprof.trace([:start, procs: :all])
 
-_ = import |> Import.import!() |> dbg()
+_ = Import.import!(import)
 
 # :eprof.stop_profiling()
 # :eprof.log("import_test.prof")
