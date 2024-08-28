@@ -54,8 +54,7 @@ defmodule DataAggregator.Accounts.Emails do
     IO.puts("Sending email to #{to} with subject #{subject} and body #{body}")
 
     new()
-    # TODO: Replace with your email
-    |> from({"Zach", "zach@ash-hq.org"})
+    |> from({"dagi", "dagi@zebbra.ch"})
     |> to(to_string(to))
     |> subject(subject)
     |> put_provider_option(:track_links, "None")

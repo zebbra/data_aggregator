@@ -4,6 +4,7 @@ defmodule DataAggregator.Accounts.UserImporter do
   """
 
   alias DataAggregator.Accounts.User
+  alias DataAggregator.Gbif
 
   require Logger
 
@@ -43,6 +44,26 @@ defmodule DataAggregator.Accounts.UserImporter do
 
   defp parse_attribute({"roles", value}) when is_list(value) do
     {"roles", value}
+  end
+
+  defp parse_attribute({"institution", ""}) do
+    {"institution_id", nil}
+  end
+
+  defp parse_attribute({"institution", value}) do
+    key =
+      case Enum.find(Gbif.RestAPI.lookup_all_institutions(), fn institution ->
+             institution["code"] == value
+           end) do
+        nil ->
+          Logger.info("could not find institution with code: #{value}")
+          nil
+
+        result ->
+          Map.get(result, "key")
+      end
+
+    {"institution_id", key}
   end
 
   defp parse_attribute(attribute), do: attribute

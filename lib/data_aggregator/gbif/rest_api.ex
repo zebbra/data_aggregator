@@ -270,7 +270,7 @@ defmodule DataAggregator.Gbif.RestAPI do
     body["results"]
   end
 
-  defp lookup_all_institutions do
+  def lookup_all_institutions do
     url = grscicoll_entities_url(:institution)
 
     %{body: body} =
