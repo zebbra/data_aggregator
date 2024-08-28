@@ -88,6 +88,33 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
     } do
       assert Collection.can_destroy?(actor, collection_other)
     end
+
+    set_test_cases = [
+      {:can_set_importing?, "set importing"},
+      {:can_set_exporting?, "set exporting"},
+      {:can_set_encoding?, "set encoding"},
+      {:can_set_fast_track_publishing?, "set fast track publishing"},
+      {:can_set_approving?, "set approving"},
+      {:can_set_deleting?, "set deleting"},
+      {:can_set_idle?, "set idle"},
+      {:can_set_idle_encoding?, "set idle encoding"}
+    ]
+
+    for {method, method_description} <- set_test_cases do
+      test "can #{method_description} for collection with same institution", %{
+        actor: actor,
+        collection_same: collection_same
+      } do
+        assert apply(Collection, unquote(method), [actor, collection_same])
+      end
+
+      test "can #{method_description} for collection with other institution", %{
+        actor: actor,
+        collection_other: collection_other
+      } do
+        assert apply(Collection, unquote(method), [actor, collection_other])
+      end
+    end
   end
 
   describe "as collection_digitizer" do
@@ -170,6 +197,33 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
     } do
       refute Collection.can_destroy?(actor, collection_other)
     end
+
+    set_test_cases = [
+      {:can_set_importing?, "set importing"},
+      {:can_set_exporting?, "set exporting"},
+      {:can_set_encoding?, "set encoding"},
+      {:can_set_fast_track_publishing?, "set fast track publishing"},
+      {:can_set_approving?, "set approving"},
+      {:can_set_deleting?, "set deleting"},
+      {:can_set_idle?, "set idle"},
+      {:can_set_idle_encoding?, "set idle encoding"}
+    ]
+
+    for {method, method_description} <- set_test_cases do
+      test "can #{method_description} for collection with same institution", %{
+        actor: actor,
+        collection_same: collection_same
+      } do
+        assert apply(Collection, unquote(method), [actor, collection_same])
+      end
+
+      test "can #{method_description} for collection with other institution", %{
+        actor: actor,
+        collection_other: collection_other
+      } do
+        refute apply(Collection, unquote(method), [actor, collection_other])
+      end
+    end
   end
 
   describe "as data_administrator" do
@@ -232,6 +286,33 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
 
     test "cannot destroy other collection", %{actor: actor, collection_other: collection_other} do
       refute Collection.can_destroy?(actor, collection_other)
+    end
+
+    set_test_cases = [
+      {:can_set_importing?, "set importing"},
+      {:can_set_exporting?, "set exporting"},
+      {:can_set_encoding?, "set encoding"},
+      {:can_set_fast_track_publishing?, "set fast track publishing"},
+      {:can_set_approving?, "set approving"},
+      {:can_set_deleting?, "set deleting"},
+      {:can_set_idle?, "set idle"},
+      {:can_set_idle_encoding?, "set idle encoding"}
+    ]
+
+    for {method, method_description} <- set_test_cases do
+      test "can #{method_description} for collection with same institution", %{
+        actor: actor,
+        collection_same: collection_same
+      } do
+        refute apply(Collection, unquote(method), [actor, collection_same])
+      end
+
+      test "can #{method_description} for collection with other institution", %{
+        actor: actor,
+        collection_other: collection_other
+      } do
+        refute apply(Collection, unquote(method), [actor, collection_other])
+      end
     end
   end
 end
