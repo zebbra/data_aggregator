@@ -4,6 +4,7 @@ defmodule DataAggregator.ExportFixtures do
   Export entities via the `DataAggregator.Records` context.
   """
 
+  import DataAggregator.AccountsFixtures, only: [default_admin: 0]
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.Records.Export
@@ -31,14 +32,14 @@ defmodule DataAggregator.ExportFixtures do
   def exportable_record(collection) do
     exportable_record_attrs()
     |> Map.put_new_lazy(:collection, fn -> collection end)
-    |> Record.create!()
+    |> Record.create!(actor: default_admin())
   end
 
   def unexportable_record(collection) do
     exportable_record_attrs()
     |> Map.put_new_lazy(:collection, fn -> collection end)
     |> Map.delete(:tax_kingdom)
-    |> Record.create!()
+    |> Record.create!(actor: default_admin())
   end
 
   def exportable_record_attrs do

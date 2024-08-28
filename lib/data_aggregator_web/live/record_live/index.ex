@@ -21,7 +21,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    case list_records(params, socket.assigns.current_user) do
+    case list_records(params, get_actor(socket)) do
       {:ok, {records, meta}} ->
         socket =
           socket
@@ -195,7 +195,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   end
 
   defp list_records(params, actor, opts \\ [load: @load]) do
-    opts = Keyword.merge(opts, authorize?: true, actor: actor)
+    opts = Keyword.put(opts, :actor, actor)
     AshPagify.validate_and_run(Record, params, opts)
   end
 

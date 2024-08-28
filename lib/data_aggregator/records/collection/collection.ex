@@ -10,6 +10,8 @@ defmodule DataAggregator.Records.Collection do
     notifiers: [Ash.Notifier.PubSub],
     authorizers: [Ash.Policy.Authorizer]
 
+  import DataAggregator.Checks.Custom
+
   alias __MODULE__
   alias DataAggregator.Records
   alias DataAggregator.Records.Calculations
@@ -349,16 +351,24 @@ defmodule DataAggregator.Records.Collection do
   end
 
   policies do
-    policy action_type(:read) do
-      # authorize_if DataAggregator.Checks.CollectionMatchesInstitution
-      authorize_if DataAggregator.Checks.IsAdmin
-      # authorize_if expr(is_nil(grscicoll_institution_key))
-      # authorize_if always()
-      authorize_if expr(grscicoll_institution_key == ^actor(:institution_id))
+    bypass with_role("admin") do
+      authorize_if always()
     end
 
-    policy action_type([:create, :update, :destroy]) do
-      authorize_if always()
+    policy_group with_role("collection_digitizer") do
+      policy action_type(:read) do
+        authorize_if relates_to_institution_filter(:grscicoll_institution_key)
+      end
+
+      policy action_type([:create, :update, :destroy]) do
+        authorize_if relates_to_institution_check(:grscicoll_institution_key)
+      end
+    end
+
+    policy_group with_role("data_administrator") do
+      policy action_type(:read) do
+        authorize_if relates_to_institution_filter(:grscicoll_institution_key)
+      end
     end
   end
 

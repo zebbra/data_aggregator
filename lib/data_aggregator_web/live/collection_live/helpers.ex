@@ -19,7 +19,7 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
     ]
   end
 
-  def get_collection(id) do
+  def get_collection(id, actor) do
     Collection.get_by_id!(id,
       load: [
         :records_count,
@@ -31,7 +31,8 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
         :publishing,
         :approving,
         :busy
-      ]
+      ],
+      actor: actor
     )
   end
 

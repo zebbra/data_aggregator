@@ -9,6 +9,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
 
   import DataAggregatorWeb.CollectionLive.Helpers
   import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [maybe_put_tsvector: 2]
+  import DataAggregatorWeb.Helpers, only: [get_actor: 1]
 
   alias Ash.Notifier.Notification
   alias DataAggregator.PubSub
@@ -99,6 +100,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
       socket
 
     opts = maybe_put_tsvector(layer, opts)
+    opts = Keyword.put(opts, :actor, get_actor(socket))
 
     case AshPagify.validate_and_run(Record, ash_pagify, opts, id) do
       {:ok, {records, meta}} ->

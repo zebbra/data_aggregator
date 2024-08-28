@@ -10,14 +10,16 @@ defmodule DataAggregator.Records.Export.Changes.SetCollectionExportingBeforeTran
   alias DataAggregator.Records.Collection
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_transaction(changeset, &set_collection_exporting/1)
+  def change(%Changeset{} = changeset, _opts, %{actor: actor}) do
+    Changeset.before_transaction(changeset, fn changeset ->
+      set_collection_exporting(changeset, actor)
+    end)
   end
 
-  defp set_collection_exporting(%Changeset{data: %{collection_id: collection_id}} = changeset) do
-    collection = Collection.get_by_id!(collection_id)
+  defp set_collection_exporting(%Changeset{data: %{collection_id: collection_id}} = changeset, actor) do
+    collection = Collection.get_by_id!(collection_id, actor: actor)
 
-    case Collection.set_exporting(collection) do
+    case Collection.set_exporting(collection, actor: actor) do
       {:ok, _collection} ->
         changeset
 

@@ -311,24 +311,28 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
     assign(socket, :form, build_form(assigns))
   end
 
-  defp build_form(%{action: :new}) do
+  defp build_form(%{action: :new, current_user: current_user}) do
     User
-    |> Form.for_create(:register_with_password, domain: DataAggregator.Accounts, as: "user")
+    |> Form.for_create(:register_with_password,
+      domain: DataAggregator.Accounts,
+      as: "user",
+      actor: current_user
+    )
     |> to_form()
   end
 
-  defp build_form(%{action: :edit, user: user}) do
+  defp build_form(%{action: :edit, user: user, current_user: current_user}) do
     user
-    |> Form.for_update(:update, domain: DataAggregator.Accounts, as: "user")
+    |> Form.for_update(:update, domain: DataAggregator.Accounts, as: "user", actor: current_user)
     |> to_form()
   end
 
   defp assign_institution_options(socket) do
     options =
-      if "admin" in socket.assigns.current_user.roles do
+      if "admin" in get_actor(socket).roles do
         Gbif.RestAPI.get_institution_options()
       else
-        [Gbif.RestAPI.get_institution_option(socket.assigns.current_user.institution_id)]
+        [Gbif.RestAPI.get_institution_option(get_actor(socket).institution_id)]
       end
 
     assign(socket, :grscicoll_institutions, options)

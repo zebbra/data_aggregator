@@ -21,7 +21,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    case list_users(params, socket.assigns.current_user) do
+    case list_users(params, get_actor(socket)) do
       {:ok, {users, meta}} ->
         socket
         |> assign(meta: meta)
@@ -53,7 +53,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
           container_attrs: [
             class: "no-scrollbar overflow-x-auto pb-4"
           ],
-          no_results_content: no_results_content(%{current_user: @current_user})
+          no_results_content: no_results_content()
         ]}
         path={~p"/administration"}
         items={@streams.results}
@@ -94,10 +94,19 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
           col_class="bg-base-300/10 border-l border-black-white/5"
           label={~t"Actions"m}
         >
+          <div class="border-black-white/10 mr-4 inline-flex border-r pr-4">
+            <.table_action_button
+              patch={build_path(~p"/administration/#{user}/edit", @meta)}
+              data-tip={~t"Edit"m}
+              icon="hero-pencil-square-mini"
+            />
+          </div>
           <.table_action_button
-            patch={build_path(~p"/administration/#{user}/edit", @meta)}
-            data-tip={~t"Edit"m}
-            icon="hero-pencil-square-mini"
+            phx-click={JS.push("user:delete", value: %{id: user.id})}
+            data-tip={~t"Delete"m}
+            data-confirm={~t"Are you sure?"m}
+            disabled={User.can_destroy?(@current_user, user) == false}
+            icon="hero-trash-mini"
           />
         </:action>
       </.table>
@@ -171,7 +180,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
 
   @impl true
   def handle_event("user:select", %{"id" => id}, socket) do
-    user = get_user(id)
+    user = get_user(id, get_actor(socket))
 
     {:noreply,
      socket
@@ -179,11 +188,22 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
      |> assign(:selected_user_institution, get_institution(user))}
   end
 
+  @impl true
+  def handle_event("user:delete", %{"id" => id}, socket) do
+    user = User.get_by_id!(id, actor: get_actor(socket))
+    :ok = User.destroy(user, actor: get_actor(socket))
+
+    {:noreply,
+     socket
+     |> put_flash(:info, ~t"User deleted successfully"m)
+     |> stream_delete(:results, user)}
+  end
+
   defp user_name(nil), do: ""
   defp user_name(user), do: "#{user.first_name} #{user.last_name}"
 
-  defp get_user(id) do
-    User.get_by_id!(id)
+  defp get_user(id, actor) do
+    User.get_by_id!(id, actor: actor)
   end
 
   defp get_institution(%{institution_id: id}) do
@@ -221,15 +241,15 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
   defp apply_action(socket, :edit, %{"user_id" => id}) do
     socket
     |> assign(:page_title, ~t"Edit User"m)
-    |> assign(:user, User.get_by_id!(id))
+    |> assign(:user, get_user(id, get_actor(socket)))
   end
 
   defp list_users(params, actor, opts \\ []) do
-    opts = Keyword.merge(opts, authorize?: true, actor: actor)
+    opts = Keyword.put(opts, :actor, actor)
     AshPagify.validate_and_run(User, params, opts)
   end
 
-  def no_results_content(assigns) do
+  def no_results_content(assigns \\ %{}) do
     ~H"""
     <.empty_state
       title={~t"No Users"m}

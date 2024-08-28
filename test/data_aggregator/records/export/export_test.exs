@@ -4,6 +4,7 @@ defmodule DataAggregator.ExportTest do
   use DataAggregator.DataCase, async: true
   use Mimic
 
+  import DataAggregator.AccountsFixtures, only: [default_admin: 0]
   import DataAggregator.ExportFixtures
   import DataAggregator.RecordsFixtures
 
@@ -69,7 +70,7 @@ defmodule DataAggregator.ExportTest do
       assert {:ok, %Export{} = export} =
                export
                |> Export.update(updated_export)
-               |> Ash.load([:collection])
+               |> Ash.load([:collection], actor: default_admin())
 
       assert export.name == "gbif.org_2"
     end
@@ -126,12 +127,12 @@ defmodule DataAggregator.ExportTest do
       export: export
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        assert {:ok, export} = Export.enqueue(export)
+        assert {:ok, export} = Export.enqueue(export, actor: default_admin())
 
         assert export.state == :queued
         assert_enqueued(worker: Exporter, args: %{id: export.id})
 
-        collection = Collection.get_by_id!(collection.id)
+        collection = Collection.get_by_id!(collection.id, actor: default_admin())
         assert collection.state == :exporting
       end)
     end
@@ -141,7 +142,7 @@ defmodule DataAggregator.ExportTest do
       export: export
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        Collection.set_importing!(collection)
+        Collection.set_importing!(collection, actor: default_admin())
         assert_not_enqueued(export)
       end)
     end
@@ -151,7 +152,7 @@ defmodule DataAggregator.ExportTest do
       export: export
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        Collection.set_exporting!(collection)
+        Collection.set_exporting!(collection, actor: default_admin())
         assert_not_enqueued(export)
       end)
     end
@@ -161,7 +162,7 @@ defmodule DataAggregator.ExportTest do
       export: export
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        Collection.set_encoding!(collection)
+        Collection.set_encoding!(collection, actor: default_admin())
         assert_not_enqueued(export)
       end)
     end
@@ -171,7 +172,7 @@ defmodule DataAggregator.ExportTest do
       export: export
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        Collection.set_approving!(collection)
+        Collection.set_approving!(collection, actor: default_admin())
         assert_not_enqueued(export)
       end)
     end
@@ -181,13 +182,13 @@ defmodule DataAggregator.ExportTest do
       export: export
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        Collection.set_fast_track_publishing!(collection)
+        Collection.set_fast_track_publishing!(collection, actor: default_admin())
         assert_not_enqueued(export)
       end)
     end
 
     defp assert_not_enqueued(export) do
-      assert {:error, %Invalid{}} = Export.enqueue(export)
+      assert {:error, %Invalid{}} = Export.enqueue(export, actor: default_admin())
       export = Export.get_by_id!(export.id)
       assert export.state == :pending
       refute_enqueued(worker: Exporter, args: %{id: export.id})
@@ -229,7 +230,7 @@ defmodule DataAggregator.ExportTest do
           header_source: header_source
         })
 
-      case Collection.export(export) do
+      case Collection.export(export, actor: default_admin()) do
         {:ok, result} ->
           %{body: body} = Req.get!(result.attachment.url)
 

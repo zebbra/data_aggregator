@@ -27,10 +27,6 @@ defmodule DataAggregator.Records do
     execute_async: true
   ]
 
-  authorization do
-    authorize :when_requested
-  end
-
   resources do
     resource DataAggregator.Records.Collection
     resource DataAggregator.Records.EncodedRecord

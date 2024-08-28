@@ -8,7 +8,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   import DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
 
   import DataAggregatorWeb.CollectionLive.Helpers,
-    only: [get_collection: 1, busy_action: 1]
+    only: [get_collection: 2, busy_action: 1]
 
   import DataAggregatorWeb.CollectionLive.Record.ActivityFeed
   import DataAggregatorWeb.CollectionLive.Record.Components
@@ -32,7 +32,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
-    collection = get_collection(id)
+    collection = get_collection(id, get_actor(socket))
 
     socket =
       socket
@@ -52,7 +52,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   def handle_params(%{"id" => id} = params, _url, socket) do
     layer = params |> Map.get("layer", "approval") |> coalesce_layer()
 
-    case list_records(params, socket.assigns.current_user) do
+    case list_records(params, get_actor(socket)) do
       {:ok, {records, meta}} ->
         socket
         |> assign(meta: meta)
@@ -736,7 +736,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   defp list_records(params, actor, opts \\ [load: @load, action: :by_collection]) do
-    opts = Keyword.merge(opts, authorize?: true, actor: actor)
+    opts = Keyword.put(opts, :actor, actor)
     opts = maybe_put_tsvector(Map.get(params, "layer"), opts)
 
     AshPagify.validate_and_run(Record, params, opts, params["id"])

@@ -3,7 +3,9 @@ defmodule DataAggregatorWeb.Helpers do
   Formatting helpers for date, datetime, etc.
   """
 
+  alias DataAggregator.Accounts.User
   alias DataAggregatorWeb.Cldr
+  alias Phoenix.LiveView.Socket
 
   @timezone "Europe/Zurich"
   @placeholder Phoenix.HTML.raw("&mdash;")
@@ -111,4 +113,7 @@ defmodule DataAggregatorWeb.Helpers do
   end
 
   def gbif_base_url, do: System.get_env("GBIF_BASE_URL")
+
+  def get_actor(%Socket{assigns: %{current_user: %User{} = actor}}), do: actor
+  def get_actor(%{current_user: %User{} = actor}), do: actor
 end

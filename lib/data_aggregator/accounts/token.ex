@@ -9,11 +9,4 @@ defmodule DataAggregator.Accounts.Token do
     table "tokens"
     repo DataAggregator.Repo
   end
-
-  # If using policies, add the following bypass:
-  # policies do
-  #   bypass AshAuthentication.Checks.AshAuthenticationInteraction do
-  #     authorize_if always()
-  #   end
-  # end
 end

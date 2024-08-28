@@ -5,7 +5,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   import DataAggregator.Accounts.Helpers
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
-  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1, busy_action: 1]
+  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 2, busy_action: 1]
 
   import DataAggregatorWeb.CollectionLive.Import.Components,
     only: [import_state_badge: 1, attribute_badge: 1]
@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   @impl true
   def mount(%{"id" => id} = _params, _session, socket) do
-    collection = get_collection(id)
+    collection = get_collection(id, get_actor(socket))
 
     socket =
       socket

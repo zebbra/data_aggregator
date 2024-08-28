@@ -6,7 +6,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
   import DataAggregatorWeb.CollectionLive.Export.Components, only: [export_state_badge: 1]
   import DataAggregatorWeb.CollectionLive.Export.Helpers
-  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
+  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 2]
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   alias DataAggregator.Records.Export
@@ -18,7 +18,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
   def mount(%{"id" => id} = _params, _session, socket) do
     socket =
       socket
-      |> assign(:collection, get_collection(id))
+      |> assign(:collection, get_collection(id, get_actor(socket)))
       |> assign(selected_export: nil)
       |> subscribe_for_export_updates(connected?(socket))
 

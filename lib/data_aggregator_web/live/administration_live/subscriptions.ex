@@ -6,6 +6,8 @@ defmodule DataAggregatorWeb.AdministrationLive.Subscriptions do
   use Phoenix.LiveView
   use DataAggregatorWeb, :verified_routes
 
+  import DataAggregatorWeb.Helpers, only: [get_actor: 1]
+
   alias Ash.Notifier.Notification
   alias DataAggregator.Accounts.User
   alias DataAggregator.PubSub
@@ -50,12 +52,12 @@ defmodule DataAggregatorWeb.AdministrationLive.Subscriptions do
   end
 
   defp handle_user_created(%Notification{data: %{id: id}}, socket) do
-    user = User.get_by_id!(id)
+    user = User.get_by_id!(id, actor: get_actor(socket))
     {:noreply, stream_insert(socket, :results, user, at: 0)}
   end
 
   defp handle_user_updated(%Notification{data: %{id: id}}, socket) do
-    user = User.get_by_id!(id)
+    user = User.get_by_id!(id, actor: get_actor(socket))
     {:noreply, stream_insert(socket, :results, user, at: 0)}
   rescue
     # Ignore if the user was not found --> it was deleted

@@ -3,7 +3,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   Module to interact with the GBIF Rest API
   """
   import DataAggregator.Api.Helpers
-  import DataAggregator.Helpers, only: [distinct: 2]
+  import DataAggregator.Helpers, only: [distinct: 3]
 
   alias DataAggregator.Cache.HttpDiskCache
   alias DataAggregator.Records.Approval
@@ -104,9 +104,9 @@ defmodule DataAggregator.Gbif.RestAPI do
 
   Available collections are collections that are not already in use in the database.
   """
-  @spec get_available_collection_options() :: [{String.t(), String.t()}]
-  def get_available_collection_options do
-    collections_in_use = distinct(Collection, :grscicoll_reference)
+  @spec get_available_collection_options(actor: any()) :: [{String.t(), String.t()}]
+  def get_available_collection_options(actor) do
+    collections_in_use = distinct(Collection, :grscicoll_reference, actor)
     Enum.reject(get_collection_options(), fn {_, key} -> key in collections_in_use end)
   end
 

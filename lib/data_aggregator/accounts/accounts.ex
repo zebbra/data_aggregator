@@ -6,8 +6,4 @@ defmodule DataAggregator.Accounts do
     resource DataAggregator.Accounts.User
     resource DataAggregator.Accounts.Token
   end
-
-  authorization do
-    authorize :when_requested
-  end
 end

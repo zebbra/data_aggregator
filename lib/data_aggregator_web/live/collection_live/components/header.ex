@@ -6,7 +6,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   use DataAggregatorWeb, :html
 
   import DataAggregator.Accounts.Helpers
-  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
+  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 2]
 
   alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Collection
@@ -26,7 +26,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   def collection_header(%{collection: nil} = assigns) do
     assigns
-    |> assign(:collection, get_collection(assigns.collection_id))
+    |> assign(:collection, get_collection(assigns.collection_id, get_actor(assigns)))
     |> assign(:gbif_dataset_base_url, "#{gbif_base_url()}/dataset")
     |> collection_header()
   end

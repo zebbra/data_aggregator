@@ -12,6 +12,8 @@ defmodule DataAggregator.Accounts.User do
 
   use DataAggregatorWeb.Gettext
 
+  import DataAggregator.Checks.Custom
+
   alias AshAuthentication.Strategy.Password.HashPasswordChange
 
   authentication do
@@ -55,6 +57,8 @@ defmodule DataAggregator.Accounts.User do
   end
 
   actions do
+    defaults [:destroy]
+
     read :read do
       primary? true
       argument :sort, :string, allow_nil?: true
@@ -128,6 +132,8 @@ defmodule DataAggregator.Accounts.User do
     define :get_by_id, action: :read, get_by: [:id]
     define :get_by_email, action: :read, get_by: [:email]
     define :register_with_password
+    define :update
+    define :destroy
   end
 
   validations do
@@ -136,15 +142,32 @@ defmodule DataAggregator.Accounts.User do
     end
   end
 
-  # If using policies, add the following bypass:
   policies do
     bypass AshAuthentication.Checks.AshAuthenticationInteraction do
       authorize_if always()
     end
 
-    policy action_type(:read) do
-      authorize_if DataAggregator.Checks.IsAdmin
-      authorize_if expr(institution_id == ^actor(:institution_id))
+    policy action_type(:destroy) do
+      forbid_if with_role("data_administrator")
+      authorize_unless it_is_myself()
+    end
+
+    bypass with_role("admin") do
+      authorize_if always()
+    end
+
+    policy_group with_role("collection_digitizer") do
+      policy action_type(:destroy) do
+        forbid_if always()
+      end
+
+      policy action_type([:read]) do
+        authorize_if relates_to_institution_filter(:institution_id)
+      end
+
+      policy action_type([:create, :update]) do
+        authorize_if relates_to_institution_check(:institution_id)
+      end
     end
   end
 

@@ -38,7 +38,13 @@ defmodule DataAggregatorWeb.ConnCase do
     conn = Phoenix.ConnTest.build_conn()
 
     if tags[:authenticated] do
-      user = DataAggregator.AccountsFixtures.user_fixture()
+      roles =
+        tags
+        |> Map.get(:authenticated)
+        |> List.wrap()
+        |> Enum.filter(&(&1 != true))
+
+      user = DataAggregator.AccountsFixtures.user_fixture(%{roles: roles})
 
       conn =
         conn

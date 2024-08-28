@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    case list_collections(params, socket.assigns.current_user) do
+    case list_collections(params, get_actor(socket)) do
       {:ok, {collections, meta}} ->
         socket
         |> assign(meta: meta)
@@ -156,6 +156,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             action={@live_action}
             collection={@collection}
             patch={build_path(~p"/collections", @meta)}
+            current_user={@current_user}
           />
         </.modal>
 
@@ -187,14 +188,14 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
     |> assign(:page_title, ~t"Edit Collection"m)
     |> assign(
       :collection,
-      Collection.get_by_id!(id, load: @load)
+      Collection.get_by_id!(id, load: @load, actor: get_actor(socket))
     )
   end
 
   @impl true
   def handle_event("collection:delete", %{"id" => id}, socket) do
-    collection = Collection.get_by_id!(id)
-    :ok = Collection.destroy(collection)
+    collection = Collection.get_by_id!(id, actor: get_actor(socket))
+    :ok = Collection.destroy(collection, actor: get_actor(socket))
 
     {:noreply,
      socket
@@ -203,7 +204,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   end
 
   defp list_collections(params, actor, opts \\ [load: @load]) do
-    opts = Keyword.merge(opts, authorize?: true, actor: actor)
+    opts = Keyword.put(opts, :actor, actor)
     AshPagify.validate_and_run(Collection, params, opts)
   end
 

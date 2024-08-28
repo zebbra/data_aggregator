@@ -91,15 +91,15 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
     assign(socket, :form, build_form(assigns))
   end
 
-  defp build_form(%{action: :new}) do
+  defp build_form(%{action: :new, current_user: actor}) do
     Collection
-    |> Form.for_create(:create, domain: DataAggregator.Records, as: "collection")
+    |> Form.for_create(:create, domain: DataAggregator.Records, as: "collection", actor: actor)
     |> to_form()
   end
 
-  defp build_form(%{action: :edit, collection: collection}) do
+  defp build_form(%{action: :edit, collection: collection, current_user: actor}) do
     collection
-    |> Form.for_update(:update, domain: DataAggregator.Records, as: "collection")
+    |> Form.for_update(:update, domain: DataAggregator.Records, as: "collection", actor: actor)
     |> to_form()
   end
 
@@ -132,11 +132,12 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
     {:noreply, socket}
   end
 
-  defp maybe_assign_available_collection_options(%{action: :edit} = socket) do
-    socket
+  defp maybe_assign_available_collection_options(%{action: :edit} = assigns) do
+    assigns
   end
 
-  defp maybe_assign_available_collection_options(socket) do
-    assign(socket, :grscicoll_collections, Gbif.RestAPI.get_available_collection_options())
+  defp maybe_assign_available_collection_options(assigns) do
+    actor = get_actor(assigns)
+    assign(assigns, :grscicoll_collections, Gbif.RestAPI.get_available_collection_options(actor))
   end
 end
