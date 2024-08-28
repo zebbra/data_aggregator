@@ -22,7 +22,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
 
   defp import_records(%Changeset{data: import} = changeset) do
     if changeset.valid? do
-      Logger.debug("Importing records for #{inspect(import.id)} ...")
+      Logger.info("Importing records for #{inspect(import.id)} ...")
 
       case rows_stream(import) do
         {:ok, rows} -> import_in_chunks(changeset, rows)
@@ -37,7 +37,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
   defp import_in_chunks(%Changeset{data: import} = changeset, rows) do
     chunk_size = Records.import_batch_size()
 
-    Logger.debug("Importing records in chunks of #{chunk_size} rows ...")
+    Logger.info("Importing records in chunks of #{chunk_size} rows ...")
 
     # make sure collection is loaded to avoid N+1 queries
     import = Ash.load!(import, [:collection], lazy?: true)
@@ -53,7 +53,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
   defp import_chunk(import, {chunk, index}) do
     max_concurrency = Records.import_max_concurrency()
 
-    Logger.debug("Importing chunk ##{index} with #{length(chunk)} rows (concurrency: #{max_concurrency}) ...")
+    Logger.info("Importing chunk ##{index} with #{length(chunk)} rows (concurrency: #{max_concurrency}) ...")
 
     {valid, invalid} =
       chunk
@@ -67,7 +67,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
       Logger.warning("#{length(invalid)} invalid row(s) dropped from chunk!")
     end
 
-    Logger.debug("Importing #{length(valid)} valid rows ...")
+    Logger.info("Importing #{length(valid)} valid rows ...")
     res = Record.bulk_import!(import, Enum.reverse(valid))
 
     {res, length(valid), length(invalid)}

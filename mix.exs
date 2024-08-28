@@ -196,7 +196,7 @@ defmodule DataAggregator.MixProject do
       {:ash_phoenix, "~> 2.1"},
       {:ash_postgres, "~> 2.1", override: true},
       {:ash_state_machine, "~> 0.2"},
-      {:ash_uuid, "~> 1.1"},
+      {:ash_uuid, "~> 1.1", path: "../ash_uuid"},
       {:ash_paper_trail, "~> 0.1"},
       {:ash_pagify, "~> 1.0"},
 
@@ -274,6 +274,7 @@ defmodule DataAggregator.MixProject do
       {:sentry, "~> 10.6"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
+      {:recon, "~> 2.5", only: :dev},
 
       # Clustering
       {:dns_cluster, "~> 0.1.1"},
