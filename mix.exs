@@ -191,7 +191,8 @@ defmodule DataAggregator.MixProject do
       {:phoenix_storybook, "~> 0.6.3"},
 
       # Ash Framework
-      {:ash, "~> 3.3", override: true, github: "hwuethrich/ash", branch: "fix/batch-change"},
+      # Revert when https://github.com/ash-project/ash/pull/1419 is merged
+      {:ash, "~> 3.3", override: true, github: "hwuethrich/ash", branch: "fix/batch-callbacks"},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
       {:ash_postgres, "~> 2.1", override: true},

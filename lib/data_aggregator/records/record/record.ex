@@ -246,12 +246,12 @@ defmodule DataAggregator.Records.Record do
       change Changes.SetOccurrenceID
       change Changes.SetBasisOfRecord
 
-      # change Changes.CreateEncodedRecordAfterAction
-      # change Changes.SetImportedAfterAction
+      change Changes.CreateEncodedRecordAfterAction
+      change Changes.SetImportedAfterAction
 
-      change Changes.CreateEncodedRecordAfterActionNew
-      change set_attribute(:state, :imported)
-      change set_attribute(:last_imported_at, &DateTime.utc_now/0)
+      # change Changes.CreateEncodedRecordAfterActionNew
+      # change set_attribute(:state, :imported)
+      # change set_attribute(:last_imported_at, &DateTime.utc_now/0)
 
       change manage_relationship(:collection, :collection, type: :append)
     end
