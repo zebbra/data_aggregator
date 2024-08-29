@@ -135,7 +135,7 @@ config :ex_cldr,
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id]
+  metadata: [:request_id, :pid, :job_id]
 
 config :mime, :extensions, %{
   "json" => "application/vnd.api+json",

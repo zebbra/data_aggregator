@@ -8,21 +8,15 @@ defmodule DataAggregator.Records.Record.Changes.RelateImport do
   alias Ash.Changeset
   alias Ash.Resource.Change
   alias DataAggregator.Records.Import
-  alias DataAggregator.Records.Record
 
   @impl Change
   def batch_change(changesets, _opts, _ctx) do
+    Enum.to_list(changesets)
+  end
+
+  @impl Change
+  def before_batch(changesets, _opts, _ctx) do
     changesets
-  end
-
-  @impl Change
-  def change(%Changeset{} = changeset, _opts, %{bulk?: true}) do
-    changeset
-  end
-
-  @impl Change
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.after_action(changeset, &create_import_record/2)
   end
 
   @impl Change
@@ -34,28 +28,22 @@ defmodule DataAggregator.Records.Record.Changes.RelateImport do
 
     batch
     |> Stream.map(import_record_args)
-    |> bulk_create_import_records()
-    |> Stream.run()
+    |> bulk_create_import_records!()
 
-    :ok
+    Enum.map(batch, fn {_, record} -> {:ok, record} end)
   end
 
-  defp bulk_create_import_records(stream) do
-    Ash.bulk_create(stream, Import.Record, :create,
-      batch_size: 1000,
-      # max_concurrency: 4, # does not work in tests
+  defp bulk_create_import_records!(stream) do
+    # use the same batch size as the import
+    batch_size = DataAggregator.Records.import_batch_size()
+
+    # we have ~280 attributes and PG can handle 65535 params, to we can batch up to ~200 records
+    # batch_size = Enum.min([batch_size, 200])
+
+    Ash.bulk_create!(stream, Import.Record, :create,
+      batch_size: batch_size,
       return_records?: true,
-      return_errors?: true,
-      return_stream?: true
+      return_errors?: true
     )
-  end
-
-  defp create_import_record(%Changeset{} = changeset, %Record{} = record) do
-    import = Changeset.get_argument(changeset, :import)
-
-    with {:ok, _, notifications} <-
-           Import.Record.create(import, record, return_notifications?: true) do
-      {:ok, record, notifications}
-    end
   end
 end

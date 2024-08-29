@@ -33,11 +33,8 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.PublicationStatusType
   alias DataAggregator.Records.Record.Calculations.IucnRedlist
   alias DataAggregator.Records.Record.Calculations.Mids
+  alias DataAggregator.Records.Record.Changes
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
-  alias Record.Changes.CreateEncodedRecordAfterAction
-  alias Record.Changes.SetBasisOfRecord
-  alias Record.Changes.SetImportedAfterAction
-  alias Record.Changes.SetOccurrenceID
 
   require Ash.Expr
   require Ash.Query
@@ -245,11 +242,12 @@ defmodule DataAggregator.Records.Record do
       primary? true
       argument :collection, :struct, allow_nil?: false
 
-      change Record.Changes.SetGrSciCollInstitution
-      change SetOccurrenceID
-      change SetBasisOfRecord
-      change SetImportedAfterAction
-      change CreateEncodedRecordAfterAction
+      change Changes.SetGrSciCollInstitution
+      change Changes.SetOccurrenceID
+      change Changes.SetBasisOfRecord
+      change Changes.CreateEncodedRecordAfterAction
+      change set_attribute(:state, :imported)
+      change set_attribute(:last_imported_at, &DateTime.utc_now/0)
 
       change manage_relationship(:collection, :collection, type: :append)
     end
@@ -264,18 +262,27 @@ defmodule DataAggregator.Records.Record do
 
       argument :import, :struct, allow_nil?: false
       argument :params, :map, allow_nil?: false
-      change Record.Changes.RelateImport
-      change Record.Changes.RelateCollectionFromImport
-      change Record.Changes.ExtractAttributes
-      change SetOccurrenceID
-      change SetBasisOfRecord
-      change Record.Changes.SetPublicationStale
-      change SetImportedAfterAction
-      change CreateEncodedRecordAfterAction
+
+      change Changes.RelateCollectionFromImport
+      change Changes.ExtractAttributes
+      change Changes.SetOccurrenceID
+      change Changes.SetBasisOfRecord
+      change Changes.RelateImport
+      change Changes.SetPublicationStale
+      change Changes.CreateEncodedRecordAfterAction
+      change set_attribute(:state, :imported)
+      change set_attribute(:last_imported_at, &DateTime.utc_now/0)
 
       upsert? true
       upsert_identity :collection_mte_catalog_number
-      upsert_fields [:import_data, :extra_data | DarwinCore.Schema.prefixed_attribute_names()]
+
+      upsert_fields DarwinCore.Schema.prefixed_attribute_names() ++
+                      [
+                        :state,
+                        :last_imported_at,
+                        :import_data,
+                        :extra_data
+                      ]
     end
 
     update :enqueue_encoder do
@@ -317,7 +324,7 @@ defmodule DataAggregator.Records.Record do
     update :check_if_fast_track_pubished do
       require_atomic? false
 
-      change Record.Changes.CheckIfFastTrackPublished
+      change Changes.CheckIfFastTrackPublished
     end
 
     update :set_imported do
@@ -370,7 +377,7 @@ defmodule DataAggregator.Records.Record do
       primary? true
       require_atomic? false
 
-      change Record.Changes.DestroyVersions
+      change Changes.DestroyVersions
     end
   end
 

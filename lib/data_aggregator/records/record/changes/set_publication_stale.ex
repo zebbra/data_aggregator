@@ -1,48 +1,24 @@
 defmodule DataAggregator.Records.Record.Changes.SetPublicationStale do
   @moduledoc """
-  Calls `DataAggregator.Records.Record.update_fast_track_status/2` and `DataAggregator.Records.Record.update_approval_status/2`to update the
-  publication states `fast_track_status` and `approval_status` to `stale` for a
-  record which was changed during the import.
+  Sets the fast_track_status and approval_status to :stale if they are not :not_published and :not_approved respectively.
   """
 
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Records.Record
 
   require Logger
 
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.after_action(changeset, &set_publication_stale/2)
-  end
-
-  defp set_publication_stale(changeset, record) do
-    if Changeset.changing_attributes?(changeset) do
-      with {:ok, record} <-
-             Record.update_fast_track_status(record, target_status(record, :fast_track_status)) do
-        Record.update_approval_status(record, target_status(record, :approval_status))
-
-        Logger.debug("Publication states 'fast_track_status' and 'approval_status' set to ':stale'")
-
-        {:ok, record}
-      end
-    end
-
-    {:ok, record}
-  end
-
-  defp target_status(record, :approval_status) do
-    case Map.get(record, :approval_status) do
-      :not_published -> :not_published
-      _ -> :stale
-    end
-  end
-
-  defp target_status(record, :fast_track_status) do
-    case Map.get(record, :fast_track_status) do
-      :not_published -> :not_published
-      _ -> :stale
-    end
+    changeset
+    |> Changeset.atomic_update(
+      :fast_track_status,
+      expr(if fast_track_status == :not_published, do: :not_published, else: :stale)
+    )
+    |> Changeset.atomic_update(
+      :approval_status,
+      expr(if approval_status == :not_approved, do: :not_approved, else: :stale)
+    )
   end
 end

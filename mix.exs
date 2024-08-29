@@ -191,7 +191,9 @@ defmodule DataAggregator.MixProject do
       {:phoenix_storybook, "~> 0.6.3"},
 
       # Ash Framework
-      {:ash, "~> 3.3", override: true},
+      # Revert when https://github.com/ash-project/ash/pull/1419 is merged
+      {:ash, "~> 3.3", override: true, github: "hwuethrich/ash", branch: "fix/batch-callbacks"},
+      # {:ash, "~> 3.3", override: true},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
       {:ash_postgres, "~> 2.1", override: true},
@@ -274,6 +276,7 @@ defmodule DataAggregator.MixProject do
       {:sentry, "~> 10.6"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
+      {:recon, "~> 2.5", only: :dev},
 
       # Clustering
       {:dns_cluster, "~> 0.1.1"},

@@ -6,18 +6,29 @@ defmodule DataAggregator.Records.Record.Changes.SetImportedAfterAction do
 
   use Ash.Resource.Change
 
-  alias Ash.Changeset
-  alias DataAggregator.Records.Record
-
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.after_action(changeset, &set_imported/2)
+  def batch_change(changesets, _opts, _context) do
+    changesets
   end
 
-  defp set_imported(_changeset, record) do
-    Logger.debug("Setting record to imported ...")
-    Record.set_imported(record)
+  @impl true
+  def before_batch(changesets, _opts, _context) do
+    changesets
+  end
+
+  @impl true
+  def after_batch(batch, _opts, _context) do
+    # use the same batch size as the import
+    batch_size = DataAggregator.Records.import_batch_size()
+
+    batch
+    |> Enum.map(fn {_, record} -> record end)
+    |> Ash.bulk_update!(:set_imported, %{},
+      stream_batch_size: batch_size,
+      return_records?: true,
+      return_errors?: true
+    )
   end
 end
