@@ -245,13 +245,9 @@ defmodule DataAggregator.Records.Record do
       change Changes.SetGrSciCollInstitution
       change Changes.SetOccurrenceID
       change Changes.SetBasisOfRecord
-
       change Changes.CreateEncodedRecordAfterAction
-      change Changes.SetImportedAfterAction
-
-      # change Changes.CreateEncodedRecordAfterActionNew
-      # change set_attribute(:state, :imported)
-      # change set_attribute(:last_imported_at, &DateTime.utc_now/0)
+      change set_attribute(:state, :imported)
+      change set_attribute(:last_imported_at, &DateTime.utc_now/0)
 
       change manage_relationship(:collection, :collection, type: :append)
     end
@@ -271,17 +267,9 @@ defmodule DataAggregator.Records.Record do
       change Changes.ExtractAttributes
       change Changes.SetOccurrenceID
       change Changes.SetBasisOfRecord
-
-      # before:
-      # change Changes.RelateImport
-      # change Changes.SetPublicationStale
-      # change Changes.CreateEncodedRecordAfterAction
-      # change Changes.SetImportedAfterAction
-
-      # optimized:
-      change Changes.RelateImportNew
-      change Changes.SetPublicationStaleNew
-      change Changes.CreateEncodedRecordAfterActionNew
+      change Changes.RelateImport
+      change Changes.SetPublicationStale
+      change Changes.CreateEncodedRecordAfterAction
       change set_attribute(:state, :imported)
       change set_attribute(:last_imported_at, &DateTime.utc_now/0)
 
@@ -342,8 +330,7 @@ defmodule DataAggregator.Records.Record do
     update :set_imported do
       require_atomic? false
 
-      change transition_state(:imported)
-      change set_attribute(:last_imported_at, &DateTime.utc_now/0)
+      change Changes.SetImported
     end
 
     update :set_encoding do
