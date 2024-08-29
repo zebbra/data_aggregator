@@ -330,7 +330,8 @@ defmodule DataAggregator.Records.Record do
     update :set_imported do
       require_atomic? false
 
-      change Changes.SetImported
+      change transition_state(:imported)
+      change set_attribute(:last_imported_at, &DateTime.utc_now/0)
     end
 
     update :set_encoding do
