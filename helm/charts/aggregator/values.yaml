@@ -44,6 +44,7 @@ env:
   LISTEN_IP: 0.0.0.0
   PORT: 4000
   PHX_SERVER: true
+  POOL_SIZE: 20
 
 envSecret: aggregator
 

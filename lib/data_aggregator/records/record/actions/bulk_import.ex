@@ -21,18 +21,28 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
     max_concurrency = Records.import_max_concurrency()
     batch_size = ceil(Records.import_batch_size() / max_concurrency)
 
-    Logger.debug("Bulk importing records with batch size #{batch_size} (concurrency: #{max_concurrency}) ...")
+    # we have ~280 attributes and PG can handle 65535 params, to we can batch up to ~200 records
+    # batch_size = Enum.min([batch_size, 200])
 
-    result =
-      rows
-      |> Stream.map(&%{import: import, params: &1})
-      |> Ash.bulk_create!(Record, :import,
-        return_errors?: true,
-        return_records?: true,
-        max_concurrency: max_concurrency,
-        batch_size: batch_size,
-        timeout: :timer.minutes(5)
+    Logger.info("Bulk importing records with batch size #{batch_size} (concurrency: #{max_concurrency}) ...")
+
+    {time, result} =
+      :timer.tc(
+        fn ->
+          rows
+          |> Stream.map(&%{import: import, params: &1})
+          |> Ash.bulk_create!(Record, :import,
+            return_errors?: true,
+            return_records?: true,
+            max_concurrency: max_concurrency,
+            batch_size: batch_size,
+            timeout: :timer.minutes(5)
+          )
+        end,
+        :millisecond
       )
+
+    Logger.info("Bulk import took #{time} ms")
 
     {:ok, result}
   end

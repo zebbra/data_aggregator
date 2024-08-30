@@ -62,7 +62,7 @@ defmodule DataAggregator.Records.RecordTest do
 
       record = Ash.load!(record, [:paper_trail_versions, :encoded_record])
 
-      assert length(record.paper_trail_versions) == 2
+      assert length(record.paper_trail_versions) == 1
       assert record.occ_occurrence_id === record.mte_catalog_number
       assert record.oth_basis_of_record === "PreservedSpecimen"
 
@@ -95,7 +95,7 @@ defmodule DataAggregator.Records.RecordTest do
 
       record = Ash.load!(record, [:paper_trail_versions])
 
-      assert length(record.paper_trail_versions) == 3
+      assert length(record.paper_trail_versions) == 2
     end
 
     test "update/2 with invalid data returns error changeset" do
@@ -223,7 +223,7 @@ defmodule DataAggregator.Records.RecordTest do
 
       record = Ash.load!(record, [:paper_trail_versions])
 
-      assert length(record.paper_trail_versions) == 3
+      assert length(record.paper_trail_versions) == 1
     end
 
     test "updating a record for the same import", %{import: import} do
@@ -262,14 +262,7 @@ defmodule DataAggregator.Records.RecordTest do
 
       record = Ash.load!(record, [:paper_trail_versions])
 
-      # we do not know when the set_imported action is done, so we filter it out
-      # to make the test more stable
-      paper_trail_versions_without_set_imported =
-        Enum.filter(record.paper_trail_versions, fn version ->
-          version.version_action_name != :set_imported
-        end)
-
-      assert length(paper_trail_versions_without_set_imported) == 3
+      assert length(record.paper_trail_versions) == 2
     end
 
     test "updating a record from another import", %{import: import} do
@@ -306,12 +299,7 @@ defmodule DataAggregator.Records.RecordTest do
 
       record = Ash.load!(record, [:paper_trail_versions])
 
-      paper_trail_versions_without_set_imported =
-        Enum.filter(record.paper_trail_versions, fn version ->
-          version.version_action_name != :set_imported
-        end)
-
-      assert length(paper_trail_versions_without_set_imported) == 3
+      assert length(record.paper_trail_versions) == 2
     end
 
     test "importing a record for another collection", %{import: import} do
