@@ -14,6 +14,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   alias AshPhoenix.Form
   alias DataAggregator.DarwinCore
+  alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.Import
 
   require Logger
@@ -339,6 +340,15 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
     visible = mapping_form_visible?(form, filter)
 
+    # Add category label to the category descriptions
+    mapped_to_opts =
+      Enum.map(mapped_to_opts, fn {desc, attrs} ->
+        case Schema.category_label_by_description(desc) do
+          nil -> {desc, attrs}
+          label -> {"#{label}: #{desc}", attrs}
+        end
+      end)
+
     assigns =
       assigns
       |> assign(:mapped_to_opts, mapped_to_opts)
@@ -625,8 +635,16 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       options
     else
       description = Map.fetch!(category, :description)
-      attribute = DarwinCore.Schema.attribute_name_without_prefix(prefixed_attribute)
-      insert_attribute(description, attribute, prefixed_attribute, options)
+
+      attribute_name_without_prefix =
+        DarwinCore.Schema.attribute_name_without_prefix(prefixed_attribute)
+
+      attribute =
+        Enum.find(category.dwc_attributes, fn dwc_attribute ->
+          dwc_attribute.attribute.name == attribute_name_without_prefix
+        end)
+
+      insert_attribute(description, attribute.dwc_field, prefixed_attribute, options)
     end
   end
 
