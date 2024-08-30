@@ -5,22 +5,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   use DataAggregatorWeb, :live_component
   use DataAggregatorWeb.Filters
 
-  import DataAggregator.Helpers, only: [distinct: 3]
+  import DataAggregator.Helpers, only: [distinct: 2]
 
   alias AshPagify.FilterForm
   alias AshPhoenix.FilterForm.Predicate
-  alias DataAggregator.Accounts.User
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
   @impl true
   def mount(socket) do
-    actor = get_actor(socket)
-
     distinct_options = %{
-      loc_continent: loc_continent_options(actor),
-      tax_kingdom: tax_kingdom_options(actor),
-      tax_phylum: tax_phylum_options(actor)
+      loc_continent: loc_continent_options(),
+      tax_kingdom: tax_kingdom_options(),
+      tax_phylum: tax_phylum_options()
     }
 
     socket =
@@ -391,15 +388,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     Map.get(collapsible_state, key, false)
   end
 
-  defp loc_continent_options(%User{} = actor) do
-    distinct(EncodedRecord, :loc_continent, actor)
+  defp loc_continent_options do
+    distinct(EncodedRecord, :loc_continent)
   end
 
-  defp tax_kingdom_options(%User{} = actor) do
-    distinct(EncodedRecord, :tax_kingdom, actor)
+  defp tax_kingdom_options do
+    distinct(EncodedRecord, :tax_kingdom)
   end
 
-  defp tax_phylum_options(%User{} = actor) do
-    distinct(EncodedRecord, :tax_phylum, actor)
+  defp tax_phylum_options do
+    distinct(EncodedRecord, :tax_phylum)
   end
 end

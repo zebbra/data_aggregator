@@ -24,12 +24,18 @@ defmodule DataAggregator.AccountsFixtures do
     @default_admin
   end
 
+  def default_admin_map do
+    @default_admin
+    |> Map.from_struct()
+    |> Map.take([:id, :roles, :institution_id])
+  end
+
   @doc """
   Generate a user
   """
   def user_fixture(attrs \\ %{}) do
     @user_defaults
     |> Map.merge(attrs)
-    |> User.register_with_password!(actor: @default_admin)
+    |> User.register_with_password!()
   end
 end

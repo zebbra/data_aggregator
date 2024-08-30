@@ -45,12 +45,10 @@ defmodule DataAggregatorWeb.Filters do
 
     @impl true
     def mount(socket) do
-      actor = get_actor(socket)
-
       distinct_options = %{
-        loc_continent: loc_continent_options(actor),
-        tax_kingdom: tax_kingdom_options(actor),
-        tax_phylum: tax_phylum_options(actor)
+        loc_continent: loc_continent_options(),
+        tax_kingdom: tax_kingdom_options(),
+        tax_phylum: tax_phylum_options()
       }
 
       socket =
@@ -381,16 +379,16 @@ defmodule DataAggregatorWeb.Filters do
       Map.get(collapsible_state, key, false)
     end
 
-    defp loc_continent_options(actor) do
-      distinct(EncodedRecord, :loc_continent, actor)
+    defp loc_continent_options() do
+      distinct(EncodedRecord, :loc_continent)
     end
 
-    defp tax_kingdom_options(actor) do
-      distinct(EncodedRecord, :tax_kingdom, actor)
+    defp tax_kingdom_options() do
+      distinct(EncodedRecord, :tax_kingdom)
     end
 
-    defp tax_phylum_options(actor) do
-      distinct(EncodedRecord, :tax_phylum, actor)
+    defp tax_phylum_options() do
+      distinct(EncodedRecord, :tax_phylum)
     end
   end
   ```

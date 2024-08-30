@@ -3,7 +3,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Import.Subscriptions
 
-  import DataAggregator.Accounts.Helpers
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 2, busy_action: 1]
 
@@ -13,6 +12,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   import DataAggregatorWeb.CollectionLive.Import.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
 
   @load load()
@@ -36,7 +36,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    case list_imports(params) do
+    case list_imports(params, get_actor(socket)) do
       {:ok, {records, meta}} ->
         socket
         |> assign(meta: meta)
@@ -438,6 +438,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             show_validation={Phoenix.Flash.get(@flash, :mapping_error)}
             meta={@meta}
             busy={@busy}
+            current_user={@current_user}
           />
         </.modal>
 
@@ -486,7 +487,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   @impl true
   def handle_event("import:select", %{"id" => id}, socket) do
     socket =
-      assign(socket, :selected_import, Import.get_by_id!(id, load: @load_import))
+      assign(
+        socket,
+        :selected_import,
+        Import.get_by_id!(id, load: @load_import, actor: get_actor(socket))
+      )
 
     {:noreply, socket}
   end
@@ -508,7 +513,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
       topic: :add_all,
       form: form,
       path: path,
-      name_opts: name_opts
+      name_opts: name_opts,
+      current_user: socket.assigns.current_user
     }
 
     send_update(DataAggregatorWeb.CollectionLive.Import.FormComponent, assigns)
@@ -528,7 +534,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   end
 
   defp apply_action(socket, :edit, %{"import_id" => id}) do
-    import = Import.get_by_id!(id, load: @load_import)
+    import = Import.get_by_id!(id, load: @load_import, actor: get_actor(socket))
 
     socket
     |> assign(:page_title, ~t"Edit Import"m)
@@ -537,7 +543,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   end
 
   defp apply_action(socket, :summary, %{"id" => collection_id, "import_id" => id}) do
-    import = Import.get_by_id!(id, load: @load_import)
+    import = Import.get_by_id!(id, load: @load_import, actor: get_actor(socket))
 
     if Enum.empty?(import.missing_mappings) do
       socket
@@ -550,7 +556,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     end
   end
 
-  defp list_imports(params, opts \\ [load: @load, action: :by_collection]) do
+  defp list_imports(params, opts \\ [load: @load, action: :by_collection], actor) do
+    opts = Keyword.put_new(opts, :actor, actor)
     AshPagify.validate_and_run(Import, params, opts, params["id"])
   end
 
@@ -558,7 +565,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   defp no_results_content(assigns) do
     ~H"""
-    <%= if has_role?(@current_user, ["data_addministrator", "adamin"]) do %>
+    <%= if Collection.can_set_importing?(@current_user, @collection) do %>
       <.empty_state
         title={~t"No imports"m}
         description={~t"Get started by importing a new dataset."m}

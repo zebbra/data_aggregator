@@ -14,7 +14,10 @@ defmodule DataAggregator.Accounts.User do
 
   import DataAggregator.Checks.Custom
 
+  alias __MODULE__
   alias AshAuthentication.Strategy.Password.HashPasswordChange
+
+  @type t :: %User{}
 
   authentication do
     strategies do
@@ -148,7 +151,7 @@ defmodule DataAggregator.Accounts.User do
     end
 
     policy action_type(:destroy) do
-      forbid_if with_role("data_administrator")
+      forbid_unless with_role("admin")
       authorize_unless it_is_myself()
     end
 

@@ -11,12 +11,12 @@ defmodule DataAggregator.Records.Collection.Changes.SetDeletingBeforeTransaction
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, %{actor: actor}) do
-    Changeset.before_transaction(changeset, fn changeset -> set_deleting(changeset, actor) end)
+  def change(%Changeset{} = changeset, _opts, _ctx) do
+    Changeset.before_transaction(changeset, &set_deleting/1)
   end
 
-  defp set_deleting(%Changeset{data: collection} = changeset, actor) do
-    case Collection.set_deleting(collection, actor: actor) do
+  defp set_deleting(%Changeset{data: collection} = changeset) do
+    case Collection.set_deleting(collection) do
       {:ok, _collection} ->
         changeset
 

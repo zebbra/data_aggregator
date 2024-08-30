@@ -23,6 +23,8 @@ defmodule DataAggregator.Records.Record do
 
   use AshPagify.Tsearch
 
+  import DataAggregator.Checks.Custom
+
   alias __MODULE__
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
@@ -410,10 +412,24 @@ defmodule DataAggregator.Records.Record do
   end
 
   policies do
-    policy always() do
+    bypass with_role("admin") do
       authorize_if always()
-      # authorize_if DataAggregator.Checks.IsAdmin
-      # authorize_if relates_to_institution_filter([:collection], :grscicoll_institution_key)
+    end
+
+    bypass action([:bulk_import, :import, :encode]) do
+      authorize_if always()
+    end
+
+    policy_group with_role(["collection_digitizer", "data_administrator"]) do
+      policy action_type(:read) do
+        authorize_if relates_to_institution_filter([:collection], :grscicoll_institution_key)
+      end
+    end
+
+    policy_group with_role(["data_administrator"]) do
+      policy action_type([:create, :update, :destroy]) do
+        authorize_if relates_to_institution_check([:collection], :grscicoll_institution_key)
+      end
     end
   end
 

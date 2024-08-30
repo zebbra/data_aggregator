@@ -3789,8 +3789,6 @@ erDiagram
 classDiagram
     class User {
         CiString email
-        request_magic_link(CiString email)
-        sign_in_with_magic_link(String token)
         sign_in_with_token_for_password(String token)
         sign_in_with_password(CiString email, String password)
         get_by_subject()
@@ -3855,8 +3853,6 @@ erDiagram
 
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
-| **request_magic_link** | _read_ | <ul><li><b>email</b> <i>CiString</i> </li></ul> |  |
-| **sign_in_with_magic_link** | _read_ | <ul><li><b>token</b> <i>String</i> </li></ul> |  |
 | **sign_in_with_token_for_password** | _read_ | <ul><li><b>token</b> <i>String</i> The short-lived sign in JWT.</li></ul> | Attempt to sign in using a short-lived sign in token. |
 | **sign_in_with_password** | _read_ | <ul><li><b>email</b> <i>CiString</i> The identity to use for retrieving the user.</li><li><b>password</b> <i>String</i> The password to check for the matching user.</li></ul> | Attempt to sign in using a username and password. |
 | **get_by_subject** | _read_ | <ul></ul> |  |

@@ -2,8 +2,6 @@
 classDiagram
     class User {
         CiString email
-        request_magic_link(CiString email)
-        sign_in_with_magic_link(String token)
         sign_in_with_token_for_password(String token)
         sign_in_with_password(CiString email, String password)
         get_by_subject()

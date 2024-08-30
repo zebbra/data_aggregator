@@ -11,7 +11,7 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
   require Logger
 
   @impl true
-  def run(input, _opts, _context) do
+  def run(input, _opts, _ctx) do
     %{import: import, rows: rows} = input.arguments
 
     # Eager load the imports collection to avoid N+1 queries when

@@ -114,6 +114,7 @@ defmodule DataAggregatorWeb.Helpers do
 
   def gbif_base_url, do: System.get_env("GBIF_BASE_URL")
 
+  @spec get_actor(Socket.t() | map()) :: User.t()
   def get_actor(%Socket{assigns: %{current_user: %User{} = actor}}), do: actor
   def get_actor(%{current_user: %User{} = actor}), do: actor
 end

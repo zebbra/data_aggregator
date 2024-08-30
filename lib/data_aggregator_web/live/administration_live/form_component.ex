@@ -50,12 +50,14 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                 field={@form[:first_name]}
                 label={~t"First name"m}
                 placeholder={~t"Enter first name"m}
+                icon_start="hero-user-mini"
                 autocomplete="given-name"
               />
               <.field
                 field={@form[:last_name]}
                 label={~t"Last name"m}
                 placeholder={~t"Enter last name"m}
+                icon_start="hero-user-mini"
                 autocomplete="family-name"
               />
               <.field
@@ -63,6 +65,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                 field={@form[:email]}
                 label={~t"E-Mail"m}
                 placeholder={~t"Enter E-Mail"m}
+                icon_start="hero-envelope-mini"
                 autocomplete="email"
                 required
               />
@@ -71,6 +74,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                 field={@form[:phone]}
                 label={~t"Phone"m}
                 placeholder={~t"Enter phone number"m}
+                icon_start="hero-phone-mini"
                 autocomplete="tel"
               />
             </div>
@@ -90,6 +94,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                 field={@form[:password]}
                 label={~t"Password"m}
                 placeholder={~t"Enter password"m}
+                icon_start="hero-key-mini"
                 icon_end={password_icon(@password_hidden?)}
                 icon_event="toggle_password"
                 icon_event_target={@myself}
@@ -149,12 +154,14 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                 field={@form[:first_name]}
                 label={~t"First name"m}
                 placeholder={~t"Enter first name"m}
+                icon_start="hero-user-mini"
                 readonly
               />
               <.field
                 field={@form[:last_name]}
                 label={~t"Last name"m}
                 placeholder={~t"Enter last name"m}
+                icon_start="hero-user-mini"
                 readonly
               />
               <.field
@@ -162,6 +169,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                 field={@form[:email]}
                 label={~t"E-Mail"m}
                 placeholder={~t"Enter E-Mail"m}
+                icon_start="hero-envelope-mini"
                 readonly
                 required
               />
@@ -170,6 +178,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                 type="tel"
                 field={@form[:phone]}
                 label={~t"Phone"m}
+                icon_start="hero-phone-mini"
                 placeholder="-"
                 readonly
               />
@@ -189,6 +198,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                 field={@form[:password]}
                 label={~t"Password"m}
                 placeholder={~t"Enter password"m}
+                icon_start="hero-key-mini"
                 icon_end={password_icon(@password_hidden?)}
                 icon_event="toggle_password"
                 icon_event_target={@myself}

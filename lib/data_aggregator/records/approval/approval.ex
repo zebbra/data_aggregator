@@ -40,7 +40,7 @@ defmodule DataAggregator.Records.Approval do
   calculations do
     calculate :attachment_url, :string do
       calculation fn publications, _opts ->
-        Enum.map(publications, fn publication -> publication.attachment.url end)
+        Enum.map(publications, & &1.attachment.url)
       end
 
       load attachment: :url

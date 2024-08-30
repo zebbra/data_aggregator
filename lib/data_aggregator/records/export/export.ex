@@ -54,7 +54,7 @@ defmodule DataAggregator.Records.Export do
 
     calculate :attachment_url, :string do
       calculation fn exports, _opts ->
-        Enum.map(exports, fn export -> export.attachment.url end)
+        Enum.map(exports, & &1.attachment.url)
       end
 
       load attachment: :url

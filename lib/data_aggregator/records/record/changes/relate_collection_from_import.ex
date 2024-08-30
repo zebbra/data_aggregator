@@ -11,11 +11,6 @@ defmodule DataAggregator.Records.Record.Changes.RelateCollectionFromImport do
   def change(%Changeset{} = changeset, _opts, _ctx) do
     import = Changeset.get_argument(changeset, :import)
 
-    Changeset.manage_relationship(
-      changeset,
-      :collection,
-      import.collection,
-      type: :append
-    )
+    Changeset.manage_relationship(changeset, :collection, import.collection, type: :append)
   end
 end

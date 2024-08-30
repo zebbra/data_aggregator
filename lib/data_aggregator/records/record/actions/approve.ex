@@ -14,7 +14,7 @@ defmodule DataAggregator.Records.Actions.Approve do
   require Logger
 
   @impl true
-  def run(input, _opts, _context) do
+  def run(input, _opts, _ctx) do
     collection = input.arguments.collection
     query = input.arguments.query
 

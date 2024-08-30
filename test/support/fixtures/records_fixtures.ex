@@ -4,8 +4,6 @@ defmodule DataAggregator.RecordsFixtures do
   entities via the `DataAggregator.Records` context.
   """
 
-  import DataAggregator.AccountsFixtures, only: [default_admin: 0]
-
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
 
@@ -29,14 +27,14 @@ defmodule DataAggregator.RecordsFixtures do
     @record_defaults
     |> Map.merge(attrs)
     |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
-    |> Record.create!(actor: default_admin())
+    |> Record.create!()
   end
 
   def collection_fixture(attrs \\ %{}) do
     collection =
       @collection_defaults
       |> Map.merge(attrs)
-      |> Collection.create!(actor: default_admin())
+      |> Collection.create!()
 
     Ash.load!(collection, [:records_to_export_query])
   end

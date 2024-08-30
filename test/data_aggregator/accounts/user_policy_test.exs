@@ -4,9 +4,10 @@ defmodule DataAggregator.Accounts.UserPolicyTest do
   use DataAggregator.DataCase, async: true
 
   alias DataAggregator.Accounts.User
+  alias DataAggregator.Gbif.RestAPIStub
 
-  @inst_1 Ash.UUID.generate()
-  @inst_2 Ash.UUID.generate()
+  @inst_1 RestAPIStub.institution_key()
+  @inst_2 RestAPIStub.other_institution_key()
 
   describe "as admin" do
     setup do
@@ -17,23 +18,39 @@ defmodule DataAggregator.Accounts.UserPolicyTest do
         institution_id: @inst_1
       }
 
-      other = %User{
+      same = %User{
         id: "user_2",
-        email: "data_administrator@email.com",
+        email: "same@email.com",
+        roles: ["data_administrator"],
+        institution_id: @inst_1
+      }
+
+      other = %User{
+        id: "user_3",
+        email: "other@email.com",
         roles: ["data_administrator"],
         institution_id: @inst_2
       }
 
-      [actor: actor, other: other]
+      [actor: actor, same: same, other: other]
     end
 
     test "can read all", %{actor: actor} do
       assert User.can_read?(actor)
     end
 
+    test "can register_with_password same", %{actor: actor, same: same} do
+      same = same |> Map.from_struct() |> Map.take([:id, :email, :roles, :institution_id])
+      assert User.can_register_with_password?(actor, same)
+    end
+
     test "can register_with_password other", %{actor: actor, other: other} do
       other = other |> Map.from_struct() |> Map.take([:id, :email, :roles, :institution_id])
       assert User.can_register_with_password?(actor, other)
+    end
+
+    test "can update same institution", %{actor: actor, same: same} do
+      assert User.can_update?(actor, same)
     end
 
     test "can update other institution", %{actor: actor, other: other} do
@@ -42,6 +59,10 @@ defmodule DataAggregator.Accounts.UserPolicyTest do
 
     test "can destroy other institution", %{actor: actor, other: other} do
       assert User.can_destroy?(actor, other)
+    end
+
+    test "can destroy same institution", %{actor: actor, same: same} do
+      assert User.can_destroy?(actor, same)
     end
 
     test "can update self", %{actor: actor} do
@@ -176,6 +197,71 @@ defmodule DataAggregator.Accounts.UserPolicyTest do
 
     test "cannot update self", %{actor: actor} do
       refute User.can_update?(actor, actor)
+    end
+
+    test "cannot destroy self", %{actor: actor} do
+      refute User.can_destroy?(actor, actor)
+    end
+  end
+
+  describe "as admin and collection_digitizier and data_administrator" do
+    setup do
+      actor = %User{
+        id: "user_1",
+        email: "admin@email.com",
+        roles: ["admin", "collection_digitizer", "data_administrator"],
+        institution_id: @inst_1
+      }
+
+      same = %User{
+        id: "user_2",
+        email: "same@email.com",
+        roles: ["data_administrator"],
+        institution_id: @inst_1
+      }
+
+      other = %User{
+        id: "user_3",
+        email: "other@email.com",
+        roles: ["data_administrator"],
+        institution_id: @inst_2
+      }
+
+      [actor: actor, same: same, other: other]
+    end
+
+    test "can read all", %{actor: actor} do
+      assert User.can_read?(actor)
+    end
+
+    test "can register_with_password same", %{actor: actor, same: same} do
+      same = same |> Map.from_struct() |> Map.take([:id, :email, :roles, :institution_id])
+      assert User.can_register_with_password?(actor, same)
+    end
+
+    test "can register_with_password other", %{actor: actor, other: other} do
+      other = other |> Map.from_struct() |> Map.take([:id, :email, :roles, :institution_id])
+      assert User.can_register_with_password?(actor, other)
+    end
+
+    test "can update same institution", %{actor: actor, same: same} do
+      assert User.can_update?(actor, same)
+    end
+
+    test "can update other institution", %{actor: actor, other: other} do
+      assert User.can_update?(actor, other)
+    end
+
+    test "can destroy other institution", %{actor: actor, other: other} do
+      assert User.can_destroy?(actor, other)
+    end
+
+    test "can destroy same institution", %{actor: actor, same: same} do
+      assert User.can_destroy?(actor, same)
+    end
+
+    test "can update self", %{actor: actor} do
+      assert User.can_update?(actor, actor)
     end
 
     test "cannot destroy self", %{actor: actor} do

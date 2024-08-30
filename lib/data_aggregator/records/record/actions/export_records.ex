@@ -12,10 +12,10 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   require Logger
 
   @impl true
-  def run(input, _opts, %{actor: actor}) do
-    export = Ash.load!(input.arguments.export, [:collection], actor: actor)
+  def run(input, _opts, _ctx) do
+    export = Ash.load!(input.arguments.export, [:collection])
 
-    query = AshPagify.query_for_filters_map(Record, export.records_query, actor: actor)
+    query = AshPagify.query_for_filters_map(Record, export.records_query)
 
     data_layer = export.data_layer
     header_source = export.header_source
@@ -31,7 +31,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
 
     attachment =
       query
-      |> Ash.stream!(page: false, actor: actor)
+      |> Ash.stream!(page: false)
       |> Stream.map(&map_record(&1, mapping, export, data_layer))
       |> Stream.map(&FlatFileUtils.map_data_to_headers(&1, get_header_labels(mapping)))
       |> create_file!(headers)

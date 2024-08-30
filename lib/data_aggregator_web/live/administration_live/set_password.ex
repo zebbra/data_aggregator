@@ -16,7 +16,7 @@ defmodule DataAggregatorWeb.AdministrationLive.SetPassword do
 
   defp build_form(%{current_user: user}) do
     user
-    |> Form.for_update(:set_password, api: DataAggregator.Accounts, as: "user")
+    |> Form.for_update(:set_password, api: DataAggregator.Accounts, as: "user", actor: user)
     |> to_form()
   end
 
@@ -40,10 +40,7 @@ defmodule DataAggregatorWeb.AdministrationLive.SetPassword do
               placeholder={~t"Enter your password"m}
             />
             <div>
-              <button
-                type="submit"
-                class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
+              <button type="submit" class="btn btn-primary btn-block">
                 <%= ~t"Set Password"m %>
               </button>
             </div>

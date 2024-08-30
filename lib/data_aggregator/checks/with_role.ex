@@ -22,6 +22,10 @@ defmodule DataAggregator.Checks.WithRole do
   def match?(actor, _, options) do
     roles = Keyword.fetch!(options, :role)
 
-    Enum.any?(actor.roles, &Enum.member?(roles, &1))
+    Enum.any?(actor_roles(actor), &Enum.member?(roles, &1))
   end
+
+  defp actor_roles(%{roles: roles}), do: roles
+  defp actor_roles(%{"roles" => roles}), do: roles
+  defp actor_roles(_), do: []
 end

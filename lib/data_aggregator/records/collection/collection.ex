@@ -360,6 +360,19 @@ defmodule DataAggregator.Records.Collection do
         authorize_if relates_to_institution_filter(:grscicoll_institution_key)
       end
 
+      policy action([
+               :set_importing,
+               :set_exporting,
+               :set_encoding,
+               :set_fast_track_publishing,
+               :set_approving,
+               :set_deleting,
+               :set_idle,
+               :set_idle_encoding
+             ]) do
+        authorize_if with_role(["admin", "data_administrator"])
+      end
+
       policy action_type([:create, :update, :destroy]) do
         authorize_if relates_to_institution_check(:grscicoll_institution_key)
       end
@@ -368,6 +381,14 @@ defmodule DataAggregator.Records.Collection do
     policy_group with_role("data_administrator") do
       policy action_type(:read) do
         authorize_if relates_to_institution_filter(:grscicoll_institution_key)
+      end
+
+      policy action_type(:update) do
+        authorize_if relates_to_institution_check(:grscicoll_institution_key)
+      end
+
+      policy action(:update) do
+        authorize_if with_role("collection_digitizer")
       end
     end
   end

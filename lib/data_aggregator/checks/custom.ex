@@ -27,9 +27,17 @@ defmodule DataAggregator.Checks.Custom do
   Checks that the actor belongs to the institution via the institution_id field
   and the given foreign key.
   """
-  @spec relates_to_institution_check(foreign_key :: atom()) :: Check.ref()
+  @spec relates_to_institution_check(
+          path_or_foreign_key :: atom() | list(atom()),
+          foreign_key :: atom()
+        ) :: Check.ref()
+
+  def relates_to_institution_check(path, foreign_key) do
+    {RelatesToInstitutionCheck, foreign_key: foreign_key, path: List.wrap(path)}
+  end
+
   def relates_to_institution_check(foreign_key) do
-    {RelatesToInstitutionCheck, foreign_key: foreign_key}
+    {RelatesToInstitutionCheck, foreign_key: foreign_key, path: []}
   end
 
   @doc """
