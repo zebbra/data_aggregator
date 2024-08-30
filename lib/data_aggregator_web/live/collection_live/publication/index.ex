@@ -12,6 +12,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   import DataAggregatorWeb.CollectionLive.Publication.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
 
   @load load()
@@ -30,7 +31,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    case list_publications(params) do
+    actor = get_actor(socket)
+
+    case list_publications(params, actor) do
       {:ok, {publications, meta}} ->
         socket
         |> assign(meta: meta)
@@ -112,6 +115,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
 
         <:action
           :let={{_id, publication}}
+          :if={Collection.can_set_importing?(@current_user, @collection)}
           tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
           col_class="bg-base-300/10 border-l border-black-white/5"
           label={~t"Actions"m}
@@ -227,13 +231,14 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
             </:item>
           </.list>
 
-          <:footer :if={can_delete?(@selected_publication)}>
+          <:footer :if={Collection.can_set_fast_track_publishing?(@current_user, @collection)}>
             <button
               type="button"
               phx-click={JS.push("publication:delete", value: %{id: @selected_publication.id})}
               class="btn btn-error max-sm:btn-sm"
               data-confirm={~t"Are you sure?"m}
               data-confirm_id="confirm_publication_alert"
+              disbled={can_delete?(@selected_publication) == false}
             >
               <.icon name="hero-x-circle-mini" class="size-6" />
               <%= ~t"Delete"m %>
@@ -256,7 +261,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
 
   @impl true
   def handle_event("publication:run", %{"id" => id}, socket) do
-    case id |> Publication.get_by_id!() |> Publication.enqueue() do
+    actor = get_actor(socket)
+
+    case id |> Publication.get_by_id!(actor: actor) |> Publication.enqueue(actor: actor) do
       {:ok, publication} ->
         {:noreply, put_flash(socket, :info, publication_success_message(publication))}
 
@@ -267,8 +274,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
 
   @impl true
   def handle_event("publication:delete", %{"id" => id}, socket) do
-    publication = Publication.get_by_id!(id)
-    :ok = Publication.destroy(publication)
+    actor = get_actor(socket)
+    publication = Publication.get_by_id!(id, actor: actor)
+    :ok = Publication.destroy(publication, actor: actor)
 
     {:noreply,
      socket
@@ -287,8 +295,14 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
 
   @impl true
   def handle_event("publication:select", %{"id" => id}, socket) do
+    actor = get_actor(socket)
+
     socket =
-      assign(socket, :selected_publication, Publication.get_by_id!(id, load: @load_publication))
+      assign(
+        socket,
+        :selected_publication,
+        Publication.get_by_id!(id, load: @load_publication, actor: actor)
+      )
 
     {:noreply, socket}
   end
@@ -299,7 +313,8 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
     |> assign(:publication, nil)
   end
 
-  defp list_publications(params, opts \\ [load: @load, action: :by_collection]) do
+  defp list_publications(params, actor, opts \\ [load: @load, action: :by_collection]) do
+    opts = Keyword.put_new(opts, :actor, actor)
     AshPagify.validate_and_run(Publication, params, opts, params["id"])
   end
 

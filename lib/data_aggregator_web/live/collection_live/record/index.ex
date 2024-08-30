@@ -3,7 +3,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Record.Subscriptions
 
-  import DataAggregator.Accounts.Helpers
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
   import DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
 
@@ -137,6 +136,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         busy={@busy}
         busy_action={@busy_action}
         layer={@layer}
+        current_user={@current_user}
       />
 
       <.table
@@ -361,6 +361,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
         <:action
           :let={{_id, record}}
+          :if={Record.can_create?(@current_user)}
           tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
           col_class="bg-base-300/10 border-l border-black-white/5"
           label={~t"Actions"m}
@@ -577,7 +578,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("record:select", %{"id" => id}, socket) do
-    record = get_record(id)
+    actor = get_actor(socket)
+    record = get_record(id, actor)
 
     socket =
       socket
@@ -590,8 +592,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("record:delete", %{"id" => id}, socket) do
-    record = Record.get_by_id!(id)
-    :ok = Record.destroy(record)
+    actor = get_actor(socket)
+    record = Record.get_by_id!(id, actor: actor)
+    :ok = Record.destroy(record, actor: actor)
 
     {:noreply,
      socket
@@ -609,9 +612,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   def handle_event("collection:encode", _params, socket) do
     %{collection: collection, layer: layer} = socket.assigns
 
-    collection = Collection.get_by_id!(collection.id, load: [:encoding])
+    actor = get_actor(socket)
+    collection = Collection.get_by_id!(collection.id, load: [:encoding], actor: actor)
 
-    case Collection.set_encoding(collection) do
+    case Collection.set_encoding(collection, actor: actor) do
       {:ok, %{id: id}} ->
         opts =
           layer
@@ -622,8 +626,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           Record
           |> Ash.Query.filter(collection.id == ^id)
           |> AshPagify.validated_query(socket.assigns.meta.ash_pagify, opts)
-          |> Ash.stream!(page: false)
-          |> Stream.map(&Record.enqueue_encoder!/1)
+          |> Ash.stream!(page: false, actor: actor)
+          |> Stream.map(&Record.enqueue_encoder!(&1, actor: actor))
           |> Stream.run()
         end
 
@@ -643,12 +647,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_event("collection:fast_track_pub", _params, socket) do
     %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
-    collection = Ash.load!(collection, [:fast_track_query], lazy?: true)
+    actor = get_actor(socket)
+    collection = Ash.load!(collection, [:fast_track_query], lazy?: true, actor: actor)
 
     fast_track_query = filter_map(ash_pagify, collection.fast_track_query, socket.assigns.layer)
     count_query = AshPagify.query_for_filters_map(Record, fast_track_query)
 
-    case create_and_enqueue(collection, fast_track_query, count_query, :fast_track) do
+    case create_and_enqueue(collection, fast_track_query, count_query, :fast_track, actor) do
       {:ok, _} ->
         {:noreply,
          socket
@@ -663,12 +668,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_event("collection:approval_pub", _params, socket) do
     %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
-    collection = Ash.load!(collection, [:approval_query], lazy?: true)
+    actor = get_actor(socket)
+    collection = Ash.load!(collection, [:approval_query], lazy?: true, actor: actor)
 
     approval_query = filter_map(ash_pagify, collection.approval_query, socket.assigns.layer)
     count_query = AshPagify.query_for_filters_map(Record, approval_query)
 
-    case create_and_enqueue(collection, approval_query, count_query, :approval) do
+    case create_and_enqueue(collection, approval_query, count_query, :approval, actor) do
       {:ok, _} ->
         {:noreply,
          socket
@@ -715,7 +721,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     {:noreply, assign(socket, :show_filters, false)}
   end
 
-  defp create_and_enqueue(collection, query, count_query, :fast_track) do
+  defp create_and_enqueue(collection, query, count_query, :fast_track, actor) do
     %{
       name: "pub-#{collection.name}-#{:os.system_time()}",
       channel: :fast_track,
@@ -723,12 +729,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       collection: collection,
       rows_count: Ash.count!(count_query)
     }
-    |> Publication.create!()
-    |> Publication.enqueue()
+    |> Publication.create!(actor: actor)
+    |> Publication.enqueue(actor: actor)
   end
 
-  defp create_and_enqueue(collection, query, _count_query, :approval) do
-    Collection.approve(collection, query)
+  defp create_and_enqueue(collection, query, _count_query, :approval, actor) do
+    Collection.approve(collection, query, actor: actor)
   end
 
   defp apply_action(socket, :index, _params) do
@@ -742,8 +748,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     AshPagify.validate_and_run(Record, params, opts, params["id"])
   end
 
-  defp get_record(id) do
-    Record.get_by_id!(id, load: @load)
+  defp get_record(id, actor) do
+    Record.get_by_id!(id, load: @load, actor: actor)
   end
 
   defp assign_search(socket, %AshPagify.Meta{current_search: search}) do
@@ -776,7 +782,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   defp no_results_content(%{filters_count: 0} = assigns) do
     ~H"""
-    <%= if has_role?(@current_user, ["data_administrator", "admin"]) do %>
+    <%= if Collection.can_create?(@current_user) do %>
       <.empty_state
         title={~t"No records"m}
         description={~t"Get started by importing a new dataset"m}

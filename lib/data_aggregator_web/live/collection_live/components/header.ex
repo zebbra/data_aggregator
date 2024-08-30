@@ -5,7 +5,6 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   use DataAggregatorWeb, :html
 
-  import DataAggregator.Accounts.Helpers
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 2]
 
   alias DataAggregator.Accounts.User
@@ -47,7 +46,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         <.link
           :if={
             @current in [:records, :imports] and
-              has_role?(@current_user, ["data_administrator", "admin"])
+              Collection.can_set_importing?(@current_user, @collection)
           }
           patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
           class={[
@@ -93,7 +92,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
       <:actions
         :if={
           @current in [:records, :imports] and
-            has_role?(@current_user, ["data_administrator", "admin"])
+            Collection.can_set_importing?(@current_user, @collection)
         }
         class="max-sm:hidden"
       >

@@ -116,6 +116,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
         <:action
           :let={{_id, import}}
+          :if={Collection.can_set_importing?(@current_user, @collection)}
           tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
           col_class="bg-base-300/10 border-l border-black-white/5"
           label={~t"Actions"m}
@@ -357,7 +358,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             </span>
           </div>
 
-          <:footer>
+          <:footer :if={Collection.can_set_importing?(@current_user, @collection)}>
             <button
               type="button"
               phx-click={JS.push("import:delete", value: %{id: @selected_import.id})}
@@ -455,7 +456,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   @impl true
   def handle_event("import:run", %{"id" => id}, socket) do
-    case id |> Import.get_by_id!() |> Import.enqueue_import() do
+    actor = get_actor(socket)
+
+    case id |> Import.get_by_id!(actor: actor) |> Import.enqueue_import(actor: actor) do
       {:ok, _} ->
         {:noreply, put_flash(socket, :info, ~t"Import started in background")}
 
@@ -466,8 +469,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   @impl true
   def handle_event("import:delete", %{"id" => id}, socket) do
-    import = Import.get_by_id!(id)
-    :ok = Import.destroy(import)
+    actor = get_actor(socket)
+    import = Import.get_by_id!(id, actor: actor)
+    :ok = Import.destroy(import, actor: actor)
 
     {:noreply,
      socket
@@ -556,7 +560,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     end
   end
 
-  defp list_imports(params, opts \\ [load: @load, action: :by_collection], actor) do
+  defp list_imports(params, actor, opts \\ [load: @load, action: :by_collection]) do
     opts = Keyword.put_new(opts, :actor, actor)
     AshPagify.validate_and_run(Import, params, opts, params["id"])
   end

@@ -137,6 +137,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   end
 
   defp maybe_assign_available_collection_options(assigns) do
-    assign(assigns, :grscicoll_collections, Gbif.RestAPI.get_available_collection_options())
+    actor = get_actor(assigns)
+    assign(assigns, :grscicoll_collections, Gbif.RestAPI.get_available_collection_options(actor))
   end
 end

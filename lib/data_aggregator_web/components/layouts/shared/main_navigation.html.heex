@@ -59,7 +59,7 @@
           <span class="md:hidden lg:inline"><%= ~t"Records"m %></span>
         </.link>
       </li>
-      <%= if Enum.any?(@current_user.roles, fn role -> role in ["collection_digitizer", "admin"] end) do %>
+      <%= if DataAggregator.Accounts.User.can_read?(@current_user) do %>
         <li>
           <.link
             navigate={~p"/administration"}

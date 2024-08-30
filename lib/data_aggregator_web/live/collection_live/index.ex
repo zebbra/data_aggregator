@@ -4,7 +4,6 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Subscriptions
 
-  import DataAggregator.Accounts.Helpers
   import DataAggregatorWeb.CollectionLive.Components, only: [collection_state_badge: 1]
   import DataAggregatorWeb.CollectionLive.Helpers
   import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
@@ -40,7 +39,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
       <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
         <%= ~t"Collections"m %>
         <:actions>
-          <%= if has_role?(@current_user, ["collection_digitizer", "admin"]) do %>
+          <%= if Collection.can_create?(@current_user) do %>
             <.link
               patch={build_path(~p"/collections/new", @meta)}
               class="btn btn-primary max-sm:btn-sm"
@@ -114,7 +113,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
         <:action
           :let={{_id, collection}}
-          :if={has_role?(@current_user, ["collection_digitizer", "admin"])}
+          :if={Collection.can_create?(@current_user)}
           tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
           col_class="bg-base-300/10 border-l border-black-white/5"
           label={~t"Actions"m}
@@ -210,7 +209,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
   defp no_results_content(assigns) do
     ~H"""
-    <%= if has_role?(@current_user, ["collection_digitizer", "admin"]) do %>
+    <%= if Collection.can_create?(@current_user) do %>
       <.empty_state
         title={~t"No collections"m}
         description={~t"Get started by adding a new collection."m}
