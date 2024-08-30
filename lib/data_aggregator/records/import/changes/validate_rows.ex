@@ -28,13 +28,22 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
   end
 
   defp validate_in_chunks(%Changeset{data: import} = changeset, rows) do
-    chunk_size = Records.import_batch_size()
-    Logger.debug("Validating rows in chunks of #{chunk_size} rows ...")
-
     # make sure collection is loaded to avoid N+1 queries
     import = Ash.load!(import, [:collection], lazy?: true)
 
-    duplicates_result = detect_duplicates(rows)
+    # detect duplicates
+    {time, duplicates_result} =
+      :timer.tc(
+        fn -> detect_duplicates(rows) end,
+        :millisecond
+      )
+
+    Logger.info("Detecting duplicates rows took #{time}ms")
+
+    max_concurrency = Records.import_max_concurrency()
+    chunk_size = Records.import_batch_size()
+
+    Logger.debug("Validating rows in chunks of #{chunk_size} rows (concurrency: #{max_concurrency}) ...")
 
     rows
     |> Stream.uniq_by(&Map.get(&1, "mte_catalog_number"))
@@ -73,9 +82,9 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
   end
 
   defp validate_chunk(import, {chunk, index}) do
-    Logger.debug("Validating chunk ##{index} with #{length(chunk)} rows ...")
-
     max_concurrency = Records.import_max_concurrency()
+
+    Logger.debug("Validating chunk ##{index} with #{length(chunk)} rows (concurrency: #{max_concurrency})...")
 
     {valid, invalid, errors} =
       chunk
