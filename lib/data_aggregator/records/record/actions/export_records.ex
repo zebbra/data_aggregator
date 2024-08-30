@@ -12,7 +12,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   require Logger
 
   @impl true
-  def run(input, _opts, _context) do
+  def run(input, _opts, _ctx) do
     export = Ash.load!(input.arguments.export, [:collection])
 
     query = AshPagify.query_for_filters_map(Record, export.records_query)

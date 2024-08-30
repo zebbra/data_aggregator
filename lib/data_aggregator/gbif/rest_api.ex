@@ -5,6 +5,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   import DataAggregator.Api.Helpers
   import DataAggregator.Helpers, only: [distinct: 2]
 
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Cache.HttpDiskCache
   alias DataAggregator.Records.Approval
   alias DataAggregator.Records.Collection
@@ -93,9 +94,12 @@ defmodule DataAggregator.Gbif.RestAPI do
   @doc """
   Get all collections from the GrsciCol API and parse them to have options for UI Select Options
   """
-  @spec get_collection_options() :: [{String.t(), String.t()}]
+  @spec get_collection_options() :: [{String.t(), String.t(), String.t()}]
   def get_collection_options do
-    Enum.map(lookup_all_collections(), &{"#{&1["code"]} - #{&1["name"]}", &1["key"]})
+    Enum.map(
+      lookup_all_collections(),
+      &{"#{&1["code"]} - #{&1["name"]}", &1["key"], &1["institutionKey"]}
+    )
   end
 
   @doc """
@@ -104,10 +108,32 @@ defmodule DataAggregator.Gbif.RestAPI do
 
   Available collections are collections that are not already in use in the database.
   """
-  @spec get_available_collection_options() :: [{String.t(), String.t()}]
-  def get_available_collection_options do
+  @spec get_available_collection_options(User.t()) :: [{String.t(), String.t()}]
+  def get_available_collection_options(actor) do
     collections_in_use = distinct(Collection, :grscicoll_reference)
-    Enum.reject(get_collection_options(), fn {_, key} -> key in collections_in_use end)
+
+    get_collection_options()
+    |> Enum.reject(fn {_, key, institution_key} ->
+      institution_key != actor.institution_id or key in collections_in_use
+    end)
+    |> Enum.map(fn {name, key, _} -> {name, key} end)
+  end
+
+  @doc """
+  Get all institutions from the GrsciCol API and parse them to have options for UI Select Options
+  """
+  @spec get_institution_options() :: [{String.t(), String.t()}]
+  def get_institution_options do
+    Enum.map(lookup_all_institutions(), &{"#{&1["code"]} - #{&1["name"]}", &1["key"]})
+  end
+
+  @doc """
+  Get one institution from the GrsciCol Api and parse it to have options for UI Select Options
+  """
+  @spec get_institution_option(String.t()) :: {String.t(), String.t()}
+  def get_institution_option(id) do
+    {:ok, institution} = get_grscicoll_entity(id, :institution)
+    {"#{institution["code"]} - #{institution["name"]}", institution["key"]}
   end
 
   @doc """
@@ -243,6 +269,18 @@ defmodule DataAggregator.Gbif.RestAPI do
 
   defp lookup_all_collections do
     url = grscicoll_entities_url(:collection)
+
+    %{body: body} =
+      [params: %{country: "CH", limit: 1000}]
+      |> Req.new()
+      |> HttpDiskCache.attach()
+      |> Req.get!(url: url, max_cache_age_seconds: @hour)
+
+    body["results"]
+  end
+
+  def lookup_all_institutions do
+    url = grscicoll_entities_url(:institution)
 
     %{body: body} =
       [params: %{country: "CH", limit: 1000}]

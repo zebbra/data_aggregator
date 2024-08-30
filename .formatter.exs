@@ -17,7 +17,9 @@
     :ash_json_api,
     :ash_uuid,
     :ash_state_machine,
-    :ash_paper_trail
+    :ash_paper_trail,
+    :ash_authentication,
+    :ash_authentication_phoenix
   ],
   plugins: [
     TailwindFormatter,

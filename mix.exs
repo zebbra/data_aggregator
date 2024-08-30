@@ -201,6 +201,8 @@ defmodule DataAggregator.MixProject do
       {:ash_uuid, "~> 1.1"},
       {:ash_paper_trail, "~> 0.1"},
       {:ash_pagify, "~> 1.0"},
+      {:ash_authentication, "~> 4.0"},
+      {:ash_authentication_phoenix, "~> 2.0"},
 
       # Database and Ecto
       {:ecto, "~> 3.11.0"},

@@ -11,7 +11,7 @@ defmodule DataAggregator.Records.Approval.Actions.BulkApprove do
   require Logger
 
   @impl true
-  def run(input, _opts, _context) do
+  def run(input, _opts, _ctx) do
     %{rows: rows} = input.arguments
 
     max_concurrency = Records.import_max_concurrency()

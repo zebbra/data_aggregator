@@ -19,7 +19,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    case list_collections(params) do
+    case list_collections(params, get_actor(socket)) do
       {:ok, {collections, meta}} ->
         socket
         |> assign(meta: meta)
@@ -35,15 +35,20 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <.page current="collections">
+    <.page current="collections" current_user={@current_user}>
       <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
         <%= ~t"Collections"m %>
         <:actions>
-          <.link patch={build_path(~p"/collections/new", @meta)} class="btn btn-primary max-sm:btn-sm">
-            <.icon name="hero-squares-2x2" class="max-sm:size-4" />
-            <span class="max-sm:hidden"><%= ~t"New collection"m %></span>
-            <span class="sm:hidden"><%= ~t"Add"m %></span>
-          </.link>
+          <%= if Collection.can_create?(@current_user) do %>
+            <.link
+              patch={build_path(~p"/collections/new", @meta)}
+              class="btn btn-primary max-sm:btn-sm"
+            >
+              <.icon name="hero-squares-2x2" class="max-sm:size-4" />
+              <span class="max-sm:hidden"><%= ~t"New collection"m %></span>
+              <span class="sm:hidden"><%= ~t"Add"m %></span>
+            </.link>
+          <% end %>
         </:actions>
       </.page_header>
 
@@ -52,7 +57,8 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           container_attrs: [
             class: "no-scrollbar overflow-x-auto pb-4"
           ],
-          no_results_content: no_results_content(%{collection: @collection})
+          no_results_content:
+            no_results_content(%{collection: @collection, current_user: @current_user})
         ]}
         path={~p"/collections"}
         items={@streams.results}
@@ -107,6 +113,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
         <:action
           :let={{_id, collection}}
+          :if={Collection.can_create?(@current_user)}
           tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
           col_class="bg-base-300/10 border-l border-black-white/5"
           label={~t"Actions"m}
@@ -148,6 +155,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             action={@live_action}
             collection={@collection}
             patch={build_path(~p"/collections", @meta)}
+            current_user={@current_user}
           />
         </.modal>
 
@@ -179,14 +187,14 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
     |> assign(:page_title, ~t"Edit Collection"m)
     |> assign(
       :collection,
-      Collection.get_by_id!(id, load: @load)
+      Collection.get_by_id!(id, load: @load, actor: get_actor(socket))
     )
   end
 
   @impl true
   def handle_event("collection:delete", %{"id" => id}, socket) do
-    collection = Collection.get_by_id!(id)
-    :ok = Collection.destroy(collection)
+    collection = Collection.get_by_id!(id, actor: get_actor(socket))
+    :ok = Collection.destroy(collection, actor: get_actor(socket))
 
     {:noreply,
      socket
@@ -194,19 +202,28 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
      |> stream_delete(:results, collection)}
   end
 
-  defp list_collections(params, opts \\ [load: @load]) do
+  defp list_collections(params, actor, opts \\ [load: @load]) do
+    opts = Keyword.put(opts, :actor, actor)
     AshPagify.validate_and_run(Collection, params, opts)
   end
 
   defp no_results_content(assigns) do
     ~H"""
-    <.empty_state
-      title={~t"No collections"m}
-      description={~t"Get started by adding a new collection."m}
-      label={~t"New collection"m}
-      icon="hero-squares-2x2"
-      href={~p"/collections/new"}
-    />
+    <%= if Collection.can_create?(@current_user) do %>
+      <.empty_state
+        title={~t"No collections"m}
+        description={~t"Get started by adding a new collection."m}
+        label={~t"New collection"m}
+        icon="hero-squares-2x2"
+        href={~p"/collections/new"}
+      />
+    <% else %>
+      <.empty_state
+        title={~t"No collections"m}
+        description={~t"There are no collections yet for your institution"m}
+        icon="hero-squares-2x2"
+      />
+    <% end %>
     """
   end
 end

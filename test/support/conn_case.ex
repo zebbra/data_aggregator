@@ -34,6 +34,26 @@ defmodule DataAggregatorWeb.ConnCase do
 
   setup tags do
     DataAggregator.DataCase.setup_sandbox(tags)
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+
+    conn = Phoenix.ConnTest.build_conn()
+
+    if tags[:authenticated] do
+      roles =
+        tags
+        |> Map.get(:authenticated)
+        |> List.wrap()
+        |> Enum.filter(&(&1 != true))
+
+      user = DataAggregator.AccountsFixtures.user_fixture(%{roles: roles})
+
+      conn =
+        conn
+        |> Phoenix.ConnTest.init_test_session(%{})
+        |> AshAuthentication.Phoenix.Plug.store_in_session(user)
+
+      {:ok, conn: conn}
+    else
+      {:ok, conn: conn}
+    end
   end
 end

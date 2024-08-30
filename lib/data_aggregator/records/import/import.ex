@@ -82,7 +82,7 @@ defmodule DataAggregator.Records.Import do
 
     calculate :attachment_url, :string do
       calculation fn imports, _opts ->
-        Enum.map(imports, fn import -> import.attachment.url end)
+        Enum.map(imports, & &1.attachment.url)
       end
 
       load attachment: :url

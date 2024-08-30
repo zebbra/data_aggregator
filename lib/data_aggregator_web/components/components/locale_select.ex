@@ -39,9 +39,7 @@ defmodule DataAggregatorWeb.Components.LocaleSelect do
   end
 
   defp options do
-    Enum.map(@locales, fn locale ->
-      option(locale)
-    end)
+    Enum.map(@locales, &option(&1))
   end
 
   defp option(value) do

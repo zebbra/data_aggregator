@@ -6,6 +6,7 @@ defmodule DataAggregatorWeb.DashboardLiveTest do
   import Phoenix.LiveViewTest
 
   describe "Index" do
+    @tag authenticated: true
     test "renders dashboard", %{conn: conn} do
       {:ok, _index_live, html} = live(conn, ~p"/")
 

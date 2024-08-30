@@ -22,7 +22,7 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
   end
 
   @spec approve_records(Changeset.t()) :: Changeset.t()
-  defp approve_records(%Changeset{data: _approval} = changeset) do
+  defp approve_records(changeset) do
     file_url = Changeset.get_attribute(changeset, :file_url)
 
     dwca_file = Helpers.fetch_file_from_url(file_url)
@@ -55,7 +55,7 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
     |> Enum.with_index()
     |> Stream.map(&Helpers.convert_headers_of_chunk(&1, attribute_name_pairs))
     |> Stream.map(&Helpers.add_raw_record_to_chunk/1)
-    |> Stream.map(&approve_chunk(&1))
+    |> Stream.map(&approve_chunk/1)
     |> reduce_approval_results(changeset)
     |> notify_infospecies()
   end

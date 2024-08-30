@@ -5,8 +5,9 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   use DataAggregatorWeb, :html
 
-  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 1]
+  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 2]
 
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Collection
 
   attr :collection_id, :any, default: nil
@@ -18,11 +19,13 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
     default: :records,
     values: ~w(records imports encodings exports publications)a
 
+  attr :current_user, User, required: true
+
   attr :meta, AshPagify.Meta, default: nil
 
   def collection_header(%{collection: nil} = assigns) do
     assigns
-    |> assign(:collection, get_collection(assigns.collection_id))
+    |> assign(:collection, get_collection(assigns.collection_id, get_actor(assigns)))
     |> assign(:gbif_dataset_base_url, "#{gbif_base_url()}/dataset")
     |> collection_header()
   end
@@ -41,7 +44,10 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           ]}
         />
         <.link
-          :if={@current in [:records, :imports]}
+          :if={
+            @current in [:records, :imports] and
+              Collection.can_set_importing?(@current_user, @collection)
+          }
           patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
           class={[
             "btn btn-primary btn-sm",
@@ -83,7 +89,13 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <%= @collection.code %>
         </div>
       </:subtitle>
-      <:actions :if={@current in [:records, :imports]} class="max-sm:hidden">
+      <:actions
+        :if={
+          @current in [:records, :imports] and
+            Collection.can_set_importing?(@current_user, @collection)
+        }
+        class="max-sm:hidden"
+      >
         <.link
           patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
           class={[

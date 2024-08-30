@@ -21,7 +21,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    case list_records(params) do
+    case list_records(params, get_actor(socket)) do
       {:ok, {records, meta}} ->
         socket =
           socket
@@ -40,7 +40,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <.page current="records" open={@selected_record != nil}>
+    <.page current="records" current_user={@current_user} open={@selected_record != nil}>
       <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6"><%= ~t"Records"m %></.page_header>
       <.table
         opts={[
@@ -194,7 +194,8 @@ defmodule DataAggregatorWeb.RecordLive.Index do
     assign(socket, :page_title, ~t"Records"m)
   end
 
-  defp list_records(params, opts \\ [load: @load]) do
+  defp list_records(params, actor, opts \\ [load: @load]) do
+    opts = Keyword.put(opts, :actor, actor)
     AshPagify.validate_and_run(Record, params, opts)
   end
 

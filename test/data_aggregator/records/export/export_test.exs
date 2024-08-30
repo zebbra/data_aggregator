@@ -91,6 +91,8 @@ defmodule DataAggregator.ExportTest do
   end
 
   describe "enqueue/1" do
+    stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
     @collection_mapping [
       %{name: "Scientific Name - collection", mapped_to: "tax_scientific_name"},
       %{name: "Numéro scientifique GBIF - collection", mapped_to: "mte_catalog_number"}
@@ -195,6 +197,8 @@ defmodule DataAggregator.ExportTest do
   end
 
   describe "export" do
+    stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
     @valid_custom_mapping %{
       "mte_catalog_number" => "Numéro scientifique GBIF",
       "tax_family" => "Famille"

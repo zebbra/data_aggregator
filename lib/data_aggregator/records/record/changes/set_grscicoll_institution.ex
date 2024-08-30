@@ -61,8 +61,6 @@ defmodule DataAggregator.Records.Record.Changes.SetGrSciCollInstitution do
   defp extract_collection(changeset) do
     case Changeset.get_argument(changeset, :collection) do
       nil ->
-        Logger.warning("No collection found in changeset")
-
         {:error, nil}
 
       collection ->

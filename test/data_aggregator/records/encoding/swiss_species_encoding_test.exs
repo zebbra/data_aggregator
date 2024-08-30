@@ -89,6 +89,7 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       assert logs =~ "no encoding strategy found for catalog: :unknown"
     end
 
+    @tag capture_log: true
     test "encode/2 for :swiss_species catalog fails if taxon_id is not provided", %{
       correct_record: record
     } do

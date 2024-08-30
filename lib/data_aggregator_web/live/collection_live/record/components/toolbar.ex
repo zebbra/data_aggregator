@@ -10,6 +10,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
   import DataAggregatorWeb.Components.Icon, only: [icon: 1]
   import DataAggregatorWeb.Components.Input, only: [input: 1]
 
+  alias DataAggregator.Accounts.User
+  alias DataAggregator.Records.Record
   alias Phoenix.LiveView.JS
 
   @actions [
@@ -27,6 +29,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
   attr :busy, :boolean, required: true, doc: "Whether the actions are busy"
   attr :busy_action, :string, required: true, doc: "The busy action"
   attr :layer, :string, required: true, doc: "The current layer"
+  attr :current_user, User, required: true, doc: "The current user"
 
   def toolbar(assigns) do
     assigns = assign(assigns, :actions, @actions)
@@ -153,7 +156,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
         </div>
 
         <%!-- Join actions buttons (< sm) --%>
-        <.dropdown id="actions-sm" class="dropdown-end sm:hidden">
+        <.dropdown
+          :if={Record.can_create?(@current_user)}
+          id="actions-sm"
+          class="dropdown-end sm:hidden"
+        >
           <:summary>
             <summary
               disabled={@busy}
@@ -179,7 +186,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
       </div>
 
       <%!-- Dropdown action buttons (sm-xl) --%>
-      <.dropdown id="actions-md" class="dropdown-end max-sm:hidden 2xl:hidden">
+      <.dropdown
+        :if={Record.can_create?(@current_user)}
+        id="actions-md"
+        class="dropdown-end max-sm:hidden 2xl:hidden"
+      >
         <:summary>
           <summary disabled={@busy} class="btn btn-outline border-base-content/20 max-sm:btn-square">
             <.icon name={if @busy, do: "hero-cog-6-tooth-solid animate-spin", else: "hero-bars-3"} />
@@ -201,7 +212,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
       </.dropdown>
 
       <%!-- Inline action buttons (> 2xl) --%>
-      <div id="actions-xl" class="join max-2xl:hidden">
+      <div :if={Record.can_create?(@current_user)} id="actions-xl" class="join max-2xl:hidden">
         <button
           :for={{label, icon, action, alert} <- @actions}
           class="join-item btn btn-outline border-base-content/20"

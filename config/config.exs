@@ -110,7 +110,8 @@ config :data_aggregator,
     DataAggregator.Records,
     DataAggregator.Taxonomy,
     DataAggregator.Files,
-    DataAggregator.Jobs
+    DataAggregator.Jobs,
+    DataAggregator.Accounts
   ]
 
 config :data_aggregator,

@@ -2,7 +2,7 @@
   aria-labelledby="main_navigation"
   class="bg-base-100 border-black-white/10 h-dvh flex flex-col border-r max-md:w-72"
 >
-  <div class="flex max-h-full flex-col overflow-clip">
+  <div class="flex h-full flex-col overflow-clip">
     <h2 id="main_navigation" class="sr-only">Main Navigation</h2>
 
     <header class="bg-base-100/90 flex h-16 shrink-0 items-center px-4 md:justify-center">
@@ -21,7 +21,7 @@
 
     <ul
       role="list"
-      class="menu h-full gap-1 overflow-y-auto px-4 py-6 md:justify-evenly md:gap-4 lg:px-8"
+      class="menu h-fit flex-nowrap gap-1 overflow-y-auto px-4 py-6 md:justify-evenly md:gap-4 lg:px-8"
     >
       <li>
         <.link
@@ -57,6 +57,29 @@
         >
           <.icon name="hero-bug-ant" />
           <span class="md:hidden lg:inline"><%= ~t"Records"m %></span>
+        </.link>
+      </li>
+      <%= if DataAggregator.Accounts.User.can_read?(@current_user) do %>
+        <li>
+          <.link
+            navigate={~p"/administration"}
+            class={[
+              "flex md:flex-col md:p-3 active:!bg-primary",
+              @current == "administration" && "bg-primary text-primary-content hover:bg-primary"
+            ]}
+          >
+            <.icon name="hero-wrench-screwdriver" />
+            <span class="md:hidden lg:inline"><%= ~t"Administration"m %></span>
+          </.link>
+        </li>
+      <% end %>
+    </ul>
+
+    <ul role="list" class="menu mt-auto px-4 py-6 md:hidden lg:px-8">
+      <li>
+        <.link navigate={~p"/sign-out"} class="flex">
+          <.icon name="hero-arrow-right-start-on-rectangle" />
+          <span><%= ~t"Sign out"m %></span>
         </.link>
       </li>
     </ul>

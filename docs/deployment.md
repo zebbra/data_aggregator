@@ -32,7 +32,13 @@ to have all migrations up, and
 bin/catalog_init
 ```
 
-to have the most recent static thesaurus data available.
+to have the most recent static thesaurus data available. and
+
+```bash
+bin/users_init
+```
+
+to populate the database with admin users.
 
 ## Staging - @zebbra
 

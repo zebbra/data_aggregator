@@ -23,6 +23,16 @@
       </div>
     </div>
     <div class="flex-0 gap-1 lg:gap-2">
+      <.link
+        href="/sign-out"
+        class="max-md:hidden btn btn-ghost inline-flex text-base-content/75 tooltip tooltip-bottom before:text-xs hover:text-base-content"
+        data-tip={~t"Sign out"}
+      >
+        <div :if={@current_user.first_name} class="truncate max-lg:max-w-36">
+          <%= @current_user.first_name %>
+        </div>
+        <.icon name="hero-arrow-right-start-on-rectangle" />
+      </.link>
       <.locale_select />
       <.theme_select />
     </div>

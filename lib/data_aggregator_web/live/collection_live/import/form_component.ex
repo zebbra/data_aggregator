@@ -23,6 +23,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
         form={@form}
         path={@path}
         name_opts={@name_opts}
+        current_user={@current_user}
       />
     </div>
     """
@@ -41,6 +42,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
           import={@import}
           collection={@collection}
           meta={@meta}
+          current_user={@current_user}
         />
         <.live_component
           :if={@action == :edit}
@@ -51,6 +53,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
           collection={@collection.id}
           show_validation={@show_validation}
           meta={@meta}
+          current_user={@current_user}
         />
         <.live_component
           :if={@action == :summary}
@@ -61,6 +64,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
           collection={@collection.id}
           meta={@meta}
           busy={@busy}
+          current_user={@current_user}
         />
       </div>
       <div :if={@import.state not in [nil, :pending]} class="p-6 lg:px-8">

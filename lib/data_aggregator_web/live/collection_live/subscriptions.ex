@@ -7,6 +7,7 @@ defmodule DataAggregatorWeb.CollectionLive.Subscriptions do
   use DataAggregatorWeb, :verified_routes
 
   import DataAggregatorWeb.CollectionLive.Helpers
+  import DataAggregatorWeb.Helpers, only: [get_actor: 1]
 
   alias Ash.Notifier.Notification
   alias DataAggregator.PubSub
@@ -54,12 +55,12 @@ defmodule DataAggregatorWeb.CollectionLive.Subscriptions do
   end
 
   defp handle_collection_created(%Notification{data: %{id: id}}, socket) do
-    collection = Collection.get_by_id!(id, load: @load)
+    collection = Collection.get_by_id!(id, load: @load, actor: get_actor(socket))
     {:noreply, stream_insert(socket, :results, collection, at: 0)}
   end
 
   defp handle_collection_updated(%Notification{data: %{id: id}}, socket) do
-    collection = Collection.get_by_id!(id, load: @load)
+    collection = Collection.get_by_id!(id, load: @load, actor: get_actor(socket))
     {:noreply, stream_insert(socket, :results, collection, at: 0)}
   rescue
     # Ignore if the collection was not found --> it was deleted
