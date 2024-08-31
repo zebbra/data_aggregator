@@ -18,6 +18,7 @@ defmodule DataAggregatorWeb.AuthOverrides do
     set :text_class, "text-xl font-semibold"
     set :image_url, "/images/logo.png"
     set :image_class, "size-12"
+    set :dark_image_class, "hidden"
   end
 
   override Components.Password.Input do
