@@ -50,7 +50,6 @@ defmodule DataAggregator.Release do
   defp load_app do
     Application.load(@app)
     Application.ensure_all_started(:req)
-    Application.ensure_all_started(:pub_sub)
     Application.ensure_all_started(:ssl)
   end
 end
