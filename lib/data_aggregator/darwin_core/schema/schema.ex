@@ -2281,10 +2281,18 @@ defmodule DataAggregator.DarwinCore.Schema do
   end
 
   @doc """
-  Returns the dwc_field name for a prefixed attribute name.
+  Returns the dwc_field name for a prefixed attribute name if found, otherwise
+  it returns the attribute name.
   """
   def dwc_field_from_prefixed_attribute_name(name) do
-    prefixed_attribute_names_and_dwc_fields() |> List.keyfind(String.to_atom(name), 0) |> elem(1)
+    dwc_field =
+      List.keyfind(prefixed_attribute_names_and_dwc_fields(), String.to_atom(name), 0)
+
+    if dwc_field do
+      elem(dwc_field, 1)
+    else
+      name
+    end
   end
 
   @doc """
