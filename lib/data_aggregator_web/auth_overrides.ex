@@ -3,6 +3,30 @@ defmodule DataAggregatorWeb.AuthOverrides do
   use AshAuthentication.Phoenix.Overrides
 
   alias AshAuthentication.Phoenix.Components
+  alias AshAuthentication.Phoenix.ResetLive
+  alias AshAuthentication.Phoenix.SignInLive
+
+  override SignInLive do
+    set :root_class, "grid h-screen place-items-center bg-base-100"
+  end
+
+  override ResetLive do
+    set :root_class, "grid h-screen place-items-center bg-base-100"
+  end
+
+  override Components.SignIn do
+    set :root_class,
+        "flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24"
+
+    set :strategy_class, "mx-auto w-72 max-w-sm lg:w-96"
+  end
+
+  override Components.SignIn do
+    set :root_class,
+        "flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24"
+
+    set :strategy_class, "mx-auto w-72 max-w-sm lg:w-96"
+  end
 
   override Components.MagicLink do
     # lets hide the magic link in the sign in page
