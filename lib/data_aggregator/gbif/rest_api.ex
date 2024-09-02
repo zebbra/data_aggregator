@@ -2,6 +2,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   @moduledoc """
   Module to interact with the GBIF Rest API
   """
+  import DataAggregator.Accounts.Helpers, only: [has_role?: 2]
   import DataAggregator.Api.Helpers
   import DataAggregator.Helpers, only: [distinct: 2]
 
@@ -113,10 +114,18 @@ defmodule DataAggregator.Gbif.RestAPI do
     collections_in_use = distinct(Collection, :grscicoll_reference)
 
     get_collection_options()
-    |> Enum.reject(fn {_, key, institution_key} ->
-      institution_key != actor.institution_id or key in collections_in_use
-    end)
+    |> maybe_restrict_to_institution(actor, collections_in_use)
     |> Enum.map(fn {name, key, _} -> {name, key} end)
+  end
+
+  defp maybe_restrict_to_institution(collections, actor, collections_in_use) do
+    if has_role?(actor, "admin") do
+      collections
+    else
+      Enum.reject(collections, fn {_, key, institution_key} ->
+        institution_key != actor.institution_id or key in collections_in_use
+      end)
+    end
   end
 
   @doc """
