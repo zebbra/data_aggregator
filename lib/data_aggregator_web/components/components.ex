@@ -94,6 +94,7 @@ defmodule DataAggregatorWeb.Components do
       import DataAggregatorWeb.Components.Drawer
       import DataAggregatorWeb.Components.Dropdown
       import DataAggregatorWeb.Components.Field
+      import DataAggregatorWeb.Components.FieldGroup
       import DataAggregatorWeb.Components.Flash
       import DataAggregatorWeb.Components.Form
       import DataAggregatorWeb.Components.Icon

@@ -18,7 +18,7 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
           opts :: Keyword.t(),
           any()
         ) :: EncodingActionResult.t()
-  def run(input, _opts, _context) do
+  def run(input, _opts, _ctx) do
     # track if it was failed and set accordingly afterwards
     previous_state = input.arguments.record.state
     record = set_encoding_state!(input.arguments.record)

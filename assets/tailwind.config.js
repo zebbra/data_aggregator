@@ -13,6 +13,7 @@ module.exports = {
     "./js/**/*.ts",
     "../lib/data_aggregator_web.ex",
     "../lib/data_aggregator_web/**/*.*ex",
+    "../deps/ash_authentication_phoenix/**/*.*ex",
   ],
   theme: {
     extend: {

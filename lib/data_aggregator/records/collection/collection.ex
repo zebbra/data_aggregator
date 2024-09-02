@@ -7,7 +7,10 @@ defmodule DataAggregator.Records.Collection do
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Records,
     extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine],
-    notifiers: [Ash.Notifier.PubSub]
+    notifiers: [Ash.Notifier.PubSub],
+    authorizers: [Ash.Policy.Authorizer]
+
+  import DataAggregator.Checks.Custom
 
   alias __MODULE__
   alias DataAggregator.Records
@@ -345,6 +348,49 @@ defmodule DataAggregator.Records.Collection do
     define :set_deleting
     define :set_idle
     define :set_idle_encoding
+  end
+
+  policies do
+    bypass with_role("admin") do
+      authorize_if always()
+    end
+
+    policy_group with_role("collection_digitizer") do
+      policy action_type(:read) do
+        authorize_if relates_to_institution_filter(:grscicoll_institution_key)
+      end
+
+      policy action([
+               :set_importing,
+               :set_exporting,
+               :set_encoding,
+               :set_fast_track_publishing,
+               :set_approving,
+               :set_deleting,
+               :set_idle,
+               :set_idle_encoding
+             ]) do
+        authorize_if with_role(["admin", "data_administrator"])
+      end
+
+      policy action_type([:create, :update, :destroy]) do
+        authorize_if relates_to_institution_check(:grscicoll_institution_key)
+      end
+    end
+
+    policy_group with_role("data_administrator") do
+      policy action_type(:read) do
+        authorize_if relates_to_institution_filter(:grscicoll_institution_key)
+      end
+
+      policy action_type(:update) do
+        authorize_if relates_to_institution_check(:grscicoll_institution_key)
+      end
+
+      policy action(:update) do
+        authorize_if with_role("collection_digitizer")
+      end
+    end
   end
 
   validations do

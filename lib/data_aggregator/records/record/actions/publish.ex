@@ -22,7 +22,7 @@ defmodule DataAggregator.Records.Actions.Publish do
   require Logger
 
   @impl true
-  def run(input, _opts, _context) do
+  def run(input, _opts, _ctx) do
     publication = input.arguments.publication
 
     query = AshPagify.query_for_filters_map(Record, publication.records_query)
@@ -98,11 +98,7 @@ defmodule DataAggregator.Records.Actions.Publish do
     |> Stream.run()
   end
 
-  @spec set_publication_status(
-          Ash.Query.t(),
-          atom(),
-          Publication.t()
-        ) :: :ok
+  @spec set_publication_status(Ash.Query.t(), atom(), Publication.t()) :: :ok
   defp set_publication_status(query, status, publication) do
     query
     |> Ash.stream!(page: false)

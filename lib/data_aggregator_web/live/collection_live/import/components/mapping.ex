@@ -497,7 +497,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     %{assigns: %{import: import}} = socket
 
     socket =
-      case Import.update_mapping(import, import.collection.import_mapping) do
+      case Import.update_mapping(import, import.collection.import_mapping, actor: get_actor(socket)) do
         {:ok, import} ->
           socket
           |> assign(:import, import)
@@ -557,7 +557,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     assign(socket, :form, form)
   end
 
-  defp build_form(%{import: import}, reset) do
+  defp build_form(%{import: import, current_user: actor}, reset) do
     import_with_mappings = Ash.load!(import, [:mappings, :missing_mappings], lazy?: true)
 
     mappings =
@@ -578,7 +578,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           create_action: :create_mapping,
           update_action: :update_mapping
         ]
-      ]
+      ],
+      actor: actor
     )
     |> to_form()
   end

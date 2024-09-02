@@ -16,6 +16,8 @@ env:
   AWS_S3_HOST: s3.cloud.zebbra.ch
   WAFFLE_S3_BUCKET: data-aggregator-stag
   WAFFLE_ASSET_HOST: https://${AWS_S3_HOST}/${WAFFLE_S3_BUCKET}
+  POOL_SIZE: 20
+  IMPORT_MAX_CONCURRENCY: 4 # k8s nodes have 8 cpus
 
 ingress:
   enabled: true

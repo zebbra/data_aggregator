@@ -1,4 +1,4 @@
-defmodule DataAggregator.RecordTest do
+defmodule DataAggregator.Records.RecordTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
@@ -170,12 +170,13 @@ defmodule DataAggregator.RecordTest do
   end
 
   describe "import action" do
-    alias DataAggregator.Records.Collection
     alias DataAggregator.Records.Import
 
     setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       collection =
-        Collection.create!(%{
+        collection_fixture(%{
           type: :zoology,
           name: "My Collection",
           owner: "Max Powers",
@@ -310,7 +311,7 @@ defmodule DataAggregator.RecordTest do
       record = Record.import!(import, params)
 
       other_collection =
-        Collection.create!(%{
+        collection_fixture(%{
           type: :zoology,
           name: "Another Collection",
           owner: "Max Powers",
@@ -333,6 +334,8 @@ defmodule DataAggregator.RecordTest do
 
   describe "mids levels" do
     setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       record = record_fixture()
 
       [record: record]

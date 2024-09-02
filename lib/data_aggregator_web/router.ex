@@ -1,10 +1,13 @@
 defmodule DataAggregatorWeb.Router do
   use DataAggregatorWeb, :router
+  use AshAuthentication.Phoenix.Router
 
   import DataAggregatorWeb.Locale, only: [assign_current_locale: 2]
   import PhoenixStorybook.Router
 
   # Browser
+  alias AshAuthentication.Phoenix.Overrides.Default
+  alias DataAggregator.Accounts.User
 
   pipeline :locale do
     plug :fetch_session
@@ -26,41 +29,81 @@ defmodule DataAggregatorWeb.Router do
     plug :fetch_live_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :load_from_session
   end
 
   pipeline :with_root_layout do
     plug :put_root_layout, html: {DataAggregatorWeb.Layouts, :root}
   end
 
-  scope "/" do
-    pipe_through [:locale, :browser]
+  scope "/", DataAggregatorWeb do
+    pipe_through([:locale, :browser, :with_root_layout])
 
-    scope "/", DataAggregatorWeb do
-      pipe_through [:with_root_layout]
+    default_hooks = [
+      DataAggregatorWeb.LiveLogger,
+      DataAggregatorWeb.LiveLocale,
+      Sentry.LiveViewHook,
+      {DataAggregatorWeb.LiveUserAuth, :live_user_required},
+      {DataAggregatorWeb.LiveUserAuth, :password_set_required}
+    ]
 
-      default_hooks = [
-        DataAggregatorWeb.LiveLogger,
-        DataAggregatorWeb.LiveLocale,
-        Sentry.LiveViewHook
-      ]
+    no_password_required_hooks = [
+      DataAggregatorWeb.LiveLogger,
+      DataAggregatorWeb.LiveLocale,
+      Sentry.LiveViewHook,
+      {DataAggregatorWeb.LiveUserAuth, :live_user_required}
+    ]
 
-      live_session :default, on_mount: default_hooks do
-        live "/", DashboardLive.Index, :index
-
-        live "/collections", CollectionLive.Index, :index
-        live "/collections/new", CollectionLive.Index, :new
-        live "/collections/:id/edit", CollectionLive.Index, :edit
-        live "/collections/:id/records", CollectionLive.Record.Index, :index
-        live "/collections/:id/imports", CollectionLive.Import.Index, :index
-        live "/collections/:id/imports/new", CollectionLive.Import.Index, :new
-        live "/collections/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit
-        live "/collections/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary
-        live "/collections/:id/exports", CollectionLive.Export.Index, :index
-        live "/collections/:id/publications", CollectionLive.Publication.Index, :index
-
-        live "/records", RecordLive.Index, :index
-      end
+    ash_authentication_live_session :no_password_set, on_mount: no_password_required_hooks do
+      live "/set_password", AdministrationLive.SetPassword, :index
     end
+
+    ash_authentication_live_session :default, on_mount: default_hooks do
+      live "/", DashboardLive.Index, :index
+
+      live "/collections", CollectionLive.Index, :index
+      live "/collections/:id/records", CollectionLive.Record.Index, :index
+      live "/collections/:id/imports", CollectionLive.Import.Index, :index
+      live "/collections/:id/exports", CollectionLive.Export.Index, :index
+      live "/collections/:id/publications", CollectionLive.Publication.Index, :index
+
+      live "/records", RecordLive.Index, :index
+    end
+
+    ash_authentication_live_session :collection_digitizer_required,
+      on_mount: default_hooks ++ [{DataAggregatorWeb.LiveUserAuth, :live_collection_digitizer_required}] do
+      live "/administration", AdministrationLive.Index, :index
+      live "/administration/new", AdministrationLive.Index, :new
+      live "/administration/:user_id/edit", AdministrationLive.Index, :edit
+
+      live "/collections/new", CollectionLive.Index, :new
+      live "/collections/:id/edit", CollectionLive.Index, :edit
+    end
+
+    ash_authentication_live_session :data_administrator_required,
+      on_mount: default_hooks ++ [{DataAggregatorWeb.LiveUserAuth, :live_data_administrator_required}] do
+      live "/collections/:id/imports/new", CollectionLive.Import.Index, :new
+      live "/collections/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit
+      live "/collections/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary
+    end
+
+    auth_routes(AuthController, User, path: "/auth")
+    sign_out_route AuthController
+
+    sign_in_route(
+      register_path: "/register",
+      on_mount: [{DataAggregatorWeb.LiveUserAuth, :live_no_user}],
+      overrides: [
+        DataAggregatorWeb.AuthOverrides,
+        Default
+      ],
+      auth_routes_prefix: "/auth"
+    )
+
+    reset_route overrides: [
+                  DataAggregatorWeb.AuthOverrides,
+                  Default
+                ]
   end
 
   scope "/api" do

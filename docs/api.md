@@ -3781,4 +3781,114 @@ erDiagram
 | ---- | ---- | ----- | ----------- |
 | **read** | _read_ | <ul></ul> |  |
 
+## Domain DataAggregator.Accounts
+
+### Class Diagram
+
+```mermaid
+classDiagram
+    class User {
+        CiString email
+        sign_in_with_token_for_password(String token)
+        sign_in_with_password(CiString email, String password)
+        get_by_subject()
+        destroy()
+        read(String sort)
+        update(String password, String[] roles, String first_name, String last_name, ...)
+        set_password(String password)
+        register_with_password(String password, String[] roles, String first_name, String last_name, ...)
+    }
+    class Token {
+        Map extra_data
+        String purpose
+        String jti
+        get_token(String token, String jti, String purpose)
+        store_token(String token, Map extra_data, String purpose)
+        store_confirmation_changes(String token, Map extra_data, String purpose)
+        get_confirmation_changes(String jti)
+        revoked?(String token, String jti)
+        revoke_token(String token, Map extra_data)
+        read_expired()
+        expunge_expired()
+    }
+```
+
+### ER Diagram
+
+```mermaid
+erDiagram
+    User {
+        CiString email
+    }
+    Token {
+        Map extra_data
+        String purpose
+        String jti
+    }
+```
+
+### Resources
+
+- [User](#user)
+- [Token](#token)
+
+### User
+
+
+
+#### Attributes
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **id** | UUID |  |
+| **email** | CiString |  |
+| **first_name** | String |  |
+| **last_name** | String |  |
+| **phone** | String |  |
+| **hashed_password** | String |  |
+| **roles** | String[] |  |
+| **institution_id** | UUID |  |
+
+#### Actions
+
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **sign_in_with_token_for_password** | _read_ | <ul><li><b>token</b> <i>String</i> The short-lived sign in JWT.</li></ul> | Attempt to sign in using a short-lived sign in token. |
+| **sign_in_with_password** | _read_ | <ul><li><b>email</b> <i>CiString</i> The identity to use for retrieving the user.</li><li><b>password</b> <i>String</i> The password to check for the matching user.</li></ul> | Attempt to sign in using a username and password. |
+| **get_by_subject** | _read_ | <ul></ul> |  |
+| **destroy** | _destroy_ | <ul></ul> |  |
+| **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
+| **update** | _update_ | <ul><li><b>password</b> <i>String</i> </li><li><b>roles</b> <i>String[]</i> attribute</li><li><b>first_name</b> <i>String</i> attribute</li><li><b>last_name</b> <i>String</i> attribute</li><li><b>email</b> <i>CiString</i> attribute</li><li><b>phone</b> <i>String</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li></ul> |  |
+| **set_password** | _update_ | <ul><li><b>password</b> <i>String</i> </li></ul> |  |
+| **register_with_password** | _create_ | <ul><li><b>password</b> <i>String</i> </li><li><b>roles</b> <i>String[]</i> attribute</li><li><b>first_name</b> <i>String</i> attribute</li><li><b>last_name</b> <i>String</i> attribute</li><li><b>email</b> <i>CiString</i> attribute</li><li><b>phone</b> <i>String</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li></ul> |  |
+
+### Token
+
+
+
+#### Attributes
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **updated_at** | UtcDatetimeUsec |  |
+| **created_at** | UtcDatetimeUsec |  |
+| **extra_data** | Map |  |
+| **purpose** | String |  |
+| **expires_at** | UtcDatetime |  |
+| **subject** | String |  |
+| **jti** | String |  |
+
+#### Actions
+
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **get_token** | _read_ | <ul><li><b>token</b> <i>String</i> </li><li><b>jti</b> <i>String</i> </li><li><b>purpose</b> <i>String</i> </li></ul> |  |
+| **store_token** | _create_ | <ul><li><b>token</b> <i>String</i> </li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>purpose</b> <i>String</i> attribute</li></ul> |  |
+| **store_confirmation_changes** | _create_ | <ul><li><b>token</b> <i>String</i> </li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>purpose</b> <i>String</i> attribute</li></ul> |  |
+| **get_confirmation_changes** | _read_ | <ul><li><b>jti</b> <i>String</i> </li></ul> |  |
+| **revoked?** | _read_ | <ul><li><b>token</b> <i>String</i> </li><li><b>jti</b> <i>String</i> </li></ul> |  |
+| **revoke_token** | _create_ | <ul><li><b>token</b> <i>String</i> </li><li><b>extra_data</b> <i>Map</i> attribute</li></ul> |  |
+| **read_expired** | _read_ | <ul></ul> |  |
+| **expunge_expired** | _destroy_ | <ul></ul> |  |
+
 

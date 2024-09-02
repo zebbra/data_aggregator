@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.Record do
   """
 
   use Ash.Resource,
+    authorizers: [Ash.Policy.Authorizer],
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Records,
     extensions: [
@@ -21,6 +22,8 @@ defmodule DataAggregator.Records.Record do
     notifiers: [Ash.Notifier.PubSub]
 
   use AshPagify.Tsearch
+
+  import DataAggregator.Checks.Custom
 
   alias __MODULE__
   alias DataAggregator.DarwinCore
@@ -381,15 +384,15 @@ defmodule DataAggregator.Records.Record do
     end
   end
 
-  identities do
-    identity :collection_mte_catalog_number, [:collection_id, :mte_catalog_number]
-  end
-
   pub_sub do
     module DataAggregator.PubSub
     prefix "record"
 
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
+  end
+
+  identities do
+    identity :collection_mte_catalog_number, [:collection_id, :mte_catalog_number]
   end
 
   code_interface do
@@ -413,6 +416,28 @@ defmodule DataAggregator.Records.Record do
     define :check_if_fast_track_pubished
     define :enqueue_fast_track_checker
     define :update_last_approval_started_at
+  end
+
+  policies do
+    bypass with_role("admin") do
+      authorize_if always()
+    end
+
+    bypass action([:bulk_import, :import, :encode]) do
+      authorize_if always()
+    end
+
+    policy_group with_role(["collection_digitizer", "data_administrator"]) do
+      policy action_type(:read) do
+        authorize_if relates_to_institution_filter([:collection], :grscicoll_institution_key)
+      end
+    end
+
+    policy_group with_role(["data_administrator"]) do
+      policy action_type([:create, :update, :destroy]) do
+        authorize_if relates_to_institution_check([:collection], :grscicoll_institution_key)
+      end
+    end
   end
 
   postgres do

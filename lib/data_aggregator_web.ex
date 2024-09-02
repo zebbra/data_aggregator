@@ -21,7 +21,7 @@ defmodule DataAggregatorWeb do
 
   def router do
     quote do
-      use Phoenix.Router, helpers: false
+      use Phoenix.Router
 
       # Import common connection and controller functions to use in pipelines
       import Phoenix.Controller

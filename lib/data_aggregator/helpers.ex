@@ -3,6 +3,8 @@ defmodule DataAggregator.Helpers do
   Generic helpers for the DataAggregator application.
   """
 
+  alias DataAggregator.Accounts.User
+
   @doc """
   Returns a list of distinct values for a given field in a resource.
   """
@@ -16,4 +18,16 @@ defmodule DataAggregator.Helpers do
     |> Enum.map(&Map.get(&1, field))
     |> Enum.filter(&(&1 != nil))
   end
+
+  @doc """
+  Generate a map from a user which can be passed as an actor to a worker.
+  """
+  @spec actor_map(User.t()) :: map()
+  def actor_map(actor) when is_struct(actor) do
+    actor
+    |> Map.from_struct()
+    |> Map.take([:id, :institution_id, :roles])
+  end
+
+  def actor_map(actor), do: actor
 end

@@ -15,6 +15,18 @@ defmodule DataAggregator.Gbif.RestAPIStub do
   """
   alias DataAggregator.Types.Api
 
+  @institution_key "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+  def institution_key, do: @institution_key
+
+  @other_institution_key "1354d651-e529-4a8e-95be-faa807639461"
+  def other_institution_key, do: @other_institution_key
+
+  @grscicoll_reference "322ce107-3156-4420-8a2b-7f17efeaa472"
+  def grscicoll_reference, do: @grscicoll_reference
+
+  @other_grscicoll_reference "322ce107-3156-4420-8a2b-7f17efeaa473"
+  def other_grscicoll_reference, do: @other_grscicoll_reference
+
   def register_dataset(_collection_name) do
     {:ok, %{status: 201, body: "1234-1234-1234-1234"}}
   end
@@ -114,7 +126,7 @@ defmodule DataAggregator.Gbif.RestAPIStub do
   def get_grscicoll_entity(key, _kind) do
     {:ok,
      %{
-       "institutionKey" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+       "institutionKey" => @institution_key,
        "institutionName" => "Universität Zürich",
        "institutionCode" => "Z",
        "key" => key
@@ -125,7 +137,7 @@ defmodule DataAggregator.Gbif.RestAPIStub do
   def get_one_collection(_reference) do
     {:ok,
      %{
-       "institutionKey" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+       "institutionKey" => @institution_key,
        "apiUrls" => [],
        "catalogUrls" => [],
        "geographicCoverage" => "Worldwide; especially Central Europe, southern Africa, New Caledonia",
@@ -142,7 +154,7 @@ defmodule DataAggregator.Gbif.RestAPIStub do
        "incorporatedCollections" => ["BERN (2008", "bryophytes)"],
        "taxonomicCoverage" => "Algae, fungi, bryophytes, and vascular plants",
        "machineTags" => [],
-       "key" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+       "key" => @grscicoll_reference,
        "masterSource" => "IH",
        "personalCollection" => false,
        "occurrenceCount" => 0,
@@ -278,12 +290,23 @@ defmodule DataAggregator.Gbif.RestAPIStub do
   end
 
   @spec get_grscicoll_collection_attributes(String.t(), list()) :: Api.response_body()
+  def get_grscicoll_collection_attributes(@other_grscicoll_reference, _attributes) do
+    {:ok,
+     %{
+       "code" => "Z",
+       "name" => "Herbarium - Universität Zürich",
+       "institutionKey" => @other_institution_key,
+       "institutionName" => "Universität Zürich",
+       "institutionCode" => "Z"
+     }}
+  end
+
   def get_grscicoll_collection_attributes(_reference, _attributes) do
     {:ok,
      %{
        "code" => "Z",
        "name" => "Herbarium - Universität Zürich",
-       "institutionKey" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+       "institutionKey" => @institution_key,
        "institutionName" => "Universität Zürich",
        "institutionCode" => "Z"
      }}

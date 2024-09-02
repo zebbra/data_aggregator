@@ -1,5 +1,26 @@
 
 
+Table tokens {
+  updated_at timestamp
+  created_at timestamp
+  extra_data jsonb
+  purpose varchar
+  expires_at timestamp
+  subject varchar
+  jti varchar [pk]
+}
+
+Table users {
+  id uuid [pk]
+  email ci_string
+  first_name varchar
+  last_name varchar
+  phone varchar
+  hashed_password varchar
+  roles array
+  institution_id uuid
+}
+
 Table file_attachments {
   id uuid [pk]
   filename varchar

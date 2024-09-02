@@ -7,6 +7,7 @@ defmodule DataAggregator.ApprovalTest do
   import DataAggregator.ApprovalFixtures
 
   alias Ash.Error.Invalid
+  alias DataAggregator.Gbif
   alias DataAggregator.Records.Approval
 
   require Logger
@@ -17,6 +18,8 @@ defmodule DataAggregator.ApprovalTest do
     }
 
     setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       []
     end
 
