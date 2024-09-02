@@ -45,7 +45,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
         <%!-- user data --%>
         <.fieldset :if={@step != :summary} id="user" class={unless @step == :user, do: "hidden"} modal>
           <.fieldgroup modal>
-            <div class="grid grid-cols-2 gap-8">
+            <div class="grid gap-8 sm:grid-cols-2">
               <.field
                 field={@form[:first_name]}
                 label={~t"First name"m}
@@ -88,7 +88,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
               />
             </div>
 
-            <div class="grid grid-cols-2 gap-8">
+            <div class="grid gap-8 sm:grid-cols-2">
               <.field
                 type={password_type(@password_hidden?)}
                 field={@form[:password]}
@@ -105,7 +105,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                 type="button"
                 phx-click="user:generate_password"
                 phx-target={@myself}
-                class="btn btn-outline border-base-content/20 mt-8"
+                class="btn btn-outline border-base-content/20 sm:mt-8"
               >
                 <%= ~t"Generate Password"m %>
               </button>
@@ -149,7 +149,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
         <%!-- summary --%>
         <.fieldset :if={@step == :summary} id="summary" modal>
           <.fieldgroup modal>
-            <div class="grid grid-cols-2 gap-8">
+            <div class="grid gap-8 sm:grid-cols-2">
               <.field
                 field={@form[:first_name]}
                 label={~t"First name"m}
