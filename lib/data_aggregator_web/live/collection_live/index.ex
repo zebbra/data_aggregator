@@ -8,6 +8,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   import DataAggregatorWeb.CollectionLive.Helpers
   import DataAggregatorWeb.Layouts.Primary, only: [page: 1]
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
 
   @load load()
@@ -78,8 +79,15 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         <:col :let={{_id, collection}} field={:state} label={~t"State"m} class="text-center">
           <.collection_state_badge collection={collection} />
         </:col>
+        <:col
+          :let={{_id, collection}}
+          field={:grscicoll_institution_code}
+          label={~t"Institution Code"m}
+        >
+          <%= collection.grscicoll_institution_code %>
+        </:col>
         <:col :let={{_id, collection}} label={~t"Institution"m}>
-          <%= collection.institution %>
+          <%= get_institution_name(collection.grscicoll_institution_key) %>
         </:col>
         <:col
           :let={{_id, collection}}
@@ -205,6 +213,18 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   defp list_collections(params, actor, opts \\ [load: @load]) do
     opts = Keyword.put(opts, :actor, actor)
     AshPagify.validate_and_run(Collection, params, opts)
+  end
+
+  defp get_institution_name(nil), do: nil
+
+  defp get_institution_name(key) do
+    case Gbif.RestAPI.get_grscicoll_entity(key, :institution) do
+      {:ok, %{"name" => name}} ->
+        name
+
+      _ ->
+        nil
+    end
   end
 
   defp no_results_content(assigns) do
