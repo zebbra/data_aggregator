@@ -58,6 +58,7 @@ defmodule DataAggregator.CollectionTest do
 
       assert collection.grscicoll_institution_key === "5b487a79-76ef-4615-93d9-f4ea25a40c33"
       assert collection.grscicoll_institution_code === "Z"
+      assert collection.grscicoll_institution_name === "Universität Zürich"
     end
 
     test "create/1 with invalid data returns error changeset" do
