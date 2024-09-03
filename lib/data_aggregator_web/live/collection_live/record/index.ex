@@ -24,6 +24,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
+  alias DataAggregator.Taxonomy.Catalog
 
   require Ash.Query
 
@@ -41,6 +42,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       |> assign(:busy, collection.busy)
       |> assign(:busy_action, busy_action(collection))
       |> assign(:show_filters, false)
+      |> assign(:show_encode, false)
       |> assign(:record_tab, "data")
       |> subscribe_for_record_updates(connected?(socket))
 
@@ -494,6 +496,43 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </.modal>
 
         <.modal
+          id="encode_modal"
+          size="xl"
+          title={~t"Encoding summary"m}
+          description={mgettext("You're about to encode %{count} records", count: @meta.total_count)}
+          show={@show_encode}
+          responsive
+          on_cancel={JS.push("encode:toggle")}
+          on_confirm={JS.push("collection:encode")}
+        >
+          <div :if={@show_encode} class="contents">
+            <p class="text-sm">
+              <%= ~t"These records will be encoded and enriched using the following resources"m %>
+            </p>
+            <ul class="mt-2 list-inside list-disc text-sm">
+              <li :for={catalog <- Catalog.get_translated_catalogs()} class="text-info">
+                <span class="text-base-content"><%= catalog %></span>
+              </li>
+            </ul>
+            <p class="text-base-content/60 mt-4 text-sm">
+              <%= ~t"By clicking"m %>
+              <span class="text-base-content italic"><%= ~t"Encode"m %></span>
+              <%= ~t"the encoding will be triggered. No further action is required. Please note that this process may take some time."m %>
+            </p>
+          </div>
+          <:footer>
+            <form method="dialog" class="contents">
+              <button type="submit" value="confirm" class="btn btn-primary" disabled={@busy}>
+                <%= ~t"Encode"m %>
+              </button>
+              <button class="btn btn-ghost">
+                <%= ~t"Cancel"m %>
+              </button>
+            </form>
+          </:footer>
+        </.modal>
+
+        <.modal
           :if={@show_filters}
           id="filters_modal"
           show
@@ -529,16 +568,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               <span class="text-base-content"><%= ~t"Record images"m %></span>
             </li>
           </ul>
-        </.alert>
-
-        <.alert
-          id="confirm_encoding_alert"
-          size="sm"
-          title={~t"Are you sure?"m}
-          text={~t"You're about to encode this collection"m}
-          label={~t"Yes, encode"m}
-          color="primary"
-        >
         </.alert>
 
         <.alert
@@ -609,11 +638,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
+  def handle_event("encode:toggle", _, socket) do
+    socket = update(socket, :show_encode, &(!&1))
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_event("collection:encode", _params, socket) do
     %{collection: collection, layer: layer} = socket.assigns
 
     actor = get_actor(socket)
     collection = Collection.get_by_id!(collection.id, load: [:encoding], actor: actor)
+    socket = update(socket, :show_encode, &(!&1))
 
     case Collection.set_encoding(collection, actor: actor) do
       {:ok, %{id: id}} ->

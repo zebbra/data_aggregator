@@ -16,7 +16,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
 
   @actions [
     {"export", "hero-arrow-down-tray", "collection:export", nil},
-    {"encode", "hero-puzzle-piece", "collection:encode", "confirm_encoding_alert"},
+    {"encode", "hero-puzzle-piece", "encode:toggle", nil},
     {"publish", "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"},
     {"approve", "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
   ]

@@ -25,9 +25,9 @@ defmodule DataAggregatorWeb.Components.Alert do
   to configure the closing/cancel/confirm event, for example:
 
   ```heex
-  <.modal id="confirm" on_cancel={JS.navigate(~p"/posts")}>
+  <.alert id="confirm" on_cancel={JS.navigate(~p"/posts")}>
     This is another modal.
-  </.modal>
+  </.alert>
   ```
 
   You can use custom confirm alerts for method="delete" forms:
