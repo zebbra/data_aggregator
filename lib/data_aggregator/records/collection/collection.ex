@@ -55,6 +55,12 @@ defmodule DataAggregator.Records.Collection do
       public? true
     end
 
+    attribute :grscicoll_institution_name, :string do
+      description "the name of the institution in the GrSciColl database"
+      allow_nil? true
+      public? true
+    end
+
     attribute :description, :string, public?: true
 
     attribute :gbif_dataset_key, :string do
