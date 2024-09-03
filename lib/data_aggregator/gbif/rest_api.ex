@@ -36,11 +36,43 @@ defmodule DataAggregator.Gbif.RestAPI do
   """
   @spec create_endpoint(String.t(), String.t()) :: Api.response()
   def create_endpoint(file_url, registration) do
+    maybe_delete_existing_endpoints(registration)
+
     Req.post(
       url: create_endpoint_url(registration),
       auth: gbif_auth(),
       json: endpoint_params(file_url)
     )
+  end
+
+  defp maybe_delete_existing_endpoints(registration) do
+    # check if there are already endpoints registered for this dataset
+    with {:ok, resp} <- Req.get(url: create_endpoint_url(registration), auth: gbif_auth()),
+         {:status, 200} <- {:status, resp.status},
+         {:endpoints, endpoints} when is_list(endpoints) <- {:endpoints, resp.body} do
+      Enum.each(endpoints, fn endpoint ->
+        # delete existing endpoints
+        case Req.delete(
+               url: create_endpoint_url(registration) <> "/" <> to_string(endpoint["key"]),
+               auth: gbif_auth()
+             ) do
+          {:ok, _} ->
+            Logger.info("Deleted endpoint #{endpoint["key"]} for dataset #{registration}")
+
+          {:error, error} ->
+            Logger.error("Error deleting endpoint #{endpoint["key"]} for dataset #{registration}: #{inspect(error)}")
+        end
+      end)
+    else
+      {:error, error} ->
+        Logger.error("Error fetching existing endpoints for dataset #{registration}: #{inspect(error)}")
+
+      {:status, status} ->
+        Logger.error("Error fetching existing endpoints for dataset #{registration}: status #{status}")
+
+      {:endpoints, _} ->
+        Logger.error("Body is not a list of endpoints")
+    end
   end
 
   @doc """
