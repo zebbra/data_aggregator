@@ -6,6 +6,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
 
   import DataAggregatorWeb.Helpers, only: [class_names: 1]
 
+  alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.Import
 
   @states AshStateMachine.Info.state_machine_all_states(Import)
@@ -160,10 +161,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
     parts = String.split(assigns.name, "_")
     category = List.first(parts)
 
-    name =
-      parts
-      |> List.delete_at(0)
-      |> Enum.join("_")
+    name = Schema.dwc_field_from_prefixed_attribute_name(assigns.name)
 
     assigns = assign(assigns, category: category, name: name)
 

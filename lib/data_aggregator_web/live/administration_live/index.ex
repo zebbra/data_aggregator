@@ -138,7 +138,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
             </:item>
             <:item title={~t"Roles"m}>
               <%= for role <- @selected_user.roles do %>
-                <.badge color="gray">
+                <.badge color="gray" class="mt-0.5">
                   <span class="px-1.5"><%= role %></span>
                 </.badge>
               <% end %>

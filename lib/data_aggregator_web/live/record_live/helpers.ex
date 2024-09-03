@@ -13,7 +13,7 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
           attribute = dwc_attribute.attribute
 
           %{
-            name: attribute.name,
+            name: dwc_attribute.dwc_field,
             imported:
               imported_attribute(
                 record,
