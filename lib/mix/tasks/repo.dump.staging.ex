@@ -6,7 +6,7 @@ defmodule Mix.Tasks.Repo.Dump.Staging do
 
   @namespace "scnat"
   @database "aggregator"
-  @labels ~w(-l app=scnat-postgres -l spilo-role=replica)
+  @labels ~w(-l app=scnat-postgres -l spilo-role=master)
 
   @temp "/tmp/database.dump"
   @destination "priv/repo/dump/staging.dump"
