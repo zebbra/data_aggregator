@@ -192,11 +192,11 @@ defmodule DataAggregator.MixProject do
 
       # Ash Framework
       # Revert when https://github.com/ash-project/ash/pull/1419 is merged
-      {:ash, "~> 3.3", override: true, github: "hwuethrich/ash", branch: "fix/batch-callbacks"},
+      {:ash, "~> 3.3", override: true, github: "ash-project/ash"},
       # {:ash, "~> 3.3", override: true},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
-      {:ash_postgres, "~> 2.1", override: true},
+      {:ash_postgres, "~> 2.2", override: true},
       {:ash_state_machine, "~> 0.2"},
       {:ash_uuid, "~> 1.1"},
       {:ash_paper_trail, "~> 0.1"},
@@ -205,8 +205,8 @@ defmodule DataAggregator.MixProject do
       {:ash_authentication_phoenix, "~> 2.0"},
 
       # Database and Ecto
-      {:ecto, "~> 3.11.0"},
-      {:ecto_sql, "~> 3.11.3"},
+      {:ecto, "~> 3.11"},
+      {:ecto_sql, "~> 3.11"},
       {:ecto_dev_logger, "~> 0.11"},
       {:ecto_psql_extras, "~> 0.7"},
       {:postgrex, ">= 0.0.0"},
@@ -257,7 +257,7 @@ defmodule DataAggregator.MixProject do
       {:gen_smtp, "~> 1.1"},
 
       # Data Processing and Parsing
-      {:explorer, "~> 0.8.3"},
+      {:explorer, "~> 0.9.2"},
       {:csv, "~> 3.2"},
       {:waffle, "~> 1.1.9"},
       {:ex_aws, "~> 2.5.4"},
@@ -288,12 +288,11 @@ defmodule DataAggregator.MixProject do
       {:picosat_elixir, "~> 0.2"},
 
       # Documentation
-      {:ecto_erd, "~> 0.5", only: :dev},
       {:ex_doc, "~> 0.34.1", runtime: false},
 
       # Livebook Widgets
-      {:kino, "~> 0.12.0", only: :dev},
-      {:kino_explorer, "~> 0.1.10", only: :dev}
+      {:kino, "~> 0.12", only: :dev},
+      {:kino_explorer, "~> 0.1", only: :dev}
     ]
   end
 
