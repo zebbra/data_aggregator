@@ -7,7 +7,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   import DataAggregatorWeb.RecordLive.Helpers,
-    only: [attrs_by_category_in_layers: 1, encoded_attribute: 2]
+    only: [attrs_by_category_in_layers: 1, encoded_attribute: 2, get_dwc_field: 1]
 
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
@@ -59,27 +59,31 @@ defmodule DataAggregatorWeb.RecordLive.Index do
         <:col
           :let={{_id, record}}
           field={:mte_catalog_number}
-          label={~t"Catalog Number"m}
+          label={get_dwc_field(:mte_catalog_number)}
           class="font-semibold"
         >
           <%= record.mte_catalog_number %>
         </:col>
-        <:col :let={{_id, record}} field={:tax_scientific_name} label={~t"Scientific Name"m}>
+        <:col
+          :let={{_id, record}}
+          field={:tax_scientific_name}
+          label={get_dwc_field(:tax_scientific_name)}
+        >
           <%= encoded_attribute(record, :tax_scientific_name) %>
         </:col>
-        <:col :let={{_id, record}} label={~t"Genus"m}>
+        <:col :let={{_id, record}} label={get_dwc_field(:tax_genus)}>
           <%= encoded_attribute(record, :tax_genus) %>
         </:col>
-        <:col :let={{_id, record}} label={~t"Family"m}>
+        <:col :let={{_id, record}} label={get_dwc_field(:tax_family)}>
           <%= encoded_attribute(record, :tax_family) %>
         </:col>
-        <:col :let={{_id, record}} label={~t"Order"m}>
+        <:col :let={{_id, record}} label={get_dwc_field(:tax_order)}>
           <%= encoded_attribute(record, :tax_order) %>
         </:col>
-        <:col :let={{_id, record}} label={~t"Class"m}>
+        <:col :let={{_id, record}} label={get_dwc_field(:tax_class)}>
           <%= encoded_attribute(record, :tax_class) %>
         </:col>
-        <:col :let={{_id, record}} label={~t"Phylum"m}>
+        <:col :let={{_id, record}} label={get_dwc_field(:tax_phylum)}>
           <%= encoded_attribute(record, :tax_phylum) %>
         </:col>
         <:col :let={{_id, record}} field={:state} label={~t"Encoding"m} class="text-center">
