@@ -459,18 +459,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
         end
       end)
 
-    translate_catalog_name(catalog_name)
-  end
-
-  defp translate_catalog_name(catalog) do
-    case catalog do
-      :gbif_taxonomy -> ~t"GBIF Taxonomy"
-      :gbif_iucn_redlist -> ~t"GBIF IUCN Redlist"
-      :swiss_species -> ~t"Swiss Species"
-      :geo_reverse -> ~t"Geo Reverse"
-      :geo_forward -> ~t"Geo Forward"
-      _ -> ~t"Unknown"
-    end
+    Catalog.translate_catalog(catalog_name)
   end
 
   defp record_versions(assigns) do

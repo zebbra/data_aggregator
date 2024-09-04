@@ -25,4 +25,15 @@ defmodule DataAggregator.Taxonomy.Catalogs.InfospeciesCenters do
 
   @spec get_center_names() :: [atom()]
   def get_center_names, do: Enum.map(@centers, fn {name, _} -> name end)
+
+  def translate_center(center) do
+    case center do
+      :infofauna -> "info fauna"
+      :vogelwarte -> "Schweizerische Vogelwarte"
+      :infoflora -> "InfoFlora"
+      :swissbryophytes -> "SwissBryophytes"
+      :swisslichens -> "SwissLichens"
+      :swissfungi -> "SwissFungi"
+    end
+  end
 end

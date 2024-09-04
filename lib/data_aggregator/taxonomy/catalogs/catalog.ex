@@ -10,6 +10,21 @@ defmodule DataAggregator.Taxonomy.Catalog do
 
   def get_catalogs, do: @catalogs
 
+  def get_translated_catalogs do
+    Enum.map(get_catalogs(), &translate_catalog/1)
+  end
+
+  def translate_catalog(catalog) do
+    case catalog do
+      :gbif_taxonomy -> "GBIF Taxonomy"
+      :swiss_species -> "Swiss Species"
+      :geo_reverse -> "Geo Reverse"
+      :geo_forward -> "Geo Forward"
+      :gbif_iucn_redlist -> "GBIF IUCN Redlist"
+      _ -> throw("no translation defined for catalog: #{catalog}")
+    end
+  end
+
   def get_input_attributes(catalog) do
     case catalog do
       :gbif_taxonomy ->

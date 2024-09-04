@@ -37,7 +37,6 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.Record.Calculations.IucnRedlist
   alias DataAggregator.Records.Record.Calculations.Mids
   alias DataAggregator.Records.Record.Changes
-  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
   require Ash.Expr
   require Ash.Query
@@ -111,16 +110,6 @@ defmodule DataAggregator.Records.Record do
 
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
-      public? true
-    end
-
-    belongs_to :swiss_species, SwissSpecies do
-      source_attribute :tax_taxon_id
-      destination_attribute :usage_key
-
-      allow_nil? true
-      attribute_type :integer
-      define_attribute? false
       public? true
     end
   end
@@ -443,7 +432,6 @@ defmodule DataAggregator.Records.Record do
 
     references do
       reference :collection, on_delete: :delete, on_update: :update, index?: true
-      reference :swiss_species, ignore?: true
     end
   end
 

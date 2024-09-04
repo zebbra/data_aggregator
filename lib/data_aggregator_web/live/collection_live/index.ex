@@ -108,11 +108,11 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         </:col>
         <:col
           :let={{_id, collection}}
-          field={:records_count}
-          label={~t"Records count / est."m}
+          field={:items_to_digitize}
+          label={~t"Records est."m}
           class="text-right"
         >
-          <%= inspect(collection.records_count) %> / <%= collection.items_to_digitize %>
+          <%= collection.items_to_digitize %>
         </:col>
         <:col :let={{_id, collection}} field={:updated_at} label={~t"Updated At"m} class="text-right">
           <%= format_datetime(collection.updated_at, format: :short) %>

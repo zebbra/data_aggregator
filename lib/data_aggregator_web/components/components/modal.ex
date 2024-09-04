@@ -78,15 +78,13 @@ defmodule DataAggregatorWeb.Components.Modal do
 
   ```heex
   <.modal id="sticky_modal">
-    <.header>
+    <:header>
       <h1 class="text-lg font-bold">Sticky header</h1>
-    </.header>
-    <.inner_block>
-      This is a sticky modal. The body will scroll.
-    </.inner_block>
-    <.footer>
+    </:header>
+    This is a sticky modal. The body will scroll.
+    <:footer>
       <button class="btn btn-primary">Save</button>
-    </.footer>
+    </:footer>
   </.modal>
   ```
 
@@ -99,6 +97,7 @@ defmodule DataAggregatorWeb.Components.Modal do
   attr :class, :string, default: nil, doc: "Additional CSS classes to add to the modal box."
   attr :show, :boolean, default: false, doc: "Whether the modal visibility is controlled."
   attr :on_cancel, JS, default: %JS{}, doc: "JS commands to run when the modal is closed."
+  attr :on_confirm, JS, default: %JS{}, doc: "JS commands to run when the modal is closed."
   attr :responsive, :boolean, default: false, doc: "Show at bottom on small screens."
   attr :backdrop, :boolean, default: true, doc: "Show a backdrop behind the modal."
 
@@ -174,6 +173,7 @@ defmodule DataAggregatorWeb.Components.Modal do
       phx-hook="DialogHook"
       data-show={@show}
       data-cancel={@on_cancel}
+      data-confirm={@on_confirm}
     >
       <div class="contents">
         <.focus_wrap

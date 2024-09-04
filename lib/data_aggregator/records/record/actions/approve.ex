@@ -24,7 +24,7 @@ defmodule DataAggregator.Records.Actions.Approve do
       Enum.map(infospecies_centers, fn center ->
         records_query =
           AshPagify.merge_filters(%AshPagify{filters: query}, %{
-            swiss_species: %{center: %{eq: center}}
+            encoded_record: %{swiss_species: %{center: %{eq: center}}}
           }).filters
 
         count_query = AshPagify.query_for_filters_map(Record, records_query)
