@@ -113,7 +113,6 @@ defmodule DataAggregator.Records.EncodedRecord do
 
     references do
       reference :record, on_delete: :delete, on_update: :update, index?: true
-      reference :swiss_species, ignore?: true
     end
   end
 
