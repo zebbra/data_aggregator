@@ -21,19 +21,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
   def render(assigns) do
     ~H"""
     <div class="contents">
-      <.modal_header id={@id}>
-        <.section_heading
-          text={~t"Export records"m}
-          description={
-            mgettext(
-              "You are about to export %{rows_count} records. Please choose the column headers for your export file and the data layer to be exported.",
-              rows_count: @rows_count
-            )
-          }
-          size="md"
-        />
-      </.modal_header>
-
+      <.modal_header id={@id} title={~t"Export records"m} />
       <.simple_form
         for={@form}
         as={:story}
@@ -43,6 +31,12 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
         phx-submit="export:save"
       >
         <div class="h-full space-y-8 overflow-y-auto p-6">
+          <p class="text-sm">
+            <%= mgettext(
+              "You are about to export %{rows_count} records. Please choose the column headers for your export file and the data layer to be exported.",
+              rows_count: format_number(@rows_count)
+            ) %>
+          </p>
           <section class="border-black-white/25 flex flex-col rounded-lg border border-dashed p-6">
             <.fieldset legend={~t"Select your data headers"m}>
               <.fieldgroup class="space-y-3">

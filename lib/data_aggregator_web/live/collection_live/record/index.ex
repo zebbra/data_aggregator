@@ -43,7 +43,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       |> assign(:busy_action, busy_action(collection))
       |> assign(:show_filters, false)
       |> assign(:show_encode, false)
+      |> assign(:show_fast_track_pub, false)
+      |> assign(:show_approval_pub, false)
       |> assign(:record_tab, "data")
+      |> assign(:agreed, false)
       |> subscribe_for_record_updates(connected?(socket))
 
     {:ok, socket}
@@ -499,15 +502,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           id="encode_modal"
           size="xl"
           title={~t"Encoding summary"m}
-          description={mgettext("You're about to encode %{count} records", count: @meta.total_count)}
           show={@show_encode}
           responsive
           on_cancel={JS.push("encode:toggle")}
           on_confirm={JS.push("collection:encode")}
         >
           <div :if={@show_encode} class="contents">
+            <p class="mb-4 text-sm">
+              <%= mgettext("You're about to encode %{count} records.",
+                count: format_number(@meta.total_count)
+              ) %>
+            </p>
             <p class="text-sm">
-              <%= ~t"These records will be encoded and enriched using the following resources"m %>
+              <%= ~t"These records will be encoded and enriched using the following resources."m %>
             </p>
             <ul class="mt-2 list-inside list-disc text-sm">
               <li :for={catalog <- Catalog.get_translated_catalogs()} class="text-info">
@@ -530,6 +537,49 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               </button>
             </form>
           </:footer>
+        </.modal>
+
+        <.modal
+          id="fast_track_pub_modal"
+          size="xl"
+          show={@show_fast_track_pub}
+          responsive
+          on_cancel={JS.push("fast_track_pub:toggle")}
+          on_confirm={JS.push("collection:fast_track_pub")}
+          overflow="manual"
+        >
+          <.live_component
+            :if={@show_fast_track_pub}
+            module={DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal}
+            id="fast_track_pub_modal_component"
+            meta={@meta}
+            collection={@collection}
+            current_user={@current_user}
+            layer={@layer}
+            busy={@busy}
+            agreed={@agreed}
+          />
+        </.modal>
+
+        <.modal
+          id="approval_pub_modal"
+          size="xl"
+          show={@show_approval_pub}
+          responsive
+          on_cancel={JS.push("approval_pub:toggle")}
+          on_confirm={JS.push("collection:approval_pub")}
+          overflow="manual"
+        >
+          <.live_component
+            :if={@show_approval_pub}
+            module={DataAggregatorWeb.CollectionLive.Record.ApprovalModal}
+            id="approval_pub_modal_component"
+            meta={@meta}
+            collection={@collection}
+            current_user={@current_user}
+            layer={@layer}
+            busy={@busy}
+          />
         </.modal>
 
         <.modal
@@ -568,26 +618,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               <span class="text-base-content"><%= ~t"Record images"m %></span>
             </li>
           </ul>
-        </.alert>
-
-        <.alert
-          id="confirm_fast_track_pub_alert"
-          size="sm"
-          title={~t"Are you sure?"m}
-          text={~t"You're about to publish this collection directly to the Gbif.ch Portal"m}
-          label={~t"Yes, publish"m}
-          color="primary"
-        >
-        </.alert>
-
-        <.alert
-          id="confirm_approval_pub_alert"
-          size="sm"
-          title={~t"Are you sure?"m}
-          text={~t"You're about to publish this collection to Infospecies for approval"m}
-          label={~t"Yes, approve"m}
-          color="primary"
-        >
         </.alert>
       </:portal>
     </.page>
@@ -681,6 +711,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
+  def handle_event("fast_track_pub:toggle", _, socket) do
+    socket =
+      socket
+      |> update(:show_fast_track_pub, &(!&1))
+      |> assign(:agreed, false)
+
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_event("collection:fast_track_pub", _params, socket) do
     %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
     actor = get_actor(socket)
@@ -693,12 +733,23 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       {:ok, _} ->
         {:noreply,
          socket
+         |> assign(:agreed, false)
          |> put_flash(:info, ~t"Publication started in background"m)
          |> push_navigate(to: ~p"/collections/#{collection.id}/publications")}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"A publication for this collection is already in process"m)}
+        {:noreply,
+         socket
+         |> assign(:agreed, false)
+         |> put_flash(:error, ~t"A publication for this collection is already in process"m)}
     end
+  end
+
+  @impl true
+  def handle_event("approval_pub:toggle", _, socket) do
+    socket = update(socket, :show_approval_pub, &(!&1))
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -750,6 +801,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     else
       update_and_patch_search(socket, params["query"])
     end
+  end
+
+  @impl true
+  def handle_event("toggle:agree", _, socket) do
+    {:noreply, update(socket, :agreed, &(!&1))}
   end
 
   @impl true

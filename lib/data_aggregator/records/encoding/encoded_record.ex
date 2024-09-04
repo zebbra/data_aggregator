@@ -22,6 +22,7 @@ defmodule DataAggregator.Records.EncodedRecord do
   alias DataAggregator.DarwinCore
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Record
+  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
   @type t :: %EncodedRecord{}
 
@@ -38,6 +39,16 @@ defmodule DataAggregator.Records.EncodedRecord do
   relationships do
     belongs_to :record, Record do
       allow_nil? false
+      public? true
+    end
+
+    belongs_to :swiss_species, SwissSpecies do
+      source_attribute :tax_taxon_id
+      destination_attribute :usage_key
+
+      allow_nil? true
+      attribute_type :integer
+      define_attribute? false
       public? true
     end
   end

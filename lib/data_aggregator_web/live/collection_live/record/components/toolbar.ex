@@ -15,10 +15,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
   alias Phoenix.LiveView.JS
 
   @actions [
-    {"export", "hero-arrow-down-tray", "collection:export", nil},
-    {"encode", "hero-puzzle-piece", "encode:toggle", nil},
-    {"publish", "hero-globe-alt", "collection:fast_track_pub", "confirm_fast_track_pub_alert"},
-    {"approve", "hero-check-badge", "collection:approval_pub", "confirm_approval_pub_alert"}
+    {"export", "hero-arrow-down-tray", "collection:export"},
+    {"encode", "hero-puzzle-piece", "encode:toggle"},
+    {"publish", "hero-globe-alt", "fast_track_pub:toggle"},
+    {"approve", "hero-check-badge", "approval_pub:toggle"}
   ]
 
   attr :search, Phoenix.HTML.Form, required: true, doc: "The search form"
@@ -171,12 +171,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
             </summary>
           </:summary>
           <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-44 gap-1 border p-2 shadow-2xl">
-            <li :for={{label, icon, action, alert} <- @actions}>
-              <button
-                phx-click={action}
-                data-confirm={alert && ~t"Are you sure?"m}
-                data-confirm_id={alert}
-              >
+            <li :for={{label, icon, action} <- @actions}>
+              <button phx-click={action}>
                 <.icon name={icon} class="size-5" />
                 <span class="font-[sans-serif]"><%= action_label(label) %></span>
               </button>
@@ -198,12 +194,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
           </summary>
         </:summary>
         <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-20 mt-14 w-44 gap-1 border p-2 shadow-2xl">
-          <li :for={{label, icon, action, alert} <- @actions}>
-            <button
-              phx-click={action}
-              data-confirm={alert && ~t"Are you sure?"m}
-              data-confirm_id={alert}
-            >
+          <li :for={{label, icon, action} <- @actions}>
+            <button phx-click={action}>
               <.icon name={icon} class="size-5" />
               <span class="font-[sans-serif]"><%= action_label(label) %></span>
             </button>
@@ -214,11 +206,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
       <%!-- Inline action buttons (> 2xl) --%>
       <div :if={Record.can_create?(@current_user)} id="actions-xl" class="join max-2xl:hidden">
         <button
-          :for={{label, icon, action, alert} <- @actions}
+          :for={{label, icon, action} <- @actions}
           class="join-item btn btn-outline border-base-content/20"
           phx-click={action}
-          data-confirm={alert && ~t"Are you sure?"m}
-          data-confirm_id={alert}
           disabled={@busy}
         >
           <.icon :if={busy?(action, @busy_action) == false} name={icon} />
