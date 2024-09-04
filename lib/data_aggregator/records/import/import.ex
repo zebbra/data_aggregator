@@ -308,8 +308,8 @@ defmodule DataAggregator.Records.Import do
     repo DataAggregator.Repo
 
     references do
-      reference :collection, on_delete: :delete, on_update: :update
-      reference :error_log, on_delete: :delete, on_update: :update
+      reference :collection, on_delete: :delete, on_update: :update, index?: true
+      reference :error_log, on_delete: :delete, on_update: :update, index?: true
     end
   end
 

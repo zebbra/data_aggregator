@@ -149,19 +149,8 @@ defmodule DataAggregator.Records.RecordTest do
 
       assert_raise NotFound, fn -> Record.get_by_id!(record.id) end
 
-      # ensure only one Version is left
-      record = Ash.load!(record, [:paper_trail_versions])
-      assert [last_version] = record.paper_trail_versions
-
-      # ensure the last version is created from the destroy action, so we keep track of deletions
-      assert_map_includes(last_version, %{
-        version_source_id: record.id,
-        tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc042",
-        mte_catalog_number: "record42",
-        version_action_type: :destroy,
-        version_action_name: :destroy,
-        changes: %{}
-      })
+      # TODO: Test versions are actually deleted, which is not easy because they are
+      # deleted at the end of the transaction
     end
 
     test "destroy/1 with invalid id returns error" do

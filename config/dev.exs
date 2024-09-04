@@ -5,7 +5,7 @@ database_url = "ecto://postgres:postgres@localhost:5432/data-aggregator-dev"
 
 # Configure ash authorization breakdown logging
 config :ash, :policies, log_policy_breakdowns: :error
-config :ash, :policies, log_successful_policy_breakdowns: :info
+# config :ash, :policies, log_successful_policy_breakdowns: :info
 # config :ash, :policies, show_policy_breakdowns?: true
 
 # Cache files in the priv/storage directory
@@ -75,6 +75,9 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
       ~r"storybook/.*(exs)$"
     ]
   ]
+
+# Override Oban queues in development
+config :data_aggregator, Oban, queues: [encoders: 4]
 
 # Enable dev routes for dashboard and mailbox
 config :data_aggregator, dev_routes: true

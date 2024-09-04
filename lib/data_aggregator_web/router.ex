@@ -5,7 +5,6 @@ defmodule DataAggregatorWeb.Router do
   import DataAggregatorWeb.Locale, only: [assign_current_locale: 2]
   import PhoenixStorybook.Router
 
-  # Browser
   alias AshAuthentication.Phoenix.Overrides.Default
   alias DataAggregator.Accounts.User
 
@@ -24,6 +23,7 @@ defmodule DataAggregatorWeb.Router do
     plug Cldr.Plug.PutSession, as: :language_tag
   end
 
+  # Browser
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_live_flash
