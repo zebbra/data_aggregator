@@ -61,14 +61,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
             <%= ~t"Please note that the approval process will involve manual work by InfoSpecies, which will review and validate each record for accuracy before publication to GBIF."m %>
           </p>
         </div>
-        <div class="flex">
-          <div class="mr-4 flex-shrink-0">
-            <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
-          </div>
-          <p class="text-sm">
-            <%= ~t"Based on the information provided, we will create exports towards the following centers:"m %>
-          </p>
-        </div>
+        <p class="text-sm">
+          <%= ~t"Based on the information provided, we will create exports towards the following centers:"m %>
+        </p>
         <.table
           opts={[container_attrs: [class: "pb-4"]]}
           id="center_and_record_counts_table"

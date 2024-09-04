@@ -223,73 +223,73 @@ eve_attributes = [
     }
   },
   %{
-    dwc_field: nil,
+    dwc_field: "endOfPeriodDay",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :end_of_period_day, type: :integer, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "endOfPeriodMonth",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :end_of_period_month, type: :integer, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "endOfPeriodYear",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :end_of_period_year, type: :integer, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "habitatCode",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :habitat_code, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "habitatContact",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :habitat_contact, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "habitatInclusion",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :habitat_inclusion, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "habitatRef",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :habitat_ref, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "influence",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :influence, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "landscapeStructure",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :landscape_structure, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "microStructure",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :micro_structure, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "substratum",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :substratum, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "substratumState",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :substratum_state, type: :string, allow_nil?: true}
@@ -416,7 +416,7 @@ idf_attributes = [
     }
   },
   %{
-    dwc_field: nil,
+    dwc_field: "lastVerifiedBy",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{
@@ -426,7 +426,7 @@ idf_attributes = [
     }
   },
   %{
-    dwc_field: nil,
+    dwc_field: "lastVerifiedByID",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{
@@ -631,7 +631,7 @@ tax_attributes = [
     attribute: %Attribute{name: :cultivar_epithet, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "taxonIdCH",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :taxon_id_ch, type: :integer, allow_nil?: true}
@@ -712,7 +712,7 @@ loc_attributes = [
     attribute: %Attribute{name: :water_body, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "waterBodyID",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :water_body_id, type: :string, allow_nil?: true}
@@ -1054,13 +1054,13 @@ loc_attributes = [
     }
   },
   %{
-    dwc_field: nil,
+    dwc_field: "swissCoordinates_x",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :swiss_coordinates_x, type: :float, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "swissCoordinates_y",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :swiss_coordinates_y, type: :float, allow_nil?: true}
@@ -1729,7 +1729,7 @@ oth_attributes = [
     attribute: %Attribute{name: :dataset_name, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "dateAvailable",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :date_available, type: :string, allow_nil?: true}
@@ -1753,7 +1753,7 @@ oth_attributes = [
     attribute: %Attribute{name: :institution_id, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "language",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :language, type: :string, allow_nil?: true}
@@ -1765,7 +1765,7 @@ oth_attributes = [
     attribute: %Attribute{name: :license, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "modifiedBy",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :modified_by, type: :string, allow_nil?: true}
@@ -1789,31 +1789,31 @@ oth_attributes = [
     attribute: %Attribute{name: :type, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "specifyPerson",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :specify_person, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "specifyOrganismName",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :specify_organism_name, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "specifyLocality",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :specify_locality, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "specifyEvent",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :specify_event, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "specifyAuthorOfRecord",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :specify_author_of_record, type: :string, allow_nil?: true}
@@ -2101,55 +2101,57 @@ categories = [
   %Category{
     name: :eve,
     label: "Event",
-    description: "The circumstances of the extraction",
+    description: "An action that occurs at some location during some time.",
     dwc_attributes: eve_attributes
   },
   %Category{
     name: :idf,
     label: "Identification",
-    description: "Characteristics of the item",
+    description: "A taxonomic determination (e.g., the assignment to a dwc:Taxon).",
     dwc_attributes: idf_attributes
   },
   %Category{
     name: :tax,
     label: "Taxon",
-    description: "Classification structure of the item",
+    description:
+      "A group of organisms (sensu http://purl.obolibrary.org/obo/OBI_0100026) considered by taxonomists to form a homogeneous unit.",
     dwc_attributes: tax_attributes
   },
   %Category{
     name: :loc,
     label: "Location",
-    description: "Geographical description",
+    description: "A spatial region or named place.",
     dwc_attributes: loc_attributes
   },
   %Category{
     name: :mte,
     label: "Material Entity",
-    description: "Distinguishing marks of the specimen",
+    description:
+      "An entity that can be identified, exists for some period of time, and consists in whole or in part of physical matter while it exists.",
     dwc_attributes: mte_attributes
   },
   %Category{
     name: :mts,
     label: "Material Sample",
-    description: "Specimens documented (bio)chemical elements",
+    description: "A material entity that represents an entity of interest in whole or in part.",
     dwc_attributes: mts_attributes
   },
   %Category{
     name: :gec,
     label: "Geological Context",
-    description: "Geological information, such as stratigraphy, that qualifies a region or a place",
+    description: "Geological information, such as stratigraphy, that qualifies a region or place.",
     dwc_attributes: gec_attributes
   },
   %Category{
     name: :org,
     label: "Organism",
-    description: "A particular organism or defined group of organisms considered to be taxonomically homogeneous",
+    description: "A particular organism or defined group of organisms considered to be taxonomically homogeneous.",
     dwc_attributes: org_attributes
   },
   %Category{
     name: :occ,
     label: "Occurrence",
-    description: "An existence of a organism at a particular place at a particular time",
+    description: "An existence of a dwc:Organism at a particular place at a particular time.",
     dwc_attributes: occ_attributes
   },
   %Category{
@@ -2222,6 +2224,16 @@ defmodule DataAggregator.DarwinCore.Schema do
   def categories, do: @categories
 
   @doc """
+  Returns the category label for a category description
+  """
+  def category_label_by_description(description) do
+    case Enum.find(@categories, fn category -> category.description == description end) do
+      nil -> nil
+      category -> category.label
+    end
+  end
+
+  @doc """
   Returns a list of all attributes prefixed with their category name.
   """
   @spec prefixed_attributes() :: [Attribute.t()]
@@ -2269,6 +2281,21 @@ defmodule DataAggregator.DarwinCore.Schema do
   end
 
   @doc """
+  Returns the dwc_field name for a prefixed attribute name if found, otherwise
+  it returns the attribute name.
+  """
+  def dwc_field_from_prefixed_attribute_name(name) do
+    dwc_field =
+      List.keyfind(prefixed_attribute_names_and_dwc_fields(), String.to_atom(name), 0)
+
+    if dwc_field do
+      elem(dwc_field, 1)
+    else
+      name
+    end
+  end
+
+  @doc """
   Returns the attributes as options for a select input grouped by category.
   """
   def attribute_options do
@@ -2279,8 +2306,8 @@ defmodule DataAggregator.DarwinCore.Schema do
 
           name =
             if attribute.allow_nil?,
-              do: attribute.name,
-              else: "#{attribute.name} (required)"
+              do: dwc_attribute.dwc_field,
+              else: "#{dwc_attribute.dwc_field} (required)"
 
           value = Category.prefixed_attribute_name(category, attribute)
 

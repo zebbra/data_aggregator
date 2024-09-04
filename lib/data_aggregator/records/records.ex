@@ -15,7 +15,7 @@ defmodule DataAggregator.Records do
   @external_resource class_diagram
 
   @default_env [
-    import_timeout: :timer.minutes(60),
+    import_timeout: :timer.hours(12),
     import_batch_size: 1000,
     approval_batch_size: 1000,
     async_import_progress?: true,
