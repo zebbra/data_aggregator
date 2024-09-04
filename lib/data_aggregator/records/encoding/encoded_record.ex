@@ -42,13 +42,9 @@ defmodule DataAggregator.Records.EncodedRecord do
       public? true
     end
 
-    belongs_to :swiss_species, SwissSpecies do
+    has_many :swiss_species, SwissSpecies do
       source_attribute :tax_taxon_id
       destination_attribute :usage_key
-
-      allow_nil? true
-      attribute_type :integer
-      define_attribute? false
       public? true
     end
   end
@@ -117,6 +113,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
     references do
       reference :record, on_delete: :delete, on_update: :update
+      reference :swiss_species, ignore?: true
     end
   end
 
