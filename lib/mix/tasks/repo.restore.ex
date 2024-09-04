@@ -5,15 +5,38 @@ defmodule Mix.Tasks.Repo.Restore do
   use Mix.Task
 
   @source "priv/repo/dump/staging.dump"
-  @database "data_aggregator_dev"
+  @database "data-aggregator-dev"
+
+  @extensions [
+    "uuid-ossp",
+    "citext",
+    "pg_trgm",
+    "btree_gin"
+  ]
 
   def run(_args) do
     if Mix.shell().yes?("Drop database and restore from #{@source}?") do
       Mix.Task.run("repo.drop", ["--force-drop"])
       Mix.Task.run("repo.create")
 
+      Enum.each(@extensions, &create_extension/1)
+
       pg_restore(["--no-acl", "--no-owner", "-d", @database, @source])
     end
+  end
+
+  def create_extension(extension) do
+    sql = "CREATE EXTENSION IF NOT EXISTS \"#{extension}\""
+
+    Mix.shell().info("Creating extension: #{extension}")
+
+    System.cmd("psql", [
+      "-U",
+      "postgres",
+      @database,
+      "-c",
+      sql
+    ])
   end
 
   def pg_restore(args) do

@@ -19,7 +19,8 @@ defmodule DataAggregator.Records.Collection.Changes.SetGrsciCollAttributes do
            "name",
            "numberSpecimens",
            "institutionKey",
-           "institutionCode"
+           "institutionCode",
+           "institutionName"
          ]) do
       {:ok, attributes} ->
         changes =
@@ -28,7 +29,8 @@ defmodule DataAggregator.Records.Collection.Changes.SetGrsciCollAttributes do
             name: attributes["name"],
             items_to_digitize: attributes["numberSpecimens"] || 0,
             grscicoll_institution_key: attributes["institutionKey"],
-            grscicoll_institution_code: attributes["institutionCode"]
+            grscicoll_institution_code: attributes["institutionCode"],
+            grscicoll_institution_name: attributes["institutionName"]
           }
 
         Changeset.change_attributes(changeset, changes)

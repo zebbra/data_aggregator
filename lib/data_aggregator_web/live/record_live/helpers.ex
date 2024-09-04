@@ -13,7 +13,7 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
           attribute = dwc_attribute.attribute
 
           %{
-            name: attribute.name,
+            name: dwc_attribute.dwc_field,
             imported:
               imported_attribute(
                 record,
@@ -50,6 +50,10 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
     else
       record.encoded_record |> Map.get(attribute) |> value_for_record_attribute()
     end
+  end
+
+  def get_dwc_field(prefixed_attribute_name) do
+    Schema.dwc_field_from_prefixed_attribute_name(prefixed_attribute_name)
   end
 
   defp value_for_record_attribute(value) when is_nil(value), do: "-"

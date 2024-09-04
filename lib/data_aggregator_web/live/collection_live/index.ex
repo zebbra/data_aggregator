@@ -78,8 +78,15 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         <:col :let={{_id, collection}} field={:state} label={~t"State"m} class="text-center">
           <.collection_state_badge collection={collection} />
         </:col>
-        <:col :let={{_id, collection}} label={~t"Institution"m}>
-          <%= collection.institution %>
+        <:col
+          :let={{_id, collection}}
+          field={:grscicoll_institution_code}
+          label={~t"Institution Code"m}
+        >
+          <%= collection.grscicoll_institution_code %>
+        </:col>
+        <:col :let={{_id, collection}} field={:grscicoll_institution_name} label={~t"Institution"m}>
+          <%= collection.grscicoll_institution_name %>
         </:col>
         <:col
           :let={{_id, collection}}

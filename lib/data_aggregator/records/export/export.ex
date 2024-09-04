@@ -218,8 +218,8 @@ defmodule DataAggregator.Records.Export do
     repo DataAggregator.Repo
 
     references do
-      reference :collection, on_delete: :delete, on_update: :update
-      reference :attachment, on_delete: :delete, on_update: :update
+      reference :collection, on_delete: :delete, on_update: :update, index?: true
+      reference :attachment, on_delete: :delete, on_update: :update, index?: true
     end
   end
 

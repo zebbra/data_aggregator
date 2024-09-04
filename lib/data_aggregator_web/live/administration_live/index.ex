@@ -42,7 +42,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
         <%= ~t"Administration"m %>
         <:actions>
           <.link patch={~p"/administration/new"} class="btn btn-primary max-sm:btn-sm">
-            <.icon name="hero-squares-2x2" class="max-sm:size-4" />
+            <.icon name="hero-user-plus" class="max-sm:size-4" />
             <span class="max-sm:hidden"><%= ~t"Add User"m %></span>
             <span class="sm:hidden"><%= ~t"Add"m %></span>
           </.link>
@@ -138,7 +138,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
             </:item>
             <:item title={~t"Roles"m}>
               <%= for role <- @selected_user.roles do %>
-                <.badge color="gray">
+                <.badge color="gray" class="mt-0.5">
                   <span class="px-1.5"><%= role %></span>
                 </.badge>
               <% end %>

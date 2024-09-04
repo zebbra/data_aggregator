@@ -96,7 +96,7 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
     repo DataAggregator.Repo
 
     references do
-      reference :record, on_delete: :delete, on_update: :update
+      reference :record, on_delete: :delete, on_update: :update, index?: true
     end
   end
 end
