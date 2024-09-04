@@ -49,8 +49,8 @@ defmodule DataAggregator.Records.Import.Record do
     repo DataAggregator.Repo
 
     references do
-      reference :import, on_delete: :delete, on_update: :update
-      reference :record, on_delete: :delete, on_update: :update
+      reference :import, on_delete: :delete, on_update: :update, index?: true
+      reference :record, on_delete: :delete, on_update: :update, index?: true
     end
   end
 end

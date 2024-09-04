@@ -79,7 +79,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal do
             />
           </div>
           <p class="text-sm">
-            <%= ~t"I have read and agree to the terms of the service and accept responsibility for this publication."m %>
+            <%= ~t"I have read and agree to the"m %>
+            <.link
+              href="https://swissnatcoll.hp.gbif-staging.org/en/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-primary"
+            >
+              <%= ~t"terms and conditions"m %>
+            </.link>
+            <%= ~t"and accept responsibility for this publication."m %>
           </p>
         </label>
         <p class="text-base-content/60 mt-4 text-sm">

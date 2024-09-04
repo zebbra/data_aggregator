@@ -52,6 +52,10 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
     end
   end
 
+  def get_dwc_field(prefixed_attribute_name) do
+    Schema.dwc_field_from_prefixed_attribute_name(prefixed_attribute_name)
+  end
+
   defp value_for_record_attribute(value) when is_nil(value), do: "-"
   defp value_for_record_attribute(value) when value === "", do: "-"
   defp value_for_record_attribute(value), do: value

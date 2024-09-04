@@ -76,6 +76,9 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
     ]
   ]
 
+# Override Oban queues in development
+config :data_aggregator, Oban, queues: [encoders: 4]
+
 # Enable dev routes for dashboard and mailbox
 config :data_aggregator, dev_routes: true
 

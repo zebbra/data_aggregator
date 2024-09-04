@@ -53,7 +53,7 @@ defmodule DataAggregator.Records.EncodedRecord do
     change_tracking_mode :changes_only
     store_action_name? true
     ignore_attributes [:inserted_at, :updated_at]
-    reference_source? false
+    reference_source? true
 
     mixin DataAggregator.Records.EncodedRecordVersionMixin
     version_extensions extensions: [AshJsonApi.Resource]
@@ -112,7 +112,7 @@ defmodule DataAggregator.Records.EncodedRecord do
     repo DataAggregator.Repo
 
     references do
-      reference :record, on_delete: :delete, on_update: :update
+      reference :record, on_delete: :delete, on_update: :update, index?: true
       reference :swiss_species, ignore?: true
     end
   end

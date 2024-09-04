@@ -190,7 +190,7 @@ defmodule DataAggregator.Records.Approval do
     repo DataAggregator.Repo
 
     references do
-      reference :attachment, on_delete: :delete, on_update: :update
+      reference :attachment, on_delete: :delete, on_update: :update, index?: true
     end
   end
 

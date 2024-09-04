@@ -173,7 +173,7 @@ defmodule DataAggregator.Records.Record do
     ]
 
     attributes_as_attributes [:mte_catalog_number, :tax_scientific_name]
-    reference_source? false
+    reference_source? true
 
     mixin DataAggregator.Records.RecordVersionMixin
     version_extensions extensions: [AshJsonApi.Resource]
@@ -367,9 +367,6 @@ defmodule DataAggregator.Records.Record do
 
     destroy :destroy do
       primary? true
-      require_atomic? false
-
-      change Changes.DestroyVersions
     end
   end
 
@@ -434,7 +431,7 @@ defmodule DataAggregator.Records.Record do
     repo DataAggregator.Repo
 
     references do
-      reference :collection, on_delete: :delete, on_update: :update
+      reference :collection, on_delete: :delete, on_update: :update, index?: true
     end
   end
 

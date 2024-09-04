@@ -40,8 +40,8 @@ defmodule DataAggregator.Records.Record.Image do
     repo DataAggregator.Repo
 
     references do
-      reference :record, on_delete: :delete, on_update: :update
-      reference :attachment, on_delete: :delete, on_update: :update
+      reference :record, on_delete: :delete, on_update: :update, index?: true
+      reference :attachment, on_delete: :delete, on_update: :update, index?: true
     end
   end
 

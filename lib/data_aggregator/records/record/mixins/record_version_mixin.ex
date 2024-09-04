@@ -13,6 +13,16 @@ defmodule DataAggregator.Records.RecordVersionMixin do
         end
       end
 
+      postgres do
+        references do
+          reference :version_source,
+            on_delete: :delete,
+            on_update: :update,
+            index?: true,
+            deferrable: true
+        end
+      end
+
       preparations do
         prepare build(sort: [version_inserted_at: :desc])
         prepare DataAggregator.Preparations.Sort

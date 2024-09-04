@@ -16,7 +16,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   import DataAggregatorWeb.RecordLive.Helpers,
-    only: [attrs_by_category_in_layers: 1, encoded_attribute: 2, encoded_attribute: 3]
+    only: [
+      attrs_by_category_in_layers: 1,
+      encoded_attribute: 2,
+      encoded_attribute: 3,
+      get_dwc_field: 1
+    ]
 
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
@@ -226,7 +231,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :tax_scientific_name)}
           field={:tax_scientific_name}
-          label={~t"Scientific Name"m}
+          label={get_dwc_field(:tax_scientific_name)}
         >
           <%= encoded_attribute(record, :tax_scientific_name, @layer) %>
         </:col>
@@ -234,7 +239,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :idf_verbatim_identification)}
           field={:idf_verbatim_identification}
-          label={~t"Identification (verbatim)"m}
+          label={get_dwc_field(:idf_verbatim_identification)}
         >
           <%= record.idf_verbatim_identification %>
         </:col>
@@ -242,7 +247,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :occ_occurrence_id)}
           field={:occ_occurrence_id}
-          label={~t"Occurrence ID"m}
+          label={get_dwc_field(:occ_occurrence_id)}
         >
           <%= record.occ_occurrence_id %>
         </:col>
@@ -250,7 +255,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :mte_catalog_number)}
           field={:mte_catalog_number}
-          label={~t"Catalog ID"m}
+          label={get_dwc_field(:mte_catalog_number)}
         >
           <%= record.mte_catalog_number %>
         </:col>
@@ -258,7 +263,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :eve_field_number)}
           field={:eve_field_number}
-          label={~t"Field ID"m}
+          label={get_dwc_field(:eve_field_number)}
         >
           <%= record.eve_field_number %>
         </:col>
@@ -266,7 +271,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :mte_recorded_by)}
           field={:mte_recorded_by}
-          label={~t"Collected by"m}
+          label={get_dwc_field(:mte_recorded_by)}
         >
           <%= record.mte_recorded_by %>
         </:col>
@@ -274,7 +279,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :idf_identified_by)}
           field={:idf_identified_by}
-          label={~t"Identified by"m}
+          label={get_dwc_field(:idf_identified_by)}
         >
           <%= record.idf_identified_by %>
         </:col>
@@ -282,7 +287,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :eve_event_date)}
           field={:eve_event_date}
-          label={~t"Date"m}
+          label={get_dwc_field(:eve_event_date)}
         >
           <%= format_date(record.eve_event_date, format: :medium) %>
         </:col>
@@ -290,7 +295,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :loc_state_province)}
           field={:loc_state_province}
-          label={~t"Place"m}
+          label={place_th_label()}
         >
           <div><%= encoded_attribute(record, :loc_state_province, @layer) %></div>
           <div class="text-base-content/75 text-xs">
@@ -301,7 +306,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :loc_verbatim_elevation)}
           field={:loc_verbatim_elevation}
-          label={~t"Elevation"m}
+          label={elevation_th_label()}
         >
           <div :if={record.loc_verbatim_elevation}><%= record.loc_verbatim_elevation %></div>
           <div :if={record.loc_minimum_elevation_in_meters}>
@@ -312,7 +317,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :loc_decimal_latitude)}
           field={:loc_decimal_latitude}
-          label={~t"Coordinates"m}
+          label={coordinates_th_label()}
           directions={{:asc, :desc_nils_last}}
         >
           <div><%= encoded_attribute(record, :loc_decimal_latitude, @layer) %></div>
@@ -869,6 +874,28 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   defp coalesce_search(nil), do: ""
   defp coalesce_search(search), do: search
+
+  defp place_th_label(assigns \\ %{}) do
+    ~H"""
+    <%= get_dwc_field(:loc_state_province) %>
+    <br />
+    <%= get_dwc_field(:loc_country_code) %>
+    """
+  end
+
+  defp elevation_th_label(assigns \\ %{}) do
+    ~H"""
+    <%= get_dwc_field(:loc_verbatim_elevation) %>
+    """
+  end
+
+  defp coordinates_th_label(assigns \\ %{}) do
+    ~H"""
+    <%= get_dwc_field(:loc_decimal_latitude) %>
+    <br />
+    <%= get_dwc_field(:loc_decimal_longitude) %>
+    """
+  end
 
   attr :collection_id, :string
 
