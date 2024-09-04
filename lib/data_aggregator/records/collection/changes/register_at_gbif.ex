@@ -37,12 +37,12 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
     if gbif_dataset_key do
       {:ok, gbif_dataset_key}
       |> create_endpoint(dwca_file_url)
-      |> maybe_delete_old_endpoints()
+      |> delete_old_endpoints()
     else
       collection_name
       |> register_collection()
       |> create_endpoint(dwca_file_url)
-      |> maybe_delete_old_endpoints()
+      |> delete_old_endpoints()
     end
   end
 
@@ -97,7 +97,7 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
 
   defp create_endpoint({:error, error}, _), do: {:error, error}
 
-  defp maybe_delete_old_endpoints({:ok, registration, new_endpoint_key}) do
+  defp delete_old_endpoints({:ok, registration, new_endpoint_key}) do
     # get endpoints
     with {:ok, endpoints} <- get_endpoints(registration),
          {:reject_endpoints, old_endpoints} <-
@@ -107,7 +107,7 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
     end
   end
 
-  defp maybe_delete_old_endpoints({:error, error}), do: {:error, error}
+  defp delete_old_endpoints({:error, error}), do: {:error, error}
 
   defp get_endpoints(registration) do
     with {:ok, resp} <- Gbif.RestAPI.get_endpoints(registration),

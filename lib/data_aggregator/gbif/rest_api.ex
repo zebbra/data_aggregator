@@ -54,6 +54,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   @doc """
   Delete a specific endpoint with the given endpoint_key for a dataset with the GBIF API
   """
+  @spec delete_endpoint(String.t(), String.t()) :: Api.response()
   def delete_endpoint(registration, endpoint_key) do
     Req.delete(
       url: create_endpoint_url(registration) <> "/" <> to_string(endpoint_key),
