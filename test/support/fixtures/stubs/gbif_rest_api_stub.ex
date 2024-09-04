@@ -35,6 +35,29 @@ defmodule DataAggregator.Gbif.RestAPIStub do
     {:ok, %{status: 201, body: "1234"}}
   end
 
+  def get_endpoints(_registration) do
+    {:ok,
+     %{
+       status: 200,
+       body: [
+         %{
+           "created" => "2024-09-04T13:19:12.639+00:00",
+           "createdBy" => "gbifch",
+           "key" => 539_580,
+           "machineTags" => [],
+           "modified" => "2024-09-04T13:19:12.639+00:00",
+           "modifiedBy" => "gbifch",
+           "type" => "DWC_ARCHIVE",
+           "url" => "http://localhost:4000/files/fat_02xau7X7PNTGOwq8MQubyl/AZG9MF13cnSG_YC5UugTDg.zip"
+         }
+       ]
+     }}
+  end
+
+  def delete_endpoint(_registration, _endpoint_key) do
+    {:ok, %{status: 204, body: ""}}
+  end
+
   def search_for_occurrences(catalog_number, dataset_key) do
     {:ok,
      %{
