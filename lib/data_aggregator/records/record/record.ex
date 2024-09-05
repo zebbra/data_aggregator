@@ -369,6 +369,7 @@ defmodule DataAggregator.Records.Record do
 
     destroy :destroy do
       primary? true
+      require_atomic? false
 
       change Changes.DecrementCollectionRecordsCountAfterAction
     end

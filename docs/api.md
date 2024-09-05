@@ -102,13 +102,13 @@ classDiagram
         String description
         String gbif_dataset_key
         Map[] import_mapping
+        Integer records_count
         CollectionType type
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID institution_id
         Atom state
         Float digitizing_progress
-        Integer records_count
         Institution institution
         Import[] imports
         Export[] exports
@@ -127,6 +127,7 @@ classDiagram
         set_deleting()
         set_idle()
         set_idle_encoding()
+        decrement_records_count()
         destroy()
         export(Struct export)
         publish(Struct publication)
@@ -1277,13 +1278,13 @@ erDiagram
         String description
         String gbif_dataset_key
         ArrayOfMap import_mapping
+        Integer records_count
         CollectionType type
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID institution_id
         Atom state
         Float digitizing_progress
-        Integer records_count
     }
     EncodedRecord {
         Map ext_vernacular_names
@@ -2321,6 +2322,7 @@ erDiagram
 | **description** | String |  |
 | **gbif_dataset_key** | String | the key of the dataset (to publish) in the GBIF database |
 | **import_mapping** | Map[] |  |
+| **records_count** | Integer |  |
 | **type** | CollectionType |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
@@ -2331,12 +2333,12 @@ erDiagram
 
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
-| **update** | _update_ | <ul><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>records_count</b> <i>Integer</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
-| **create** | _create_ | <ul><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **create** | _create_ | <ul><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>records_count</b> <i>Integer</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **update_import_mapping** | _update_ | <ul><li><b>import_mapping</b> <i>Map[]</i> attribute</li></ul> |  |
-| **touch** | _update_ | <ul><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
-| **register_at_gbif** | _update_ | <ul><li><b>dwca_file_url</b> <i>String</i> </li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **touch** | _update_ | <ul><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>records_count</b> <i>Integer</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **register_at_gbif** | _update_ | <ul><li><b>dwca_file_url</b> <i>String</i> </li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>records_count</b> <i>Integer</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **set_importing** | _update_ | <ul></ul> |  |
 | **set_exporting** | _update_ | <ul></ul> |  |
 | **set_encoding** | _update_ | <ul></ul> |  |
@@ -2345,6 +2347,7 @@ erDiagram
 | **set_deleting** | _update_ | <ul></ul> |  |
 | **set_idle** | _update_ | <ul></ul> |  |
 | **set_idle_encoding** | _update_ | <ul></ul> |  |
+| **decrement_records_count** | _update_ | <ul></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **export** | _action_ | <ul><li><b>export</b> <i>Struct</i> </li></ul> |  |
 | **publish** | _action_ | <ul><li><b>publication</b> <i>Struct</i> </li></ul> |  |
@@ -3792,6 +3795,9 @@ erDiagram
 classDiagram
     class User {
         CiString email
+        String first_name
+        String last_name
+        String phone
         sign_in_with_token_for_password(String token)
         sign_in_with_password(CiString email, String password)
         get_by_subject()
@@ -3822,6 +3828,9 @@ classDiagram
 erDiagram
     User {
         CiString email
+        String first_name
+        String last_name
+        String phone
     }
     Token {
         Map extra_data

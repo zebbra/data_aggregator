@@ -13,13 +13,13 @@ classDiagram
         String description
         String gbif_dataset_key
         Map[] import_mapping
+        Integer records_count
         CollectionType type
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID institution_id
         Atom state
         Float digitizing_progress
-        Integer records_count
         Institution institution
         Import[] imports
         Export[] exports
@@ -38,6 +38,7 @@ classDiagram
         set_deleting()
         set_idle()
         set_idle_encoding()
+        decrement_records_count()
         destroy()
         export(Struct export)
         publish(Struct publication)
