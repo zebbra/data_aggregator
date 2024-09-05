@@ -7,6 +7,7 @@ defmodule DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransa
 
   alias Ash.Changeset
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Record
 
   require Logger
 
@@ -17,6 +18,14 @@ defmodule DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransa
 
   defp set_collection_idle(%Changeset{data: %{collection_id: collection_id}}, entity) do
     collection = Collection.get_by_id!(collection_id)
+    Logger.debug("Updating collections.records_count ...")
+
+    records_count =
+      Record
+      |> Ash.Query.filter(collection_id == ^collection_id)
+      |> Ash.count!()
+
+    Collection.update!(collection, %{records_count: records_count})
     Collection.set_idle(collection)
 
     entity

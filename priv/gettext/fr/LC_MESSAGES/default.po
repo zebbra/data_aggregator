@@ -41,8 +41,8 @@ msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Use this form to manage collections in your database."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:121
-#: lib/data_aggregator_web/live/collection_live/index.ex:154
+#: lib/data_aggregator_web/live/collection_live/index.ex:139
+#: lib/data_aggregator_web/live/collection_live/index.ex:172
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Are you sure?"
@@ -54,32 +54,32 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Code"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:190
+#: lib/data_aggregator_web/live/collection_live/index.ex:208
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Collection deleted successfully"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/index.ex:40
-#: lib/data_aggregator_web/live/collection_live/index.ex:164
+#: lib/data_aggregator_web/live/collection_live/index.ex:182
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Collections"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:120
+#: lib/data_aggregator_web/live/collection_live/index.ex:138
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Delete"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:113
+#: lib/data_aggregator_web/live/collection_live/index.ex:131
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Edit"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:176
+#: lib/data_aggregator_web/live/collection_live/index.ex:194
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Edit Collection"
@@ -97,20 +97,20 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:170
+#: lib/data_aggregator_web/live/collection_live/index.ex:188
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "New Collection"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/index.ex:48
-#: lib/data_aggregator_web/live/collection_live/index.ex:205
+#: lib/data_aggregator_web/live/collection_live/index.ex:223
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "New collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:99
+#: lib/data_aggregator_web/live/collection_live/index.ex:117
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Updated At"
@@ -806,14 +806,14 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Summary"
 msgid "Import started in background"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:204
+#: lib/data_aggregator_web/live/collection_live/index.ex:222
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Get started by adding a new collection."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:203
-#: lib/data_aggregator_web/live/collection_live/index.ex:211
+#: lib/data_aggregator_web/live/collection_live/index.ex:221
+#: lib/data_aggregator_web/live/collection_live/index.ex:229
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "No collections"
@@ -1759,7 +1759,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Actions"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:108
+#: lib/data_aggregator_web/live/collection_live/index.ex:126
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Actions"
@@ -2210,7 +2210,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Subscriptions"
 msgid "The import has been completed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:155
+#: lib/data_aggregator_web/live/collection_live/index.ex:173
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Yes, delete collection"
@@ -2909,7 +2909,7 @@ msgctxt "DataAggregatorWeb.AdministrationLive.SetPassword"
 msgid "Something went wrong"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:212
+#: lib/data_aggregator_web/live/collection_live/index.ex:230
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "There are no collections yet for your institution"
@@ -3031,12 +3031,6 @@ msgstr ""
 #: lib/data_aggregator_web/live/collection_live/record/fast_track_pub_modal.ex:29
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Publication summary"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/index.ex:94
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Index"
-msgid "Records est."
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/approval_modal.ex:89
@@ -3238,4 +3232,16 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal"
 msgid "terms and conditions"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:94
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Progress"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:112
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Records count / est."
 msgstr ""

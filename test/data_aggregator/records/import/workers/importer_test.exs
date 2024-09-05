@@ -8,6 +8,7 @@ defmodule DataAggregator.Records.Import.Workers.ImporterTest do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.Import.Workers.Importer
+  alias DataAggregator.Records.Record
 
   describe "DataAggregator.Records.Import.Workers.Importer.perform/1" do
     @valid_mapping [
@@ -48,6 +49,28 @@ defmodule DataAggregator.Records.Import.Workers.ImporterTest do
 
       assert import.state == :imported
       assert import.records_count == 2
+    end
+
+    @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"
+    test "updates records_count upon import or records.destroy", %{
+      collection: collection,
+      import: import
+    } do
+      assert collection.records_count == 0
+
+      {:ok, import} = perform_job(Importer, %{id: import.id})
+
+      assert import.state == :imported
+      assert import.records_count == 2
+
+      collection = Collection.get_by_id!(collection.id)
+      assert collection.records_count == 2
+
+      [record | _] = Record.by_collection!(collection.id)
+      Record.destroy(record)
+
+      collection = Collection.get_by_id!(collection.id)
+      assert collection.records_count == 1
     end
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"

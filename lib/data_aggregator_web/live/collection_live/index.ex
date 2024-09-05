@@ -90,11 +90,29 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         </:col>
         <:col
           :let={{_id, collection}}
-          field={:items_to_digitize}
-          label={~t"Records est."m}
+          field={:digitizing_progress}
+          label={~t"Progress"m}
           class="text-right"
         >
-          <%= collection.items_to_digitize %>
+          <div
+            class="tooltip tooltip-primary flex flex-1 items-center"
+            data-tip={
+                "#{collection.digitizing_progress |> Decimal.from_float() |> Decimal.round(1)}%"}
+          >
+            <progress
+              class="progress progress-primary min-w-32"
+              value={collection.digitizing_progress}
+              max="100"
+            />
+          </div>
+        </:col>
+        <:col
+          :let={{_id, collection}}
+          field={:records_count}
+          label={~t"Records count / est."m}
+          class="text-right"
+        >
+          <%= inspect(collection.records_count) %> / <%= collection.items_to_digitize %>
         </:col>
         <:col :let={{_id, collection}} field={:updated_at} label={~t"Updated At"m} class="text-right">
           <%= format_datetime(collection.updated_at, format: :short) %>

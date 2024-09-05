@@ -71,6 +71,8 @@ defmodule DataAggregator.Records.Collection do
 
     attribute :import_mapping, {:array, :map}, public?: true
 
+    attribute :records_count, :integer, allow_nil?: false, default: 0, public?: true
+
     attribute :type, CollectionType, allow_nil?: false, public?: true
 
     # allow sorting by inserted_at/updated_at
@@ -132,7 +134,6 @@ defmodule DataAggregator.Records.Collection do
   end
 
   aggregates do
-    count :records_count, :records, public?: true
     count :imports_count, :imports
 
     count :records_count_not_encoded, :records do
@@ -284,6 +285,12 @@ defmodule DataAggregator.Records.Collection do
       change transition_state(:idle)
     end
 
+    update :decrement_records_count do
+      accept []
+
+      change atomic_update(:records_count, expr(records_count - 1))
+    end
+
     destroy :destroy do
       accept []
       primary? true
@@ -330,6 +337,8 @@ defmodule DataAggregator.Records.Collection do
     publish :set_idle, ["updated", [:id, nil]]
     publish :set_idle_encoding, ["updated", [:id, nil]]
     publish :set_deleting, ["updated", [:id, nil]]
+
+    publish :decrement_records_count, ["updated", [:id, nil]]
   end
 
   code_interface do
@@ -354,6 +363,8 @@ defmodule DataAggregator.Records.Collection do
     define :set_deleting
     define :set_idle
     define :set_idle_encoding
+
+    define :decrement_records_count
   end
 
   policies do
