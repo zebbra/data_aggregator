@@ -57,6 +57,19 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert record.eve_event_date != nil
     end
 
+    @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs-encoding.csv"
+    test "updates collections.records_count after import", %{
+      collection: collection,
+      import: import
+    } do
+      assert collection.records_count == 0
+
+      Import.import!(import)
+
+      collection = Collection.get_by_id!(collection.id)
+      assert collection.records_count == 18
+    end
+
     @tag path: "test/support/fixtures/files/invalid-records-small.csv"
     test "fails with a file with some invalid records", %{import: import} do
       {result, _logs} = with_log(fn -> Import.import(import) end)

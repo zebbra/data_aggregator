@@ -7,6 +7,7 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
 
   def load do
     [
+      :digitizing_progress,
       :importing,
       :exporting,
       :encoding,
@@ -19,7 +20,6 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
   def get_collection(id, actor) do
     Collection.get_by_id!(id,
       load: [
-        :records_count,
         :digitizing_progress,
         :records_count_not_encoded,
         :importing,

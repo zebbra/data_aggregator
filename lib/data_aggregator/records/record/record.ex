@@ -172,6 +172,8 @@ defmodule DataAggregator.Records.Record do
       :state
     ]
 
+    ignore_actions [:destroy]
+
     attributes_as_attributes [:mte_catalog_number, :tax_scientific_name]
     reference_source? true
 
@@ -367,6 +369,8 @@ defmodule DataAggregator.Records.Record do
 
     destroy :destroy do
       primary? true
+
+      change Changes.DecrementCollectionRecordsCountAfterAction
     end
   end
 
