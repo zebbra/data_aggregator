@@ -299,6 +299,24 @@ defmodule DataAggregator.ExportTest do
     end
 
     @tag mapping: nil
+    @tag data_layer: :raw
+    @tag header_source: :dwc_attributes
+    test "transforms values according to the transformers", %{data_frame: data_frame} do
+      rows = Explorer.DataFrame.to_rows(data_frame)
+
+      transformed_attributes =
+        Enum.map(rows, &Map.take(&1, ["decimalLongitude", "decimalLatitude"]))
+
+      expected = [
+        %{"decimalLatitude" => 46.8182, "decimalLongitude" => 640_000},
+        %{"decimalLatitude" => 46.8182, "decimalLongitude" => 640_000},
+        %{"decimalLatitude" => 46.8182, "decimalLongitude" => 640_000}
+      ]
+
+      assert expected == transformed_attributes
+    end
+
+    @tag mapping: nil
     @tag data_layer: :encoded
     @tag header_source: :collection_mapping
     test "export records with datalayer :encoded, header_source :collection_mapping", %{

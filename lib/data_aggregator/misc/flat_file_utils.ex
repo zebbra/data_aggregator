@@ -5,12 +5,46 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   alias DataAggregator.Files.Attachment
 
   @doc """
-   gives you a map of all relevant header fields and the record values
-   in the structure of `%{"verbatimLocality" => nil, "kingdom" => "My Kingdom", ..}`
+  gives you a map of all relevant header fields and the record values
+  in the structure of `%{"verbatimLocality" => nil, "kingdom" => "My Kingdom", ..}`
+
+  ## Transforming the data
+
+  If you want to transform the data before mapping it to the headers, you can pass a
+  map of transformers to the function. The transformers map should have the same keys
+  as the header_fields map and the values should be functions that take the record
+  value as an argument and return the transformed value.
+
+  ### Example:
+
+  ```elixir
+  header_fields = %{
+    "verbatimLocality" => "Verbatim Locality",
+    "kingdom" => "Kingdom"
+  }
+
+  transformers = %{
+    "kingdom" => fn value -> String.upcase(value) end
+  }
+
+  map_data_to_headers(record_data, header_fields, transformers)
+  ```
   """
-  @spec map_data_to_headers(map(), list()) :: map()
-  def map_data_to_headers(record_data, header_fields) do
+  @spec map_data_to_headers(map(), list(), map() | nil) :: map()
+  def map_data_to_headers(record_data, header_fields, transformers \\ nil)
+
+  def map_data_to_headers(record_data, header_fields, nil) do
     Map.new(header_fields, fn {k, v} -> {v, Map.get(record_data, k)} end)
+  end
+
+  def map_data_to_headers(record_data, header_fields, transformers) do
+    Map.new(header_fields, fn {k, v} ->
+      if Map.has_key?(transformers, k) do
+        {v, transformers[k].(Map.get(record_data, k))}
+      else
+        {v, Map.get(record_data, k)}
+      end
+    end)
   end
 
   @doc """

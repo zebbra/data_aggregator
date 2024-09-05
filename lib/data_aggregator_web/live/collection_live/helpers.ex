@@ -7,7 +7,6 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
 
   def load do
     [
-      :digitizing_progress,
       :importing,
       :exporting,
       :encoding,

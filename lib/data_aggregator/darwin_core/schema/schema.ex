@@ -1,3 +1,5 @@
+import DataAggregatorWeb.Helpers, only: [format_coordinate: 1]
+
 alias Ash.Resource.Attribute
 alias DataAggregator.DarwinCore.Schema.Category
 
@@ -2369,5 +2371,13 @@ defmodule DataAggregator.DarwinCore.Schema do
       end
 
     List.flatten(for_result)
+  end
+
+  @spec dwc_transformers() :: map()
+  def dwc_transformers do
+    %{
+      loc_decimal_latitude: &format_coordinate/1,
+      loc_decimal_longitude: &format_coordinate/1
+    }
   end
 end

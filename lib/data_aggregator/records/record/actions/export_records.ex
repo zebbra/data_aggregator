@@ -33,7 +33,13 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
       query
       |> Ash.stream!(page: false)
       |> Stream.map(&map_record(&1, mapping, export, data_layer))
-      |> Stream.map(&FlatFileUtils.map_data_to_headers(&1, get_header_labels(mapping)))
+      |> Stream.map(
+        &FlatFileUtils.map_data_to_headers(
+          &1,
+          get_header_labels(mapping),
+          Schema.dwc_transformers()
+        )
+      )
       |> create_file!(headers)
       |> FlatFileUtils.create_zip!()
       |> FlatFileUtils.store_on_s3!()
