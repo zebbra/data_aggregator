@@ -3,6 +3,9 @@ defmodule DataAggregator.Api.Helpers do
   Helper functions for the Data Aggregator API and clients
   """
 
+  @spec grscicoll_api_base_url() :: String.t()
+  def grscicoll_api_base_url, do: System.get_env("GRSCICOLL_API_BASE_URL")
+
   @spec gbif_api_base_url() :: String.t()
   def gbif_api_base_url, do: System.get_env("GBIF_API_BASE_URL")
 
@@ -29,20 +32,20 @@ defmodule DataAggregator.Api.Helpers do
 
   @spec grscicoll_entity_by_key_url(String.t(), atom()) :: String.t()
   def grscicoll_entity_by_key_url(key, :collection) do
-    gbif_api_base_url() <> "/grscicoll/collection/#{key}"
+    grscicoll_api_base_url() <> "/collection/#{key}"
   end
 
   def grscicoll_entity_by_key_url(key, :institution) do
-    gbif_api_base_url() <> "/grscicoll/institution/#{key}"
+    grscicoll_api_base_url() <> "/institution/#{key}"
   end
 
   @spec grscicoll_entities_url(atom()) :: String.t()
   def grscicoll_entities_url(:collection) do
-    gbif_api_base_url() <> "/grscicoll/collection"
+    grscicoll_api_base_url() <> "/collection"
   end
 
   def grscicoll_entities_url(:institution) do
-    gbif_api_base_url() <> "/grscicoll/institution"
+    grscicoll_api_base_url() <> "/institution"
   end
 
   @spec infospecies_approval_notification_url() :: String.t()
