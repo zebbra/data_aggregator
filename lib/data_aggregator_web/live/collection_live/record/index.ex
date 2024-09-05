@@ -320,8 +320,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           label={coordinates_th_label()}
           directions={{:asc, :desc_nils_last}}
         >
-          <div><%= encoded_attribute(record, :loc_decimal_latitude, @layer) %></div>
-          <div><%= encoded_attribute(record, :loc_decimal_longitude, @layer) %></div>
+          <div>
+            <%= format_coordinate(encoded_attribute(record, :loc_decimal_latitude, @layer)) %>
+          </div>
+          <div>
+            <%= format_coordinate(encoded_attribute(record, :loc_decimal_longitude, @layer)) %>
+          </div>
         </:col>
         <:col
           :let={{_id, record}}
