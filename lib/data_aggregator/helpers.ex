@@ -3,20 +3,24 @@ defmodule DataAggregator.Helpers do
   Generic helpers for the DataAggregator application.
   """
 
+  import Ash.Expr
+
   alias DataAggregator.Accounts.User
+
+  require Ash.Query
 
   @doc """
   Returns a list of distinct values for a given field in a resource.
   """
-  @spec distinct(Ash.Resource.t(), atom()) :: [String.t()]
-  def distinct(resource, field) do
-    resource
+  @spec distinct(Ash.Resource.t() | Ash.Query.t(), atom()) :: [String.t()]
+  def distinct(resource_or_query, field) do
+    resource_or_query
+    |> Ash.Query.filter(^ref(field) != "")
     |> Ash.Query.distinct(field)
+    |> Ash.Query.distinct_sort(field)
     |> Ash.Query.select(field)
-    |> Ash.Query.sort(field)
     |> Ash.read!()
     |> Enum.map(&Map.get(&1, field))
-    |> Enum.filter(&(&1 != nil))
   end
 
   @doc """

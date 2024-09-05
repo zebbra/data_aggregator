@@ -6,6 +6,7 @@ defmodule Mix.Tasks.Repo.Restore do
 
   @source "priv/repo/dump/staging.dump"
   @database "data-aggregator-dev"
+  # @database "postgresql://postgres:postgres@localhost:5432/data-aggregator-dev"
 
   @extensions [
     "uuid-ossp",
@@ -30,13 +31,8 @@ defmodule Mix.Tasks.Repo.Restore do
 
     Mix.shell().info("Creating extension: #{extension}")
 
-    System.cmd("psql", [
-      "-U",
-      "postgres",
-      @database,
-      "-c",
-      sql
-    ])
+    args = ["-U", "postgres", @database, "-c", sql]
+    System.cmd("psql", args)
   end
 
   def pg_restore(args) do
