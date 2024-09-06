@@ -4,7 +4,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   use DataAggregatorWeb.CollectionLive.Publication.Subscriptions
 
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
-  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 2]
+  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection_light: 2]
 
   import DataAggregatorWeb.CollectionLive.Publication.Components,
     only: [publication_state_badge: 1, publication_channel_badge: 1]
@@ -22,7 +22,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   def mount(%{"id" => id} = _params, _session, socket) do
     socket =
       socket
-      |> assign(:collection, get_collection(id, get_actor(socket)))
+      |> assign(:collection, get_collection_light(id, get_actor(socket)))
       |> assign(selected_publication: nil)
       |> subscribe_for_publication_updates(connected?(socket))
 

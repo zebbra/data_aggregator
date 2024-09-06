@@ -17,31 +17,34 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
     ]
   end
 
-  def get_collection(id, actor) do
-    Collection.get_by_id!(id,
-      load: [
-        :digitizing_progress,
-        :records_count_not_encoded,
-        :importing,
-        :exporting,
-        :encoding,
-        :publishing,
-        :approving,
-        :busy
-      ],
-      actor: actor
-    )
+  @load_light [
+    :importing,
+    :exporting,
+    :encoding,
+    :publishing,
+    :approving,
+    :busy
+  ]
+
+  @load_full @load_light ++ [:records_count_not_encoded]
+
+  def get_collection_light(id, actor) do
+    Collection.get_by_id!(id, load: @load_light, actor: actor)
+  end
+
+  def get_collection_full(id, actor) do
+    Collection.get_by_id!(id, load: @load_full, actor: actor)
   end
 
   def busy_action("set_importing"), do: "dataset:import"
   def busy_action(%{importing: true}), do: "dataset:import"
   def busy_action("set_exporting"), do: "collection:export"
   def busy_action(%{exporting: true}), do: "collection:export"
-  def busy_action("set_encoding"), do: "collection:encode"
-  def busy_action(%{encoding: true}), do: "collection:encode"
-  def busy_action("set_fast_track_publishing"), do: "collection:fast_track_pub"
-  def busy_action(%{publishing: true}), do: "collection:fast_track_pub"
-  def busy_action("set_approving"), do: "collection:approval_pub"
-  def busy_action(%{approving: true}), do: "collection:approval_pub"
+  def busy_action("set_encoding"), do: "encode:toggle"
+  def busy_action(%{encoding: true}), do: "encode:toggle"
+  def busy_action("set_fast_track_publishing"), do: "fast_track_pub:toggle"
+  def busy_action(%{publishing: true}), do: "fast_track_pub:toggle"
+  def busy_action("set_approving"), do: "approval_pub:toggle"
+  def busy_action(%{approving: true}), do: "approval_pub:toggle"
   def busy_action(_), do: nil
 end

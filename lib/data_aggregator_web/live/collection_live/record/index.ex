@@ -7,7 +7,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   import DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
 
   import DataAggregatorWeb.CollectionLive.Helpers,
-    only: [get_collection: 2, busy_action: 1]
+    only: [get_collection_full: 2, busy_action: 1]
 
   import DataAggregatorWeb.CollectionLive.Record.ActivityFeed
   import DataAggregatorWeb.CollectionLive.Record.Components
@@ -37,7 +37,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
-    collection = get_collection(id, get_actor(socket))
+    collection = get_collection_full(id, get_actor(socket))
 
     socket =
       socket
