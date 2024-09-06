@@ -1,0 +1,2 @@
+GBIFCH00700637	PreservedSpecimen	GBIFCH00700637	CSCF-COL-1034508		present		1991	7	1		EUROPE	CH	LU	950		47.01749	7.93185	3535	infospecies.ch:infofauna:20917	Rhagonycha lignosa (O. F. Müller, 1764)	Animalia
+CSCF-COL-1047246	HumanObservation	CSCF-COL-1047246	CSCF-COL-1047246		present	02. M�r	2020	7	17		EUROPE	CH	VD	642		46.42674	6.1702	3535	infospecies.ch:infofauna:22867	Stenurella bifasciata (O. F. Müller, 1776)	Animalia
