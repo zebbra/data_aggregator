@@ -197,8 +197,8 @@ defmodule DataAggregator.MixProject do
       {:ash_postgres, "~> 2.2", override: true},
       {:ash_state_machine, "~> 0.2"},
       {:ash_uuid, "~> 1.1"},
-      # Revert when https://github.com/ash-project/ash_paper_trail/pull/107 is merged
-      {:ash_paper_trail, github: "zebbra/ash_paper_trail", branch: "feat/ignore_actions"},
+      # Revert when https://github.com/ash-project/ash_paper_trail v0.1.5 is released
+      {:ash_paper_trail, github: "ash-project/ash_paper_trail"},
       # {:ash_paper_trail, "~> 0.1"},
       {:ash_pagify, "~> 1.0"},
       {:ash_authentication, "~> 4.0"},
