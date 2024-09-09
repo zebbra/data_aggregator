@@ -24,6 +24,8 @@ defmodule DataAggregator.Records.Import.Changes.DetectColumns do
       {:error, error} ->
         message = if is_exception(error), do: Exception.message(error), else: error
 
+        message = Records.DataFrame.maybe_parse_polaris_error(message)
+
         exception =
           InvalidArgument.exception(
             field: field,
