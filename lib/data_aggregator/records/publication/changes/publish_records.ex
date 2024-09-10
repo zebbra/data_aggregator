@@ -13,7 +13,7 @@ defmodule DataAggregator.Records.Publication.Changes.PublishRecords do
 
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_action(changeset, &publish_records/1, append?: true)
+    Changeset.before_transaction(changeset, &publish_records/1, append?: true)
   end
 
   defp publish_records(%Changeset{data: original_publication} = changeset) do
