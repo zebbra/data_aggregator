@@ -4,7 +4,7 @@ import Config
 database_url = "ecto://postgres:postgres@localhost:5432/data-aggregator-dev"
 
 # Configure ash authorization breakdown logging
-config :ash, :policies, log_policy_breakdowns: :error
+# config :ash, :policies, log_policy_breakdowns: :error
 # config :ash, :policies, log_successful_policy_breakdowns: :info
 # config :ash, :policies, show_policy_breakdowns?: true
 

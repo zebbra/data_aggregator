@@ -6,28 +6,35 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.Record
 
+  @transformers Schema.dwc_transformers()
+
   def attrs_by_category_in_layers(record) do
     for category <- Schema.categories() do
       attributes =
         for dwc_attribute <- category.dwc_attributes do
-          attribute = dwc_attribute.attribute
+          attribute = String.to_existing_atom("#{category.name}_#{dwc_attribute.attribute.name}")
 
           %{
             name: dwc_attribute.dwc_field,
             imported:
-              imported_attribute(
-                record,
-                String.to_existing_atom("#{category.name}_#{attribute.name}")
-              ),
+              record
+              |> imported_attribute(attribute)
+              |> maybe_transform_value(attribute),
             encoded:
-              encoded_attribute(
-                record,
-                String.to_existing_atom("#{category.name}_#{attribute.name}")
-              )
+              record
+              |> encoded_attribute(attribute)
+              |> maybe_transform_value(attribute)
           }
         end
 
       %{label: category.label, description: category.description, attributes: attributes}
+    end
+  end
+
+  defp maybe_transform_value(value, attribute_name) do
+    case @transformers[attribute_name] do
+      nil -> value
+      transformer -> transformer.(value)
     end
   end
 

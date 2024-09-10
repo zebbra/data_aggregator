@@ -6,7 +6,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
   use DataAggregatorWeb, :verified_routes
   use DataAggregatorWeb.Gettext
 
-  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection: 2, busy_action: 1]
+  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection_light: 2, busy_action: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers
   import DataAggregatorWeb.Helpers, only: [get_actor: 1]
 
@@ -82,7 +82,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
 
   defp handle_import_updated(%Notification{data: %{id: id, collection_id: collection_id}}, socket, event) do
     import = Import.get_by_id!(id, load: @load_all, actor: get_actor(socket))
-    collection = get_collection(collection_id, get_actor(socket))
+    collection = get_collection_light(collection_id, get_actor(socket))
 
     socket =
       socket

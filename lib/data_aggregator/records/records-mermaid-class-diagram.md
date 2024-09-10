@@ -9,16 +9,17 @@ classDiagram
         String grscicoll_reference
         String grscicoll_institution_key
         String grscicoll_institution_code
+        String grscicoll_institution_name
         String description
         String gbif_dataset_key
         Map[] import_mapping
+        Integer records_count
         CollectionType type
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID institution_id
         Atom state
         Float digitizing_progress
-        Integer records_count
         Institution institution
         Import[] imports
         Export[] exports
@@ -37,6 +38,7 @@ classDiagram
         set_deleting()
         set_idle()
         set_idle_encoding()
+        decrement_records_count()
         destroy()
         export(Struct export)
         publish(Struct publication)
@@ -328,6 +330,7 @@ classDiagram
         UtcDatetimeUsec updated_at
         UUID record_id
         Record record
+        SwissSpecies[] swiss_species
         destroy()
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read(String sort)
@@ -764,7 +767,6 @@ classDiagram
         Image[] images
         Attachment[] image_attachments
         EncodedRecord encoded_record
-        SwissSpecies swiss_species
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read(String sort)
         by_collection(String collection_id, String sort)
@@ -1161,12 +1163,12 @@ classDiagram
     Collection -- Record
     EncodedRecord -- Version
     EncodedRecord -- Record
+    EncodedRecord -- SwissSpecies
     RecordEncodingResult -- Record
     Import -- Record
     Import -- Record
     Record -- Record
     Record -- Image
     Record -- Version
-    Record -- SwissSpecies
 
 ```

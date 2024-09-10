@@ -27,7 +27,7 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
     query
     |> Ash.stream!(page: false)
     |> Stream.map(&map_record(&1, record_attributes))
-    |> Stream.map(&FlatFileUtils.map_data_to_headers(&1, header_fields))
+    |> Stream.map(&FlatFileUtils.map_data_to_headers(&1, header_fields, Schema.dwc_transformers()))
     |> FlatFileUtils.store_on_disk!(path, headers)
   end
 

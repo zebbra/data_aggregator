@@ -46,9 +46,9 @@ defmodule DataAggregator.Accounts.User do
       public? true
     end
 
-    attribute :first_name, :string, allow_nil?: true
-    attribute :last_name, :string, allow_nil?: true
-    attribute :phone, :string, allow_nil?: true
+    attribute :first_name, :string, allow_nil?: true, public?: true
+    attribute :last_name, :string, allow_nil?: true, public?: true
+    attribute :phone, :string, allow_nil?: true, public?: true
     attribute :hashed_password, :string, allow_nil?: true, sensitive?: true
     attribute :roles, {:array, :string}, default: []
 

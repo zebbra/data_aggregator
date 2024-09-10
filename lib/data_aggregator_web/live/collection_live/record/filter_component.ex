@@ -12,18 +12,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
+  require Ash.Query
+
   @impl true
   def mount(socket) do
-    distinct_options = %{
-      loc_continent: loc_continent_options(),
-      tax_kingdom: tax_kingdom_options(),
-      tax_phylum: tax_phylum_options()
-    }
-
-    socket =
-      socket
-      |> assign(:distinct_options, distinct_options)
-      |> assign(:error, nil)
+    socket = assign(socket, :error, nil)
 
     {:ok, socket}
   end
@@ -35,6 +28,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       |> assign(assigns)
       |> assign_form()
       |> assign_collapsible_state()
+      |> assign_options()
       |> assign(:count, format_count(assigns.meta.total_count))
       |> assign(:label, Map.get(assigns, :label, ~t"entries"m))
 
@@ -388,15 +382,34 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     Map.get(collapsible_state, key, false)
   end
 
-  defp loc_continent_options do
-    distinct(EncodedRecord, :loc_continent)
+  defp assign_options(socket) do
+    assign_new(socket, :distinct_options, fn ->
+      %{
+        loc_continent: loc_continent_options(socket.assigns.collection_id),
+        tax_kingdom: tax_kingdom_options(socket.assigns.collection_id),
+        tax_phylum: tax_phylum_options(socket.assigns.collection_id)
+      }
+    end)
   end
 
-  defp tax_kingdom_options do
-    distinct(EncodedRecord, :tax_kingdom)
+  defp loc_continent_options(collection_id) do
+    distinct(
+      Ash.Query.filter(EncodedRecord, record.collection_id == ^collection_id),
+      :loc_continent
+    )
   end
 
-  defp tax_phylum_options do
-    distinct(EncodedRecord, :tax_phylum)
+  defp tax_kingdom_options(collection_id) do
+    distinct(
+      Ash.Query.filter(EncodedRecord, record.collection_id == ^collection_id),
+      :tax_kingdom
+    )
+  end
+
+  defp tax_phylum_options(collection_id) do
+    distinct(
+      Ash.Query.filter(EncodedRecord, record.collection_id == ^collection_id),
+      :tax_phylum
+    )
   end
 end

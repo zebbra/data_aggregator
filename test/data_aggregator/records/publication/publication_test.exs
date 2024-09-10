@@ -48,21 +48,27 @@ defmodule DataAggregator.PublicationTest do
         record_fixture(%{
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
-          tax_kingdom: "Animalia"
+          tax_kingdom: "Animalia",
+          loc_decimal_latitude: 10.0,
+          loc_decimal_longitude: 10.0
         })
 
       record2 =
         record_fixture(%{
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
-          tax_kingdom: "Animalia"
+          tax_kingdom: "Animalia",
+          loc_decimal_latitude: 166.4713889,
+          loc_decimal_longitude: 640_000.0
         })
 
       record3 =
         record_fixture(%{
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
-          tax_kingdom: "Animalia"
+          tax_kingdom: "Animalia",
+          loc_decimal_latitude: 47.27606815,
+          loc_decimal_longitude: 9.408043484
         })
 
       record4 =
@@ -172,6 +178,21 @@ defmodule DataAggregator.PublicationTest do
       )
 
       assert DataFrame.n_rows(data_frame) == 5
+
+      rows = DataFrame.to_rows(data_frame)
+
+      transformed_attributes =
+        Enum.map(rows, &Map.take(&1, ["decimalLongitude", "decimalLatitude"]))
+
+      expected = [
+        %{"decimalLatitude" => 10.0, "decimalLongitude" => 10.0},
+        %{"decimalLatitude" => 166.4713889, "decimalLongitude" => 640_000.0},
+        %{"decimalLatitude" => 47.27606815, "decimalLongitude" => 9.408043484},
+        %{"decimalLatitude" => nil, "decimalLongitude" => nil},
+        %{"decimalLatitude" => nil, "decimalLongitude" => nil}
+      ]
+
+      assert expected == transformed_attributes
     end
 
     test "publish/1 fails at register collection", %{

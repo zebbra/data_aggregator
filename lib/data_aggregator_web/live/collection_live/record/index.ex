@@ -7,7 +7,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   import DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
 
   import DataAggregatorWeb.CollectionLive.Helpers,
-    only: [get_collection: 2, busy_action: 1]
+    only: [get_collection_full: 2, busy_action: 1]
 
   import DataAggregatorWeb.CollectionLive.Record.ActivityFeed
   import DataAggregatorWeb.CollectionLive.Record.Components
@@ -29,6 +29,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
+  alias DataAggregator.Taxonomy.Catalog
 
   require Ash.Query
 
@@ -36,7 +37,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
-    collection = get_collection(id, get_actor(socket))
+    collection = get_collection_full(id, get_actor(socket))
 
     socket =
       socket
@@ -46,7 +47,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       |> assign(:busy, collection.busy)
       |> assign(:busy_action, busy_action(collection))
       |> assign(:show_filters, false)
+      |> assign(:show_encode, false)
+      |> assign(:show_fast_track_pub, false)
+      |> assign(:show_approval_pub, false)
       |> assign(:record_tab, "data")
+      |> assign(:agreed, false)
       |> subscribe_for_record_updates(connected?(socket))
 
     {:ok, socket}
@@ -315,8 +320,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           label={coordinates_th_label()}
           directions={{:asc, :desc_nils_last}}
         >
-          <div><%= encoded_attribute(record, :loc_decimal_latitude, @layer) %></div>
-          <div><%= encoded_attribute(record, :loc_decimal_longitude, @layer) %></div>
+          <div>
+            <%= format_coordinate(encoded_attribute(record, :loc_decimal_latitude, @layer)) %>
+          </div>
+          <div>
+            <%= format_coordinate(encoded_attribute(record, :loc_decimal_longitude, @layer)) %>
+          </div>
         </:col>
         <:col
           :let={{_id, record}}
@@ -499,6 +508,90 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </.modal>
 
         <.modal
+          id="encode_modal"
+          size="xl"
+          title={~t"Encoding summary"m}
+          show={@show_encode}
+          responsive
+          on_cancel={JS.push("encode:toggle")}
+          on_confirm={JS.push("collection:encode")}
+        >
+          <div :if={@show_encode} class="contents">
+            <p class="mb-4 text-sm">
+              <%= mgettext("You're about to encode %{count} records.",
+                count: format_number(@meta.total_count)
+              ) %>
+            </p>
+            <p class="text-sm">
+              <%= ~t"These records will be encoded and enriched using the following resources."m %>
+            </p>
+            <ul class="mt-2 list-inside list-disc text-sm">
+              <li :for={catalog <- Catalog.get_translated_catalogs()} class="text-info">
+                <span class="text-base-content"><%= catalog %></span>
+              </li>
+            </ul>
+            <p class="text-base-content/60 mt-4 text-sm">
+              <%= ~t"By clicking"m %>
+              <span class="text-base-content italic"><%= ~t"Encode"m %></span>
+              <%= ~t"the encoding will be triggered. No further action is required. Please note that this process may take some time."m %>
+            </p>
+          </div>
+          <:footer>
+            <form method="dialog" class="contents">
+              <button type="submit" value="confirm" class="btn btn-primary" disabled={@busy}>
+                <%= ~t"Encode"m %>
+              </button>
+              <button class="btn btn-ghost">
+                <%= ~t"Cancel"m %>
+              </button>
+            </form>
+          </:footer>
+        </.modal>
+
+        <.modal
+          id="fast_track_pub_modal"
+          size="xl"
+          show={@show_fast_track_pub}
+          responsive
+          on_cancel={JS.push("fast_track_pub:toggle")}
+          on_confirm={JS.push("collection:fast_track_pub")}
+          overflow="manual"
+        >
+          <.live_component
+            :if={@show_fast_track_pub}
+            module={DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal}
+            id="fast_track_pub_modal_component"
+            meta={@meta}
+            collection={@collection}
+            current_user={@current_user}
+            layer={@layer}
+            busy={@busy}
+            agreed={@agreed}
+          />
+        </.modal>
+
+        <.modal
+          id="approval_pub_modal"
+          size="xl"
+          show={@show_approval_pub}
+          responsive
+          on_cancel={JS.push("approval_pub:toggle")}
+          on_confirm={JS.push("collection:approval_pub")}
+          overflow="manual"
+        >
+          <.live_component
+            :if={@show_approval_pub}
+            module={DataAggregatorWeb.CollectionLive.Record.ApprovalModal}
+            id="approval_pub_modal_component"
+            meta={@meta}
+            collection={@collection}
+            current_user={@current_user}
+            layer={@layer}
+            busy={@busy}
+          />
+        </.modal>
+
+        <.modal
           :if={@show_filters}
           id="filters_modal"
           show
@@ -534,36 +627,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               <span class="text-base-content"><%= ~t"Record images"m %></span>
             </li>
           </ul>
-        </.alert>
-
-        <.alert
-          id="confirm_encoding_alert"
-          size="sm"
-          title={~t"Are you sure?"m}
-          text={~t"You're about to encode this collection"m}
-          label={~t"Yes, encode"m}
-          color="primary"
-        >
-        </.alert>
-
-        <.alert
-          id="confirm_fast_track_pub_alert"
-          size="sm"
-          title={~t"Are you sure?"m}
-          text={~t"You're about to publish this collection directly to the Gbif.ch Portal"m}
-          label={~t"Yes, publish"m}
-          color="primary"
-        >
-        </.alert>
-
-        <.alert
-          id="confirm_approval_pub_alert"
-          size="sm"
-          title={~t"Are you sure?"m}
-          text={~t"You're about to publish this collection to Infospecies for approval"m}
-          label={~t"Yes, approve"m}
-          color="primary"
-        >
         </.alert>
       </:portal>
     </.page>
@@ -614,11 +677,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
+  def handle_event("encode:toggle", _, socket) do
+    socket = update(socket, :show_encode, &(!&1))
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_event("collection:encode", _params, socket) do
     %{collection: collection, layer: layer} = socket.assigns
 
     actor = get_actor(socket)
     collection = Collection.get_by_id!(collection.id, load: [:encoding], actor: actor)
+    socket = update(socket, :show_encode, &(!&1))
 
     case Collection.set_encoding(collection, actor: actor) do
       {:ok, %{id: id}} ->
@@ -650,6 +720,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
+  def handle_event("fast_track_pub:toggle", _, socket) do
+    socket =
+      socket
+      |> update(:show_fast_track_pub, &(!&1))
+      |> assign(:agreed, false)
+
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_event("collection:fast_track_pub", _params, socket) do
     %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
     actor = get_actor(socket)
@@ -662,12 +742,23 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       {:ok, _} ->
         {:noreply,
          socket
+         |> assign(:agreed, false)
          |> put_flash(:info, ~t"Publication started in background"m)
          |> push_navigate(to: ~p"/collections/#{collection.id}/publications")}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"A publication for this collection is already in process"m)}
+        {:noreply,
+         socket
+         |> assign(:agreed, false)
+         |> put_flash(:error, ~t"A publication for this collection is already in process"m)}
     end
+  end
+
+  @impl true
+  def handle_event("approval_pub:toggle", _, socket) do
+    socket = update(socket, :show_approval_pub, &(!&1))
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -719,6 +810,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     else
       update_and_patch_search(socket, params["query"])
     end
+  end
+
+  @impl true
+  def handle_event("toggle:agree", _, socket) do
+    {:noreply, update(socket, :agreed, &(!&1))}
   end
 
   @impl true

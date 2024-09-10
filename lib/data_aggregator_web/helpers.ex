@@ -77,6 +77,14 @@ defmodule DataAggregatorWeb.Helpers do
     "#{format.(hours)}:#{format.(minutes)}:#{format.(seconds)}"
   end
 
+  def format_coordinate(val)
+  def format_coordinate(val) when val in [nil, "", "-"], do: val
+
+  def format_coordinate(val) do
+    truncated = trunc(val)
+    if truncated == val, do: truncated, else: val
+  end
+
   @doc ~S"""
   Returns a string of class names from a list of class names.
 

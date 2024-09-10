@@ -76,14 +76,14 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
         <:col :let={{_id, user}} field={:phone} label={~t"Phone"m}>
           <%= user.phone %>
         </:col>
-        <:col :let={{_id, user}} label={~t"Roles"m}>
+        <:col :let={{_id, user}} field={:roles} label={~t"Roles"m}>
           <%= for role <- user.roles do %>
             <.badge color="gray" class="mt-0.5">
               <span class="px-1.5"><%= role %></span>
             </.badge>
           <% end %>
         </:col>
-        <:col :let={{_id, user}} field={:institution_id} label={~t"Institution"m}>
+        <:col :let={{_id, user}} label={~t"Institution"m}>
           <%= if user.institution_id do %>
             <%= get_institution_name(user.institution_id) %>
           <% end %>
