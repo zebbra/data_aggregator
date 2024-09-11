@@ -40,14 +40,14 @@ defmodule DataAggregatorWeb.CollectionLiveTest do
     test "redirects to / for empty roles", %{conn: conn} do
       {:error, {:redirect, %{to: path, flash: %{}}}} = live(conn, ~p"/collections/new")
 
-      assert path == ~p"/"
+      assert path == ~p"/collections"
     end
 
     @tag authenticated: "data_administrator"
     test "redirects to / for role data_administrator", %{conn: conn} do
       {:error, {:redirect, %{to: path, flash: %{}}}} = live(conn, ~p"/collections/new")
 
-      assert path == ~p"/"
+      assert path == ~p"/collections"
     end
 
     @tag authenticated: "collection_digitizer"

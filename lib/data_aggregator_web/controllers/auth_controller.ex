@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.AuthController do
   use AshAuthentication.Phoenix.Controller
 
   def success(conn, _activity, user, _token) do
-    return_to = get_session(conn, :return_to) || ~p"/"
+    return_to = get_session(conn, :return_to) || ~p"/collections"
 
     conn
     |> delete_session(:return_to)

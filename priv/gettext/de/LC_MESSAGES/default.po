@@ -189,37 +189,25 @@ msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Dashboard"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:47
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:35
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Collections"
 msgstr "Sammlungen"
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:35
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Layouts.Primary"
-msgid "Home"
-msgstr "Start"
-
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:59
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:47
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Records"
 msgstr "Einträge"
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:47
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:35
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Collections"
 msgstr "Sammlungen"
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:35
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Layouts.Secondary"
-msgid "Home"
-msgstr "Start"
-
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:59
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:47
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Records"
@@ -2915,13 +2903,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "There are no collections yet for your institution"
 msgstr "Es gibt noch keine Sammlungen für deine Institution"
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:72
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:60
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Administration"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:72
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:60
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Administration"
@@ -2965,13 +2953,13 @@ msgstr "Keine Einträge vorhanden"
 msgid "Sign out"
 msgstr "Abmelden"
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:82
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:88
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Sign out"
 msgstr "Abmelden"
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:82
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:88
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Sign out"
@@ -3245,3 +3233,27 @@ msgstr "Fortschritt"
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Records count / est."
 msgstr "Einträge / geschätzt"
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:70
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Primary"
+msgid "Guide"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:79
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Primary"
+msgid "Tutorials"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:70
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Secondary"
+msgid "Guide"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:79
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Secondary"
+msgid "Tutorials"
+msgstr ""
