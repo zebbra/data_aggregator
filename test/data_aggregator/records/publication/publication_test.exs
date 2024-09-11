@@ -195,24 +195,28 @@ defmodule DataAggregator.PublicationTest do
       assert expected == transformed_attributes
     end
 
+    @tag capture_log: true
     test "publish/1 fails at register collection", %{
       publication_1: publication_1
     } do
       {:error, _error} = Collection.publish(publication_1)
     end
 
+    @tag capture_log: true
     test "publish/1 fails at create endpoint", %{
       publication_2: publication_2
     } do
       {:error, _error} = Collection.publish(publication_2)
     end
 
+    @tag capture_log: true
     test "publish/1 fails at get endpoints", %{
       publication_3: publication_3
     } do
       {:error, _error} = Collection.publish(publication_3)
     end
 
+    @tag capture_log: true
     test "publish/1 fails at delete endpoint", %{
       publication_4: publication_4
     } do
@@ -229,6 +233,7 @@ defmodule DataAggregator.PublicationTest do
       end)
     end
 
+    @tag capture_log: true
     test "run/1 correctly sets states when failing at publish/register_at_gbif step", %{
       publication_1: publication
     } do
