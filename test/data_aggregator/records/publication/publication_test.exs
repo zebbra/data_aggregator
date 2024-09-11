@@ -14,6 +14,7 @@ defmodule DataAggregator.PublicationTest do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Publication.Workers.Publisher
+  alias DataAggregator.Records.Record
   alias Explorer.DataFrame
 
   require Ash.Query
@@ -199,28 +200,44 @@ defmodule DataAggregator.PublicationTest do
     test "publish/1 fails at register collection", %{
       publication_1: publication_1
     } do
-      {:error, _error} = Collection.publish(publication_1)
+      {:error, %Invalid{errors: errors}} = Collection.publish(publication_1)
+
+      assert Enum.any?(errors, fn error ->
+               String.contains?(error.message, "Error during collection registering")
+             end)
     end
 
     @tag capture_log: true
     test "publish/1 fails at create endpoint", %{
       publication_2: publication_2
     } do
-      {:error, _error} = Collection.publish(publication_2)
+      {:error, %Invalid{errors: errors}} = Collection.publish(publication_2)
+
+      assert Enum.any?(errors, fn error ->
+               String.contains?(error.message, "Error during endpoint creation")
+             end)
     end
 
     @tag capture_log: true
     test "publish/1 fails at get endpoints", %{
       publication_3: publication_3
     } do
-      {:error, _error} = Collection.publish(publication_3)
+      {:error, %Invalid{errors: errors}} = Collection.publish(publication_3)
+
+      assert Enum.any?(errors, fn error ->
+               String.contains?(error.message, "Error fetching existing endpoints")
+             end)
     end
 
     @tag capture_log: true
     test "publish/1 fails at delete endpoint", %{
       publication_4: publication_4
     } do
-      {:error, _error} = Collection.publish(publication_4)
+      {:error, %Invalid{errors: errors}} = Collection.publish(publication_4)
+
+      assert Enum.any?(errors, fn error ->
+               String.contains?(error.message, "Error deleting endpoint")
+             end)
     end
 
     test "run/1", %{
@@ -242,6 +259,16 @@ defmodule DataAggregator.PublicationTest do
 
         publication = Publication.get_by_id!(publication.id)
         collection = Collection.get_by_id!(publication.collection_id)
+
+        query = AshPagify.query_for_filters_map(Record, publication.records_query)
+
+        records =
+          query
+          |> Ash.stream!(page: false)
+          |> Stream.take(5)
+          |> Enum.to_list()
+
+        assert Enum.all?(records, &(&1.fast_track_status == :publication_failed))
 
         assert publication.state == :failed
         assert collection.state == :idle
