@@ -8,6 +8,7 @@ defmodule DataAggregator.EncodingFixtures do
 
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Gbif.RestAPIStub
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
@@ -145,6 +146,27 @@ defmodule DataAggregator.EncodingFixtures do
     |> Map.put(:loc_decimal_longitude, 7.456905642729698)
     |> Map.put(:loc_decimal_latitude, 46.946660986374766)
     |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Record.create!()
+  end
+
+  @doc """
+    Generate a correct record for grscicoll institution encoding
+  """
+  def record_fixture_for_add_institution_code_encoding_correct(attrs \\ %{}) do
+    @encoded_record_defaults
+    |> Map.merge(attrs)
+    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Record.create!()
+  end
+
+  def record_fixture_for_add_institution_code_encoding_failing(attrs \\ %{}) do
+    @encoded_record_defaults
+    |> Map.merge(attrs)
+    |> Map.put_new_lazy(:collection, fn ->
+      collection_fixture(%{
+        grscicoll_reference: RestAPIStub.missing_institution_data_grscicoll_reference()
+      })
+    end)
     |> Record.create!()
   end
 end

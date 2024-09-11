@@ -14,9 +14,9 @@ defmodule DataAggregator.Records.Record.Calculations.Mids.LevelOne do
   @impl true
   def expression(_opts, _context) do
     expr(
-      not is_nil(mte_catalog_number) and
-        not is_nil(tax_scientific_name) and
-        not is_nil(oth_institution_code)
+      not is_nil(encoded_record.mte_catalog_number) and
+        not is_nil(encoded_record.tax_scientific_name) and
+        not is_nil(encoded_record.oth_institution_code)
     )
   end
 end
