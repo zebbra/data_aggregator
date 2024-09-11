@@ -105,6 +105,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
             phx-click={JS.push("user:delete", value: %{id: user.id})}
             data-tip={~t"Delete"m}
             data-confirm={~t"Are you sure?"m}
+            data-confirm_id="confirm_administration_alert"
             disabled={User.can_destroy?(@current_user, user) == false}
             icon="hero-trash-mini"
           />
@@ -165,6 +166,12 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
             current_user={@current_user}
           />
         </.modal>
+        <.alert
+          id="confirm_administration_alert"
+          size="sm"
+          title={~t"Are you sure?"m}
+          label={~t"Yes, delete user"m}
+        />
       </:portal>
     </.page>
     """

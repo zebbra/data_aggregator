@@ -31,7 +31,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
     <div class="contents">
       <.modal_header id={@id}>
         <.stepper current={current_step(@step)} steps={3} class="pr-2" />
-        <.section_heading text={heading(@step)} class="mt-4" />
+        <.section_heading text={heading(@step, @action)} class="mt-4" />
       </.modal_header>
 
       <.simple_form
@@ -313,9 +313,10 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
   defp current_step(:role), do: 2
   defp current_step(:summary), do: 3
 
-  defp heading(:user), do: ~t"Add User"m
-  defp heading(:role), do: ~t"Add Role"m
-  defp heading(:summary), do: ~t"Summary"m
+  defp heading(:user, :new), do: ~t"Add User"m
+  defp heading(:user, :edit), do: ~t"Edit User"m
+  defp heading(:role, _), do: ~t"Add Role"m
+  defp heading(:summary, _), do: ~t"Summary"m
 
   defp assign_form(%{assigns: assigns} = socket) do
     assign(socket, :form, build_form(assigns))

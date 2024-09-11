@@ -2641,7 +2641,7 @@ msgctxt "DataAggregator.Accounts.User"
 msgid "is not a valid email address"
 msgstr "ist keine gültige E-Mail-Adresse"
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:317
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:318
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Add Role"
@@ -2761,7 +2761,7 @@ msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Select institutions"
 msgstr "Institution auswählen"
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:318
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:319
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Summary"
@@ -2785,20 +2785,20 @@ msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Add User"
 msgstr "Benutzer hinzufügen"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:128
+#: lib/data_aggregator_web/live/administration_live/index.ex:129
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Address"
 msgstr "Adresse"
 
 #: lib/data_aggregator_web/live/administration_live/index.ex:42
-#: lib/data_aggregator_web/live/administration_live/index.ex:231
+#: lib/data_aggregator_web/live/administration_live/index.ex:238
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Administration"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:122
+#: lib/data_aggregator_web/live/administration_live/index.ex:123
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "E-Mail"
@@ -2810,7 +2810,7 @@ msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:243
+#: lib/data_aggregator_web/live/administration_live/index.ex:250
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Edit User"
@@ -2828,14 +2828,14 @@ msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "First Name"
 msgstr "Vorname"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:256
+#: lib/data_aggregator_web/live/administration_live/index.ex:263
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Get started by adding a new User."
 msgstr "Beginne, indem Du einen neuen Benutzer erstellst."
 
 #: lib/data_aggregator_web/live/administration_live/index.ex:86
-#: lib/data_aggregator_web/live/administration_live/index.ex:125
+#: lib/data_aggregator_web/live/administration_live/index.ex:126
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Institution"
@@ -2847,14 +2847,14 @@ msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Last Name"
 msgstr "Nachname"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:237
-#: lib/data_aggregator_web/live/administration_live/index.ex:257
+#: lib/data_aggregator_web/live/administration_live/index.ex:244
+#: lib/data_aggregator_web/live/administration_live/index.ex:264
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "New User"
 msgstr "Neuer Benutzer"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:255
+#: lib/data_aggregator_web/live/administration_live/index.ex:262
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "No Users"
@@ -2867,7 +2867,7 @@ msgid "Phone"
 msgstr "Telefon"
 
 #: lib/data_aggregator_web/live/administration_live/index.ex:79
-#: lib/data_aggregator_web/live/administration_live/index.ex:139
+#: lib/data_aggregator_web/live/administration_live/index.ex:140
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Roles"
@@ -2978,6 +2978,7 @@ msgid "There are no records yet for your institution"
 msgstr "Es gibt noch keine Einträge für deine Institution"
 
 #: lib/data_aggregator_web/live/administration_live/index.ex:107
+#: lib/data_aggregator_web/live/administration_live/index.ex:172
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Are you sure?"
@@ -2989,7 +2990,7 @@ msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Delete"
 msgstr "Löschen"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:198
+#: lib/data_aggregator_web/live/administration_live/index.ex:205
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "User deleted successfully"
@@ -3257,3 +3258,15 @@ msgstr ""
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Tutorials"
 msgstr ""
+
+#: lib/data_aggregator_web/live/administration_live/index.ex:173
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.AdministrationLive.Index"
+msgid "Yes, delete user"
+msgstr "Ja, User löschen"
+
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:317
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
+msgid "Edit User"
+msgstr "User bearbeiten"
