@@ -167,8 +167,6 @@ defmodule DataAggregator.Records.Record do
       :updated_at,
       :import_data,
       :errors,
-      :approval_status,
-      :fast_track_status,
       :state
     ]
 
