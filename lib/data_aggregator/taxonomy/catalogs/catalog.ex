@@ -1,4 +1,11 @@
-catalogs = [:gbif_taxonomy, :swiss_species, :geo_reverse, :geo_forward, :gbif_iucn_redlist]
+catalogs = [
+  :gbif_taxonomy,
+  :swiss_species,
+  :geo_reverse,
+  :geo_forward,
+  :gbif_iucn_redlist,
+  :add_institution_code
+]
 
 defmodule DataAggregator.Taxonomy.Catalog do
   @moduledoc """
@@ -21,6 +28,7 @@ defmodule DataAggregator.Taxonomy.Catalog do
       :geo_reverse -> "Geo Reverse"
       :geo_forward -> "Geo Forward"
       :gbif_iucn_redlist -> "GBIF IUCN Redlist"
+      :add_institution_code -> "Add Institution Code"
       _ -> throw("no translation defined for catalog: #{catalog}")
     end
   end
@@ -47,6 +55,9 @@ defmodule DataAggregator.Taxonomy.Catalog do
         []
 
       :geo_forward ->
+        []
+
+      :add_institution_code ->
         []
 
       _ ->
@@ -107,6 +118,12 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:loc_country, "country"},
           {:loc_country_code, "country_code"},
           {:loc_state_province, "state"}
+        ]
+
+      :add_institution_code ->
+        [
+          {:oth_institution_id, :grscicoll_institution_key},
+          {:oth_institution_code, :grscicoll_institution_code}
         ]
 
       _ ->

@@ -15,9 +15,8 @@ defmodule DataAggregator.Records.Record.Calculations.Mids.LevelTwo do
   def expression(_opts, _context) do
     expr(
       mids_level_one and
-        ((not is_nil(mte_part_of_organism) or
-            not is_nil(encoded_record.mte_part_of_organism)) and
-           (not is_nil(tax_taxon_id) or not is_nil(encoded_record.tax_taxon_id)))
+        not is_nil(encoded_record.mte_part_of_organism) and
+        not is_nil(encoded_record.tax_taxon_id)
     )
   end
 end

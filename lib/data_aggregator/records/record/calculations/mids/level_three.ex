@@ -63,69 +63,66 @@ defmodule DataAggregator.Records.Record.Calculations.Mids.LevelThree do
   end
 
   defp has_non_nil_eve_event_date do
-    expr(not is_nil(eve_event_date) or not is_nil(encoded_record.eve_event_date))
+    expr(not is_nil(encoded_record.eve_event_date))
   end
 
   defp has_non_nil_mte_recorded_by do
-    expr(not is_nil(mte_recorded_by) or not is_nil(encoded_record.mte_recorded_by))
+    expr(not is_nil(encoded_record.mte_recorded_by))
   end
 
   defp has_non_nil_idf_type_status do
-    expr(not is_nil(idf_type_status) or not is_nil(encoded_record.idf_type_status))
+    expr(not is_nil(encoded_record.idf_type_status))
   end
 
   defp has_non_nil_tax_original_name_usage do
-    expr(not is_nil(tax_original_name_usage) or not is_nil(encoded_record.tax_original_name_usage))
+    expr(not is_nil(encoded_record.tax_original_name_usage))
   end
 
   defp has_non_nil_loc_continent do
-    expr(not is_nil(loc_continent) or not is_nil(encoded_record.loc_continent))
+    expr(not is_nil(encoded_record.loc_continent))
   end
 
   defp has_non_nil_loc_country do
-    expr(not is_nil(loc_country) or not is_nil(encoded_record.loc_country))
+    expr(not is_nil(encoded_record.loc_country))
   end
 
   defp has_non_nil_loc_county do
-    expr(not is_nil(loc_county) or not is_nil(encoded_record.loc_county))
+    expr(not is_nil(encoded_record.loc_county))
   end
 
   defp has_non_nil_loc_decimal_latitude do
-    expr(not is_nil(loc_decimal_latitude) or not is_nil(encoded_record.loc_decimal_latitude))
+    expr(not is_nil(encoded_record.loc_decimal_latitude))
   end
 
   defp has_non_nil_loc_decimal_longitude do
-    expr(not is_nil(loc_decimal_longitude) or not is_nil(encoded_record.loc_decimal_longitude))
+    expr(not is_nil(encoded_record.loc_decimal_longitude))
   end
 
   defp has_non_nil_loc_higher_geography do
-    expr(not is_nil(loc_higher_geography) or not is_nil(encoded_record.loc_higher_geography))
+    expr(not is_nil(encoded_record.loc_higher_geography))
   end
 
   defp has_non_nil_loc_locality do
-    expr(not is_nil(loc_locality) or not is_nil(encoded_record.loc_locality))
+    expr(not is_nil(encoded_record.loc_locality))
   end
 
   defp has_non_nil_loc_state_province do
-    expr(not is_nil(loc_state_province) or not is_nil(encoded_record.loc_state_province))
+    expr(not is_nil(encoded_record.loc_state_province))
   end
 
   defp has_non_nil_loc_verbatim_depth do
-    expr(not is_nil(loc_verbatim_depth) or not is_nil(encoded_record.loc_verbatim_depth))
+    expr(not is_nil(encoded_record.loc_verbatim_depth))
   end
 
   defp has_non_nil_loc_verbatim_elevation do
-    expr(not is_nil(loc_verbatim_elevation) or not is_nil(encoded_record.loc_verbatim_elevation))
+    expr(not is_nil(encoded_record.loc_verbatim_elevation))
   end
 
   defp has_non_nil_mte_year_collection_entrance do
-    expr(
-      not is_nil(mte_year_collection_entrance) or
-        not is_nil(encoded_record.mte_year_collection_entrance)
-    )
+    expr(not is_nil(encoded_record.mte_year_collection_entrance))
   end
 
   defp has_non_nil_occ_occurrence_id do
-    expr(not is_nil(occ_occurrence_id) or not is_nil(encoded_record.occ_occurrence_id))
+    expr(not is_nil(encoded_record.occ_occurrence_id))
   end
 end

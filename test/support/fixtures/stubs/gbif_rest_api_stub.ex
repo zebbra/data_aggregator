@@ -27,6 +27,9 @@ defmodule DataAggregator.Gbif.RestAPIStub do
   @other_grscicoll_reference "322ce107-3156-4420-8a2b-7f17efeaa473"
   def other_grscicoll_reference, do: @other_grscicoll_reference
 
+  @missing_institution_data_grscicoll_reference "6267ef74-8393-4d57-a9f8-2b36831f5042"
+  def missing_institution_data_grscicoll_reference, do: @missing_institution_data_grscicoll_reference
+
   def register_dataset(_collection_name) do
     {:ok, %{status: 201, body: "1234-1234-1234-1234"}}
   end
@@ -298,6 +301,17 @@ defmodule DataAggregator.Gbif.RestAPIStub do
        "institutionKey" => @other_institution_key,
        "institutionName" => "Universität Zürich",
        "institutionCode" => "Z"
+     }}
+  end
+
+  def get_grscicoll_collection_attributes(@missing_institution_data_grscicoll_reference, _attributes) do
+    {:ok,
+     %{
+       "code" => "Z",
+       "name" => "Herbarium - Universität Zürich",
+       "institutionKey" => nil,
+       "institutionName" => nil,
+       "institutionCode" => nil
      }}
   end
 
