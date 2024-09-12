@@ -7,11 +7,14 @@ defmodule DataAggregator.PublicationTest do
   import DataAggregator.EncodingFixtures
   import DataAggregator.RecordsFixtures
 
+  alias Ash.Error.Invalid
   alias DataAggregator.DarwinCore.Publication.DwcaFile
   alias DataAggregator.Gbif
+  alias DataAggregator.Gbif.RestAPIStub
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Publication.Workers.Publisher
+  alias DataAggregator.Records.Record
   alias Explorer.DataFrame
 
   require Ash.Query
@@ -21,6 +24,26 @@ defmodule DataAggregator.PublicationTest do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       collection = collection_fixture(%{name: "Collection NumberO!+ne"})
+
+      collection_register_collection_failing =
+        collection_fixture(%{
+          grscicoll_reference: RestAPIStub.register_collection_fail_grscicoll_reference()
+        })
+
+      collection_create_endpoint_failing =
+        collection_fixture(%{
+          grscicoll_reference: RestAPIStub.create_endpoint_fail_grscicoll_reference()
+        })
+
+      collection_get_endpoints_failing =
+        collection_fixture(%{
+          grscicoll_reference: RestAPIStub.get_endpoints_fail_grscicoll_reference()
+        })
+
+      collection_delete_endpoint_failing =
+        collection_fixture(%{
+          grscicoll_reference: RestAPIStub.delete_endpoint_fail_grscicoll_reference()
+        })
 
       record1 =
         record_fixture(%{
@@ -90,12 +113,50 @@ defmodule DataAggregator.PublicationTest do
           collection: collection
         })
 
-      [collection: collection, records: records, publication: publication]
+      publicatoin_1 =
+        Publication.create!(%{
+          name: "Publication register collection failing",
+          channel: :fast_track,
+          records_query: query,
+          collection: collection_register_collection_failing
+        })
+
+      publication_2 =
+        Publication.create!(%{
+          name: "Publication create endpoint failing",
+          channel: :fast_track,
+          records_query: query,
+          collection: collection_create_endpoint_failing
+        })
+
+      publication_3 =
+        Publication.create!(%{
+          name: "Publication get endpoints failing, delete endpoint failing",
+          channel: :fast_track,
+          records_query: query,
+          collection: collection_get_endpoints_failing
+        })
+
+      publication_4 =
+        Publication.create!(%{
+          name: "Publication get endpoints success, delete endpoint failing",
+          channel: :fast_track,
+          records_query: query,
+          collection: collection_delete_endpoint_failing
+        })
+
+      [
+        collection: collection,
+        records: records,
+        publication: publication,
+        publication_1: publicatoin_1,
+        publication_2: publication_2,
+        publication_3: publication_3,
+        publication_4: publication_4
+      ]
     end
 
     test "publish/1 successful", %{
-      collection: _collection,
-      records: _records,
       publication: publication
     } do
       {:ok, publication} = Collection.publish(publication)
@@ -133,6 +194,85 @@ defmodule DataAggregator.PublicationTest do
       ]
 
       assert expected == transformed_attributes
+    end
+
+    @tag capture_log: true
+    test "publish/1 fails at register collection", %{
+      publication_1: publication_1
+    } do
+      {:error, %Invalid{errors: errors}} = Collection.publish(publication_1)
+
+      assert Enum.any?(errors, fn error ->
+               String.contains?(error.message, "Error during collection registering")
+             end)
+    end
+
+    @tag capture_log: true
+    test "publish/1 fails at create endpoint", %{
+      publication_2: publication_2
+    } do
+      {:error, %Invalid{errors: errors}} = Collection.publish(publication_2)
+
+      assert Enum.any?(errors, fn error ->
+               String.contains?(error.message, "Error during endpoint creation")
+             end)
+    end
+
+    @tag capture_log: true
+    test "publish/1 fails at get endpoints", %{
+      publication_3: publication_3
+    } do
+      {:error, %Invalid{errors: errors}} = Collection.publish(publication_3)
+
+      assert Enum.any?(errors, fn error ->
+               String.contains?(error.message, "Error fetching existing endpoints")
+             end)
+    end
+
+    @tag capture_log: true
+    test "publish/1 fails at delete endpoint", %{
+      publication_4: publication_4
+    } do
+      {:error, %Invalid{errors: errors}} = Collection.publish(publication_4)
+
+      assert Enum.any?(errors, fn error ->
+               String.contains?(error.message, "Error deleting endpoint")
+             end)
+    end
+
+    test "run/1", %{
+      publication: publication
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {:ok, publication} = Publication.run(publication)
+
+        assert publication.state == :done
+      end)
+    end
+
+    @tag capture_log: true
+    test "run/1 correctly sets states when failing at publish/register_at_gbif step", %{
+      publication_1: publication
+    } do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        assert {:error, %Invalid{}} = Publication.run(publication)
+
+        publication = Publication.get_by_id!(publication.id)
+        collection = Collection.get_by_id!(publication.collection_id)
+
+        query = AshPagify.query_for_filters_map(Record, publication.records_query)
+
+        records =
+          query
+          |> Ash.stream!(page: false)
+          |> Stream.take(5)
+          |> Enum.to_list()
+
+        assert Enum.all?(records, &(&1.fast_track_status == :publication_failed))
+
+        assert publication.state == :failed
+        assert collection.state == :idle
+      end)
     end
 
     test "enqueue/1", %{collection: collection, publication: publication} do
@@ -198,7 +338,7 @@ defmodule DataAggregator.PublicationTest do
     end
 
     defp assert_not_enqueued(publication) do
-      assert {:error, %Ash.Error.Invalid{}} = Publication.enqueue(publication)
+      assert {:error, %Invalid{}} = Publication.enqueue(publication)
       publication = Publication.get_by_id!(publication.id)
       assert publication.state == :pending
       refute_enqueued(worker: Publisher, args: %{id: publication.id})

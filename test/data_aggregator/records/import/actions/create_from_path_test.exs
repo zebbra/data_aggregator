@@ -52,16 +52,16 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
                {"Province", :string},
                {"Localité", :string},
                {"Station", :string},
-               {"LongitudeDecimale", :float},
-               {"LatitudeDecimale", :float},
+               {"LongitudeDecimale", :string},
+               {"LatitudeDecimale", :string},
                {"PrecisionGEO", :string},
                {"Remarques", :string},
-               {"DAYCOLLECTED", :integer},
-               {"MONTHCOLLECTED", :integer},
-               {"YEARCOLLECTED", :integer},
-               {"ENDOFPERIODDAY", :integer},
-               {"ENDOFPERIODMONTH", :integer},
-               {"ENDOFPERIODYEAR", :integer},
+               {"DAYCOLLECTED", :string},
+               {"MONTHCOLLECTED", :string},
+               {"YEARCOLLECTED", :string},
+               {"ENDOFPERIODDAY", :string},
+               {"ENDOFPERIODMONTH", :string},
+               {"ENDOFPERIODYEAR", :string},
                {"Collecteur", :string}
              ]
     end
@@ -78,6 +78,19 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
       assert_invalid_path(
         error,
         ~r/Could not detect CSV delimiter/
+      )
+    end
+
+    test "with invalid field format prints nicely formatted error", %{collection: collection} do
+      {:error, error} =
+        Import.create_from_path(
+          collection,
+          "test/support/fixtures/files/invalid_field_format.txt"
+        )
+
+      assert_invalid_path(
+        error,
+        "Could not parse '02. M�r' as data type 'str' for field '_duplicated_0'. Please verify your data."
       )
     end
 

@@ -17,8 +17,11 @@ defmodule DataAggregator.WorkflowTest do
   alias DataAggregator.Records.Publication.Workers.Publisher
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.Record.Workers.Encoder
+  alias DataAggregator.Taxonomy.Catalog
 
   require Ash.Query
+
+  @catalog_versions length(Catalog.get_catalogs()) - 1
 
   @mapping [
     %{name: "institutionCode", mapped_to: "oth_institution_code"},
@@ -254,7 +257,7 @@ defmodule DataAggregator.WorkflowTest do
           ])
         )
 
-      expected_length = 6 * 4
+      expected_length = 6 * @catalog_versions
       assert length(versions) == expected_length
 
       # Ensure all strategies set the user_id correctly
@@ -333,7 +336,7 @@ defmodule DataAggregator.WorkflowTest do
           ])
         )
 
-      expected_length = 6 * 4
+      expected_length = 6 * @catalog_versions
       assert length(versions) == expected_length
 
       # Ensure all strategies set the user_id correctly
@@ -464,7 +467,7 @@ defmodule DataAggregator.WorkflowTest do
           ])
         )
 
-      expected_length = 6 * 4
+      expected_length = 6 * @catalog_versions
       assert length(versions) == expected_length
 
       # Ensure all strategies set the user_id correctly

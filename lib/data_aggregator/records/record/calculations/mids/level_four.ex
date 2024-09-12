@@ -58,81 +58,66 @@ defmodule DataAggregator.Records.Record.Calculations.Mids.LevelFour do
   end
 
   defp has_non_nil_eve_verbatim_event_date do
-    expr(not is_nil(eve_verbatim_event_date) or not is_nil(encoded_record.eve_verbatim_event_date))
+    expr(not is_nil(encoded_record.eve_verbatim_event_date))
   end
 
   defp has_non_nil_idf_identified_by do
-    expr(not is_nil(idf_identified_by) or not is_nil(encoded_record.idf_identified_by))
+    expr(not is_nil(encoded_record.idf_identified_by))
   end
 
   defp has_non_nil_idf_identification_qualifier do
-    expr(
-      not is_nil(idf_identification_qualifier) or
-        not is_nil(encoded_record.idf_identification_qualifier)
-    )
+    expr(not is_nil(encoded_record.idf_identification_qualifier))
   end
 
   defp has_non_nil_idf_identification_verification_status do
-    expr(
-      not is_nil(idf_identification_verification_status) or
-        not is_nil(encoded_record.idf_identification_verification_status)
-    )
+    expr(not is_nil(encoded_record.idf_identification_verification_status))
   end
 
   defp has_non_nil_idf_last_verified_by do
-    expr(not is_nil(idf_last_verified_by) or not is_nil(encoded_record.idf_last_verified_by))
+    expr(not is_nil(encoded_record.idf_last_verified_by))
   end
 
   defp has_non_nil_idf_verbatim_identification do
-    expr(
-      not is_nil(idf_verbatim_identification) or
-        not is_nil(encoded_record.idf_verbatim_identification)
-    )
+    expr(not is_nil(encoded_record.idf_verbatim_identification))
   end
 
   defp has_non_nil_loc_georeferenced_by do
-    expr(not is_nil(loc_georeferenced_by) or not is_nil(encoded_record.loc_georeferenced_by))
+    expr(not is_nil(encoded_record.loc_georeferenced_by))
   end
 
   defp has_non_nil_loc_georeference_verification_status do
-    expr(
-      not is_nil(loc_georeference_verification_status) or
-        not is_nil(encoded_record.loc_georeference_verification_status)
-    )
+    expr(not is_nil(encoded_record.loc_georeference_verification_status))
   end
 
   defp has_non_nil_loc_verbatim_coordinates do
-    expr(not is_nil(loc_verbatim_coordinates) or not is_nil(encoded_record.loc_verbatim_coordinates))
+    expr(not is_nil(encoded_record.loc_verbatim_coordinates))
   end
 
   defp has_non_nil_loc_verbatim_latitude do
-    expr(not is_nil(loc_verbatim_latitude) or not is_nil(encoded_record.loc_verbatim_latitude))
+    expr(not is_nil(encoded_record.loc_verbatim_latitude))
   end
 
   defp has_non_nil_loc_verbatim_longitude do
-    expr(not is_nil(loc_verbatim_longitude) or not is_nil(encoded_record.loc_verbatim_longitude))
+    expr(not is_nil(encoded_record.loc_verbatim_longitude))
   end
 
   defp has_non_nil_loc_verbatim_locality do
-    expr(not is_nil(loc_verbatim_locality) or not is_nil(encoded_record.loc_verbatim_locality))
+    expr(not is_nil(encoded_record.loc_verbatim_locality))
   end
 
   defp has_non_nil_mte_associated_media do
-    expr(not is_nil(mte_associated_media) or not is_nil(encoded_record.mte_associated_media))
+    expr(not is_nil(encoded_record.mte_associated_media))
   end
 
   defp has_non_nil_mte_completeness do
-    expr(not is_nil(mte_completeness) or not is_nil(encoded_record.mte_completeness))
+    expr(not is_nil(encoded_record.mte_completeness))
   end
 
   defp has_non_nil_mte_other_catalog_numbers do
-    expr(
-      not is_nil(mte_other_catalog_numbers) or
-        not is_nil(encoded_record.mte_other_catalog_numbers)
-    )
+    expr(not is_nil(encoded_record.mte_other_catalog_numbers))
   end
 
   defp has_non_nil_mte_verbatim_label do
-    expr(not is_nil(mte_verbatim_label) or not is_nil(encoded_record.mte_verbatim_label))
+    expr(not is_nil(encoded_record.mte_verbatim_label))
   end
 end

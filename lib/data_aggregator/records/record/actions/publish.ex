@@ -75,7 +75,22 @@ defmodule DataAggregator.Records.Actions.Publish do
       |> Publication.update_attachment(attachment)
       |> Ash.load!([:collection, :attachment])
 
-    register(publication, query)
+    case register(publication, query) do
+      {:ok, publication} ->
+        {:ok, publication}
+
+      {:error, error} ->
+        Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(error)}")
+
+        set_publication_status(
+          query,
+          :publication_failed,
+          publication,
+          ctx
+        )
+
+        {:error, error}
+    end
   rescue
     e ->
       publication = input.arguments.publication
@@ -117,7 +132,7 @@ defmodule DataAggregator.Records.Actions.Publish do
     update_status!(publication.channel, status, record, ctx)
   end
 
-  defp maybe_add_publication_progress!(publication, :in_publication) do
+  defp maybe_add_publication_progress!(publication, state) when state in [:in_publication, :publication_failed] do
     if Records.execute_async?() do
       Task.start(fn -> Publication.add_publication_progress!(publication, 1) end)
     else

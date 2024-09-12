@@ -75,6 +75,52 @@ defmodule DataAggregator.Records.CollectionType do
           _ -> false
         end
 
+      :geology ->
+        case attribute do
+          :picture -> true
+          :iucn_redlist -> true
+          :idf_type_status -> true
+          :tax_scientific_name -> true
+          :idf_verbatim_identification -> true
+          :occ_occurrence_id -> true
+          :mte_catalog_number -> true
+          :mte_recorded_by -> true
+          :idf_identified_by -> true
+          :eve_event_date -> true
+          :loc_state_province -> true
+          :loc_verbatim_elevation -> true
+          :loc_decimal_latitude -> true
+          :state -> true
+          :fast_track_status -> true
+          :approval_status -> true
+          :mids_level -> true
+          :updated_at -> true
+          _ -> false
+        end
+
+      :paleontology ->
+        case attribute do
+          :picture -> true
+          :iucn_redlist -> true
+          :idf_type_status -> true
+          :tax_scientific_name -> true
+          :idf_verbatim_identification -> true
+          :occ_occurrence_id -> true
+          :mte_catalog_number -> true
+          :mte_recorded_by -> true
+          :idf_identified_by -> true
+          :eve_event_date -> true
+          :loc_state_province -> true
+          :loc_verbatim_elevation -> true
+          :loc_decimal_latitude -> true
+          :state -> true
+          :fast_track_status -> true
+          :approval_status -> true
+          :mids_level -> true
+          :updated_at -> true
+          _ -> false
+        end
+
       _ ->
         false
     end

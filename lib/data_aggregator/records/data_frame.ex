@@ -8,7 +8,8 @@ defmodule DataAggregator.Records.DataFrame do
   require Logger
 
   @csv_exts ~w(.csv .tsv .txt)
-  @csv_read_opts [parse_dates: true]
+  # disable schema inference
+  @csv_read_opts [parse_dates: true, infer_schema_length: 0]
   @csv_write_opts []
   @csv_delimiters [",", ";", "|", "\t"]
 
@@ -147,4 +148,18 @@ defmodule DataAggregator.Records.DataFrame do
   rescue
     error -> {:error, error}
   end
+
+  def maybe_parse_polaris_error("Polars Error: could not parse `" <> message) do
+    [parts] = Regex.scan(~r/(.*)` as dtype `(.*)` at column '(.*)' \(column number/, message)
+
+    if length(parts) == 4 do
+      [_, value, dtype, column] = parts
+
+      "Could not parse '#{value}' as data type '#{dtype}' for field '#{column}'. Please verify your data."
+    else
+      "Polars Error: could not parse `" <> message
+    end
+  end
+
+  def maybe_parse_polaris_error(message), do: message
 end
