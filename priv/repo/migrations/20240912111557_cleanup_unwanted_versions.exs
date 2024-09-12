@@ -18,4 +18,6 @@ defmodule DataAggregator.Repo.Migrations.CleanupUnwantedVersions do
       WHERE version_action_name = 'create';
     """
   end
+
+  def down, do: :ok
 end
