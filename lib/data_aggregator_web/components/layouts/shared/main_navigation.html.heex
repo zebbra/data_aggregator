@@ -7,7 +7,7 @@
 
     <header class="bg-base-100/90 flex h-16 shrink-0 items-center px-4 md:justify-center">
       <.link
-        href="/collections"
+        navigate={~p"/"}
         aria-current={if @current === "collections", do: "page", else: nil}
         aria-label="Collections"
         class="avatar btn md:btn-circle btn-ghost max-md:justify-start w-full space-x-2"

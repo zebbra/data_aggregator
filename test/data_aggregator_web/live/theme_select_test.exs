@@ -6,17 +6,17 @@ defmodule DataAggregatorWeb.ThemeSelectTest do
   import Phoenix.LiveViewTest
 
   describe "theme select" do
-    @tag authenticated: true
+    @tag authenticated: :admin
     test "applies default theme to system", %{conn: conn} do
-      {:ok, _, html} = live(conn, "/")
+      {:ok, _, html} = live(conn, "/administration")
       assert html =~ "hero-computer-desktop size-6 swap-off"
       assert html =~ "hero-moon size-6 swap-on"
       assert html =~ "hero-sun size-6 swap-on"
     end
 
-    @tag authenticated: true
+    @tag authenticated: :admin
     test "cycles theme to dark on click", %{conn: conn} do
-      {:ok, view, html} = live(conn, "/")
+      {:ok, view, html} = live(conn, "/administration")
       assert html =~ "hero-computer-desktop size-6 swap-off"
       assert html =~ "hero-moon size-6 swap-on"
       assert html =~ "hero-sun size-6 swap-on"
@@ -31,9 +31,9 @@ defmodule DataAggregatorWeb.ThemeSelectTest do
       assert html =~ "hero-sun size-6 swap-on"
     end
 
-    @tag authenticated: true
+    @tag authenticated: :admin
     test "cycles theme to light on click", %{conn: conn} do
-      {:ok, view, html} = live(conn, "/")
+      {:ok, view, html} = live(conn, "/administration")
       assert html =~ "hero-computer-desktop size-6 swap-off"
       assert html =~ "hero-moon size-6 swap-on"
       assert html =~ "hero-sun size-6 swap-on"
