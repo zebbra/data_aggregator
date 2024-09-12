@@ -15,7 +15,7 @@ defmodule DataAggregator.Repo.Migrations.AddUserActorToVersions do
             name: "records_versions_user_id_fkey",
             type: :uuid,
             prefix: "public",
-            on_delete: :nothing,
+            on_delete: :nilify_all,
             on_update: :update_all
           )
     end
@@ -27,13 +27,29 @@ defmodule DataAggregator.Repo.Migrations.AddUserActorToVersions do
             name: "encoded_records_versions_user_id_fkey",
             type: :uuid,
             prefix: "public",
-            on_delete: :nothing,
+            on_delete: :nilify_all,
             on_update: :update_all
           )
     end
+
+    execute(
+      "ALTER TABLE encoded_records_versions alter CONSTRAINT encoded_records_versions_user_id_fkey DEFERRABLE INITIALLY IMMEDIATE"
+    )
+
+    create index(:encoded_records_versions, [:user_id])
+
+    execute(
+      "ALTER TABLE records_versions alter CONSTRAINT records_versions_user_id_fkey DEFERRABLE INITIALLY IMMEDIATE"
+    )
+
+    create index(:records_versions, [:user_id])
   end
 
   def down do
+    drop_if_exists index(:records_versions, [:user_id])
+
+    drop_if_exists index(:encoded_records_versions, [:user_id])
+
     drop constraint(:encoded_records_versions, "encoded_records_versions_user_id_fkey")
 
     alter table(:encoded_records_versions) do
@@ -45,5 +61,13 @@ defmodule DataAggregator.Repo.Migrations.AddUserActorToVersions do
     alter table(:records_versions) do
       remove :user_id
     end
+
+    execute(
+      "ALTER TABLE records_versions alter CONSTRAINT records_versions_user_id_fkey DEFERRABLE INITIALLY IMMEDIATE"
+    )
+
+    execute(
+      "ALTER TABLE encoded_records_versions alter CONSTRAINT encoded_records_versions_user_id_fkey DEFERRABLE INITIALLY IMMEDIATE"
+    )
   end
 end

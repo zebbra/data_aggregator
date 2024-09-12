@@ -9,7 +9,9 @@ defmodule DataAggregator.Repo.Migrations.CleanupUnwantedVersions do
         'enqueue_encoder',
         'set_encoded',
         'set_encoding',
-        'set_encoding_failed'
+        'set_encoding_failed',
+        'set_imported',
+        'update_last_approval_started_at'
       );
     """
 

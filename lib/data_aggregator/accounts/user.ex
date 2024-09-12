@@ -39,13 +39,7 @@ defmodule DataAggregator.Accounts.User do
   end
 
   attributes do
-    # we need to use the default `id` prefix for the user uuid attribute
-    # as otherwise an error is raised if we use Record.Version with load
-    # [:user] statement. Somewhere in the ash_paper_trail <-> ash_uuid
-    # interaction the prefix is not correctly set (the constraint is not
-    # copied over to the version resource and the default prefix `id` is
-    # used).
-    uuid_attribute :id, prefix: "id"
+    uuid_attribute :id, prefix: "usr"
 
     attribute :email, :ci_string do
       allow_nil? false

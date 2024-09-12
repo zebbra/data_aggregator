@@ -95,11 +95,11 @@
       "generated?": false,
       "primary_key?": false,
       "references": {
-        "deferrable": false,
+        "deferrable": true,
         "destination_attribute": "id",
         "destination_attribute_default": null,
         "destination_attribute_generated": null,
-        "index?": false,
+        "index?": true,
         "match_type": null,
         "match_with": null,
         "multitenancy": {
@@ -108,7 +108,7 @@
           "strategy": null
         },
         "name": "encoded_records_versions_user_id_fkey",
-        "on_delete": "nothing",
+        "on_delete": "nilify",
         "on_update": "update",
         "primary_key?": true,
         "schema": "public",
@@ -124,7 +124,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "B506EF445AE0358CE8945F6B41686CEDA3311584740F30FD9C929D60E211DA23",
+  "hash": "4CDF30D62EA1F828D76A552FE67DD1FEB64151E0D210427CA6B4F3CDA62A0302",
   "identities": [],
   "multitenancy": {
     "attribute": null,

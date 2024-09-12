@@ -63,6 +63,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
     belongs_to_actor :user, DataAggregator.Accounts.User,
       domain: DataAggregator.Accounts,
+      define_attribute?: false,
       public?: true
   end
 

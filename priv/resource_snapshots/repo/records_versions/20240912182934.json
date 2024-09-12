@@ -115,11 +115,11 @@
       "generated?": false,
       "primary_key?": false,
       "references": {
-        "deferrable": false,
+        "deferrable": true,
         "destination_attribute": "id",
         "destination_attribute_default": null,
         "destination_attribute_generated": null,
-        "index?": false,
+        "index?": true,
         "match_type": null,
         "match_with": null,
         "multitenancy": {
@@ -128,7 +128,7 @@
           "strategy": null
         },
         "name": "records_versions_user_id_fkey",
-        "on_delete": "nothing",
+        "on_delete": "nilify",
         "on_update": "update",
         "primary_key?": true,
         "schema": "public",
@@ -144,7 +144,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "C9B0710E0821B991075B84B2FDBE4F2BBF1E229F65E1E90C2ED89798A4A459B3",
+  "hash": "9DD736314489C3A871D24AFD9E1A22C9C50607BBC537E5C7BC2F67BBC5AF7167",
   "identities": [],
   "multitenancy": {
     "attribute": null,

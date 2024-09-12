@@ -2,6 +2,18 @@ defmodule DataAggregator.Records.EncodedRecordVersionMixin do
   @moduledoc false
   defmacro __using__(_) do
     quote do
+      import AshUUID.Macros
+
+      attributes do
+        uuid_attribute :user_id,
+          prefix: "usr",
+          public?: true,
+          primary_key?: false,
+          allow_nil?: true,
+          writable?: true,
+          default: nil
+      end
+
       json_api do
         type "encoded_record_versions"
 
@@ -17,6 +29,12 @@ defmodule DataAggregator.Records.EncodedRecordVersionMixin do
         references do
           reference :version_source,
             on_delete: :delete,
+            on_update: :update,
+            index?: true,
+            deferrable: true
+
+          reference :user,
+            on_delete: :nilify,
             on_update: :update,
             index?: true,
             deferrable: true
