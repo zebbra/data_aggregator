@@ -44,6 +44,25 @@ defmodule DataAggregator.Gbif.RestAPI do
   end
 
   @doc """
+  Get the endpoints for a dataset with the GBIF API
+  """
+  @spec get_endpoints(String.t()) :: Api.response()
+  def get_endpoints(registration) do
+    Req.get(url: create_endpoint_url(registration), auth: gbif_auth())
+  end
+
+  @doc """
+  Delete a specific endpoint with the given endpoint_key for a dataset with the GBIF API
+  """
+  @spec delete_endpoint(String.t(), String.t()) :: Api.response()
+  def delete_endpoint(registration, endpoint_key) do
+    Req.delete(
+      url: create_endpoint_url(registration) <> "/" <> to_string(endpoint_key),
+      auth: gbif_auth()
+    )
+  end
+
+  @doc """
   Search for occurrences in the GBIF API. Returns a list of occurrences.
   """
   @spec search_for_occurrences(String.t(), String.t()) :: Api.response()

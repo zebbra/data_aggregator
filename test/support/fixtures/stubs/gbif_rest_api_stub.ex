@@ -30,12 +30,112 @@ defmodule DataAggregator.Gbif.RestAPIStub do
   @missing_institution_data_grscicoll_reference "6267ef74-8393-4d57-a9f8-2b36831f5042"
   def missing_institution_data_grscicoll_reference, do: @missing_institution_data_grscicoll_reference
 
+  @register_collection_fail_grscicoll_reference "eea611de-57bb-4992-a9e7-a32fb17f0c76"
+  def register_collection_fail_grscicoll_reference, do: @register_collection_fail_grscicoll_reference
+
+  @create_endpoint_fail_grscicoll_reference "e808c4a3-9838-4343-a0d8-86e875d5771d"
+  def create_endpoint_fail_grscicoll_reference, do: @create_endpoint_fail_grscicoll_reference
+
+  @get_endpoints_fail_grscicoll_reference "dcf1d465-2aaf-4b59-9546-b1516fbdb2a9"
+  def get_endpoints_fail_grscicoll_reference, do: @get_endpoints_fail_grscicoll_reference
+
+  @delete_endpoint_fail_grscicoll_reference "56ac3b30-4b52-48a1-aed9-4442426fc24d"
+  def delete_endpoint_fail_grscicoll_reference, do: @delete_endpoint_fail_grscicoll_reference
+
+  def register_dataset("register collection failing") do
+    {:error, %{status: 400, body: "error registering collection"}}
+  end
+
+  def register_dataset("create endpoint failing") do
+    {:ok, %{status: 201, body: "1234-1234-1234-0001"}}
+  end
+
+  def register_dataset("get endpoints failing, delete endpoint failing") do
+    {:ok, %{status: 201, body: "1234-1234-1234-0002"}}
+  end
+
+  def register_dataset("get endpoints success, delete endpoint failing") do
+    {:ok, %{status: 201, body: "1234-1234-1234-0003"}}
+  end
+
   def register_dataset(_collection_name) do
     {:ok, %{status: 201, body: "1234-1234-1234-1234"}}
   end
 
+  def create_endpoint(_file_url, "1234-1234-1234-0001") do
+    {:error, %{status: 400, body: "could not create endpoint"}}
+  end
+
+  def create_endpoint(_file_url, "1234-1234-1234-0002") do
+    {:ok, %{status: 201, body: "0002"}}
+  end
+
+  def create_endpoint(_file_url, "1234-1234-1234-0003") do
+    {:ok, %{status: 201, body: "0003"}}
+  end
+
   def create_endpoint(_file_url, _registration) do
     {:ok, %{status: 201, body: "1234"}}
+  end
+
+  def get_endpoints("1234-1234-1234-0002") do
+    {:error, %{status: 400, body: "error getting endpoints"}}
+  end
+
+  def get_endpoints("1234-1234-1234-0003") do
+    {:ok,
+     %{
+       status: 200,
+       body: [
+         %{
+           "created" => "2024-09-04T13:19:12.639+00:00",
+           "createdBy" => "gbifch",
+           "key" => "0003",
+           "machineTags" => [],
+           "modified" => "2024-09-04T13:19:12.639+00:00",
+           "modifiedBy" => "gbifch",
+           "type" => "DWC_ARCHIVE",
+           "url" => "http://localhost:4000/files/fat_02xau7X7PNTGOwq8MQubyl/AZG9MF13cnSG_YC5UugTDg.zip"
+         },
+         %{
+           "created" => "2024-09-04T13:19:12.639+00:00",
+           "createdBy" => "gbifch",
+           "key" => "0004",
+           "machineTags" => [],
+           "modified" => "2024-09-04T13:19:12.639+00:00",
+           "modifiedBy" => "gbifch",
+           "type" => "DWC_ARCHIVE",
+           "url" => "http://localhost:4000/files/fat_02xau7X7PNTGOwq8MQubyl/AZG9MF13cnSG_YC5UugTDg.zip"
+         }
+       ]
+     }}
+  end
+
+  def get_endpoints(_registration) do
+    {:ok,
+     %{
+       status: 200,
+       body: [
+         %{
+           "created" => "2024-09-04T13:19:12.639+00:00",
+           "createdBy" => "gbifch",
+           "key" => 539_580,
+           "machineTags" => [],
+           "modified" => "2024-09-04T13:19:12.639+00:00",
+           "modifiedBy" => "gbifch",
+           "type" => "DWC_ARCHIVE",
+           "url" => "http://localhost:4000/files/fat_02xau7X7PNTGOwq8MQubyl/AZG9MF13cnSG_YC5UugTDg.zip"
+         }
+       ]
+     }}
+  end
+
+  def delete_endpoint(_registration, "0004") do
+    {:error, %{status: 400, body: "error deleting endpoint"}}
+  end
+
+  def delete_endpoint(_registration, _endpoint_key) do
+    {:ok, %{status: 204, body: ""}}
   end
 
   def search_for_occurrences(catalog_number, dataset_key) do
@@ -312,6 +412,50 @@ defmodule DataAggregator.Gbif.RestAPIStub do
        "institutionKey" => nil,
        "institutionName" => nil,
        "institutionCode" => nil
+     }}
+  end
+
+  def get_grscicoll_collection_attributes(@register_collection_fail_grscicoll_reference, _attributes) do
+    {:ok,
+     %{
+       "code" => "Z",
+       "name" => "register collection failing",
+       "institutionKey" => @register_collection_fail_grscicoll_reference,
+       "institutionName" => "Universität Zürich",
+       "institutionCode" => "Z"
+     }}
+  end
+
+  def get_grscicoll_collection_attributes(@create_endpoint_fail_grscicoll_reference, _attributes) do
+    {:ok,
+     %{
+       "code" => "Z",
+       "name" => "create endpoint failing",
+       "institutionKey" => @create_endpoint_fail_grscicoll_reference,
+       "institutionName" => "Universität Zürich",
+       "institutionCode" => "Z"
+     }}
+  end
+
+  def get_grscicoll_collection_attributes(@get_endpoints_fail_grscicoll_reference, _attributes) do
+    {:ok,
+     %{
+       "code" => "Z",
+       "name" => "get endpoints failing, delete endpoint failing",
+       "institutionKey" => @get_endpoints_fail_grscicoll_reference,
+       "institutionName" => "Universität Zürich",
+       "institutionCode" => "Z"
+     }}
+  end
+
+  def get_grscicoll_collection_attributes(@delete_endpoint_fail_grscicoll_reference, _attributes) do
+    {:ok,
+     %{
+       "code" => "Z",
+       "name" => "get endpoints success, delete endpoint failing",
+       "institutionKey" => @delete_endpoint_fail_grscicoll_reference,
+       "institutionName" => "Universität Zürich",
+       "institutionCode" => "Z"
      }}
   end
 
