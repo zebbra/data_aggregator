@@ -59,7 +59,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
           <.table
             id={"table_#{@activity.index}"}
             opts={[
-              container_attrs: [class: ""]
+              container_attrs: [class: "overflow-x-auto no-scrollbar"]
             ]}
             items={Enum.map(@activity.content, fn {k, v} -> %{attr: k, value: v} end)}
           >
