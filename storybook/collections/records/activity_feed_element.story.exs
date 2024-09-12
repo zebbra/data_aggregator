@@ -41,7 +41,8 @@ defmodule Storybook.Collections.Records.ActivityFeedElement do
         actor: "John Doe",
         date_time: DateTime.utc_now(),
         content: %{},
-        source: Atom.to_string(name)
+        source: Atom.to_string(name),
+        index: name
       }
 
       activity = maybe_put_content(activity, name)
@@ -63,7 +64,8 @@ defmodule Storybook.Collections.Records.ActivityFeedElement do
         actor: "John Doe",
         date_time: DateTime.utc_now(),
         content: %{"fast_track_status" => state},
-        source: "fast_track_status_#{state}"
+        source: "fast_track_status_#{state}",
+        index: "fast_track_status_#{state}"
       }
 
       [activity | acc]
@@ -79,7 +81,8 @@ defmodule Storybook.Collections.Records.ActivityFeedElement do
         actor: "John Doe",
         date_time: DateTime.utc_now(),
         content: %{"approval_status" => state},
-        source: "approval_status_#{state}"
+        source: "approval_status_#{state}",
+        index: "approval_status_#{state}"
       }
 
       [activity | acc]
