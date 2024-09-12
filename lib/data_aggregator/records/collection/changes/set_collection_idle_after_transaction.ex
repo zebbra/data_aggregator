@@ -19,7 +19,7 @@ defmodule DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransa
   defp set_collection_idle(%Changeset{action: action, data: %{collection_id: collection_id}}, entity) do
     collection = Collection.get_by_id!(collection_id)
 
-    if action.name == :set_imported do
+    if action.name in [:set_imported, :set_failed] do
       Logger.debug("Updating collections.records_count ...")
 
       records_count =
