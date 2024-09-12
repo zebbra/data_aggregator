@@ -12,14 +12,14 @@ defmodule DataAggregator.Records.Publication.Changes.PublishRecords do
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_transaction(changeset, &publish_records/1, append?: true)
+  def change(%Changeset{} = changeset, _opts, ctx) do
+    Changeset.before_transaction(changeset, &publish_records(&1, ctx), append?: true)
   end
 
-  defp publish_records(%Changeset{data: original_publication} = changeset) do
+  defp publish_records(%Changeset{data: original_publication} = changeset, %{actor: actor}) do
     publication = Ash.load!(original_publication, [:collection])
 
-    case Collection.publish(publication) do
+    case Collection.publish(publication, actor: actor, authorize?: false) do
       {:ok, publication} -> add_success(changeset, publication)
       {:error, error} -> add_error(changeset, error, publication)
     end

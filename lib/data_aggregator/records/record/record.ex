@@ -163,22 +163,27 @@ defmodule DataAggregator.Records.Record do
     store_action_name? true
 
     ignore_attributes [
+      :last_imported_at,
       :inserted_at,
       :updated_at,
       :import_data,
       :errors,
-      :approval_status,
-      :fast_track_status,
       :state
     ]
 
     ignore_actions [:destroy]
+    on_actions [:update, :update_fast_track_status, :update_approval_status]
 
     attributes_as_attributes [:mte_catalog_number, :tax_scientific_name]
     reference_source? true
 
     mixin DataAggregator.Records.RecordVersionMixin
     version_extensions extensions: [AshJsonApi.Resource]
+
+    belongs_to_actor :user, DataAggregator.Accounts.User,
+      domain: DataAggregator.Accounts,
+      define_attribute?: false,
+      public?: true
   end
 
   state_machine do

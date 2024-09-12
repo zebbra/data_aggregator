@@ -2,10 +2,18 @@ defmodule DataAggregatorWeb.CollectionLiveTest do
   @moduledoc false
 
   use DataAggregatorWeb.ConnCase, async: true
+  use Mimic
 
   import Phoenix.LiveViewTest
 
   alias Ash.Error.Forbidden
+  alias DataAggregator.Gbif
+
+  setup do
+    stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
+    :ok
+  end
 
   describe "Collection Index" do
     @tag authenticated: true

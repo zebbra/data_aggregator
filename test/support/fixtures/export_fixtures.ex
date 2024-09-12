@@ -49,7 +49,7 @@ defmodule DataAggregator.ExportFixtures do
       tax_family: "Bradypodidae",
       tax_genus: "Bradypus",
       tax_kingdom: "Animalia",
-      tax_taxon_id: 1_012_187,
+      tax_taxon_id: 2_435_194,
       loc_decimal_latitude: 46.8182,
       loc_decimal_longitude: 640_000.0
     }

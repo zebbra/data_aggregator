@@ -11,14 +11,19 @@ defmodule DataAggregator.Records.Approval.Changes.UpdateRawRecordStateAfterActio
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.after_action(changeset, &set_approved/2)
+  def change(%Changeset{} = changeset, _opts, ctx) do
+    Changeset.after_action(changeset, fn _, approved_record ->
+      set_approved(approved_record, ctx)
+    end)
   end
 
-  defp set_approved(_changeset, approved_record) do
+  defp set_approved(approved_record, %{actor: actor}) do
     approved_record = Ash.load!(approved_record, [:record], lazy?: true)
 
-    Record.update_approval_status!(approved_record.record, :approved)
+    Record.update_approval_status!(approved_record.record, :approved,
+      actor: actor,
+      authorize?: false
+    )
 
     {:ok, approved_record}
   end

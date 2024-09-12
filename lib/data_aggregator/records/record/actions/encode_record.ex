@@ -4,6 +4,7 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   """
   use Ash.Resource.Actions.Implementation
 
+  alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingActionResult
   alias DataAggregator.Records.Encoding.EncodingResult
@@ -16,9 +17,9 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   @spec run(
           Ash.ActionInput.t(),
           opts :: Keyword.t(),
-          any()
+          Context.t()
         ) :: EncodingActionResult.t()
-  def run(input, _opts, _ctx) do
+  def run(input, _opts, ctx) do
     # track if it was failed and set accordingly afterwards
     previous_state = input.arguments.record.state
     record = set_encoding_state!(input.arguments.record)
@@ -30,7 +31,7 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
     # Strategy.encode/2 returns an EncodingResult.t() (encoded_record) and
     # update_state/1 returns an EncodingActionResult.t() (record)
     case record
-         |> Strategy.encode(catalog)
+         |> Strategy.encode(catalog, ctx)
          |> update_state(previous_state) do
       {:ok, record} ->
         Logger.debug(

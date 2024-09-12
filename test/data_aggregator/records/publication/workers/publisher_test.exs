@@ -69,7 +69,7 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
 
       assert publication.state == :done
       assert publication.channel == :fast_track
-      assert publication.published_count == 10
+      assert publication.published_count == 5
     end
 
     test "publication :approval success", %{publication: publication} do
@@ -80,7 +80,7 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
 
       assert publication.state == :done
       assert publication.channel == :approval
-      assert publication.published_count == 10
+      assert publication.published_count == 5
     end
   end
 end

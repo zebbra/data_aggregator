@@ -3,6 +3,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     Encode Records with the gbif taxonomy catalog
   """
 
+  alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Gbif
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
@@ -27,13 +28,13 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   @doc """
     query the gbif taxanomy api and return the encoded record
   """
-  @spec apply_strategy(EncodedRecord.t()) :: EncodingResult.t()
-  def apply_strategy(encoded_record) do
-    process_encoded_record(encoded_record)
+  @spec apply_strategy(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
+  def apply_strategy(encoded_record, ctx) do
+    process_encoded_record(encoded_record, ctx)
   end
 
-  @spec process_encoded_record(EncodedRecord.t()) :: EncodingResult.t()
-  defp process_encoded_record(encoded_record) do
+  @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
+  defp process_encoded_record(encoded_record, ctx) do
     {:ok,
      encoded_record
      |> build_request_params()
@@ -41,7 +42,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
      |> parse_response()
      |> parse_response_body()
      |> handle_synonym()
-     |> Strategy.update_encoded_record(encoded_record, @output_attributes)}
+     |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)}
   catch
     error ->
       {:error, error, encoded_record}
@@ -92,7 +93,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   defp handle_synonym(body) when body.synonym == false, do: body
 
   defp handle_synonym(body) when body.synonym == true do
-    body.acceptedUsageKey
+    body.usageKey
     |> fetch_species_api()
     |> parse_response()
     |> parse_species_api_body()

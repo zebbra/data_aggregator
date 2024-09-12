@@ -59,6 +59,9 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
     end
   end
 
+  def get_dwc_field("fast_track_status"), do: "publicationStatus"
+  def get_dwc_field("approval_status"), do: "approvalStatus"
+
   def get_dwc_field(prefixed_attribute_name) do
     Schema.dwc_field_from_prefixed_attribute_name(prefixed_attribute_name)
   end

@@ -4,6 +4,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   """
   use DataAggregatorWeb, :html
 
+  alias DataAggregatorWeb.CollectionLive.Record.ActivityFeed
+
   attr :href, :string, required: true
   attr :title, :string, required: true
   attr :value, :float, required: true
@@ -46,81 +48,59 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       :publishing,
       :in_publication,
       :published,
-      :stale,
       :publication_failed,
+      :stale
+    ]
+
+  def publication_state_badge(assigns) do
+    assigns =
+      assigns
+      |> assign(:name, :update_fast_track_status)
+      |> assign(:content, %{"fast_track_status" => Atom.to_string(assigns.state)})
+
+    ~H"""
+    <.badge
+      class="tooltip"
+      color={ActivityFeed.badge_color(@name, @content)}
+      data-tip={ActivityFeed.icon_tooltip(@name, @content)}
+    >
+      <.icon name={ActivityFeed.icon_lookup(@name, @content)} class="size-5 shrink-0" />
+      <span class="text-nowrap pr-1.5">
+        <%= ActivityFeed.badge_text(@name, @content) %>
+      </span>
+    </.badge>
+    """
+  end
+
+  attr :state, :atom,
+    required: true,
+    values: [
       :not_approved,
       :approving,
       :in_approval,
       :approved,
-      :approval_failed
+      :approval_failed,
+      :stale
     ]
 
-  def publication_status_badge(assigns) do
-    cond do
-      assigns.state in [:publishing, :approving] ->
-        ~H"""
-        <.badge class="tooltip" color="blue" data-tip={~t"Publication in progress"m}>
-          <.icon name="hero-cog-6-tooth-solid" class="size-5 shrink-0 animate-spin" />
-          <span class="text-nowrap pr-1.5"><%= ~t"Publishing"m %></span>
-        </.badge>
-        """
+  def approval_state_badge(assigns) do
+    assigns =
+      assigns
+      |> assign(:name, :update_approval_status)
+      |> assign(:content, %{"approval_status" => Atom.to_string(assigns.state)})
 
-      assigns.state in [:in_publication, :in_approval] ->
-        ~H"""
-        <.badge
-          class="tooltip"
-          color="blue"
-          data-tip={~t"Record is in the publication pipeline - no further action required"m}
-        >
-          <.icon name="hero-information-circle-solid" class="size-5 shrink-0" />
-          <span class="text-nowrap pr-1.5"><%= ~t"In Publication"m %></span>
-        </.badge>
-        """
-
-      assigns.state in [:published, :approved] ->
-        ~H"""
-        <.badge class="tooltip" color="green" data-tip={~t"Record was successful published"m}>
-          <.icon name="hero-check-circle-solid" class="size-5 shrink-0" />
-          <span class="text-nowrap pr-1.5"><%= ~t"Published"m %></span>
-        </.badge>
-        """
-
-      assigns.state == :stale ->
-        ~H"""
-        <.badge
-          class="tooltip"
-          color="orange"
-          data-tip={~t"Record was changed after publishing it and has to be republished"m}
-        >
-          <.icon name="hero-exclamation-triangle-solid" class="size-5 shrink-0" />
-          <span class="text-nowrap pr-1.5"><%= ~t"Stale"m %></span>
-        </.badge>
-        """
-
-      assigns.state in [:publication_failed, :approval_failed] ->
-        ~H"""
-        <.badge
-          class="tooltip"
-          color="red"
-          data-tip={~t"Publication failed. Process should be started again"m}
-        >
-          <.icon name="hero-x-circle-solid" class="size-5 shrink-0" />
-          <span class="text-nowrap pr-1.5"><%= ~t"Failed"m %></span>
-        </.badge>
-        """
-
-      true ->
-        ~H"""
-        <.badge
-          class="tooltip"
-          color="gray"
-          data-tip={~t"No publication information available. Publish the collection to see the status"m}
-        >
-          <.icon name="hero-question-mark-circle-solid" class="size-5 shrink-0" />
-          <span class="text-nowrap pr-1.5"><%= ~t"Not Published"m %></span>
-        </.badge>
-        """
-    end
+    ~H"""
+    <.badge
+      class="tooltip"
+      color={ActivityFeed.badge_color(@name, @content)}
+      data-tip={ActivityFeed.icon_tooltip(@name, @content)}
+    >
+      <.icon name={ActivityFeed.icon_lookup(@name, @content)} class="size-5 shrink-0" />
+      <span class="text-nowrap pr-1.5">
+        <%= ActivityFeed.badge_text(@name, @content) %>
+      </span>
+    </.badge>
+    """
   end
 
   @level [0, 1, 2, 3, 4]

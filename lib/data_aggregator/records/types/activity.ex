@@ -5,7 +5,7 @@ defmodule DataAggregator.Records.Activity do
 
   alias __MODULE__
 
-  defstruct [:name, :actor, :date_time, :content, :source]
+  defstruct [:name, :actor, :date_time, :content, :source, :index]
 
   @type t :: %Activity{}
 end

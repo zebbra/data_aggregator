@@ -110,8 +110,18 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             <%= import.duration %>
           </div>
         </:col>
-        <:col :let={{_id, import}} field={:records_count} label={~t"Records"m} class="text-right">
-          <%= format_number(import.records_count, format: :short) %>
+        <:col
+          :let={{_id, import}}
+          field={:rows_imported_count}
+          label={~t"Records"m}
+          class="text-right"
+          directions={{:asc_nils_first, :desc_nils_last}}
+        >
+          <%= if import.rows_imported_count do %>
+            <%= format_number(import.rows_imported_count, format: :short) %>
+          <% else %>
+            0
+          <% end %>
         </:col>
 
         <:action

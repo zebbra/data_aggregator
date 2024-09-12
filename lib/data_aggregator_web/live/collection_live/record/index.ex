@@ -343,7 +343,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           label={~t"Publication status"m}
           class="text-center"
         >
-          <.publication_status_badge state={record.fast_track_status} />
+          <.publication_state_badge state={record.fast_track_status} />
         </:col>
         <:col
           :let={{_id, record}}
@@ -352,7 +352,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           label={~t"Approval status"m}
           class="text-center"
         >
-          <.publication_status_badge state={record.approval_status} />
+          <.approval_state_badge state={record.approval_status} />
         </:col>
         <:col
           :let={{_id, record}}
