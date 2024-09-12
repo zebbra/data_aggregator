@@ -6,11 +6,14 @@ defmodule DataAggregator.GbifIUCNRedlistEncodingTest do
 
   import DataAggregator.EncodingFixtures
 
+  alias DataAggregator.Gbif
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
   describe "encoding of records with " do
     setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       extincted_record = record_fixture_for_encoding_gbif_iucn_redlist_extinct()
       not_evaluated_record = record_fixture_for_encoding_gbif_iucn_redlist_not_evaluated()
 
