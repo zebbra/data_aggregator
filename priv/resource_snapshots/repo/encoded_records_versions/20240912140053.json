@@ -35,26 +35,6 @@
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "mte_catalog_number",
-      "type": "text"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "tax_scientific_name",
-      "type": "text"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
       "references": {
         "deferrable": true,
         "destination_attribute": "id",
@@ -68,12 +48,12 @@
           "global": null,
           "strategy": null
         },
-        "name": "records_versions_version_source_id_fkey",
+        "name": "encoded_records_versions_version_source_id_fkey",
         "on_delete": "delete",
         "on_update": "update",
         "primary_key?": true,
         "schema": "public",
-        "table": "records"
+        "table": "encoded_records"
       },
       "size": null,
       "source": "version_source_id",
@@ -127,9 +107,9 @@
           "global": null,
           "strategy": null
         },
-        "name": "records_versions_user_id_fkey",
-        "on_delete": null,
-        "on_update": null,
+        "name": "encoded_records_versions_user_id_fkey",
+        "on_delete": "nothing",
+        "on_update": "update",
         "primary_key?": true,
         "schema": "public",
         "table": "users"
@@ -144,7 +124,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "E61F7BD4AD5041E6CF60E67744FFC25E6AAD7D89F7C200BE684160A845712CE5",
+  "hash": "B506EF445AE0358CE8945F6B41686CEDA3311584740F30FD9C929D60E211DA23",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -153,5 +133,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "records_versions"
+  "table": "encoded_records_versions"
 }

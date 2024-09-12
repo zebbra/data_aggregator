@@ -14,7 +14,9 @@ defmodule DataAggregator.Repo.Migrations.AddUserActorToVersions do
             column: :id,
             name: "records_versions_user_id_fkey",
             type: :uuid,
-            prefix: "public"
+            prefix: "public",
+            on_delete: :nothing,
+            on_update: :update_all
           )
     end
 
@@ -24,7 +26,9 @@ defmodule DataAggregator.Repo.Migrations.AddUserActorToVersions do
             column: :id,
             name: "encoded_records_versions_user_id_fkey",
             type: :uuid,
-            prefix: "public"
+            prefix: "public",
+            on_delete: :nothing,
+            on_update: :update_all
           )
     end
   end
