@@ -16,16 +16,20 @@ defmodule DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransa
     Changeset.after_transaction(changeset, &set_collection_idle/2)
   end
 
-  defp set_collection_idle(%Changeset{data: %{collection_id: collection_id}}, entity) do
+  defp set_collection_idle(%Changeset{action: action, data: %{collection_id: collection_id}}, entity) do
     collection = Collection.get_by_id!(collection_id)
-    Logger.debug("Updating collections.records_count ...")
 
-    records_count =
-      Record
-      |> Ash.Query.filter(collection_id == ^collection_id)
-      |> Ash.count!()
+    if action.name == :set_imported do
+      Logger.debug("Updating collections.records_count ...")
 
-    Collection.update!(collection, %{records_count: records_count})
+      records_count =
+        Record
+        |> Ash.Query.filter(collection_id == ^collection_id)
+        |> Ash.count!()
+
+      Collection.update!(collection, %{records_count: records_count})
+    end
+
     Collection.set_idle(collection)
 
     entity

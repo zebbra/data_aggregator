@@ -18,7 +18,7 @@ defmodule DataAggregator.EncodingFixtures do
     mte_catalog_number: "encoded_record1",
     tax_scientific_name: "Oenanthea Pallas",
     tax_kingdom: "Animalia",
-    tax_taxon_id: 1_012_187
+    tax_taxon_id: 2_435_194
   }
 
   @doc """
@@ -103,7 +103,7 @@ defmodule DataAggregator.EncodingFixtures do
          id: "spc_02vSBcLj4G1ReRVJNXDLVo",
          taxon_id_ch: 15_311,
          accepted_name: "Enantiulus dentigerus (Verhoeff, 1901)",
-         usage_key: 1_012_187,
+         usage_key: 2_435_194,
          accepted_usage_key: nil,
          scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
          rank: "SPECIES"

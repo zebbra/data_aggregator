@@ -1,0 +1,622 @@
+defmodule DataAggregator.WorkflowTest do
+  @moduledoc false
+
+  use DataAggregator.DataCase, async: true
+  use Mimic
+
+  import DataAggregator.AccountsFixtures, only: [user_fixture: 0]
+  import DataAggregator.EncodingFixtures, only: [expect_correct_swiss_species_api_call: 0]
+
+  alias DataAggregator.Gbif
+  alias DataAggregator.Opencage
+  alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.EncodedRecord
+  alias DataAggregator.Records.Import
+  alias DataAggregator.Records.Import.Workers.Importer
+  alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.Publication.Workers.Publisher
+  alias DataAggregator.Records.Record
+  alias DataAggregator.Records.Record.Workers.Encoder
+
+  require Ash.Query
+
+  @mapping [
+    %{name: "institutionCode", mapped_to: "oth_institution_code"},
+    %{name: "basisOfRecord", mapped_to: "oth_basis_of_record"},
+    %{name: "collectionCode", mapped_to: "oth_collection_code"},
+    %{name: "catalogNumber", mapped_to: "mte_catalog_number"},
+    %{name: "verbatimLocality", mapped_to: "loc_verbatim_locality"},
+    %{name: "verbatimElevation", mapped_to: "loc_verbatim_elevation"},
+    %{name: "locality", mapped_to: "loc_locality"},
+    %{name: "countryCode", mapped_to: "loc_country_code"},
+    %{name: "higherGeography", mapped_to: "loc_higher_geography"},
+    %{name: "country", mapped_to: "loc_country"},
+    %{name: "stateProvince", mapped_to: "loc_state_province"},
+    %{name: "locationRemarks", mapped_to: "loc_location_remarks"},
+    %{name: "verbatimLabel", mapped_to: "mte_verbatim_label"},
+    %{name: "materialEntityRemarks", mapped_to: "mte_material_entity_remarks"},
+    %{name: "typeStatus", mapped_to: "idf_type_status"},
+    %{name: "verbatimEventDate", mapped_to: "eve_verbatim_event_date"},
+    %{name: "day", mapped_to: "eve_day"},
+    %{name: "endOfPeriodDay", mapped_to: "eve_end_of_period_day"},
+    %{name: "month", mapped_to: "eve_month"},
+    %{name: "endOfPeriodMonth", mapped_to: "eve_end_of_period_month"},
+    %{name: "year", mapped_to: "eve_year"},
+    %{name: "endOfPeriodYear", mapped_to: "eve_end_of_period_year"},
+    %{name: "eventDate", mapped_to: nil},
+    %{name: "eventRemarks", mapped_to: "eve_event_remarks"},
+    %{name: "lifeStage", mapped_to: "mte_life_stage"},
+    # %{name: "organismQuantity", mapped_to: "mte_organism_quantity"},
+    %{name: "organismQuantityType", mapped_to: "mte_organism_quantity_type"},
+    %{name: "recordedBy", mapped_to: "mte_recorded_by"},
+    %{name: "kingdom", mapped_to: "tax_kingdom"},
+    %{name: "verbatimIdentification", mapped_to: "idf_verbatim_identification"},
+    %{name: "genus", mapped_to: "tax_genus"},
+    %{name: "specificEpithet", mapped_to: "tax_specific_epithet"},
+    %{name: "scientificNameAuthorship", mapped_to: "tax_scientific_name_authorship"},
+    # %{name: "namePublishedInYear", mapped_to: "tax_name_published_in_year"},
+    %{name: "taxonRank", mapped_to: "tax_taxon_rank"},
+    %{name: "scientificName", mapped_to: "tax_scientific_name"},
+    %{name: "identificationRemarks", mapped_to: "idf_identification_remarks"}
+  ]
+
+  @publication_states [
+    :not_published,
+    :publishing,
+    :in_publication,
+    :published,
+    :publication_failed,
+    :stale
+  ]
+
+  @approval_state_lookup %{
+    :not_published => :not_approved,
+    :publishing => :approving,
+    :in_publication => :in_approval,
+    :published => :approved,
+    :publication_failed => :approval_failed,
+    :stale => :stale
+  }
+
+  setup do
+    stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+    stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
+
+    collection =
+      Collection.create!(%{
+        type: :zoology,
+        owner: "John Doe",
+        grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
+      })
+
+    actor = user_fixture()
+
+    [collection: collection, actor: actor]
+  end
+
+  test "it creates the collection (sanity check)", %{collection: collection} do
+    assert collection.name == "Herbarium - Universität Zürich"
+    assert collection.owner == "John Doe"
+    assert collection.grscicoll_reference == "322ce107-3156-4420-8a2b-7f17efeaa472"
+  end
+
+  describe "Importer.perform/1" do
+    setup %{collection: collection, actor: actor} do
+      path = "test/support/fixtures/files/workflow.csv"
+
+      import =
+        collection
+        |> Import.create_from_path!(path)
+        |> Import.update_mapping!(@mapping)
+
+      {:ok, import} = perform_job(Importer, %{id: import.id, user_id: actor.id})
+
+      [import: import, actor: actor]
+    end
+
+    test "import workflow performs as expected", %{import: import, actor: actor} do
+      assert import.state == :imported
+      import = Ash.load!(import, [:records_count])
+      assert import.records_count == 6
+
+      records = Ash.read!(Record, load: [:paper_trail_versions])
+      assert length(records) == 6
+
+      expected = [
+        %{state: :imported, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :imported, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :imported, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :imported, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :imported, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :imported, fast_track_status: :not_published, approval_status: :not_approved}
+      ]
+
+      # assert that the records are in the correct state
+      assert_states_equal(expected, records)
+
+      # record create -> import versions for each record have been created
+      assert_create_import_versions(records, actor)
+
+      # update the states of the records so we can test the workflow
+      update_states(records)
+
+      records = Ash.read!(Record, load: [:paper_trail_versions])
+      assert length(records) == 6
+
+      expected = [
+        %{state: :imported, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :imported, fast_track_status: :publishing, approval_status: :approving},
+        %{state: :imported, fast_track_status: :in_publication, approval_status: :in_approval},
+        %{state: :imported, fast_track_status: :published, approval_status: :approved},
+        %{
+          state: :imported,
+          fast_track_status: :publication_failed,
+          approval_status: :approval_failed
+        },
+        %{state: :imported, fast_track_status: :stale, approval_status: :stale}
+      ]
+
+      # assert that the records are in the correct state
+      assert_states_equal(expected, records)
+      # assert that we removed the update versions
+      assert_create_import_versions(records, actor)
+
+      import = Ash.update!(import, %{state: :pending})
+      assert import.state == :pending
+
+      perform_job(Importer, %{id: import.id, user_id: actor.id})
+      records = Ash.read!(Record, load: [:paper_trail_versions])
+      assert length(records) == 6
+
+      expected = [
+        %{state: :imported, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :imported, fast_track_status: :stale, approval_status: :stale},
+        %{state: :imported, fast_track_status: :stale, approval_status: :stale},
+        %{state: :imported, fast_track_status: :stale, approval_status: :stale},
+        %{state: :imported, fast_track_status: :stale, approval_status: :stale},
+        %{state: :imported, fast_track_status: :stale, approval_status: :stale}
+      ]
+
+      assert_states_equal(expected, records)
+      # record create -> import versions for each record have been created a second time
+      assert_create_import_versions(records, actor, 2)
+    end
+  end
+
+  describe "Encoder.perform/1" do
+    setup %{collection: collection, actor: actor} do
+      path = "test/support/fixtures/files/workflow.csv"
+
+      import =
+        collection
+        |> Import.create_from_path!(path)
+        |> Import.update_mapping!(@mapping)
+
+      {:ok, import} = perform_job(Importer, %{id: import.id, user_id: actor.id})
+
+      [import: import, actor: actor]
+    end
+
+    test "encoding workflow performs as expected", %{import: import, actor: actor} do
+      assert import.state == :imported
+      import = Ash.load!(import, [:records_count])
+      assert import.records_count == 6
+
+      records = Ash.read!(Record, load: [:paper_trail_versions])
+      assert length(records) == 6
+
+      expected = [
+        %{state: :imported, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :imported, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :imported, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :imported, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :imported, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :imported, fast_track_status: :not_published, approval_status: :not_approved}
+      ]
+
+      # assert that the records are in the correct state
+      assert_states_equal(expected, records)
+
+      # record create -> import versions for each record have been created
+      assert_create_import_versions(records, actor)
+
+      encode_records(records, actor)
+      records = Ash.read!(Record, load: [:paper_trail_versions])
+      assert length(records) == 6
+
+      expected = [
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved}
+      ]
+
+      # assert that the records are in the correct state
+      assert_states_equal(expected, records)
+
+      # no new records versions should have been created
+      assert_create_import_versions(records, actor)
+
+      encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions])
+      assert length(encoded_records) == 6
+
+      versions =
+        encoded_records
+        |> Enum.map(& &1.paper_trail_versions)
+        |> List.flatten()
+        |> Enum.map(
+          &Map.take(&1, [
+            :version_action_name,
+            :version_action_type,
+            :user_id
+          ])
+        )
+
+      expected_length = 6 * 4
+      assert length(versions) == expected_length
+
+      # Ensure all strategies set the user_id correctly
+      for index <- 0..(expected_length - 1) do
+        version = Enum.at(versions, index)
+        assert version.user_id == actor.id
+      end
+    end
+  end
+
+  describe "Publisher.perform/1 fast_track_publication" do
+    setup %{collection: collection, actor: actor} do
+      path = "test/support/fixtures/files/workflow.csv"
+
+      import =
+        collection
+        |> Import.create_from_path!(path)
+        |> Import.update_mapping!(@mapping)
+
+      perform_job(Importer, %{id: import.id, user_id: actor.id})
+
+      encode_records(Ash.read!(Record, load: [:paper_trail_versions]), actor)
+      records = Ash.read!(Record, load: [:paper_trail_versions])
+
+      query = %{
+        collection: %{id: %{eq: collection.id}},
+        tax_kingdom: %{is_nil: false}
+      }
+
+      publication =
+        Publication.create!(%{
+          name: "publication-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+          channel: :fast_track,
+          collection: collection,
+          records_query: query
+        })
+
+      [publication: publication, actor: actor, records: records]
+    end
+
+    test "publishing workflow performs as expected", %{
+      publication: publication,
+      records: records,
+      actor: actor
+    } do
+      # Sanity check
+      assert length(records) == 6
+
+      expected = [
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved}
+      ]
+
+      # assert that the records are in the correct state
+      assert_states_equal(expected, records)
+
+      # no new records versions should have been created
+      assert_create_import_versions(records, actor)
+
+      encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions])
+      assert length(encoded_records) == 6
+
+      versions =
+        encoded_records
+        |> Enum.map(& &1.paper_trail_versions)
+        |> List.flatten()
+        |> Enum.map(
+          &Map.take(&1, [
+            :version_action_name,
+            :version_action_type,
+            :user_id
+          ])
+        )
+
+      expected_length = 6 * 4
+      assert length(versions) == expected_length
+
+      # Ensure all strategies set the user_id correctly
+      for index <- 0..(expected_length - 1) do
+        version = Enum.at(versions, index)
+        assert version.user_id == actor.id
+      end
+
+      perform_job(Publisher, %{id: publication.id, user_id: actor.id})
+
+      publication = Publication.get_by_id!(publication.id)
+
+      assert publication.state == :done
+      assert publication.channel == :fast_track
+      assert publication.published_count == 6
+
+      records = Ash.read!(Record, load: [:paper_trail_versions])
+      assert length(records) == 6
+
+      expected = [
+        %{state: :encoded, fast_track_status: :published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :published, approval_status: :not_approved}
+      ]
+
+      # assert that the records are in the correct state
+      assert_states_equal(expected, records)
+
+      versions =
+        records
+        |> Enum.map(& &1.paper_trail_versions)
+        |> List.flatten()
+        |> Enum.map(
+          &Map.take(&1, [
+            :version_action_name,
+            :version_action_type,
+            :user_id
+          ])
+        )
+
+      # import, fast_track_updated (2x -> publishing, and in_publication)
+      expected_length = 6 * 3
+      assert length(versions) == expected_length
+
+      # Ensure all strategies set the user_id correctly
+      for index <- 0..(expected_length - 1) do
+        version = Enum.at(versions, index)
+        assert version.user_id == actor.id
+        assert version.version_action_name in [:import, :update_fast_track_status]
+      end
+    end
+  end
+
+  describe "Publisher.perform/1 approval" do
+    setup %{collection: collection, actor: actor} do
+      path = "test/support/fixtures/files/workflow.csv"
+
+      import =
+        collection
+        |> Import.create_from_path!(path)
+        |> Import.update_mapping!(@mapping)
+
+      perform_job(Importer, %{id: import.id, user_id: actor.id})
+
+      encode_records(Ash.read!(Record, load: [:paper_trail_versions]), actor)
+      records = Ash.read!(Record, load: [:paper_trail_versions])
+
+      # we cant set the relation from encoed_record to swiss_species as we
+      # cant create a fixture for swiss_species as the module is copied
+      # with mimic which leads to an error when trying to create a swiss_species
+      # record
+      query = %{
+        collection: %{id: %{eq: collection.id}},
+        tax_kingdom: %{is_nil: false}
+        # encoded_record: %{swiss_species: %{center: %{eq: "infofauna"}}}
+      }
+
+      publication =
+        Publication.create!(%{
+          name: "approval-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+          channel: :approval,
+          collection: collection,
+          records_query: query,
+          center: "infofauna"
+        })
+
+      [publication: publication, actor: actor, records: records]
+    end
+
+    test "publishing workflow performs as expected", %{
+      publication: publication,
+      records: records,
+      actor: actor
+    } do
+      # Sanity check
+      assert length(records) == 6
+
+      expected = [
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved}
+      ]
+
+      # assert that the records are in the correct state
+      assert_states_equal(expected, records)
+
+      # no new records versions should have been created
+      assert_create_import_versions(records, actor)
+
+      encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions])
+      assert length(encoded_records) == 6
+
+      versions =
+        encoded_records
+        |> Enum.map(& &1.paper_trail_versions)
+        |> List.flatten()
+        |> Enum.map(
+          &Map.take(&1, [
+            :version_action_name,
+            :version_action_type,
+            :user_id
+          ])
+        )
+
+      expected_length = 6 * 4
+      assert length(versions) == expected_length
+
+      # Ensure all strategies set the user_id correctly
+      for index <- 0..(expected_length - 1) do
+        version = Enum.at(versions, index)
+        assert version.user_id == actor.id
+      end
+
+      perform_job(Publisher, %{id: publication.id, user_id: actor.id})
+
+      publication = Publication.get_by_id!(publication.id)
+
+      assert publication.state == :done
+      assert publication.channel == :approval
+      assert publication.published_count == 6
+
+      records = Ash.read!(Record, load: [:paper_trail_versions])
+      assert length(records) == 6
+
+      expected = [
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :in_approval},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :in_approval},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :in_approval},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :in_approval},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :in_approval},
+        %{state: :encoded, fast_track_status: :not_published, approval_status: :in_approval}
+      ]
+
+      # assert that the records are in the correct state
+      assert_states_equal(expected, records)
+
+      versions =
+        records
+        |> Enum.map(& &1.paper_trail_versions)
+        |> List.flatten()
+        |> Enum.map(
+          &Map.take(&1, [
+            :version_action_name,
+            :version_action_type,
+            :user_id
+          ])
+        )
+
+      # import, approval_updated (2x -> approving, and in_approval)
+      expected_length = 6 * 3
+      assert length(versions) == expected_length
+
+      # Ensure all strategies set the user_id correctly
+      for index <- 0..(expected_length - 1) do
+        version = Enum.at(versions, index)
+        assert version.user_id == actor.id
+        assert version.version_action_name in [:import, :update_approval_status]
+      end
+    end
+  end
+
+  defp encode_records(records, actor) do
+    Enum.each(records, fn record ->
+      expect_correct_swiss_species_api_call()
+      perform_job(Encoder, %{id: record.id, user_id: actor.id})
+    end)
+  end
+
+  defp assert_states_equal(expected, records) do
+    assert_lists_equal(
+      expected,
+      Enum.map(records, &Map.take(&1, [:state, :fast_track_status, :approval_status]))
+    )
+  end
+
+  defp update_states(records) do
+    Enum.with_index(@publication_states, fn state, index ->
+      record = Enum.at(records, index)
+
+      record
+      |> Ash.update!(%{
+        fast_track_status: state,
+        approval_status: @approval_state_lookup[state]
+      })
+      |> Ash.load!(:paper_trail_versions)
+      |> Map.get(:paper_trail_versions)
+      |> Enum.filter(&(&1.version_action_type == :update))
+      |> Enum.each(&Ash.destroy!(&1))
+    end)
+  end
+
+  defp assert_create_import_versions(records, actor, iterations \\ 1) do
+    versions =
+      records
+      |> Enum.map(&Ash.load!(&1, [:paper_trail_versions]))
+      |> Enum.map(& &1.paper_trail_versions)
+      |> List.flatten()
+      |> Enum.map(
+        &Map.take(&1, [
+          :version_action_type,
+          :version_action_name,
+          :mte_catalog_number,
+          :tax_scientific_name,
+          :user_id
+        ])
+      )
+
+    assert length(versions) == 6 * iterations
+
+    expected = [
+      %{
+        tax_scientific_name: "Anergates atratulus (Schenck, 1852)",
+        mte_catalog_number: "GBIFCH00993789",
+        user_id: actor.id,
+        version_action_name: :import,
+        version_action_type: :create
+      },
+      %{
+        tax_scientific_name: "Anergates atratulus (Schenck, 1852)",
+        mte_catalog_number: "GBIFCH00993760",
+        user_id: actor.id,
+        version_action_name: :import,
+        version_action_type: :create
+      },
+      %{
+        tax_scientific_name: "Anergates atratulus (Schenck, 1852)",
+        mte_catalog_number: "GBIFCH00993778",
+        user_id: actor.id,
+        version_action_name: :import,
+        version_action_type: :create
+      },
+      %{
+        tax_scientific_name: "Aphaenogaster subterranea (Latreille, 1798)",
+        mte_catalog_number: "GBIFCH00995787",
+        user_id: actor.id,
+        version_action_name: :import,
+        version_action_type: :create
+      },
+      %{
+        tax_scientific_name: "Aphaenogaster subterranea (Latreille, 1798)",
+        mte_catalog_number: "GBIFCH00995788",
+        user_id: actor.id,
+        version_action_name: :import,
+        version_action_type: :create
+      },
+      %{
+        tax_scientific_name: "Anergates atratulus (Schenck, 1852)",
+        mte_catalog_number: "GBIFCH00993799",
+        user_id: actor.id,
+        version_action_name: :import,
+        version_action_type: :create
+      }
+    ]
+
+    # duplicate expected versions for each iteration > 0
+    expected = 1..iterations |> Enum.map(fn _ -> expected end) |> List.flatten()
+
+    assert_lists_equal(expected, versions)
+  end
+end

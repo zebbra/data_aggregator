@@ -808,7 +808,9 @@ classDiagram
         String tax_scientific_name
         UUID version_source_id
         Map changes
+        UUID user_id
         Record version_source
+        User user
         destroy()
         update(Atom version_action_type, Atom version_action_name, String mte_catalog_number, String tax_scientific_name, ...)
         read()
@@ -820,11 +822,13 @@ classDiagram
         Atom version_action_name
         UUID version_source_id
         Map changes
+        UUID user_id
         EncodedRecord version_source
+        User user
         destroy()
-        update(Atom version_action_type, Atom version_action_name, UUID version_source_id, Map changes)
+        update(Atom version_action_type, Atom version_action_name, UUID version_source_id, Map changes, ...)
         read()
-        create(Atom version_action_type, Atom version_action_name, UUID version_source_id, Map changes)
+        create(Atom version_action_type, Atom version_action_name, UUID version_source_id, Map changes, ...)
     }
     class Approval {
         UUID id
@@ -1149,6 +1153,8 @@ classDiagram
         bulk_approve(Term rows)
     }
 
+    User -- Version
+    User -- Version
     Attachment -- Approval
     Attachment -- Export
     Attachment -- Import

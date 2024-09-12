@@ -52,11 +52,18 @@ defmodule DataAggregator.Records.EncodedRecord do
   paper_trail do
     change_tracking_mode :changes_only
     store_action_name? true
+
     ignore_attributes [:inserted_at, :updated_at]
+    ignore_actions [:create]
+
     reference_source? true
 
     mixin DataAggregator.Records.EncodedRecordVersionMixin
     version_extensions extensions: [AshJsonApi.Resource]
+
+    belongs_to_actor :user, DataAggregator.Accounts.User,
+      domain: DataAggregator.Accounts,
+      public?: true
   end
 
   preparations do

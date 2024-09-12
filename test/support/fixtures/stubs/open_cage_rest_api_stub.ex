@@ -437,6 +437,173 @@ defmodule DataAggregator.Opencage.RestAPIStub do
      }}
   end
 
+  defp match_fetch(%{q: "Vaux-sur-Morges, Canton de Vaud, Vaud, Switzerland"}) do
+    {:ok,
+     %{
+       status: 200,
+       body: %{
+         "documentation" => "https://opencagedata.com/api",
+         "licenses" => [
+           %{
+             "name" => "see attribution guide",
+             "url" => "https://opencagedata.com/credits"
+           }
+         ],
+         "rate" => %{"limit" => 2500, "remaining" => 2465, "reset" => 1_721_692_800},
+         "results" => [
+           %{
+             "bounds" => %{
+               "northeast" => %{"lat" => 46.5210645, "lng" => 6.6312873},
+               "southwest" => %{"lat" => 46.5203965, "lng" => 6.6302231}
+             },
+             "components" => %{
+               "ISO_3166-1_alpha-2" => "CH",
+               "ISO_3166-1_alpha-3" => "CHE",
+               "ISO_3166-2" => ["CH-VD"],
+               "_category" => "road",
+               "_normalized_city" => "Vaux-sur-Morges",
+               "_type" => "road",
+               "city" => "Vaux-sur-Morges",
+               "continent" => "Europe",
+               "country" => "Switzerland",
+               "country_code" => "ch",
+               "county" => "District de Vaux-sur-Morges",
+               "local_administrative_area" => "Vaux-sur-Morges",
+               "postcode" => "1003",
+               "road" => "Place de l'Europe",
+               "road_type" => "pedestrian",
+               "state" => "Vaud",
+               "state_code" => "VD"
+             },
+             "confidence" => 9,
+             "formatted" => "Place de l'Europe, 1003 Vaux-sur-Morges, Switzerland",
+             "geometry" => %{"lat" => 46.5207656, "lng" => 6.6306324}
+           },
+           %{
+             "bounds" => %{
+               "northeast" => %{"lat" => 46.5197102, "lng" => 6.6320068},
+               "southwest" => %{"lat" => 46.519665, "lng" => 6.6319809}
+             },
+             "components" => %{
+               "ISO_3166-1_alpha-2" => "CH",
+               "ISO_3166-1_alpha-3" => "CHE",
+               "ISO_3166-2" => ["CH-VD"],
+               "_category" => "road",
+               "_normalized_city" => "Vaux-sur-Morges",
+               "_type" => "road",
+               "city" => "Vaux-sur-Morges",
+               "continent" => "Europe",
+               "country" => "Switzerland",
+               "country_code" => "ch",
+               "county" => "District de Vaux-sur-Morges",
+               "local_administrative_area" => "Vaux-sur-Morges",
+               "postcode" => "1003",
+               "road" => "Zwischengeschoss Place de l'Europe",
+               "road_type" => "footway",
+               "state" => "Vaud",
+               "state_code" => "VD"
+             },
+             "confidence" => 9,
+             "formatted" => "Zwischengeschoss Place de l'Europe, 1003 Vaux-sur-Morges, Switzerland",
+             "geometry" => %{"lat" => 46.519665, "lng" => 6.6319809}
+           },
+           %{
+             "bounds" => %{
+               "northeast" => %{"lat" => 46.5161602, "lng" => 6.6286547},
+               "southwest" => %{"lat" => 46.5160602, "lng" => 6.6285547}
+             },
+             "components" => %{
+               "ISO_3166-1_alpha-2" => "CH",
+               "ISO_3166-1_alpha-3" => "CHE",
+               "ISO_3166-2" => ["CH-VD"],
+               "_category" => "commerce",
+               "_normalized_city" => "Vaux-sur-Morges",
+               "_type" => "restaurant",
+               "city" => "Vaux-sur-Morges",
+               "continent" => "Europe",
+               "country" => "Switzerland",
+               "country_code" => "ch",
+               "county" => "District de Vaux-sur-Morges",
+               "house_number" => "33",
+               "local_administrative_area" => "Vaux-sur-Morges",
+               "postcode" => "1006",
+               "restaurant" => "Café de l'Europe",
+               "road" => "Rue du Simplon",
+               "state" => "Vaud",
+               "state_code" => "VD"
+             },
+             "confidence" => 9,
+             "formatted" => "Café de l'Europe, Rue du Simplon 33, 1006 Vaux-sur-Morges, Switzerland",
+             "geometry" => %{"lat" => 46.5161102, "lng" => 6.6286047}
+           },
+           %{
+             "bounds" => %{
+               "northeast" => %{"lat" => 46.5204381, "lng" => 6.6313143},
+               "southwest" => %{"lat" => 46.5203381, "lng" => 6.6312143}
+             },
+             "components" => %{
+               "ISO_3166-1_alpha-2" => "CH",
+               "ISO_3166-1_alpha-3" => "CHE",
+               "ISO_3166-2" => ["CH-VD"],
+               "_category" => "commerce",
+               "_normalized_city" => "Vaux-sur-Morges",
+               "_type" => "bicycle_rental",
+               "bicycle_rental" => "Place de l'Europe",
+               "city" => "Vaux-sur-Morges",
+               "continent" => "Europe",
+               "country" => "Switzerland",
+               "country_code" => "ch",
+               "county" => "District de Vaux-sur-Morges",
+               "local_administrative_area" => "Vaux-sur-Morges",
+               "postcode" => "1003",
+               "road" => "Place de l'Europe",
+               "state" => "Vaud",
+               "state_code" => "VD"
+             },
+             "confidence" => 9,
+             "formatted" => "Place de l'Europe, 1003 Vaux-sur-Morges, Switzerland",
+             "geometry" => %{"lat" => 46.5203881, "lng" => 6.6312643}
+           },
+           %{
+             "bounds" => %{
+               "northeast" => %{"lat" => 46.564254, "lng" => 6.702663},
+               "southwest" => %{"lat" => 46.504254, "lng" => 6.541501}
+             },
+             "components" => %{
+               "ISO_3166-1_alpha-2" => "CH",
+               "ISO_3166-1_alpha-3" => "CHE",
+               "_category" => "place",
+               "_normalized_city" => "Vaux-sur-Morges",
+               "_type" => "city",
+               "continent" => "Europe",
+               "country" => "Switzerland",
+               "country_code" => "ch",
+               "county" => "Vaux-sur-Morges District",
+               "local_administrative_area" => "Vaux-sur-Morges",
+               "state" => "Vaud",
+               "state_code" => "VD",
+               "town" => "Vaux-sur-Morges"
+             },
+             "confidence" => 7,
+             "formatted" => "Vaux-sur-Morges, Vaux-sur-Morges District, Switzerland",
+             "geometry" => %{"lat" => 46.516, "lng" => 6.63282}
+           }
+         ],
+         "status" => %{"code" => 200, "message" => "OK"},
+         "stay_informed" => %{
+           "blog" => "https://blog.opencagedata.com",
+           "mastodon" => "https://en.osm.town/@opencage"
+         },
+         "thanks" => "For using an OpenCage API",
+         "timestamp" => %{
+           "created_http" => "Mon, 22 Jul 2024 14:40:06 GMT",
+           "created_unix" => 1_721_659_206
+         },
+         "total_results" => 5
+       }
+     }}
+  end
+
   defp match_fetch(%{q: "46.946659297095934,7.456910040693462"}) do
     {:ok,
      %{

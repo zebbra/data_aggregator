@@ -70,7 +70,7 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:tax_genus, :genus},
           {:tax_scientific_name, :scientificName},
           {:tax_taxon_id, :key},
-          {:tax_taxon_id, :acceptedUsageKey}
+          {:tax_taxon_id, :usageKey}
         ]
 
       :gbif_iucn_redlist ->

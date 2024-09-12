@@ -14,11 +14,19 @@ defmodule DataAggregator.Records.Record.Changes.SetPublicationStale do
     changeset
     |> Changeset.atomic_update(
       :fast_track_status,
-      expr(if fast_track_status == :not_published, do: :not_published, else: :stale)
+      expr(
+        if fast_track_status == :not_published or fast_track_status == "not_published",
+          do: :not_published,
+          else: :stale
+      )
     )
     |> Changeset.atomic_update(
       :approval_status,
-      expr(if approval_status == :not_approved, do: :not_approved, else: :stale)
+      expr(
+        if approval_status == :not_approved or approval_status == "not_approved",
+          do: :not_approved,
+          else: :stale
+      )
     )
   end
 end

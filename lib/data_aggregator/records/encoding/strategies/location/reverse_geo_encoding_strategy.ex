@@ -3,6 +3,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
     Encode Records with the geo location api (opencagedata) to receive reverse encoded geo locations
   """
 
+  alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Misc.Coordinates
   alias DataAggregator.Opencage
   alias DataAggregator.Records.EncodedRecord
@@ -21,11 +22,11 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
   @doc """
     lookup the geo encoding api and return the encoded record
   """
-  @spec apply_strategy(EncodedRecord.t()) :: EncodingResult.t()
-  def apply_strategy(encoded_record) do
+  @spec apply_strategy(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
+  def apply_strategy(encoded_record, ctx) do
     encoded_record = Ash.load!(encoded_record, [:record])
 
-    case process_encoded_record(encoded_record) do
+    case process_encoded_record(encoded_record, ctx) do
       {:ok, encoded_record} ->
         {:ok, encoded_record}
 
@@ -41,8 +42,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
       {:error, error, encoded_record}
   end
 
-  @spec process_encoded_record(EncodedRecord.t()) :: EncodingResult.t()
-  defp process_encoded_record(encoded_record) do
+  @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
+  defp process_encoded_record(encoded_record, ctx) do
     {
       :ok,
       encoded_record
@@ -51,7 +52,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
       |> add_swiss_coordinates(encoded_record)
       |> add_intl_coords(encoded_record)
       |> add_municipality_and_city()
-      |> Strategy.update_encoded_record(encoded_record, @output_attributes)
+      |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)
     }
   catch
     error ->

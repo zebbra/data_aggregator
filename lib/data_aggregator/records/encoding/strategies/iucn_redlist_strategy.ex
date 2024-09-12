@@ -3,6 +3,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
     Encode Records with the gbif iucn redlist catalog api
   """
 
+  alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Gbif
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
@@ -22,9 +23,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
   @doc """
     lookup the gbif iucn redlist api and return the encoded record
   """
-  @spec apply_strategy(EncodedRecord.t()) :: EncodingResult.t()
-  def apply_strategy(encoded_record) do
-    case process_encoded_record(encoded_record) do
+  @spec apply_strategy(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
+  def apply_strategy(encoded_record, ctx) do
+    case process_encoded_record(encoded_record, ctx) do
       {:ok, encoded_record} ->
         {:ok, encoded_record}
 
@@ -40,8 +41,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
       {:error, error, encoded_record}
   end
 
-  @spec process_encoded_record(EncodedRecord.t()) :: EncodingResult.t()
-  defp process_encoded_record(encoded_record) do
+  @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
+  defp process_encoded_record(encoded_record, ctx) do
     taxon_id = encoded_record |> Map.get(@input_attribute, "") |> to_string()
 
     # early return if taxon_id is empty
@@ -55,7 +56,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy do
       if response.body === nil or response.body === "" do
         {:ok, encoded_record}
       else
-        {:ok, Strategy.update_encoded_record(response.body, encoded_record, @output_attributes)}
+        {:ok, Strategy.update_encoded_record(response.body, encoded_record, @output_attributes, ctx)}
       end
     else
       e ->

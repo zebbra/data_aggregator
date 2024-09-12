@@ -6,17 +6,19 @@ defmodule DataAggregator.Records.Publication.Changes.EnqueuePublisher do
   use Ash.Resource.Change
 
   alias Ash.Changeset
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.Publication.Workers.Publisher
 
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_action(changeset, &enqueue_publisher/1)
+  def change(%Changeset{} = changeset, _opts, ctx) do
+    Changeset.before_action(changeset, &enqueue_publisher(&1, ctx))
   end
 
-  defp enqueue_publisher(%Changeset{data: publication} = changeset) do
-    case insert_job(publication) do
+  defp enqueue_publisher(%Changeset{data: publication} = changeset, %{actor: actor}) do
+    case insert_job(publication, actor) do
       {:ok, job} ->
         Logger.debug("Enqueued publication job #{inspect(job.id)}")
         changeset
@@ -27,9 +29,15 @@ defmodule DataAggregator.Records.Publication.Changes.EnqueuePublisher do
     end
   end
 
-  defp insert_job(%Publication{id: id}) do
+  defp insert_job(%Publication{id: id}, nil) do
     %{id: id}
-    |> Publication.Workers.Publisher.new()
+    |> Publisher.new()
+    |> Oban.insert()
+  end
+
+  defp insert_job(%Publication{id: id}, %User{id: user_id}) do
+    %{id: id, user_id: user_id}
+    |> Publisher.new()
     |> Oban.insert()
   end
 end

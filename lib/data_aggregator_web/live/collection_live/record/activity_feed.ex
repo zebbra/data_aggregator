@@ -7,6 +7,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   import DataAggregatorWeb.RecordLive.Helpers, only: [get_dwc_field: 1]
 
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Activity
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
@@ -56,6 +57,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
         </span>
         <div class="ring-base-content/20 w-full rounded-md pt-5 pb-4 ring-1">
           <.table
+            id={"table_#{@activity.index}"}
             opts={[
               container_attrs: [class: ""]
             ]}
@@ -200,6 +202,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       (record_versions ++ encoded_record_versions)
       |> activites_from_versions()
       |> sort_activities()
+      |> Enum.with_index(fn activity, index -> Map.put(activity, :index, index) end)
 
     assign(assigns, :activities, sorted_activities)
   end
@@ -215,12 +218,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   defp version_to_activity(version) do
     %Activity{
       name: version.version_action_name,
-      actor: "Owner",
+      actor: maybe_set_actor(version.user),
       date_time: version.version_inserted_at,
       content: version.changes,
       source: version_source(version)
     }
   end
+
+  defp maybe_set_actor(%User{first_name: first_name}) when first_name != nil, do: first_name
+  defp maybe_set_actor(%User{last_name: last_name}) when last_name != nil, do: last_name
+  defp maybe_set_actor(%User{email: email}) when email != nil, do: email
+  defp maybe_set_actor(%User{}), do: ~t"Anonym"m
+  defp maybe_set_actor(_), do: ~t"System"m
 
   defp version_source(%{version_action_name: :update_fast_track_status}), do: ~t"Publication"
   defp version_source(%{version_action_name: :update_approval_status}), do: ~t"Approval"
@@ -257,15 +266,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   defp record_versions(assigns) do
     Record.Version
     |> Ash.Query.for_read(:read)
-    |> Ash.Query.load(:version_source)
+    |> Ash.Query.load([:version_source, :user])
     |> Ash.Query.filter(version_source_id == ^assigns.record.id)
-    |> Ash.Query.filter(
-      version_action_name in [
-        :update_approval_status,
-        :update_fast_track_status,
-        :import
-      ]
-    )
     |> Ash.read!()
   end
 
@@ -275,13 +277,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
     EncodedRecord.Version
     |> Ash.Query.for_read(:read)
-    |> Ash.Query.load(:version_source)
+    |> Ash.Query.load([:version_source, :user])
     |> Ash.Query.filter(version_source_id == ^encoded_record_id)
-    |> Ash.Query.filter(
-      version_action_name in [
-        :update
-      ]
-    )
     |> Ash.read!()
   end
 
