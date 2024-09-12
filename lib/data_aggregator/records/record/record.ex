@@ -236,7 +236,6 @@ defmodule DataAggregator.Records.Record do
       primary? true
       argument :collection, :struct, allow_nil?: false
 
-      change Changes.SetGrSciCollInstitution
       change Changes.SetOccurrenceID
       change Changes.SetBasisOfRecord
       change Changes.CreateEncodedRecordAfterAction
