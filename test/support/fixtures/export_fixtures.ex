@@ -19,7 +19,10 @@ defmodule DataAggregator.ExportFixtures do
   Generate an export.
   """
   def export_fixture(attrs \\ %{}) do
-    collection = Ash.load!(collection_fixture(), [:records_to_export_query])
+    collection =
+      Ash.load!(collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()}), [
+        :records_to_export_query
+      ])
 
     @export_defaults
     |> Map.merge(attrs)

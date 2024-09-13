@@ -40,7 +40,9 @@ defmodule DataAggregator.EncodingFixtures do
     |> Map.merge(attrs)
     |> Map.put(:loc_municipality, "Bern")
     |> Map.put(:loc_country, "Switzerland")
-    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Map.put_new_lazy(:collection, fn ->
+      collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
+    end)
     |> Record.create!()
   end
 
@@ -53,7 +55,9 @@ defmodule DataAggregator.EncodingFixtures do
     @encoded_record_defaults
     |> Map.merge(attrs)
     |> Map.put(:tax_scientific_name, "this leads to wrong match type")
-    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Map.put_new_lazy(:collection, fn ->
+      collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
+    end)
     |> Record.create!()
   end
 
@@ -66,7 +70,9 @@ defmodule DataAggregator.EncodingFixtures do
     @encoded_record_defaults
     |> Map.merge(attrs)
     |> Map.put(:tax_taxon_id, 2_496_198)
-    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Map.put_new_lazy(:collection, fn ->
+      collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
+    end)
     |> Record.create!()
   end
 
@@ -77,7 +83,9 @@ defmodule DataAggregator.EncodingFixtures do
     @encoded_record_defaults
     |> Map.merge(attrs)
     |> Map.put(:tax_taxon_id, 2_496_298)
-    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Map.put_new_lazy(:collection, fn ->
+      collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
+    end)
     |> Record.create!()
   end
 
@@ -90,7 +98,9 @@ defmodule DataAggregator.EncodingFixtures do
     @encoded_record_defaults
     |> Map.merge(attrs)
     |> Map.put(:tax_taxon_id, 0)
-    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Map.put_new_lazy(:collection, fn ->
+      collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
+    end)
     |> Record.create!()
   end
 
@@ -133,7 +143,9 @@ defmodule DataAggregator.EncodingFixtures do
     |> Map.merge(attrs)
     |> Map.put(:loc_municipality, "Liebefeld")
     |> Map.put(:loc_state_province, "Bern")
-    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Map.put_new_lazy(:collection, fn ->
+      collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
+    end)
     |> Record.create!()
   end
 
@@ -145,7 +157,9 @@ defmodule DataAggregator.EncodingFixtures do
     |> Map.merge(attrs)
     |> Map.put(:loc_decimal_longitude, 7.456905642729698)
     |> Map.put(:loc_decimal_latitude, 46.946660986374766)
-    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Map.put_new_lazy(:collection, fn ->
+      collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
+    end)
     |> Record.create!()
   end
 
@@ -155,7 +169,9 @@ defmodule DataAggregator.EncodingFixtures do
   def record_fixture_for_add_institution_code_encoding_correct(attrs \\ %{}) do
     @encoded_record_defaults
     |> Map.merge(attrs)
-    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Map.put_new_lazy(:collection, fn ->
+      collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
+    end)
     |> Record.create!()
   end
 

@@ -139,7 +139,9 @@ defmodule DataAggregator.Gbif.RestAPI do
 
   defp maybe_restrict_to_institution(collections, actor, collections_in_use) do
     if has_role?(actor, "admin") do
-      collections
+      Enum.reject(collections, fn {_, key, _} ->
+        key in collections_in_use
+      end)
     else
       Enum.reject(collections, fn {_, key, institution_key} ->
         institution_key != actor.institution_id or key in collections_in_use

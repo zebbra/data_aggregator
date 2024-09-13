@@ -26,7 +26,9 @@ defmodule DataAggregator.RecordsFixtures do
   def record_fixture(attrs \\ %{}) do
     @record_defaults
     |> Map.merge(attrs)
-    |> Map.put_new_lazy(:collection, fn -> collection_fixture() end)
+    |> Map.put_new_lazy(:collection, fn ->
+      collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
+    end)
     |> Record.create!()
   end
 

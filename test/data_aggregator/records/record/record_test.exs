@@ -298,7 +298,7 @@ defmodule DataAggregator.Records.RecordTest do
           type: :zoology,
           name: "Another Collection",
           owner: "Max Powers",
-          grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"
+          grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa473"
         })
 
       other_import = Import.create!(other_collection)
