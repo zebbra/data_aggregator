@@ -6,6 +6,7 @@ defmodule DataAggregator.Records.Validations.GrSciCollValidator do
   use Ash.Resource.Validation
 
   alias DataAggregator.Gbif
+  alias DataAggregator.Records.Collection
 
   @impl true
   def init(opts) do
@@ -29,22 +30,34 @@ defmodule DataAggregator.Records.Validations.GrSciCollValidator do
     key = Ash.Changeset.get_attribute(changeset, opts[:attribute])
     kind = opts[:kind]
 
-    if key == nil do
-      {:error, "No valid GrSciColl reference (nil) provided"}
+    with :ok <- maybe_validate_unique(opts[:attribute], key),
+         :ok <- grscicoll_element_exist?(key, kind) do
+      :ok
     else
-      case does_grscicoll_element_exist?(key, kind) do
-        :ok ->
-          :ok
-
-        {:error, error} ->
-          # The returned error will be passed into `Ash.Error.to_ash_error/3`
-          {:error, field: opts[:attribute], message: error}
-      end
+      {:error, error} ->
+        # The returned error will be passed into `Ash.Error.to_ash_error/3`
+        {:error, field: opts[:attribute], message: error}
     end
   end
 
-  @spec does_grscicoll_element_exist?(String.t(), atom()) :: :ok | {:error, any()}
-  defp does_grscicoll_element_exist?(key, kind) do
+  @spec maybe_validate_unique(atom(), String.t() | nil) :: :ok | {:error, String.t()}
+  defp maybe_validate_unique(attribute, key)
+
+  defp maybe_validate_unique(_, nil), do: :ok
+
+  defp maybe_validate_unique(:grscicoll_reference, key) do
+    case Collection.get_by_grscicoll_reference(key) do
+      {:ok, _} -> {:error, "has already been taken"}
+      {:error, _} -> :ok
+    end
+  end
+
+  defp maybe_validate_unique(_, _), do: :ok
+
+  @spec grscicoll_element_exist?(String.t() | nil, atom()) :: :ok | {:error, any()}
+  defp grscicoll_element_exist?(nil, _), do: :ok
+
+  defp grscicoll_element_exist?(key, kind) do
     case Gbif.RestAPI.get_grscicoll_entity(key, kind) do
       {:ok, element} ->
         if element != nil && element["key"] == key do

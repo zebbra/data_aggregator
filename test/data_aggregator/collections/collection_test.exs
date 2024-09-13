@@ -26,8 +26,8 @@ defmodule DataAggregator.CollectionTest do
 
     test "read!/0 returns all collections" do
       created = [
-        collection_fixture(),
-        collection_fixture()
+        collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()}),
+        collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
       ]
 
       persisted = Collection.read!(page: false)
