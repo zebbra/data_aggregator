@@ -13,9 +13,10 @@ defmodule DataAggregatorWeb.Router do
 
     plug Cldr.Plug.PutLocale,
       apps: [:cldr, :gettext],
+      default: DataAggregatorWeb.Cldr.default_locale(),
       cldr: DataAggregatorWeb.Cldr,
       gettext: DataAggregatorWeb.Gettext,
-      from: [:query, :session, :accept_language],
+      from: [],
       param: "locale"
 
     plug :assign_current_locale

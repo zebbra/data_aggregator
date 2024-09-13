@@ -72,9 +72,7 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
 # config :ash, :custom_types, uuid: AshUUID.UUID
 
 # Configure gettext
-config :data_aggregator, DataAggregatorWeb.Gettext,
-  default_locale: "en",
-  allowed_locales: ~w(de fr)
+config :data_aggregator, DataAggregatorWeb.Gettext, default_locale: "en"
 
 # Configure Oban job queues
 config :data_aggregator, Oban,
