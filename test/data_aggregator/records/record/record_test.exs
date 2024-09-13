@@ -381,7 +381,7 @@ defmodule DataAggregator.Records.RecordTest do
         loc_higher_geography: "bla",
         loc_locality: "bla",
         loc_state_province: "bla",
-        loc_verbatim_depth: 42,
+        loc_verbatim_depth: "42",
         loc_verbatim_elevation: "42",
         mte_year_collection_entrance: 2001,
         occ_occurrence_id: "bla"
@@ -411,7 +411,7 @@ defmodule DataAggregator.Records.RecordTest do
         loc_higher_geography: "bla",
         loc_locality: "bla",
         loc_state_province: "bla",
-        loc_verbatim_depth: 42,
+        loc_verbatim_depth: "42",
         loc_verbatim_elevation: "42",
         mte_year_collection_entrance: 2001,
         occ_occurrence_id: "bla",

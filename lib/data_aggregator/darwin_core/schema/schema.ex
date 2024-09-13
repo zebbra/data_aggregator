@@ -837,7 +837,7 @@ loc_attributes = [
     dwc_field: "verbatimDepth",
     dwc_link: "http://rs.tdwg.org/dwc/terms/verbatimDepth",
     dwca_file: :core,
-    attribute: %Attribute{name: :verbatim_depth, type: :integer, allow_nil?: true}
+    attribute: %Attribute{name: :verbatim_depth, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "minimumDistanceAboveSurfaceInMeters",
@@ -1611,7 +1611,7 @@ pvn_attributes = [
     dwc_field: "preservationDateBegin",
     dwc_link: "http://data.ggbn.org/schemas/ggbn/terms/preservationDateBegin",
     dwca_file: :preservation,
-    attribute: %Attribute{name: :preservation_date_begin, type: :string, allow_nil?: true}
+    attribute: %Attribute{name: :preservation_date_begin, type: :date, allow_nil?: true}
   },
   %{
     dwc_field: "preservationID",
@@ -1734,7 +1734,7 @@ oth_attributes = [
     dwc_field: "dateAvailable",
     dwc_link: nil,
     dwca_file: nil,
-    attribute: %Attribute{name: :date_available, type: :string, allow_nil?: true}
+    attribute: %Attribute{name: :date_available, type: :date, allow_nil?: true}
   },
   %{
     dwc_field: "informationWithheld",
