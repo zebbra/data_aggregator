@@ -60,7 +60,10 @@ defmodule DataAggregator.WorkflowTest do
     # %{name: "namePublishedInYear", mapped_to: "tax_name_published_in_year"},
     %{name: "taxonRank", mapped_to: "tax_taxon_rank"},
     %{name: "scientificName", mapped_to: "tax_scientific_name"},
-    %{name: "identificationRemarks", mapped_to: "idf_identification_remarks"}
+    %{name: "identificationRemarks", mapped_to: "idf_identification_remarks"},
+    %{name: "preservationDateBegin", mapped_to: "pvn_preservation_date_begin"},
+    %{name: "verbatimDepth", mapped_to: "loc_verbatim_depth"},
+    %{name: "dateAvailable", mapped_to: "oth_date_available"}
   ]
 
   @publication_states [
@@ -136,9 +139,10 @@ defmodule DataAggregator.WorkflowTest do
 
       # assert that the records are in the correct state
       assert_states_equal(expected, records)
-
       # record create -> import versions for each record have been created
       assert_create_import_versions(records, actor)
+      # no encoded_records versions should have been created
+      assert_no_encode_verions()
 
       # update the states of the records so we can test the workflow
       update_states(records)
@@ -163,6 +167,8 @@ defmodule DataAggregator.WorkflowTest do
       assert_states_equal(expected, records)
       # assert that we removed the update versions
       assert_create_import_versions(records, actor)
+      # no encoded_records versions should have been created
+      assert_no_encode_verions()
 
       import = Ash.update!(import, %{state: :pending})
       assert import.state == :pending
@@ -183,6 +189,8 @@ defmodule DataAggregator.WorkflowTest do
       assert_states_equal(expected, records)
       # record create -> import versions for each record have been created a second time
       assert_create_import_versions(records, actor, 2)
+      # no encoded_records versions should have been created
+      assert_no_encode_verions()
     end
   end
 
@@ -219,9 +227,10 @@ defmodule DataAggregator.WorkflowTest do
 
       # assert that the records are in the correct state
       assert_states_equal(expected, records)
-
       # record create -> import versions for each record have been created
       assert_create_import_versions(records, actor)
+      # no encoded_records versions should have been created
+      assert_no_encode_verions()
 
       encode_records(records, actor)
       records = Ash.read!(Record, load: [:paper_trail_versions])
@@ -238,33 +247,10 @@ defmodule DataAggregator.WorkflowTest do
 
       # assert that the records are in the correct state
       assert_states_equal(expected, records)
-
       # no new records versions should have been created
       assert_create_import_versions(records, actor)
-
-      encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions])
-      assert length(encoded_records) == 6
-
-      versions =
-        encoded_records
-        |> Enum.map(& &1.paper_trail_versions)
-        |> List.flatten()
-        |> Enum.map(
-          &Map.take(&1, [
-            :version_action_name,
-            :version_action_type,
-            :user_id
-          ])
-        )
-
-      expected_length = 6 * @catalog_versions
-      assert length(versions) == expected_length
-
-      # Ensure all strategies set the user_id correctly
-      for index <- 0..(expected_length - 1) do
-        version = Enum.at(versions, index)
-        assert version.user_id == actor.id
-      end
+      # encoded_record versions for each record have been created
+      assert_encode_versions(actor)
     end
   end
 
@@ -317,33 +303,10 @@ defmodule DataAggregator.WorkflowTest do
 
       # assert that the records are in the correct state
       assert_states_equal(expected, records)
-
       # no new records versions should have been created
       assert_create_import_versions(records, actor)
-
-      encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions])
-      assert length(encoded_records) == 6
-
-      versions =
-        encoded_records
-        |> Enum.map(& &1.paper_trail_versions)
-        |> List.flatten()
-        |> Enum.map(
-          &Map.take(&1, [
-            :version_action_name,
-            :version_action_type,
-            :user_id
-          ])
-        )
-
-      expected_length = 6 * @catalog_versions
-      assert length(versions) == expected_length
-
-      # Ensure all strategies set the user_id correctly
-      for index <- 0..(expected_length - 1) do
-        version = Enum.at(versions, index)
-        assert version.user_id == actor.id
-      end
+      # encoded_record versions for each record have been created
+      assert_encode_versions(actor)
 
       perform_job(Publisher, %{id: publication.id, user_id: actor.id})
 
@@ -390,6 +353,9 @@ defmodule DataAggregator.WorkflowTest do
         assert version.user_id == actor.id
         assert version.version_action_name in [:import, :update_fast_track_status]
       end
+
+      # no new records versions should have been created
+      assert_encode_versions(actor)
     end
   end
 
@@ -448,33 +414,10 @@ defmodule DataAggregator.WorkflowTest do
 
       # assert that the records are in the correct state
       assert_states_equal(expected, records)
-
       # no new records versions should have been created
       assert_create_import_versions(records, actor)
-
-      encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions])
-      assert length(encoded_records) == 6
-
-      versions =
-        encoded_records
-        |> Enum.map(& &1.paper_trail_versions)
-        |> List.flatten()
-        |> Enum.map(
-          &Map.take(&1, [
-            :version_action_name,
-            :version_action_type,
-            :user_id
-          ])
-        )
-
-      expected_length = 6 * @catalog_versions
-      assert length(versions) == expected_length
-
-      # Ensure all strategies set the user_id correctly
-      for index <- 0..(expected_length - 1) do
-        version = Enum.at(versions, index)
-        assert version.user_id == actor.id
-      end
+      # encoded_record versions for each record have been created
+      assert_encode_versions(actor)
 
       perform_job(Publisher, %{id: publication.id, user_id: actor.id})
 
@@ -521,6 +464,9 @@ defmodule DataAggregator.WorkflowTest do
         assert version.user_id == actor.id
         assert version.version_action_name in [:import, :update_approval_status]
       end
+
+      # no new records versions should have been created
+      assert_encode_versions(actor)
     end
   end
 
@@ -554,6 +500,7 @@ defmodule DataAggregator.WorkflowTest do
     end)
   end
 
+  # record versions for x import iterations
   defp assert_create_import_versions(records, actor, iterations \\ 1) do
     versions =
       records
@@ -621,5 +568,52 @@ defmodule DataAggregator.WorkflowTest do
     expected = 1..iterations |> Enum.map(fn _ -> expected end) |> List.flatten()
 
     assert_lists_equal(expected, versions)
+  end
+
+  # versions for one encoding iteration
+  defp assert_encode_versions(actor) do
+    encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions])
+    assert length(encoded_records) == 6
+
+    versions =
+      encoded_records
+      |> Enum.map(& &1.paper_trail_versions)
+      |> List.flatten()
+      |> Enum.map(
+        &Map.take(&1, [
+          :version_action_name,
+          :version_action_type,
+          :user_id
+        ])
+      )
+
+    expected_length = 6 * @catalog_versions
+    assert length(versions) == expected_length
+
+    # Ensure all strategies set the user_id correctly
+    for index <- 0..(expected_length - 1) do
+      version = Enum.at(versions, index)
+      assert version.user_id == actor.id
+    end
+  end
+
+  defp assert_no_encode_verions do
+    encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions])
+    assert length(encoded_records) == 6
+
+    versions =
+      encoded_records
+      |> Enum.map(& &1.paper_trail_versions)
+      |> List.flatten()
+      |> Enum.map(
+        &Map.take(&1, [
+          :version_action_name,
+          :version_action_type,
+          :user_id
+        ])
+      )
+
+    expected_length = 0
+    assert length(versions) == expected_length
   end
 end

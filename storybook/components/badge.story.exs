@@ -15,7 +15,7 @@ defmodule Storybook.Components.Badge do
         },
         slots: [
           """
-            <span class="px-1.5">#{color}</span>
+            <span class="px-1.5">#{color} badge</span>
           """
         ]
       }

@@ -320,6 +320,9 @@ defmodule DataAggregator.MixProject do
       "repo.migrate": [
         "ash_postgres.migrate"
       ],
+      "repo.rollback": [
+        "ash_postgres.rollback"
+      ],
       "repo.drop": [
         "ash_postgres.drop"
       ],

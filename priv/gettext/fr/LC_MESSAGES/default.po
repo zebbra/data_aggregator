@@ -1602,8 +1602,8 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Data"
 msgstr ""
 
-#: lib/data_aggregator_web/components/components/attachment.ex:62
-#: lib/data_aggregator_web/components/components/attachment.ex:70
+#: lib/data_aggregator_web/components/components/attachment.ex:64
+#: lib/data_aggregator_web/components/components/attachment.ex:72
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Components.Attachment"
 msgid "rows"
