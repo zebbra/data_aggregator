@@ -225,8 +225,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     }
   end
 
-  defp maybe_set_actor(%User{first_name: first_name}) when first_name != nil, do: first_name
-  defp maybe_set_actor(%User{last_name: last_name}) when last_name != nil, do: last_name
+  defp maybe_set_actor(%User{first_name: first_name, last_name: last_name}) when first_name != nil and last_name != nil,
+    do: "#{first_name} #{last_name}"
+
   defp maybe_set_actor(%User{email: email}) when email != nil, do: email
   defp maybe_set_actor(%User{}), do: ~t"Anonym"m
   defp maybe_set_actor(_), do: ~t"System"m
