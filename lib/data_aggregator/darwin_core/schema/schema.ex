@@ -1824,55 +1824,55 @@ oth_attributes = [
 
 ext_attributes = [
   %{
-    dwc_field: nil,
+    dwc_field: "amplification",
     dwc_link: nil,
     dwca_file: :amplification,
     attribute: %Attribute{name: :amplification, type: :map, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "assertions",
     dwc_link: nil,
     dwca_file: :extended_measurement_or_facts,
     attribute: %Attribute{name: :assertions, type: :map, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "chronometric",
     dwc_link: nil,
     dwca_file: :chronometric_age,
     attribute: %Attribute{name: :chronometric, type: :map, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "permit",
     dwc_link: nil,
     dwca_file: :permit,
     attribute: %Attribute{name: :permit, type: :map, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "resourceRelationship",
     dwc_link: nil,
     dwca_file: :resource_relationship,
     attribute: %Attribute{name: :resource_relationship, type: :map, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "reference",
     dwc_link: nil,
     dwca_file: :references,
     attribute: %Attribute{name: :references, type: :map, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "speciesDistribution",
     dwc_link: nil,
     dwca_file: :distribution,
     attribute: %Attribute{name: :species_distribution, type: :map, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "speciesProfile",
     dwc_link: nil,
     dwca_file: :species_profile,
     attribute: %Attribute{name: :species_profile, type: :map, allow_nil?: true}
   },
   %{
-    dwc_field: nil,
+    dwc_field: "vernacularNames",
     dwc_link: nil,
     dwca_file: :vernacular_names,
     attribute: %Attribute{name: :vernacular_names, type: :map, allow_nil?: true}
