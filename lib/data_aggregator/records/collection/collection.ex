@@ -305,7 +305,7 @@ defmodule DataAggregator.Records.Collection do
       run Records.Actions.ExportRecords
     end
 
-    # starts the publication process to the svnhc portal for the given query of records
+    # starts the publication process to the SwissNatColl portal for the given query of records
     action :publish, :map do
       argument :publication, :struct, allow_nil?: false
 

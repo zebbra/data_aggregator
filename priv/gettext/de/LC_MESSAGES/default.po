@@ -3120,12 +3120,6 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal"
 msgid "Publish"
 msgstr "Veröffentlichen"
 
-#: lib/data_aggregator_web/live/collection_live/record/fast_track_pub_modal.ex:60
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal"
-msgid "The publisher of your data on GBIF is SVNHC, but your institution retains ownership of the data at all times."
-msgstr "Der Herausgeber deiner Daten auf GBIF ist SVNHC, aber deine Institution behält jederzeit die Eigentumsrechte an den Daten."
-
 #: lib/data_aggregator_web/live/collection_live/record/fast_track_pub_modal.ex:68
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal"
@@ -3270,3 +3264,9 @@ msgstr "Ja, User löschen"
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Edit User"
 msgstr "User bearbeiten"
+
+#: lib/data_aggregator_web/live/collection_live/record/fast_track_pub_modal.ex:60
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal"
+msgid "The publisher of your data on GBIF is SwissNatColl, but your institution retains ownership of the data at all times."
+msgstr "Der Herausgeber deiner Daten auf GBIF ist SwissNatColl, aber deine Institution behält jederzeit die Eigentumsrechte an den Daten."
