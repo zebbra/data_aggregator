@@ -193,6 +193,8 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
 
   attr :options, :list, doc: "the options to pass to `DataAggregatorWeb.Components.FieldGroup.options_for_group/1`"
 
+  attr :hidden_options, :list, default: nil, doc: "list of options that should be hidden"
+
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
   attr :class, :string, default: nil, doc: "additional css class for input"
   attr :hidden, :boolean, default: false, doc: "whether the field is hidden"
@@ -230,20 +232,28 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
           :for={{label, value} <- options_for_group(@options)}
           class="flex cursor-pointer justify-between gap-4 py-2 sm:flex-row-reverse sm:justify-end"
         >
-          <.label for={"#{@name}-#{value}"} label={label} class="cursor-pointer min-w-0 flex-1" />
-          <input
-            type="checkbox"
-            id={"#{@name}-#{value}"}
-            name={@name}
-            value={value}
-            checked={checked?(value, @value)}
-            class="toggle"
-            {@rest}
-          />
+          <div hidden={hidden_option?(value, @hidden_options)}>
+            <.label for={"#{@name}-#{value}"} label={label} class="cursor-pointer min-w-0 flex-1" />
+            <input
+              type="checkbox"
+              id={"#{@name}-#{value}"}
+              name={@name}
+              value={value}
+              checked={checked?(value, @value)}
+              class="toggle"
+              {@rest}
+            />
+          </div>
         </div>
       </div>
     </div>
     """
+  end
+
+  defp hidden_option?(_value, nil), do: false
+
+  defp hidden_option?(value, hidden_options) do
+    Enum.member?(hidden_options, value)
   end
 
   @doc """

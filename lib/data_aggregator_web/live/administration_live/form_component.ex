@@ -134,7 +134,12 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
         >
           <.fieldgroup modal>
             <div class="grid grid-cols-1 gap-8">
-              <.toggle_group field={@form[:roles]} options={toggle_group_options()} multiple />
+              <.toggle_group
+                field={@form[:roles]}
+                options={toggle_group_options()}
+                hidden_options={hidden_toggle_group_options(@current_user)}
+                multiple
+              />
             </div>
           </.fieldgroup>
           <:actions modal>
@@ -355,5 +360,11 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
       "Data Administrator": "data_administrator",
       Admin: "admin"
     ]
+  end
+
+  defp hidden_toggle_group_options(current_user) do
+    unless Enum.member?(current_user.roles, "admin") do
+      ["admin"]
+    end
   end
 end
