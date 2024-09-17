@@ -3,6 +3,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
     Encode Records with the geo location api (opencagedata) to receive forward encoded geo locations
   """
 
+  alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Opencage
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
@@ -19,8 +20,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
   @doc """
     lookup the geo encoding api and return the encoded record
   """
-  @spec apply_strategy(EncodedRecord.t()) :: EncodingResult.t()
-  def apply_strategy(encoded_record) do
+  @spec apply_strategy(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
+  def apply_strategy(encoded_record, ctx) do
     encoded_record = Ash.load!(encoded_record, [:record])
 
     longitude = encoded_record.loc_decimal_longitude
@@ -33,7 +34,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
 
       {:ok, encoded_record}
     else
-      case process_encoded_record(encoded_record) do
+      case process_encoded_record(encoded_record, ctx) do
         {:ok, encoded_record} ->
           {:ok, encoded_record}
 
@@ -50,14 +51,14 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
       {:error, error, encoded_record}
   end
 
-  @spec process_encoded_record(EncodedRecord.t()) :: EncodingResult.t()
-  defp process_encoded_record(encoded_record) do
+  @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
+  defp process_encoded_record(encoded_record, ctx) do
     {
       :ok,
       encoded_record
       |> build_params()
       |> fetch_if_params_available()
-      |> Strategy.update_encoded_record(encoded_record, @output_attributes)
+      |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)
     }
   catch
     error ->

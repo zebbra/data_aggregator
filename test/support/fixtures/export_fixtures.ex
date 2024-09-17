@@ -19,7 +19,10 @@ defmodule DataAggregator.ExportFixtures do
   Generate an export.
   """
   def export_fixture(attrs \\ %{}) do
-    collection = Ash.load!(collection_fixture(), [:records_to_export_query])
+    collection =
+      Ash.load!(collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()}), [
+        :records_to_export_query
+      ])
 
     @export_defaults
     |> Map.merge(attrs)
@@ -49,7 +52,7 @@ defmodule DataAggregator.ExportFixtures do
       tax_family: "Bradypodidae",
       tax_genus: "Bradypus",
       tax_kingdom: "Animalia",
-      tax_taxon_id: 1_012_187,
+      tax_taxon_id: 2_435_194,
       loc_decimal_latitude: 46.8182,
       loc_decimal_longitude: 640_000.0
     }

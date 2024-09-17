@@ -23,18 +23,18 @@ defmodule DataAggregatorWeb.LocaleSelectTest do
     end
 
     @tag authenticated: :admin
-    test "applies de-CH locale if passed as URI query", %{conn: conn} do
+    test "does not apply de-CH locale if passed as URI query", %{conn: conn} do
       {:ok, _, html} = live(conn, "/administration?locale=de-CH")
-      refute html =~ ~s|lang=\"en\"|
+      assert html =~ ~s|lang=\"en\"|
       refute html =~ ~s|lang=\"fr-CH\"|
-      assert html =~ ~s|lang=\"de-CH\"|
+      refute html =~ ~s|lang=\"de-CH\"|
     end
 
     @tag authenticated: :admin
-    test "applies fr-CH locale if passed as URI query", %{conn: conn} do
+    test "does not apply fr-CH locale if passed as URI query", %{conn: conn} do
       {:ok, _, html} = live(conn, "/administration?locale=fr-CH")
-      refute html =~ ~s|lang=\"en\"|
-      assert html =~ ~s|lang=\"fr-CH\"|
+      assert html =~ ~s|lang=\"en\"|
+      refute html =~ ~s|lang=\"fr-CH\"|
       refute html =~ ~s|lang=\"de-CH\"|
     end
 

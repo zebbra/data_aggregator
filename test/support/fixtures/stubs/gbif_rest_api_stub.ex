@@ -550,6 +550,37 @@ defmodule DataAggregator.Gbif.RestAPIStub do
      }}
   end
 
+  def get_iucn_redlist_category("2496298") do
+    {:ok,
+     %Req.Response{
+       status: 200,
+       headers: %{
+         "accept-ranges" => ["bytes"],
+         "age" => ["0"],
+         "cache-control" => ["public, max-age=3601"],
+         "connection" => ["keep-alive"],
+         "content-type" => ["application/json"],
+         "date" => ["Thu, 12 Sep 2024 19:05:03 GMT"],
+         "expires" => ["0"],
+         "pragma" => ["no-cache"],
+         "vary" => ["Origin, Access-Control-Request-Method, Access-Control-Request-Headers"],
+         "via" => ["1.1 varnish (Varnish/6.6)"],
+         "x-content-type-options" => ["nosniff"],
+         "x-frame-options" => ["DENY"],
+         "x-varnish" => ["383780524"],
+         "x-xss-protection" => ["1; mode=block"]
+       },
+       body: %{
+         "category" => "NOT_EVALUATED",
+         "code" => "NE",
+         "scientificName" => "Coccyzus cinereus Vieillot, 1817",
+         "taxonomicStatus" => "ACCEPTED"
+       },
+       trailers: %{},
+       private: %{}
+     }}
+  end
+
   def get_iucn_redlist_category(_) do
     {:ok,
      %Req.Response{
@@ -585,5 +616,11 @@ defmodule DataAggregator.Gbif.RestAPIStub do
 
   def notify_infospecies_with_approval_result(_) do
     {:ok, %{body: "it's all fine", status: 200}}
+  end
+
+  def get_available_collection_options(_) do
+    [
+      {"MJWC - Research Collection of Matthew J.W. Cock", "76694a72-e0e2-484d-ac61-ecb1e3cb5bb8"}
+    ]
   end
 end

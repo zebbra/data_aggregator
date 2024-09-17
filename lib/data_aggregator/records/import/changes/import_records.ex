@@ -16,16 +16,16 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_action(changeset, &import_records/1, append?: true)
+  def change(%Changeset{} = changeset, _opts, ctx) do
+    Changeset.before_action(changeset, &import_records(&1, ctx), append?: true)
   end
 
-  defp import_records(%Changeset{data: import} = changeset) do
+  defp import_records(%Changeset{data: import} = changeset, ctx) do
     if changeset.valid? do
       Logger.info("Importing records for #{inspect(import.id)} ...")
 
       case rows_stream(import) do
-        {:ok, rows} -> import_in_chunks(changeset, rows)
+        {:ok, rows} -> import_in_chunks(changeset, rows, ctx)
         {:error, error} -> add_error(changeset, error)
       end
     else
@@ -34,7 +34,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
     end
   end
 
-  defp import_in_chunks(%Changeset{data: import} = changeset, rows) do
+  defp import_in_chunks(%Changeset{data: import} = changeset, rows, ctx) do
     chunk_size = Records.import_batch_size()
 
     Logger.info("Importing records in chunks of #{chunk_size} rows ...")
@@ -45,12 +45,12 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
     rows
     |> Stream.chunk_every(chunk_size)
     |> Enum.with_index()
-    |> Stream.map(&import_chunk(import, &1))
+    |> Stream.map(&import_chunk(import, &1, ctx))
     |> reduce_import_results(changeset)
     |> error_if_nothing_imported()
   end
 
-  defp import_chunk(import, {chunk, index}) do
+  defp import_chunk(import, {chunk, index}, %{actor: actor}) do
     max_concurrency = Records.import_max_concurrency()
 
     Logger.info("Importing chunk ##{index} with #{length(chunk)} rows (concurrency: #{max_concurrency}) ...")
@@ -68,7 +68,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
     end
 
     Logger.info("Importing #{length(valid)} valid rows ...")
-    res = Record.bulk_import!(import, Enum.reverse(valid))
+    res = Record.bulk_import!(import, Enum.reverse(valid), actor: actor, authorize?: false)
 
     {res, length(valid), length(invalid)}
   end

@@ -3,6 +3,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.AddInstitutionCodeStrategy do
     Encode Records with the grscicoll institution data from its collectoin
   """
 
+  alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
@@ -16,12 +17,12 @@ defmodule DataAggregator.Records.Encoding.Strategy.AddInstitutionCodeStrategy do
   @doc """
     lookup the grscicoll institution data from the collection and return the encoded record
   """
-  @spec apply_strategy(EncodedRecord.t()) :: EncodingResult.t()
-  def apply_strategy(encoded_record) do
+  @spec apply_strategy(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
+  def apply_strategy(encoded_record, ctx) do
     # Load the record and its collection
     encoded_record = Ash.load!(encoded_record, record: :collection)
 
-    case process_encoded_record(encoded_record) do
+    case process_encoded_record(encoded_record, ctx) do
       {:ok, encoded_record} ->
         {:ok, encoded_record}
 
@@ -32,8 +33,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.AddInstitutionCodeStrategy do
     end
   end
 
-  @spec process_encoded_record(EncodedRecord.t()) :: EncodingResult.t()
-  defp process_encoded_record(encoded_record) do
+  @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
+  defp process_encoded_record(encoded_record, ctx) do
     with {:ok, collection} when not is_nil(collection) <-
            extract_collection(encoded_record),
          {:ok, institution_key} <-
@@ -47,7 +48,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.AddInstitutionCodeStrategy do
            grscicoll_institution_code: institution_code
          },
          encoded_record,
-         @output_attributes
+         @output_attributes,
+         ctx
        )}
     else
       {:error, _} ->

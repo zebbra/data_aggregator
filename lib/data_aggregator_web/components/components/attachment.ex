@@ -44,7 +44,9 @@ defmodule DataAggregatorWeb.Components.Attachment do
 
   def file_info(%{show_file_name: true} = assigns) do
     ~H"""
-    <div class="font-mono"><%= if is_nil(@attachment), do: "-", else: @attachment.filename %></div>
+    <div class="font-mono break-words">
+      <%= if is_nil(@attachment), do: "-", else: @attachment.filename %>
+    </div>
     <.maybe_badge_with_rows attachment={@attachment} badge={@badge} rows={@rows} />
     """
   end

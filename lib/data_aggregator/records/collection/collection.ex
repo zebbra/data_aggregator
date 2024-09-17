@@ -349,6 +349,7 @@ defmodule DataAggregator.Records.Collection do
     define :update_import_mapping, args: [:import_mapping]
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
+    define :get_by_grscicoll_reference, action: :read, get_by: [:grscicoll_reference]
     define :touch
     define :export, action: :export, args: [:export]
     define :publish, args: [:publication]

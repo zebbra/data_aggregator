@@ -7,7 +7,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Helpers do
     [
       :duration,
       :collection_name,
-      :records_count,
       :missing_mappings,
       :attachment_filename,
       :attachment_byte_size,

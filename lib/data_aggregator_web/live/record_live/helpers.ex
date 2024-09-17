@@ -49,7 +49,7 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
 
   @spec encoded_attribute(Record.t(), atom(), String.t() | nil) :: any()
   def encoded_attribute(record, attribute, layer \\ nil)
-  def encoded_attribute(record, attribute, "original"), do: Map.get(record, attribute)
+  def encoded_attribute(record, attribute, "import"), do: Map.get(record, attribute)
 
   def encoded_attribute(record, attribute, _) do
     if record.encoded_record == nil do
@@ -58,6 +58,9 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
       record.encoded_record |> Map.get(attribute) |> value_for_record_attribute()
     end
   end
+
+  def get_dwc_field("fast_track_status"), do: "publicationStatus"
+  def get_dwc_field("approval_status"), do: "approvalStatus"
 
   def get_dwc_field(prefixed_attribute_name) do
     Schema.dwc_field_from_prefixed_attribute_name(prefixed_attribute_name)

@@ -2,6 +2,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   @moduledoc false
   use DataAggregatorWeb, :html
 
+  import DataAggregatorWeb.CollectionLive.Record.Components,
+    only: [publication_state_badge: 1, approval_state_badge: 1]
+
+  import DataAggregatorWeb.RecordLive.Helpers, only: [get_dwc_field: 1]
+
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Activity
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
@@ -28,7 +34,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   attr :activity, Activity, required: true
 
-  defp activity_feed_element(%{activity: activity} = assigns) when activity.name in [:import, :update] do
+  def activity_feed_element(%{activity: activity} = assigns) when activity.name in [:import, :update] do
     ~H"""
     <div class="grid w-full grid-cols-9 gap-y-4">
       <div class="bg-base-100 size-6 relative flex items-center justify-center">
@@ -49,16 +55,39 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
         <span class="indicator-item end-2 badge badge-primary badge-sm translate-x-0">
           <%= @activity.source %>
         </span>
-        <div class="ring-base-content/20 w-full rounded-md pt-5 pr-2 pb-4 pl-4 ring-1">
-          <.changed_value :for={change <- map_to_string(@activity.content)} value={change} />
+        <div class="ring-base-content/20 w-full rounded-md pt-5 pb-4 ring-1">
+          <.table
+            id={"table_#{@activity.index}"}
+            opts={[
+              container_attrs: [class: "overflow-x-auto no-scrollbar"]
+            ]}
+            items={Enum.map(@activity.content, fn {k, v} -> %{attr: k, value: v} end)}
+          >
+            <:col :let={change} label={~t"Attribute"} class="font-semibold">
+              <%= get_dwc_field(change.attr) %>
+            </:col>
+            <:col :let={change} label={~t"Value"}>
+              <.publication_state_badge
+                :if={change.attr == "fast_track_status"}
+                state={String.to_existing_atom(change.value)}
+              />
+              <.approval_state_badge
+                :if={change.attr == "approval_status"}
+                state={String.to_existing_atom(change.value)}
+              />
+              <%= if change.attr not in ~w(approval_status fast_track_status) do %>
+                <%= inspect(change.value) %>
+              <% end %>
+            </:col>
+          </.table>
         </div>
       </div>
     </div>
     """
   end
 
-  defp activity_feed_element(%{activity: activity} = assigns)
-       when activity.name in [:set_encoded, :set_encoding_failed, :update_approval_status, :update_fast_track_status] do
+  def activity_feed_element(%{activity: activity} = assigns)
+      when activity.name in [:set_encoded, :set_encoding_failed, :update_approval_status, :update_fast_track_status] do
     ~H"""
     <div class="grid w-full grid-cols-9 gap-y-2 ">
       <div class="bg-base-100 size-6 relative flex items-center justify-center">
@@ -80,7 +109,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   # this is just the fallback for unwanted activities, which we do not want to render
-  defp activity_feed_element(assigns) do
+  def activity_feed_element(assigns) do
     ~H"""
     <div class="grid w-full grid-cols-9 gap-y-4">
       <div class="bg-base-100 size-6 relative flex items-center justify-center">
@@ -96,90 +125,24 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     """
   end
 
-  defp activity_icon(%{activity: activity} = assigns) when activity.name == :import do
-    ~H"""
-    <.badge class="tooltip tooltip-right" data-tip={~t"Dataset imported"m} color="blue">
-      <.icon name="hero-arrow-up-tray" class="size-5 shrink-0" />
-    </.badge>
-    """
-  end
-
-  defp activity_icon(%{activity: activity} = assigns) when activity.name == :update do
-    ~H"""
-    <.badge class="tooltip tooltip-right" data-tip={~t"Encoded data updated"m} color="green">
-      <.icon name="hero-puzzle-piece" class="size-5 shrink-0" />
-    </.badge>
-    """
-  end
-
-  defp activity_icon(%{activity: activity} = assigns) when activity.name == :set_encoded do
-    ~H"""
-    <.badge class="tooltip tooltip-right" data-tip={~t"Encoding Successful"m} color="green">
-      <.icon name="hero-check" class="size-5 shrink-0" />
-    </.badge>
-    """
-  end
-
-  defp activity_icon(%{activity: activity} = assigns) when activity.name == :set_encoding_failed do
-    ~H"""
-    <.badge class="tooltip tooltip-right" data-tip={~t"Encoding failed"m} color="red">
-      <.icon name="hero-x-mark" class="size-5 shrink-0" />
-    </.badge>
-    """
-  end
-
   defp activity_icon(%{activity: activity} = assigns)
-       when activity.name in [:update_approval_status, :update_fast_track_status] do
-    cond do
-      published?(activity) ->
-        ~H"""
-        <.badge class="tooltip tooltip-right" data-tip={~t"Successful published"m} color="green">
-          <.icon name="hero-check" class="size-5 shrink-0" />
-        </.badge>
-        """
-
-      publishing?(activity) ->
-        ~H"""
-        <.badge class="tooltip tooltip-right" data-tip={~t"Publishing in progress"m} color="blue">
-          <.icon name="hero-cog-6-tooth-solid" class="size-5 shrink-0" />
-        </.badge>
-        """
-
-      in_publication?(activity) ->
-        ~H"""
-        <.badge
-          class="tooltip tooltip-right"
-          data-tip={~t"Record is now in the publication pipeline"m}
-          color="blue"
-        >
-          <.icon name="hero-globe-alt" class="size-5 shrink-0" />
-        </.badge>
-        """
-
-      publication_failed?(activity) ->
-        ~H"""
-        <.badge class="tooltip tooltip-right" data-tip={~t"Publication failed"m} color="red">
-          <.icon name="hero-x-mark" class="size-5 shrink-0" />
-        </.badge>
-        """
-
-      publication_stale?(activity) ->
-        ~H"""
-        <.badge class="tooltip tooltip-right" data-tip={~t"Record data changed"m} color="orange">
-          <.icon name="hero-exclamation-triangle-solid" class="size-5 shrink-0" />
-        </.badge>
-        """
-
-      not_published?(activity) ->
-        ~H"""
-        <.badge class="tooltip tooltip-right" data-tip={~t"Publishing in progress"m} color="blue">
-          <.icon name="hero-information-circle" class="size-5 shrink-0" />
-        </.badge>
-        """
-
-      true ->
-        publication_or_approval_activity_badge(assigns)
-    end
+       when activity.name in [
+              :import,
+              :update,
+              :set_encoded,
+              :set_encoding_failed,
+              :update_approval_status,
+              :update_fast_track_status
+            ] do
+    ~H"""
+    <.badge
+      class="tooltip tooltip-right"
+      data-tip={icon_tooltip(@activity.name, @activity.content)}
+      color={badge_color(@activity.name, @activity.content)}
+    >
+      <.icon name={icon_lookup(@activity.name, @activity.content)} class="size-5 shrink-0" />
+    </.badge>
+    """
   end
 
   defp activity_icon(%{activity: _activity} = assigns) do
@@ -198,110 +161,27 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     """
   end
 
-  defp activity_text(%{activity: activity} = assigns) when activity.name == :import do
+  defp activity_text(%{activity: activity} = assigns) when activity.name in [:import, :update] do
     ~H"""
     <span class="font-medium">
-      <%= ~t"A data import was updating the record"m %>
+      <%= text(@activity.name, @activity.content) %>
     </span>
-    """
-  end
-
-  defp activity_text(%{activity: activity} = assigns) when activity.name == :update do
-    ~H"""
-    <span class="font-medium">
-      <%= ~t"The record was updated by encoding"m %>
-    </span>
-    """
-  end
-
-  defp activity_text(%{activity: activity} = assigns) when activity.name == :set_encoded do
-    ~H"""
-    <span class="font-medium">
-      <%= ~t"The record encoding was"m %>
-    </span>
-    <.badge color="green">
-      <%= ~t"Successful"m %>
-    </.badge>
-    """
-  end
-
-  defp activity_text(%{activity: activity} = assigns) when activity.name == :set_encoding_failed do
-    ~H"""
-    <span class="font-medium">
-      <%= ~t"The record encoding has"m %>
-    </span>
-    <.badge color="red">
-      <%= ~t"Failed"m %>
-    </.badge>
     """
   end
 
   defp activity_text(%{activity: activity} = assigns)
-       when activity.name in [:update_approval_status, :update_fast_track_status] do
-    cond do
-      published?(activity) ->
-        ~H"""
-        <span class="font-medium">
-          <%= ~t"Record was successful"m %>
-        </span>
-        <.badge color="green">
-          <%= ~t"Published"m %>
-        </.badge>
-        """
-
-      publishing?(activity) ->
-        ~H"""
-        <span class="font-medium">
-          <%= ~t"Record is currently"m %>
-        </span>
-        <.badge color="blue">
-          <%= ~t"Publishing"m %>
-        </.badge>
-        """
-
-      in_publication?(activity) ->
-        ~H"""
-        <span class="font-medium">
-          <%= ~t"Record is currently"m %>
-        </span>
-        <.badge color="blue">
-          <%= ~t"In Publication"m %>
-        </.badge>
-        """
-
-      publication_failed?(activity) ->
-        ~H"""
-        <span class="font-medium">
-          <%= ~t"Record publication"m %>
-        </span>
-        <.badge color="blue">
-          <%= ~t"Failed"m %>
-        </.badge>
-        """
-
-      publication_stale?(activity) ->
-        ~H"""
-        <span class="font-medium">
-          <%= ~t"The publication is now"m %>
-        </span>
-        <.badge color="orange">
-          <%= ~t"Stale"m %>
-        </.badge>
-        """
-
-      not_published?(activity) ->
-        ~H"""
-        <span class="font-medium">
-          <%= ~t"Record is"m %>
-        </span>
-        <.badge color="blue">
-          <%= ~t"Not yet Published"m %>
-        </.badge>
-        """
-
-      true ->
-        publication_or_approval_activity(assigns)
-    end
+       when activity.name in [:set_encoded, :set_encoding_failed, :update_approval_status, :update_fast_track_status] do
+    ~H"""
+    <span class="font-medium">
+      <%= text(@activity.name, @activity.content) %>
+    </span>
+    <.badge
+      :if={badge_text(@activity.name, @activity.content)}
+      color={badge_color(@activity.name, @activity.content)}
+    >
+      <%= badge_text(@activity.name, @activity.content) %>
+    </.badge>
+    """
   end
 
   defp activity_text(assigns) do
@@ -312,56 +192,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     """
   end
 
-  defp publication_or_approval_activity(%{activity: activity} = assigns) do
-    case activity.name do
-      :update_approval_status ->
-        ~H"""
-        <span class="font-medium">
-          <%= ~t"Approval status was updated"m %>
-        </span>
-        """
-
-      :update_fast_track_status ->
-        ~H"""
-        <span class="font-medium">
-          <%= ~t"Publication status was updated"m %>
-        </span>
-        """
-
-      _ ->
-        ~H"""
-        <span class="font-medium">
-          <%= @activity.name %>
-        </span>
-        """
-    end
-  end
-
-  defp publication_or_approval_activity_badge(%{activity: activity} = assigns) do
-    case activity.name do
-      :update_approval_status ->
-        ~H"""
-        <.badge color="green">
-          <.icon name="hero-check-badge" class="size-5 shrink-0" />
-        </.badge>
-        """
-
-      :update_fast_track_status ->
-        ~H"""
-        <.badge color="green">
-          <.icon name="hero-globe-alt" class="size-5 shrink-0" />
-        </.badge>
-        """
-
-      _ ->
-        ~H"""
-        <.badge color="orange">
-          <.icon name="hero-question-mark-circle-solid" class="size-5 shrink-0" />
-        </.badge>
-        """
-    end
-  end
-
   defp assign_activities(assigns) do
     assign(assigns, :record, Ash.load!(assigns.record, :encoded_record, lazy?: true))
 
@@ -370,46 +200,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
     sorted_activities =
       (record_versions ++ encoded_record_versions)
-      |> Enum.filter(&filter_version/1)
       |> activites_from_versions()
       |> sort_activities()
+      |> Enum.with_index(fn activity, index -> Map.put(activity, :index, index) end)
 
     assign(assigns, :activities, sorted_activities)
-  end
-
-  defp filter_version(version) do
-    version.version_action_name not in [:set_encoding_failed, :set_encoded] or
-      version.changes != %{}
-  end
-
-  defp published?(activity) do
-    activity.content["approval_status"] == "published" or
-      activity.content["fast_track_status"] == "published"
-  end
-
-  defp publishing?(activity) do
-    activity.content["approval_status"] == "publishing" or
-      activity.content["fast_track_status"] == "publishing"
-  end
-
-  defp in_publication?(activity) do
-    activity.content["approval_status"] == "in_publication" or
-      activity.content["fast_track_status"] == "in_publication"
-  end
-
-  defp publication_failed?(activity) do
-    activity.content["approval_status"] == "publication_failed" or
-      activity.content["fast_track_status"] == "publication_failed"
-  end
-
-  defp publication_stale?(activity) do
-    activity.content["approval_status"] == "stale" or
-      activity.content["fast_track_status"] == "stale"
-  end
-
-  defp not_published?(activity) do
-    activity.content["approval_status"] == "not_approved" or
-      activity.content["fast_track_status"] == "not_published"
   end
 
   defp sort_activities(activities) do
@@ -423,12 +218,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   defp version_to_activity(version) do
     %Activity{
       name: version.version_action_name,
-      actor: "Owner",
+      actor: maybe_set_actor(version.user),
       date_time: version.version_inserted_at,
       content: version.changes,
       source: version_source(version)
     }
   end
+
+  defp maybe_set_actor(%User{first_name: first_name, last_name: last_name}) when first_name != nil and last_name != nil,
+    do: "#{first_name} #{last_name}"
+
+  defp maybe_set_actor(%User{email: email}) when email != nil, do: email
+  defp maybe_set_actor(%User{}), do: ~t"Anonym"m
+  defp maybe_set_actor(_), do: ~t"System"m
 
   defp version_source(%{version_action_name: :update_fast_track_status}), do: ~t"Publication"
   defp version_source(%{version_action_name: :update_approval_status}), do: ~t"Approval"
@@ -465,17 +267,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   defp record_versions(assigns) do
     Record.Version
     |> Ash.Query.for_read(:read)
-    |> Ash.Query.load(:version_source)
+    |> Ash.Query.load([:version_source, :user])
     |> Ash.Query.filter(version_source_id == ^assigns.record.id)
-    |> Ash.Query.filter(
-      version_action_name in [
-        :set_encoded,
-        :set_encoding_failed,
-        :update_approval_status,
-        :update_fast_track_status,
-        :import
-      ]
-    )
     |> Ash.read!()
   end
 
@@ -485,73 +278,187 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
     EncodedRecord.Version
     |> Ash.Query.for_read(:read)
-    |> Ash.Query.load(:version_source)
+    |> Ash.Query.load([:version_source, :user])
     |> Ash.Query.filter(version_source_id == ^encoded_record_id)
-    |> Ash.Query.filter(
-      version_action_name in [
-        :update
-      ]
-    )
     |> Ash.read!()
   end
 
-  defp map_to_string(map) when is_map(map) do
-    map
-    |> stringify_values()
-    |> Map.to_list()
-    |> map_nil_values()
-    |> Enum.map(fn {k, v} -> {k, value_to_list(v)} end)
-  end
+  def icon_lookup(:import, _), do: "hero-arrow-up-tray"
+  def icon_lookup(:update, _), do: "hero-puzzle-piece"
+  def icon_lookup(:set_encoded, _), do: "hero-check"
+  def icon_lookup(:set_encoding_failed, _), do: "hero-x-mark"
 
-  defp map_to_string(map) do
-    inspect(map)
-  end
-
-  defp map_nil_values(list) do
-    Enum.map(list, fn {k, v} ->
-      if v == nil do
-        {k, "-"}
-      else
-        {k, v}
-      end
-    end)
-  end
-
-  defp value_to_list(value) when is_map(value) do
-    Map.to_list(value)
-  end
-
-  defp value_to_list(value), do: value
-
-  defp changed_value(%{value: value} = assigns) when is_tuple(value) and tuple_size(value) == 2 do
-    {key, value} = value
-
-    assigns = assign(assigns, :key, key)
-    assigns = assign(assigns, :value, value)
-
-    if is_list(value) do
-      ~H"""
-      <.changed_value :for={{k, v} when v not in [nil, "", " "] <- @value} value={{k, v}} />
-      """
-    else
-      ~H"""
-      <.badge class="tooltip mr-1 mb-1" data-tip={@key} color="gray">
-        <%= @value %>
-      </.badge>
-      """
+  def icon_lookup(:update_fast_track_status, content) do
+    case content["fast_track_status"] do
+      "not_published" -> "hero-question-mark-circle"
+      "publishing" -> "hero-cog-6-tooth-solid"
+      "in_publication" -> "hero-globe-alt"
+      "published" -> "hero-check"
+      "publication_failed" -> "hero-x-mark"
+      "stale" -> "hero-exclamation-triangle-solid"
+      _ -> "hero-globe-alt"
     end
   end
 
-  defp stringify_values(map) do
-    Enum.reduce(map, %{}, fn {key, value}, acc ->
-      updated_value =
-        case value do
-          v when v == %{} -> nil
-          v when is_map(v) -> stringify_values(v)
-          v -> v
-        end
-
-      Map.put(acc, key, updated_value)
-    end)
+  def icon_lookup(:update_approval_status, content) do
+    case content["approval_status"] do
+      "not_approved" -> "hero-question-mark-circle"
+      "approving" -> "hero-cog-6-tooth-solid"
+      "in_approval" -> "hero-check-badge"
+      "approved" -> "hero-check"
+      "approval_failed" -> "hero-x-mark"
+      "stale" -> "hero-exclamation-triangle-solid"
+      _ -> "hero-check-badge"
+    end
   end
+
+  def icon_lookup(_, _), do: "hero-question-mark-circle-solid"
+
+  def icon_tooltip(:import, _), do: ~t"Dataset imported"m
+  def icon_tooltip(:update, _), do: ~t"Encoded data updated"m
+  def icon_tooltip(:set_encoded, _), do: ~t"Encoding successful"m
+  def icon_tooltip(:set_encoding_failed, _), do: ~t"Encoding failed"m
+
+  def icon_tooltip(:update_fast_track_status, content) do
+    case content["fast_track_status"] do
+      "not_published" ->
+        ~t"No publication information available. Publish the collection to see the status"m
+
+      "publishing" ->
+        ~t"Publication in progress"m
+
+      "in_publication" ->
+        ~t"Record is now in the publication pipeline - no further action required"m
+
+      "published" ->
+        ~t"Record publication was successful"m
+
+      "publication_failed" ->
+        ~t"Publication failed. Process should be started again"m
+
+      "stale" ->
+        ~t"Record was changed after publishing it and has to be republished"m
+
+      _ ->
+        nil
+    end
+  end
+
+  def icon_tooltip(:update_approval_status, content) do
+    case content["approval_status"] do
+      "not_approved" ->
+        ~t"No approval information available. Approve the collection to see the status"m
+
+      "approving" ->
+        ~t"Approval in progress"m
+
+      "in_approval" ->
+        ~t"Record is now in the approval pipeline - no further action required"m
+
+      "approved" ->
+        ~t"Record approval was successful"m
+
+      "approval_failed" ->
+        ~t"Approval failed. Process should be started again"m
+
+      "stale" ->
+        ~t"Record data changed after approving it and has to be reapproved"m
+
+      _ ->
+        nil
+    end
+  end
+
+  def icon_tooltip(_, _), do: nil
+
+  defp text(:import, _), do: ~t"A data import was updating the record"m
+  defp text(:update, _), do: ~t"The record was updated by encoding"m
+  defp text(:set_encoded, _), do: ~t"The record encoding was"m
+  defp text(:set_encoding_failed, _), do: ~t"The record encoding has"m
+
+  defp text(:update_fast_track_status, content) do
+    case content["fast_track_status"] do
+      "not_published" -> ~t"Record is"m
+      "publishing" -> ~t"Record is currently"m
+      "in_publication" -> ~t"Record is now"m
+      "published" -> ~t"Record was successful"m
+      "publication_failed" -> ~t"Record publication"m
+      "stale" -> ~t"The publication is now"m
+      _ -> ~t"Publication status was updated"m
+    end
+  end
+
+  defp text(:update_approval_status, content) do
+    case content["approval_status"] do
+      "not_approved" -> ~t"Record is"m
+      "approving" -> ~t"Record is currently"m
+      "in_approval" -> ~t"Record is now"m
+      "approved" -> ~t"Record was successful"m
+      "approval_failed" -> ~t"Record approval"m
+      "stale" -> ~t"The approval is now"m
+      _ -> ~t"Approval status was updated"m
+    end
+  end
+
+  defp text(name, _), do: name
+
+  def badge_text(:set_encoded, _), do: ~t"Successful"m
+  def badge_text(:set_encoding_failed, _), do: ~t"Failed"m
+
+  def badge_text(:update_fast_track_status, content) do
+    case content["fast_track_status"] do
+      "not_published" -> ~t"Not Published"m
+      "publishing" -> ~t"Publishing"m
+      "in_publication" -> ~t"In Publication"m
+      "published" -> ~t"Published"m
+      "publication_failed" -> ~t"Failed"m
+      "stale" -> ~t"Stale"m
+      _ -> nil
+    end
+  end
+
+  def badge_text(:update_approval_status, content) do
+    case content["approval_status"] do
+      "not_approved" -> ~t"Not Approved"m
+      "approving" -> ~t"Approving"m
+      "in_approval" -> ~t"In Approval"m
+      "approved" -> ~t"Approved"m
+      "approval_failed" -> ~t"Failed"m
+      "stale" -> ~t"Stale"m
+      _ -> nil
+    end
+  end
+
+  def badge_text(_, _), do: nil
+
+  def badge_color(:import, _), do: "blue"
+  def badge_color(:update, _), do: "green"
+  def badge_color(:set_encoded, _), do: "green"
+  def badge_color(:set_encoding_failed, _), do: "red"
+
+  def badge_color(:update_fast_track_status, content) do
+    case content["fast_track_status"] do
+      "not_published" -> "gray"
+      "publishing" -> "blue"
+      "in_publication" -> "blue"
+      "published" -> "green"
+      "publication_failed" -> "red"
+      "stale" -> "orange"
+      _ -> "green"
+    end
+  end
+
+  def badge_color(:update_approval_status, content) do
+    case content["approval_status"] do
+      "not_approved" -> "gray"
+      "approving" -> "blue"
+      "in_approval" -> "blue"
+      "approved" -> "green"
+      "approval_failed" -> "red"
+      "stale" -> "orange"
+      _ -> "green"
+    end
+  end
+
+  def badge_color(_, _), do: "gray"
 end

@@ -68,7 +68,7 @@ classDiagram
         String oth_institution_id
         String oth_institution_code
         String oth_information_withheld
-        String oth_date_available
+        Date oth_date_available
         String oth_dataset_name
         String oth_dataset_id
         String oth_data_generalizations
@@ -88,7 +88,7 @@ classDiagram
         String pvn_preservation_mode_keywords
         String pvn_preservation_method
         String pvn_preservation_id
-        String pvn_preservation_date_begin
+        Date pvn_preservation_date_begin
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
@@ -194,7 +194,7 @@ classDiagram
         String loc_location_according_to
         Integer loc_maximum_distance_above_surface_in_meters
         Integer loc_minimum_distance_above_surface_in_meters
-        Integer loc_verbatim_depth
+        String loc_verbatim_depth
         Integer loc_maximum_depth_in_meters
         Integer loc_minimum_depth_in_meters
         String loc_vertical_datum
@@ -489,7 +489,7 @@ classDiagram
         String oth_institution_id
         String oth_institution_code
         String oth_information_withheld
-        String oth_date_available
+        Date oth_date_available
         String oth_dataset_name
         String oth_dataset_id
         String oth_data_generalizations
@@ -509,7 +509,7 @@ classDiagram
         String pvn_preservation_mode_keywords
         String pvn_preservation_method
         String pvn_preservation_id
-        String pvn_preservation_date_begin
+        Date pvn_preservation_date_begin
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
@@ -615,7 +615,7 @@ classDiagram
         String loc_location_according_to
         Integer loc_maximum_distance_above_surface_in_meters
         Integer loc_minimum_distance_above_surface_in_meters
-        Integer loc_verbatim_depth
+        String loc_verbatim_depth
         Integer loc_maximum_depth_in_meters
         Integer loc_minimum_depth_in_meters
         String loc_vertical_datum
@@ -808,7 +808,9 @@ classDiagram
         String tax_scientific_name
         UUID version_source_id
         Map changes
+        UUID user_id
         Record version_source
+        User user
         destroy()
         update(Atom version_action_type, Atom version_action_name, String mte_catalog_number, String tax_scientific_name, ...)
         read()
@@ -820,11 +822,13 @@ classDiagram
         Atom version_action_name
         UUID version_source_id
         Map changes
+        UUID user_id
         EncodedRecord version_source
+        User user
         destroy()
-        update(Atom version_action_type, Atom version_action_name, UUID version_source_id, Map changes)
+        update(Atom version_action_type, Atom version_action_name, UUID version_source_id, Map changes, ...)
         read()
-        create(Atom version_action_type, Atom version_action_name, UUID version_source_id, Map changes)
+        create(Atom version_action_type, Atom version_action_name, UUID version_source_id, Map changes, ...)
     }
     class Approval {
         UUID id
@@ -880,7 +884,7 @@ classDiagram
         String oth_institution_id
         String oth_institution_code
         String oth_information_withheld
-        String oth_date_available
+        Date oth_date_available
         String oth_dataset_name
         String oth_dataset_id
         String oth_data_generalizations
@@ -900,7 +904,7 @@ classDiagram
         String pvn_preservation_mode_keywords
         String pvn_preservation_method
         String pvn_preservation_id
-        String pvn_preservation_date_begin
+        Date pvn_preservation_date_begin
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
@@ -1006,7 +1010,7 @@ classDiagram
         String loc_location_according_to
         Integer loc_maximum_distance_above_surface_in_meters
         Integer loc_minimum_distance_above_surface_in_meters
-        Integer loc_verbatim_depth
+        String loc_verbatim_depth
         Integer loc_maximum_depth_in_meters
         Integer loc_minimum_depth_in_meters
         String loc_vertical_datum
@@ -1149,6 +1153,8 @@ classDiagram
         bulk_approve(Term rows)
     }
 
+    User -- Version
+    User -- Version
     Attachment -- Approval
     Attachment -- Export
     Attachment -- Import

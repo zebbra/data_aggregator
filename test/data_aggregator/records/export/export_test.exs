@@ -22,7 +22,7 @@ defmodule DataAggregator.ExportTest do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
-      []
+      :ok
     end
 
     test "read!/0 returns all exports" do
@@ -91,14 +91,14 @@ defmodule DataAggregator.ExportTest do
   end
 
   describe "enqueue/1" do
-    stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
-
     @collection_mapping [
       %{name: "Scientific Name - collection", mapped_to: "tax_scientific_name"},
       %{name: "Numéro scientifique GBIF - collection", mapped_to: "mte_catalog_number"}
     ]
 
     setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       collection =
         Ash.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
           :records_to_export_query
@@ -197,8 +197,6 @@ defmodule DataAggregator.ExportTest do
   end
 
   describe "export" do
-    stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
-
     @valid_custom_mapping %{
       "mte_catalog_number" => "Numéro scientifique GBIF",
       "tax_family" => "Famille"
@@ -212,6 +210,8 @@ defmodule DataAggregator.ExportTest do
     ]
 
     setup %{mapping: mapping, data_layer: data_layer, header_source: header_source} do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
       collection =
         Ash.load!(collection_fixture(%{import_mapping: @collection_mapping}), [
           :records_to_export_query

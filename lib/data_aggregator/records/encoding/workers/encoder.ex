@@ -23,6 +23,7 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
 
   use Oban.Worker, queue: :encoders, max_attempts: 1
 
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Records
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalog
@@ -35,24 +36,35 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
     if there is no error, a success tuple is returned containing the encoded record
   """
   @impl Oban.Worker
+  def perform(%Oban.Job{args: %{"id" => id, "user_id" => user_id}}) do
+    with {:ok, record} <- Record.get_by_id(id) do
+      perform_with_actor(record, User.get_by_id!(user_id))
+    end
+  end
+
+  @impl Oban.Worker
   def perform(%Oban.Job{args: %{"id" => id}}) do
     with {:ok, record} <- Record.get_by_id(id) do
-      Logger.debug("Encoding for Record #{record.id} in progress...")
-
-      Enum.reduce_while(
-        Catalog.get_catalogs(),
-        {:ok, record},
-        fn catalog, {:ok, acc} ->
-          case Record.encode(acc, catalog) do
-            {:ok, record} ->
-              {:cont, {:ok, record}}
-
-            {:error, error} ->
-              {:halt, {:error, error}}
-          end
-        end
-      )
+      perform_with_actor(record)
     end
+  end
+
+  defp perform_with_actor(record, actor \\ nil) do
+    Logger.debug("Encoding for Record #{record.id} in progress...")
+
+    Enum.reduce_while(
+      Catalog.get_catalogs(),
+      {:ok, record},
+      fn catalog, {:ok, acc} ->
+        case Record.encode(acc, catalog, actor: actor, authorize?: false) do
+          {:ok, record} ->
+            {:cont, {:ok, record}}
+
+          {:error, error} ->
+            {:halt, {:error, error}}
+        end
+      end
+    )
   end
 
   @impl Oban.Worker

@@ -7,7 +7,7 @@ defmodule DataAggregatorWeb.Locale do
 
   require Logger
 
-  def locales, do: ~w(en de-CH fr-CH)
+  def locales, do: ~w(en)
   def current, do: DataAggregatorWeb.Cldr.get_locale()
 
   @spec assign_current_locale(Plug.Conn.t(), any) :: Plug.Conn.t()

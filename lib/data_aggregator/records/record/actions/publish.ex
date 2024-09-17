@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.Actions.Publish do
 
   use Ash.Resource.Actions.Implementation
 
+  alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.DarwinCore.Publication.CoreFile
   alias DataAggregator.DarwinCore.Publication.EmlFile
   alias DataAggregator.DarwinCore.Publication.MaterialSampleFile
@@ -22,7 +23,7 @@ defmodule DataAggregator.Records.Actions.Publish do
   require Logger
 
   @impl true
-  def run(input, _opts, _ctx) do
+  def run(input, _opts, ctx) do
     publication = input.arguments.publication
 
     query = AshPagify.query_for_filters_map(Record, publication.records_query)
@@ -30,7 +31,8 @@ defmodule DataAggregator.Records.Actions.Publish do
     set_publication_status(
       query,
       :publishing,
-      publication
+      publication,
+      ctx
     )
 
     path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
@@ -64,7 +66,8 @@ defmodule DataAggregator.Records.Actions.Publish do
     set_publication_status(
       query,
       :in_publication,
-      publication
+      publication,
+      ctx
     )
 
     publication =
@@ -82,7 +85,8 @@ defmodule DataAggregator.Records.Actions.Publish do
         set_publication_status(
           query,
           :publication_failed,
-          publication
+          publication,
+          ctx
         )
 
         {:error, error}
@@ -98,7 +102,8 @@ defmodule DataAggregator.Records.Actions.Publish do
       set_publication_status(
         query,
         :publication_failed,
-        publication
+        publication,
+        ctx
       )
 
       {:error, e}
@@ -112,28 +117,36 @@ defmodule DataAggregator.Records.Actions.Publish do
     |> Stream.run()
   end
 
-  @spec set_publication_status(Ash.Query.t(), atom(), Publication.t()) :: :ok
-  defp set_publication_status(query, status, publication) do
+  @spec set_publication_status(Ash.Query.t(), atom(), Publication.t(), Context.t()) :: :ok
+  defp set_publication_status(query, status, publication, ctx) do
     query
     |> Ash.stream!(page: false)
-    |> Stream.map(&update_record!(&1, status, publication))
+    |> Stream.map(&update_record!(&1, status, publication, ctx))
     |> Stream.run()
   end
 
-  @spec update_record!(Record.t(), atom(), Publication.t()) :: any()
-  defp update_record!(record, status, publication) do
+  @spec update_record!(Record.t(), atom(), Publication.t(), Context.t()) :: any()
+  defp update_record!(record, status, publication, ctx) do
+    maybe_add_publication_progress!(publication, status)
+
+    update_status!(publication.channel, status, record, ctx)
+  end
+
+  defp maybe_add_publication_progress!(publication, state) when state in [:in_publication, :publication_failed] do
     if Records.execute_async?() do
       Task.start(fn -> Publication.add_publication_progress!(publication, 1) end)
     else
       Publication.add_publication_progress!(publication, 1)
     end
-
-    update_status!(publication.channel, status, record)
   end
 
-  defp update_status!(:fast_track, status, record), do: Record.update_fast_track_status!(record, status)
+  defp maybe_add_publication_progress!(_, _), do: :ok
 
-  defp update_status!(:approval, status, record), do: Record.update_approval_status!(record, translate_status(status))
+  defp update_status!(:fast_track, status, record, %{actor: actor}),
+    do: Record.update_fast_track_status!(record, status, actor: actor, authorize?: false)
+
+  defp update_status!(:approval, status, record, %{actor: actor}),
+    do: Record.update_approval_status!(record, translate_status(status), actor: actor, authorize?: false)
 
   defp translate_status(:publishing), do: :approving
   defp translate_status(:in_publication), do: :in_approval

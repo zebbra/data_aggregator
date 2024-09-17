@@ -3,6 +3,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
     Encode Records with the gbif swiss species registry catalog
   """
 
+  alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.Strategy
@@ -22,9 +23,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
   @doc """
     lookup the swiss species registry and return the encoded record
   """
-  @spec apply_strategy(EncodedRecord.t()) :: EncodingResult.t()
-  def apply_strategy(encoded_record) do
-    case process_encoded_record(encoded_record) do
+  @spec apply_strategy(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
+  def apply_strategy(encoded_record, ctx) do
+    case process_encoded_record(encoded_record, ctx) do
       {:ok, encoded_record} ->
         {:ok, encoded_record}
 
@@ -40,19 +41,19 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
       {:error, error, encoded_record}
   end
 
-  @spec process_encoded_record(EncodedRecord.t()) :: EncodingResult.t()
-  defp process_encoded_record(encoded_record) do
+  @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
+  defp process_encoded_record(encoded_record, ctx) do
     taxon_id = Map.get(encoded_record, @input_attribute)
 
     # early return if taxon_id is empty
     if taxon_id === nil, do: raise("taxon_id is empty")
 
-    case SwissSpecies.get_by_usage_key(Map.get(encoded_record, @input_attribute)) do
+    case SwissSpecies.get_by_usage_key(taxon_id) do
       {:ok, result} ->
         {:ok,
          result
          |> Map.from_struct()
-         |> Strategy.update_encoded_record(encoded_record, @output_attributes)}
+         |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)}
 
       {:error, %Ash.Error.Query.NotFound{}} ->
         Logger.warning("[swiss_species] no matching encoded_record found for taxon_id: #{encoded_record.tax_taxon_id}")

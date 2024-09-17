@@ -31,7 +31,7 @@ defmodule DataAggregatorWeb.Components.Badge do
     ~H"""
     <span
       class={[
-        "inline-flex h-8 items-center space-x-1.5 rounded-full px-1.5 py-1 text-sm font-medium ring-1 ring-inset",
+        "inline-flex h-8 items-center space-x-1.5 whitespace-nowrap rounded-full px-1.5 py-1 text-sm font-medium ring-1 ring-inset",
         badge_color_class(@color),
         @class
       ]}
