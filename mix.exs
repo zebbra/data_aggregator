@@ -191,15 +191,15 @@ defmodule DataAggregator.MixProject do
       {:phoenix_storybook, "~> 0.6.3"},
 
       # Ash Framework
-      {:ash, "~> 3.3", override: true},
+      # Revert once 3.4.17 is released
+      # {:ash, "~> 3.3", override: true},
+      {:ash, github: "ash-project/ash", branch: "main", override: true},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
-      {:ash_postgres, "~> 2.2", override: true},
+      {:ash_postgres, "~> 2.4", override: true},
       {:ash_state_machine, "~> 0.2"},
       {:ash_uuid, "~> 1.1"},
-      # Revert when https://github.com/ash-project/ash_paper_trail v0.1.5 is released
-      {:ash_paper_trail, github: "ash-project/ash_paper_trail"},
-      # {:ash_paper_trail, "~> 0.1"},
+      {:ash_paper_trail, "~> 0.2"},
       {:ash_pagify, "~> 1.0"},
       {:ash_authentication, "~> 4.0"},
       {:ash_authentication_phoenix, "~> 2.0"},
