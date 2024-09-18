@@ -189,37 +189,25 @@ msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Dashboard"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:47
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:35
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Collections"
 msgstr "Sammlungen"
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:35
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Layouts.Primary"
-msgid "Home"
-msgstr "Start"
-
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:59
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:47
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Records"
 msgstr "Einträge"
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:47
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:35
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Collections"
 msgstr "Sammlungen"
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:35
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Layouts.Secondary"
-msgid "Home"
-msgstr "Start"
-
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:59
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:47
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Records"
@@ -2354,20 +2342,20 @@ msgctxt "DataAggregator.Accounts.User"
 msgid "is not a valid email address"
 msgstr "ist keine gültige E-Mail-Adresse"
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:317
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:323
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Add Role"
 msgstr "Rolle hinzufügen"
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:316
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:321
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Add User"
 msgstr "Benutzer hinzufügen"
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:145
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:224
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:150
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:229
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Back"
@@ -2380,35 +2368,35 @@ msgid "Cancel"
 msgstr "Abbrechen"
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:66
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:170
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:175
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "E-Mail"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:67
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:171
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:176
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Enter E-Mail"
 msgstr "E-Mail eingeben"
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:52
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:156
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:161
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Enter first name"
 msgstr "Vorname eingeben"
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:59
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:163
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:168
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Enter last name"
 msgstr "Nachname eingeben"
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:96
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:200
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:205
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Enter password"
@@ -2421,7 +2409,7 @@ msgid "Enter phone number"
 msgstr "Telefonnummer eingeben"
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:51
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:155
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:160
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "First name"
@@ -2434,35 +2422,35 @@ msgid "Generate Password"
 msgstr "Passwort generieren"
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:85
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:191
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:196
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Institution"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:58
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:162
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:167
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Last name"
 msgstr "Nachname"
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:116
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:142
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:147
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Next"
 msgstr "Weiter"
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:95
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:199
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:204
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Password"
 msgstr "Passwort"
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:75
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:180
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:185
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Phone"
@@ -2474,7 +2462,7 @@ msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Select institutions"
 msgstr "Institution auswählen"
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:318
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:324
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Summary"
@@ -2498,20 +2486,20 @@ msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Add User"
 msgstr "Benutzer hinzufügen"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:128
+#: lib/data_aggregator_web/live/administration_live/index.ex:129
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Address"
 msgstr "Adresse"
 
 #: lib/data_aggregator_web/live/administration_live/index.ex:42
-#: lib/data_aggregator_web/live/administration_live/index.ex:231
+#: lib/data_aggregator_web/live/administration_live/index.ex:238
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Administration"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:122
+#: lib/data_aggregator_web/live/administration_live/index.ex:123
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "E-Mail"
@@ -2523,7 +2511,7 @@ msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:243
+#: lib/data_aggregator_web/live/administration_live/index.ex:250
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Edit User"
@@ -2541,14 +2529,14 @@ msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "First Name"
 msgstr "Vorname"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:256
+#: lib/data_aggregator_web/live/administration_live/index.ex:263
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Get started by adding a new User."
 msgstr "Beginne, indem Du einen neuen Benutzer erstellst."
 
 #: lib/data_aggregator_web/live/administration_live/index.ex:86
-#: lib/data_aggregator_web/live/administration_live/index.ex:125
+#: lib/data_aggregator_web/live/administration_live/index.ex:126
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Institution"
@@ -2560,14 +2548,14 @@ msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Last Name"
 msgstr "Nachname"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:237
-#: lib/data_aggregator_web/live/administration_live/index.ex:257
+#: lib/data_aggregator_web/live/administration_live/index.ex:244
+#: lib/data_aggregator_web/live/administration_live/index.ex:264
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "New User"
 msgstr "Neuer Benutzer"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:255
+#: lib/data_aggregator_web/live/administration_live/index.ex:262
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "No Users"
@@ -2580,7 +2568,7 @@ msgid "Phone"
 msgstr "Telefon"
 
 #: lib/data_aggregator_web/live/administration_live/index.ex:79
-#: lib/data_aggregator_web/live/administration_live/index.ex:139
+#: lib/data_aggregator_web/live/administration_live/index.ex:140
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Roles"
@@ -2616,37 +2604,37 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "There are no collections yet for your institution"
 msgstr "Es gibt noch keine Sammlungen für deine Institution"
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:72
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:60
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Administration"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:72
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:60
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Administration"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:221
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:226
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Create user"
 msgstr "Benutzer erstellen"
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:221
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:226
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Update user"
 msgstr "Benutzer aktualisieren"
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:254
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:259
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "User created successfully"
 msgstr "Benutzer erfolgreich erstellt"
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:255
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:260
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "User updated successfully"
@@ -2654,7 +2642,7 @@ msgstr "Benutzer erfolgreich aktualisiert"
 
 #: lib/data_aggregator_web/components/components/field_group.ex:69
 #: lib/data_aggregator_web/components/components/field_group.ex:145
-#: lib/data_aggregator_web/components/components/field_group.ex:226
+#: lib/data_aggregator_web/components/components/field_group.ex:228
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Components.FieldGroup"
 msgid "No entries found"
@@ -2666,13 +2654,13 @@ msgstr "Keine Einträge vorhanden"
 msgid "Sign out"
 msgstr "Abmelden"
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:82
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:90
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Sign out"
 msgstr "Abmelden"
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:82
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:90
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Sign out"
@@ -2691,6 +2679,7 @@ msgid "There are no records yet for your institution"
 msgstr "Es gibt noch keine Einträge für deine Institution"
 
 #: lib/data_aggregator_web/live/administration_live/index.ex:107
+#: lib/data_aggregator_web/live/administration_live/index.ex:172
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Are you sure?"
@@ -2702,7 +2691,7 @@ msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Delete"
 msgstr "Löschen"
 
-#: lib/data_aggregator_web/live/administration_live/index.ex:198
+#: lib/data_aggregator_web/live/administration_live/index.ex:205
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "User deleted successfully"
@@ -2831,12 +2820,6 @@ msgstr "Zusätzlich zu den bereitgestellten Filtern fügen wir auch die Einschr�
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal"
 msgid "Publish"
 msgstr "Veröffentlichen"
-
-#: lib/data_aggregator_web/live/collection_live/record/fast_track_pub_modal.ex:60
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal"
-msgid "The publisher of your data on GBIF is SVNHC, but your institution retains ownership of the data at all times."
-msgstr "Der Herausgeber deiner Daten auf GBIF ist SVNHC, aber deine Institution behält jederzeit die Eigentumsrechte an den Daten."
 
 #: lib/data_aggregator_web/live/collection_live/record/fast_track_pub_modal.ex:68
 #, elixir-autogen, elixir-format
@@ -3300,3 +3283,45 @@ msgstr "Eigene Attribute sind Attribute, die nicht Teil des Darwin Core-Standard
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "No encoding results available"
 msgstr "Keine Enkodierungsergebnisse verfügbar"
+
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:322
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
+msgid "Edit User"
+msgstr "Benutzer bearbeiten"
+
+#: lib/data_aggregator_web/live/administration_live/index.ex:173
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.AdministrationLive.Index"
+msgid "Yes, delete user"
+msgstr "Ja, Benutzer löschen"
+
+#: lib/data_aggregator_web/live/collection_live/record/fast_track_pub_modal.ex:60
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal"
+msgid "The publisher of your data on GBIF is SwissNatColl, but your institution retains ownership of the data at all times."
+msgstr "Der Herausgeber deiner Daten auf GBIF ist SwissNatColl, aber deine Institution behält jederzeit die Eigentumsrechte an den Daten."
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:71
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Primary"
+msgid "Guide"
+msgstr "Guide"
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:81
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Primary"
+msgid "Tutorials"
+msgstr "Tutorials"
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:71
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Secondary"
+msgid "Guide"
+msgstr "Guide"
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:81
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Secondary"
+msgid "Tutorials"
+msgstr "Tutorials"

@@ -133,7 +133,7 @@ To enrich the data with information about the IUCN Redlist which indicates how "
 
 ### Publication
 
-Under the term "Publication" we understand the process of transforming the data into a Darwin Core Archive and publishing it to the GBIF Switzerland or "SVNHC" portal. It's done fully automatic and the user only has to click a single button in the UI to start the process --> "publish".
+Under the term "Publication" we understand the process of transforming the data into a Darwin Core Archive and publishing it to the GBIF Switzerland or "SwissNatColl" portal. It's done fully automatic and the user only has to click a single button in the UI to start the process --> "publish".
 
 <img src="images/publish.png" alt="Publish">
 
@@ -149,7 +149,7 @@ The Darwin Core Archive is a zip file that contains the data in a Darwin Core co
 
 `for_coders:` The creation of the Darwin Core Archive is handled by the modules under `lib/data_aggregator/darwin_core/publication`.
 
-#### Publish to SVNHC
+#### Publish to SwissNatColl
 
 The publication process is done by registering the previously created Darwin Core Archive with the Registration API `https://api.gbif-uat.org/v1/dataset` on Gbif and makes it then available to be crawled from Gbif for making it available to the public.
 

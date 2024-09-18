@@ -57,7 +57,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal do
             <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
           </div>
           <p class="text-sm">
-            <%= ~t"The publisher of your data on GBIF is SVNHC, but your institution retains ownership of the data at all times."m %>
+            <%= ~t"The publisher of your data on GBIF is SwissNatColl, but your institution retains ownership of the data at all times."m %>
           </p>
         </div>
         <div :if={@count == 0} class="flex">

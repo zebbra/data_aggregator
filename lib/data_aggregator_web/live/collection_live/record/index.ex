@@ -153,7 +153,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         opts={[
           no_results_content:
             no_results_content(%{
-              collection_id: @collection.id,
+              collection: @collection,
               current_user: @current_user,
               filters_count: @filters_count
             })
@@ -936,13 +936,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   defp no_results_content(%{filters_count: 0} = assigns) do
     ~H"""
-    <%= if Collection.can_create?(@current_user) do %>
+    <%= if Collection.can_set_importing?(@current_user, @collection) do %>
       <.empty_state
         title={~t"No records"m}
         description={~t"Get started by importing a new dataset"m}
         label={~t"Import"m}
         icon="hero-bug-ant"
-        href={~p"/collections/#{@collection_id}/imports/new"}
+        href={~p"/collections/#{@collection.id}/imports/new"}
       />
     <% else %>
       <.empty_state
