@@ -7,9 +7,9 @@
 
     <header class="bg-base-100/90 flex h-16 shrink-0 items-center px-4 md:justify-center">
       <.link
-        href="/"
-        aria-current={if @current === "home", do: "page", else: nil}
-        aria-label="Home"
+        navigate={~p"/"}
+        aria-current={if @current === "collections", do: "page", else: nil}
+        aria-label="Collections"
         class="avatar btn md:btn-circle btn-ghost max-md:justify-start w-full space-x-2"
       >
         <div class="w-10 rounded-full">
@@ -23,18 +23,6 @@
       role="list"
       class="menu h-fit flex-nowrap gap-1 overflow-y-auto px-4 py-6 md:justify-evenly md:gap-4 lg:px-8"
     >
-      <li>
-        <.link
-          navigate={~p"/"}
-          class={[
-            "flex md:flex-col md:p-3 active:!bg-primary",
-            @current == "home" && "bg-primary text-primary-content hover:bg-primary"
-          ]}
-        >
-          <.icon name="hero-home" />
-          <span class="md:hidden lg:inline"><%= ~t"Home"m %></span>
-        </.link>
-      </li>
       <li>
         <.link
           navigate={~p"/collections"}
@@ -73,6 +61,24 @@
           </.link>
         </li>
       <% end %>
+      <li>
+        <.link
+          href="https://swissnatcoll.hp.gbif-staging.org/en/how-to-publish-data"
+          class="flex md:flex-col md:p-3"
+        >
+          <.icon name="hero-book-open" />
+          <span class="md:hidden lg:inline"><%= ~t"Guide"m %></span>
+        </.link>
+      </li>
+      <li>
+        <.link
+          href="https://swissnatcoll.hp.gbif-staging.org/en/tutorial-sessions"
+          class="flex md:flex-col md:p-3"
+        >
+          <.icon name="hero-video-camera" />
+          <span class="md:hidden lg:inline"><%= ~t"Tutorials"m %></span>
+        </.link>
+      </li>
     </ul>
 
     <ul role="list" class="menu mt-auto px-4 py-6 md:hidden lg:px-8">

@@ -7,10 +7,9 @@ defmodule DataAggregatorWeb.DashboardLiveTest do
 
   describe "Index" do
     @tag authenticated: true
-    test "renders dashboard", %{conn: conn} do
-      {:ok, _index_live, html} = live(conn, ~p"/")
-
-      assert html =~ "Dashboard"
+    test "redirects to collection", %{conn: conn} do
+      # {:ok, _index_live, html} = live(conn, ~p"/")
+      {:error, {:live_redirect, %{to: "/collections"}}} = live(conn, ~p"/")
     end
   end
 end

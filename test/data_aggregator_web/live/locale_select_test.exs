@@ -6,41 +6,41 @@ defmodule DataAggregatorWeb.LocaleSelectTest do
   import Phoenix.LiveViewTest
 
   describe "locale select" do
-    @tag authenticated: true
+    @tag authenticated: :admin
     test "applies default locale to en", %{conn: conn} do
-      {:ok, _, html} = live(conn, "/")
+      {:ok, _, html} = live(conn, "/administration")
       assert html =~ ~s|lang=\"en\"|
       refute html =~ ~s|lang=\"fr-CH\"|
       refute html =~ ~s|lang=\"de-CH\"|
     end
 
-    @tag authenticated: true
+    @tag authenticated: :admin
     test "applies en locale if passed as URI query", %{conn: conn} do
-      {:ok, _, html} = live(conn, "/?locale=en")
+      {:ok, _, html} = live(conn, "/administration?locale=en")
       assert html =~ ~s|lang=\"en\"|
       refute html =~ ~s|lang=\"fr-CH\"|
       refute html =~ ~s|lang=\"de-CH\"|
     end
 
-    @tag authenticated: true
+    @tag authenticated: :admin
     test "does not apply de-CH locale if passed as URI query", %{conn: conn} do
-      {:ok, _, html} = live(conn, "/?locale=de-CH")
+      {:ok, _, html} = live(conn, "/administration?locale=de-CH")
       assert html =~ ~s|lang=\"en\"|
       refute html =~ ~s|lang=\"fr-CH\"|
       refute html =~ ~s|lang=\"de-CH\"|
     end
 
-    @tag authenticated: true
+    @tag authenticated: :admin
     test "does not apply fr-CH locale if passed as URI query", %{conn: conn} do
-      {:ok, _, html} = live(conn, "/?locale=fr-CH")
+      {:ok, _, html} = live(conn, "/administration?locale=fr-CH")
       assert html =~ ~s|lang=\"en\"|
       refute html =~ ~s|lang=\"fr-CH\"|
       refute html =~ ~s|lang=\"de-CH\"|
     end
 
-    @tag authenticated: true
+    @tag authenticated: :admin
     test "applies en locale if passed as URI query is not valid", %{conn: conn} do
-      {:ok, _, html} = live(conn, "/?locale=ar")
+      {:ok, _, html} = live(conn, "/administration?locale=ar")
       assert html =~ ~s|lang=\"en\"|
       refute html =~ ~s|lang=\"fr-CH\"|
       refute html =~ ~s|lang=\"de-CH\"|
