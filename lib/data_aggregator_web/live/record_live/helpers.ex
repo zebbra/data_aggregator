@@ -15,7 +15,7 @@ defmodule DataAggregatorWeb.RecordLive.Helpers do
           attribute = String.to_existing_atom("#{category.name}_#{dwc_attribute.attribute.name}")
 
           %{
-            name: dwc_attribute.dwc_field,
+            name: dwc_attribute.dwc_field || dwc_attribute.attribute.name,
             imported:
               record
               |> imported_attribute(attribute)

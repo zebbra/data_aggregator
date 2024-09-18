@@ -452,6 +452,33 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 </div>
               </details>
             <% end %>
+            <details
+              :if={Enum.empty?(@selected_record.extra_data) == false}
+              class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 open:first:border-t lg:pl-4"
+            >
+              <summary class="collapse-title">
+                <%= ~t"Custom Attributes"m %>
+              </summary>
+              <div class="collapse-content">
+                <p class="text-base-content/60 text-sm/6 line-clamp-2 max-w-4xl">
+                  <%= ~t"Custom attributes are attributes that are not part of the darwin core standard."m %>
+                </p>
+                <.table
+                  opts={[
+                    container_attrs: [class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
+                  ]}
+                  id="custom_attributes_table"
+                  items={Enum.map(@selected_record.extra_data, fn {k, v} -> %{name: k, value: v} end)}
+                >
+                  <:col :let={attribute} label={~t"Name"} class="font-semibold">
+                    <%= attribute.name %>
+                  </:col>
+                  <:col :let={attribute} label={~t"Value"}>
+                    <%= attribute.value %>
+                  </:col>
+                </.table>
+              </div>
+            </details>
           </div>
           <.activity_feed :if={@record_tab == "changes"} record={@selected_record} />
           <div :if={@record_tab == "encodings"} class="px-6 pt-4 lg:px-8">
@@ -460,7 +487,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             </h2>
             <div class="">
               <p class="text-base-content/60 text-sm/6 line-clamp-2 max-w-4xl">
-                <%= ~t"Results by catalog"m %>
+                <%= if Enum.any?(@record_encoding_results) do %>
+                  <%= ~t"Results by catalog"m %>
+                <% else %>
+                  <%= ~t"No encoding results available"m %>
+                <% end %>
               </p>
 
               <.table

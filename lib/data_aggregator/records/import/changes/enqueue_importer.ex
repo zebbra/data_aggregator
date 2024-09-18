@@ -6,17 +6,19 @@ defmodule DataAggregator.Records.Import.Changes.EnqueueImporter do
   use Ash.Resource.Change
 
   alias Ash.Changeset
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Import
+  alias DataAggregator.Records.Import.Workers.Importer
 
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_action(changeset, &enqueue_importer/1)
+  def change(%Changeset{} = changeset, _opts, ctx) do
+    Changeset.before_action(changeset, &enqueue_importer(&1, ctx))
   end
 
-  defp enqueue_importer(%Changeset{data: import} = changeset) do
-    case insert_job(import) do
+  defp enqueue_importer(%Changeset{data: import} = changeset, %{actor: actor}) do
+    case insert_job(import, actor) do
       {:ok, job} ->
         Logger.debug("Enqueued import job #{inspect(job.id)}")
         changeset
@@ -27,9 +29,15 @@ defmodule DataAggregator.Records.Import.Changes.EnqueueImporter do
     end
   end
 
-  defp insert_job(%Import{id: id}) do
+  defp insert_job(%Import{id: id}, %User{id: user_id}) do
+    %{id: id, user_id: user_id}
+    |> Importer.new()
+    |> Oban.insert()
+  end
+
+  defp insert_job(%Import{id: id}, _) do
     %{id: id}
-    |> Import.Workers.Importer.new()
+    |> Importer.new()
     |> Oban.insert()
   end
 end

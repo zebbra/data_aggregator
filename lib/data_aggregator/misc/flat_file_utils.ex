@@ -34,18 +34,29 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   def map_data_to_headers(record_data, header_fields, transformers \\ nil)
 
   def map_data_to_headers(record_data, header_fields, nil) do
-    Map.new(header_fields, fn {k, v} -> {v, Map.get(record_data, k)} end)
+    Map.new(header_fields, fn {k, v} -> {v, maybe_from_extra_data(record_data, k)} end)
   end
 
   def map_data_to_headers(record_data, header_fields, transformers) do
     Map.new(header_fields, fn {k, v} ->
       if Map.has_key?(transformers, k) do
-        {v, transformers[k].(Map.get(record_data, k))}
+        {v, transformers[k].(maybe_from_extra_data(record_data, k))}
       else
-        {v, Map.get(record_data, k)}
+        {v, maybe_from_extra_data(record_data, k)}
       end
     end)
   end
+
+  defp maybe_from_extra_data(record, field) do
+    if Map.has_key?(record, field) do
+      Map.get(record, field)
+    else
+      get_in(record, [:extra_data, stringify(field)])
+    end
+  end
+
+  defp stringify(val) when is_atom(val), do: Atom.to_string(val)
+  defp stringify(val), do: val
 
   @doc """
   Creates a directory in the system's temporary directory with a unique name

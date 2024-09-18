@@ -132,7 +132,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
             <div class="bg-error text-error-content rounded-l px-2 py-1 uppercase">
               <%= cat.name %>
             </div>
-            <div class="bg-base-100 rounded-r px-2 py-1"><%= attr.attribute.name %></div>
+            <div class="bg-base-100 rounded-r px-2 py-1"><%= attr.dwc_field %></div>
           </div>
         </div>
       </div>
@@ -151,35 +151,53 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
     """
   end
 
-  attr :name, :string,
+  attr :column, Import.Column,
     required: true,
     doc: "The name of the attribute prefixed with the category"
 
-  attr :mapped, :boolean, default: false, doc: "Whether the attribute is mapped to a column"
-
   def attribute_badge(assigns) do
-    parts = String.split(assigns.name, "_")
-    category = List.first(parts)
+    %{column: column} = assigns
 
-    name = Schema.dwc_field_from_prefixed_attribute_name(assigns.name)
+    custom = Schema.known_attribute?(column.mapped_to) == false
+    category = parse_category(column.mapped_to, custom)
 
-    assigns = assign(assigns, category: category, name: name)
+    name =
+      if custom,
+        do: column.name,
+        else: Schema.dwc_field_from_prefixed_attribute_name(column.mapped_to)
+
+    assigns =
+      assigns
+      |> assign(:category, category)
+      |> assign(:custom, custom)
+      |> assign(:name, name)
 
     ~H"""
     <div class="inline-flex text-xs">
       <div class={[
         "rounded-l px-2 py-1 uppercase",
-        if(@mapped == true, do: "bg-info text-info-content", else: "bg-error text-white")
+        if(@column.mapped?, do: "bg-info text-info-content", else: "bg-error text-white")
       ]}>
         <%= @category %>
       </div>
       <div class={[
         "rounded-r px-2 py-1",
-        if(@mapped == true, do: "bg-info/10 text-base-content", else: "bg-error/10 text-error")
+        if(@column.mapped?,
+          do: "bg-info/10 text-base-content",
+          else: "bg-error/10 text-error"
+        )
       ]}>
         <%= @name %>
       </div>
     </div>
     """
+  end
+
+  defp parse_category(_prefixed_attribute, true), do: ~t"Custom Attribute"m
+
+  defp parse_category(prefixed_attribute, _custom) do
+    prefixed_attribute
+    |> String.split("_")
+    |> List.first()
   end
 end
