@@ -142,7 +142,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                       />
 
                       <.field
-                        type="select"
+                        type="combobox"
                         label={
                           Form.input_value(column_form, :mapped_to)
                           |> DarwinCore.Schema.dwc_field_from_prefixed_attribute_name()
@@ -209,7 +209,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                       />
 
                       <.custom_field
-                        type="select"
+                        type="combobox"
+                        max_options={1000}
+                        dropup={true}
                         label={Form.input_value(column_form, :name)}
                         field={column_form[:mapped_to]}
                         options={maybe_add_selected_attribute(column_form, @available_attributes)}

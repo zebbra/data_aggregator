@@ -35,6 +35,15 @@ class ComboboxHook extends Hook {
   }
 
   updated(): void {
+    const input = this.el.querySelector("input[type='hidden']")!;
+    const selectEl = this.el.querySelector("select.combobox")!;
+
+    // This might be the case when the combobox is inside a form and the form structure
+    // changes (for example for embedded resources which are added or removed dynamically)
+    if (input.getAttribute("name") !== selectEl.getAttribute("name")) {
+      selectEl.setAttribute("name", input.getAttribute("name")!);
+    }
+
     // If the options have changed, destroy the TomSelect instance and re-initialize it with the new options.
     const latestSelect = this.el.querySelector("select.combobox-latest");
     const initialSelect = this.el.querySelector("select.combobox");
@@ -135,6 +144,7 @@ class ComboboxHook extends Hook {
       ...options,
       ...globalOpts,
       render,
+      controlInput: `<input type="text" autocomplete="off" size="1" phx-change='[["_",{"to":"#_"}]]' />`,
     };
 
     if (remoteOptionsEventName) {
