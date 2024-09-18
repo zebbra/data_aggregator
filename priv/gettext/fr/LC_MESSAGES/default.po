@@ -2675,13 +2675,13 @@ msgstr ""
 msgid "Sign out"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:88
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:90
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Sign out"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:88
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:90
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Sign out"
@@ -3281,25 +3281,25 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal"
 msgid "The publisher of your data on GBIF is SwissNatColl, but your institution retains ownership of the data at all times."
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:70
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:71
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Guide"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:79
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:81
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Tutorials"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:70
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:71
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Guide"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:79
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:81
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Tutorials"
