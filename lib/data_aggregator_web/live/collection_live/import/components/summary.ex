@@ -75,7 +75,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
             </span>
           </:col>
           <:col :let={column} label={~t"Mapped to"m}>
-            <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
+            <.attribute_badge column={column} />
           </:col>
         </.table>
 

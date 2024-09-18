@@ -349,7 +349,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               </span>
             </:col>
             <:col :let={column} label={~t"Mapped to"m} class="py-5">
-              <.attribute_badge name={column.mapped_to} mapped={column.mapped?} />
+              <.attribute_badge column={column} />
             </:col>
           </.table>
 
@@ -433,7 +433,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           id="import_modal"
           class="no-scrollbar"
           show={@live_action in [:new, :edit, :summary]}
-          size="2xl"
+          size="3xl"
           responsive
           backdrop={false}
           on_cancel={JS.patch(build_path(~p"/collections/#{@collection}/imports", @meta))}
@@ -518,21 +518,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   @impl true
   def handle_event("hide:error_log_preview", _, socket) do
     {:noreply, assign(socket, :show_error_log_preview, false)}
-  end
-
-  @impl true
-  def handle_info({:add_all, form, path, name_opts}, socket) do
-    assigns = %{
-      id: socket.assigns.import.id,
-      topic: :add_all,
-      form: form,
-      path: path,
-      name_opts: name_opts,
-      current_user: socket.assigns.current_user
-    }
-
-    send_update(DataAggregatorWeb.CollectionLive.Import.FormComponent, assigns)
-    {:noreply, socket}
   end
 
   defp apply_action(socket, :index, _params) do

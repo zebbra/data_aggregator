@@ -31,8 +31,9 @@ defmodule DataAggregator.ExportFixtures do
     |> Export.create!()
   end
 
-  def exportable_record(collection) do
+  def exportable_record(collection, attrs \\ %{}) do
     exportable_record_attrs()
+    |> Map.merge(attrs)
     |> Map.put_new_lazy(:collection, fn -> collection end)
     |> Record.create!()
   end

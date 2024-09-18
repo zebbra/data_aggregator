@@ -124,7 +124,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   end
 
   defp get_data_attributes(mapping) do
-    Map.keys(mapping)
+    Map.keys(mapping) ++ [:extra_data]
   end
 
   defp get_header_labels(mapping) do

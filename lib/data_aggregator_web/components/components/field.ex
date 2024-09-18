@@ -239,7 +239,7 @@ defmodule DataAggregatorWeb.Components.Field do
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
       <% else %>
-        <.label :if={@label} for={@id} label={@label} class="sm:pb-0 sm:block" {@rest} />
+        <.label :if={@label} for={@id} label={@label} class="sm:pb-0 sm:block self-center" {@rest} />
       <% end %>
       <.input {assigns} class="sm:col-span-2" />
       <.description
@@ -263,7 +263,7 @@ defmodule DataAggregatorWeb.Components.Field do
       <%= if @custom_label != [] do %>
         <%= render_slot(@custom_label) %>
       <% else %>
-        <.label :if={@label} for={@id} label={@label} class="sm:pb-0 sm:block" {@rest} />
+        <.label :if={@label} for={@id} label={@label} class="sm:pb-0 sm:block self-center" {@rest} />
       <% end %>
       <.input class="sm:col-span-2" {assigns} />
       <.description

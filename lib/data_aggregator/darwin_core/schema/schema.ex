@@ -2322,12 +2322,19 @@ defmodule DataAggregator.DarwinCore.Schema do
               do: dwc_attribute.dwc_field,
               else: "#{dwc_attribute.dwc_field} (required)"
 
+          name = if is_nil(name), do: Atom.to_string(attribute.name), else: name
+
           value = Category.prefixed_attribute_name(category, attribute)
 
           {name, value}
         end
 
-      category_label = category.description
+      category_label =
+        case category_label_by_description(category.description) do
+          nil -> category.description
+          label -> "#{label}: #{category.description}"
+        end
+
       {category_label, options}
     end
   end
@@ -2379,5 +2386,20 @@ defmodule DataAggregator.DarwinCore.Schema do
       loc_decimal_latitude: &format_coordinate/1,
       loc_decimal_longitude: &format_coordinate/1
     }
+  end
+
+  @doc """
+  Checks if an attribute is a known attribute. Useful
+  to determine if a mapped_to attribute is a custom attribute.
+  """
+  @spec known_attribute?(atom()) :: boolean()
+  def known_attribute?(attr) when is_binary(attr) do
+    attr |> String.to_existing_atom() |> known_attribute?()
+  rescue
+    _ -> false
+  end
+
+  def known_attribute?(attr) do
+    Enum.member?(prefixed_attribute_names(), attr)
   end
 end

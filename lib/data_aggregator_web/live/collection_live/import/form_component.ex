@@ -7,29 +7,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
   alias DataAggregatorWeb.CollectionLive.Import.Components
 
   @impl true
-  def render(%{topic: :add_all} = assigns) do
-    ~H"""
-    <div class="contents">
-      <.live_component
-        :if={@action == :edit}
-        module={Components.Mapping}
-        id={@id}
-        action={@action}
-        import={@import}
-        collection={@collection.id}
-        show_validation={@show_validation}
-        meta={@meta}
-        topic={@topic}
-        form={@form}
-        path={@path}
-        name_opts={@name_opts}
-        current_user={@current_user}
-      />
-    </div>
-    """
-  end
-
-  @impl true
   def render(assigns) do
     ~H"""
     <div class="contents">
