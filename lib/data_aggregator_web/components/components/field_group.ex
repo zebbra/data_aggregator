@@ -232,7 +232,17 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
           :for={{label, value} <- options_for_group(@options)}
           class="flex cursor-pointer justify-between gap-4 py-2 sm:flex-row-reverse sm:justify-end"
         >
-          <div hidden={hidden_option?(value, @hidden_options)}>
+          <%= if hidden_option?(value, @hidden_options) do %>
+            <input
+              type="checkbox"
+              id={"#{@name}-#{value}"}
+              hidden
+              name={@name}
+              value={value}
+              checked={checked?(value, @value)}
+              {@rest}
+            />
+          <% else %>
             <.label for={"#{@name}-#{value}"} label={label} class="cursor-pointer min-w-0 flex-1" />
             <input
               type="checkbox"
@@ -243,7 +253,7 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
               class="toggle"
               {@rest}
             />
-          </div>
+          <% end %>
         </div>
       </div>
     </div>
