@@ -67,6 +67,7 @@ defmodule DataAggregatorWeb.Router do
       live "/collections/:id/imports", CollectionLive.Import.Index, :index
       live "/collections/:id/exports", CollectionLive.Export.Index, :index
       live "/collections/:id/publications", CollectionLive.Publication.Index, :index
+      live "/collections/:id/image_uploads", CollectionLive.ImageUpload.Index, :index
 
       live "/records", RecordLive.Index, :index
     end
@@ -86,6 +87,11 @@ defmodule DataAggregatorWeb.Router do
       live "/collections/:id/imports/new", CollectionLive.Import.Index, :new
       live "/collections/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit
       live "/collections/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary
+      live "/collections/:id/image_uploads/new", CollectionLive.ImageUpload.Index, :new
+
+      live "/collections/:id/image_uploads/:image_upload_id/edit",
+           CollectionLive.ImageUpload.Index,
+           :edit
     end
 
     auth_routes(AuthController, User, path: "/auth")

@@ -17,7 +17,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   attr :current, :atom,
     default: :records,
-    values: ~w(records imports encodings exports publications)a
+    values: ~w(records imports encodings exports publications image_upload)a
 
   attr :current_user, User, required: true
 
@@ -106,6 +106,19 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" />
           <.icon :if={@busy == false} name="hero-arrow-up-tray" />
           <%= ~t"Import dataset"m %>
+        </.link>
+      </:actions>
+      <:actions :if={@current in [:image_upload]} class="max-sm:hidden">
+        <.link
+          patch={build_path(~p"/collections/#{@collection}/image_uploads/new", @meta)}
+          class={[
+            "btn btn-primary",
+            @disabled && "btn-disabled"
+          ]}
+        >
+          <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" />
+          <.icon :if={@busy == false} name="hero-arrow-up-tray" />
+          <%= ~t"Upload Images"m %>
         </.link>
       </:actions>
     </.page_header>

@@ -85,6 +85,7 @@ defmodule DataAggregator.Records.Collection do
     has_many :imports, DataAggregator.Records.Import, public?: true
     has_many :exports, DataAggregator.Records.Export, public?: true
     has_many :records, DataAggregator.Records.Record, public?: true
+    has_many :image_uploads, DataAggregator.Records.ImageUpload, public?: true
   end
 
   calculations do
