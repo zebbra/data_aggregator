@@ -4,7 +4,12 @@ defmodule DataAggregator.Api.Helpers do
   """
 
   @spec grscicoll_api_base_url() :: String.t()
-  def grscicoll_api_base_url, do: System.get_env("GRSCICOLL_API_BASE_URL")
+  def grscicoll_api_base_url do
+    case System.get_env("GRSCICOLL_API_BASE_URL") do
+      nil -> raise "GRSCICOLL_API_BASE_URL is not set"
+      url -> url
+    end
+  end
 
   @spec gbif_api_base_url() :: String.t()
   def gbif_api_base_url, do: System.get_env("GBIF_API_BASE_URL")

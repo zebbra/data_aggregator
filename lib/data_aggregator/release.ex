@@ -16,6 +16,7 @@ defmodule DataAggregator.Release do
 
   def catalog_init do
     load_app()
+    start_minimal_app()
 
     for repo <- repos() do
       {:ok, _, _} = Ecto.Migrator.with_repo(repo, &eval_catalogs_file(&1))
@@ -28,6 +29,7 @@ defmodule DataAggregator.Release do
 
   def users_init do
     load_app()
+    start_minimal_app()
 
     for repo <- repos() do
       {:ok, _, _} = Ecto.Migrator.with_repo(repo, &eval_users_file(&1))
@@ -45,6 +47,11 @@ defmodule DataAggregator.Release do
 
   defp repos do
     Application.fetch_env!(@app, :ecto_repos)
+  end
+
+  defp start_minimal_app do
+    Application.put_env(@app, :minimal, true)
+    Application.ensure_all_started(@app)
   end
 
   defp load_app do
