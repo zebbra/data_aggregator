@@ -44,7 +44,7 @@ defmodule DataAggregator.Application do
       DataAggregatorWeb.Endpoint
     ]
 
-    minimal_children = [
+    children_for_init = [
       # Start the Ecto repository
       DataAggregator.Repo,
       # Start the PubSub system
@@ -58,7 +58,7 @@ defmodule DataAggregator.Application do
     opts = [strategy: :one_for_one, name: DataAggregator.Supervisor]
 
     if Application.get_env(:data_aggregator, :minimal) do
-      Supervisor.start_link(minimal_children, opts)
+      Supervisor.start_link(children_for_init, opts)
     else
       Supervisor.start_link(children, opts)
     end
