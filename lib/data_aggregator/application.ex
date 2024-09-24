@@ -44,10 +44,24 @@ defmodule DataAggregator.Application do
       DataAggregatorWeb.Endpoint
     ]
 
+    minimal_children = [
+      # Start the Ecto repository
+      DataAggregator.Repo,
+      # Start the PubSub system
+      DataAggregator.PubSub,
+      # Start the AshAuthentication system
+      {AshAuthentication.Supervisor, otp_app: :data_aggregator}
+    ]
+
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: DataAggregator.Supervisor]
-    Supervisor.start_link(children, opts)
+
+    if Application.get_env(:data_aggregator, :minimal) do
+      Supervisor.start_link(minimal_children, opts)
+    else
+      Supervisor.start_link(children, opts)
+    end
   end
 
   # Tell Phoenix to update the endpoint configuration
