@@ -1,9 +1,14 @@
 defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
   @moduledoc false
   use DataAggregatorWeb, :live_view
+  use DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions
 
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection_light: 2]
+
+  import DataAggregatorWeb.CollectionLive.ImageUpload.Components,
+    only: [image_upload_state_badge: 1]
+
   import DataAggregatorWeb.CollectionLive.ImageUpload.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
@@ -21,6 +26,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
       |> assign(:collection, collection)
       |> assign(:selected_image_upload, nil)
       |> assign(:busy, collection.busy)
+      |> subscribe_for_image_upload_updates(connected?(socket))
 
     {:ok, socket}
   end
@@ -90,9 +96,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           end
         }
       >
-        <%!-- <:col :let={{_id, import}} field={:state} label={~t"State"m}>
-          <.import_state_badge import={import} />
-        </:col> --%>
+        <:col :let={{_id, image_upload}} field={:state} label={~t"State"m}>
+          <.image_upload_state_badge image_upload={image_upload} />
+        </:col>
         <:col :let={{_id, image_upload}} label={~t"File"m}>
           <.file_info attachment={image_upload.attachment} files_count={image_upload.images_count} />
         </:col>

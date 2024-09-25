@@ -11,10 +11,16 @@ defmodule DataAggregator.Records.ImageUpload.Changes.DetectFiles do
   def change(%Changeset{} = changeset, _opts, _ctx) do
     path = Changeset.get_argument(changeset, :path)
 
-    {:ok, zip_handle} = path |> File.read!() |> :zip.zip_open([:memory])
+    {:ok, file_names_with_comment} = path |> File.read!() |> :zip.list_dir()
 
-    {:ok, file_names} = :zip.zip_get(zip_handle)
+    count =
+      Enum.count(file_names_with_comment, fn entry ->
+        case entry do
+          {:zip_comment, _} -> false
+          _ -> true
+        end
+      end)
 
-    Changeset.change_attribute(changeset, :images_count, Enum.count(file_names))
+    Changeset.change_attribute(changeset, :images_count, count)
   end
 end

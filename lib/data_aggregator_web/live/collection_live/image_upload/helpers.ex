@@ -8,4 +8,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Helpers do
       attachment: [:filename, :url, :byte_size]
     ]
   end
+
+  def load_all do
+    load() ++
+      []
+  end
 end

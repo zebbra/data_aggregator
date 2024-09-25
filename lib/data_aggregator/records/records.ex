@@ -24,7 +24,9 @@ defmodule DataAggregator.Records do
     encode_timeout: :timer.minutes(60),
     encode_batch_size: 1000,
     publication_verification_timeout: :timer.minutes(5),
-    execute_async: true
+    execute_async: true,
+    image_upload_timeout: :timer.minutes(60),
+    extraction_timeout: :timer.minutes(60)
   ]
 
   authorization do
@@ -39,7 +41,6 @@ defmodule DataAggregator.Records do
     resource DataAggregator.Records.Import
     resource DataAggregator.Records.Import.Record
     resource DataAggregator.Records.ImageUpload
-    resource DataAggregator.Records.ImageUpload.Image
     resource DataAggregator.Records.Publication
     resource DataAggregator.Records.Record
     resource DataAggregator.Records.Record.Image
@@ -83,4 +84,7 @@ defmodule DataAggregator.Records do
 
   def export_timeout, do: get_env(:export_timeout)
   def approval_timeout, do: get_env(:approval_timeout)
+
+  def image_upload_timeout, do: get_env(:image_upload_timeout)
+  def extraction_timeout, do: get_env(:extraction_timeout)
 end

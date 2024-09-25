@@ -164,9 +164,48 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
       {:noreply, assign(socket, :error_message, error_to_string(:required))}
     else
       collection = socket.assigns.collection
-      results = consume(socket, collection)
+      actor = get_actor(socket)
 
-      handle_upload_result(socket, results, collection)
+      with {:consume, result} when is_list(result) <- {:consume, consume(socket, collection)},
+           {:first_result, %ImageUpload{} = image_upload} <- {:first_result, Enum.at(result, 0)},
+           {:enqueue_extraction, {:ok, _}} <-
+             {:enqueue_extraction, ImageUpload.enqueue_extraction(image_upload, actor: actor)} do
+        {
+          :noreply,
+          socket
+          |> handle_flash(image_upload)
+          |> push_patch(
+            to:
+              build_path(
+                ~p"/collections/#{collection}/image_uploads/#{image_upload}/edit",
+                socket.assigns.meta
+              )
+          )
+        }
+      else
+        {:enqueue_extraction, {:error, error}} ->
+          error_message = "Extraction failed with error #{inspect(error)}"
+
+          {
+            :noreply,
+            socket
+            |> assign(error_message: error_message)
+            |> push_patch(to: ~p"/collections/#{collection}/image_uploads/new")
+          }
+
+        _ ->
+          {
+            :noreply,
+            socket
+            |> handle_flash(nil)
+            |> push_patch(
+              to:
+                build_path(~p"/collections/#{collection}/image_uploads",
+                  meta: socket.assigns.meta
+                )
+            )
+          }
+      end
     end
   end
 
@@ -185,42 +224,6 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
       {:noreply, assign(socket, :uploading, false)}
     else
       {:noreply, socket}
-    end
-  end
-
-  defp handle_upload_result(socket, results, collection) do
-    case Enum.at(results, 0) do
-      {:error, error} ->
-        error_message = "File upload failed with error #{inspect(error)}"
-
-        {
-          :noreply,
-          socket
-          |> assign(error_message: error_message)
-          |> push_patch(to: ~p"/collections/#{collection}/image_uploads/new")
-        }
-
-      %ImageUpload{} = image_upload ->
-        {
-          :noreply,
-          socket
-          |> handle_flash(image_upload)
-          |> push_patch(
-            to:
-              build_path(
-                ~p"/collections/#{collection}/image_uploads/#{image_upload}/edit",
-                socket.assigns.meta
-              )
-          )
-        }
-
-      _ ->
-        {
-          :noreply,
-          socket
-          |> handle_flash(nil)
-          |> push_patch(to: build_path(~p"/collections/#{collection}/image_uploads", meta: socket.assigns.meta))
-        }
     end
   end
 

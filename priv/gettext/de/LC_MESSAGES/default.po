@@ -3349,7 +3349,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "An error has occured"
 msgstr "Ein Fehler ist aufgetreten"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:319
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:322
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "An error has occurred"
@@ -3367,7 +3367,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Choose a file"
 msgstr "Wähle eine Datei"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:260
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:263
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "File upload failed"
@@ -3385,7 +3385,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Please provide your zip file containing images to upload to this collection."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:315
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:318
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Please select a file"
@@ -3403,7 +3403,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Show more"
 msgstr "Zeige mehr"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:316
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:319
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Too large"
@@ -3415,13 +3415,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Uploading..."
 msgstr "Lädt hoch..."
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:318
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:321
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "You have selected an unacceptable file type"
 msgstr "Du hast einen nicht akzeptablen Dateityp ausgewählt"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:317
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:320
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "You have selected too many files"
@@ -3439,116 +3439,116 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "or drag and drop"
 msgstr "oder drag & drop"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:275
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:278
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "up to %{max_file_size}"
 msgstr "bis zu %{max_file_size}"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:114
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:120
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Actions"
 msgstr "Aktionen"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:139
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:145
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Are you sure?"
 msgstr "Bist Du sicher?"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:138
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:144
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Delete"
 msgstr "Löschen"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:129
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:135
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:217
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:223
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Edit Image Upload"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:66
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:72
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Exports"
 msgstr "Exporte"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:96
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:102
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "File"
 msgstr "Datei"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:230
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:236
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Get started by uploading a new zip file."
 msgstr "Beginne, indem Du einen neuen Benutzer erstellst."
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:74
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:204
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:80
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:210
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Image Upload"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:185
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:191
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Image Upload deleted successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:62
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:68
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Imports"
 msgstr "Importe"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:209
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:215
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "New Image Upload"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:229
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:235
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "No image uploads"
 msgstr "Noch keine Bilder hochgeladen"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:70
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:76
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Publications and Approvals"
 msgstr "Veröffentlichungen und Genehmigungen"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:58
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:64
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Records"
 msgstr "Einträge"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:99
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:105
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Size"
 msgstr "Größe"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:102
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:108
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Started at"
 msgstr "Gestartet am"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:231
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:237
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Upload Images"
@@ -3577,3 +3577,69 @@ msgstr ""
 msgctxt "DataAggregatorWeb.Components.Attachment"
 msgid "Files"
 msgstr "Datei"
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:102
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
+msgid "Extracted"
+msgstr "Extrahiert"
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:100
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
+msgid "Extracting"
+msgstr "Extrahierend"
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:104
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
+msgid "Extraction failed"
+msgstr "Extraktion Fehlgeschlagen"
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:98
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
+msgid "Extraction queued"
+msgstr "Extraktion in Warteschlange"
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:103
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
+msgid "Mapped"
+msgstr "Zugeordnet"
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:101
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
+msgid "Mapping"
+msgstr "Zuordnung"
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:105
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
+msgid "Mapping failed"
+msgstr "Zuordnung Fehlgeschlagen"
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:99
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
+msgid "Mapping queued"
+msgstr "Zuordnung in Warteschlange"
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:97
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
+msgid "New"
+msgstr "Neu"
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:99
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
+msgid "State"
+msgstr "Status"
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/subscriptions.ex:102
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions"
+msgid "Image Upload event"
+msgstr ""
