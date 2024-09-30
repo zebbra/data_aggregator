@@ -87,7 +87,8 @@ config :data_aggregator, Oban,
     exports: 1,
     publications: 1,
     publication_verifications: 1,
-    extractions: 1
+    extractions: 1,
+    mappings: 1
   ]
 
 config :data_aggregator, :ash_uuid,

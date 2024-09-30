@@ -26,7 +26,8 @@ defmodule DataAggregator.Records do
     publication_verification_timeout: :timer.minutes(5),
     execute_async: true,
     image_upload_timeout: :timer.minutes(60),
-    extraction_timeout: :timer.minutes(60)
+    extraction_timeout: :timer.minutes(60),
+    mapping_timeout: :timer.hours(1)
   ]
 
   authorization do
@@ -87,4 +88,5 @@ defmodule DataAggregator.Records do
 
   def image_upload_timeout, do: get_env(:image_upload_timeout)
   def extraction_timeout, do: get_env(:extraction_timeout)
+  def mapping_timeout, do: get_env(:mapping_timeout)
 end

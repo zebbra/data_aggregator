@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.ImageUpload.Changes.SetExtractionFailedOnError do
+defmodule DataAggregator.Records.ImageUpload.Changes.SetMappingFailedOnError do
   @moduledoc """
-  Sets the state to `:extraction_failed` if the transaction fails.
+  Sets the state to `:mapping_failed` if the transaction fails.
   """
 
   use Ash.Resource.Change
@@ -20,7 +20,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.SetExtractionFailedOnError 
   end
 
   defp handle_error(%Changeset{data: image_upload}, {:error, error}) do
-    Logger.warning("Image extraction error: #{inspect(error)}")
-    ImageUpload.set_extraction_failed(image_upload)
+    Logger.warning("Image mapping error: #{inspect(error)}")
+    ImageUpload.set_mapping_failed(image_upload)
   end
 end

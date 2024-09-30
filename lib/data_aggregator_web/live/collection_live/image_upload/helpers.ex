@@ -5,6 +5,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Helpers do
 
   def load do
     [
+      :mapped_images,
+      :unmapped_images,
       attachment: [:filename, :url, :byte_size]
     ]
   end

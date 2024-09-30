@@ -180,7 +180,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           <div
             class="tooltip tooltip-right"
             data-tip={
-              if record.mte_associated_media,
+              if record.encoded_record.mte_associated_media,
                 do: ~t"Images available"m,
                 else: ~t"No images uploaded yet"m
             }
@@ -737,8 +737,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           |> Ash.Query.filter(collection.id == ^id)
           |> AshPagify.validated_query(socket.assigns.meta.ash_pagify, opts)
           |> Ash.stream!(page: false, actor: actor)
-          |> Stream.map(&Record.enqueue_encoder!(&1, actor: actor))
-          |> Stream.run()
+          |> Enum.each(&Record.enqueue_encoder!(&1, actor: actor))
         end
 
         if Records.execute_async?() do

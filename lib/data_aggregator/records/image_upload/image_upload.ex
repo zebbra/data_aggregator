@@ -28,6 +28,11 @@ defmodule DataAggregator.Records.ImageUpload do
 
     attribute :images_count, :integer, allow_nil?: true, public?: true
     attribute :images_mapped_count, :integer, allow_nil?: true, public?: true
+
+    attribute :mapping_identifier, :atom,
+      allow_nil?: false,
+      default: :mte_catalog_number,
+      public?: true
   end
 
   relationships do
@@ -49,27 +54,32 @@ defmodule DataAggregator.Records.ImageUpload do
     end
   end
 
+  calculations do
+    calculate :mapped_images, {:array, :string}, ImageUpload.Calculations.MappedImages
+    calculate :unmapped_images, {:array, :string}, ImageUpload.Calculations.UnmappedImages
+  end
+
   state_machine do
     initial_states [:new]
     default_initial_state :new
 
     transitions do
       transition :enqueue_extraction, from: [:new], to: :extraction_queued
-      transition :extract, from: [:extraction_queued], to: :extracting
+      transition :extract, from: [:extraction_queued, :new], to: :extracting
       transition :extract, from: [:extracting], to: :extracted
 
-      transition :enqueue_mapping, from: :extracted, to: :mapping_queued
-      transition :map, from: :mapping_queued, to: :mapping
+      transition :enqueue_mapping, from: [:extracted, :mapped], to: :mapping_queued
+      transition :map, from: [:mapping_queued, :extracted], to: :mapping
       transition :map, from: :mapping, to: :mapped
 
-      transition :set_extracting, from: :extraction_queued, to: :extracting
+      transition :set_extracting, from: [:extraction_queued, :new], to: :extracting
       transition :set_extracted, from: :extracting, to: :extracted
 
       transition :set_extraction_failed,
         from: [:extraction_queued, :extracting],
         to: :extraction_failed
 
-      transition :set_mapping, from: :mapping_queued, to: :mapping
+      transition :set_mapping, from: [:mapping_queued, :extracted], to: :mapping
       transition :set_mapped, from: :mapping, to: :mapped
       transition :set_mapping_failed, from: [:mapping_queued, :mapping], to: :mapping_failed
     end
@@ -78,6 +88,11 @@ defmodule DataAggregator.Records.ImageUpload do
   actions do
     default_accept :*
     defaults [:destroy, :update]
+
+    update :update_mapping_identifier do
+      accept [:mapping_identifier]
+      require_atomic? false
+    end
 
     update :enqueue_extraction do
       accept []
@@ -127,7 +142,7 @@ defmodule DataAggregator.Records.ImageUpload do
 
       # change ImageUpload.Changes.SetCollectionMappingBeforeTransaction
       change transition_state(:mapping_queued)
-      # change ImageUpload.Changes.EnqueueMapper
+      change ImageUpload.Changes.EnqueueMapper
     end
 
     update :map do
@@ -136,9 +151,9 @@ defmodule DataAggregator.Records.ImageUpload do
 
       change SetTimeout
       change ImageUpload.Changes.SetMappingBeforeTransaction
-      # change ImageUpload.Changes.MapImages
+      change ImageUpload.Changes.MapImages
       change ImageUpload.Changes.SetMappedAfterAction
-      # change ImageUpload.Changes.SetFailedOnError
+      change ImageUpload.Changes.SetMappingFailedOnError
     end
 
     update :set_mapping do
@@ -212,6 +227,9 @@ defmodule DataAggregator.Records.ImageUpload do
     publish :set_extracting, [[:collection_id, nil], "updated", [:id, nil]]
     publish :set_extracted, [[:collection_id, nil], "updated", [:id, nil]]
     publish :set_extraction_failed, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_mapping, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_mapped, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_mapping_failed, [[:collection_id, nil], "updated", [:id, nil]]
   end
 
   code_interface do
@@ -229,6 +247,9 @@ defmodule DataAggregator.Records.ImageUpload do
     define :set_mapping_failed
     define :enqueue_extraction
     define :extract
+    define :update_mapping_identifier, args: [:mapping_identifier]
+    define :enqueue_mapping
+    define :map
   end
 
   postgres do

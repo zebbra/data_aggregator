@@ -92,6 +92,10 @@ defmodule DataAggregatorWeb.Router do
       live "/collections/:id/image_uploads/:image_upload_id/edit",
            CollectionLive.ImageUpload.Index,
            :edit
+
+      live "/collections/:id/image_uploads/:image_upload_id/summary",
+           CollectionLive.ImageUpload.Index,
+           :summary
     end
 
     auth_routes(AuthController, User, path: "/auth")

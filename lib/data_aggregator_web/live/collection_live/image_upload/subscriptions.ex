@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
 
   @load_all load_all()
 
-  @image_upload_update_events ~w(set_extracting set_extracted set_extraction_failed)
+  @image_upload_update_events ~w(set_extracting set_extracted set_extraction_failed set_mapping set_mapped set_mapping_failed)
 
   def subscribe_for_image_upload_updates(socket, connected) do
     with true <- connected,
@@ -64,7 +64,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
 
       true ->
         Logger.warning("Unknown topic: #{topic}")
-        socket
+        {:noreply, socket}
     end
   end
 

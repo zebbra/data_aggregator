@@ -21,14 +21,13 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.FormComponent do
           meta={@meta}
           current_user={@current_user}
         />
-        <%!-- <.live_component
+        <.live_component
           :if={@action == :edit}
           module={Components.Mapping}
           id={@id}
           action={@action}
-          import={@import}
-          collection={@collection.id}
-          show_validation={@show_validation}
+          image_upload={@image_upload}
+          collection={@collection}
           meta={@meta}
           current_user={@current_user}
         />
@@ -37,12 +36,12 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.FormComponent do
           module={Components.Summary}
           id={@id}
           action={@action}
-          import={@import}
+          image_upload={@image_upload}
           collection={@collection.id}
           meta={@meta}
           busy={@busy}
           current_user={@current_user}
-        /> --%>
+        />
       </div>
     </div>
     """

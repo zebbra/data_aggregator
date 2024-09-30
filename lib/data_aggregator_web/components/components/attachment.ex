@@ -63,6 +63,15 @@ defmodule DataAggregatorWeb.Components.Attachment do
     """
   end
 
+  defp maybe_badge_with_count(%{badge: true, attachment: attachment, files_count: _} = assigns) when attachment != nil do
+    ~H"""
+    <div class="text-base-content/60 flex items-center gap-x-2 text-xs">
+      <.attachment_download_badge attachment={@attachment} />
+      <%= ~t"Contains"m %> <%= format_number(@files_count) %> <%= ~t"Files"m %>
+    </div>
+    """
+  end
+
   defp maybe_badge_with_count(%{badge: true, attachment: attachment} = assigns) when attachment != nil do
     ~H"""
     <div class="text-base-content/60 flex items-center gap-x-2 text-xs">
@@ -80,7 +89,7 @@ defmodule DataAggregatorWeb.Components.Attachment do
   defp maybe_badge_with_count(%{files_count: _} = assigns) do
     ~H"""
     <div class="text-base-content/60 text-xs">
-      <%= format_number(@files_count) %> <%= ~t"Files"m %>
+      <%= ~t"Contains"m %> <%= format_number(@files_count) %> <%= ~t"Files"m %>
     </div>
     """
   end
