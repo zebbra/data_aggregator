@@ -7,6 +7,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Helpers do
     [
       :mapped_images,
       :unmapped_images,
+      :mapped_images_count,
+      :unmapped_images_count,
+      :invalid_files_count,
       attachment: [:filename, :url, :byte_size]
     ]
   end

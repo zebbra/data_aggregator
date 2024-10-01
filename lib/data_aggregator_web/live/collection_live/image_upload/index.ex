@@ -99,10 +99,18 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           <.image_upload_state_badge image_upload={image_upload} />
         </:col>
         <:col :let={{_id, image_upload}} label={~t"File"m}>
-          <.file_info attachment={image_upload.attachment} files_count={image_upload.images_count} />
-        </:col>
-        <:col :let={{_id, image_upload}} label={~t"Size"m}>
+          <.file_info attachment={image_upload.attachment} />
           <.attachment_download_badge attachment={image_upload.attachment} />
+        </:col>
+        <:col :let={{_id, image_upload}} field={:mapped_images_count} label={~t"Mapped images count"m}>
+          <%= image_upload.mapped_images_count %>
+        </:col>
+        <:col
+          :let={{_id, image_upload}}
+          field={:unmapped_images_count}
+          label={~t"Unmapped images count"m}
+        >
+          <%= image_upload.unmapped_images_count %>
         </:col>
         <:col :let={{_id, image_upload}} field={:mapping_identifier} label={~t"Mapping identifier"m}>
           <%= image_upload.mapping_identifier %>
@@ -179,18 +187,14 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
             <:item title={~t"Mapping identifier"m}>
               <%= @selected_image_upload.mapping_identifier %>
             </:item>
-            <:item title={~t"Number Images"m}>
-              <%= @selected_image_upload.images_count %>
+            <:item title={~t"Mapped images count"m}>
+              <%= @selected_image_upload.mapped_images_count %>
             </:item>
-            <:item title={~t"Mapped Images"m}>
-              <div :for={filename <- @selected_image_upload.mapped_images}>
-                <%= filename %>
-              </div>
+            <:item title={~t"Unmapped images count"m}>
+              <%= @selected_image_upload.unmapped_images_count %>
             </:item>
-            <:item title={~t"Unmapped Images"m}>
-              <div :for={filename <- @selected_image_upload.unmapped_images}>
-                <%= filename %>
-              </div>
+            <:item title={~t"Inavlid files count"m}>
+              <%= @selected_image_upload.invalid_files_count || 0 %>
             </:item>
           </.list>
           <:footer></:footer>
@@ -246,7 +250,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
 
   @impl true
   def handle_event("image_upload:select", %{"id" => nil}, socket) do
-    socket = assign(socket, selected_iimage_upload: nil)
+    socket = assign(socket, selected_image_upload: nil)
 
     {:noreply, socket}
   end

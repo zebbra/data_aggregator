@@ -46,11 +46,11 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
       <div class="h-full overflow-y-auto overflow-x-hidden px-6 py-1">
         <.list dense>
           <:item title={~t"File"m}>
-            <.file_info
-              attachment={@image_upload.attachment}
-              files_count={@image_upload.images_count}
-              badge
-            />
+            <.file_info attachment={@image_upload.attachment} />
+            <.attachment_download_badge attachment={@image_upload.attachment} />
+          </:item>
+          <:item title={~t"Invalid files count"}>
+            <%= invalid_file_infos(@image_upload.invalid_file_infos) %>
           </:item>
         </.list>
       </div>
@@ -117,5 +117,35 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
           socket.assigns.meta
         )
     )
+  end
+
+  defp invalid_file_infos(nil), do: 0
+
+  defp invalid_file_infos(infos) do
+    {file_size_infos, file_extension_infos} =
+      Enum.split_with(infos, &(&1["reason"] == "file_size"))
+
+    assigns = %{file_size_infos: file_size_infos, file_extension_infos: file_extension_infos}
+
+    ~H"""
+    <div :if={length(@file_size_infos) > 0}>
+      <.section_heading
+        :if={length(@file_size_infos) > 0}
+        text={~t"File size limit exceeded"m}
+        size="sm"
+        class="text-red-500"
+      />
+      <%= length(@file_size_infos) %>
+    </div>
+    <div :if={length(@file_extension_infos) > 0}>
+      <.section_heading
+        :if={length(@file_extension_infos) > 0}
+        text={~t"Invalid file extension"m}
+        size="sm"
+        class="text-red-500"
+      />
+      <%= length(@file_extension_infos) %>
+    </div>
+    """
   end
 end

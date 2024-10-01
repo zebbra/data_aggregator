@@ -26,8 +26,7 @@ defmodule DataAggregator.Records.ImageUpload do
     attribute :started_at, :utc_datetime, allow_nil?: true, public?: true
     attribute :finished_at, :utc_datetime, allow_nil?: true, public?: true
 
-    attribute :images_count, :integer, allow_nil?: true, public?: true
-    attribute :images_mapped_count, :integer, allow_nil?: true, public?: true
+    attribute :invalid_file_infos, {:array, :map}, allow_nil?: true, public?: true
 
     attribute :mapping_identifier, :atom,
       allow_nil?: false,
@@ -57,6 +56,9 @@ defmodule DataAggregator.Records.ImageUpload do
   calculations do
     calculate :mapped_images, {:array, :string}, ImageUpload.Calculations.MappedImages
     calculate :unmapped_images, {:array, :string}, ImageUpload.Calculations.UnmappedImages
+    calculate :mapped_images_count, :integer, expr(length(mapped_images))
+    calculate :unmapped_images_count, :integer, expr(length(unmapped_images))
+    calculate :invalid_files_count, :integer, expr(length(invalid_file_infos))
   end
 
   state_machine do
@@ -211,10 +213,8 @@ defmodule DataAggregator.Records.ImageUpload do
       argument :path, :string, allow_nil?: false
       argument :filename, :string, allow_nil?: true
       change manage_relationship(:collection, :collection, type: :append)
-      change ImageUpload.Changes.DetectFiles
+      change ImageUpload.Changes.ValidateFile
       change ImageUpload.Changes.CreateAttachment
-      # change ImageUpload.Changes.DetectColumns
-      # change ImageUpload.Changes.CountRows
     end
   end
 

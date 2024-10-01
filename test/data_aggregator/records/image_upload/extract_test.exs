@@ -15,9 +15,15 @@ defmodule DataAggregator.Records.ImageUpload.ExtractTest do
     image_upload =
       image_upload_fixture(collection)
 
+    image_upload_with_invalid_files =
+      image_upload_fixture(collection, %{
+        path: "test/support/fixtures/files/image_upload_test_catalog_number_invalid_files.zip"
+      })
+
     [
       collection: collection,
-      image_upload: image_upload
+      image_upload: image_upload,
+      image_upload_with_invalid_files: image_upload_with_invalid_files
     ]
   end
 
@@ -25,6 +31,8 @@ defmodule DataAggregator.Records.ImageUpload.ExtractTest do
     image_upload: image_upload
   } do
     assert {:ok, image_upload} = ImageUpload.extract(image_upload)
+
+    assert image_upload.invalid_file_infos == []
 
     assert image_upload.state == :extracted
     assert image_upload.image_attachments != nil
@@ -49,6 +57,39 @@ defmodule DataAggregator.Records.ImageUpload.ExtractTest do
     Enum.each(image_upload.images, fn image ->
       assert image.attachment_id != nil
       assert image.image_upload_id == image_upload.id
+    end)
+  end
+
+  test "extract/1 successful with part of the zipped files invalid", %{
+    image_upload_with_invalid_files: image_upload
+  } do
+    assert {:ok, image_upload} = ImageUpload.extract(image_upload)
+
+    assert image_upload.invalid_file_infos != nil
+    assert is_list(image_upload.invalid_file_infos)
+    assert length(image_upload.invalid_file_infos) == 2
+
+    Enum.each(image_upload.invalid_file_infos, fn invalid_file_info ->
+      case invalid_file_info["filename"] do
+        "image_too_big_10MB.jpg" ->
+          assert invalid_file_info["reason"] == "file_size"
+
+        "collection-import-m.csv" ->
+          assert invalid_file_info["reason"] == "file_extension"
+      end
+    end)
+
+    assert image_upload.state == :extracted
+    assert image_upload.image_attachments != nil
+    assert is_list(image_upload.image_attachments)
+    assert length(image_upload.image_attachments) == 1
+
+    assert image_upload.images != nil
+    image_upload = Ash.load!(image_upload, :images)
+
+    Enum.each(image_upload.image_attachments, fn image_attachment ->
+      assert image_attachment.url != nil
+      assert image_attachment.filename == "catalogNumber1_1.jpg"
     end)
   end
 end
