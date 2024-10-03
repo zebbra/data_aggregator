@@ -40,6 +40,16 @@ if System.get_env("IMPORT_MAX_CONCURRENCY") do
   config :data_aggregator, DataAggregator.Records, import_max_concurrency: max_concurrency
 end
 
+if System.get_env("IMPORT_TIMEOUT") do
+  import_timeout = "IMPORT_TIMEOUT" |> System.get_env() |> String.to_integer()
+  config :data_aggregator, DataAggregator.Records, import_timeout: import_timeout
+end
+
+if System.get_env("EXPORT_TIMEOUT") do
+  export_timeout = "EXPORT_TIMEOUT" |> System.get_env() |> String.to_integer()
+  config :data_aggregator, DataAggregator.Records, export_timeout: export_timeout
+end
+
 http_cache_path = System.get_env("HTTP_CACHE_PATH") || "priv/cache/#{config_env()}/http"
 
 config :data_aggregator,
