@@ -58,8 +58,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components do
   def state_color(state) do
     cond do
       state in [:new] -> "gray"
-      state in [:extraction_queued, :extracting, :mapping_queued, :mapping] -> "blue"
-      state in [:extracted, :mapped] -> "green"
+      state in [:extraction_queued, :extracting, :mapping_queued, :mapping, :extracted] -> "blue"
+      state in [:mapped] -> "green"
       state in [:extraction_failed, :mapping_failed] -> "red"
     end
   end
@@ -83,7 +83,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components do
       state in [:extraction_queued, :extracting, :mapping_queued, :mapping] ->
         {"hero-cog-6-tooth-solid", "text-info animate-spin"}
 
-      state in [:extracted, :mapped] ->
+      state in [:extracted] ->
+        {"hero-check-circle-solid", "text-info"}
+
+      state in [:mapped] ->
         {"hero-check-circle-solid", "text-success"}
 
       state in [:extraction_failed, :mapping_failed] ->
@@ -99,8 +102,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components do
       state in [:mapping_queued] -> ~t"Mapping queued"m
       state in [:extracting] -> ~t"Extracting"m
       state in [:mapping] -> ~t"Mapping"m
-      state in [:extracted] -> ~t"Extracted"m
-      state in [:mapped] -> ~t"Mapped"m
+      state in [:extracted] -> ~t"Ready for Mapping"m
+      state in [:mapped] -> ~t"Finished"m
       state in [:extraction_failed] -> ~t"Extraction failed"m
       state in [:mapping_failed] -> ~t"Mapping failed"m
     end

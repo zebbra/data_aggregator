@@ -3569,55 +3569,43 @@ msgctxt "DataAggregatorWeb.Components.Attachment"
 msgid "Files"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:102
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
-msgid "Extracted"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:100
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:103
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Extracting"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:104
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:107
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Extraction failed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:98
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:101
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Extraction queued"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:103
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
-msgid "Mapped"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:101
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:104
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:105
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:108
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Mapping failed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:99
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:102
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Mapping queued"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:97
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:100
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "New"
@@ -3827,4 +3815,16 @@ msgstr ""
 #: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:199
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Image upload log"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:106
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
+msgid "Finished"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:105
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
+msgid "Ready for Mapping"
 msgstr ""
