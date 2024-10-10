@@ -196,6 +196,19 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
             <:item title={~t"Inavlid files count"m}>
               <%= @selected_image_upload.invalid_files_count || 0 %>
             </:item>
+            <:item title={~t"Image upload log"}>
+              <.link
+                data-tip="download log"
+                class="self-center tooltip rounded-full text-xs gap-x-1 font-medium bg-blue-100 px-1.5 pb-0.5 text-blue-500 opacity-75 hover:opacity-100"
+                target="_blank"
+                href={
+                  ~p"/collecitons/#{@collection}/image_uploads/log/#{@selected_image_upload}/download"
+                }
+                aria-label="download log"
+              >
+                <.icon name="hero-arrow-down-tray" class="size-5" />
+              </.link>
+            </:item>
           </.list>
           <:footer></:footer>
         </.slideover>

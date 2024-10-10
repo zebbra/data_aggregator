@@ -69,6 +69,10 @@ defmodule DataAggregatorWeb.Router do
       live "/collections/:id/publications", CollectionLive.Publication.Index, :index
       live "/collections/:id/image_uploads", CollectionLive.ImageUpload.Index, :index
 
+      get "/collecitons/:id/image_uploads/log/:image_upload_id/download",
+          ImageUploadController,
+          :download_log
+
       live "/records", RecordLive.Index, :index
     end
 
