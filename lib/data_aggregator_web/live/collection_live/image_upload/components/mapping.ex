@@ -7,6 +7,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
 
+  alias DataAggregator.DarwinCore.Schema
+
   @impl true
   def update(assigns, socket) do
     socket =
@@ -46,8 +48,22 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
         <div class="h-full overflow-y-auto px-6 py-8">
           <.fieldset>
             <.fieldgroup>
+              <div class="flex">
+                <div class="mr-4 flex-shrink-0">
+                  <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
+                </div>
+                <div>
+                  <p class="text-sm">
+                    <%= ~t"The mapping identifier links image filenames to records by matching the part before an underscore (or the file extension if no underscore exists) with a chosen attribute, like catalogName." %>
+                    <br />
+                    <br />
+                    <%= ~t"For example: 'catalogName001_01.jpg' maps to a record where its catalogName is 'catalogName001'." %>
+                  </p>
+                </div>
+              </div>
               <.field
                 type="combobox"
+                dropup
                 field={@form[:mapping_identifier]}
                 label={~t"Mapping Identifier"m}
                 options={@mapping_identifier_options}
@@ -59,7 +75,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
 
         <:actions modal>
           <button type="submit" class="btn btn-primary">
-            <%= ~t"Update mapping identifier"m %>
+            <%= ~t"Update mapping"m %>
           </button>
           <button type="button" class="btn btn-ghost" onclick="image_upload_modal.close()">
             <%= ~t"Cancel"m %>
@@ -118,14 +134,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
   end
 
   defp assign_mapping_identifier_options(socket) do
-    socket =
-      assign(socket, :mapping_identifier_options, [
-        {"Select mapping identifier", "abc"},
-        {"occurrenceID", :occ_occurrence_id},
-        {"catalogNumber", :mte_catalog_number}
-      ])
+    options = Schema.image_upload_identifier_options()
 
-    socket
+    assign(socket, :mapping_identifier_options, options)
   end
 
   defp valid_links(collection, image_upload, meta) do

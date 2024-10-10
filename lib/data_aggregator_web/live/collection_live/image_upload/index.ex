@@ -12,6 +12,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
   import DataAggregatorWeb.CollectionLive.ImageUpload.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
+  alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.ImageUpload
 
@@ -113,7 +114,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           <%= image_upload.unmapped_images_count %>
         </:col>
         <:col :let={{_id, image_upload}} field={:mapping_identifier} label={~t"Mapping identifier"m}>
-          <%= image_upload.mapping_identifier %>
+          <%= Schema.dwc_field_from_prefixed_attribute_name(image_upload.mapping_identifier) %>
         </:col>
         <:col :let={{_id, image_upload}} field={:started_at} label={~t"Created at"m}>
           <%= format_datetime(image_upload.inserted_at, format: :short) %>
@@ -187,16 +188,16 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
             <:item title={~t"Mapping identifier"m}>
               <%= @selected_image_upload.mapping_identifier %>
             </:item>
-            <:item title={~t"Mapped images count"m}>
+            <:item title={~t"Mapped images"m}>
               <%= @selected_image_upload.mapped_images_count %>
             </:item>
-            <:item title={~t"Unmapped images count"m}>
+            <:item title={~t"Unmapped images"m}>
               <%= @selected_image_upload.unmapped_images_count %>
             </:item>
-            <:item title={~t"Inavlid files count"m}>
+            <:item title={~t"Inavlid files"m}>
               <%= @selected_image_upload.invalid_files_count || 0 %>
             </:item>
-            <:item title={~t"Image upload log"}>
+            <:item title={~t"Logfile"}>
               <.link
                 data-tip="download log"
                 class="self-center tooltip rounded-full text-xs gap-x-1 font-medium bg-blue-100 px-1.5 pb-0.5 text-blue-500 opacity-75 hover:opacity-100"

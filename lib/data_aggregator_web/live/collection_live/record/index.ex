@@ -174,7 +174,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <:col
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :picture)}
-          field={:mte_associated_media}
           label={picture_th_label()}
         >
           <div
@@ -186,12 +185,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             }
           >
             <.icon
-              name={if record.mte_associated_media, do: "hero-camera-mini", else: "hero-camera"}
+              name={
+                if record.encoded_record.mte_associated_media,
+                  do: "hero-camera-mini",
+                  else: "hero-camera"
+              }
               class={
                 class_names([
                   "size-5",
-                  record.mte_associated_media === nil && "text-base-content",
-                  record.mte_associated_media !== nil && "text-success"
+                  record.encoded_record.mte_associated_media === nil && "text-base-content",
+                  record.encoded_record.mte_associated_media !== nil && "text-success"
                 ])
               }
             />

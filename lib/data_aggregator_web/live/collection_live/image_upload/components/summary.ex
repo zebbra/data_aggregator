@@ -9,6 +9,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
   import DataAggregatorWeb.CollectionLive.ImageUpload.Components
   import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
 
+  alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.ImageUpload
 
   @impl true
@@ -49,6 +50,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
             <.file_info attachment={@image_upload.attachment} />
             <.attachment_download_badge attachment={@image_upload.attachment} />
           </:item>
+          <:item title={~t"Created at"m}>
+            <%= format_datetime(@image_upload.inserted_at) %>
+          </:item>
           <:item title={~t"Invalid files count"}>
             <%= invalid_file_infos(@image_upload.invalid_file_infos) %>
           </:item>
@@ -60,7 +64,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
       <div class="h-full overflow-y-auto overflow-x-hidden px-6 py-1">
         <.list dense>
           <:item title={~t"Chosen Identifier"m}>
-            <%= @image_upload.mapping_identifier %>
+            <%= Schema.dwc_field_from_prefixed_attribute_name(@image_upload.mapping_identifier) %>
           </:item>
         </.list>
       </div>
@@ -120,6 +124,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
   end
 
   defp invalid_file_infos(nil), do: 0
+  defp invalid_file_infos([]), do: 0
 
   defp invalid_file_infos(infos) do
     {file_size_infos, file_extension_infos} =
@@ -129,23 +134,14 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
 
     ~H"""
     <div :if={length(@file_size_infos) > 0}>
-      <.section_heading
-        :if={length(@file_size_infos) > 0}
-        text={~t"File size limit exceeded"m}
-        size="sm"
-        class="text-red-500"
-      />
-      <%= length(@file_size_infos) %>
+      <%= "#{length(@file_size_infos)} #{files_plural(length(@file_size_infos))} exeeded file size limit" %>
     </div>
     <div :if={length(@file_extension_infos) > 0}>
-      <.section_heading
-        :if={length(@file_extension_infos) > 0}
-        text={~t"Invalid file extension"m}
-        size="sm"
-        class="text-red-500"
-      />
-      <%= length(@file_extension_infos) %>
+      <%= "#{length(@file_extension_infos)} #{files_plural(length(@file_extension_infos))}  with invalid file extension" %>
     </div>
     """
   end
+
+  defp files_plural(1), do: ~t"file"m
+  defp files_plural(_), do: ~t"files"m
 end
