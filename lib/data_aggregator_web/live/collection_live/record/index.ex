@@ -124,7 +124,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           />
           <.scope_stat
             href={path_helper(@collection, @layer, @meta, %{status: :not_encoded})}
-            title={~t"Not encoded"m}
+            title={~t"Not encoded / Incomplet"m}
             value={
               if @collection.records_count_not_encoded == 0,
                 do: 1,
@@ -132,6 +132,28 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             }
             desc={@collection.records_count_not_encoded}
             active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_encoded})}
+          />
+          <.scope_stat
+            href={path_helper(@collection, @layer, @meta, %{status: :not_published})}
+            title={~t"Not published"m}
+            value={
+              if @collection.records_count_not_published == 0,
+                do: 1,
+                else: @collection.records_count_not_published / @collection.records_count
+            }
+            desc={@collection.records_count_not_published}
+            active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_published})}
+          />
+          <.scope_stat
+            href={path_helper(@collection, @layer, @meta, %{status: :not_approved})}
+            title={~t"Not approved"m}
+            value={
+              if @collection.records_count_not_approved == 0,
+                do: 1,
+                else: @collection.records_count_not_approved / @collection.records_count
+            }
+            desc={@collection.records_count_not_approved}
+            active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_approved})}
           />
         </div>
       </div>
@@ -289,7 +311,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:eve_event_date}
           label={get_dwc_field(:eve_event_date)}
         >
-          <%= format_date(record.eve_event_date, format: :medium) %>
+          <%= record.eve_event_date %>
         </:col>
         <:col
           :let={{_id, record}}

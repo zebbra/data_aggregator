@@ -26,7 +26,12 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
     :busy
   ]
 
-  @load_full @load_light ++ [:records_count_not_encoded]
+  @load_full @load_light ++
+               [
+                 :records_count_not_encoded,
+                 :records_count_not_published,
+                 :records_count_not_approved
+               ]
 
   def get_collection_light(id, actor) do
     Collection.get_by_id!(id, load: @load_light, actor: actor)

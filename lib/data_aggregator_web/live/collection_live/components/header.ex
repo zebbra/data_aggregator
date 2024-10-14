@@ -64,11 +64,11 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           class="max-sm:hidden text-base-content font-bold text-3xl tracking-tight"
           items={[
             %{label: ~t"Collections"m, link: ~p"/collections"},
-            %{label: "#{@collection.code} - #{@collection.name}", link: "#"}
+            %{label: "#{@collection.name} (#{@collection.code})", link: "#"}
           ]}
         />
         <h2 class="text-base-content text-2xl font-bold tracking-tight max-sm:line-clamp-2 sm:hidden sm:truncate sm:text-3xl">
-          <%= @collection.code %> - <%= @collection.name %>
+          <%= "#{@collection.name} (#{@collection.code})" %>
         </h2>
       </:title>
       <:subtitle>

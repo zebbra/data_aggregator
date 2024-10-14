@@ -42,19 +42,19 @@ defmodule DataAggregator.Gbif.RestAPIStub do
   @delete_endpoint_fail_grscicoll_reference "56ac3b30-4b52-48a1-aed9-4442426fc24d"
   def delete_endpoint_fail_grscicoll_reference, do: @delete_endpoint_fail_grscicoll_reference
 
-  def register_dataset("register collection failing") do
+  def register_dataset("register collection failing (Z) of Universität Zürich") do
     {:error, %{status: 400, body: "error registering collection"}}
   end
 
-  def register_dataset("create endpoint failing") do
+  def register_dataset("create endpoint failing (Z) of Universität Zürich") do
     {:ok, %{status: 201, body: "1234-1234-1234-0001"}}
   end
 
-  def register_dataset("get endpoints failing, delete endpoint failing") do
+  def register_dataset("get endpoints failing, delete endpoint failing (Z) of Universität Zürich") do
     {:ok, %{status: 201, body: "1234-1234-1234-0002"}}
   end
 
-  def register_dataset("get endpoints success, delete endpoint failing") do
+  def register_dataset("get endpoints success, delete endpoint failing (Z) of Universität Zürich") do
     {:ok, %{status: 201, body: "1234-1234-1234-0003"}}
   end
 
