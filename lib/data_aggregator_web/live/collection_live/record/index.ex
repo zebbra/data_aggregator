@@ -432,14 +432,42 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       <:secondary>
         <.slideover
           title={@selected_record != nil && encoded_attribute(@selected_record, :tax_scientific_name)}
-          subtitle={~t"Characteristics according to the darwin core standard"m}
           open={@selected_record != nil}
           on_cancel={JS.push("record:select", value: %{id: nil})}
           size="xl"
           gradient={false}
           class=""
         >
-          <.secondary_navigation class="sticky border-t-0 top-0 mb-6">
+          <:additional_header_content>
+            <.slideover_subtitle
+              text={@selected_record.mte_catalog_number}
+              occurrence_id={@selected_record.occ_occurrence_id}
+              fast_track_status={@selected_record.fast_track_status}
+            />
+            <div class="mt-4 flex space-x-2">
+              <.encoding_state_badge state={@selected_record.state} />
+              <.publication_state_badge state={@selected_record.fast_track_status} />
+              <.approval_state_badge state={@selected_record.approval_status} />
+            </div>
+          </:additional_header_content>
+          <.list>
+            <:item title={~t"Imported"m}>
+              <%= format_datetime(@selected_record.last_imported_at) %>
+            </:item>
+            <:item title={~t"Last Changes"m}>
+              <%= format_datetime(@selected_record.updated_at) %>
+            </:item>
+            <:item title={~t"Quality"m}>
+              <.mids_level_indicator level={@selected_record.mids_level} />
+            </:item>
+          </.list>
+          <div class="pb-4">
+            <.first_associated_media
+              associated_media={@selected_record.mte_associated_media}
+              class="w-2/3 max-h-128 px-8"
+            />
+          </div>
+          <.secondary_navigation class="sticky border-t-0 top-0">
             <.secondary_navigation_item
               label={~t"Data"m}
               on_click="record:set_tab"
@@ -461,7 +489,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           </.secondary_navigation>
           <div :if={@record_tab == "data"} class="contents">
             <%= for category <- @attrs_in_categories do %>
-              <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 open:first:border-t lg:pl-4">
+              <details
+                :if={category_has_data?(category)}
+                class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:first:border-t lg:pl-4"
+              >
                 <summary class="collapse-title">
                   <%= category.label %>
                 </summary>
@@ -474,7 +505,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                       container_attrs: [class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
                     ]}
                     id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
-                    items={category.attributes}
+                    items={attributes_with_data(category.attributes)}
                   >
                     <:col :let={attribute} label={~t"Name"} class="font-semibold">
                       <%= attribute.name %>

@@ -116,7 +116,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
 
     ~H"""
     <div
-      class={["tooltip tooltip-top flex h-8 justify-evenly rounded-full p-2", level_indicator(@level)]}
+      class={[
+        "tooltip tooltip-top max-w-32 flex h-8 justify-evenly rounded-full p-2",
+        level_indicator(@level)
+      ]}
       data-tip={level_translation(@level)}
     >
       <div :for={_level <- @color_dot_range} :if={@level > 0}>
@@ -125,6 +128,49 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       <div :for={_level <- @gray_dot_range} :if={@level < 4}>
         <div class="bg-base-100 size-4 rounded-full " />
       </div>
+    </div>
+    """
+  end
+
+  attr :associated_media, :string, required: true
+  attr :class, :string, default: ""
+
+  def first_associated_media(%{associated_media: nil} = assigns), do: ~H""
+
+  def first_associated_media(%{associated_media: associated_media} = assigns) do
+    split =
+      associated_media
+      |> String.split("|")
+      |> Enum.map(&String.trim/1)
+
+    assigns = assign(assigns, :split, split)
+
+    ~H"""
+    <div class={@class}>
+      <img src={List.first(@split)} class="rounded-lg" />
+    </div>
+    """
+  end
+
+  attr :text, :string, required: true
+  attr :occurrence_id, :string, default: nil
+  attr :fast_track_status, :atom, default: nil
+
+  def slideover_subtitle(assigns) do
+    ~H"""
+    <div class="my-auto flex space-x-3">
+      <div class="text-base-content/60">
+        <%= @text %>
+      </div>
+      <.link
+        :if={@occurrence_id !== nil && @fast_track_status == :published}
+        class="link link-primary link-hover text-sm/6 flex max-w-4xl items-center gap-x-2"
+        target="_blank"
+        href={"#{gbif_base_url()}/occurrence/#{@occurrence_id}"}
+      >
+        <%= ~t"Show on GBIF" %>
+        <.icon name="hero-arrow-top-right-on-square" class="size-4" />
+      </.link>
     </div>
     """
   end

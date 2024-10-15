@@ -59,6 +59,9 @@ defmodule DataAggregatorWeb.Blocks.Slideover do
     default: "right",
     doc: "The position of the close button."
 
+  slot :additional_header_content,
+    doc: "additional content to render in the header of the slideover"
+
   slot :inner_block, required: true, doc: "the inner block of the slideover"
 
   slot :footer, doc: "the footer of the slideover" do
@@ -90,6 +93,7 @@ defmodule DataAggregatorWeb.Blocks.Slideover do
               <%= @title %>
               <:subtitle :if={@subtitle}><%= @subtitle %></:subtitle>
             </.section_heading>
+            <%= render_slot(@additional_header_content) %>
           </.modal_header>
 
           <div

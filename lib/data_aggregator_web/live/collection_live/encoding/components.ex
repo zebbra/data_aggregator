@@ -94,8 +94,8 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Components do
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   defp state_translation(state) do
     cond do
-      state == :encoded -> ~t"Successful"m
-      state == :success -> ~t"Successful"m
+      state == :encoded -> ~t"Encoded"m
+      state == :success -> ~t"Encoded"m
       state == :failed -> ~t"Incomplete"m
       state == :error -> ~t"Incomplete"m
       state == :encoding -> ~t"Processing"m
