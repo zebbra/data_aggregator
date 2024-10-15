@@ -23,11 +23,11 @@ defmodule DataAggregator.Gbif.RestAPI do
   Register a dataset with the GBIF API
   """
   @spec register_dataset(String.t()) :: Api.response()
-  def register_dataset(collection_name) do
+  def register_dataset(dataset_name) do
     Req.post(
       url: register_dataset_url(),
       auth: gbif_auth(),
-      json: registration_params(collection_name)
+      json: registration_params(dataset_name)
     )
   end
 
@@ -259,9 +259,9 @@ defmodule DataAggregator.Gbif.RestAPI do
     }
   end
 
-  defp registration_params(collection_name) do
+  defp registration_params(dataset_name) do
     %{
-      "title" => collection_name,
+      "title" => dataset_name,
       "type" => "OCCURRENCE",
       "installationKey" => System.get_env("GBIF_INSTALLATION_KEY"),
       "publishingOrganizationKey" => System.get_env("GBIF_ORGANIZATION_KEY"),

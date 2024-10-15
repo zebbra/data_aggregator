@@ -17,10 +17,16 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     dwca_file_url = Changeset.get_argument(changeset, :dwca_file_url)
-    collection_name = Changeset.get_attribute(changeset, :name)
     gbif_dataset_key = Changeset.get_attribute(changeset, :gbif_dataset_key)
 
-    case register_at_gbif(gbif_dataset_key, collection_name, dwca_file_url) do
+    dataset_name =
+      dataset_name(
+        Changeset.get_attribute(changeset, :name),
+        Changeset.get_attribute(changeset, :code),
+        Changeset.get_attribute(changeset, :grscicoll_institution_name)
+      )
+
+    case register_at_gbif(gbif_dataset_key, dataset_name, dwca_file_url) do
       {:ok, dataset_key} ->
         Changeset.change_attribute(changeset, :gbif_dataset_key, to_string(dataset_key))
 
@@ -29,17 +35,36 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
     end
   end
 
+  defp dataset_name(nil, _collection_code, _institution_name) do
+    Logger.debug("Dataset name is missing")
+    nil
+  end
+
+  defp dataset_name(_collection_name, nil, _institution_name) do
+    Logger.debug("Collection code is missing")
+    nil
+  end
+
+  defp dataset_name(_collection_name, _collection_code, nil) do
+    Logger.debug("Institution code is missing")
+    nil
+  end
+
+  defp dataset_name(collection_name, collection_code, institution_name) do
+    "#{collection_name} (#{collection_code}) of #{institution_name}"
+  end
+
   @spec register_at_gbif(String.t() | nil, String.t(), String.t()) ::
           registered_collection()
-  defp register_at_gbif(_gbif_dataset_key, nil, _dwca_file_url), do: {:error, "Collection name is missing"}
+  defp register_at_gbif(_gbif_dataset_key, nil, _dwca_file_url), do: {:error, "Dataset name is missing"}
 
-  defp register_at_gbif(gbif_dataset_key, collection_name, dwca_file_url) do
+  defp register_at_gbif(gbif_dataset_key, dataset_name, dwca_file_url) do
     if gbif_dataset_key do
       {:ok, gbif_dataset_key}
       |> create_endpoint(dwca_file_url)
       |> delete_old_endpoints()
     else
-      collection_name
+      dataset_name
       |> register_collection()
       |> create_endpoint(dwca_file_url)
       |> delete_old_endpoints()
@@ -47,9 +72,9 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
   end
 
   @spec register_collection(String.t()) :: registered_collection()
-  defp register_collection(collection_name) do
+  defp register_collection(dataset_name) do
     with {:ok, response} <-
-           collection_name |> Gbif.RestAPI.register_dataset() |> ensure_response(collection_name),
+           dataset_name |> Gbif.RestAPI.register_dataset() |> ensure_response(dataset_name),
          :ok <- ensure_status(response) do
       {:ok, response.body}
     end
@@ -57,8 +82,8 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
 
   defp ensure_response({:ok, response}, _), do: {:ok, response}
 
-  defp ensure_response({:error, error}, collection_name) do
-    msg = "Error during collection registering: #{inspect(collection_name)}, #{inspect(error)}"
+  defp ensure_response({:error, error}, dataset_name) do
+    msg = "Error during collection registering: #{inspect(dataset_name)}, #{inspect(error)}"
 
     Logger.error(msg)
 

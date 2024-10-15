@@ -49,6 +49,14 @@ defmodule DataAggregator.Records.Record do
       %{
         name: :not_encoded,
         filter: %{state: %{not_equals: :encoded}}
+      },
+      %{
+        name: :not_published,
+        filter: %{fast_track_status: %{not_equals: :published}}
+      },
+      %{
+        name: :not_approved,
+        filter: %{approval_status: %{not_equals: :approved}}
       }
     ]
   }

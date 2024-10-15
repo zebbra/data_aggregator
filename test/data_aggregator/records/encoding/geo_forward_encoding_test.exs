@@ -39,7 +39,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
         loc_country: "Switzerland",
         loc_country_code: "ch",
         loc_state_province: "Bern",
-        loc_municipality: "Liebefeld"
+        loc_municipality: nil
       })
 
       assert record.state === :encoded
@@ -75,8 +75,8 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
         loc_country: "Switzerland",
         loc_country_code: "ch",
         loc_locality: "Niesen",
-        loc_municipality: "Reichenbach im Kandertal",
-        loc_state_province: "Bern"
+        loc_municipality: nil,
+        loc_state_province: nil
       })
 
       assert record.state === :encoded

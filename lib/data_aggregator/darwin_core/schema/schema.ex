@@ -98,7 +98,7 @@ eve_attributes = [
     dwc_field: "eventDate",
     dwc_link: "http://rs.tdwg.org/dwc/terms/eventDate",
     dwca_file: :core,
-    attribute: %Attribute{name: :event_date, type: :date, allow_nil?: true}
+    attribute: %Attribute{name: :event_date, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "eventTime",
@@ -339,7 +339,7 @@ idf_attributes = [
     dwc_field: "dateIdentified",
     dwc_link: "http://rs.tdwg.org/dwc/terms/dateIdentified",
     dwca_file: :core,
-    attribute: %Attribute{name: :date_identified, type: :date, allow_nil?: true}
+    attribute: %Attribute{name: :date_identified, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "identifiedBy",
@@ -1015,7 +1015,7 @@ loc_attributes = [
     dwca_file: :core,
     attribute: %Attribute{
       name: :georeferenced_date,
-      type: :date,
+      type: :string,
       allow_nil?: true
     }
   },
@@ -1611,7 +1611,7 @@ pvn_attributes = [
     dwc_field: "preservationDateBegin",
     dwc_link: "http://data.ggbn.org/schemas/ggbn/terms/preservationDateBegin",
     dwca_file: :preservation,
-    attribute: %Attribute{name: :preservation_date_begin, type: :date, allow_nil?: true}
+    attribute: %Attribute{name: :preservation_date_begin, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "preservationID",
@@ -1734,7 +1734,7 @@ oth_attributes = [
     dwc_field: "dateAvailable",
     dwc_link: nil,
     dwca_file: nil,
-    attribute: %Attribute{name: :date_available, type: :date, allow_nil?: true}
+    attribute: %Attribute{name: :date_available, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "informationWithheld",

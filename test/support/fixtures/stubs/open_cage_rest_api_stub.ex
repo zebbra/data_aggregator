@@ -20,6 +20,182 @@ defmodule DataAggregator.Opencage.RestAPIStub do
     match_fetch(%{q: q})
   end
 
+  defp match_fetch(%{q: "Switzerland"}) do
+    {:ok,
+     %Req.Response{
+       status: 200,
+       body: %{
+         "documentation" => "https://opencagedata.com/api",
+         "licenses" => [
+           %{
+             "name" => "see attribution guide",
+             "url" => "https://opencagedata.com/credits"
+           }
+         ],
+         "rate" => %{"limit" => 2500, "remaining" => 2496, "reset" => 1_729_036_800},
+         "results" => [
+           %{
+             "bounds" => %{
+               "northeast" => %{"lat" => 47.8084544, "lng" => 10.4922941},
+               "southwest" => %{"lat" => 45.8179447, "lng" => 5.9559113}
+             },
+             "components" => %{
+               "ISO_3166-1_alpha-2" => "CH",
+               "ISO_3166-1_alpha-3" => "CHE",
+               "_category" => "place",
+               "_type" => "country",
+               "continent" => "Europe",
+               "country" => "Switzerland",
+               "country_code" => "ch"
+             },
+             "confidence" => 1,
+             "formatted" => "Switzerland",
+             "geometry" => %{"lat" => 46.7985624, "lng" => 8.2319736}
+           }
+         ],
+         "status" => %{"code" => 200, "message" => "OK"},
+         "stay_informed" => %{
+           "blog" => "https://blog.opencagedata.com",
+           "mastodon" => "https://en.osm.town/@opencage"
+         },
+         "thanks" => "For using an OpenCage API",
+         "timestamp" => %{
+           "created_http" => "Tue, 15 Oct 2024 07:50:42 GMT",
+           "created_unix" => 1_728_978_642
+         },
+         "total_results" => 1
+       }
+     }}
+  end
+
+  defp match_fetch(%{q: "Vaud, Switzerland"}) do
+    {:ok,
+     %Req.Response{
+       status: 200,
+       body: %{
+         "documentation" => "https://opencagedata.com/api",
+         "licenses" => [
+           %{
+             "name" => "see attribution guide",
+             "url" => "https://opencagedata.com/credits"
+           }
+         ],
+         "rate" => %{"limit" => 2500, "remaining" => 2495, "reset" => 1_729_036_800},
+         "results" => [
+           %{
+             "bounds" => %{
+               "northeast" => %{"lat" => 46.9867207, "lng" => 7.2491896},
+               "southwest" => %{"lat" => 46.1870679, "lng" => 6.0638578}
+             },
+             "components" => %{
+               "ISO_3166-1_alpha-2" => "CH",
+               "ISO_3166-1_alpha-3" => "CHE",
+               "ISO_3166-2" => ["CH-VD"],
+               "_category" => "place",
+               "_type" => "state",
+               "continent" => "Europe",
+               "country" => "Switzerland",
+               "country_code" => "ch",
+               "state" => "Vaud",
+               "state_code" => "VD"
+             },
+             "confidence" => 1,
+             "formatted" => "Vaud, Switzerland",
+             "geometry" => %{"lat" => 46.6356963, "lng" => 6.5320717}
+           }
+         ],
+         "status" => %{"code" => 200, "message" => "OK"},
+         "stay_informed" => %{
+           "blog" => "https://blog.opencagedata.com",
+           "mastodon" => "https://en.osm.town/@opencage"
+         },
+         "thanks" => "For using an OpenCage API",
+         "timestamp" => %{
+           "created_http" => "Tue, 15 Oct 2024 08:05:11 GMT",
+           "created_unix" => 1_728_979_511
+         },
+         "total_results" => 1
+       }
+     }}
+  end
+
+  defp match_fetch(%{q: "Bern, Switzerland"}) do
+    {:ok,
+     %Req.Response{
+       status: 200,
+       body: %{
+         "documentation" => "https://opencagedata.com/api",
+         "licenses" => [
+           %{
+             "name" => "see attribution guide",
+             "url" => "https://opencagedata.com/credits"
+           }
+         ],
+         "rate" => %{"limit" => 2500, "remaining" => 2494, "reset" => 1_729_036_800},
+         "results" => [
+           %{
+             "bounds" => %{
+               "northeast" => %{"lat" => 46.9901527, "lng" => 7.4955563},
+               "southwest" => %{"lat" => 46.9190326, "lng" => 7.2943145}
+             },
+             "components" => %{
+               "ISO_3166-1_alpha-2" => "CH",
+               "ISO_3166-1_alpha-3" => "CHE",
+               "ISO_3166-2" => ["CH-BE"],
+               "_category" => "place",
+               "_normalized_city" => "Bern",
+               "_type" => "city",
+               "city" => "Bern",
+               "continent" => "Europe",
+               "country" => "Switzerland",
+               "country_code" => "ch",
+               "county" => "Bern-Mittelland administrative district",
+               "local_administrative_area" => "Bern",
+               "state" => "Bern",
+               "state_code" => "BE",
+               "state_district" => "Bernese Mittelland administrative region"
+             },
+             "confidence" => 6,
+             "formatted" => "Bern, Bern-Mittelland, Switzerland",
+             "geometry" => %{"lat" => 46.9484742, "lng" => 7.4521749}
+           },
+           %{
+             "bounds" => %{
+               "northeast" => %{"lat" => 47.3453097, "lng" => 8.4551574},
+               "southwest" => %{"lat" => 46.3265189, "lng" => 6.8614832}
+             },
+             "components" => %{
+               "ISO_3166-1_alpha-2" => "CH",
+               "ISO_3166-1_alpha-3" => "CHE",
+               "ISO_3166-2" => ["CH-BE"],
+               "_category" => "place",
+               "_type" => "state",
+               "continent" => "Europe",
+               "country" => "Switzerland",
+               "country_code" => "ch",
+               "state" => "Bern",
+               "state_code" => "BE"
+             },
+             "confidence" => 1,
+             "formatted" => "Bern, Switzerland",
+             "geometry" => %{"lat" => 46.8382351, "lng" => 7.6004502}
+           }
+         ],
+         "status" => %{"code" => 200, "message" => "OK"},
+         "stay_informed" => %{
+           "blog" => "https://blog.opencagedata.com",
+           "mastodon" => "https://en.osm.town/@opencage"
+         },
+         "thanks" => "For using an OpenCage API",
+         "timestamp" => %{
+           "created_http" => "Tue, 15 Oct 2024 08:11:26 GMT",
+           "created_unix" => 1_728_979_886
+         },
+         "total_results" => 2
+       }
+     }}
+  end
+
   defp match_fetch(%{q: "46.946660986374766,7.456905642729698"}) do
     {:ok,
      %{
@@ -193,417 +369,6 @@ defmodule DataAggregator.Opencage.RestAPIStub do
      }}
   end
 
-  defp match_fetch(%{q: "Bern, Switzerland"}) do
-    {:ok,
-     %{
-       status: 200,
-       body: %{
-         "documentation" => "https://opencagedata.com/api",
-         "licenses" => [
-           %{
-             "name" => "see attribution guide",
-             "url" => "https://opencagedata.com/credits"
-           }
-         ],
-         "rate" => %{"limit" => 2500, "remaining" => 2464, "reset" => 1_721_692_800},
-         "results" => [
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 46.9901527, "lng" => 7.4955563},
-               "southwest" => %{"lat" => 46.9190326, "lng" => 7.2943145}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "ISO_3166-2" => ["CH-BE"],
-               "_category" => "place",
-               "_normalized_city" => "Bern",
-               "_type" => "city",
-               "city" => "Bern",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "Bern-Mittelland administrative district",
-               "local_administrative_area" => "Bern",
-               "state" => "Bern",
-               "state_code" => "BE",
-               "state_district" => "Bernese Mittelland administrative region"
-             },
-             "confidence" => 6,
-             "formatted" => "Bern, Bern-Mittelland, Switzerland",
-             "geometry" => %{"lat" => 46.9484742, "lng" => 7.4521749}
-           },
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 47.3453097, "lng" => 8.4551574},
-               "southwest" => %{"lat" => 46.3265189, "lng" => 6.8614832}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "ISO_3166-2" => ["CH-BE"],
-               "_category" => "place",
-               "_type" => "state",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "state" => "Bern",
-               "state_code" => "BE"
-             },
-             "confidence" => 1,
-             "formatted" => "Bern, Switzerland",
-             "geometry" => %{"lat" => 46.8382351, "lng" => 7.6004502}
-           }
-         ],
-         "status" => %{"code" => 200, "message" => "OK"},
-         "stay_informed" => %{
-           "blog" => "https://blog.opencagedata.com",
-           "mastodon" => "https://en.osm.town/@opencage"
-         },
-         "thanks" => "For using an OpenCage API",
-         "timestamp" => %{
-           "created_http" => "Mon, 22 Jul 2024 14:40:07 GMT",
-           "created_unix" => 1_721_659_207
-         },
-         "total_results" => 2
-       }
-     }}
-  end
-
-  defp match_fetch(%{q: "Europe, Lausanne, Vaud, Switzerland"}) do
-    {:ok,
-     %{
-       status: 200,
-       body: %{
-         "documentation" => "https://opencagedata.com/api",
-         "licenses" => [
-           %{
-             "name" => "see attribution guide",
-             "url" => "https://opencagedata.com/credits"
-           }
-         ],
-         "rate" => %{"limit" => 2500, "remaining" => 2465, "reset" => 1_721_692_800},
-         "results" => [
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 46.5210645, "lng" => 6.6312873},
-               "southwest" => %{"lat" => 46.5203965, "lng" => 6.6302231}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "ISO_3166-2" => ["CH-VD"],
-               "_category" => "road",
-               "_normalized_city" => "Lausanne",
-               "_type" => "road",
-               "city" => "Lausanne",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "District de Lausanne",
-               "local_administrative_area" => "Lausanne",
-               "postcode" => "1003",
-               "road" => "Place de l'Europe",
-               "road_type" => "pedestrian",
-               "state" => "Vaud",
-               "state_code" => "VD"
-             },
-             "confidence" => 9,
-             "formatted" => "Place de l'Europe, 1003 Lausanne, Switzerland",
-             "geometry" => %{"lat" => 46.5207656, "lng" => 6.6306324}
-           },
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 46.5197102, "lng" => 6.6320068},
-               "southwest" => %{"lat" => 46.519665, "lng" => 6.6319809}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "ISO_3166-2" => ["CH-VD"],
-               "_category" => "road",
-               "_normalized_city" => "Lausanne",
-               "_type" => "road",
-               "city" => "Lausanne",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "District de Lausanne",
-               "local_administrative_area" => "Lausanne",
-               "postcode" => "1003",
-               "road" => "Zwischengeschoss Place de l'Europe",
-               "road_type" => "footway",
-               "state" => "Vaud",
-               "state_code" => "VD"
-             },
-             "confidence" => 9,
-             "formatted" => "Zwischengeschoss Place de l'Europe, 1003 Lausanne, Switzerland",
-             "geometry" => %{"lat" => 46.519665, "lng" => 6.6319809}
-           },
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 46.5161602, "lng" => 6.6286547},
-               "southwest" => %{"lat" => 46.5160602, "lng" => 6.6285547}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "ISO_3166-2" => ["CH-VD"],
-               "_category" => "commerce",
-               "_normalized_city" => "Lausanne",
-               "_type" => "restaurant",
-               "city" => "Lausanne",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "District de Lausanne",
-               "house_number" => "33",
-               "local_administrative_area" => "Lausanne",
-               "postcode" => "1006",
-               "restaurant" => "Café de l'Europe",
-               "road" => "Rue du Simplon",
-               "state" => "Vaud",
-               "state_code" => "VD"
-             },
-             "confidence" => 9,
-             "formatted" => "Café de l'Europe, Rue du Simplon 33, 1006 Lausanne, Switzerland",
-             "geometry" => %{"lat" => 46.5161102, "lng" => 6.6286047}
-           },
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 46.5204381, "lng" => 6.6313143},
-               "southwest" => %{"lat" => 46.5203381, "lng" => 6.6312143}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "ISO_3166-2" => ["CH-VD"],
-               "_category" => "commerce",
-               "_normalized_city" => "Lausanne",
-               "_type" => "bicycle_rental",
-               "bicycle_rental" => "Place de l'Europe",
-               "city" => "Lausanne",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "District de Lausanne",
-               "local_administrative_area" => "Lausanne",
-               "postcode" => "1003",
-               "road" => "Place de l'Europe",
-               "state" => "Vaud",
-               "state_code" => "VD"
-             },
-             "confidence" => 9,
-             "formatted" => "Place de l'Europe, 1003 Lausanne, Switzerland",
-             "geometry" => %{"lat" => 46.5203881, "lng" => 6.6312643}
-           },
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 46.564254, "lng" => 6.702663},
-               "southwest" => %{"lat" => 46.504254, "lng" => 6.541501}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "_category" => "place",
-               "_normalized_city" => "Lausanne",
-               "_type" => "city",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "Lausanne District",
-               "local_administrative_area" => "Lausanne",
-               "state" => "Vaud",
-               "state_code" => "VD",
-               "town" => "Lausanne"
-             },
-             "confidence" => 7,
-             "formatted" => "Lausanne, Lausanne District, Switzerland",
-             "geometry" => %{"lat" => 46.516, "lng" => 6.63282}
-           }
-         ],
-         "status" => %{"code" => 200, "message" => "OK"},
-         "stay_informed" => %{
-           "blog" => "https://blog.opencagedata.com",
-           "mastodon" => "https://en.osm.town/@opencage"
-         },
-         "thanks" => "For using an OpenCage API",
-         "timestamp" => %{
-           "created_http" => "Mon, 22 Jul 2024 14:40:06 GMT",
-           "created_unix" => 1_721_659_206
-         },
-         "total_results" => 5
-       }
-     }}
-  end
-
-  defp match_fetch(%{q: "Vaux-sur-Morges, Canton de Vaud, Vaud, Switzerland"}) do
-    {:ok,
-     %{
-       status: 200,
-       body: %{
-         "documentation" => "https://opencagedata.com/api",
-         "licenses" => [
-           %{
-             "name" => "see attribution guide",
-             "url" => "https://opencagedata.com/credits"
-           }
-         ],
-         "rate" => %{"limit" => 2500, "remaining" => 2465, "reset" => 1_721_692_800},
-         "results" => [
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 46.5210645, "lng" => 6.6312873},
-               "southwest" => %{"lat" => 46.5203965, "lng" => 6.6302231}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "ISO_3166-2" => ["CH-VD"],
-               "_category" => "road",
-               "_normalized_city" => "Vaux-sur-Morges",
-               "_type" => "road",
-               "city" => "Vaux-sur-Morges",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "District de Vaux-sur-Morges",
-               "local_administrative_area" => "Vaux-sur-Morges",
-               "postcode" => "1003",
-               "road" => "Place de l'Europe",
-               "road_type" => "pedestrian",
-               "state" => "Vaud",
-               "state_code" => "VD"
-             },
-             "confidence" => 9,
-             "formatted" => "Place de l'Europe, 1003 Vaux-sur-Morges, Switzerland",
-             "geometry" => %{"lat" => 46.5207656, "lng" => 6.6306324}
-           },
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 46.5197102, "lng" => 6.6320068},
-               "southwest" => %{"lat" => 46.519665, "lng" => 6.6319809}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "ISO_3166-2" => ["CH-VD"],
-               "_category" => "road",
-               "_normalized_city" => "Vaux-sur-Morges",
-               "_type" => "road",
-               "city" => "Vaux-sur-Morges",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "District de Vaux-sur-Morges",
-               "local_administrative_area" => "Vaux-sur-Morges",
-               "postcode" => "1003",
-               "road" => "Zwischengeschoss Place de l'Europe",
-               "road_type" => "footway",
-               "state" => "Vaud",
-               "state_code" => "VD"
-             },
-             "confidence" => 9,
-             "formatted" => "Zwischengeschoss Place de l'Europe, 1003 Vaux-sur-Morges, Switzerland",
-             "geometry" => %{"lat" => 46.519665, "lng" => 6.6319809}
-           },
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 46.5161602, "lng" => 6.6286547},
-               "southwest" => %{"lat" => 46.5160602, "lng" => 6.6285547}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "ISO_3166-2" => ["CH-VD"],
-               "_category" => "commerce",
-               "_normalized_city" => "Vaux-sur-Morges",
-               "_type" => "restaurant",
-               "city" => "Vaux-sur-Morges",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "District de Vaux-sur-Morges",
-               "house_number" => "33",
-               "local_administrative_area" => "Vaux-sur-Morges",
-               "postcode" => "1006",
-               "restaurant" => "Café de l'Europe",
-               "road" => "Rue du Simplon",
-               "state" => "Vaud",
-               "state_code" => "VD"
-             },
-             "confidence" => 9,
-             "formatted" => "Café de l'Europe, Rue du Simplon 33, 1006 Vaux-sur-Morges, Switzerland",
-             "geometry" => %{"lat" => 46.5161102, "lng" => 6.6286047}
-           },
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 46.5204381, "lng" => 6.6313143},
-               "southwest" => %{"lat" => 46.5203381, "lng" => 6.6312143}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "ISO_3166-2" => ["CH-VD"],
-               "_category" => "commerce",
-               "_normalized_city" => "Vaux-sur-Morges",
-               "_type" => "bicycle_rental",
-               "bicycle_rental" => "Place de l'Europe",
-               "city" => "Vaux-sur-Morges",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "District de Vaux-sur-Morges",
-               "local_administrative_area" => "Vaux-sur-Morges",
-               "postcode" => "1003",
-               "road" => "Place de l'Europe",
-               "state" => "Vaud",
-               "state_code" => "VD"
-             },
-             "confidence" => 9,
-             "formatted" => "Place de l'Europe, 1003 Vaux-sur-Morges, Switzerland",
-             "geometry" => %{"lat" => 46.5203881, "lng" => 6.6312643}
-           },
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 46.564254, "lng" => 6.702663},
-               "southwest" => %{"lat" => 46.504254, "lng" => 6.541501}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "_category" => "place",
-               "_normalized_city" => "Vaux-sur-Morges",
-               "_type" => "city",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "Vaux-sur-Morges District",
-               "local_administrative_area" => "Vaux-sur-Morges",
-               "state" => "Vaud",
-               "state_code" => "VD",
-               "town" => "Vaux-sur-Morges"
-             },
-             "confidence" => 7,
-             "formatted" => "Vaux-sur-Morges, Vaux-sur-Morges District, Switzerland",
-             "geometry" => %{"lat" => 46.516, "lng" => 6.63282}
-           }
-         ],
-         "status" => %{"code" => 200, "message" => "OK"},
-         "stay_informed" => %{
-           "blog" => "https://blog.opencagedata.com",
-           "mastodon" => "https://en.osm.town/@opencage"
-         },
-         "thanks" => "For using an OpenCage API",
-         "timestamp" => %{
-           "created_http" => "Mon, 22 Jul 2024 14:40:06 GMT",
-           "created_unix" => 1_721_659_206
-         },
-         "total_results" => 5
-       }
-     }}
-  end
-
   defp match_fetch(%{q: "46.946659297095934,7.456910040693462"}) do
     {:ok,
      %{
@@ -716,111 +481,6 @@ defmodule DataAggregator.Opencage.RestAPIStub do
            "created_unix" => 1_721_659_207
          },
          "total_results" => 1
-       }
-     }}
-  end
-
-  defp match_fetch(%{q: "Niesen, Switzerland"}) do
-    {:ok,
-     %{
-       status: 200,
-       body: %{
-         "documentation" => "https://opencagedata.com/api",
-         "licenses" => [
-           %{
-             "name" => "see attribution guide",
-             "url" => "https://opencagedata.com/credits"
-           }
-         ],
-         "rate" => %{"limit" => 2500, "remaining" => 2460, "reset" => 1_721_692_800},
-         "results" => [
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 46.6462436, "lng" => 7.6524174},
-               "southwest" => %{"lat" => 46.6461436, "lng" => 7.6523174}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "ISO_3166-2" => ["CH-BE"],
-               "_category" => "natural/water",
-               "_normalized_city" => "Reichenbach im Kandertal",
-               "_type" => "peak",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "Frutigen-Niedersimmental administrative district",
-               "local_administrative_area" => "Reichenbach im Kandertal",
-               "peak" => "Niesen",
-               "postcode" => "3752",
-               "state" => "Bern",
-               "state_code" => "BE",
-               "state_district" => "Oberland administrative region",
-               "village" => "Reichenbach im Kandertal"
-             },
-             "confidence" => 9,
-             "formatted" => "Niesen, 3752 Reichenbach im Kandertal, Switzerland",
-             "geometry" => %{"lat" => 46.6461936, "lng" => 7.6523674}
-           },
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 46.7768394, "lng" => 7.9696604},
-               "southwest" => %{"lat" => 46.7767394, "lng" => 7.9695604}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "ISO_3166-2" => ["CH-BE"],
-               "_category" => "natural/water",
-               "_normalized_city" => "Oberried am Brienzersee",
-               "_type" => "peak",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "Interlaken-Oberhasli administrative district",
-               "local_administrative_area" => "Oberried am Brienzersee",
-               "peak" => "Niesen",
-               "postcode" => "3854",
-               "state" => "Bern",
-               "state_code" => "BE",
-               "state_district" => "Oberland administrative region",
-               "village" => "Oberried am Brienzersee"
-             },
-             "confidence" => 9,
-             "formatted" => "Niesen, 3854 Oberried am Brienzersee, Switzerland",
-             "geometry" => %{"lat" => 46.7767894, "lng" => 7.9696104}
-           },
-           %{
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "_category" => "place",
-               "_normalized_city" => "Reichenbach im Kandertal",
-               "_type" => "municipality",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "Frutigen-Niedersimmental District",
-               "local_administrative_area" => "Reichenbach im Kandertal",
-               "state" => "Bern",
-               "state_code" => "BE"
-             },
-             "confidence" => 9,
-             "formatted" => "Reichenbach im Kandertal, Frutigen-Niedersimmental District, Switzerland",
-             "geometry" => %{"lat" => 46.64631, "lng" => 7.65236}
-           }
-         ],
-         "status" => %{"code" => 200, "message" => "OK"},
-         "stay_informed" => %{
-           "blog" => "https://blog.opencagedata.com",
-           "mastodon" => "https://en.osm.town/@opencage"
-         },
-         "thanks" => "For using an OpenCage API",
-         "timestamp" => %{
-           "created_http" => "Mon, 22 Jul 2024 14:40:07 GMT",
-           "created_unix" => 1_721_659_207
-         },
-         "total_results" => 3
        }
      }}
   end

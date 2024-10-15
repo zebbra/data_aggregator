@@ -145,6 +145,14 @@ defmodule DataAggregator.Records.Collection do
              )
     end
 
+    count :records_count_not_published, :records do
+      filter expr(fast_track_status != :published)
+    end
+
+    count :records_count_not_approved, :records do
+      filter expr(approval_status != :approved)
+    end
+
     count :records_count_imported, :records do
       filter expr(state == :imported)
     end

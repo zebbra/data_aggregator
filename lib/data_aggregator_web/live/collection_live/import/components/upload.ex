@@ -27,7 +27,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
      |> allow_upload(:file,
        max_entries: 1,
        accept: DataFrame.supported_exts(),
-       max_file_size: 200 * 1024 * 1024,
+       max_file_size: 800 * 1024 * 1024,
        auto_upload: true,
        progress: &handle_progress/3
      )
