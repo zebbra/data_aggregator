@@ -119,18 +119,23 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             href={path_helper(@collection, @layer, @meta, %{status: :all})}
             title={~t"All records"m}
             value={1.0}
-            desc={@collection.records_count}
+            desc={mgettext("%{record_count} Records", record_count: @collection.records_count)}
             active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :all})}
           />
           <.scope_stat
             href={path_helper(@collection, @layer, @meta, %{status: :not_encoded})}
-            title={~t"Not encoded / Incomplet"m}
+            title={~t"Not encoded / Incomplete"m}
             value={
               if @collection.records_count_not_encoded == 0,
                 do: 1,
                 else: @collection.records_count_not_encoded / @collection.records_count
             }
-            desc={@collection.records_count_not_encoded}
+            desc={
+              mgettext("%{records_count_not_encoded} of %{records_count} Records",
+                records_count_not_encoded: @collection.records_count_not_encoded,
+                records_count: @collection.records_count
+              )
+            }
             active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_encoded})}
           />
           <.scope_stat
@@ -141,7 +146,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 do: 1,
                 else: @collection.records_count_not_published / @collection.records_count
             }
-            desc={@collection.records_count_not_published}
+            desc={
+              mgettext("%{records_count_not_published} of %{records_count} Records",
+                records_count_not_published: @collection.records_count_not_published,
+                records_count: @collection.records_count
+              )
+            }
             active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_published})}
           />
           <.scope_stat
@@ -152,7 +162,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 do: 1,
                 else: @collection.records_count_not_approved / @collection.records_count
             }
-            desc={@collection.records_count_not_approved}
+            desc={
+              mgettext("%{records_count_not_approved} of %{records_count} Records",
+                records_count_not_approved: @collection.records_count_not_approved,
+                records_count: @collection.records_count
+              )
+            }
             active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_approved})}
           />
         </div>

@@ -38,7 +38,7 @@ defmodule DataAggregator.EncodingFixtures do
   def record_fixture_for_encoding(attrs \\ %{}) do
     @encoded_record_defaults
     |> Map.merge(attrs)
-    |> Map.put(:loc_municipality, "Bern")
+    |> Map.put(:loc_state_province, "Bern")
     |> Map.put(:loc_country, "Switzerland")
     |> Map.put_new_lazy(:collection, fn ->
       collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
@@ -141,8 +141,8 @@ defmodule DataAggregator.EncodingFixtures do
   def record_fixture_for_forward_geo_encoding_correct(attrs \\ %{}) do
     @encoded_record_defaults
     |> Map.merge(attrs)
-    |> Map.put(:loc_municipality, "Liebefeld")
     |> Map.put(:loc_state_province, "Bern")
+    |> Map.put(:loc_country, "Switzerland")
     |> Map.put_new_lazy(:collection, fn ->
       collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
     end)

@@ -9,7 +9,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   attr :href, :string, required: true
   attr :title, :string, required: true
   attr :value, :float, required: true
-  attr :desc, :integer, required: true
+  attr :desc, :string, required: true
   attr :active, :boolean, default: false
 
   def scope_stat(assigns) do
@@ -35,7 +35,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         @active && "lg:text-primary/75 lg:group-hover:text-primary-content",
         @active == false && "lg:group-hover:text-base-100/80"
       ]}>
-        <%= format_number(@desc) %>
+        <%= @desc %>
       </div>
     </.link>
     """

@@ -13,7 +13,7 @@ defmodule DataAggregator.Opencage.RestAPI do
   @spec fetch(Api.params()) :: Api.response()
   def fetch(request_params) do
     req =
-      HttpDiskCache.attach(Req.new(params: request_params))
+      [params: request_params] |> Req.new() |> HttpDiskCache.attach()
 
     Req.get(req, url: @geo_api_url, max_cache_age_seconds: @month)
   end
