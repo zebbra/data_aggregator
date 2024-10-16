@@ -1979,7 +1979,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Yes, delete record"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/subscriptions.ex:123
+#: lib/data_aggregator_web/live/collection_live/record/subscriptions.ex:89
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Subscriptions"
 msgid "The encoding process has been completed"

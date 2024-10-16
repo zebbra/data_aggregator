@@ -19,9 +19,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
 
   require Logger
 
-  @load [:collection, :encoded_record, :mids_level, :iucn_redlist]
-
-  @record_update_events ~w(set_encoding set_encoded set_encoding_failed)
   @collection_action_events ~w(
     set_importing
     set_exporting
@@ -38,7 +35,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
          %Collection{id: id} <- collection do
       topic = [
         "record:#{id}:destroyed",
-        "record:#{id}:updated",
         "collection:updated:#{id}"
       ]
 
@@ -58,33 +54,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
     {:noreply, stream_delete(socket, :results, record)}
   end
 
-  defp handle_record_updated(%Notification{data: %{id: id, collection_id: collection_id}}, socket, _event) do
-    record = Record.get_by_id!(id, load: @load, actor: get_actor(socket))
-    collection = get_collection_full(collection_id, get_actor(socket))
-
-    socket =
-      socket
-      |> assign(:busy, collection.busy)
-      |> assign(:busy_action, busy_action(collection))
-      |> assign(:collection, collection)
-      |> maybe_assign_selected_record(record)
-      |> stream_insert(:results, record, at: 0)
-
-    {:noreply, socket}
-  end
-
-  defp maybe_assign_selected_record(%{assigns: %{selected_record: nil}} = socket, _record), do: socket
-
-  defp maybe_assign_selected_record(
-         %{assigns: %{selected_record: %{id: selected_record_id}}} = socket,
-         %{id: id} = record
-       )
-       when selected_record_id == id do
-    assign(socket, :selected_record, record)
-  end
-
-  defp maybe_assign_selected_record(socket, _record), do: socket
-
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def handle_notification(topic, event, notification, socket) do
     id = socket.assigns.collection.id
@@ -92,9 +61,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
     cond do
       topic == "record:#{id}:destroyed" ->
         handle_record_destroyed(notification, socket)
-
-      topic == "record:#{id}:updated" and event in @record_update_events ->
-        handle_record_updated(notification, socket, event)
 
       topic == "collection:updated:#{id}" and event in @collection_action_events ->
         set_busy(socket, event)
@@ -109,7 +75,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
     |> assign(:busy, false)
     |> assign(:busy_action, nil)
     |> set_notification(event)
-    |> refresh()
+    |> refresh(reload_collection: event == "set_idle_encoding")
   end
 
   defp set_busy(socket, event) do
@@ -127,7 +93,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
     socket
   end
 
-  defp refresh(socket) do
+  defp refresh(socket, refresh_opts \\ []) do
+    reload_collection = Keyword.get(refresh_opts, :reload_collection, false)
+
     %{
       assigns: %{collection: %{id: id}, meta: %{ash_pagify: ash_pagify, opts: opts}, layer: layer}
     } =
@@ -142,6 +110,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
           socket
           |> assign(meta: meta)
           |> stream(:results, records, reset: true)
+          |> maybe_reload_collection(reload_collection)
 
         {:noreply, socket}
 
@@ -149,6 +118,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
         {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/records")}
     end
   end
+
+  defp maybe_reload_collection(socket, true) do
+    assign(
+      socket,
+      :collection,
+      get_collection_full(socket.assigns.collection.id, get_actor(socket))
+    )
+  end
+
+  defp maybe_reload_collection(socket, _), do: socket
 
   defmacro __using__(_opts) do
     quote do
