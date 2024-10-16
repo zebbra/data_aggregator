@@ -119,7 +119,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             href={path_helper(@collection, @layer, @meta, %{status: :all})}
             title={~t"All records"m}
             value={1.0}
-            desc={mgettext("%{record_count} Records", record_count: @collection.records_count)}
+            desc={
+              mgettext("%{record_count} Records",
+                record_count: format_number(@collection.records_count)
+              )
+            }
             active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :all})}
           />
           <.scope_stat
@@ -132,8 +136,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             }
             desc={
               mgettext("%{records_count_not_encoded} of %{records_count} Records",
-                records_count_not_encoded: @collection.records_count_not_encoded,
-                records_count: @collection.records_count
+                records_count_not_encoded: format_number(@collection.records_count_not_encoded),
+                records_count: format_number(@collection.records_count)
               )
             }
             active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_encoded})}
@@ -148,8 +152,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             }
             desc={
               mgettext("%{records_count_not_published} of %{records_count} Records",
-                records_count_not_published: @collection.records_count_not_published,
-                records_count: @collection.records_count
+                records_count_not_published: format_number(@collection.records_count_not_published),
+                records_count: format_number(@collection.records_count)
               )
             }
             active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_published})}
@@ -164,8 +168,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             }
             desc={
               mgettext("%{records_count_not_approved} of %{records_count} Records",
-                records_count_not_approved: @collection.records_count_not_approved,
-                records_count: @collection.records_count
+                records_count_not_approved: format_number(@collection.records_count_not_approved),
+                records_count: format_number(@collection.records_count)
               )
             }
             active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_approved})}
@@ -461,7 +465,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               <.mids_level_indicator level={@selected_record.mids_level} />
             </:item>
           </.list>
-          <div class="pb-4">
+          <div class="border-black-white/10 border-b pb-4">
             <.first_associated_media
               associated_media={@selected_record.mte_associated_media}
               class="w-2/3 max-h-128 px-8"
@@ -801,8 +805,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           |> Ash.Query.filter(collection.id == ^id)
           |> AshPagify.validated_query(socket.assigns.meta.ash_pagify, opts)
           |> Ash.stream!(page: false, actor: actor)
-          |> Stream.map(&Record.enqueue_encoder!(&1, actor: actor))
-          |> Stream.run()
+          |> Enum.each(&Record.enqueue_encoder!(&1, actor: actor))
         end
 
         if Records.execute_async?() do

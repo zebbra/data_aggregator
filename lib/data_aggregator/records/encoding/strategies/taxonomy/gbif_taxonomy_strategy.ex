@@ -54,7 +54,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     |> Enum.map(fn {record_attribute, request_attribute} ->
       request_value = Map.get(encoded_record, record_attribute)
 
-      unless request_value == nil do
+      if request_value != nil do
         {request_attribute, request_value}
       end
     end)

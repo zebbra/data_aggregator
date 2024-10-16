@@ -191,9 +191,7 @@ defmodule DataAggregator.MixProject do
       {:phoenix_storybook, "~> 0.6.3"},
 
       # Ash Framework
-      # Revert once 3.4.17 is released
-      # {:ash, "~> 3.3", override: true},
-      {:ash, github: "ash-project/ash", branch: "main", override: true},
+      {:ash, "~> 3.4", override: true},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
       {:ash_postgres, "~> 2.4", override: true},

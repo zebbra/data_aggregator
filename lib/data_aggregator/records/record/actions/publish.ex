@@ -113,16 +113,14 @@ defmodule DataAggregator.Records.Actions.Publish do
   defp queue_records_for_verification(query) do
     query
     |> Ash.stream!(page: false)
-    |> Stream.map(&Record.enqueue_fast_track_checker/1)
-    |> Stream.run()
+    |> Enum.each(&Record.enqueue_fast_track_checker/1)
   end
 
   @spec set_publication_status(Ash.Query.t(), atom(), Publication.t(), Context.t()) :: :ok
   defp set_publication_status(query, status, publication, ctx) do
     query
     |> Ash.stream!(page: false)
-    |> Stream.map(&update_record!(&1, status, publication, ctx))
-    |> Stream.run()
+    |> Enum.each(&update_record!(&1, status, publication, ctx))
   end
 
   @spec update_record!(Record.t(), atom(), Publication.t(), Context.t()) :: any()
