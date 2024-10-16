@@ -5,8 +5,7 @@
 To tag a create a release tag, use the following command:
 
 ```bash
-git tag -a v1.1.0 -m "Release 1.1.0 and other notes"
-git push --tags
+mix git_ops.release
 ```
 
 Now the CI/CD pipeline will be triggered and...
