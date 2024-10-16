@@ -75,7 +75,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
     |> assign(:busy, false)
     |> assign(:busy_action, nil)
     |> set_notification(event)
-    |> refresh()
+    |> refresh(reload_collection: event == "set_idle_encoding")
   end
 
   defp set_busy(socket, event) do
@@ -93,7 +93,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
     socket
   end
 
-  defp refresh(socket) do
+  defp refresh(socket, refresh_opts \\ []) do
+    reload_collection = Keyword.get(refresh_opts, :reload_collection, false)
+
     %{
       assigns: %{collection: %{id: id}, meta: %{ash_pagify: ash_pagify, opts: opts}, layer: layer}
     } =
@@ -108,6 +110,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
           socket
           |> assign(meta: meta)
           |> stream(:results, records, reset: true)
+          |> maybe_reload_collection(reload_collection)
 
         {:noreply, socket}
 
@@ -115,6 +118,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
         {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/records")}
     end
   end
+
+  defp maybe_reload_collection(socket, true) do
+    assign(
+      socket,
+      :collection,
+      get_collection_full(socket.assigns.collection.id, get_actor(socket))
+    )
+  end
+
+  defp maybe_reload_collection(socket, _), do: socket
 
   defmacro __using__(_opts) do
     quote do
