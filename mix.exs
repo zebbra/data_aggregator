@@ -322,6 +322,8 @@ defmodule DataAggregator.MixProject do
       # Setup Project
       setup: [
         "deps.get",
+        "git_hooks.install",
+        "git_ops.message_hook",
         "repo.setup",
         "assets.setup",
         "assets.build",
