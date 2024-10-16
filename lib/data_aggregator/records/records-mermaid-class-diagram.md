@@ -68,7 +68,7 @@ classDiagram
         String oth_institution_id
         String oth_institution_code
         String oth_information_withheld
-        Date oth_date_available
+        String oth_date_available
         String oth_dataset_name
         String oth_dataset_id
         String oth_data_generalizations
@@ -88,7 +88,7 @@ classDiagram
         String pvn_preservation_mode_keywords
         String pvn_preservation_method
         String pvn_preservation_id
-        Date pvn_preservation_date_begin
+        String pvn_preservation_date_begin
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
@@ -176,7 +176,7 @@ classDiagram
         String loc_georeference_remarks
         String loc_georeference_sources
         String loc_georeference_protocol
-        Date loc_georeferenced_date
+        String loc_georeferenced_date
         String loc_georeferenced_by
         Float loc_footprint_spatial_fit
         String loc_footprint_srs
@@ -272,7 +272,7 @@ classDiagram
         String idf_evidence_type
         String idf_type_status
         String idf_identified_by
-        Date idf_date_identified
+        String idf_date_identified
         Float eve_shrub_layer_height_in_meters
         String eve_start_day_of_year
         String eve_sampling_effort
@@ -307,7 +307,7 @@ classDiagram
         Integer eve_day
         Integer eve_end_day_of_year
         String eve_event_time
-        Date eve_event_date
+        String eve_event_date
         String eve_field_number
         String eve_parent_event_id
         String eve_event_id
@@ -489,7 +489,7 @@ classDiagram
         String oth_institution_id
         String oth_institution_code
         String oth_information_withheld
-        Date oth_date_available
+        String oth_date_available
         String oth_dataset_name
         String oth_dataset_id
         String oth_data_generalizations
@@ -509,7 +509,7 @@ classDiagram
         String pvn_preservation_mode_keywords
         String pvn_preservation_method
         String pvn_preservation_id
-        Date pvn_preservation_date_begin
+        String pvn_preservation_date_begin
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
@@ -597,7 +597,7 @@ classDiagram
         String loc_georeference_remarks
         String loc_georeference_sources
         String loc_georeference_protocol
-        Date loc_georeferenced_date
+        String loc_georeferenced_date
         String loc_georeferenced_by
         Float loc_footprint_spatial_fit
         String loc_footprint_srs
@@ -693,7 +693,7 @@ classDiagram
         String idf_evidence_type
         String idf_type_status
         String idf_identified_by
-        Date idf_date_identified
+        String idf_date_identified
         Float eve_shrub_layer_height_in_meters
         String eve_start_day_of_year
         String eve_sampling_effort
@@ -728,7 +728,7 @@ classDiagram
         Integer eve_day
         Integer eve_end_day_of_year
         String eve_event_time
-        Date eve_event_date
+        String eve_event_date
         String eve_field_number
         String eve_parent_event_id
         String eve_event_id
@@ -884,7 +884,7 @@ classDiagram
         String oth_institution_id
         String oth_institution_code
         String oth_information_withheld
-        Date oth_date_available
+        String oth_date_available
         String oth_dataset_name
         String oth_dataset_id
         String oth_data_generalizations
@@ -904,7 +904,7 @@ classDiagram
         String pvn_preservation_mode_keywords
         String pvn_preservation_method
         String pvn_preservation_id
-        Date pvn_preservation_date_begin
+        String pvn_preservation_date_begin
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
@@ -992,7 +992,7 @@ classDiagram
         String loc_georeference_remarks
         String loc_georeference_sources
         String loc_georeference_protocol
-        Date loc_georeferenced_date
+        String loc_georeferenced_date
         String loc_georeferenced_by
         Float loc_footprint_spatial_fit
         String loc_footprint_srs
@@ -1088,7 +1088,7 @@ classDiagram
         String idf_evidence_type
         String idf_type_status
         String idf_identified_by
-        Date idf_date_identified
+        String idf_date_identified
         Float eve_shrub_layer_height_in_meters
         String eve_start_day_of_year
         String eve_sampling_effort
@@ -1123,7 +1123,7 @@ classDiagram
         Integer eve_day
         Integer eve_end_day_of_year
         String eve_event_time
-        Date eve_event_date
+        String eve_event_date
         String eve_field_number
         String eve_parent_event_id
         String eve_event_id
