@@ -363,7 +363,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
   end
 
   defp hidden_toggle_group_options(current_user) do
-    unless Enum.member?(current_user.roles, "admin") do
+    if !Enum.member?(current_user.roles, "admin") do
       ["admin"]
     end
   end

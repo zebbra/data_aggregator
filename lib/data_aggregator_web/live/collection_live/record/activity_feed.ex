@@ -274,7 +274,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   defp encoded_record_versions(assigns) do
     encoded_record_id =
-      unless assigns.record.encoded_record == nil, do: assigns.record.encoded_record.id
+      if assigns.record.encoded_record != nil, do: assigns.record.encoded_record.id
 
     EncodedRecord.Version
     |> Ash.Query.for_read(:read)

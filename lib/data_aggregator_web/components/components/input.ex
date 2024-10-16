@@ -231,7 +231,7 @@ defmodule DataAggregatorWeb.Components.Input do
   # All other inside inputs text, datetime-local, url, password, etc. are handled here...
   def input(%{inside: true} = assigns) do
     # throw error if type is not in valid types
-    unless Enum.member?(@valid_inside_types, assigns[:type]) do
+    if !Enum.member?(@valid_inside_types, assigns[:type]) do
       raise ArgumentError,
             "type must be one of #{inspect(@valid_inside_types)}, got: #{inspect(assigns[:type])}"
     end

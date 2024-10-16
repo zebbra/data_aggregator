@@ -105,8 +105,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   def store_local_file(file, data_with_headers, headers) do
     data_with_headers
     |> CSV.encode(separator: ?,, headers: headers)
-    |> Stream.each(&IO.write(file, &1))
-    |> Stream.run()
+    |> Enum.each(&IO.write(file, &1))
 
     file
   end
