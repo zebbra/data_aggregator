@@ -159,12 +159,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   def slideover_subtitle(assigns) do
     ~H"""
     <div class="my-auto flex space-x-3">
-      <div class="text-base-content/60">
+      <p class="text-base-content/60 text-sm/6 line-clamp-2 mt-1 max-w-4xl">
         <%= @text %>
-      </div>
+      </p>
       <.link
         :if={@occurrence_id !== nil && @fast_track_status == :published}
-        class="link link-primary link-hover text-sm/6 flex max-w-4xl items-center gap-x-2"
+        class="link link-primary link-hover text-sm/6 flex max-w-4xl items-center gap-x-2 mt-1"
         target="_blank"
         href={"#{gbif_base_url()}/occurrence/#{@occurrence_id}"}
       >
