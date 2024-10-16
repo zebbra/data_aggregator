@@ -5,6 +5,11 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [0.9.0](https://github.com/zebbra/data_aggregator/compare/v0.8.3...0.9.0) (2024-10-16)
+
+
+
+
 ## [v0.8.3](https://github.com/zebbra/data_aggregator/compare/v0.8.3...v0.8.3) (2024-10-16)
 
 
