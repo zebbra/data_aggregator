@@ -147,7 +147,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
 
     ~H"""
     <div class={@class}>
-      <img src={List.first(@split)} class="rounded-lg" />
+      <img src={List.first(@split)} class="max-h-128 w-2/3 rounded-lg px-8" />
     </div>
     """
   end

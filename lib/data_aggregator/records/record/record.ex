@@ -391,6 +391,9 @@ defmodule DataAggregator.Records.Record do
     module DataAggregator.PubSub
     prefix "record"
 
+    publish :set_encoding, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_encoded, [[:collection_id, nil], "updated", [:id, nil]]
+    publish :set_encoding_failed, [[:collection_id, nil], "updated", [:id, nil]]
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
   end
 

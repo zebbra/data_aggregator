@@ -127,7 +127,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             title={~t"Not encoded / Incomplete"m}
             value={
               if @collection.records_count_not_encoded == 0,
-                do: 1,
+                do: 0,
                 else: @collection.records_count_not_encoded / @collection.records_count
             }
             desc={
@@ -143,7 +143,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             title={~t"Not published"m}
             value={
               if @collection.records_count_not_published == 0,
-                do: 1,
+                do: 0,
                 else: @collection.records_count_not_published / @collection.records_count
             }
             desc={
@@ -159,7 +159,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             title={~t"Not approved"m}
             value={
               if @collection.records_count_not_approved == 0,
-                do: 1,
+                do: 0,
                 else: @collection.records_count_not_approved / @collection.records_count
             }
             desc={
@@ -192,7 +192,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             no_results_content(%{
               collection: @collection,
               current_user: @current_user,
-              filters_count: @filters_count
+              filters_count: @filters_count,
+              meta: @meta
             })
         ]}
         path={~p"/collections/#{@collection.id}/records?layer=#{@layer}"}
@@ -450,23 +451,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               <.approval_state_badge state={@selected_record.approval_status} />
             </div>
           </:additional_header_content>
-          <.list>
-            <:item title={~t"Imported"m}>
-              <%= format_datetime(@selected_record.last_imported_at) %>
-            </:item>
-            <:item title={~t"Last Changes"m}>
-              <%= format_datetime(@selected_record.updated_at) %>
-            </:item>
-            <:item title={~t"Quality"m}>
-              <.mids_level_indicator level={@selected_record.mids_level} />
-            </:item>
-          </.list>
-          <div class="pb-4">
-            <.first_associated_media
-              associated_media={@selected_record.mte_associated_media}
-              class="w-2/3 max-h-128 px-8"
-            />
-          </div>
+
           <.secondary_navigation class="sticky border-t-0 top-0">
             <.secondary_navigation_item
               label={~t"Data"m}
@@ -488,6 +473,23 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             />
           </.secondary_navigation>
           <div :if={@record_tab == "data"} class="contents">
+            <.list class="border-black-white/10 border-b">
+              <:item title={~t"Imported"m}>
+                <%= format_datetime(@selected_record.last_imported_at) %>
+              </:item>
+              <:item title={~t"Last Changes"m}>
+                <%= format_datetime(@selected_record.updated_at) %>
+              </:item>
+              <:item title={~t"Quality"m}>
+                <.mids_level_indicator level={@selected_record.mids_level} />
+              </:item>
+            </.list>
+            <div class="pb-4">
+              <.first_associated_media
+                associated_media={@selected_record.mte_associated_media}
+                class="border-black-white/10 border-b py-8"
+              />
+            </div>
             <%= for category <- @attrs_in_categories do %>
               <details
                 :if={category_has_data?(category)}
@@ -1004,20 +1006,27 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   defp no_results_content(%{filters_count: 0} = assigns) do
     ~H"""
-    <%= if Collection.can_set_importing?(@current_user, @collection) do %>
-      <.empty_state
-        title={~t"No records"m}
-        description={~t"Get started by importing a new dataset"m}
-        label={~t"Import"m}
-        icon="hero-bug-ant"
-        href={~p"/collections/#{@collection.id}/imports/new"}
-      />
-    <% else %>
-      <.empty_state
-        title={~t"No records found"m}
-        description={~t"There are no records yet for your institution"m}
-        icon="hero-magnifying-glass"
-      />
+    <%= cond do %>
+      <% not AshPagify.active_scope?(@meta.ash_pagify, %{status: :all}) -> %>
+        <.empty_state
+          title={~t"No records found"m}
+          description={~t"Try with a different scope"m}
+          icon="hero-magnifying-glass"
+        />
+      <% Collection.can_set_importing?(@current_user, @collection) -> %>
+        <.empty_state
+          title={~t"No records"m}
+          description={~t"Get started by importing a new dataset"m}
+          label={~t"Import"m}
+          icon="hero-bug-ant"
+          href={~p"/collections/#{@collection.id}/imports/new"}
+        />
+      <% true -> %>
+        <.empty_state
+          title={~t"No records found"m}
+          description={~t"There are no records yet for your institution"m}
+          icon="hero-magnifying-glass"
+        />
     <% end %>
     """
   end
