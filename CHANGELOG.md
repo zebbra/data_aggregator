@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [0.9.1](https://github.com/zebbra/data_aggregator/compare/v0.9.0...0.9.1) (2024-10-18)
+
+
+
+
+### Features:
+
+* kill-switch: implemented logic to abort import,export,encode,publish,approve actions
+
 ## [0.9.0](https://github.com/zebbra/data_aggregator/compare/v0.8.3...0.9.0) (2024-10-16)
 
 
