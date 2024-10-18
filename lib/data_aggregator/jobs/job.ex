@@ -24,7 +24,7 @@ defmodule DataAggregator.Jobs.Job do
     # field :priority, :integer
 
     # field :attempted_at, :utc_datetime_usec
-    # field :cancelled_at, :utc_datetime_usec
+    attribute :cancelled_at, :utc_datetime_usec, public?: true
     # field :completed_at, :utc_datetime_usec
     # field :discarded_at, :utc_datetime_usec
     # field :inserted_at, :utc_datetime_usec
@@ -37,14 +37,54 @@ defmodule DataAggregator.Jobs.Job do
     # field :unsaved_error, :map, virtual: true
   end
 
+  calculations do
+    calculate :collection_id, :string, expr(args[:collection_id])
+  end
+
   actions do
     default_accept :*
-    defaults [:read]
+    defaults [:read, :update]
+
+    read :imports_by_collection do
+      argument :collection_id, :string, allow_nil?: false
+
+      filter expr(collection_id == ^arg(:collection_id) and queue == "imports")
+    end
+
+    read :exports_by_collection do
+      argument :collection_id, :string, allow_nil?: false
+
+      filter expr(collection_id == ^arg(:collection_id) and queue == "exports")
+    end
+
+    read :publications_by_collection do
+      argument :collection_id, :string, allow_nil?: false
+
+      filter expr(collection_id == ^arg(:collection_id) and queue == "publications")
+    end
+
+    read :publication_verifications_by_collection do
+      argument :collection_id, :string, allow_nil?: false
+
+      filter expr(collection_id == ^arg(:collection_id) and queue == "publication_verifications")
+    end
+
+    read :encodings_by_collection do
+      argument :collection_id, :string, allow_nil?: false
+
+      filter expr(collection_id == ^arg(:collection_id) and queue == "encoders")
+    end
   end
 
   code_interface do
     define :read
     define :get_by_id, action: :read, get_by: [:id]
+    define :imports_by_collection, args: [:collection_id]
+    define :exports_by_collection, args: [:collection_id]
+    define :publications_by_collection, args: [:collection_id]
+    define :publication_verifications_by_collection, args: [:collection_id]
+    define :encodings_by_collection, args: [:collection_id]
+    define :update
   end
 
   postgres do

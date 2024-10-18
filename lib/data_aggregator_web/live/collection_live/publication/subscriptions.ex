@@ -3,8 +3,10 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Subscriptions do
   This module contains helper functions for the collection > publication subscriptions.
   """
   use Phoenix.LiveView
+  use DataAggregatorWeb, :verified_routes
   use DataAggregatorWeb.Gettext
 
+  import DataAggregatorWeb.CollectionLive.Helpers, only: [busy_action: 1]
   import DataAggregatorWeb.CollectionLive.Publication.Helpers
 
   alias Ash.Notifier.Notification
@@ -18,6 +20,15 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Subscriptions do
   @load load()
   @load_all load_all()
   @update_events ~w(set_running set_done set_failed)
+  @collection_action_events ~w(
+    set_importing
+    set_exporting
+    set_encoding
+    set_fast_track_publishing
+    set_approving
+    set_idle
+    set_idle_encoding
+  )
 
   def subscribe_for_publication_updates(socket, connected) do
     with true <- connected,
@@ -26,7 +37,8 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Subscriptions do
       topic = [
         "publication:#{id}:created",
         "publication:#{id}:updated",
-        "publication:#{id}:destroyed"
+        "publication:#{id}:destroyed",
+        "collection:updated:#{id}"
       ]
 
       PubSub.subscribe(topic)
@@ -54,6 +66,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Subscriptions do
       topic == "publication:#{id}:destroyed" ->
         handle_publication_destroyed(notification, socket)
 
+      topic == "collection:updated:#{id}" and event in @collection_action_events ->
+        set_busy(socket, event)
+
       true ->
         {:noreply, socket}
     end
@@ -80,6 +95,20 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Subscriptions do
     {:noreply, stream_delete(socket, :results, publication)}
   end
 
+  defp set_busy(socket, event) when event in ~w(set_idle set_idle_encoding) do
+    socket
+    |> assign(:busy, false)
+    |> assign(:busy_action, nil)
+    |> refresh()
+  end
+
+  defp set_busy(socket, event) do
+    socket
+    |> assign(:busy, true)
+    |> assign(:busy_action, busy_action(event))
+    |> refresh()
+  end
+
   defp maybe_assign_selected_publication(%{assigns: %{selected_publication: nil}} = socket, _publication), do: socket
 
   defp maybe_assign_selected_publication(socket, publication), do: assign(socket, :selected_publication, publication)
@@ -94,6 +123,23 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Subscriptions do
 
   defp set_notification(socket, _) do
     socket
+  end
+
+  defp refresh(socket) do
+    %{assigns: %{collection: %{id: id}, meta: %{ash_pagify: ash_pagify, opts: opts}}} = socket
+
+    case AshPagify.validate_and_run(Publication, ash_pagify, opts, id) do
+      {:ok, {records, meta}} ->
+        socket =
+          socket
+          |> assign(meta: meta)
+          |> stream(:results, records, reset: true)
+
+        {:noreply, socket}
+
+      {:error, _meta} ->
+        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/publications")}
+    end
   end
 
   defmacro __using__(_opts) do

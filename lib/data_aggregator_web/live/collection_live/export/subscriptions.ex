@@ -3,9 +3,11 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
   This module contains helper functions for the collection > export subscriptions.
   """
   use Phoenix.LiveView
+  use DataAggregatorWeb, :verified_routes
   use DataAggregatorWeb.Gettext
 
   import DataAggregatorWeb.CollectionLive.Export.Helpers
+  import DataAggregatorWeb.CollectionLive.Helpers, only: [busy_action: 1]
 
   alias Ash.Notifier.Notification
   alias DataAggregator.PubSub
@@ -18,6 +20,15 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
   @load load()
   @load_all load_all()
   @update_events ~w(set_running set_exported set_failed)
+  @collection_action_events ~w(
+    set_importing
+    set_exporting
+    set_encoding
+    set_fast_track_publishing
+    set_approving
+    set_idle
+    set_idle_encoding
+  )
 
   def subscribe_for_export_updates(socket, connected) do
     with true <- connected,
@@ -26,7 +37,8 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
       topic = [
         "export:#{id}:created",
         "export:#{id}:updated",
-        "export:#{id}:destroyed"
+        "export:#{id}:destroyed",
+        "collection:updated:#{id}"
       ]
 
       PubSub.subscribe(topic)
@@ -54,6 +66,9 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
       topic == "export:#{id}:destroyed" ->
         handle_export_destroyed(notification, socket)
 
+      topic == "collection:updated:#{id}" and event in @collection_action_events ->
+        set_busy(socket, event)
+
       true ->
         {:noreply, socket}
     end
@@ -80,6 +95,20 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
     {:noreply, stream_delete(socket, :results, export)}
   end
 
+  defp set_busy(socket, event) when event in ~w(set_idle set_idle_encoding) do
+    socket
+    |> assign(:busy, false)
+    |> assign(:busy_action, nil)
+    |> refresh()
+  end
+
+  defp set_busy(socket, event) do
+    socket
+    |> assign(:busy, true)
+    |> assign(:busy_action, busy_action(event))
+    |> refresh()
+  end
+
   defp maybe_assign_selected_export(%{assigns: %{selected_export: nil}} = socket, _export), do: socket
 
   defp maybe_assign_selected_export(socket, export), do: assign(socket, :selected_export, export)
@@ -94,6 +123,23 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
 
   defp set_notification(socket, _) do
     socket
+  end
+
+  defp refresh(socket) do
+    %{assigns: %{collection: %{id: id}, meta: %{ash_pagify: ash_pagify, opts: opts}}} = socket
+
+    case AshPagify.validate_and_run(Export, ash_pagify, opts, id) do
+      {:ok, {records, meta}} ->
+        socket =
+          socket
+          |> assign(meta: meta)
+          |> stream(:results, records, reset: true)
+
+        {:noreply, socket}
+
+      {:error, _meta} ->
+        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/exports")}
+    end
   end
 
   defmacro __using__(_opts) do

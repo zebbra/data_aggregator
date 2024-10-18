@@ -7,7 +7,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   import DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
 
   import DataAggregatorWeb.CollectionLive.Helpers,
-    only: [get_collection_full: 2, busy_action: 1]
+    only: [get_collection_full: 2, busy_action: 1, cancel_action: 2]
 
   import DataAggregatorWeb.CollectionLive.Record.ActivityFeed
   import DataAggregatorWeb.CollectionLive.Record.Components
@@ -23,7 +23,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       get_dwc_field: 1
     ]
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.Encoding.RecordEncodingResult
@@ -88,8 +87,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         collection={@collection}
         current={:records}
         current_user={@current_user}
-        disabled={@busy}
-        busy={busy?("dataset:import", @busy_action)}
+        busy={@busy}
+        busy_action={@busy_action}
       />
 
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
@@ -739,6 +738,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
+  def handle_event("collection:cancel", %{"id" => id}, socket) do
+    cancel_action(id, socket)
+  end
+
+  @impl true
   def handle_event("record:select", %{"id" => nil}, socket) do
     socket =
       socket
@@ -789,33 +793,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("collection:encode", _params, socket) do
-    %{collection: collection, layer: layer} = socket.assigns
+    %{collection: collection, meta: %{ash_pagify: ash_pagify}, layer: layer} = socket.assigns
 
     actor = get_actor(socket)
     collection = Collection.get_by_id!(collection.id, load: [:encoding], actor: actor)
     socket = update(socket, :show_encode, &(!&1))
 
-    case Collection.set_encoding(collection, actor: actor) do
-      {:ok, %{id: id}} ->
-        opts =
-          layer
-          |> maybe_put_tsvector()
-          |> Keyword.put(:for, Record)
+    encoding_query = filter_map(ash_pagify, %{collection: %{id: %{eq: collection.id}}}, layer)
 
-        enqueue_encoder_fn = fn ->
-          Record
-          |> Ash.Query.filter(collection.id == ^id)
-          |> AshPagify.validated_query(socket.assigns.meta.ash_pagify, opts)
-          |> Ash.stream!(page: false, actor: actor)
-          |> Enum.each(&Record.enqueue_encoder!(&1, actor: actor))
-        end
-
-        if Records.execute_async?() do
-          Task.start(enqueue_encoder_fn)
-        else
-          enqueue_encoder_fn.()
-        end
-
+    case Collection.enqueue_encoding(collection, encoding_query, actor: actor) do
+      {:ok, _} ->
         {:noreply, put_flash(socket, :info, ~t"Encoding started in background"m)}
 
       {:error, _} ->

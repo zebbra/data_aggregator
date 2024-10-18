@@ -127,6 +127,7 @@ defmodule DataAggregator.Records.Import do
       transition :set_importing, from: [:pending, :import_queued], to: :importing
       transition :set_imported, from: :importing, to: :imported
       transition :set_failed, from: :importing, to: :failed
+      transition :cancel_import, from: [:importing, :import_queued], to: :failed
     end
   end
 
@@ -159,6 +160,12 @@ defmodule DataAggregator.Records.Import do
                  keyset?: true
 
       filter expr(collection_id == ^arg(:collection_id))
+    end
+
+    read :active_by_collection do
+      argument :collection_id, :string, allow_nil?: false
+
+      filter expr(collection_id == ^arg(:collection_id) and state in [:importing, :import_queued])
     end
 
     create :create do
@@ -269,6 +276,14 @@ defmodule DataAggregator.Records.Import do
       change manage_relationship(:error_log, :error_log, type: :append)
       change load(:error_log)
     end
+
+    update :cancel_import do
+      accept []
+      require_atomic? false
+
+      change transition_state(:failed)
+      change set_attribute(:finished_at, &DateTime.utc_now/0)
+    end
   end
 
   pub_sub do
@@ -289,6 +304,7 @@ defmodule DataAggregator.Records.Import do
     define :update
     define :get_by_id, action: :read, get_by: [:id]
     define :by_collection, args: [:collection_id]
+    define :active_by_collection, args: [:collection_id]
     define :create, args: [:collection]
     define :create_from_path, args: [:collection, :path]
     define :update_mapping, args: [:columns]
@@ -301,6 +317,7 @@ defmodule DataAggregator.Records.Import do
     define :set_failed
     define :destroy
     define :update_error_log, args: [:error_log]
+    define :cancel_import
   end
 
   postgres do

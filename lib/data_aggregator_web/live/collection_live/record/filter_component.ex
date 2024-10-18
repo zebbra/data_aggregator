@@ -98,27 +98,27 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     """
   end
 
-  @impl true
-  def filter_form_component(%{component: %{source: %FilterForm{key: "eve_event_date_range"}}} = assigns) do
-    ~H"""
-    <div class="px-6">
-      <.date_range
-        component={@component}
-        title={~t"Date"m}
-        description={~t"Search your records by occurrence date"m}
-        min_date={Cldr.Calendar.date_from_tuple({1800, 1, 1})}
-        max_date={Cldr.Calendar.current(Date.utc_today(), :day)}
-        presets={[
-          months: ~t"Last Month"m,
-          years: ~t"Last Year"m,
-          century: ~t"Last Century"m
-        ]}
-        target={@target}
-        top_level
-      />
-    </div>
-    """
-  end
+  # @impl true
+  # def filter_form_component(%{component: %{source: %FilterForm{key: "eve_event_date_range"}}} = assigns) do
+  #   ~H"""
+  #   <div class="px-6">
+  #     <.date_range
+  #       component={@component}
+  #       title={~t"Date"m}
+  #       description={~t"Search your records by occurrence date"m}
+  #       min_date={Cldr.Calendar.date_from_tuple({1800, 1, 1})}
+  #       max_date={Cldr.Calendar.current(Date.utc_today(), :day)}
+  #       presets={[
+  #         months: ~t"Last Month"m,
+  #         years: ~t"Last Year"m,
+  #         century: ~t"Last Century"m
+  #       ]}
+  #       target={@target}
+  #       top_level
+  #     />
+  #   </div>
+  #   """
+  # end
 
   @impl true
   def filter_form_component(%{component: %{source: %Predicate{field: :mids_level}}} = assigns) do
@@ -284,12 +284,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     resource
     |> FilterForm.new()
     |> FilterForm.add_predicate(:iucn_redlist, :eq, "")
-    |> FilterForm.add_group(return_id?: true, key: "eve_event_date_range")
-    |> then(fn {form, date_range_group_id} ->
-      form
-      |> FilterForm.add_predicate(:eve_event_date, :greater_than_or_equal, nil, to: date_range_group_id)
-      |> FilterForm.add_predicate(:eve_event_date, :less_than_or_equal, nil, to: date_range_group_id)
-    end)
+    # Remove for now as we use strings in our database...
+    # |> FilterForm.add_group(return_id?: true, key: "eve_event_date_range")
+    # |> then(fn {form, date_range_group_id} ->
+    #   form
+    #   |> FilterForm.add_predicate(:eve_event_date, :greater_than_or_equal, nil, to: date_range_group_id)
+    #   |> FilterForm.add_predicate(:eve_event_date, :less_than_or_equal, nil, to: date_range_group_id)
+    # end)
     |> FilterForm.add_predicate(:mids_level, :greater_than_or_equal, "")
     |> FilterForm.add_group(return_id?: true, key: "taxonomy")
     |> then(fn {form, taxonomy_group_id} ->
@@ -316,21 +317,21 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     end)
   end
 
-  @impl true
-  def handle_preset(filter_form, "eve_event_date_range", preset, socket) do
-    filter_form =
-      FilterForm.update_group(filter_form, "eve_event_date_range", fn predicate ->
-        case predicate.operator do
-          :greater_than_or_equal ->
-            %{predicate | value: shift_date(preset)}
+  # @impl true
+  # def handle_preset(filter_form, "eve_event_date_range", preset, socket) do
+  #   filter_form =
+  #     FilterForm.update_group(filter_form, "eve_event_date_range", fn predicate ->
+  #       case predicate.operator do
+  #         :greater_than_or_equal ->
+  #           %{predicate | value: shift_date(preset)}
 
-          :less_than_or_equal ->
-            %{predicate | value: Date.utc_today()}
-        end
-      end)
+  #         :less_than_or_equal ->
+  #           %{predicate | value: Date.utc_today()}
+  #       end
+  #     end)
 
-    assign_and_update(socket, filter_form)
-  end
+  #   assign_and_update(socket, filter_form)
+  # end
 
   @impl true
   def handle_preset(_filter_form, _key, _preset, socket) do

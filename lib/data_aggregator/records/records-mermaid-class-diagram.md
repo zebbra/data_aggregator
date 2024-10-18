@@ -39,6 +39,8 @@ classDiagram
         set_idle()
         set_idle_encoding()
         decrement_records_count()
+        enqueue_encoding(Map query)
+        cancel_action()
         destroy()
         export(Struct export)
         publish(Struct publication)
@@ -376,6 +378,7 @@ classDiagram
         destroy()
         read()
         by_collection(String collection_id, String sort)
+        active_by_collection(String collection_id)
         create(Struct collection, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
         update_mapping(Map mapping, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
         update(Struct[] records, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
@@ -386,6 +389,7 @@ classDiagram
         run()
         set_exported()
         update_attachment(Struct attachment)
+        cancel_export()
     }
     class Import {
         UUID id
@@ -412,6 +416,7 @@ classDiagram
         destroy()
         read(String sort)
         by_collection(String collection_id, String sort)
+        active_by_collection(String collection_id)
         create(Struct collection, Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, ...)
         create_from_path(Struct collection, String path, String filename)
         update_mapping(Column[] columns)
@@ -423,6 +428,7 @@ classDiagram
         set_failed()
         set_imported()
         update_error_log(Struct error_log)
+        cancel_import()
     }
     class Record {
         UUID import_id
@@ -456,6 +462,7 @@ classDiagram
         destroy()
         read()
         by_collection(String collection_id, String sort)
+        active_by_collection(String collection_id)
         create(Struct collection, String name, Atom channel, UtcDatetime published_at, ...)
         enqueue()
         add_publication_progress(Integer published)
@@ -464,6 +471,7 @@ classDiagram
         run()
         set_done()
         update_attachment(Struct attachment)
+        cancel_publication()
     }
     class Record {
         Map ext_vernacular_names
@@ -770,6 +778,7 @@ classDiagram
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read(String sort)
         by_collection(String collection_id, String sort)
+        encoding_by_collection(String collection_id)
         create(Struct collection, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         import(Struct import, Map params, Map ext_vernacular_names, Map ext_species_profile, ...)
         enqueue_encoder()

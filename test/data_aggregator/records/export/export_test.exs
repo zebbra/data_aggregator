@@ -133,7 +133,11 @@ defmodule DataAggregator.ExportTest do
         assert {:ok, export} = Export.enqueue(export)
 
         assert export.state == :queued
-        assert_enqueued(worker: Exporter, args: %{id: export.id})
+
+        assert_enqueued(
+          worker: Exporter,
+          args: %{id: export.id, collection_id: export.collection_id}
+        )
 
         collection = Collection.get_by_id!(collection.id)
         assert collection.state == :exporting

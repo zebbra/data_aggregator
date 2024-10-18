@@ -45,7 +45,10 @@ defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
 
         assert import.state == :import_queued
 
-        assert_enqueued(worker: Importer, args: %{id: import.id})
+        assert_enqueued(
+          worker: Importer,
+          args: %{id: import.id, collection_id: import.collection_id}
+        )
       end)
     end
 

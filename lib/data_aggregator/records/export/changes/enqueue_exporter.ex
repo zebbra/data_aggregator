@@ -31,8 +31,8 @@ defmodule DataAggregator.Records.Export.Changes.EnqueueExporter do
     {:error, error}
   end
 
-  defp insert_job(%Export{id: id}) do
-    %{id: id}
+  defp insert_job(%Export{id: id, collection_id: collection_id}) do
+    %{id: id, collection_id: collection_id}
     |> Export.Workers.Exporter.new()
     |> Oban.insert()
   end

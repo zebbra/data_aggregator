@@ -28,8 +28,8 @@ defmodule DataAggregator.Records.Record.Changes.EnqueueFastTrackChecker do
     end
   end
 
-  defp insert_job(%Record{id: id}) do
-    %{id: id}
+  defp insert_job(%Record{id: id, collection_id: collection_id}) do
+    %{id: id, collection_id: collection_id}
     |> Scheduler.FastTrackPublicationVerifier.new()
     |> Oban.insert()
   end

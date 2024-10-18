@@ -69,6 +69,7 @@ defmodule DataAggregator.Records.Publication do
       transition :set_running, from: [:pending, :done, :failed, :queued], to: :running
       transition :set_done, from: :running, to: :done
       transition :set_failed, from: :running, to: :failed
+      transition :cancel_publication, from: [:running, :queued], to: :failed
     end
   end
 
@@ -91,6 +92,12 @@ defmodule DataAggregator.Records.Publication do
                  keyset?: true
 
       filter expr(collection_id == ^arg(:collection_id))
+    end
+
+    read :active_by_collection do
+      argument :collection_id, :string, allow_nil?: false
+
+      filter expr(collection_id == ^arg(:collection_id) and state in [:running, :queued])
     end
 
     create :create do
@@ -165,6 +172,14 @@ defmodule DataAggregator.Records.Publication do
       change manage_relationship(:attachment, :attachment, type: :append)
       change load(:attachment)
     end
+
+    update :cancel_publication do
+      accept []
+      require_atomic? false
+
+      change transition_state(:failed)
+      change set_attribute(:finished_at, &DateTime.utc_now/0)
+    end
   end
 
   pub_sub do
@@ -181,6 +196,7 @@ defmodule DataAggregator.Records.Publication do
   code_interface do
     define :read
     define :by_collection, args: [:collection_id]
+    define :active_by_collection, args: [:collection_id]
     define :create
     define :update
     define :destroy
@@ -192,6 +208,7 @@ defmodule DataAggregator.Records.Publication do
     define :set_failed
     define :update_attachment, action: :update_attachment, args: [:attachment]
     define :add_publication_progress, args: [:published]
+    define :cancel_publication
   end
 
   postgres do

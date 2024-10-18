@@ -5,15 +5,18 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   use DataAggregatorWeb, :html
 
-  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection_light: 2]
+  import DataAggregatorWeb.CollectionLive.Helpers,
+    only: [get_collection_light: 2, busy_action_translation: 1]
+
+  import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [busy?: 2]
 
   alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Collection
 
   attr :collection_id, :any, default: nil
   attr :collection, Collection, default: nil
-  attr :disabled, :boolean, default: false, doc: "Whether the header action is disabled."
   attr :busy, :boolean, default: false, doc: "Whether the header action is busy."
+  attr :busy_action, :string, default: nil, doc: "The currently busy action on this collection."
 
   attr :current, :atom,
     default: :records,
@@ -31,7 +34,19 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   end
 
   def collection_header(assigns) do
-    assigns = assign_new(assigns, :gbif_dataset_base_url, fn -> "#{gbif_base_url()}/dataset" end)
+    show_import_button =
+      assigns.current in [:records, :imports] and
+        Collection.can_set_importing?(assigns.current_user, assigns.collection)
+
+    show_cancel_button =
+      assigns.busy and not assigns.collection.deleting and
+        Collection.can_cancel_action?(assigns.current_user, assigns.collection)
+
+    assigns =
+      assigns
+      |> assign_new(:gbif_dataset_base_url, fn -> "#{gbif_base_url()}/dataset" end)
+      |> assign(:show_import_button, show_import_button)
+      |> assign(:show_cancel_button, show_cancel_button)
 
     ~H"""
     <.page_header title_class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
@@ -43,21 +58,33 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             %{label: ~t"Current"m, link: "#"}
           ]}
         />
-        <.link
-          :if={
-            @current in [:records, :imports] and
-              Collection.can_set_importing?(@current_user, @collection)
-          }
-          patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
-          class={[
-            "btn btn-primary btn-sm",
-            @disabled && "btn-disabled"
-          ]}
-        >
-          <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
-          <.icon :if={@busy == false} name="hero-arrow-up-tray" class="size-4" />
-          <%= ~t"Add"m %>
-        </.link>
+        <div :if={@show_import_button or @show_cancel_button}>
+          <.link
+            :if={@show_cancel_button}
+            phx-click={JS.push("collection:cancel", value: %{id: @collection.id})}
+            data-confirm={~t"Are you sure?"m}
+            type="button"
+            class="btn btn-error btn-sm"
+          >
+            <.icon name="hero-stop-solid" class="size-4" />
+            <%= ~t"Cancel"m %>
+          </.link>
+          <.link
+            :if={@show_import_button}
+            patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
+            class={[
+              "btn btn-primary btn-sm",
+              @busy && "btn-disabled"
+            ]}
+          >
+            <%= if importing?(@busy_action) do %>
+              <.icon name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
+            <% else %>
+              <.icon name="hero-arrow-up-tray" class="size-4" />
+            <% end %>
+            <%= ~t"Add"m %>
+          </.link>
+        </div>
       </:breadcrumbs>
       <:title>
         <.breadcrumbs
@@ -89,26 +116,38 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <%= @collection.code %>
         </div>
       </:subtitle>
-      <:actions
-        :if={
-          @current in [:records, :imports] and
-            Collection.can_set_importing?(@current_user, @collection)
-        }
-        class="max-sm:hidden"
-      >
+      <:actions :if={@show_import_button or @show_cancel_button} class="max-sm:hidden sm:space-x-2">
         <.link
+          :if={@show_cancel_button}
+          phx-click={JS.push("collection:cancel", value: %{id: @collection.id})}
+          data-confirm={~t"Are you sure?"m}
+          type="button"
+          class="btn btn-error"
+        >
+          <.icon name="hero-stop-solid" />
+          <%= busy_action_translation(@busy_action) %>
+        </.link>
+        <.link
+          :if={@show_import_button}
           patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
           class={[
             "btn btn-primary",
-            @disabled && "btn-disabled"
+            @busy && "btn-disabled"
           ]}
         >
-          <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" />
-          <.icon :if={@busy == false} name="hero-arrow-up-tray" />
+          <%= if importing?(@busy_action) do %>
+            <.icon name="hero-cog-6-tooth-solid animate-spin" />
+          <% else %>
+            <.icon name="hero-arrow-up-tray" />
+          <% end %>
           <%= ~t"Import dataset"m %>
         </.link>
       </:actions>
     </.page_header>
     """
+  end
+
+  defp importing?(busy_action) do
+    busy?("dataset:import", busy_action)
   end
 end
