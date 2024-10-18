@@ -299,6 +299,23 @@ defmodule DataAggregator.Records.Collection do
       change atomic_update(:records_count, expr(records_count - 1))
     end
 
+    update :enqueue_encoding do
+      accept []
+      argument :query, :map, allow_nil?: false
+      require_atomic? false
+
+      change Changes.SetCollectionEncodingBeforeTransaction
+      change Changes.EnqueueRecordsEnqueuer
+    end
+
+    update :cancel_action do
+      accept []
+      require_atomic? false
+
+      change Changes.CancelAction
+      change Changes.SetCollectionIdleAfterTransaction
+    end
+
     destroy :destroy do
       accept []
       primary? true
@@ -359,6 +376,7 @@ defmodule DataAggregator.Records.Collection do
     define :get_by_id, action: :read, get_by: [:id]
     define :get_by_grscicoll_reference, action: :read, get_by: [:grscicoll_reference]
     define :touch
+    define :enqueue_encoding, args: [:query]
     define :export, action: :export, args: [:export]
     define :publish, args: [:publication]
     define :approve, args: [:collection, :query]
@@ -374,11 +392,16 @@ defmodule DataAggregator.Records.Collection do
     define :set_idle_encoding
 
     define :decrement_records_count
+    define :cancel_action
   end
 
   policies do
     bypass with_role("admin") do
       authorize_if always()
+    end
+
+    policy action(:cancel_action) do
+      forbid_unless with_role("admin")
     end
 
     policy_group with_role("collection_digitizer") do
@@ -394,7 +417,8 @@ defmodule DataAggregator.Records.Collection do
                :set_approving,
                :set_deleting,
                :set_idle,
-               :set_idle_encoding
+               :set_idle_encoding,
+               :enqueue_encoding
              ]) do
         authorize_if with_role(["admin", "data_administrator"])
       end

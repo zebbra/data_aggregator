@@ -4,7 +4,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   use DataAggregatorWeb.CollectionLive.Import.Subscriptions
 
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
-  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection_light: 2, busy_action: 1]
+
+  import DataAggregatorWeb.CollectionLive.Helpers,
+    only: [get_collection_light: 2, cancel_action: 2, busy_action: 1]
 
   import DataAggregatorWeb.CollectionLive.Import.Components,
     only: [import_state_badge: 1, attribute_badge: 1]
@@ -58,8 +60,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         current={:imports}
         current_user={@current_user}
         meta={@meta}
-        disabled={@busy}
-        busy={@busy_action == "dataset:import"}
+        busy={@busy}
+        busy_action={@busy_action}
       />
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
         <.secondary_navigation_item
@@ -462,6 +464,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
       </:portal>
     </.page>
     """
+  end
+
+  @impl true
+  def handle_event("collection:cancel", %{"id" => id}, socket) do
+    cancel_action(id, socket)
   end
 
   @impl true

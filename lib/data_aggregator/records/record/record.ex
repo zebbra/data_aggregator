@@ -245,6 +245,12 @@ defmodule DataAggregator.Records.Record do
       filter expr(collection_id == ^arg(:collection_id))
     end
 
+    read :encoding_by_collection do
+      argument :collection_id, :string, allow_nil?: false
+
+      filter expr(collection_id == ^arg(:collection_id) and state in [:encoding, :queued])
+    end
+
     create :create do
       primary? true
       argument :collection, :struct, allow_nil?: false
@@ -401,6 +407,7 @@ defmodule DataAggregator.Records.Record do
   code_interface do
     define :read
     define :by_collection, args: [:collection_id]
+    define :encoding_by_collection, args: [:collection_id]
     define :create
     define :import, args: [:import, :params]
     define :bulk_import, args: [:import, :rows]

@@ -6,7 +6,10 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
   import DataAggregatorWeb.CollectionLive.Export.Components, only: [export_state_badge: 1]
   import DataAggregatorWeb.CollectionLive.Export.Helpers
-  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection_light: 2]
+
+  import DataAggregatorWeb.CollectionLive.Helpers,
+    only: [get_collection_light: 2, cancel_action: 2, busy_action: 1]
+
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   alias DataAggregator.Records.Collection
@@ -17,10 +20,14 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
 
   @impl true
   def mount(%{"id" => id} = _params, _session, socket) do
+    collection = get_collection_light(id, get_actor(socket))
+
     socket =
       socket
-      |> assign(:collection, get_collection_light(id, get_actor(socket)))
+      |> assign(:collection, collection)
       |> assign(selected_export: nil)
+      |> assign(:busy, collection.busy)
+      |> assign(:busy_action, busy_action(collection))
       |> subscribe_for_export_updates(connected?(socket))
 
     {:ok, socket}
@@ -47,7 +54,13 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
   def render(assigns) do
     ~H"""
     <.page current="collections" current_user={@current_user} open={@selected_export != nil}>
-      <.collection_header collection={@collection} current={:exports} current_user={@current_user} />
+      <.collection_header
+        collection={@collection}
+        current={:exports}
+        current_user={@current_user}
+        busy={@busy}
+        busy_action={@busy_action}
+      />
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/records"}
@@ -230,6 +243,11 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
       </:portal>
     </.page>
     """
+  end
+
+  @impl true
+  def handle_event("collection:cancel", %{"id" => id}, socket) do
+    cancel_action(id, socket)
   end
 
   @impl true

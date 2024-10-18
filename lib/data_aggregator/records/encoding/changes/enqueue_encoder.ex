@@ -29,14 +29,14 @@ defmodule DataAggregator.Records.Record.Changes.EnqueueEncoder do
     end
   end
 
-  defp insert_job(%Record{id: id}, %User{id: user_id}) do
-    %{id: id, user_id: user_id}
+  defp insert_job(%Record{id: id, collection_id: collection_id}, %User{id: user_id}) do
+    %{id: id, collection_id: collection_id, user_id: user_id}
     |> Encoder.new()
     |> Oban.insert()
   end
 
-  defp insert_job(%Record{id: id}, _) do
-    %{id: id}
+  defp insert_job(%Record{id: id, collection_id: collection_id}, _) do
+    %{id: id, collection_id: collection_id}
     |> Encoder.new()
     |> Oban.insert()
   end
