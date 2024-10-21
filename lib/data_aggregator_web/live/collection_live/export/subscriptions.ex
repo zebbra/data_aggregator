@@ -21,6 +21,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
   @load_all load_all()
   @update_events ~w(set_running set_exported set_failed)
   @collection_action_events ~w(
+    set_mapping
     set_importing
     set_exporting
     set_encoding

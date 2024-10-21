@@ -125,6 +125,7 @@ defmodule DataAggregator.Records.Collection do
     calculate :records_to_export_query, :map, Calculations.RecordsToExport
     calculate :fast_track_query, :map, Calculations.FastTrackQuery
     calculate :approval_query, :map, Calculations.ApprovalQuery
+    calculate :mapping, :boolean, expr(state == :mapping)
     calculate :importing, :boolean, expr(state == :importing)
     calculate :exporting, :boolean, expr(state == :exporting)
     calculate :encoding, :boolean, expr(state == :encoding)
@@ -180,6 +181,7 @@ defmodule DataAggregator.Records.Collection do
     default_initial_state :idle
 
     transitions do
+      transition :set_mapping, from: [:idle], to: :mapping
       transition :set_importing, from: [:idle], to: :importing
       transition :set_exporting, from: [:idle], to: :exporting
       transition :set_encoding, from: [:idle], to: :encoding
@@ -188,7 +190,7 @@ defmodule DataAggregator.Records.Collection do
       transition :set_deleting, from: [:idle], to: :deleting
 
       transition :set_idle,
-        from: [:importing, :exporting, :fast_track_publishing, :approving],
+        from: [:mapping, :importing, :exporting, :fast_track_publishing, :approving],
         to: :idle
 
       transition :set_idle_encoding,
@@ -235,6 +237,13 @@ defmodule DataAggregator.Records.Collection do
       require_atomic? false
 
       change Changes.RegisterAtGbif
+    end
+
+    update :set_mapping do
+      accept []
+      require_atomic? false
+
+      change transition_state(:mapping)
     end
 
     update :set_importing do
@@ -355,6 +364,7 @@ defmodule DataAggregator.Records.Collection do
     publish_all :destroy, ["destroyed", [:id, nil]]
     publish :update, ["updated", [:id, nil]]
 
+    publish :set_mapping, ["updated", [:id, nil]]
     publish :set_importing, ["updated", [:id, nil]]
     publish :set_exporting, ["updated", [:id, nil]]
     publish :set_encoding, ["updated", [:id, nil]]
@@ -383,6 +393,7 @@ defmodule DataAggregator.Records.Collection do
     define :approve, args: [:collection, :query]
     define :register_at_gbif, args: [:dwca_file_url]
 
+    define :set_mapping
     define :set_importing
     define :set_exporting
     define :set_encoding
@@ -411,6 +422,7 @@ defmodule DataAggregator.Records.Collection do
       end
 
       policy action([
+               :set_mapping,
                :set_importing,
                :set_exporting,
                :set_encoding,

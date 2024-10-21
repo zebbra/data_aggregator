@@ -12,6 +12,7 @@ defmodule DataAggregator.Records.ImageUpload do
   alias __MODULE__
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
   alias DataAggregator.Records.ImageUpload
   alias DataAggregator.Records.ImageUpload.Changes.SetTimeout
   alias DataAggregator.Records.Record
@@ -145,7 +146,7 @@ defmodule DataAggregator.Records.ImageUpload do
       accept []
       require_atomic? false
 
-      # change ImageUpload.Changes.SetCollectionMappingBeforeTransaction
+      change ImageUpload.Changes.SetCollectionMappingBeforeTransaction
       change transition_state(:mapping_queued)
       change ImageUpload.Changes.EnqueueMapper
     end
@@ -173,6 +174,7 @@ defmodule DataAggregator.Records.ImageUpload do
       require_atomic? false
 
       change transition_state(:mapped)
+      change SetCollectionIdleAfterTransaction
     end
 
     update :set_mapping_failed do
@@ -180,6 +182,7 @@ defmodule DataAggregator.Records.ImageUpload do
       require_atomic? false
 
       change transition_state(:mapping_failed)
+      change SetCollectionIdleAfterTransaction
     end
 
     read :read do

@@ -30,7 +30,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
         matching_record ->
           Logger.info("Record found for image #{image.attachment.filename}")
 
-          Record.add_image(matching_record, image, actor: actor)
+          Record.add_image(matching_record, image, actor: actor, authorize?: false)
       end
     end)
 
