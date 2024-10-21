@@ -34,7 +34,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   attr :activity, Activity, required: true
 
-  def activity_feed_element(%{activity: activity} = assigns) when activity.name in [:import, :update] do
+  def activity_feed_element(%{activity: activity} = assigns) when activity.name in [:import, :update, :add_image_url] do
     ~H"""
     <div class="grid w-full grid-cols-9 gap-y-4">
       <div class="bg-base-100 size-6 relative flex items-center justify-center">
@@ -132,7 +132,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
               :set_encoded,
               :set_encoding_failed,
               :update_approval_status,
-              :update_fast_track_status
+              :update_fast_track_status,
+              :add_image_url
             ] do
     ~H"""
     <.badge
@@ -161,7 +162,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     """
   end
 
-  defp activity_text(%{activity: activity} = assigns) when activity.name in [:import, :update] do
+  defp activity_text(%{activity: activity} = assigns) when activity.name in [:import, :update, :add_image_url] do
     ~H"""
     <span class="font-medium">
       <%= text(@activity.name, @activity.content) %>
@@ -237,6 +238,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   defp version_source(%{version_action_name: :import}), do: ~t"Import"
 
   defp version_source(%{version_action_name: :update} = version), do: version_source_from_catalog(version.changes)
+
+  defp version_source(%{version_action_name: :add_image_url}), do: ~t"Image Upload"
 
   defp version_source(_), do: nil
 
@@ -369,6 +372,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
+  def icon_tooltip(:add_image_url, _), do: ~t"associatedMedia was updated"m
+
   def icon_tooltip(_, _), do: nil
 
   defp text(:import, _), do: ~t"A data import was updating the record"m
@@ -399,6 +404,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       _ -> ~t"Approval status was updated"m
     end
   end
+
+  defp text(:add_image_url, _), do: ~t"associatedMedia was updated"m
 
   defp text(name, _), do: name
 
@@ -459,6 +466,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       _ -> "green"
     end
   end
+
+  def badge_color(:add_image_url, _), do: "green"
 
   def badge_color(_, _), do: "gray"
 end

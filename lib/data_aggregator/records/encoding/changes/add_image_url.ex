@@ -10,8 +10,8 @@ defmodule DataAggregator.Records.Encoding.Changes.AddImageUrl do
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, ctx) do
-    Changeset.before_action(changeset, &add_image(&1, ctx))
+  def change(%Changeset{} = changeset, _opts, %{actor: actor} = ctx) do
+    Changeset.before_action(changeset, &add_image(&1, ctx), actor: actor)
   end
 
   defp add_image(%Changeset{arguments: %{image: image}} = changeset, _ctx) do

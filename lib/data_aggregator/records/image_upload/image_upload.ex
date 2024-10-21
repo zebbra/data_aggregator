@@ -70,7 +70,10 @@ defmodule DataAggregator.Records.ImageUpload do
       transition :extract, from: [:extraction_queued, :new], to: :extracting
       transition :extract, from: [:extracting], to: :extracted
 
-      transition :enqueue_mapping, from: [:extracted, :mapped], to: :mapping_queued
+      transition :enqueue_mapping,
+        from: [:extracted, :mapped, :mapping_failed],
+        to: :mapping_queued
+
       transition :map, from: [:mapping_queued, :extracted], to: :mapping
       transition :map, from: :mapping, to: :mapped
 
