@@ -43,31 +43,31 @@ defmodule DataAggregator.Records.Record do
 
   @type t :: %Record{}
 
-  @ash_pagify_scopes %{
-    status: [
-      %{name: :all, filter: nil, default?: true},
-      %{
-        name: :not_encoded,
-        filter: %{state: %{not_equals: :encoded}}
-      },
-      %{
-        name: :not_published,
-        filter: %{fast_track_status: %{not_equals: :published}}
-      },
-      %{
-        name: :not_approved,
-        filter: %{approval_status: %{not_equals: :approved}}
-      }
+  @ash_pagify_options %{
+    scopes: %{
+      status: [
+        %{name: :all, filter: nil, default?: true},
+        %{
+          name: :not_encoded,
+          filter: %{state: %{not_equals: :encoded}}
+        },
+        %{
+          name: :not_published,
+          filter: %{fast_track_status: %{not_equals: :published}}
+        },
+        %{
+          name: :not_approved,
+          filter: %{approval_status: %{not_equals: :approved}}
+        }
+      ]
+    },
+    full_text_search: [
+      tsvector_column: [
+        encoded_tsvector: Ash.Expr.expr(encoded_tsvector)
+      ]
     ]
   }
-  def ash_pagify_scopes, do: @ash_pagify_scopes
-
-  @full_text_search [
-    tsvector_column: [
-      encoded_tsvector: Ash.Expr.expr(encoded_tsvector)
-    ]
-  ]
-  def full_text_search, do: @full_text_search
+  def ash_pagify_options, do: @ash_pagify_options
 
   attributes do
     uuid_attribute :id, prefix: "rec", public?: true
