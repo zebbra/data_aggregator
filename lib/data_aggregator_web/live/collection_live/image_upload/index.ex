@@ -140,9 +140,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
               patch={
                 build_path(~p"/collections/#{@collection}/image_uploads/#{image_upload}/edit", @meta)
               }
-              data-tip={~t"Edit"m}
               disabled={@busy}
-              icon="hero-pencil-square-mini"
+              data-tip={edit_data_tip(image_upload)}
+              icon={edit_icon(image_upload)}
             />
           </div>
 
@@ -306,6 +306,12 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
     opts = Keyword.put_new(opts, :actor, actor)
     AshPagify.validate_and_run(ImageUpload, params, opts, params["id"])
   end
+
+  defp edit_data_tip(%ImageUpload{state: :mapped}), do: ~t"Edit for rerun"m
+  defp edit_data_tip(_), do: ~t"Edit"m
+
+  defp edit_icon(%ImageUpload{state: :mapped}), do: "hero-arrow-path-rounded-square"
+  defp edit_icon(_), do: "hero-pencil-square-mini"
 
   defp no_results_content(assigns) do
     ~H"""

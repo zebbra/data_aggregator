@@ -3584,7 +3584,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "Please review the image upload summary."
 msgstr "Bitte überprüfe die Zusammenfassung deines Imports."
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:81
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:127
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "Run Mapping"
@@ -3602,13 +3602,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "Summary"
 msgstr "Zusammenfassung"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:145
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:148
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "file"
 msgstr "Datei"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:146
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:149
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "files"
@@ -3746,7 +3746,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Delete"
 msgstr "Löschen"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:143
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:311
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Edit"
@@ -3771,7 +3771,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "File"
 msgstr "Datei"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:314
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:320
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Get started by uploading a new zip file."
@@ -3834,7 +3834,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "New Image Upload"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:313
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:319
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "No image uploads"
@@ -3882,7 +3882,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Unmapped images count"
 msgstr "Spalten ohne Zuordnung"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:315
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:321
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Upload Images"
@@ -3937,3 +3937,15 @@ msgstr "Kontinent"
 msgctxt "DataAggregatorWeb.Components.Attachment"
 msgid "Files"
 msgstr "Datei"
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:126
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
+msgid "Re-run Mapping"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:310
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
+msgid "Edit for rerun"
+msgstr ""

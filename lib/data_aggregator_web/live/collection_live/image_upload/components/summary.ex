@@ -78,7 +78,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
           phx-value-id={@image_upload.id}
           phx-target={@myself}
         >
-          <%= ~t"Run Mapping"m %>
+          <%= run_mapping_text(@image_upload) %>
         </button>
         <.link
           patch={
@@ -122,6 +122,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
         )
     )
   end
+
+  defp run_mapping_text(%ImageUpload{state: :mapped}), do: ~t"Re-run Mapping"m
+  defp run_mapping_text(_), do: ~t"Run Mapping"m
 
   defp invalid_file_infos(nil), do: 0
   defp invalid_file_infos([]), do: 0

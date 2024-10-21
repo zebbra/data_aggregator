@@ -148,7 +148,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           patch={build_path(~p"/collections/#{@collection}/image_uploads/new", @meta)}
           class={[
             "btn btn-primary",
-            @disabled && "btn-disabled"
+            @busy && "btn-disabled"
           ]}
         >
           <.icon :if={@busy} name="hero-cog-6-tooth-solid animate-spin" />
