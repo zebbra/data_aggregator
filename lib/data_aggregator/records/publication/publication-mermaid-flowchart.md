@@ -10,7 +10,9 @@ running --> failed: set_failed
 failed --> queued: enqueue
 failed --> running: run
 failed --> running: set_running
+running --> failed: cancel_publication
 queued --> running: set_running
+queued --> failed: cancel_publication
 pending --> running: run
 pending --> running: set_running
 ```

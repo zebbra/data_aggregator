@@ -34,7 +34,7 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackCheckerTest do
 
         assert_enqueued(
           worker: Scheduler.FastTrackPublicationVerifier,
-          args: %{id: record.id}
+          args: %{id: record.id, collection_id: record.collection_id}
         )
       end)
     end
@@ -50,7 +50,7 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackCheckerTest do
 
         assert_enqueued(
           worker: Scheduler.FastTrackPublicationVerifier,
-          args: %{id: record.id}
+          args: %{id: record.id, collection_id: record.collection_id}
         )
       end)
     end

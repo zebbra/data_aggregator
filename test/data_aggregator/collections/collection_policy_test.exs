@@ -101,6 +101,20 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       assert Collection.can_destroy?(actor, collection_other)
     end
 
+    test "can enqueue encoding for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
+    } do
+      assert Collection.can_enqueue_encoding?(actor, collection_same, %{})
+    end
+
+    test "can enqueue encoding for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      assert Collection.can_enqueue_encoding?(actor, collection_other, %{})
+    end
+
     set_test_cases = [
       {:can_set_importing?, "set importing"},
       {:can_set_exporting?, "set exporting"},
@@ -109,7 +123,8 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       {:can_set_approving?, "set approving"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
-      {:can_set_idle_encoding?, "set idle encoding"}
+      {:can_set_idle_encoding?, "set idle encoding"},
+      {:can_cancel_action?, "cancel action"}
     ]
 
     for {method, method_description} <- set_test_cases do
@@ -216,6 +231,20 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       refute Collection.can_destroy?(actor, collection_other)
     end
 
+    test "cannot enqueue encoding for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
+    } do
+      refute Collection.can_enqueue_encoding?(actor, collection_same, %{})
+    end
+
+    test "cannot enqueue encoding for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      refute Collection.can_enqueue_encoding?(actor, collection_other, %{})
+    end
+
     set_test_cases = [
       {:can_set_importing?, "set importing"},
       {:can_set_exporting?, "set exporting"},
@@ -224,7 +253,8 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       {:can_set_approving?, "set approving"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
-      {:can_set_idle_encoding?, "set idle encoding"}
+      {:can_set_idle_encoding?, "set idle encoding"},
+      {:can_cancel_action?, "cancel action"}
     ]
 
     for {method, method_description} <- set_test_cases do
@@ -311,6 +341,34 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
 
     test "cannot destroy other collection", %{actor: actor, collection_other: collection_other} do
       refute Collection.can_destroy?(actor, collection_other)
+    end
+
+    test "cannot cancel action for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
+    } do
+      refute Collection.can_cancel_action?(actor, collection_same)
+    end
+
+    test "cannot cancel action for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      refute Collection.can_cancel_action?(actor, collection_other)
+    end
+
+    test "can enqueue encoding for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
+    } do
+      assert Collection.can_enqueue_encoding?(actor, collection_same, %{})
+    end
+
+    test "cannot enqueue encoding for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      refute Collection.can_enqueue_encoding?(actor, collection_other, %{})
     end
 
     set_test_cases = [
@@ -408,6 +466,20 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
 
     test "cannot destroy other collection", %{actor: actor, collection_other: collection_other} do
       refute Collection.can_destroy?(actor, collection_other)
+    end
+
+    test "can enqueue encoding for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
+    } do
+      assert Collection.can_enqueue_encoding?(actor, collection_same, %{})
+    end
+
+    test "cannot enqueue encoding for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      refute Collection.can_enqueue_encoding?(actor, collection_other, %{})
     end
 
     set_test_cases = [

@@ -7,7 +7,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   import DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
 
   import DataAggregatorWeb.CollectionLive.Helpers,
-    only: [get_collection_full: 2, busy_action: 1]
+    only: [get_collection_full: 2, busy_action: 1, cancel_action: 2]
 
   import DataAggregatorWeb.CollectionLive.Record.ActivityFeed
   import DataAggregatorWeb.CollectionLive.Record.Components
@@ -23,7 +23,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       get_dwc_field: 1
     ]
 
-  alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.Encoding.RecordEncodingResult
@@ -88,8 +87,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         collection={@collection}
         current={:records}
         current_user={@current_user}
-        disabled={@busy}
-        busy={busy?("dataset:import", @busy_action)}
+        busy={@busy}
+        busy_action={@busy_action}
       />
 
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
@@ -123,19 +122,60 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             href={path_helper(@collection, @layer, @meta, %{status: :all})}
             title={~t"All records"m}
             value={1.0}
-            desc={@collection.records_count}
+            desc={
+              mgettext("%{record_count} Records",
+                record_count: format_number(@collection.records_count)
+              )
+            }
             active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :all})}
           />
           <.scope_stat
             href={path_helper(@collection, @layer, @meta, %{status: :not_encoded})}
-            title={~t"Not encoded"m}
+            title={~t"Not encoded / Incomplete"m}
             value={
               if @collection.records_count_not_encoded == 0,
-                do: 1,
+                do: 0,
                 else: @collection.records_count_not_encoded / @collection.records_count
             }
-            desc={@collection.records_count_not_encoded}
+            desc={
+              mgettext("%{records_count_not_encoded} of %{records_count} Records",
+                records_count_not_encoded: format_number(@collection.records_count_not_encoded),
+                records_count: format_number(@collection.records_count)
+              )
+            }
             active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_encoded})}
+          />
+          <.scope_stat
+            href={path_helper(@collection, @layer, @meta, %{status: :not_published})}
+            title={~t"Not published"m}
+            value={
+              if @collection.records_count_not_published == 0,
+                do: 0,
+                else: @collection.records_count_not_published / @collection.records_count
+            }
+            desc={
+              mgettext("%{records_count_not_published} of %{records_count} Records",
+                records_count_not_published: format_number(@collection.records_count_not_published),
+                records_count: format_number(@collection.records_count)
+              )
+            }
+            active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_published})}
+          />
+          <.scope_stat
+            href={path_helper(@collection, @layer, @meta, %{status: :not_approved})}
+            title={~t"Not approved"m}
+            value={
+              if @collection.records_count_not_approved == 0,
+                do: 0,
+                else: @collection.records_count_not_approved / @collection.records_count
+            }
+            desc={
+              mgettext("%{records_count_not_approved} of %{records_count} Records",
+                records_count_not_approved: format_number(@collection.records_count_not_approved),
+                records_count: format_number(@collection.records_count)
+              )
+            }
+            active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_approved})}
           />
         </div>
       </div>
@@ -159,7 +199,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             no_results_content(%{
               collection: @collection,
               current_user: @current_user,
-              filters_count: @filters_count
+              filters_count: @filters_count,
+              meta: @meta
             })
         ]}
         path={~p"/collections/#{@collection.id}/records?layer=#{@layer}"}
@@ -296,7 +337,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:eve_event_date}
           label={get_dwc_field(:eve_event_date)}
         >
-          <%= format_date(record.eve_event_date, format: :medium) %>
+          <%= record.eve_event_date %>
         </:col>
         <:col
           :let={{_id, record}}
@@ -402,14 +443,26 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       <:secondary>
         <.slideover
           title={@selected_record != nil && encoded_attribute(@selected_record, :tax_scientific_name)}
-          subtitle={~t"Characteristics according to the darwin core standard"m}
           open={@selected_record != nil}
           on_cancel={JS.push("record:select", value: %{id: nil})}
           size="xl"
           gradient={false}
           class=""
         >
-          <.secondary_navigation class="sticky border-t-0 top-0 mb-6">
+          <:additional_header_content>
+            <.slideover_subtitle
+              text={@selected_record.mte_catalog_number}
+              occurrence_id={@selected_record.occ_occurrence_id}
+              fast_track_status={@selected_record.fast_track_status}
+            />
+            <div class="mt-4 flex space-x-2">
+              <.encoding_state_badge state={@selected_record.state} />
+              <.publication_state_badge state={@selected_record.fast_track_status} />
+              <.approval_state_badge state={@selected_record.approval_status} />
+            </div>
+          </:additional_header_content>
+
+          <.secondary_navigation class="sticky border-t-0 top-0">
             <.secondary_navigation_item
               label={~t"Data"m}
               on_click="record:set_tab"
@@ -430,8 +483,28 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             />
           </.secondary_navigation>
           <div :if={@record_tab == "data"} class="contents">
+            <.list class="border-black-white/10 border-b">
+              <:item title={~t"Imported"m}>
+                <%= format_datetime(@selected_record.last_imported_at) %>
+              </:item>
+              <:item title={~t"Last Changes"m}>
+                <%= format_datetime(@selected_record.updated_at) %>
+              </:item>
+              <:item title={~t"Quality"m}>
+                <.mids_level_indicator level={@selected_record.mids_level} />
+              </:item>
+            </.list>
+            <div :if={@selected_record.mte_associated_media} class="pb-4">
+              <.first_associated_media
+                associated_media={@selected_record.mte_associated_media}
+                class="border-black-white/10 border-b py-8"
+              />
+            </div>
             <%= for category <- @attrs_in_categories do %>
-              <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 open:first:border-t lg:pl-4">
+              <details
+                :if={category_has_data?(category)}
+                class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:first:border-t lg:pl-4"
+              >
                 <summary class="collapse-title">
                   <%= category.label %>
                 </summary>
@@ -444,7 +517,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                       container_attrs: [class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
                     ]}
                     id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
-                    items={category.attributes}
+                    items={attributes_with_data(category.attributes)}
                   >
                     <:col :let={attribute} label={~t"Name"} class="font-semibold">
                       <%= attribute.name %>
@@ -672,6 +745,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
+  def handle_event("collection:cancel", %{"id" => id}, socket) do
+    cancel_action(id, socket)
+  end
+
+  @impl true
   def handle_event("record:select", %{"id" => nil}, socket) do
     socket =
       socket
@@ -722,33 +800,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("collection:encode", _params, socket) do
-    %{collection: collection, layer: layer} = socket.assigns
+    %{collection: collection, meta: %{ash_pagify: ash_pagify}, layer: layer} = socket.assigns
 
     actor = get_actor(socket)
     collection = Collection.get_by_id!(collection.id, load: [:encoding], actor: actor)
     socket = update(socket, :show_encode, &(!&1))
 
-    case Collection.set_encoding(collection, actor: actor) do
-      {:ok, %{id: id}} ->
-        opts =
-          layer
-          |> maybe_put_tsvector()
-          |> Keyword.put(:for, Record)
+    encoding_query = filter_map(ash_pagify, %{collection: %{id: %{eq: collection.id}}}, layer)
 
-        enqueue_encoder_fn = fn ->
-          Record
-          |> Ash.Query.filter(collection.id == ^id)
-          |> AshPagify.validated_query(socket.assigns.meta.ash_pagify, opts)
-          |> Ash.stream!(page: false, actor: actor)
-          |> Enum.each(&Record.enqueue_encoder!(&1, actor: actor))
-        end
-
-        if Records.execute_async?() do
-          Task.start(enqueue_encoder_fn)
-        else
-          enqueue_encoder_fn.()
-        end
-
+    case Collection.enqueue_encoding(collection, encoding_query, actor: actor) do
+      {:ok, _} ->
         {:noreply, put_flash(socket, :info, ~t"Encoding started in background"m)}
 
       {:error, _} ->
@@ -942,20 +1003,27 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   defp no_results_content(%{filters_count: 0} = assigns) do
     ~H"""
-    <%= if Collection.can_set_importing?(@current_user, @collection) do %>
-      <.empty_state
-        title={~t"No records"m}
-        description={~t"Get started by importing a new dataset"m}
-        label={~t"Import"m}
-        icon="hero-bug-ant"
-        href={~p"/collections/#{@collection.id}/imports/new"}
-      />
-    <% else %>
-      <.empty_state
-        title={~t"No records found"m}
-        description={~t"There are no records yet for your institution"m}
-        icon="hero-magnifying-glass"
-      />
+    <%= cond do %>
+      <% not AshPagify.active_scope?(@meta.ash_pagify, %{status: :all}) -> %>
+        <.empty_state
+          title={~t"No records found"m}
+          description={~t"Try with a different scope"m}
+          icon="hero-magnifying-glass"
+        />
+      <% Collection.can_set_importing?(@current_user, @collection) -> %>
+        <.empty_state
+          title={~t"No records"m}
+          description={~t"Get started by importing a new dataset"m}
+          label={~t"Import"m}
+          icon="hero-bug-ant"
+          href={~p"/collections/#{@collection.id}/imports/new"}
+        />
+      <% true -> %>
+        <.empty_state
+          title={~t"No records found"m}
+          description={~t"There are no records yet for your institution"m}
+          icon="hero-magnifying-glass"
+        />
     <% end %>
     """
   end

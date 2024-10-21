@@ -29,14 +29,14 @@ defmodule DataAggregator.Records.Publication.Changes.EnqueuePublisher do
     end
   end
 
-  defp insert_job(%Publication{id: id}, nil) do
-    %{id: id}
+  defp insert_job(%Publication{id: id, collection_id: collection_id}, nil) do
+    %{id: id, collection_id: collection_id}
     |> Publisher.new()
     |> Oban.insert()
   end
 
-  defp insert_job(%Publication{id: id}, %User{id: user_id}) do
-    %{id: id, user_id: user_id}
+  defp insert_job(%Publication{id: id, collection_id: collection_id}, %User{id: user_id}) do
+    %{id: id, collection_id: collection_id, user_id: user_id}
     |> Publisher.new()
     |> Oban.insert()
   end

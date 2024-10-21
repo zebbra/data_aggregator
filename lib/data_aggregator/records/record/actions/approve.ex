@@ -6,6 +6,7 @@ defmodule DataAggregator.Records.Actions.Approve do
   """
   use Ash.Resource.Actions.Implementation
 
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
@@ -47,6 +48,16 @@ defmodule DataAggregator.Records.Actions.Approve do
 
         {center, rows_count}
       end)
+
+    total_rows_count =
+      Enum.reduce(center_and_record_counts, 0, fn {_, rows_count}, acc -> acc + rows_count end)
+
+    # Mark the collection as approving only after all publications have been
+    # created and enqueued and only if there are any publications. This has
+    # the potential to introduce a duplicated approval for the same collection
+    if total_rows_count > 0 do
+      Collection.set_approving!(collection)
+    end
 
     {:ok, center_and_record_counts}
   end

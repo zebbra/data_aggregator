@@ -39,6 +39,8 @@ classDiagram
         set_idle()
         set_idle_encoding()
         decrement_records_count()
+        enqueue_encoding(Map query)
+        cancel_action()
         destroy()
         export(Struct export)
         publish(Struct publication)
@@ -68,7 +70,7 @@ classDiagram
         String oth_institution_id
         String oth_institution_code
         String oth_information_withheld
-        Date oth_date_available
+        String oth_date_available
         String oth_dataset_name
         String oth_dataset_id
         String oth_data_generalizations
@@ -88,7 +90,7 @@ classDiagram
         String pvn_preservation_mode_keywords
         String pvn_preservation_method
         String pvn_preservation_id
-        Date pvn_preservation_date_begin
+        String pvn_preservation_date_begin
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
@@ -176,7 +178,7 @@ classDiagram
         String loc_georeference_remarks
         String loc_georeference_sources
         String loc_georeference_protocol
-        Date loc_georeferenced_date
+        String loc_georeferenced_date
         String loc_georeferenced_by
         Float loc_footprint_spatial_fit
         String loc_footprint_srs
@@ -272,7 +274,7 @@ classDiagram
         String idf_evidence_type
         String idf_type_status
         String idf_identified_by
-        Date idf_date_identified
+        String idf_date_identified
         Float eve_shrub_layer_height_in_meters
         String eve_start_day_of_year
         String eve_sampling_effort
@@ -307,7 +309,7 @@ classDiagram
         Integer eve_day
         Integer eve_end_day_of_year
         String eve_event_time
-        Date eve_event_date
+        String eve_event_date
         String eve_field_number
         String eve_parent_event_id
         String eve_event_id
@@ -376,6 +378,7 @@ classDiagram
         destroy()
         read()
         by_collection(String collection_id, String sort)
+        active_by_collection(String collection_id)
         create(Struct collection, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
         update_mapping(Map mapping, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
         update(Struct[] records, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
@@ -386,6 +389,7 @@ classDiagram
         run()
         set_exported()
         update_attachment(Struct attachment)
+        cancel_export()
     }
     class Import {
         UUID id
@@ -412,6 +416,7 @@ classDiagram
         destroy()
         read(String sort)
         by_collection(String collection_id, String sort)
+        active_by_collection(String collection_id)
         create(Struct collection, Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, ...)
         create_from_path(Struct collection, String path, String filename)
         update_mapping(Column[] columns)
@@ -423,6 +428,7 @@ classDiagram
         set_failed()
         set_imported()
         update_error_log(Struct error_log)
+        cancel_import()
     }
     class Record {
         UUID import_id
@@ -456,6 +462,7 @@ classDiagram
         destroy()
         read()
         by_collection(String collection_id, String sort)
+        active_by_collection(String collection_id)
         create(Struct collection, String name, Atom channel, UtcDatetime published_at, ...)
         enqueue()
         add_publication_progress(Integer published)
@@ -464,6 +471,7 @@ classDiagram
         run()
         set_done()
         update_attachment(Struct attachment)
+        cancel_publication()
     }
     class Record {
         Map ext_vernacular_names
@@ -489,7 +497,7 @@ classDiagram
         String oth_institution_id
         String oth_institution_code
         String oth_information_withheld
-        Date oth_date_available
+        String oth_date_available
         String oth_dataset_name
         String oth_dataset_id
         String oth_data_generalizations
@@ -509,7 +517,7 @@ classDiagram
         String pvn_preservation_mode_keywords
         String pvn_preservation_method
         String pvn_preservation_id
-        Date pvn_preservation_date_begin
+        String pvn_preservation_date_begin
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
@@ -597,7 +605,7 @@ classDiagram
         String loc_georeference_remarks
         String loc_georeference_sources
         String loc_georeference_protocol
-        Date loc_georeferenced_date
+        String loc_georeferenced_date
         String loc_georeferenced_by
         Float loc_footprint_spatial_fit
         String loc_footprint_srs
@@ -693,7 +701,7 @@ classDiagram
         String idf_evidence_type
         String idf_type_status
         String idf_identified_by
-        Date idf_date_identified
+        String idf_date_identified
         Float eve_shrub_layer_height_in_meters
         String eve_start_day_of_year
         String eve_sampling_effort
@@ -728,7 +736,7 @@ classDiagram
         Integer eve_day
         Integer eve_end_day_of_year
         String eve_event_time
-        Date eve_event_date
+        String eve_event_date
         String eve_field_number
         String eve_parent_event_id
         String eve_event_id
@@ -770,6 +778,7 @@ classDiagram
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read(String sort)
         by_collection(String collection_id, String sort)
+        encoding_by_collection(String collection_id)
         create(Struct collection, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         import(Struct import, Map params, Map ext_vernacular_names, Map ext_species_profile, ...)
         enqueue_encoder()
@@ -884,7 +893,7 @@ classDiagram
         String oth_institution_id
         String oth_institution_code
         String oth_information_withheld
-        Date oth_date_available
+        String oth_date_available
         String oth_dataset_name
         String oth_dataset_id
         String oth_data_generalizations
@@ -904,7 +913,7 @@ classDiagram
         String pvn_preservation_mode_keywords
         String pvn_preservation_method
         String pvn_preservation_id
-        Date pvn_preservation_date_begin
+        String pvn_preservation_date_begin
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
@@ -992,7 +1001,7 @@ classDiagram
         String loc_georeference_remarks
         String loc_georeference_sources
         String loc_georeference_protocol
-        Date loc_georeferenced_date
+        String loc_georeferenced_date
         String loc_georeferenced_by
         Float loc_footprint_spatial_fit
         String loc_footprint_srs
@@ -1088,7 +1097,7 @@ classDiagram
         String idf_evidence_type
         String idf_type_status
         String idf_identified_by
-        Date idf_date_identified
+        String idf_date_identified
         Float eve_shrub_layer_height_in_meters
         String eve_start_day_of_year
         String eve_sampling_effort
@@ -1123,7 +1132,7 @@ classDiagram
         Integer eve_day
         Integer eve_end_day_of_year
         String eve_event_time
-        Date eve_event_date
+        String eve_event_date
         String eve_field_number
         String eve_parent_event_id
         String eve_event_id

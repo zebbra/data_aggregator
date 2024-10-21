@@ -2,11 +2,11 @@
 
 ## Tagging releases
 
-To tag a create a release tag, use the following command:
+We use the [git_ops](https://hexdocs.pm/git_ops/readme.html) package to manage our release. To tag a create a release tag, use the following command:
 
 ```bash
-git tag -a v1.1.0 -m "Release 1.1.0 and other notes"
-git push --tags
+mix git_ops.release
+git push --follow-tags
 ```
 
 Now the CI/CD pipeline will be triggered and...

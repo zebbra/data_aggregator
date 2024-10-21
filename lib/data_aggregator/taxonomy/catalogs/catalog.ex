@@ -113,7 +113,6 @@ defmodule DataAggregator.Taxonomy.Catalog do
 
       :geo_forward ->
         [
-          {:loc_municipality, "city"},
           {:loc_continent, "continent"},
           {:loc_country, "country"},
           {:loc_country_code, "country_code"},

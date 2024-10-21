@@ -17,6 +17,7 @@ defmodule DataAggregatorWeb.Components.Button do
   """
   attr :disabled, :boolean, default: false, doc: "whether the button is disabled"
   attr :icon, :string, doc: "the icon name"
+  attr :icon_class, :string, default: nil, doc: "additional icon classes"
 
   attr :rest, :global,
     include: ~w(phx-click phx-value-id patch data-tip data-confirm data-confirm_id),
@@ -40,7 +41,8 @@ defmodule DataAggregatorWeb.Components.Button do
             if(@disabled,
               do: "text-base-content/20",
               else: "text-base-content/75"
-            )
+            ),
+            @icon_class
           ])
         }
       />

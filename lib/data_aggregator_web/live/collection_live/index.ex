@@ -125,6 +125,17 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           col_class="bg-base-300/10 border-l border-black-white/5"
           label={~t"Actions"m}
         >
+          <.table_action_button
+            :if={
+              collection.busy and not collection.deleting and
+                Collection.can_cancel_action?(@current_user, collection)
+            }
+            phx-click={JS.push("collection:cancel", value: %{id: collection.id})}
+            data-tip={state_translation(collection.state)}
+            data-confirm={~t"Are you sure?"m}
+            icon="hero-stop-mini"
+            icon_class="bg-error"
+          />
           <div class="border-black-white/10 mr-4 inline-flex border-r pr-4">
             <.table_action_button
               patch={build_path(~p"/collections/#{collection}/edit", @meta)}
@@ -196,6 +207,11 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
       :collection,
       Collection.get_by_id!(id, load: @load, actor: get_actor(socket))
     )
+  end
+
+  @impl true
+  def handle_event("collection:cancel", %{"id" => id}, socket) do
+    cancel_action(id, socket, load: @load)
   end
 
   @impl true

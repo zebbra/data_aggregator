@@ -40,6 +40,16 @@ if System.get_env("IMPORT_MAX_CONCURRENCY") do
   config :data_aggregator, DataAggregator.Records, import_max_concurrency: max_concurrency
 end
 
+if System.get_env("IMPORT_TIMEOUT") do
+  import_timeout = "IMPORT_TIMEOUT" |> System.get_env() |> String.to_integer()
+  config :data_aggregator, DataAggregator.Records, import_timeout: import_timeout
+end
+
+if System.get_env("EXPORT_TIMEOUT") do
+  export_timeout = "EXPORT_TIMEOUT" |> System.get_env() |> String.to_integer()
+  config :data_aggregator, DataAggregator.Records, export_timeout: export_timeout
+end
+
 http_cache_path = System.get_env("HTTP_CACHE_PATH") || "priv/cache/#{config_env()}/http"
 
 config :data_aggregator,
@@ -131,7 +141,7 @@ if config_env() == :prod do
   ## Configure Erlang clustering using DNS cluster
   config :data_aggregator, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
-  unless base_url.scheme in ["http", "https"] do
+  if base_url.scheme not in ["http", "https"] do
     raise "BASE_URL must start with `http` or `https`. Currently configured as `#{System.get_env("BASE_URL")}`"
   end
 

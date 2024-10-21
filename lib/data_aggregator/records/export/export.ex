@@ -74,6 +74,7 @@ defmodule DataAggregator.Records.Export do
       transition :set_running, from: [:pending, :exported, :failed, :queued], to: :running
       transition :set_exported, from: :running, to: :exported
       transition :set_failed, from: :running, to: :failed
+      transition :cancel_export, from: [:running, :queued], to: :failed
     end
   end
 
@@ -96,6 +97,12 @@ defmodule DataAggregator.Records.Export do
                  keyset?: true
 
       filter expr(collection_id == ^arg(:collection_id))
+    end
+
+    read :active_by_collection do
+      argument :collection_id, :string, allow_nil?: false
+
+      filter expr(collection_id == ^arg(:collection_id) and state in [:running, :queued])
     end
 
     create :create do
@@ -183,6 +190,14 @@ defmodule DataAggregator.Records.Export do
       change manage_relationship(:attachment, :attachment, type: :append)
       change load(:attachment)
     end
+
+    update :cancel_export do
+      accept []
+      require_atomic? false
+
+      change transition_state(:failed)
+      change set_attribute(:finished_at, &DateTime.utc_now/0)
+    end
   end
 
   pub_sub do
@@ -199,6 +214,7 @@ defmodule DataAggregator.Records.Export do
   code_interface do
     define :read
     define :by_collection, args: [:collection_id]
+    define :active_by_collection, args: [:collection_id]
     define :create
     define :update
     define :destroy
@@ -211,6 +227,7 @@ defmodule DataAggregator.Records.Export do
     define :set_failed
     define :update_attachment, action: :update_attachment, args: [:attachment]
     define :add_export_progress, args: [:exported]
+    define :cancel_export
   end
 
   postgres do

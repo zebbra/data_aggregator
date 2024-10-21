@@ -280,7 +280,11 @@ defmodule DataAggregator.PublicationTest do
         assert {:ok, publication} = Publication.enqueue(publication)
 
         assert publication.state == :queued
-        assert_enqueued(worker: Publisher, args: %{id: publication.id})
+
+        assert_enqueued(
+          worker: Publisher,
+          args: %{id: publication.id, collection_id: publication.collection_id}
+        )
 
         collection = Collection.get_by_id!(collection.id)
         assert collection.state == :fast_track_publishing

@@ -71,22 +71,17 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
       System.get_env("OPEN_CAGE_DATA_API_KEY") ||
         throw("No open cage data api key found in the environment variables. set one under OPEN_CAGE_DATA_API_KEY")
 
-    # we want to encode the location if we have at least one of the following fields,
-    # otherwise we would get a way too generic response
+    # we only want to encode, if a tleast loc_country is present
     q =
-      if encoded_record.loc_locality || encoded_record.loc_municipality do
+      if encoded_record.loc_country do
         [
-          encoded_record.loc_locality,
-          encoded_record.loc_municipality,
           encoded_record.loc_state_province,
           encoded_record.loc_country
         ]
         |> Enum.reject(&is_nil/1)
         |> Enum.join(", ")
       else
-        Logger.debug(
-          "no encoded_record.loc_locality or encoded_record.loc_municipality found on encoded_record #{encoded_record.id}"
-        )
+        Logger.debug("no encoded_record.loc_country found on encoded_record #{encoded_record.id}")
 
         ""
       end
@@ -120,7 +115,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
         params
         |> fetch_api()
         |> parse_response()
-        |> add_municipality_and_city()
 
       {:error, error} ->
         Logger.debug(error)
@@ -151,21 +145,6 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
 
   defp parse_response(response) when response.status != 200,
     do: throw("No valid response (status #{response.status}) from geo api")
-
-  defp add_municipality_and_city(update_params) do
-    update_params
-    |> Map.put(
-      "town",
-      update_params["town"] || update_params["township"] || update_params["village"] ||
-        update_params["city"] ||
-        update_params["_normalized_city"]
-    )
-    |> Map.put(
-      "city",
-      update_params["city"] || update_params["suburb"] || update_params["township"] ||
-        update_params["village"] || update_params["_normalized_city"]
-    )
-  end
 
   @spec handle_error(String.t(), map()) :: :ok
   defp handle_error(encoded_record_id, error) do

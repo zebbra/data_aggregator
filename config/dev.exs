@@ -22,25 +22,82 @@ config :data_aggregator, DataAggregator.Repo,
   show_sensitive_data_on_connection_error: true,
   timeout: 10 * 60 * 1000
 
+config :data_aggregator, DataAggregatorWeb.Endpoint,
+  http: [ip: {127, 0, 0, 1}, port: 4000],
+  check_origin: false,
+  code_reloader: true,
+  # Instructs the tool to manage your mix version in your `mix.exs` file
+  # See below for more information
+  debug_errors: true,
+  secret_key_base: "rs4+NR9FM90SkkrmYTJDIn0wK0Cac6qKzU82uKfNirNVIvYjdulbQ7lIUvIx2S4m",
+  watchers: [
+    # Instructs the tool to manage the version in your README.md
+    # Pass in `true` to use `"README.md"` or a string to customize
+    esbuild: {Esbuild, :install_and_run, [:data_aggregator, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:data_aggregator, ~w(--watch)]},
+    storybook: {Tailwind, :install_and_run, [:storybook, ~w(--watch)]}
+  ]
+
+config :data_aggregator, DataAggregatorWeb.Endpoint,
+  live_reload: [
+    patterns: [
+      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/gettext/.*(po)$",
+      ~r"lib/data_aggregator_web/(controllers|live|components)/.*(ex|heex)$",
+      ~r"storybook/.*(exs)$"
+    ]
+  ]
+
+config :data_aggregator, Oban, queues: [encoders: 4]
+config :data_aggregator, dev_routes: true
+
+config :data_aggregator,
+  http_cache_enabled: true
+
+config :data_aggregator, publication_verification_scheduler_active: false
+config :data_aggregator, serve_files_from: "priv/storage/dev/files"
+
+config :esbuild,
+  version: "0.23.0",
+  data_aggregator: [
+    args:
+      ~w(js/app.ts js/storybook.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+  ]
+
+config :git_hooks,
+  auto_install: true,
+  verbose: true,
+  hooks: [
+    pre_commit: [
+      tasks: [
+        {:cmd, "mix lint"}
+      ]
+    ],
+    pre_push: [
+      tasks: [
+        {:cmd, "mix test --color"}
+      ]
+    ]
+  ]
+
+config :git_ops,
+  mix_project: Mix.Project.get!(),
+  changelog_file: "CHANGELOG.md",
+  repository_url: "https://github.com/zebbra/data_aggregator",
+  manage_mix_version?: true,
+  manage_readme_version: "README.md",
+  version_tag_prefix: "v"
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
-config :data_aggregator, DataAggregatorWeb.Endpoint,
-  # Binding to loopback ipv4 address prevents access from other machines.
-  # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: 4000],
-  check_origin: false,
-  code_reloader: true,
-  debug_errors: true,
-  secret_key_base: "rs4+NR9FM90SkkrmYTJDIn0wK0Cac6qKzU82uKfNirNVIvYjdulbQ7lIUvIx2S4m",
-  watchers: [
-    esbuild: {Esbuild, :install_and_run, [:data_aggregator, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:data_aggregator, ~w(--watch)]},
-    storybook: {Tailwind, :install_and_run, [:storybook, ~w(--watch)]}
-  ]
+# Binding to loopback ipv4 address prevents access from other machines.
+# Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
 
 # ## SSL Support
 #
@@ -66,58 +123,20 @@ config :data_aggregator, DataAggregatorWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :data_aggregator, DataAggregatorWeb.Endpoint,
-  live_reload: [
-    patterns: [
-      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"priv/gettext/.*(po)$",
-      ~r"lib/data_aggregator_web/(controllers|live|components)/.*(ex|heex)$",
-      ~r"storybook/.*(exs)$"
-    ]
-  ]
 
 # Override Oban queues in development
-config :data_aggregator, Oban, queues: [encoders: 4]
 
 # Enable dev routes for dashboard and mailbox
-config :data_aggregator, dev_routes: true
 
 # Enable http file cache
-config :data_aggregator,
-  http_cache_enabled: true
 
 # Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier`
-config :data_aggregator, publication_verification_scheduler_active: false
 
 # Serve uploaded files from the priv/storage directory
-config :data_aggregator, serve_files_from: "priv/storage/dev/files"
 
 # Configure esbuild (the version is required)
-config :esbuild,
-  version: "0.23.0",
-  data_aggregator: [
-    args:
-      ~w(js/app.ts js/storybook.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
-    cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
-  ]
 
 # Configure git hooks. They can be installed manuallu by running `mix git_hooks.install`
-config :git_hooks,
-  auto_install: true,
-  verbose: true,
-  hooks: [
-    pre_commit: [
-      tasks: [
-        {:cmd, "mix lint"}
-      ]
-    ],
-    pre_push: [
-      tasks: [
-        {:cmd, "mix test --color"}
-      ]
-    ]
-  ]
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"

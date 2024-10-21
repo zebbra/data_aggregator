@@ -1,16 +1,19 @@
 defmodule DataAggregator.MixProject do
   use Mix.Project
 
+  @version "0.9.1"
+
   def project do
     [
       app: :data_aggregator,
-      version: "0.1.0",
-      elixir: "~> 1.16",
+      version: @version,
+      elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [ignore_module_conflict: true],
       start_permanent: Mix.env() == :prod,
       consolidate_protocols: Mix.env() == :prod,
       aliases: aliases(),
+      package: package(),
       deps: deps(),
       preferred_cli_env: [
         "test.watch": :test
@@ -47,6 +50,19 @@ defmodule DataAggregator.MixProject do
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
+
+  # Hex package manager configuration.
+  #
+  # Type `mix help hex.config` for more information.
+  def package do
+    [
+      name: "data_aggregator",
+      files: ~w(lib .formatter.exs mix.exs README.md LICENSE CHANGELOG.md),
+      links: %{
+        "GitHub" => "https://github.com/zebbra/data_aggregator"
+      }
+    ]
+  end
 
   defp docs do
     [
@@ -191,9 +207,7 @@ defmodule DataAggregator.MixProject do
       {:phoenix_storybook, "~> 0.6.3"},
 
       # Ash Framework
-      # Revert once 3.4.17 is released
-      # {:ash, "~> 3.3", override: true},
-      {:ash, github: "ash-project/ash", branch: "main", override: true},
+      {:ash, "~> 3.4", override: true},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
       {:ash_postgres, "~> 2.4", override: true},
@@ -217,6 +231,7 @@ defmodule DataAggregator.MixProject do
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:assertions, "~> 0.19", only: :test},
+      {:git_ops, "~> 2.6.3", only: [:dev]},
       {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
       {:mimic, "~> 1.8", only: :test},
@@ -307,6 +322,8 @@ defmodule DataAggregator.MixProject do
       # Setup Project
       setup: [
         "deps.get",
+        "git_hooks.install",
+        "git_ops.message_hook",
         "repo.setup",
         "assets.setup",
         "assets.build",

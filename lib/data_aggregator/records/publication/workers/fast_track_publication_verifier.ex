@@ -29,7 +29,7 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
     record = id |> Record.get_by_id!() |> Record.check_if_fast_track_pubished!()
 
     if scheduler_active?() && record.fast_track_status != :published do
-      %{id: id}
+      %{id: id, collection_id: record.collection_id}
       |> FastTrackPublicationVerifier.new(schedule_in: publication_interval_minutes())
       |> Oban.insert!()
 

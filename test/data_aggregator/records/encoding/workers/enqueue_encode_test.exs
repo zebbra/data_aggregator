@@ -33,7 +33,10 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
 
         assert record.state == :queued
 
-        assert_enqueued(worker: Encoder, args: %{id: correct_record.id})
+        assert_enqueued(
+          worker: Encoder,
+          args: %{id: correct_record.id, collection_id: correct_record.collection_id}
+        )
       end)
     end
 
@@ -43,7 +46,10 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
 
         assert record.state == :queued
 
-        assert_enqueued(worker: Encoder, args: %{id: record.id})
+        assert_enqueued(
+          worker: Encoder,
+          args: %{id: record.id, collection_id: record.collection_id}
+        )
       end)
     end
 
