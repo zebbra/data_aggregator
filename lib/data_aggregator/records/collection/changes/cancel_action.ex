@@ -186,19 +186,19 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
   def ash_cancel_all_jobs(base_query) do
     query =
       base_query
-      |> Ash.Query.filter(state not in ["cancelled", "completed", "discarded", "executing"])
+      |> Ash.Query.filter(state not in [:cancelled, :completed, :discarded, :executing])
       |> Ash.Query.select([:id, :queue, :state])
 
     # Exclude executing jobs from this bulk_update as we need to return only cancelled jobs
     # which have been in state executing (see below)
-    Ash.bulk_update(query, :update, %{state: "cancelled", cancelled_at: utc_now()}, reuse_values?: true)
+    Ash.bulk_update(query, :update, %{state: :cancelled, cancelled_at: utc_now()}, reuse_values?: true)
 
     query =
       base_query
       |> Ash.Query.filter(state == "executing")
       |> Ash.Query.select([:id, :queue, :state])
 
-    Ash.bulk_update(query, :update, %{state: "cancelled", cancelled_at: utc_now()},
+    Ash.bulk_update(query, :update, %{state: :cancelled, cancelled_at: utc_now()},
       return_records?: true,
       reuse_values?: true
     )

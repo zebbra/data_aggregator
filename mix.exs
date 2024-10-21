@@ -214,7 +214,7 @@ defmodule DataAggregator.MixProject do
       {:ash_state_machine, "~> 0.2"},
       {:ash_uuid, "~> 1.1"},
       {:ash_paper_trail, "~> 0.2"},
-      {:ash_pagify, "~> 1.0"},
+      {:ash_pagify, "~> 1.1"},
       {:ash_authentication, "~> 4.0"},
       {:ash_authentication_phoenix, "~> 2.0"},
 

@@ -224,8 +224,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
   defp current_layer_label("encoding"), do: ~t"Encoding Layer"m
   defp current_layer_label("import"), do: ~t"Import Layer"m
 
-  defp action_label("export"), do: ~t"Export"m
-  defp action_label("encode"), do: ~t"Encode"m
-  defp action_label("publish"), do: ~t"Publish"m
-  defp action_label("approve"), do: ~t"Approve"m
+  def action_label("export"), do: ~t"Export"m
+  def action_label("encode"), do: ~t"Encode"m
+  def action_label("publish"), do: ~t"Publish"m
+  def action_label("approve"), do: ~t"Approve"m
 end

@@ -9,7 +9,7 @@ defmodule DataAggregator.Jobs.Job do
 
   attributes do
     integer_primary_key :id, public?: true
-    attribute :state, :atom, public?: true
+    attribute :state, DataAggregator.Jobs.Types.ObanJobState, public?: true
     attribute :queue, :string, default: "default", public?: true
     attribute :worker, :string, public?: true
 
