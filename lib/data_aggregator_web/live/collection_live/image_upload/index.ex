@@ -55,7 +55,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
         collection={@collection}
         current={:image_upload}
         current_user={@current_user}
-        disabled={@busy}
+        busy={@busy}
         meta={@meta}
       />
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
