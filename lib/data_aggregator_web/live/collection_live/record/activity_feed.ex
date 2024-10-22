@@ -315,6 +315,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
+  def icon_lookup(:add_image_url, _), do: "hero-photo"
+
   def icon_lookup(_, _), do: "hero-question-mark-circle-solid"
 
   def icon_tooltip(:import, _), do: ~t"Dataset imported"m

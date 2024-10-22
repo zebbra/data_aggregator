@@ -494,9 +494,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 <.mids_level_indicator level={@selected_record.mids_level} />
               </:item>
             </.list>
-            <div :if={@selected_record.mte_associated_media} class="pb-4">
+            <div :if={@selected_record.encoded_record.mte_associated_media} class="pb-4">
               <.first_associated_media
-                associated_media={@selected_record.mte_associated_media}
+                associated_media={@selected_record.encoded_record.mte_associated_media}
                 class="border-black-white/10 border-b py-8"
               />
             </div>

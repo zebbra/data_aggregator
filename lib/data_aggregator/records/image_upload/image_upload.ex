@@ -166,6 +166,7 @@ defmodule DataAggregator.Records.ImageUpload do
       accept []
       require_atomic? false
 
+      change set_attribute(:started_at, &DateTime.utc_now/0)
       change transition_state(:mapping)
     end
 
@@ -174,6 +175,7 @@ defmodule DataAggregator.Records.ImageUpload do
       require_atomic? false
 
       change transition_state(:mapped)
+      change set_attribute(:finished_at, &DateTime.utc_now/0)
       change SetCollectionIdleAfterTransaction
     end
 

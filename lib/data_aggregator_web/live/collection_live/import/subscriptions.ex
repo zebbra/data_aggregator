@@ -22,6 +22,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
 
   @import_update_events ~w(set_importing set_imported set_failed update_mapping add_import_progress)
   @collection_action_events ~w(
+    set_mapping
+    set_importing
     set_exporting
     set_encoding
     set_fast_track_publishing

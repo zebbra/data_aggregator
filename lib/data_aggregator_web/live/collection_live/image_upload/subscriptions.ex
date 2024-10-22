@@ -21,6 +21,16 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
   @load_all load_all()
 
   @image_upload_update_events ~w(set_extracting set_extracted set_extraction_failed set_mapping set_mapped set_mapping_failed)
+  @collection_action_events ~w(
+    set_mapping
+    set_importing
+    set_exporting
+    set_encoding
+    set_fast_track_publishing
+    set_approving
+    set_idle
+    set_idle_encoding
+  )
 
   def subscribe_for_image_upload_updates(socket, connected) do
     with true <- connected,
@@ -59,8 +69,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
       topic == "image_upload:#{id}:destroyed" ->
         handle_image_upload_destroyed(notification, socket)
 
-      # topic == "collection:updated:#{id}" ->
-      #   handle_collection_updated(notification, socket)
+      topic == "collection:updated:#{id}" and event in @collection_action_events ->
+        set_busy(socket, event)
 
       true ->
         Logger.warning("Unknown topic: #{topic}")
@@ -90,6 +100,20 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
     {:noreply, socket}
   end
 
+  defp set_busy(socket, event) when event in ~w(set_idle set_idle_encoding) do
+    socket
+    |> assign(:busy, false)
+    |> assign(:busy_action, nil)
+    |> refresh()
+  end
+
+  defp set_busy(socket, event) do
+    socket
+    |> assign(:busy, true)
+    |> assign(:busy_action, busy_action(event))
+    |> refresh()
+  end
+
   defp handle_image_upload_destroyed(%Notification{data: image_upload}, socket) do
     {:noreply, stream_delete(socket, :results, image_upload)}
   end
@@ -100,6 +124,23 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
 
   defp set_notification(socket, _event) do
     put_flash(socket, :info, ~t"Image Upload event"m)
+  end
+
+  defp refresh(socket) do
+    %{assigns: %{collection: %{id: id}, meta: %{ash_pagify: ash_pagify, opts: opts}}} = socket
+
+    case AshPagify.validate_and_run(ImageUpload, ash_pagify, opts, id) do
+      {:ok, {records, meta}} ->
+        socket =
+          socket
+          |> assign(meta: meta)
+          |> stream(:results, records, reset: true)
+
+        {:noreply, socket}
+
+      {:error, _meta} ->
+        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/image_uploads")}
+    end
   end
 
   defmacro __using__(_opts) do

@@ -103,21 +103,23 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           <.file_info attachment={image_upload.attachment} />
           <.attachment_download_badge attachment={image_upload.attachment} />
         </:col>
-        <:col :let={{_id, image_upload}} field={:mapped_images_count} label={~t"Mapped images count"m}>
+        <:col :let={{_id, image_upload}} field={:mapped_images_count} label={~t"Mapped"m}>
           <%= image_upload.mapped_images_count %>
         </:col>
-        <:col
-          :let={{_id, image_upload}}
-          field={:unmapped_images_count}
-          label={~t"Unmapped images count"m}
-        >
+        <:col :let={{_id, image_upload}} field={:unmapped_images_count} label={~t"Unmapped"m}>
           <%= image_upload.unmapped_images_count %>
+        </:col>
+        <:col :let={{_id, image_upload}} field={:invalid_files_count} label={~t"Invalid"m}>
+          <%= image_upload.invalid_files_count || 0 %>
         </:col>
         <:col :let={{_id, image_upload}} field={:mapping_identifier} label={~t"Mapping identifier"m}>
           <%= Schema.dwc_field_from_prefixed_attribute_name(image_upload.mapping_identifier) %>
         </:col>
         <:col :let={{_id, image_upload}} field={:started_at} label={~t"Created at"m}>
           <%= format_datetime(image_upload.inserted_at, format: :short) %>
+        </:col>
+        <:col :let={{_id, image_upload}} field={:started_at} label={~t"Started at"m}>
+          <%= format_datetime(image_upload.started_at, format: :short) %>
         </:col>
 
         <:action
@@ -127,33 +129,13 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           col_class="bg-base-300/10 border-l border-black-white/5"
           label={~t"Actions"m}
         >
-          <%!-- <div
-            :if={invalid?(image_upload)}
-            class="link tooltip link-hover btn btn-sm btn-circle btn-ghost inline-flex"
-            data-tip={~t"Mapping is invalid"m}
-          >
-            <.icon name="hero-exclamation-circle-mini" class="size-5 text-base-content/75" />
-          </div> --%>
-
-          <div class="border-black-white/10 mr-4 inline-flex border-r pr-4">
-            <.table_action_button
-              patch={
-                build_path(~p"/collections/#{@collection}/image_uploads/#{image_upload}/edit", @meta)
-              }
-              disabled={@busy}
-              data-tip={edit_data_tip(image_upload)}
-              icon={edit_icon(image_upload)}
-            />
-          </div>
-
           <.table_action_button
-            type="button"
-            phx-click={JS.push("image_upload:delete", value: %{id: image_upload.id})}
-            data-tip={~t"Delete"m}
-            data-confirm={~t"Are you sure?"m}
-            data-confirm_id="confirm_image_upload_alert"
+            patch={
+              build_path(~p"/collections/#{@collection}/image_uploads/#{image_upload}/edit", @meta)
+            }
             disabled={@busy}
-            icon="hero-trash-mini"
+            data-tip={edit_data_tip(image_upload)}
+            icon={edit_icon(image_upload)}
           />
         </:action>
       </.table>
@@ -186,15 +168,26 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
               <.attachment_download_badge attachment={@selected_image_upload.attachment} />
             </:item>
             <:item title={~t"Mapping identifier"m}>
-              <%= @selected_image_upload.mapping_identifier %>
+              <%= Schema.dwc_field_from_prefixed_attribute_name(
+                @selected_image_upload.mapping_identifier
+              ) %>
             </:item>
-            <:item title={~t"Mapped images"m}>
+            <:item title={~t"Created at"m}>
+              <%= format_datetime(@selected_image_upload.inserted_at) %>
+            </:item>
+            <:item title={~t"Started at"m}>
+              <%= format_datetime(@selected_image_upload.started_at) %>
+            </:item>
+            <:item title={~t"Finished at"m}>
+              <%= format_datetime(@selected_image_upload.finished_at) %>
+            </:item>
+            <:item title={~t"Mapped"m}>
               <%= @selected_image_upload.mapped_images_count %>
             </:item>
-            <:item title={~t"Unmapped images"m}>
+            <:item title={~t"Unmapped"m}>
               <%= @selected_image_upload.unmapped_images_count %>
             </:item>
-            <:item title={~t"Inavlid files"m}>
+            <:item title={~t"Inavlid"m}>
               <%= @selected_image_upload.invalid_files_count || 0 %>
             </:item>
             <:item title={~t"Logfile"}>

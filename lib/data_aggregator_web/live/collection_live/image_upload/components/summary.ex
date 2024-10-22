@@ -53,7 +53,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
           <:item title={~t"Created at"m}>
             <%= format_datetime(@image_upload.inserted_at) %>
           </:item>
-          <:item title={~t"Invalid files count"}>
+          <:item title={~t"Invalid files"}>
             <%= invalid_file_infos(@image_upload.invalid_file_infos) %>
           </:item>
         </.list>

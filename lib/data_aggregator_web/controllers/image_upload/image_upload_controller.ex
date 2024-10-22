@@ -25,7 +25,7 @@ defmodule DataAggregatorWeb.ImageUploadController do
 
   defp generate_log_content(image_upload) do
     # CSV Header
-    log = "Filename,Status,Message\n"
+    log = "Filename,Status,Message,Matched Attribute\n"
 
     log =
       Enum.reduce(image_upload.invalid_file_infos || [], log, fn %{
@@ -33,12 +33,12 @@ defmodule DataAggregatorWeb.ImageUploadController do
                                                                    "reason" => reason
                                                                  },
                                                                  acc ->
-        "#{acc}#{filename},not uploaded,#{reason}\n"
+        "#{acc}#{filename},not uploaded,#{reason},\n"
       end)
 
     log =
-      Enum.reduce(image_upload.mapped_images, log, fn filename, acc ->
-        "#{acc}#{filename},mapped,\n"
+      Enum.reduce(image_upload.mapped_images, log, fn {filename, matched_attribute}, acc ->
+        "#{acc}#{filename},mapped,,#{matched_attribute}\n"
       end)
 
     Enum.reduce(image_upload.unmapped_images, log, fn filename, acc ->
