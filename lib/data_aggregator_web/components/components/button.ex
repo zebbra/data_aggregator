@@ -86,7 +86,7 @@ defmodule DataAggregatorWeb.Components.Button do
   def close_button(assigns) do
     ~H"""
     <.dynamic_tag
-      name={@as}
+      tag_name={@as}
       class={[
         "absolute flex",
         position_class(@position, @dense)

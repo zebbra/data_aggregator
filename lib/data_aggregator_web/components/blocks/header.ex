@@ -173,7 +173,7 @@ defmodule DataAggregatorWeb.Blocks.Header do
       <div class={["min-w-0 flex-1", @align_actions && "sm:mt-2"]}>
         <.dynamic_tag
           :if={@title == []}
-          name={@as}
+          tag_name={@as}
           class={[
             "text-base-content max-sm:line-clamp-2 sm:truncate max-w-4xl text-inherit",
             heading_title_size_class(@size)

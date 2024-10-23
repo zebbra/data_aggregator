@@ -127,7 +127,7 @@ config :data_aggregator,
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.23.0",
+  version: "0.24.0",
   data_aggregator: [
     args: ~w(js/app.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
@@ -198,7 +198,7 @@ config :spark, :formatter,
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "3.4.10",
+  version: "3.4.13",
   data_aggregator: [
     args: ~w(
       --config=tailwind.config.js

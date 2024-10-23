@@ -977,7 +977,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   defp coalesce_search(nil), do: ""
   defp coalesce_search(search), do: search
 
-  defp place_th_label(assigns \\ %{}) do
+  def place_th_label(assigns \\ %{}) do
     ~H"""
     <%= get_dwc_field(:loc_state_province) %>
     <br />
@@ -985,13 +985,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     """
   end
 
-  defp elevation_th_label(assigns \\ %{}) do
+  def elevation_th_label(assigns \\ %{}) do
     ~H"""
     <%= get_dwc_field(:loc_verbatim_elevation) %>
     """
   end
 
-  defp coordinates_th_label(assigns \\ %{}) do
+  def coordinates_th_label(assigns \\ %{}) do
     ~H"""
     <%= get_dwc_field(:loc_decimal_latitude) %>
     <br />
@@ -1041,13 +1041,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   defp coalesce_layer(layer) when layer in ~w(approval encoding import), do: layer
   defp coalesce_layer(_), do: "approval"
 
-  defp picture_th_label(assigns \\ %{}) do
+  def picture_th_label(assigns \\ %{}) do
     ~H"""
     <.icon name="hero-camera" class="size-5" />
     """
   end
 
-  defp iucn_redlist_th_label(assigns \\ %{}) do
+  def iucn_redlist_th_label(assigns \\ %{}) do
     ~H"""
     <.icon name="hero-flag" class="size-5" />
     """
