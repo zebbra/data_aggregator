@@ -455,6 +455,10 @@ defmodule DataAggregator.Records.Record do
     references do
       reference :collection, on_delete: :delete, on_update: :update, index?: true
     end
+
+    custom_indexes do
+      index [:state, :approval_status, :fast_track_status], include: ["id"]
+    end
   end
 
   json_api do

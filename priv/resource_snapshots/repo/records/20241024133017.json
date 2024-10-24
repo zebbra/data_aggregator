@@ -238,7 +238,7 @@
       "references": null,
       "size": null,
       "source": "oth_date_available",
-      "type": "date"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -438,7 +438,7 @@
       "references": null,
       "size": null,
       "source": "pvn_preservation_date_begin",
-      "type": "date"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -1318,7 +1318,7 @@
       "references": null,
       "size": null,
       "source": "loc_georeferenced_date",
-      "type": "date"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -2278,7 +2278,7 @@
       "references": null,
       "size": null,
       "source": "idf_date_identified",
-      "type": "date"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -2628,7 +2628,7 @@
       "references": null,
       "size": null,
       "source": "eve_event_date",
-      "type": "date"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -2942,10 +2942,45 @@
   ],
   "base_filter": null,
   "check_constraints": [],
-  "custom_indexes": [],
+  "custom_indexes": [
+    {
+      "all_tenants?": false,
+      "concurrently": false,
+      "error_fields": [
+        "state",
+        "approval_status",
+        "fast_track_status"
+      ],
+      "fields": [
+        {
+          "type": "atom",
+          "value": "state"
+        },
+        {
+          "type": "atom",
+          "value": "approval_status"
+        },
+        {
+          "type": "atom",
+          "value": "fast_track_status"
+        }
+      ],
+      "include": [
+        "id"
+      ],
+      "message": null,
+      "name": null,
+      "nulls_distinct": true,
+      "prefix": null,
+      "table": null,
+      "unique": false,
+      "using": null,
+      "where": null
+    }
+  ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "77C321E8B9105656918D1F401F546C88FE1BF521456E48F3BAB90085E78A1820",
+  "hash": "3146BC465FA31B12B2659870755F98B6F235A020E1E6F3B4429C0717BD4E5D62",
   "identities": [
     {
       "all_tenants?": false,
