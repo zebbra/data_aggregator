@@ -9,18 +9,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components do
   @states AshStateMachine.Info.state_machine_all_states(ImageUpload)
 
   def image_upload_state_badge(%{image_upload: image_upload} = assigns) when is_struct(image_upload) do
-    # progress =
-    #   case image_upload.state do
-    #     :extracting -> image_upload.extract_progress
-    #     :mapping -> image_upload.map_progress
-    #     _ -> nil
-    #   end
-
-    progress = nil
-
     assigns
     |> assign(:state, image_upload.state)
-    |> assign(:progress, progress)
     |> assign(:image_upload, nil)
     |> image_upload_state_badge()
   end
@@ -29,25 +19,12 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components do
     ~H"""
     <.badge class="pr-3" color={state_color(@state)}>
       <.image_upload_state_icon state={@state} />
-      <.image_upload_state_badge_label state={@state} progress={@progress} />
+      <.image_upload_state_badge_label state={@state} />
     </.badge>
     """
   end
 
   attr :state, :atom, required: true, values: @states
-  attr :progress, :float, required: false, default: nil
-
-  # def image_upload_state_badge_label(%{state: :extracting} = assigns) do
-  #   ~H"""
-  #   <.progress max={1} value={@progress} class="progress-info w-16 leading-4" />
-  #   """
-  # end
-
-  # def image_upload_state_badge_label(%{state: :extraction_queued} = assigns) do
-  #   ~H"""
-  #   <.progress max={1} value={} class="progress-info opacity-75 w-16" />
-  #   """
-  # end
 
   def image_upload_state_badge_label(assigns) do
     ~H"""
