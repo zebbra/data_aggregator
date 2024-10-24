@@ -17,7 +17,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     <.link
       patch={@href}
       class={[
-        "lg:stat btn btn-outline lg:text-left lg:h-auto group",
+        "lg:stat btn btn-outline lg:text-left lg:h-auto group animate-none",
         @active && "btn-primary lg:border-primary",
         @active == false && "border-base-content/20 lg:border-base-content/20"
       ]}
@@ -38,6 +38,24 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         <%= @desc %>
       </div>
     </.link>
+    """
+  end
+
+  attr :title, :string, required: true
+
+  def placeholder_stat(assigns) do
+    ~H"""
+    <div class="btn btn-outline group border-base-content/20 animate-none lg:stat lg:border-base-content/20 lg:h-auto lg:text-left">
+      <div class="truncate leading-4 lg:stat-title lg:group-hover:text-base-100/80">
+        <%= @title %>
+      </div>
+      <div class={["stat-value max-lg:hidden"]}>
+        <div class="skeleton my-2 h-6 w-24"></div>
+      </div>
+      <div class={["stat-desc max-lg:hidden lg:group-hover:text-base-100/80"]}>
+        <div class="skeleton max-w-32 h-4"></div>
+      </div>
+    </div>
     """
   end
 

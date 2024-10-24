@@ -78,12 +78,13 @@ defmodule DataAggregatorWeb.Helpers do
   end
 
   def format_coordinate(val)
-  def format_coordinate(val) when val in [nil, "", "-"], do: val
 
-  def format_coordinate(val) do
+  def format_coordinate(val) when is_float(val) do
     truncated = trunc(val)
     if truncated == val, do: truncated, else: val
   end
+
+  def format_coordinate(val), do: val
 
   @doc ~S"""
   Returns a string of class names from a list of class names.

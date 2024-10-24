@@ -144,6 +144,8 @@ defmodule DataAggregatorWeb.Components do
         class: "no-scrollbar overflow-x-auto py-4"
       ],
       no_results_content: "",
+      loading_content: loading_content(),
+      error_content: error_content(),
       symbol_asc: symbol_asc(),
       symbol_desc: symbol_desc(),
       symbol_attrs: [
@@ -173,6 +175,33 @@ defmodule DataAggregatorWeb.Components do
       ],
       limit_order_by: 1
     ]
+  end
+
+  defp loading_content do
+    assigns = %{}
+
+    ~H"""
+    <div class="skeleton my-3 py-3" />
+    """
+  end
+
+  defp error_content do
+    assigns = %{}
+
+    ~H"""
+    <div class="flex h-64 items-center justify-center">
+      <div class="text-center">
+        <DataAggregatorWeb.Components.Icon.icon
+          name="hero-exclamation-triangle-mini"
+          class="text-base-content/50 size-10 bg-error"
+        />
+        <h3 class="text-base-content mt-2 text-sm font-semibold">There was an error</h3>
+        <p class="text-base-content/60 mt-1 text-sm">
+          We could not load the records, please try again later
+        </p>
+      </div>
+    </div>
+    """
   end
 
   defp symbol_asc do

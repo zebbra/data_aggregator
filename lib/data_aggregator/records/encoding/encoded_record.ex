@@ -30,6 +30,11 @@ defmodule DataAggregator.Records.EncodedRecord do
     uuid_attribute :id, prefix: "enr", public?: true
     attribute :extra_data, :map, public?: true
     attribute :iucn_redlist_category, :string, allow_nil?: true, public?: true
+    attribute :iucn_redlist, :boolean, writable?: false, public?: true
+    attribute :mids_level_one, :boolean, writable?: false, public?: true
+    attribute :mids_level_two, :boolean, writable?: false, public?: true
+    attribute :mids_level_three, :boolean, writable?: false, public?: true
+    attribute :mids_level_four, :boolean, writable?: false, public?: true
 
     attribute :tsv, :string, allow_nil?: true
 

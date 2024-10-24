@@ -417,6 +417,11 @@ classDiagram
         UUID id
         Map extra_data
         String iucn_redlist_category
+        Boolean iucn_redlist
+        Boolean mids_level_one
+        Boolean mids_level_two
+        Boolean mids_level_three
+        Boolean mids_level_four
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID record_id
@@ -1583,6 +1588,11 @@ erDiagram
         UUID id
         Map extra_data
         String iucn_redlist_category
+        Boolean iucn_redlist
+        Boolean mids_level_one
+        Boolean mids_level_two
+        Boolean mids_level_three
+        Boolean mids_level_four
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID record_id
@@ -2663,6 +2673,11 @@ erDiagram
 | **id** | UUID |  |
 | **extra_data** | Map |  |
 | **iucn_redlist_category** | String |  |
+| **iucn_redlist** | Boolean |  |
+| **mids_level_one** | Boolean |  |
+| **mids_level_two** | Boolean |  |
+| **mids_level_three** | Boolean |  |
+| **mids_level_four** | Boolean |  |
 | **tsv** | String |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
@@ -3760,7 +3775,7 @@ erDiagram
 classDiagram
     class Job {
         Integer id
-        Atom state
+        ObanJobState state
         String queue
         String worker
         Map args
@@ -3769,7 +3784,7 @@ classDiagram
         String[] attempted_by
         Integer max_attempts
         UtcDatetimeUsec cancelled_at
-        update(Atom state, String queue, String worker, Map args, ...)
+        update(ObanJobState state, String queue, String worker, Map args, ...)
         read()
         imports_by_collection(String collection_id)
         exports_by_collection(String collection_id)
@@ -3785,7 +3800,7 @@ classDiagram
 erDiagram
     Job {
         Integer id
-        Atom state
+        ObanJobState state
         String queue
         String worker
         Map args
@@ -3810,7 +3825,7 @@ erDiagram
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | **id** | Integer |  |
-| **state** | Atom |  |
+| **state** | ObanJobState |  |
 | **queue** | String |  |
 | **worker** | String |  |
 | **args** | Map |  |
@@ -3824,7 +3839,7 @@ erDiagram
 
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
-| **update** | _update_ | <ul><li><b>state</b> <i>Atom</i> attribute</li><li><b>queue</b> <i>String</i> attribute</li><li><b>worker</b> <i>String</i> attribute</li><li><b>args</b> <i>Map</i> attribute</li><li><b>errors</b> <i>Map[]</i> attribute</li><li><b>attempt</b> <i>Integer</i> attribute</li><li><b>attempted_by</b> <i>String[]</i> attribute</li><li><b>max_attempts</b> <i>Integer</i> attribute</li><li><b>cancelled_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>state</b> <i>ObanJobState</i> attribute</li><li><b>queue</b> <i>String</i> attribute</li><li><b>worker</b> <i>String</i> attribute</li><li><b>args</b> <i>Map</i> attribute</li><li><b>errors</b> <i>Map[]</i> attribute</li><li><b>attempt</b> <i>Integer</i> attribute</li><li><b>attempted_by</b> <i>String[]</i> attribute</li><li><b>max_attempts</b> <i>Integer</i> attribute</li><li><b>cancelled_at</b> <i>UtcDatetimeUsec</i> attribute</li></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
 | **imports_by_collection** | _read_ | <ul><li><b>collection_id</b> <i>String</i> </li></ul> |  |
 | **exports_by_collection** | _read_ | <ul><li><b>collection_id</b> <i>String</i> </li></ul> |  |

@@ -32,6 +32,9 @@ defmodule DataAggregatorWeb.RecordLive.Index do
 
         {:noreply, socket}
 
+      {:error, %AshPagify.Meta{errors: []}} ->
+        raise ~t"Something went wrong"m
+
       {:error, _meta} ->
         {:noreply, push_navigate(socket, to: ~p"/records")}
     end

@@ -2,7 +2,7 @@
 classDiagram
     class Job {
         Integer id
-        Atom state
+        ObanJobState state
         String queue
         String worker
         Map args
@@ -11,7 +11,7 @@ classDiagram
         String[] attempted_by
         Integer max_attempts
         UtcDatetimeUsec cancelled_at
-        update(Atom state, String queue, String worker, Map args, ...)
+        update(ObanJobState state, String queue, String worker, Map args, ...)
         read()
         imports_by_collection(String collection_id)
         exports_by_collection(String collection_id)
