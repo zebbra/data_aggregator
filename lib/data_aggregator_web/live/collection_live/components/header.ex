@@ -74,7 +74,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
             class={[
               "btn btn-primary btn-sm",
-              @busy && "btn-disabled"
+              (@busy || is_nil(@meta)) && "btn-disabled"
             ]}
           >
             <%= if importing?(@busy_action) do %>
@@ -132,7 +132,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
           class={[
             "btn btn-primary",
-            @busy && "btn-disabled"
+            (@busy || is_nil(@meta)) && "btn-disabled"
           ]}
         >
           <%= if importing?(@busy_action) do %>

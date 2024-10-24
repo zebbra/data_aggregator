@@ -9,6 +9,8 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
   alias DataAggregator.Accounts.User
   alias DataAggregator.Gbif
 
+  @dialyzer {:no_return, render: 1}
+
   @impl true
   def mount(_params, _session, socket) do
     socket =

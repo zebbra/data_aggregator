@@ -21,8 +21,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
     {"approve", "hero-check-badge", "approval_pub:toggle"}
   ]
 
-  attr :search, Phoenix.HTML.Form, required: true, doc: "The search form"
-  attr :meta, AshPagify.Meta, required: true, doc: "The ash_pagify meta object"
+  attr :search, Phoenix.HTML.Form, default: nil, doc: "The search form"
+  attr :meta, AshPagify.Meta, default: nil, doc: "The ash_pagify meta object"
   attr :collection_id, :string, required: true, doc: "The collection id"
   attr :records_count, :integer, required: true, doc: "The total number of records"
   attr :filters_count, :integer, required: true, doc: "The number of active filters"
@@ -52,6 +52,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
             >
               <.custom_field
                 field={@search[:query]}
+                disabled={is_nil(@meta)}
                 placeholder={~t"Search"}
                 class="input input-bordered join-item max-sm:text-base sm:inline-flex items-center flex-row gap-2"
               >
@@ -94,6 +95,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
         <.dropdown id="layer" class="dropdown-end">
           <:summary>
             <summary
+              disabled={is_nil(@meta)}
               class="join-item btn btn-outline border-base-content/20 max-lg:btn-square max-lg:inline-flex sm:max-lg:tooltip"
               data-tip={current_layer_label(@layer)}
             >
@@ -149,6 +151,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
               "join-item btn btn-outline border-y max-lg:btn-square sm:!rounded-e-lg sm:max-lg:tooltip"
             ]}
             data-tip={~t"Filters"m}
+            disabled={is_nil(@meta)}
           >
             <.icon name="hero-adjustments-vertical" />
             <span class="max-lg:hidden"><%= ~t"Filters"m %></span>
@@ -163,7 +166,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
         >
           <:summary>
             <summary
-              disabled={@busy}
+              disabled={@busy or is_nil(@meta)}
               class="join-item btn btn-outline border-base-content/20 !rounded-e-lg btn-square sm:hidden"
               data-tip={~t"Actions"m}
             >
@@ -188,7 +191,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
         class="dropdown-end max-sm:hidden 2xl:hidden"
       >
         <:summary>
-          <summary disabled={@busy} class="btn btn-outline border-base-content/20 max-sm:btn-square">
+          <summary
+            disabled={@busy or is_nil(@meta)}
+            class="btn btn-outline border-base-content/20 max-sm:btn-square"
+          >
             <.icon name={if @busy, do: "hero-cog-6-tooth-solid animate-spin", else: "hero-bars-3"} />
             <span class="max-sm:hidden"><%= ~t"Actions"m %></span>
           </summary>
@@ -209,7 +215,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
           :for={{label, icon, action} <- @actions}
           class="join-item btn btn-outline border-base-content/20"
           phx-click={action}
-          disabled={@busy}
+          disabled={@busy or is_nil(@meta)}
         >
           <.icon :if={busy?(action, @busy_action) == false} name={icon} />
           <.icon :if={busy?(action, @busy_action)} name="hero-cog-6-tooth-solid animate-spin" />
