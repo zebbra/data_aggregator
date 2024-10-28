@@ -160,7 +160,7 @@ eve_attributes = [
     dwca_file: :releve,
     attribute: %Attribute{
       name: :herb_layer_height_in_centimeters,
-      type: :integer,
+      type: :float,
       allow_nil?: true
     }
   },
@@ -170,7 +170,7 @@ eve_attributes = [
     dwca_file: :releve,
     attribute: %Attribute{
       name: :inclination_in_degrees,
-      type: :integer,
+      type: :float,
       allow_nil?: true
     }
   },
@@ -220,7 +220,7 @@ eve_attributes = [
     dwca_file: :releve,
     attribute: %Attribute{
       name: :tree_layer_height_in_meters,
-      type: :integer,
+      type: :float,
       allow_nil?: true
     }
   },
@@ -801,13 +801,13 @@ loc_attributes = [
     dwc_field: "minimumElevationInMeters",
     dwc_link: "http://rs.tdwg.org/dwc/terms/minimumElevationInMeters",
     dwca_file: :core,
-    attribute: %Attribute{name: :minimum_elevation_in_meters, type: :integer, allow_nil?: true}
+    attribute: %Attribute{name: :minimum_elevation_in_meters, type: :float, allow_nil?: true}
   },
   %{
     dwc_field: "maximumElevationInMeters",
     dwc_link: "http://rs.tdwg.org/dwc/terms/maximumElevationInMeters",
     dwca_file: :core,
-    attribute: %Attribute{name: :maximum_elevation_in_meters, type: :integer, allow_nil?: true}
+    attribute: %Attribute{name: :maximum_elevation_in_meters, type: :float, allow_nil?: true}
   },
   %{
     dwc_field: "verbatimElevation",
@@ -825,13 +825,13 @@ loc_attributes = [
     dwc_field: "minimumDepthInMeters",
     dwc_link: "http://rs.tdwg.org/dwc/terms/minimumDepthInMeters",
     dwca_file: :core,
-    attribute: %Attribute{name: :minimum_depth_in_meters, type: :integer, allow_nil?: true}
+    attribute: %Attribute{name: :minimum_depth_in_meters, type: :float, allow_nil?: true}
   },
   %{
     dwc_field: "maximumDepthInMeters",
     dwc_link: "http://rs.tdwg.org/dwc/terms/maximumDepthInMeters",
     dwca_file: :core,
-    attribute: %Attribute{name: :maximum_depth_in_meters, type: :integer, allow_nil?: true}
+    attribute: %Attribute{name: :maximum_depth_in_meters, type: :float, allow_nil?: true}
   },
   %{
     dwc_field: "verbatimDepth",
@@ -845,7 +845,7 @@ loc_attributes = [
     dwca_file: :core,
     attribute: %Attribute{
       name: :minimum_distance_above_surface_in_meters,
-      type: :integer,
+      type: :float,
       allow_nil?: true
     }
   },
@@ -855,7 +855,7 @@ loc_attributes = [
     dwca_file: :core,
     attribute: %Attribute{
       name: :maximum_distance_above_surface_in_meters,
-      type: :integer,
+      type: :float,
       allow_nil?: true
     }
   },
@@ -895,7 +895,7 @@ loc_attributes = [
     dwca_file: :core,
     attribute: %Attribute{
       name: :coordinate_uncertainty_in_meters,
-      type: :integer,
+      type: :float,
       allow_nil?: true
     }
   },
@@ -1653,7 +1653,7 @@ pvn_attributes = [
     dwc_field: "preservationTemperature",
     dwc_link: nil,
     dwca_file: :preservation,
-    attribute: %Attribute{name: :preservation_temperature, type: :string, allow_nil?: true}
+    attribute: %Attribute{name: :preservation_temperature, type: :float, allow_nil?: true}
   },
   %{
     dwc_field: "sequence",
