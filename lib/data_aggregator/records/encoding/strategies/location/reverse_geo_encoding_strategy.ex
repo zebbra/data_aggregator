@@ -51,6 +51,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
       |> fetch_if_coords_available()
       |> add_swiss_coordinates(encoded_record)
       |> add_intl_coords(encoded_record)
+      |> upcase_country_code()
       |> add_municipality_and_city()
       |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)
     }
@@ -204,6 +205,13 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
 
     country == "switzerland" or country_code == "ch"
   end
+
+  @spec upcase_country_code(map()) :: map()
+  defp upcase_country_code(%{"country_code" => _country_code} = update_params) do
+    Map.update!(update_params, "country_code", &String.upcase/1)
+  end
+
+  defp upcase_country_code(update_params), do: update_params
 
   @spec add_intl_coords(map(), EncodedRecord.t()) :: map()
   defp add_intl_coords(update_params, encoded_record) do

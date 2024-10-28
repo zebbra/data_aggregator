@@ -40,7 +40,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
         loc_swiss_coordinates_y: 1_199_508.5872802814,
         loc_continent: "Europe",
         loc_country: "Switzerland",
-        loc_country_code: "ch",
+        loc_country_code: "CH",
         loc_state_province: "Bern",
         loc_municipality: "Bern"
       })
@@ -72,7 +72,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
         loc_swiss_coordinates_y: nil,
         loc_continent: "Africa",
         loc_country: "Libya",
-        loc_country_code: "ly",
+        loc_country_code: "LY",
         loc_decimal_latitude: 32.117833,
         loc_decimal_longitude: 20.082039,
         loc_municipality: "Benghazi",
@@ -108,7 +108,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
         loc_swiss_coordinates_y: 1_199_508.5872802814,
         loc_continent: "Europe",
         loc_country: "Switzerland",
-        loc_country_code: "ch",
+        loc_country_code: "CH",
         loc_state_province: "Bern",
         loc_municipality: "Bern"
       })

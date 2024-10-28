@@ -37,7 +37,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
       assert_map_includes(encoded_record, %{
         loc_continent: "Europe",
         loc_country: "Switzerland",
-        loc_country_code: "ch",
+        loc_country_code: "CH",
         loc_state_province: "Bern",
         loc_municipality: nil
       })
@@ -73,7 +73,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
         loc_swiss_coordinates_y: nil,
         loc_continent: "Europe",
         loc_country: "Switzerland",
-        loc_country_code: "ch",
+        loc_country_code: "CH",
         loc_locality: "Niesen",
         loc_municipality: nil,
         loc_state_province: nil
@@ -91,7 +91,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
           loc_locality: "Europe",
           loc_continent: "Europe",
           loc_country: "Switzerland",
-          loc_country_code: "ch",
+          loc_country_code: "CH",
           loc_municipality: "Lausanne",
           loc_state_province: "Vaud"
         })
@@ -111,7 +111,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
         loc_locality: "Europe",
         loc_continent: "Europe",
         loc_country: "Switzerland",
-        loc_country_code: "ch",
+        loc_country_code: "CH",
         loc_municipality: "Lausanne",
         loc_state_province: "Vaud"
       })
