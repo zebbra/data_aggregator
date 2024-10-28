@@ -46,6 +46,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         |> apply_action(socket.assigns.live_action, params)
         |> noreply()
 
+      {:error, %AshPagify.Meta{errors: []}} ->
+        raise ~t"Something went wrong"m
+
       {:error, _meta} ->
         {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/imports")}
     end

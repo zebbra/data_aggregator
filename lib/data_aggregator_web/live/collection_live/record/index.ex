@@ -7,7 +7,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   import DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
 
   import DataAggregatorWeb.CollectionLive.Helpers,
-    only: [get_collection_full: 2, busy_action: 1, cancel_action: 2]
+    only: [get_collection_light: 2, get_collection_full: 2, busy_action: 1, cancel_action: 2]
 
   import DataAggregatorWeb.CollectionLive.Record.ActivityFeed
   import DataAggregatorWeb.CollectionLive.Record.Components
@@ -29,14 +29,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalog
+  alias Phoenix.LiveView.AsyncResult
 
   require Ash.Query
 
-  @load [:collection, :encoded_record, :mids_level, :iucn_redlist]
+  @load [:encoded_record, :mids_level, :iucn_redlist]
+  @async_keys [:meta, :results]
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
-    collection = get_collection_full(id, get_actor(socket))
+    collection = get_collection_light(id, get_actor(socket))
 
     socket =
       socket
@@ -45,37 +47,98 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       |> assign(:selected_record, nil)
       |> assign(:busy, collection.busy)
       |> assign(:busy_action, busy_action(collection))
+      |> assign_search(nil)
+      |> assign(:filters_count, 0)
       |> assign(:show_filters, false)
       |> assign(:show_encode, false)
       |> assign(:show_fast_track_pub, false)
       |> assign(:show_approval_pub, false)
       |> assign(:record_tab, "data")
       |> assign(:agreed, false)
+      |> assign_scope_stats()
       |> subscribe_for_record_updates(connected?(socket))
 
     {:ok, socket}
   end
 
-  @impl true
-  def handle_params(%{"id" => id} = params, _url, socket) do
-    layer = params |> Map.get("layer", "approval") |> coalesce_layer()
+  defp assign_scope_stats(socket) do
+    %{collection: collection, current_user: current_user} = socket.assigns
 
-    case list_records(params, get_actor(socket)) do
+    assign_async(
+      socket,
+      [:records_count_not_approved, :records_count_not_encoded, :records_count_not_published],
+      fn ->
+        collection = get_collection_full(collection.id, current_user)
+
+        stats = %{
+          records_count_not_approved: collection.records_count_not_approved,
+          records_count_not_encoded: collection.records_count_not_encoded,
+          records_count_not_published: collection.records_count_not_published
+        }
+
+        {:ok, stats}
+      end
+    )
+  end
+
+  @impl true
+  def handle_params(params, _url, socket) do
+    layer = params |> Map.get("layer", "approval") |> coalesce_layer()
+    actor = get_actor(socket)
+
+    socket
+    |> register_async_keys()
+    |> start_async(:results, fn -> list_records(params, actor) end)
+    |> assign(:layer, layer)
+    |> apply_action(socket.assigns.live_action, params)
+    |> noreply()
+  end
+
+  defp register_async_keys(socket) do
+    @async_keys
+    |> Enum.reduce(socket, fn key, acc ->
+      assign(acc, key, AsyncResult.loading())
+    end)
+    |> stream(:results, [])
+  end
+
+  defp fail_async_keys(socket, reason) do
+    @async_keys
+    |> Enum.reduce(socket, fn key, acc ->
+      update(acc, key, fn async_result -> AsyncResult.failed(async_result, {:exit, reason}) end)
+    end)
+    |> noreply()
+  end
+
+  @impl true
+  def handle_async(:results, {:exit, reason}, socket) do
+    fail_async_keys(socket, reason)
+  end
+
+  @impl true
+  def handle_async(:results, {:ok, fetch_result}, socket) do
+    case fetch_result do
       {:ok, {records, meta}} ->
+        %{
+          results: origin_results,
+          meta: origin_meta
+        } = socket.assigns
+
+        filters_count = meta |> AshPagify.FilterForm.active_filter_form_fields() |> length()
+
         socket
-        |> assign(meta: meta)
+        |> assign(:meta, AsyncResult.ok(origin_meta, meta))
+        |> assign(:results, AsyncResult.ok(origin_results, :results))
         |> stream(:results, records, reset: true)
-        |> assign(:layer, layer)
-        |> assign(
-          :filters_count,
-          meta |> AshPagify.FilterForm.active_filter_form_fields() |> length()
-        )
+        |> assign(:filters_count, filters_count)
         |> assign_search(meta)
-        |> apply_action(socket.assigns.live_action, params)
         |> noreply()
 
+      {:error, %AshPagify.Meta{errors: []}} ->
+        fail_async_keys(socket, ~t"Something went wrong"m)
+
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/records")}
+        {:noreply, push_navigate(socket, to: ~p"/collections/#{socket.assigns.collection.id}/records")}
     end
   end
 
@@ -89,11 +152,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         current_user={@current_user}
         busy={@busy}
         busy_action={@busy_action}
+        meta={@meta.result}
       />
 
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
         <.secondary_navigation_item
-          href={path_helper(@collection, @layer, @meta)}
+          href={path_helper(@collection, @layer, @meta.result)}
           label={~t"Records"m}
           active
         />
@@ -119,7 +183,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       <div :if={@collection.records_count > 0} class="px-6 py-4 md:py-6 lg:px-8">
         <div class="grid grid-cols-2 gap-4 md:gap-6 xl:grid-cols-4">
           <.scope_stat
-            href={path_helper(@collection, @layer, @meta, %{status: :all})}
+            href={path_helper(@collection, @layer, @meta.result, %{status: :all})}
             title={~t"All records"m}
             value={1.0}
             desc={
@@ -127,55 +191,73 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 record_count: format_number(@collection.records_count)
               )
             }
-            active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :all})}
+            active={@meta.ok? && AshPagify.active_scope?(@meta.result.ash_pagify, %{status: :all})}
+          />
+
+          <.placeholder_stat
+            :if={@records_count_not_encoded.loading}
+            title={~t"Not encoded / Incomplete"m}
           />
           <.scope_stat
-            href={path_helper(@collection, @layer, @meta, %{status: :not_encoded})}
+            :if={@records_count_not_encoded.ok?}
+            href={path_helper(@collection, @layer, @meta.result, %{status: :not_encoded})}
             title={~t"Not encoded / Incomplete"m}
             value={
-              if @collection.records_count_not_encoded == 0,
+              if @records_count_not_encoded.result == 0,
                 do: 0,
-                else: @collection.records_count_not_encoded / @collection.records_count
+                else: @records_count_not_encoded.result / @collection.records_count
             }
             desc={
               mgettext("%{records_count_not_encoded} of %{records_count} Records",
-                records_count_not_encoded: format_number(@collection.records_count_not_encoded),
+                records_count_not_encoded: format_number(@records_count_not_encoded.result),
                 records_count: format_number(@collection.records_count)
               )
             }
-            active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_encoded})}
+            active={
+              @meta.ok? && AshPagify.active_scope?(@meta.result.ash_pagify, %{status: :not_encoded})
+            }
           />
+
+          <.placeholder_stat :if={@records_count_not_published.loading} title={~t"Not published"m} />
           <.scope_stat
-            href={path_helper(@collection, @layer, @meta, %{status: :not_published})}
+            :if={@records_count_not_published.ok?}
+            href={path_helper(@collection, @layer, @meta.result, %{status: :not_published})}
             title={~t"Not published"m}
             value={
-              if @collection.records_count_not_published == 0,
+              if @records_count_not_published.result == 0,
                 do: 0,
-                else: @collection.records_count_not_published / @collection.records_count
+                else: @records_count_not_published.result / @collection.records_count
             }
             desc={
               mgettext("%{records_count_not_published} of %{records_count} Records",
-                records_count_not_published: format_number(@collection.records_count_not_published),
+                records_count_not_published: format_number(@records_count_not_published.result),
                 records_count: format_number(@collection.records_count)
               )
             }
-            active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_published})}
+            active={
+              @meta.ok? && AshPagify.active_scope?(@meta.result.ash_pagify, %{status: :not_published})
+            }
           />
+
+          <.placeholder_stat :if={@records_count_not_approved.loading} title={~t"Not approved"m} />
           <.scope_stat
-            href={path_helper(@collection, @layer, @meta, %{status: :not_approved})}
+            :if={@records_count_not_approved.ok?}
+            href={path_helper(@collection, @layer, @meta.result, %{status: :not_approved})}
             title={~t"Not approved"m}
             value={
-              if @collection.records_count_not_approved == 0,
+              if @records_count_not_approved.result == 0,
                 do: 0,
-                else: @collection.records_count_not_approved / @collection.records_count
+                else: @records_count_not_approved.result / @collection.records_count
             }
             desc={
               mgettext("%{records_count_not_approved} of %{records_count} Records",
-                records_count_not_approved: format_number(@collection.records_count_not_approved),
+                records_count_not_approved: format_number(@records_count_not_approved.result),
                 records_count: format_number(@collection.records_count)
               )
             }
-            active={AshPagify.active_scope?(@meta.ash_pagify, %{status: :not_approved})}
+            active={
+              @meta.ok? && AshPagify.active_scope?(@meta.result.ash_pagify, %{status: :not_approved})
+            }
           />
         </div>
       </div>
@@ -183,7 +265,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       <%!-- Search, filter and actions toolbar --%>
       <.toolbar
         search={@search}
-        meta={@meta}
+        meta={@meta.result}
         collection_id={@collection.id}
         records_count={@collection.records_count}
         filters_count={@filters_count}
@@ -194,18 +276,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       />
 
       <.table
+        loading={@results.loading}
+        error={@results.failed != nil}
         opts={[
           no_results_content:
             no_results_content(%{
               collection: @collection,
               current_user: @current_user,
               filters_count: @filters_count,
-              meta: @meta
+              meta: @meta.result
             })
         ]}
         path={~p"/collections/#{@collection.id}/records?layer=#{@layer}"}
         items={@streams.results}
-        meta={@meta}
+        meta={@meta.result}
         row_click={
           fn {_id, record} ->
             JS.push("record:select", value: %{id: record.id})
@@ -246,6 +330,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :if={CollectionType.visible?(@collection_type, :iucn_redlist)}
           field={:iucn_redlist}
           label={iucn_redlist_th_label()}
+          directions={{:asc, :desc_nils_last}}
         >
           <div
             class="tooltip tooltip-right"
@@ -438,7 +523,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           />
         </:action>
       </.table>
-      <.pagination meta={@meta} path={~p"/collections/#{@collection.id}/records?layer=#{@layer}"} />
+      <.pagination
+        meta={@meta.result}
+        path={~p"/collections/#{@collection.id}/records?layer=#{@layer}"}
+      />
 
       <:secondary>
         <.slideover
@@ -598,12 +686,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
       <:portal>
         <.modal
+          :if={@meta.ok?}
           id="export_modal"
           show={@live_action == :export}
           size="2xl"
           responsive
           backdrop={false}
-          on_cancel={JS.patch(path_helper(@collection, @layer, @meta))}
+          on_cancel={JS.patch(path_helper(@collection, @layer, @meta.result))}
           overflow="manual"
         >
           <.live_component
@@ -612,13 +701,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             id={:new}
             action={@live_action}
             collection={@collection}
-            meta={@meta}
+            meta={@meta.result}
             busy={@busy}
             layer={@layer}
           />
         </.modal>
 
         <.modal
+          :if={@meta.ok?}
           id="encode_modal"
           size="xl"
           title={~t"Encoding summary"m}
@@ -630,7 +720,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           <div :if={@show_encode} class="contents">
             <p class="mb-4 text-sm">
               <%= mgettext("You're about to encode %{count} records.",
-                count: format_number(@meta.total_count)
+                count: format_number(@meta.result.total_count)
               ) %>
             </p>
             <p class="text-sm">
@@ -660,6 +750,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </.modal>
 
         <.modal
+          :if={@meta.ok?}
           id="fast_track_pub_modal"
           size="xl"
           show={@show_fast_track_pub}
@@ -672,7 +763,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             :if={@show_fast_track_pub}
             module={DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal}
             id="fast_track_pub_modal_component"
-            meta={@meta}
+            meta={@meta.result}
             collection={@collection}
             current_user={@current_user}
             layer={@layer}
@@ -682,6 +773,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </.modal>
 
         <.modal
+          :if={@meta.ok?}
           id="approval_pub_modal"
           size="xl"
           show={@show_approval_pub}
@@ -694,7 +786,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             :if={@show_approval_pub}
             module={DataAggregatorWeb.CollectionLive.Record.ApprovalModal}
             id="approval_pub_modal_component"
-            meta={@meta}
+            meta={@meta.result}
             collection={@collection}
             current_user={@current_user}
             layer={@layer}
@@ -703,7 +795,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </.modal>
 
         <.modal
-          :if={@show_filters}
+          :if={@show_filters and @meta.ok?}
           id="filters_modal"
           show
           size="3xl"
@@ -716,7 +808,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             module={DataAggregatorWeb.CollectionLive.Record.FilterComponent}
             id="record_filters"
             label={~t"records"m}
-            meta={@meta}
+            meta={@meta.result}
             collection_id={@collection.id}
             path={~p"/collections/#{@collection}/records?layer=#{@layer}"}
           />
@@ -800,7 +892,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("collection:encode", _params, socket) do
-    %{collection: collection, meta: %{ash_pagify: ash_pagify}, layer: layer} = socket.assigns
+    %{collection: collection, meta: %{result: %{ash_pagify: ash_pagify}}, layer: layer} =
+      socket.assigns
 
     actor = get_actor(socket)
     collection = Collection.get_by_id!(collection.id, load: [:encoding], actor: actor)
@@ -829,7 +922,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("collection:fast_track_pub", _params, socket) do
-    %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
+    %{collection: collection, meta: %{result: %{ash_pagify: ash_pagify}}} = socket.assigns
     actor = get_actor(socket)
     collection = Ash.load!(collection, [:fast_track_query], lazy?: true, actor: actor)
 
@@ -861,7 +954,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("collection:approval_pub", _params, socket) do
-    %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
+    %{collection: collection, meta: %{result: %{ash_pagify: ash_pagify}}} = socket.assigns
     actor = get_actor(socket)
     collection = Ash.load!(collection, [:approval_query], lazy?: true, actor: actor)
 
@@ -893,7 +986,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("search:reset", %{"search" => params}, socket) do
-    if (params["query"] == "" and coalesce_search(socket.assigns.meta.current_search) != "") or
+    if (params["query"] == "" and coalesce_search(socket.assigns.meta.result.current_search) != "") or
          params["_unused_query"] == "" do
       update_and_patch_search(socket, "")
     else
@@ -903,7 +996,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("search:apply", %{"search" => params}, socket) do
-    if params["query"] == coalesce_search(socket.assigns.meta.current_search) do
+    if params["query"] == coalesce_search(socket.assigns.meta.result.current_search) do
       {:noreply, socket}
     else
       update_and_patch_search(socket, params["query"])
@@ -940,15 +1033,68 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     assign(socket, :page_title, ~t"Collection Records"m)
   end
 
-  defp list_records(params, actor, opts \\ [load: @load, action: :by_collection]) do
+  defp list_records(params, actor, opts \\ [action: :by_collection]) do
     opts = Keyword.put(opts, :actor, actor)
     opts = maybe_put_tsvector(Map.get(params, "layer"), opts)
 
-    AshPagify.validate_and_run(Record, params, opts, params["id"])
+    record_select =
+      [
+        :id,
+        :tax_scientific_name,
+        :mte_catalog_number,
+        :occ_occurrence_id,
+        :mte_associated_media,
+        :idf_type_status,
+        :idf_verbatim_identification,
+        :occ_occurrence_id,
+        :mte_catalog_number,
+        :eve_field_number,
+        :mte_recorded_by,
+        :idf_identified_by,
+        :eve_event_date,
+        :loc_state_province,
+        :loc_country_code,
+        :loc_verbatim_elevation,
+        :loc_minimum_elevation_in_meters,
+        :loc_maximum_elevation_in_meters,
+        :loc_decimal_latitude,
+        :loc_decimal_longitude,
+        :state,
+        :fast_track_status,
+        :approval_status,
+        :updated_at
+      ]
+
+    encoded_record_select = [
+      :tax_scientific_name,
+      :loc_state_province,
+      :loc_country_code,
+      :loc_decimal_latitude,
+      :loc_decimal_longitude
+    ]
+
+    opts =
+      Keyword.put(opts, :load, [
+        :mids_level,
+        :iucn_redlist,
+        encoded_record: encoded_record_select
+      ])
+
+    query =
+      Ash.Query.select(
+        Record,
+        record_select
+      )
+
+    AshPagify.validate_and_run(query, params, opts, params["id"])
   end
 
   defp get_record(id, actor) do
     Record.get_by_id!(id, load: @load, actor: actor)
+  end
+
+  defp assign_search(socket, nil) do
+    assign(socket, :search, to_form(%{"query" => ""}, as: :search))
   end
 
   defp assign_search(socket, %AshPagify.Meta{current_search: search}) do
@@ -960,10 +1106,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     if String.length(query) > 0 && String.length(query) < 3 do
       {:noreply, socket}
     else
-      %{meta: %{ash_pagify: ash_pagify} = meta, layer: layer, collection: collection} =
-        socket.assigns
+      %{meta: %{result: meta}, layer: layer, collection: collection} = socket.assigns
 
-      ash_pagify = AshPagify.set_search(ash_pagify, query)
+      ash_pagify = AshPagify.set_search(meta.ash_pagify, query)
       meta = %{meta | ash_pagify: ash_pagify}
 
       path = path_helper(collection, layer, meta)

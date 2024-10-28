@@ -238,7 +238,7 @@
       "references": null,
       "size": null,
       "source": "oth_date_available",
-      "type": "date"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -438,7 +438,7 @@
       "references": null,
       "size": null,
       "source": "pvn_preservation_date_begin",
-      "type": "date"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -1318,7 +1318,7 @@
       "references": null,
       "size": null,
       "source": "loc_georeferenced_date",
-      "type": "date"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -2278,7 +2278,7 @@
       "references": null,
       "size": null,
       "source": "idf_date_identified",
-      "type": "date"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -2628,7 +2628,7 @@
       "references": null,
       "size": null,
       "source": "eve_event_date",
-      "type": "date"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -2797,48 +2797,8 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "import_data",
-      "type": "map"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
       "source": "extra_data",
       "type": "map"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "errors",
-      "type": "map"
-    },
-    {
-      "allow_nil?": false,
-      "default": "\"not_published\"",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "fast_track_status",
-      "type": "text"
-    },
-    {
-      "allow_nil?": false,
-      "default": "\"not_approved\"",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "approval_status",
-      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -2857,8 +2817,8 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "last_approval_started_at",
-      "type": "utc_datetime"
+      "source": "iucn_redlist",
+      "type": "boolean"
     },
     {
       "allow_nil?": true,
@@ -2867,8 +2827,38 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "last_imported_at",
-      "type": "utc_datetime"
+      "source": "mids_level_one",
+      "type": "boolean"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "mids_level_two",
+      "type": "boolean"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "mids_level_three",
+      "type": "boolean"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "mids_level_four",
+      "type": "boolean"
     },
     {
       "allow_nil?": true,
@@ -2918,26 +2908,16 @@
           "global": null,
           "strategy": null
         },
-        "name": "records_collection_id_fkey",
+        "name": "encoded_records_record_id_fkey",
         "on_delete": "delete",
         "on_update": "update",
         "primary_key?": true,
         "schema": "public",
-        "table": "collections"
+        "table": "records"
       },
       "size": null,
-      "source": "collection_id",
+      "source": "record_id",
       "type": "uuid"
-    },
-    {
-      "allow_nil?": false,
-      "default": "\"imported\"",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "state",
-      "type": "text"
     }
   ],
   "base_filter": null,
@@ -2945,23 +2925,23 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "77C321E8B9105656918D1F401F546C88FE1BF521456E48F3BAB90085E78A1820",
+  "hash": "95640D2CE3DC8D53AAD16D0EC99DDCD384F931162F3D96E544D44E7AAE277648",
   "identities": [
     {
       "all_tenants?": false,
       "base_filter": null,
-      "index_name": "records_collection_mte_catalog_number_index",
+      "index_name": "encoded_records_record_mte_catalog_number_index",
       "keys": [
         {
           "type": "atom",
-          "value": "collection_id"
+          "value": "record_id"
         },
         {
           "type": "atom",
           "value": "mte_catalog_number"
         }
       ],
-      "name": "collection_mte_catalog_number",
+      "name": "record_mte_catalog_number",
       "nils_distinct?": true,
       "where": null
     }
@@ -2973,5 +2953,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "records"
+  "table": "encoded_records"
 }

@@ -34,8 +34,6 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.PublicationStatusType
-  alias DataAggregator.Records.Record.Calculations.IucnRedlist
-  alias DataAggregator.Records.Record.Calculations.Mids
   alias DataAggregator.Records.Record.Changes
 
   require Ash.Expr
@@ -125,7 +123,7 @@ defmodule DataAggregator.Records.Record do
   calculations do
     calculate :iucn_redlist,
               :boolean,
-              IucnRedlist,
+              expr(encoded_record.iucn_redlist),
               public?: true
 
     calculate :encoded,
@@ -147,19 +145,19 @@ defmodule DataAggregator.Records.Record do
 
     calculate :mids_level_one,
               :boolean,
-              Mids.LevelOne
+              expr(encoded_record.mids_level_one)
 
     calculate :mids_level_two,
               :boolean,
-              Mids.LevelTwo
+              expr(encoded_record.mids_level_two)
 
     calculate :mids_level_three,
               :boolean,
-              Mids.LevelThree
+              expr(not is_nil(collection.code) and encoded_record.mids_level_three)
 
     calculate :mids_level_four,
               :boolean,
-              Mids.LevelFour
+              expr(encoded_record.mids_level_four)
 
     calculate :tsvector, AshPostgres.Tsvector, expr(tsv)
 
@@ -464,6 +462,10 @@ defmodule DataAggregator.Records.Record do
 
     references do
       reference :collection, on_delete: :delete, on_update: :update, index?: true
+    end
+
+    custom_indexes do
+      index [:state, :approval_status, :fast_track_status], include: ["id"]
     end
   end
 

@@ -1,7 +1,7 @@
 defmodule DataAggregator.MixProject do
   use Mix.Project
 
-  @version "0.9.1"
+  @version "0.9.2"
 
   def project do
     [
@@ -210,11 +210,13 @@ defmodule DataAggregator.MixProject do
       {:ash, "~> 3.4", override: true},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
+      # Remove once v0.2.37 is available
+      {:ash_sql, git: "https://github.com/ash-project/ash_sql.git", override: true},
       {:ash_postgres, "~> 2.4", override: true},
       {:ash_state_machine, "~> 0.2"},
       {:ash_uuid, "~> 1.1"},
       {:ash_paper_trail, "~> 0.2"},
-      {:ash_pagify, "~> 1.1"},
+      {:ash_pagify, "~> 1.2"},
       {:ash_authentication, "~> 4.0"},
       {:ash_authentication_phoenix, "~> 2.0"},
 
@@ -272,7 +274,7 @@ defmodule DataAggregator.MixProject do
       {:gen_smtp, "~> 1.1"},
 
       # Data Processing and Parsing
-      {:explorer, "~> 0.9.2"},
+      {:explorer, "~> 0.10.0"},
       {:csv, "~> 3.2"},
       {:waffle, "~> 1.1.9"},
       {:ex_aws, "~> 2.5.4"},

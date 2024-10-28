@@ -15,6 +15,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
   alias DataAggregator.PubSub
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
+  alias Phoenix.LiveView.AsyncResult
   alias Phoenix.LiveView.Socket
 
   require Logger
@@ -98,7 +99,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
     reload_collection = Keyword.get(refresh_opts, :reload_collection, false)
 
     %{
-      assigns: %{collection: %{id: id}, meta: %{ash_pagify: ash_pagify, opts: opts}, layer: layer}
+      assigns: %{
+        collection: %{id: id},
+        meta: %{result: %{ash_pagify: ash_pagify, opts: opts}},
+        layer: layer
+      }
     } =
       socket
 
@@ -107,9 +112,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
 
     case AshPagify.validate_and_run(Record, ash_pagify, opts, id) do
       {:ok, {records, meta}} ->
+        %{meta: origin_meta, results: origin_results} = socket.assigns
+
         socket =
           socket
-          |> assign(meta: meta)
+          |> assign(:meta, AsyncResult.ok(origin_meta, meta))
+          |> assign(:results, AsyncResult.ok(origin_results, :results))
           |> stream(:results, records, reset: true)
           |> maybe_reload_collection(reload_collection)
 

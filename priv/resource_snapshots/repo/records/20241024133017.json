@@ -1318,7 +1318,7 @@
       "references": null,
       "size": null,
       "source": "loc_georeferenced_date",
-      "type": "date"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -1498,7 +1498,7 @@
       "references": null,
       "size": null,
       "source": "loc_verbatim_depth",
-      "type": "bigint"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -2145,26 +2145,7 @@
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "usage_key",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "index?": false,
-        "match_type": null,
-        "match_with": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "records_tax_taxon_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "swiss_species"
-      },
+      "references": null,
       "size": null,
       "source": "tax_taxon_id",
       "type": "bigint"
@@ -2297,7 +2278,7 @@
       "references": null,
       "size": null,
       "source": "idf_date_identified",
-      "type": "date"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -2647,7 +2628,7 @@
       "references": null,
       "size": null,
       "source": "eve_event_date",
-      "type": "date"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -2961,10 +2942,45 @@
   ],
   "base_filter": null,
   "check_constraints": [],
-  "custom_indexes": [],
+  "custom_indexes": [
+    {
+      "all_tenants?": false,
+      "concurrently": false,
+      "error_fields": [
+        "state",
+        "approval_status",
+        "fast_track_status"
+      ],
+      "fields": [
+        {
+          "type": "atom",
+          "value": "state"
+        },
+        {
+          "type": "atom",
+          "value": "approval_status"
+        },
+        {
+          "type": "atom",
+          "value": "fast_track_status"
+        }
+      ],
+      "include": [
+        "id"
+      ],
+      "message": null,
+      "name": null,
+      "nulls_distinct": true,
+      "prefix": null,
+      "table": null,
+      "unique": false,
+      "using": null,
+      "where": null
+    }
+  ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "6311B027ED802C586D56770B3F4C8A97B416536603CC1A9792D365924C576204",
+  "hash": "3146BC465FA31B12B2659870755F98B6F235A020E1E6F3B4429C0717BD4E5D62",
   "identities": [
     {
       "all_tenants?": false,

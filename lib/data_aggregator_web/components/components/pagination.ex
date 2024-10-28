@@ -18,7 +18,7 @@ defmodule DataAggregatorWeb.Components.Pagination do
       <.pagination meta={@meta} path="/" />
   """
   attr :meta, Meta,
-    required: true,
+    default: nil,
     doc: """
     The meta information of the query as returned by the `AshPagify` query functions
     """

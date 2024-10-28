@@ -328,6 +328,11 @@ classDiagram
         UUID id
         Map extra_data
         String iucn_redlist_category
+        Boolean iucn_redlist
+        Boolean mids_level_one
+        Boolean mids_level_two
+        Boolean mids_level_three
+        Boolean mids_level_four
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID record_id
