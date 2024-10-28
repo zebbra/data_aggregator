@@ -47,7 +47,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
       <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6"><%= ~t"Records"m %></.page_header>
       <.table
         opts={[
-          container_attrs: [class: "no-scrollbar overflow-x-auto pb-4"],
+          container_attrs: [class: "overflow-x-auto pb-4"],
           no_results_content: no_results_content()
         ]}
         path={~p"/records"}

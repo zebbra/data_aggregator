@@ -402,7 +402,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           <.table
             opts={[
               container_attrs: [
-                class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8"
+                class: "overflow-x-auto -mx-6 lg:-mx-8"
               ]
             ]}
             items={error_log_preview_data(@selected_import.error_log)}

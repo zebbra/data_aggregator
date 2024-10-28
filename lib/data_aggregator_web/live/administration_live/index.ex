@@ -53,7 +53,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
       <.table
         opts={[
           container_attrs: [
-            class: "no-scrollbar overflow-x-auto pb-4"
+            class: "overflow-x-auto pb-4"
           ],
           no_results_content: no_results_content()
         ]}

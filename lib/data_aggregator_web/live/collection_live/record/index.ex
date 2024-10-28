@@ -595,7 +595,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   </p>
                   <.table
                     opts={[
-                      container_attrs: [class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
+                      container_attrs: [class: "overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
                     ]}
                     id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
                     items={attributes_with_data(category.attributes)}
