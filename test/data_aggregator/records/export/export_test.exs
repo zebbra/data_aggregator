@@ -368,7 +368,7 @@ defmodule DataAggregator.ExportTest do
 
       assert_lists_equal(Explorer.DataFrame.names(data_frame), expected_dwc_column_headers())
 
-      assert Explorer.DataFrame.n_columns(data_frame) == 278
+      assert Explorer.DataFrame.n_columns(data_frame) == 280
       assert Explorer.DataFrame.n_rows(data_frame) == 2
     end
 
@@ -383,7 +383,7 @@ defmodule DataAggregator.ExportTest do
 
       assert_lists_equal(Explorer.DataFrame.names(data_frame), expected_dwc_column_headers())
 
-      assert Explorer.DataFrame.n_columns(data_frame) == 278
+      assert Explorer.DataFrame.n_columns(data_frame) == 280
       assert Explorer.DataFrame.n_rows(data_frame) == 2
     end
   end

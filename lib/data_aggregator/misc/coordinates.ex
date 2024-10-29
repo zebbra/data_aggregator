@@ -42,6 +42,18 @@ defmodule DataAggregator.Misc.Coordinates do
   end
 
   @doc """
+    converts the projection coordinates E (easting) and N (northing)
+    in LV03 into the lat and long in WGS84
+  """
+  @spec lv03_to_wgs84!(Coordinates.t()) :: Coordinates.t()
+  def lv03_to_wgs84!(coord) do
+    y = coord.e + 2_000_000.0
+    x = coord.n + 1_000_000.0
+
+    lv95_to_wgs84!(%Coordinates{e: y, n: x})
+  end
+
+  @doc """
     converts the lat and long in WGS84 to the projection coordinates E (easting) and N (northing) in LV95
   """
   @spec wgs84_to_lv95!(Coordinates.t()) :: Coordinates.t()
@@ -69,6 +81,35 @@ defmodule DataAggregator.Misc.Coordinates do
         119.79 * Float.pow(phi, 3)
 
     # return the result as lv95 coordinates
+    %Coordinates{e: e, n: n}
+  end
+
+  @doc """
+    converts the lat and long in WGS84 to the projection coordinates E (easting) and N (northing) in LV03
+  """
+  @spec wgs84_to_lv03!(Coordinates.t()) :: Coordinates.t()
+  def wgs84_to_lv03!(coord) do
+    %Coordinates{e: e, n: n} = wgs84_to_lv95!(coord)
+
+    y = e - 2_000_000.0
+    x = n - 1_000_000.0
+
+    %Coordinates{e: y, n: x}
+  end
+
+  @spec lv95_to_lv03!(Coordinates.t()) :: Coordinates.t()
+  def lv95_to_lv03!(coord) do
+    y = coord.e - 2_000_000.0
+    x = coord.n - 1_000_000.0
+
+    %Coordinates{e: y, n: x}
+  end
+
+  @spec lv03_to_lv95!(Coordinates.t()) :: Coordinates.t()
+  def lv03_to_lv95!(coord) do
+    e = coord.e + 2_000_000.0
+    n = coord.n + 1_000_000.0
+
     %Coordinates{e: e, n: n}
   end
 end

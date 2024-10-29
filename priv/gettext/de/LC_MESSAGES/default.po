@@ -509,19 +509,19 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "New Import"
 msgstr "Neuer Import"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1154
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1162
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Get started by importing a new dataset"
 msgstr "Beginne, indem Du einen neuen Datensatz importierst"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1155
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1163
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Import"
 msgstr "Import"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1153
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1161
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "No records"
@@ -1942,9 +1942,9 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Encoding started in background"
 msgstr "Enkodierung im Hintergrund gestartet"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1147
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1161
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1172
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1155
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1169
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1180
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "No records found"
@@ -1956,7 +1956,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Publication started in background"
 msgstr "Veröffentlichung im Hintergrund gestartet"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1173
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1181
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Try with a different filter"
@@ -2627,7 +2627,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "There are no imports yet for your institution"
 msgstr "Es gibt noch keine Importe für deine Institution"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1162
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1170
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "There are no records yet for your institution"
@@ -3345,7 +3345,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Last Changes"
 msgstr "Nachname"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1148
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1156
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Try with a different scope"

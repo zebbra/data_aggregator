@@ -258,6 +258,65 @@ defmodule DataAggregator.Opencage.RestAPIStub do
      }}
   end
 
+  defp match_fetch(%{q: "46.086797,7.104789"}) do
+    {:ok,
+     %{
+       status: 200,
+       body: %{
+         "documentation" => "https://opencagedata.com/api",
+         "licenses" => [
+           %{
+             "name" => "see attribution guide",
+             "url" => "https://opencagedata.com/credits"
+           }
+         ],
+         "rate" => %{"limit" => 2500, "remaining" => 2498, "reset" => 1_730_246_400},
+         "results" => [
+           %{
+             "bounds" => %{
+               "northeast" => %{"lat" => 46.088489, "lng" => 7.106615},
+               "southwest" => %{"lat" => 46.0881359, "lng" => 7.1049418}
+             },
+             "components" => %{
+               "ISO_3166-1_alpha-2" => "CH",
+               "ISO_3166-1_alpha-3" => "CHE",
+               "ISO_3166-2" => ["CH-VS"],
+               "_category" => "road",
+               "_normalized_city" => "Val de Bagnes",
+               "_type" => "road",
+               "continent" => "Europe",
+               "country" => "Switzerland",
+               "country_code" => "ch",
+               "county" => "Entremont",
+               "local_administrative_area" => "Val de Bagnes",
+               "municipality" => "Val de Bagnes",
+               "postcode" => "1934",
+               "road" => "Route du Coteau",
+               "road_type" => "residential",
+               "state" => "Wallis",
+               "state_code" => "VS"
+             },
+             "confidence" => 9,
+             "distance_from_q" => %{"meters" => 184},
+             "formatted" => "Route du Coteau, 1934 Val de Bagnes, Switzerland",
+             "geometry" => %{"lat" => 46.0884374, "lng" => 7.1051661}
+           }
+         ],
+         "status" => %{"code" => 200, "message" => "OK"},
+         "stay_informed" => %{
+           "blog" => "https://blog.opencagedata.com",
+           "mastodon" => "https://en.osm.town/@opencage"
+         },
+         "thanks" => "For using an OpenCage API",
+         "timestamp" => %{
+           "created_http" => "Tue, 29 Oct 2024 10:48:40 GMT",
+           "created_unix" => 1_730_198_920
+         },
+         "total_results" => 1
+       }
+     }}
+  end
+
   defp match_fetch(%{q: "4242.4242,2424.2424"}) do
     {:ok,
      %{

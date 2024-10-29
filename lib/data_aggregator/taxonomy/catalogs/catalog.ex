@@ -105,8 +105,10 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:loc_country, "country"},
           {:loc_country_code, "country_code"},
           {:loc_state_province, "state"},
-          {:loc_swiss_coordinates_x, "loc_swiss_coordinates_x"},
-          {:loc_swiss_coordinates_y, "loc_swiss_coordinates_y"},
+          {:loc_swiss_coordinates_lv03_x, "loc_swiss_coordinates_lv03_x"},
+          {:loc_swiss_coordinates_lv03_y, "loc_swiss_coordinates_lv03_y"},
+          {:loc_swiss_coordinates_lv95_x, "loc_swiss_coordinates_lv95_x"},
+          {:loc_swiss_coordinates_lv95_y, "loc_swiss_coordinates_lv95_y"},
           {:loc_decimal_longitude, "loc_decimal_longitude"},
           {:loc_decimal_latitude, "loc_decimal_latitude"}
         ]

@@ -1056,16 +1056,28 @@ loc_attributes = [
     }
   },
   %{
-    dwc_field: "swissCoordinates_x",
+    dwc_field: "swissCoordinatesLv03_x",
     dwc_link: nil,
     dwca_file: nil,
-    attribute: %Attribute{name: :swiss_coordinates_x, type: :float, allow_nil?: true}
+    attribute: %Attribute{name: :swiss_coordinates_lv03_x, type: :float, allow_nil?: true}
   },
   %{
-    dwc_field: "swissCoordinates_y",
+    dwc_field: "swissCoordinatesLv03_y",
     dwc_link: nil,
     dwca_file: nil,
-    attribute: %Attribute{name: :swiss_coordinates_y, type: :float, allow_nil?: true}
+    attribute: %Attribute{name: :swiss_coordinates_lv03_y, type: :float, allow_nil?: true}
+  },
+  %{
+    dwc_field: "swissCoordinatesLv95_x",
+    dwc_link: nil,
+    dwca_file: nil,
+    attribute: %Attribute{name: :swiss_coordinates_lv95_x, type: :float, allow_nil?: true}
+  },
+  %{
+    dwc_field: "swissCoordinatesLv95_y",
+    dwc_link: nil,
+    dwca_file: nil,
+    attribute: %Attribute{name: :swiss_coordinates_lv95_y, type: :float, allow_nil?: true}
   }
 ]
 

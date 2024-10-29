@@ -604,10 +604,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                       <%= attribute.name %>
                     </:col>
                     <:col :let={attribute} label={~t"Imported"}>
-                      <%= attribute.imported %>
+                      <%= format_value(attribute.imported) %>
                     </:col>
                     <:col :let={attribute} label={~t"Encoded"}>
-                      <%= attribute.encoded %>
+                      <%= format_value(attribute.encoded) %>
                     </:col>
                   </.table>
                 </div>
@@ -1111,6 +1111,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       |> noreply()
     end
   end
+
+  defp format_value(nil), do: ""
+
+  defp format_value(value) when is_float(value) and round(value) == value do
+    round(value)
+  end
+
+  defp format_value(value), do: value
 
   defp coalesce_search(nil), do: ""
   defp coalesce_search(search), do: search
