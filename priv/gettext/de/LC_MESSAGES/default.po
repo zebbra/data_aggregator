@@ -1515,8 +1515,8 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Data"
 msgstr "Daten"
 
-#: lib/data_aggregator_web/components/components/attachment.ex:64
-#: lib/data_aggregator_web/components/components/attachment.ex:72
+#: lib/data_aggregator_web/components/components/attachment.ex:75
+#: lib/data_aggregator_web/components/components/attachment.ex:83
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.Components.Attachment"
 msgid "rows"
@@ -3535,13 +3535,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping"
 msgid "Update mapping"
 msgstr "Zuordnung aktualisieren"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:90
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:87
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "Back"
 msgstr "Zurück"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:66
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:63
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "Chosen Identifier"
@@ -3559,19 +3559,19 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "File"
 msgstr "Datei"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:62
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:61
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "Mapping"
 msgstr "Zuordnung"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:105
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:102
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "Mapping started in background"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:111
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:108
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "Not able to enqueue mapping"
@@ -3583,7 +3583,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "Please review the image upload summary."
 msgstr "Bitte überprüfe die Zusammenfassung deines Imports."
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:129
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:126
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "Run Mapping"
@@ -3601,13 +3601,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "Summary"
 msgstr "Zusammenfassung"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:150
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:147
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "file"
 msgstr "Datei"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:151
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:148
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "files"
@@ -3882,7 +3882,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Image Upload"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:128
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:125
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "Re-run Mapping"

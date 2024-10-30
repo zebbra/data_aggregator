@@ -14,8 +14,5 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Helpers do
     ]
   end
 
-  def load_all do
-    load() ++
-      []
-  end
+  def load_all, do: load()
 end

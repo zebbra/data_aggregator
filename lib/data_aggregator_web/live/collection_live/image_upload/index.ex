@@ -109,7 +109,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           <.image_upload_state_badge image_upload={image_upload} />
         </:col>
         <:col :let={{_id, image_upload}} label={~t"File"m}>
-          <.file_info attachment={image_upload.attachment} />
+          <.file_info attachment={image_upload.attachment} show_rows={false} />
           <.attachment_download_badge attachment={image_upload.attachment} />
         </:col>
         <:col :let={{_id, image_upload}} field={:mapped_images_count} label={~t"Mapped"m}>
@@ -173,7 +173,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           </.section_heading>
           <.list>
             <:item title={~t"File"m}>
-              <.file_info attachment={@selected_image_upload.attachment} />
+              <.file_info attachment={@selected_image_upload.attachment} show_rows={false} />
               <.attachment_download_badge attachment={@selected_image_upload.attachment} />
             </:item>
             <:item title={~t"Mapping identifier"m}>

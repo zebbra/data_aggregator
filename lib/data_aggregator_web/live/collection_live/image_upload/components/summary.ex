@@ -47,7 +47,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
       <div class="h-full overflow-y-auto overflow-x-hidden px-6 py-1">
         <.list dense>
           <:item title={~t"File"m}>
-            <.file_info attachment={@image_upload.attachment} />
+            <.file_info attachment={@image_upload.attachment} show_rows={false} />
             <.attachment_download_badge attachment={@image_upload.attachment} />
           </:item>
           <:item title={~t"Created at"m}>
@@ -57,11 +57,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
             <%= invalid_file_infos(@image_upload.invalid_file_infos) %>
           </:item>
         </.list>
-      </div>
 
-      <.section_heading text={~t"Mapping"m} class="px-6 lg:px-6 text-left" />
-
-      <div class="h-full overflow-y-auto overflow-x-hidden px-6 py-1">
+        <.section_heading text={~t"Mapping"m} size="md" class="pt-4" />
         <.list dense>
           <:item title={~t"Chosen Identifier"m}>
             <%= Schema.dwc_field_from_prefixed_attribute_name(@image_upload.mapping_identifier) %>
