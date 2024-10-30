@@ -97,6 +97,35 @@
       "size": null,
       "source": "record_id",
       "type": "uuid"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": true,
+        "match_type": null,
+        "match_with": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "record_images_image_upload_id_fkey",
+        "on_delete": "delete",
+        "on_update": "update",
+        "primary_key?": true,
+        "schema": "public",
+        "table": "image_uploads"
+      },
+      "size": null,
+      "source": "image_upload_id",
+      "type": "uuid"
     }
   ],
   "base_filter": null,
@@ -104,7 +133,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "2C8301EAA04BDA995AEC119C6A404B27C6233025335B77011EAB3CF7065B7F28",
+  "hash": "DCEBD7D3B90F9987258747AF8E1BF42FF04346ED5CEC84329F94AEB5479B58E0",
   "identities": [],
   "multitenancy": {
     "attribute": null,

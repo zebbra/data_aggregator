@@ -57,18 +57,21 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "images_count",
-      "type": "bigint"
+      "source": "invalid_file_infos",
+      "type": [
+        "array",
+        "map"
+      ]
     },
     {
-      "allow_nil?": true,
-      "default": "nil",
+      "allow_nil?": false,
+      "default": "\"mte_catalog_number\"",
       "generated?": false,
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "images_mapped_count",
-      "type": "bigint"
+      "source": "mapping_identifier",
+      "type": "text"
     },
     {
       "allow_nil?": false,
@@ -127,6 +130,16 @@
       "size": null,
       "source": "attachment_id",
       "type": "uuid"
+    },
+    {
+      "allow_nil?": false,
+      "default": "\"new\"",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "state",
+      "type": "text"
     }
   ],
   "base_filter": null,
@@ -134,7 +147,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "86290A1873F0B31019A9EBEF3C41BDCCB7DF43EF8D009DFA3D78CE1EA9ECFB9D",
+  "hash": "95BF06241115368E1F4E000EC22858B9BDD9E263B72A4B5845D7DF7318F7AF73",
   "identities": [],
   "multitenancy": {
     "attribute": null,
