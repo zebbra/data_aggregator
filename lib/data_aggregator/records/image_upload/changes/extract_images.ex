@@ -12,6 +12,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
 
   @accepted_image_extensions ~w(.jpg .jpeg .png .bmp .tiff .svg .webp)
   @max_image_size 5_000_000
+  @ignored_os_folders ~w(__MACOSX)
 
   @impl true
   def change(%Changeset{} = changeset, _opts, ctx) do
@@ -28,6 +29,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
          {:temp_path, temp_path} <-
            {:temp_path, FlatFileUtils.create_directory!("image_upload_#{image_upload.id}")},
          {:unzip, {:ok, _}} <- {:unzip, unzip_cached_file(cached_file, temp_path)},
+         {:ok, temp_path} <- maybe_enter_single_subdirectory(temp_path),
          {:validate, invalid_file_infos} <- {:validate, validate_files(temp_path)},
          {:add_invalid_file_info, changeset} <-
            {:add_invalid_file_info, Changeset.change_attribute(changeset, :invalid_file_infos, invalid_file_infos)},
@@ -37,6 +39,9 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
     else
       {:cached_file, _} ->
         add_error(changeset, "Could not load cached file")
+
+      {:multiple_subdirectories_error, error} ->
+        add_error(changeset, error)
 
       {:unzip, {:error, error}} ->
         add_error(changeset, "Could not unzip attachment: #{error}")
@@ -54,6 +59,23 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
     |> :zip.unzip([{:cwd, to_charlist(temp_path)}])
   end
 
+  defp maybe_enter_single_subdirectory(temp_path) do
+    temp_path
+    |> File.ls!()
+    |> Enum.filter(&(File.dir?(temp_path <> "/" <> &1) and &1 not in @ignored_os_folders))
+    |> case do
+      [subdir] ->
+        Logger.info("Entering single subdirectory ...")
+        {:ok, temp_path <> "/" <> subdir}
+
+      [] ->
+        {:ok, temp_path}
+
+      _ ->
+        {:multiple_subdirectories_error, "Multiple subdirectories found"}
+    end
+  end
+
   defp validate_files(temp_path) do
     Logger.info("Validating extracted files ...")
 
@@ -66,10 +88,17 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
   defp validate_file(file, temp_path) do
     with {:ok, stats} <- File.stat(temp_path <> "/" <> file),
          ext = get_extenstion(file),
+         :ok <- validate_not_hidden(ext),
          :ok <- validate_extension(ext),
          :ok <- validate_size(stats.size) do
       {:ok, file}
     else
+      {:error, :file_hidden, _ext} ->
+        Logger.info("Hidden file detected: #{file}")
+        Logger.info("Deleting file: #{temp_path}/#{file}")
+        File.rm!(temp_path <> "/" <> file)
+        {:ok, nil}
+
       {:error, :file_size, size} ->
         Logger.info("File size (#{size}) exceeds maximum allowed size of #{@max_image_size}")
         Logger.info("Deleting file: #{temp_path}/#{file}")
@@ -86,6 +115,12 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
         Logger.warning("Error validating file: #{inspect(error)}")
     end
   end
+
+  defp validate_not_hidden("" = ext) do
+    {:error, :file_hidden, ext}
+  end
+
+  defp validate_not_hidden(_), do: :ok
 
   defp validate_size(size) do
     if size <= @max_image_size do

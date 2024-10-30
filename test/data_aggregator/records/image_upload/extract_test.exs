@@ -20,10 +20,22 @@ defmodule DataAggregator.Records.ImageUpload.ExtractTest do
         path: "test/support/fixtures/files/image_upload_test_catalog_number_invalid_files.zip"
       })
 
+    image_upload_mac_hidden_files =
+      image_upload_fixture(collection, %{
+        path: "test/support/fixtures/files/mac_hidden_files.zip"
+      })
+
+    image_upload_osx_zipped_folder =
+      image_upload_fixture(collection, %{
+        path: "test/support/fixtures/files/mac_zip_folder.zip"
+      })
+
     [
       collection: collection,
       image_upload: image_upload,
-      image_upload_with_invalid_files: image_upload_with_invalid_files
+      image_upload_with_invalid_files: image_upload_with_invalid_files,
+      image_upload_mac_hidden_files: image_upload_mac_hidden_files,
+      image_upload_osx_zipped_folder: image_upload_osx_zipped_folder
     ]
   end
 
@@ -90,6 +102,62 @@ defmodule DataAggregator.Records.ImageUpload.ExtractTest do
     Enum.each(image_upload.image_attachments, fn image_attachment ->
       assert image_attachment.url != nil
       assert image_attachment.filename == "catalogNumber1_1.jpg"
+    end)
+  end
+
+  test "extract/1 successful with zip file containing hidden OSX file filtered out", %{
+    image_upload_mac_hidden_files: image_upload
+  } do
+    assert {:ok, image_upload} = ImageUpload.extract(image_upload)
+
+    assert image_upload.invalid_file_infos == []
+
+    assert image_upload.state == :extracted
+    assert image_upload.image_attachments != nil
+    assert is_list(image_upload.image_attachments)
+    assert length(image_upload.image_attachments) == 5
+
+    assert image_upload.images != nil
+    image_upload = Ash.load!(image_upload, :images)
+
+    Enum.each(image_upload.image_attachments, fn image_attachment ->
+      assert image_attachment.url != nil
+
+      assert image_attachment.filename in [
+               "GBIFCH00993799_1.jpg",
+               "GBIFCH00993799_2.jpg",
+               "GBIFCH00993760.jpeg",
+               "GBIFCH00993789.jpg",
+               "occurrenceID1337_noMatch.jpg"
+             ]
+    end)
+  end
+
+  test "extract/1 successful with zip file containing zipped OSX folder with files", %{
+    image_upload_osx_zipped_folder: image_upload
+  } do
+    assert {:ok, image_upload} = ImageUpload.extract(image_upload)
+
+    assert image_upload.invalid_file_infos == []
+
+    assert image_upload.state == :extracted
+    assert image_upload.image_attachments != nil
+    assert is_list(image_upload.image_attachments)
+    assert length(image_upload.image_attachments) == 5
+
+    assert image_upload.images != nil
+    image_upload = Ash.load!(image_upload, :images)
+
+    Enum.each(image_upload.image_attachments, fn image_attachment ->
+      assert image_attachment.url != nil
+
+      assert image_attachment.filename in [
+               "GBIFCH00993799_1.jpg",
+               "GBIFCH00993799_2.jpg",
+               "GBIFCH00993760.jpeg",
+               "GBIFCH00993789.jpg",
+               "occurrenceID1337_noMatch.jpg"
+             ]
     end)
   end
 end

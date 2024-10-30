@@ -104,7 +104,6 @@ defmodule DataAggregator.Records.ImageUpload do
       accept []
       require_atomic? false
 
-      # change ImageUpload.Changes.SetCollectionExtractingBeforeTransaction
       change transition_state(:extraction_queued)
       change ImageUpload.Changes.EnqueueExtractor
     end
@@ -116,7 +115,6 @@ defmodule DataAggregator.Records.ImageUpload do
       change SetTimeout
       change ImageUpload.Changes.SetExtractingBeforeTransaction
       change ImageUpload.Changes.ExtractImages
-      # change ImageUpload.Changes.ValidateImages
       change ImageUpload.Changes.SetExtractedAfterAction
       change ImageUpload.Changes.SetExtractionFailedOnError
     end
