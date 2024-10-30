@@ -134,7 +134,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
   end
 
   defp assign_mapping_identifier_options(socket) do
-    options = Schema.image_upload_identifier_options()
+    options = Schema.attribute_options(required?: false)
 
     assign(socket, :mapping_identifier_options, options)
   end

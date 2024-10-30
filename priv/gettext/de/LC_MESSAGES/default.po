@@ -253,26 +253,27 @@ msgctxt "DataAggregatorWeb.CollectionLive.Encoding.Components"
 msgid "Unknown"
 msgstr "Unbekannt"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:85
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:90
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:105
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Add"
 msgstr "Neu"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:57
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:93
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:62
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:113
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Collections"
 msgstr "Sammlungen"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:58
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:63
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Current"
 msgstr "Aktuell"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:143
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:166
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Import dataset"
@@ -1980,7 +1981,7 @@ msgctxt "DataAggregatorWeb.Components.Button"
 msgid "close"
 msgstr "schließen"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:108
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:128
 #: lib/data_aggregator_web/live/collection_live/record/components.ex:189
 #, elixir-autogen, elixir-format
 msgid "Show on GBIF"
@@ -3351,62 +3352,62 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Try with a different scope"
 msgstr "Versuche es mit einem anderen Filter"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:65
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:123
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:70
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:146
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Are you sure?"
 msgstr "Bist Du sicher?"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:70
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:75
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: lib/data_aggregator_web/live/collection_live/helpers.ex:93
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:99
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Helpers"
 msgid "Action %{action} cancelled"
 msgstr "Aktion %{action} abgebrochen"
 
-#: lib/data_aggregator_web/live/collection_live/helpers.ex:71
-#: lib/data_aggregator_web/live/collection_live/helpers.ex:82
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:76
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:88
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Helpers"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: lib/data_aggregator_web/live/collection_live/helpers.ex:70
-#: lib/data_aggregator_web/live/collection_live/helpers.ex:81
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:75
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:87
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Helpers"
 msgid "Cancel approval"
 msgstr "Genehmigung abbrechen"
 
-#: lib/data_aggregator_web/live/collection_live/helpers.ex:68
-#: lib/data_aggregator_web/live/collection_live/helpers.ex:79
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:73
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:85
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Helpers"
 msgid "Cancel encoding"
 msgstr "Enkodierung abbrechen"
 
-#: lib/data_aggregator_web/live/collection_live/helpers.ex:67
-#: lib/data_aggregator_web/live/collection_live/helpers.ex:78
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:72
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:84
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Helpers"
 msgid "Cancel export"
 msgstr "Export abbrechen"
 
-#: lib/data_aggregator_web/live/collection_live/helpers.ex:66
-#: lib/data_aggregator_web/live/collection_live/helpers.ex:77
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:70
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:82
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Helpers"
 msgid "Cancel import"
 msgstr "Import abbrechen"
 
-#: lib/data_aggregator_web/live/collection_live/helpers.ex:69
-#: lib/data_aggregator_web/live/collection_live/helpers.ex:80
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:74
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:86
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Helpers"
 msgid "Cancel publication"
@@ -3417,7 +3418,7 @@ msgstr "Veröffentlichung abbrechen"
 msgid "For example: 'catalogName001_01.jpg' maps to a record where its catalogName is 'catalogName001'."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:195
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:202
 #, elixir-autogen, elixir-format
 msgid "Logfile"
 msgstr ""
@@ -3432,7 +3433,7 @@ msgstr ""
 msgid "Upload Images"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:156
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:181
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Upload Images"
@@ -3714,144 +3715,144 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "up to %{max_file_size}"
 msgstr "bis zu %{max_file_size}"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:132
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:139
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Actions"
 msgstr "Aktionen"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:240
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:247
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Are you sure you want to delete this Image Upload and the associated Images"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:120
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:177
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:127
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:184
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Created at"
 msgstr "Erstellt am"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:306
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:318
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:288
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:300
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Edit Image Upload"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:74
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:81
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Exports"
 msgstr "Exporte"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:104
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:168
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:111
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:175
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "File"
 msgstr "Datei"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:315
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:327
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Get started by uploading a new zip file."
 msgstr "Beginne, indem Du einen neuen Benutzer erstellst."
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:82
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:155
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:275
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:89
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:162
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:287
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Image Upload"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:296
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:308
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Image Upload Summary"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:256
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:268
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Image Upload deleted successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:70
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:77
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Imports"
 msgstr "Importe"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:117
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:172
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:124
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:179
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Mapping identifier"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:280
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:292
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "New Image Upload"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:314
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:326
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "No image uploads"
 msgstr "Noch keine Bilder hochgeladen"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:78
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:85
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Publications and Approvals"
 msgstr "Veröffentlichungen und Genehmigungen"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:66
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:73
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Records"
 msgstr "Einträge"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:148
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:155
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Show Image Upload"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:101
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:108
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "State"
 msgstr "Status"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:161
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:168
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "State:"
 msgstr "Status:"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:316
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:328
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Upload Images"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:149
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:156
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "View details of the selected image upload."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:241
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:248
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Yes, delete image upload"
@@ -3901,7 +3902,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "Re-run Mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:305
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:317
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Edit for rerun"
@@ -3930,40 +3931,40 @@ msgstr "Zuordnung"
 msgid "Invalid files"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:183
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:190
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Finished at"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:192
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:199
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Inavlid"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:114
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:121
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Invalid"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:108
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:186
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:115
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:193
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Mapped"
 msgstr "Gemappt auf"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:123
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:180
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:130
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:187
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Started at"
 msgstr "Gestartet am"
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:111
-#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:189
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:118
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:196
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Unmapped"
@@ -4002,5 +4003,18 @@ msgstr "Etwas ist schief gelaufen!"
 #: lib/data_aggregator_web/live/record_live/index.ex:36
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.RecordLive.Index"
+msgid "Something went wrong"
+msgstr "Etwas ist schief gelaufen!"
+
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:71
+#: lib/data_aggregator_web/live/collection_live/helpers.ex:83
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Helpers"
+msgid "Cancel image mapping"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:51
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Something went wrong"
 msgstr "Etwas ist schief gelaufen!"

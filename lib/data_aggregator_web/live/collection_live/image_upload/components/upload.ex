@@ -26,7 +26,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
      |> assign(:uploading, false)
      |> allow_upload(:file,
        max_entries: 1,
-       accept: DataFrame.supported_file_upload_exts(),
+       accept: DataFrame.supported_image_file_upload_exts(),
        max_file_size: 200 * 1024 * 1024,
        auto_upload: true,
        progress: &handle_progress/3

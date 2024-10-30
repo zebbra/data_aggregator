@@ -14,6 +14,7 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
     [
       :digitizing_progress,
       :importing,
+      :mapping,
       :exporting,
       :encoding,
       :publishing,
@@ -25,6 +26,7 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
 
   @load_light [
     :importing,
+    :mapping,
     :exporting,
     :encoding,
     :publishing,
@@ -50,6 +52,8 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
 
   def busy_action("set_importing"), do: "dataset:import"
   def busy_action(%{importing: true}), do: "dataset:import"
+  def busy_action("set_mapping"), do: "collection:mapping"
+  def busy_action(%{mapping: true}), do: "collection:mapping"
   def busy_action("set_exporting"), do: "collection:export"
   def busy_action(%{exporting: true}), do: "collection:export"
   def busy_action("set_encoding"), do: "encode:toggle"
@@ -64,6 +68,7 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
   def busy_action_translation(busy_action) do
     case busy_action do
       "dataset:import" -> ~t"Cancel import"m
+      "collection:mapping" -> ~t"Cancel image mapping"m
       "collection:export" -> ~t"Cancel export"m
       "encode:toggle" -> ~t"Cancel encoding"m
       "fast_track_pub:toggle" -> ~t"Cancel publication"m
@@ -75,6 +80,7 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
   def state_translation(state) do
     case state do
       :importing -> ~t"Cancel import"m
+      :mapping -> ~t"Cancel image mapping"m
       :exporting -> ~t"Cancel export"m
       :encoding -> ~t"Cancel encoding"m
       :fast_track_pubishing -> ~t"Cancel publication"m

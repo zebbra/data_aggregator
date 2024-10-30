@@ -88,6 +88,8 @@ defmodule DataAggregator.Records.ImageUpload do
       transition :set_mapping, from: [:mapping_queued, :extracted], to: :mapping
       transition :set_mapped, from: :mapping, to: :mapped
       transition :set_mapping_failed, from: [:mapping_queued, :mapping], to: :mapping_failed
+
+      transition :cancel_mapping, from: [:mapping, :mapping_queued], to: :mapping_failed
     end
   end
 
@@ -182,7 +184,16 @@ defmodule DataAggregator.Records.ImageUpload do
       require_atomic? false
 
       change transition_state(:mapping_failed)
+      change set_attribute(:finished_at, &DateTime.utc_now/0)
       change SetCollectionIdleAfterTransaction
+    end
+
+    update :cancel_mapping do
+      accept []
+      require_atomic? false
+
+      change transition_state(:mapping_failed)
+      change set_attribute(:finished_at, &DateTime.utc_now/0)
     end
 
     read :read do
@@ -205,6 +216,12 @@ defmodule DataAggregator.Records.ImageUpload do
                  keyset?: true
 
       filter expr(collection_id == ^arg(:collection_id))
+    end
+
+    read :active_by_collection do
+      argument :collection_id, :string, allow_nil?: false
+
+      filter expr(collection_id == ^arg(:collection_id) and state in [:mapping, :mapping_queued])
     end
 
     create :create do
@@ -242,6 +259,7 @@ defmodule DataAggregator.Records.ImageUpload do
     define :read
     define :get_by_id, action: :read, get_by: [:id]
     define :by_collection, args: [:collection_id]
+    define :active_by_collection, args: [:collection_id]
     define :create, args: [:collection]
     define :create_from_path, args: [:collection, :path]
     define :destroy
@@ -256,6 +274,7 @@ defmodule DataAggregator.Records.ImageUpload do
     define :update_mapping_identifier, args: [:mapping_identifier]
     define :enqueue_mapping
     define :map
+    define :cancel_mapping
   end
 
   postgres do

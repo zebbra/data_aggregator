@@ -24,12 +24,14 @@ classDiagram
         Import[] imports
         Export[] exports
         Record[] records
+        ImageUpload[] image_uploads
         update(Integer items_to_digitize, String owner, String name, String code, ...)
         read(String sort)
         create(Integer items_to_digitize, String owner, String name, String code, ...)
         update_import_mapping(Map[] import_mapping)
         touch(Integer items_to_digitize, String owner, String name, String code, ...)
         register_at_gbif(String dwca_file_url, Integer items_to_digitize, String owner, String name, ...)
+        set_mapping()
         set_importing()
         set_exporting()
         set_encoding()
@@ -342,6 +344,7 @@ classDiagram
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read(String sort)
         create(Struct record, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        add_image_url(Struct image, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
     }
     class RecordEncodingResult {
         UUID id
@@ -444,6 +447,41 @@ classDiagram
         destroy()
         read()
         create(Struct import, Struct record, UUID import_id, UUID record_id)
+    }
+    class ImageUpload {
+        UUID id
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        UtcDatetime started_at
+        UtcDatetime finished_at
+        Map[] invalid_file_infos
+        Atom mapping_identifier
+        UUID collection_id
+        UUID attachment_id
+        Atom state
+        Collection collection
+        Attachment attachment
+        Image[] images
+        Attachment[] image_attachments
+        update(UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, Atom mapping_identifier, ...)
+        destroy()
+        update_mapping_identifier(Atom mapping_identifier)
+        enqueue_extraction()
+        extract()
+        set_extracting()
+        set_extracted()
+        set_extraction_failed()
+        enqueue_mapping()
+        map()
+        set_mapping()
+        set_mapped()
+        set_mapping_failed()
+        cancel_mapping()
+        read(String sort)
+        by_collection(String collection_id, String sort)
+        active_by_collection(String collection_id)
+        create(Struct collection, UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, ...)
+        create_from_path(Struct collection, String path, String filename)
     }
     class Publication {
         UUID id
@@ -798,6 +836,7 @@ classDiagram
         update_fast_track_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         update_approval_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         update_last_approval_started_at()
+        add_image(Struct image, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         destroy()
     }
     class Image {
@@ -807,12 +846,14 @@ classDiagram
         UtcDatetimeUsec updated_at
         UUID attachment_id
         UUID record_id
+        UUID image_upload_id
         Attachment attachment
         Record record
+        ImageUpload image_upload
         destroy()
-        update(Integer size, UUID attachment_id, UUID record_id)
+        update(Integer size, UUID attachment_id, UUID record_id, UUID image_upload_id)
         read()
-        create(Integer size, UUID attachment_id, UUID record_id)
+        create(Integer size, UUID attachment_id, UUID record_id, UUID image_upload_id)
     }
     class Version {
         UUID id
@@ -1171,6 +1212,7 @@ classDiagram
     User -- Version
     Attachment -- Approval
     Attachment -- Export
+    Attachment -- ImageUpload
     Attachment -- Import
     Attachment -- Publication
     Attachment -- Record
@@ -1178,6 +1220,7 @@ classDiagram
     Institution -- Collection
     ApprovedRecord -- Record
     Collection -- Export
+    Collection -- ImageUpload
     Collection -- Import
     Collection -- Publication
     Collection -- Record
@@ -1185,6 +1228,7 @@ classDiagram
     EncodedRecord -- Record
     EncodedRecord -- SwissSpecies
     RecordEncodingResult -- Record
+    ImageUpload -- Image
     Import -- Record
     Import -- Record
     Record -- Record

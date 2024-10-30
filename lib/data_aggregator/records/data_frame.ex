@@ -24,8 +24,8 @@ defmodule DataAggregator.Records.DataFrame do
   @supported_exts @csv_exts ++ @ipc_exts ++ @pqt_exts
   def supported_exts, do: @supported_exts
 
-  @supported_file_upload_exts ~w(.zip)
-  def supported_file_upload_exts, do: @supported_file_upload_exts
+  @supported_image_file_upload_exts ~w(.zip)
+  def supported_image_file_upload_exts, do: @supported_image_file_upload_exts
 
   @doc """
   Returns a `DataFrame` from the given file.

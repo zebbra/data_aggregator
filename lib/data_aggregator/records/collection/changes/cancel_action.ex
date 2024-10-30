@@ -18,6 +18,7 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
   alias Ash.Changeset
   alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Export
+  alias DataAggregator.Records.ImageUpload
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
@@ -36,6 +37,9 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     case state do
       :importing ->
         cancel_import(changeset)
+
+      :mapping ->
+        cancel_image_mapping(changeset)
 
       :exporting ->
         cancel_export(changeset)
@@ -69,6 +73,21 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
 
     if active_import do
       Import.cancel_import!(active_import)
+    end
+
+    changeset
+  end
+
+  defp cancel_image_mapping(%Changeset{data: %{id: collection_id}} = changeset) do
+    cancel_all_jobs(Job.query_to_image_mappings_by_collection(collection_id))
+
+    active_image_mapping =
+      collection_id
+      |> ImageUpload.query_to_active_by_collection()
+      |> Ash.read_one!()
+
+    if active_image_mapping do
+      ImageUpload.cancel_mapping!(active_image_mapping)
     end
 
     changeset

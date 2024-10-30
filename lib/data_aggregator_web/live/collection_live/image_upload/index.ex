@@ -4,7 +4,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
   use DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions
 
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
-  import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection_light: 2]
+
+  import DataAggregatorWeb.CollectionLive.Helpers,
+    only: [get_collection_light: 2, cancel_action: 2, busy_action: 1]
 
   import DataAggregatorWeb.CollectionLive.ImageUpload.Components,
     only: [image_upload_state_badge: 1]
@@ -29,6 +31,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
       |> assign(:collection, collection)
       |> assign(:selected_image_upload, nil)
       |> assign(:busy, collection.busy)
+      |> assign(:busy_action, busy_action(collection))
       |> subscribe_for_image_upload_updates(connected?(socket))
 
     {:ok, socket}
@@ -44,6 +47,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
         |> apply_action(socket.assigns.live_action, params)
         |> noreply()
 
+      {:error, %AshPagify.Meta{errors: []}} ->
+        raise ~t"Something went wrong"m
+
       {:error, _meta} ->
         {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/image_uploads")}
     end
@@ -57,8 +63,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
         collection={@collection}
         current={:image_upload}
         current_user={@current_user}
-        busy={@busy}
         meta={@meta}
+        busy={@busy}
+        busy_action={@busy_action}
       />
       <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
         <.secondary_navigation_item
@@ -243,6 +250,11 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
       </:portal>
     </.page>
     """
+  end
+
+  @impl true
+  def handle_event("collection:cancel", %{"id" => id}, socket) do
+    cancel_action(id, socket)
   end
 
   @impl true
