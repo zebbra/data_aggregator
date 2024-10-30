@@ -5,6 +5,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
   use Mimic
 
   import DataAggregator.EncodingFixtures
+  import DataAggregator.ImageUploadFixtures
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.Gbif
@@ -15,6 +16,8 @@ defmodule DataAggregator.Collections.CancelActionTest do
   alias DataAggregator.Records.Collection.Workers.RecordsEnqueuer
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Export.Workers.Exporter
+  alias DataAggregator.Records.ImageUpload
+  alias DataAggregator.Records.ImageUpload.Workers.Mapper
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.Import.Workers.Importer
   alias DataAggregator.Records.Publication
@@ -116,6 +119,71 @@ defmodule DataAggregator.Collections.CancelActionTest do
         assert collection.state === :idle
 
         refute collection.id |> Job.query_to_imports_by_collection() |> Ash.read_one!()
+      end)
+    end
+
+    test "cancels an image mapping job and sets the image_upload to failed and the collection to idle" do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        collection = collection_fixture()
+
+        image_upload =
+          image_upload_fixture_extracted(collection)
+
+        assert {:ok, image_upload} = ImageUpload.enqueue_mapping(image_upload)
+
+        collection = Collection.set_mapping!(collection)
+        assert collection.state === :mapping
+        assert image_upload.state === :mapping_queued
+
+        active_job =
+          collection.id |> Job.query_to_image_mappings_by_collection() |> Ash.read_one!()
+
+        assert active_job.state === :available
+
+        assert_enqueued(
+          worker: Mapper,
+          args: %{id: image_upload.id, collection_id: image_upload.collection_id}
+        )
+
+        Collection.cancel_action!(collection)
+        image_upload = ImageUpload.get_by_id!(image_upload.id)
+        collection = Collection.get_by_id!(collection.id)
+
+        assert image_upload.state === :mapping_failed
+        assert collection.state === :idle
+
+        cancelled_job =
+          collection.id |> Job.query_to_image_mappings_by_collection() |> Ash.read_one!()
+
+        assert cancelled_job.state === :cancelled
+      end)
+    end
+
+    test "cancels an image mapping with no active mapping and no mapping job and sets collection to idle" do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        collection = collection_fixture(%{state: :mapping})
+
+        assert collection.state === :mapping
+
+        image_upload =
+          image_upload_fixture_extracted(collection)
+
+        assert image_upload.state === :extracted
+
+        refute_enqueued(
+          worker: Mapper,
+          args: %{id: image_upload.id, collection_id: image_upload.collection_id}
+        )
+
+        Collection.cancel_action!(collection)
+
+        image_upload = ImageUpload.get_by_id!(image_upload.id)
+        collection = Collection.get_by_id!(collection.id)
+
+        assert image_upload.state === :extracted
+        assert collection.state === :idle
+
+        refute collection.id |> Job.query_to_image_mappings_by_collection() |> Ash.read_one!()
       end)
     end
 

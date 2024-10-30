@@ -1515,8 +1515,8 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Data"
 msgstr ""
 
-#: lib/data_aggregator_web/components/components/attachment.ex:79
-#: lib/data_aggregator_web/components/components/attachment.ex:100
+#: lib/data_aggregator_web/components/components/attachment.ex:64
+#: lib/data_aggregator_web/components/components/attachment.ex:72
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Components.Attachment"
 msgid "rows"
@@ -3880,20 +3880,6 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Image Upload"
-msgstr ""
-
-#: lib/data_aggregator_web/components/components/attachment.ex:70
-#: lib/data_aggregator_web/components/components/attachment.ex:92
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Components.Attachment"
-msgid "Contains"
-msgstr ""
-
-#: lib/data_aggregator_web/components/components/attachment.ex:70
-#: lib/data_aggregator_web/components/components/attachment.ex:92
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.Components.Attachment"
-msgid "Files"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/image_upload/components/summary.ex:128

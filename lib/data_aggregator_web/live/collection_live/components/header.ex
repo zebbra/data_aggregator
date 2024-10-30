@@ -76,7 +76,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           </.link>
           <.link
             :if={@show_import_button}
-            patch={build_path(~p"/collections/#{@collection}/image_uploads/new", @meta)}
+            patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
             class={[
               "btn btn-primary btn-sm",
               (@busy || is_nil(@meta)) && "btn-disabled"
@@ -91,7 +91,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           </.link>
           <.link
             :if={@show_image_upload_button}
-            patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
+            patch={build_path(~p"/collections/#{@collection}/image_uploads/new", @meta)}
             class={[
               "btn btn-primary btn-sm",
               (@busy || is_nil(@meta)) && "btn-disabled"
