@@ -21,15 +21,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.RelateImagesStrategy do
     # Load the record and its images
     encoded_record = Ash.load!(encoded_record, [record: [images: :attachment]], lazy?: true)
 
-    case process_encoded_record(encoded_record, ctx) do
-      {:ok, encoded_record} ->
-        {:ok, encoded_record}
-
-      {:error, error, encoded_record} ->
-        handle_error(encoded_record.id, error)
-
-        {:error, error, encoded_record}
-    end
+    process_encoded_record(encoded_record, ctx)
   end
 
   @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
@@ -55,10 +47,5 @@ defmodule DataAggregator.Records.Encoding.Strategy.RelateImagesStrategy do
       nil -> new_url
       _ -> "#{associated_media} | #{new_url}"
     end
-  end
-
-  @spec handle_error(String.t(), any()) :: :ok
-  defp handle_error(record_id, error) do
-    Logger.warning("Error relating images for encoded record #{record_id}: #{inspect(error)}")
   end
 end
