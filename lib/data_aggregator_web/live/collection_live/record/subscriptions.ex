@@ -21,6 +21,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
   require Logger
 
   @collection_action_events ~w(
+    set_mapping
     set_importing
     set_exporting
     set_encoding

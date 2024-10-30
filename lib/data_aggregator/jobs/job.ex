@@ -51,6 +51,12 @@ defmodule DataAggregator.Jobs.Job do
       filter expr(collection_id == ^arg(:collection_id) and queue == "imports")
     end
 
+    read :image_mappings_by_collection do
+      argument :collection_id, :string, allow_nil?: false
+
+      filter expr(collection_id == ^arg(:collection_id) and queue == "mappings")
+    end
+
     read :exports_by_collection do
       argument :collection_id, :string, allow_nil?: false
 
@@ -80,6 +86,7 @@ defmodule DataAggregator.Jobs.Job do
     define :read
     define :get_by_id, action: :read, get_by: [:id]
     define :imports_by_collection, args: [:collection_id]
+    define :image_mappings_by_collection, args: [:collection_id]
     define :exports_by_collection, args: [:collection_id]
     define :publications_by_collection, args: [:collection_id]
     define :publication_verifications_by_collection, args: [:collection_id]

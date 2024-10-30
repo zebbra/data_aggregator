@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   attr :current, :atom,
     default: :records,
-    values: ~w(records imports encodings exports publications)a
+    values: ~w(records imports encodings exports publications image_upload)a
 
   attr :current_user, User, required: true
 
@@ -38,6 +38,10 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
       assigns.current in [:records, :imports] and
         Collection.can_set_importing?(assigns.current_user, assigns.collection)
 
+    show_image_upload_button =
+      assigns.current in [:image_upload] and
+        Collection.can_set_mapping?(assigns.current_user, assigns.collection)
+
     show_cancel_button =
       assigns.busy and not assigns.collection.deleting and
         Collection.can_cancel_action?(assigns.current_user, assigns.collection)
@@ -46,6 +50,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
       assigns
       |> assign_new(:gbif_dataset_base_url, fn -> "#{gbif_base_url()}/dataset" end)
       |> assign(:show_import_button, show_import_button)
+      |> assign(:show_image_upload_button, show_image_upload_button)
       |> assign(:show_cancel_button, show_cancel_button)
 
     ~H"""
@@ -58,7 +63,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             %{label: ~t"Current"m, link: "#"}
           ]}
         />
-        <div :if={@show_import_button or @show_cancel_button}>
+        <div :if={@show_import_button or @show_image_upload_button or @show_cancel_button}>
           <.link
             :if={@show_cancel_button}
             phx-click={JS.push("collection:cancel", value: %{id: @collection.id})}
@@ -78,6 +83,21 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             ]}
           >
             <%= if importing?(@busy_action) do %>
+              <.icon name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
+            <% else %>
+              <.icon name="hero-arrow-up-tray" class="size-4" />
+            <% end %>
+            <%= ~t"Add"m %>
+          </.link>
+          <.link
+            :if={@show_image_upload_button}
+            patch={build_path(~p"/collections/#{@collection}/image_uploads/new", @meta)}
+            class={[
+              "btn btn-primary btn-sm",
+              (@busy || is_nil(@meta)) && "btn-disabled"
+            ]}
+          >
+            <%= if mapping?(@busy_action) do %>
               <.icon name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
             <% else %>
               <.icon name="hero-arrow-up-tray" class="size-4" />
@@ -116,7 +136,10 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <%= @collection.code %>
         </div>
       </:subtitle>
-      <:actions :if={@show_import_button or @show_cancel_button} class="max-sm:hidden sm:space-x-2">
+      <:actions
+        :if={@show_import_button or @show_image_upload_button or @show_cancel_button}
+        class="max-sm:hidden sm:space-x-2"
+      >
         <.link
           :if={@show_cancel_button}
           phx-click={JS.push("collection:cancel", value: %{id: @collection.id})}
@@ -142,6 +165,21 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <% end %>
           <%= ~t"Import dataset"m %>
         </.link>
+        <.link
+          :if={@show_image_upload_button}
+          patch={build_path(~p"/collections/#{@collection}/image_uploads/new", @meta)}
+          class={[
+            "btn btn-primary",
+            (@busy || is_nil(@meta)) && "btn-disabled"
+          ]}
+        >
+          <%= if mapping?(@busy_action) do %>
+            <.icon name="hero-cog-6-tooth-solid animate-spin" />
+          <% else %>
+            <.icon name="hero-arrow-up-tray" />
+          <% end %>
+          <%= ~t"Upload Images"m %>
+        </.link>
       </:actions>
     </.page_header>
     """
@@ -149,5 +187,9 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   defp importing?(busy_action) do
     busy?("dataset:import", busy_action)
+  end
+
+  defp mapping?(busy_action) do
+    busy?("collection:mapping", busy_action)
   end
 end

@@ -173,6 +173,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           href={~p"/collections/#{@collection}/publications"}
           label={~t"Publications and Approvals"m}
         />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/image_uploads"}
+          label={~t"Image Upload"m}
+        />
       </.secondary_navigation>
 
       <%!-- Stat scopes --%>
@@ -295,24 +299,27 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <:col
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :picture)}
-          field={:mte_associated_media}
           label={picture_th_label()}
         >
           <div
             class="tooltip tooltip-right"
             data-tip={
-              if record.mte_associated_media,
+              if record.encoded_record.mte_associated_media,
                 do: ~t"Images available"m,
                 else: ~t"No images uploaded yet"m
             }
           >
             <.icon
-              name={if record.mte_associated_media, do: "hero-camera-mini", else: "hero-camera"}
+              name={
+                if record.encoded_record.mte_associated_media,
+                  do: "hero-camera-mini",
+                  else: "hero-camera"
+              }
               class={
                 class_names([
                   "size-5",
-                  record.mte_associated_media === nil && "text-base-content",
-                  record.mte_associated_media !== nil && "text-success"
+                  record.encoded_record.mte_associated_media === nil && "text-base-content",
+                  record.encoded_record.mte_associated_media !== nil && "text-success"
                 ])
               }
             />
@@ -575,9 +582,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 <.mids_level_indicator level={@selected_record.mids_level} />
               </:item>
             </.list>
-            <div :if={@selected_record.mte_associated_media} class="pb-4">
+            <div :if={@selected_record.encoded_record.mte_associated_media} class="pb-4">
               <.first_associated_media
-                associated_media={@selected_record.mte_associated_media}
+                associated_media={@selected_record.encoded_record.mte_associated_media}
                 class="border-black-white/10 border-b py-8"
               />
             </div>

@@ -105,6 +105,13 @@ defmodule DataAggregator.Records.EncodedRecord do
 
       change manage_relationship(:record, :record, type: :append)
     end
+
+    update :add_image_url do
+      argument :image, :struct, allow_nil?: false
+      require_atomic? false
+
+      change Encoding.Changes.AddImageUrl
+    end
   end
 
   identities do
@@ -115,6 +122,7 @@ defmodule DataAggregator.Records.EncodedRecord do
     define :read
     define :create
     define :update
+    define :add_image_url, args: [:image]
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :get_by_record, action: :read, get_by: [:record_id]

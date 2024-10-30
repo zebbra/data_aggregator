@@ -84,6 +84,10 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
           label={~t"Publications and Approvals"m}
           active
         />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/image_uploads"}
+          label={~t"Image Upload"m}
+        />
       </.secondary_navigation>
 
       <.table

@@ -1,8 +1,0 @@
-catalog_number,image_url
-MHNG-MAM-8.0x42,https://github.com/zebbra/data_aggregator/tree/main/test/support/fixtures/files/images/image-1.jpeg
-MHNG-MAM-8.0x42,https://github.com/zebbra/data_aggregator/tree/main/test/support/fixtures/files/images/image-2.jpeg
-MHNG-MAM-8.0x4asd,https://github.com/zebbra/data_aggregator/tree/main/test/support/fixtures/files/images/image-3.jpeg
-MHNG-MAM-8.0x4asd,https://github.com/zebbra/data_aggregator/tree/main/test/support/fixtures/files/images/image-4.jpeg
-MHNG-MAM-9.0x42,https://github.com/zebbra/data_aggregator/tree/main/test/support/fixtures/files/images/image-5.jpeg
-MHNG-MAM-9.0x4asd,https://github.com/zebbra/data_aggregator/tree/main/test/support/fixtures/files/images/image-6.jpeg
-MHNG-MAM-10.0x42,https://github.com/zebbra/data_aggregator/tree/main/test/support/fixtures/files/images/image-7.jpeg

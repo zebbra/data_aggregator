@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.Record.Image do
     extensions: [AshUUID, AshJsonApi.Resource]
 
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Records.ImageUpload
   alias DataAggregator.Records.Record
 
   attributes do
@@ -20,6 +21,7 @@ defmodule DataAggregator.Records.Record.Image do
   relationships do
     belongs_to :attachment, Attachment, public?: true
     belongs_to :record, Record, public?: true
+    belongs_to :image_upload, ImageUpload, public?: true
   end
 
   actions do
@@ -42,6 +44,7 @@ defmodule DataAggregator.Records.Record.Image do
     references do
       reference :record, on_delete: :delete, on_update: :update, index?: true
       reference :attachment, on_delete: :delete, on_update: :update, index?: true
+      reference :image_upload, on_delete: :delete, on_update: :update, index?: true
     end
   end
 
