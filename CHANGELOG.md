@@ -5,6 +5,51 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [0.9.3](https://github.com/zebbra/data_aggregator/compare/v0.9.2...0.9.3) (2024-10-30)
+
+
+
+
+### Features:
+
+* images: add relate_images encoding strategy
+
+* image-upload: integrate into cancel action logic
+
+* image-upload: support hidden files and single subdiredctories
+
+* image-upload: small ui changes.
+
+* image-upload: set collection busy when mapping images
+
+* image-upload: add activity feed for add_image_url change
+
+* image-upload: conditional edit text/icons depending on first run or rerun
+
+* kill-switch: implemented logic to abort import,export,encode,publish,approve actions
+
+* image-upload: add info text to mapping modal.
+
+* image-upload: rename and recolor image upload state
+
+* image-upload: Add log download button to summary
+
+* image-upload: validate and delete files when extracting.
+
+* image-upload: add file mapping and tests.
+
+* image-upload: add file extraction after zip upload
+
+* image-upload: First steps implementing image upload
+
+### Bug Fixes:
+
+* linting error
+
+### Performance Improvements:
+
+* records table: use generated db columns and assign_async operations
+
 ## [0.9.2](https://github.com/zebbra/data_aggregator/compare/v0.9.1...0.9.2) (2024-10-24)
 
 
