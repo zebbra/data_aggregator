@@ -1065,19 +1065,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         :updated_at
       ]
 
-    encoded_record_select = [
-      :tax_scientific_name,
-      :loc_state_province,
-      :loc_country_code,
-      :loc_decimal_latitude,
-      :loc_decimal_longitude
-    ]
-
     opts =
       Keyword.put(opts, :load, [
         :mids_level,
         :iucn_redlist,
-        encoded_record: encoded_record_select
+        :encoded_record
       ])
 
     query =

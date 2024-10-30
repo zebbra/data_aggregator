@@ -20,7 +20,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.AddInstitutionCodeStrategy do
   @spec apply_strategy(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
   def apply_strategy(encoded_record, ctx) do
     # Load the record and its collection
-    encoded_record = Ash.load!(encoded_record, record: :collection)
+    encoded_record = Ash.load!(encoded_record, [record: :collection], lazy?: true)
 
     case process_encoded_record(encoded_record, ctx) do
       {:ok, encoded_record} ->

@@ -24,7 +24,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
   """
   @spec apply_strategy(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
   def apply_strategy(encoded_record, ctx) do
-    encoded_record = Ash.load!(encoded_record, [:record])
+    encoded_record = Ash.load!(encoded_record, [:record], lazy?: true)
 
     case process_encoded_record(encoded_record, ctx) do
       {:ok, encoded_record} ->
