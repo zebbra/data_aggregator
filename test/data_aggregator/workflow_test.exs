@@ -21,7 +21,7 @@ defmodule DataAggregator.WorkflowTest do
 
   require Ash.Query
 
-  @catalog_versions length(Catalog.get_catalogs()) - 1
+  @catalog_versions length(Catalog.get_catalogs()) - 2
 
   @mapping [
     %{name: "institutionCode", mapped_to: "oth_institution_code"},

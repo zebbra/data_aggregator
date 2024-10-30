@@ -129,10 +129,27 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
   end
 
   defp maybe_reload_collection(socket, true) do
-    assign(
-      socket,
-      :collection,
-      get_collection_full(socket.assigns.collection.id, get_actor(socket))
+    collection = get_collection_full(socket.assigns.collection.id, get_actor(socket))
+
+    %{
+      records_count_not_approved: origin_records_count_not_approved,
+      records_count_not_encoded: origin_records_count_not_encoded,
+      records_count_not_published: origin_records_count_not_published
+    } = socket.assigns
+
+    socket
+    |> assign(:collection, collection)
+    |> assign(
+      :records_count_not_approved,
+      AsyncResult.ok(origin_records_count_not_approved, collection.records_count_not_approved)
+    )
+    |> assign(
+      :records_count_not_encoded,
+      AsyncResult.ok(origin_records_count_not_encoded, collection.records_count_not_encoded)
+    )
+    |> assign(
+      :records_count_not_published,
+      AsyncResult.ok(origin_records_count_not_published, collection.records_count_not_published)
     )
   end
 

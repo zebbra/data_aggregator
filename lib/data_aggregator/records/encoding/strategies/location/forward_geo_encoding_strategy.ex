@@ -22,7 +22,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
   """
   @spec apply_strategy(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
   def apply_strategy(encoded_record, ctx) do
-    encoded_record = Ash.load!(encoded_record, [:record])
+    encoded_record = Ash.load!(encoded_record, [:record], lazy?: true)
 
     longitude = encoded_record.loc_decimal_longitude
     latitude = encoded_record.loc_decimal_latitude

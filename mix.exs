@@ -210,8 +210,6 @@ defmodule DataAggregator.MixProject do
       {:ash, "~> 3.4", override: true},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
-      # Remove once v0.2.37 is available
-      {:ash_sql, git: "https://github.com/ash-project/ash_sql.git", override: true},
       {:ash_postgres, "~> 2.4", override: true},
       {:ash_state_machine, "~> 0.2"},
       {:ash_uuid, "~> 1.1"},
