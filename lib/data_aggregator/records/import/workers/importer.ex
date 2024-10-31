@@ -14,6 +14,8 @@ defmodule DataAggregator.Records.Import.Workers.Importer do
   ## Arguments
 
   * `id` - the ID of the import to run
+  * `collection_id` - the ID of the collection to import
+  * `user_id` - the ID of the user to run the import as (optional)
 
   ## Timeouts
 

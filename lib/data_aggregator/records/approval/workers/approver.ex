@@ -14,6 +14,7 @@ defmodule DataAggregator.Records.Approval.Workers.Approver do
   ## Arguments
 
   * `id` - the ID of the approval to run
+  * `collection_id` - the ID of the collection to approve
 
   """
 

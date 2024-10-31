@@ -14,6 +14,8 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
   ## Arguments
 
   * `id` - the ID of the record to encode during the run
+  * `collection_id` - the ID of the collection to encode the record in
+  * `user_id` - the ID of the user to run the encoding as (optional)
 
   ## Timeouts
 

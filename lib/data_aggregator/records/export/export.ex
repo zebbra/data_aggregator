@@ -42,7 +42,11 @@ defmodule DataAggregator.Records.Export do
   end
 
   relationships do
-    belongs_to :collection, Collection, public?: true
+    belongs_to :collection, Collection do
+      public? true
+      allow_nil? false
+    end
+
     belongs_to :attachment, Attachment, public?: true
   end
 
@@ -252,5 +256,10 @@ defmodule DataAggregator.Records.Export do
       patch :update
       delete :destroy
     end
+  end
+
+  multitenancy do
+    strategy :attribute
+    attribute :collection_id
   end
 end

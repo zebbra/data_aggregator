@@ -154,7 +154,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
       header_source: params["header_source"],
       data_layer: params["data_layer"]
     }
-    |> Export.create!()
+    |> Export.create!(tenant: collection)
     |> Export.enqueue()
   end
 

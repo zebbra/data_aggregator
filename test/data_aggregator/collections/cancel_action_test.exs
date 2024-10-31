@@ -192,14 +192,17 @@ defmodule DataAggregator.Collections.CancelActionTest do
         collection = collection_fixture()
 
         export =
-          Export.create!(%{
-            name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-            collection: collection,
-            mapping: @mapping,
-            records_query: collection.records_to_export_query,
-            data_layer: :raw,
-            header_source: :custom_selection
-          })
+          Export.create!(
+            %{
+              name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+              collection: collection,
+              mapping: @mapping,
+              records_query: collection.records_to_export_query,
+              data_layer: :raw,
+              header_source: :custom_selection
+            },
+            tenant: collection
+          )
 
         assert {:ok, export} = Export.enqueue(export)
 
@@ -218,7 +221,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
         )
 
         Collection.cancel_action!(collection)
-        export = Export.get_by_id!(export.id)
+        export = Export.get_by_id!(export.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert export.state === :failed
@@ -236,14 +239,17 @@ defmodule DataAggregator.Collections.CancelActionTest do
         assert collection.state === :exporting
 
         export =
-          Export.create!(%{
-            name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-            collection: collection,
-            mapping: @mapping,
-            records_query: collection.records_to_export_query,
-            data_layer: :raw,
-            header_source: :custom_selection
-          })
+          Export.create!(
+            %{
+              name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+              collection: collection,
+              mapping: @mapping,
+              records_query: collection.records_to_export_query,
+              data_layer: :raw,
+              header_source: :custom_selection
+            },
+            tenant: collection
+          )
 
         assert export.state === :pending
 
@@ -254,7 +260,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         Collection.cancel_action!(collection)
 
-        export = Export.get_by_id!(export.id)
+        export = Export.get_by_id!(export.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert export.state === :pending

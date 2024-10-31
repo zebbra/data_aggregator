@@ -14,6 +14,8 @@ defmodule DataAggregator.Records.Publication.Workers.Publisher do
   ## Arguments
 
   * `id` - the ID of the publication to run
+  * `collection_id` - the ID of the collection to publish
+  * `user_id` - the ID of the user to run the publication as (optional)
 
   """
 

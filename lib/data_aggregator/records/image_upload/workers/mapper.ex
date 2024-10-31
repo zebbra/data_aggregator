@@ -14,6 +14,7 @@ defmodule DataAggregator.Records.ImageUpload.Workers.Mapper do
   ## Arguments
 
   * `id` - the ID of the image upload to map
+  * `user_id` - the ID of the user to run the mapping as (optional)
 
   ## Timeouts
 

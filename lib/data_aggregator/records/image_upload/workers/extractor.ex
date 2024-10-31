@@ -14,6 +14,7 @@ defmodule DataAggregator.Records.ImageUpload.Workers.Extractor do
   ## Arguments
 
   * `id` - the ID of the image upload to extract
+  * `user_id` - the ID of the user to run the extraction as (optional)
 
   ## Timeouts
 

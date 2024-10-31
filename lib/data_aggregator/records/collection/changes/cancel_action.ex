@@ -99,6 +99,7 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     active_export =
       collection_id
       |> Export.query_to_active_by_collection()
+      |> Ash.Query.set_tenant(collection_id)
       |> Ash.read_one!()
 
     if active_export do
