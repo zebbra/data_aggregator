@@ -407,6 +407,7 @@ defmodule DataAggregator.Records.Record do
 
   identities do
     identity :collection_mte_catalog_number, [:collection_id, :mte_catalog_number]
+    identity :by_collection, [:id, :collection_id]
   end
 
   code_interface do
