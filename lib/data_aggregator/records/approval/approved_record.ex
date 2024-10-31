@@ -21,6 +21,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
   alias DataAggregator.DarwinCore
   alias DataAggregator.Records.Approval
   alias DataAggregator.Records.Approval.Changes.SetMandatoryAttributes
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
 
   @type t :: %ApprovedRecord{}
@@ -34,6 +35,11 @@ defmodule DataAggregator.Records.ApprovedRecord do
 
   relationships do
     belongs_to :record, Record do
+      allow_nil? false
+      public? true
+    end
+
+    belongs_to :collection, Collection do
       allow_nil? false
       public? true
     end
@@ -57,6 +63,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
     create :create do
       primary? true
       argument :record, :struct, allow_nil?: false
+      argument :collection, :struct, allow_nil?: false
 
       upsert? true
       upsert_identity :record_mte_catalog_number
@@ -65,7 +72,8 @@ defmodule DataAggregator.Records.ApprovedRecord do
       change SetMandatoryAttributes
       change Approval.Changes.SetOptionalAttributes
 
-      change manage_relationship(:record, :record, type: :append)
+      change manage_relationship(:record, type: :append)
+      change manage_relationship(:collection, type: :append)
     end
 
     create :approve do
@@ -76,6 +84,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
       """
 
       argument :record, :struct, allow_nil?: true
+      argument :collection, :struct, allow_nil?: true
 
       change SetMandatoryAttributes
       change Approval.Changes.UpdateRawRecordStateAfterAction
@@ -84,7 +93,8 @@ defmodule DataAggregator.Records.ApprovedRecord do
       upsert_identity :record_mte_catalog_number
       upsert_fields [:extra_data | DarwinCore.Schema.prefixed_attribute_names()]
 
-      change manage_relationship(:record, :record, type: :append)
+      change manage_relationship(:record, type: :append)
+      change manage_relationship(:collection, type: :append)
     end
 
     action :bulk_approve, :map do
@@ -120,7 +130,13 @@ defmodule DataAggregator.Records.ApprovedRecord do
     repo DataAggregator.Repo
 
     references do
-      reference :record, on_delete: :delete, on_update: :update, index?: true
+      reference :collection, on_delete: :delete, on_update: :update
+
+      reference :record,
+        on_delete: :delete,
+        on_update: :update,
+        index?: true,
+        match_with: [collection_id: :collection_id]
     end
   end
 
@@ -139,5 +155,10 @@ defmodule DataAggregator.Records.ApprovedRecord do
       patch :update
       delete :destroy
     end
+  end
+
+  multitenancy do
+    strategy :attribute
+    attribute :collection_id
   end
 end

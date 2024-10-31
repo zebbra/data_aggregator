@@ -85,7 +85,9 @@ defmodule DataAggregator.Records.Approval.Helpers do
       Enum.map(rows, fn row ->
         case Record.get_by_mte_catalog_number(row.mte_catalog_number) do
           {:ok, record} ->
-            Map.put(row, :record, record)
+            row
+            |> Map.put(:record, record)
+            |> Map.put(:collection_id, record.collection_id)
 
           {:error, _} ->
             row

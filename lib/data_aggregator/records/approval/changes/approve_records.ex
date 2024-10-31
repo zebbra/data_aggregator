@@ -55,14 +55,14 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
     |> Enum.with_index()
     |> Stream.map(&Helpers.convert_headers_of_chunk(&1, attribute_name_pairs))
     |> Stream.map(&Helpers.add_raw_record_to_chunk/1)
-    |> Stream.map(&approve_chunk/1)
+    |> Stream.map(&approve_chunk(&1, changeset))
     |> reduce_approval_results(changeset)
     |> notify_infospecies()
   end
 
-  @spec approve_chunk({[map()], integer()}) ::
+  @spec approve_chunk({[map()], integer()}, Changeset.t()) ::
           {BulkResult.t(), [map()], [{map(), [Ash.Error.t()]}]}
-  defp approve_chunk({chunk, index}) do
+  defp approve_chunk({chunk, index}, changeset) do
     Logger.debug("Approving chunk ##{index} with #{length(chunk)} rows ...")
 
     max_concurrency = Records.import_max_concurrency()
@@ -84,7 +84,7 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
 
     Logger.debug("Approving #{length(valid)} valid rows ...")
 
-    res = ApprovedRecord.bulk_approve!(Enum.reverse(valid))
+    res = ApprovedRecord.bulk_approve!(Enum.reverse(valid), tenant: changeset.tenant)
 
     {res, valid, invalid}
   end

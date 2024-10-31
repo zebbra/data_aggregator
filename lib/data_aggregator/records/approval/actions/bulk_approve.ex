@@ -26,7 +26,8 @@ defmodule DataAggregator.Records.Approval.Actions.BulkApprove do
         return_errors?: true,
         return_records?: true,
         max_concurrency: max_concurrency,
-        batch_size: batch_size
+        batch_size: batch_size,
+        tenant: input.tenant
       )
 
     {:ok, result}

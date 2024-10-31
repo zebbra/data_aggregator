@@ -25,8 +25,10 @@ defmodule DataAggregator.Records.Approval.Workers.Approver do
   require Logger
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"id" => id}}) do
-    with {:ok, approval} <- Approval.get_by_id(id) do
+  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id}}) do
+    collection = DataAggregator.Records.Collection.get_by_id!(collection_id)
+
+    with {:ok, approval} <- Approval.get_by_id(id, tenant: collection) do
       Logger.info("Running approval #{inspect(approval.id)} ...")
       Approval.run(approval)
     end

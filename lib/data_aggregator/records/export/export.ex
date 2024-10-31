@@ -109,7 +109,7 @@ defmodule DataAggregator.Records.Export do
       primary? true
       argument :collection, :struct, allow_nil?: false
 
-      change manage_relationship(:collection, :collection, type: :append)
+      change manage_relationship(:collection, type: :append)
     end
 
     update :update_mapping do
@@ -187,7 +187,7 @@ defmodule DataAggregator.Records.Export do
       argument :attachment, :struct, allow_nil?: false
       require_atomic? false
 
-      change manage_relationship(:attachment, :attachment, type: :append)
+      change manage_relationship(:attachment, type: :append)
       change load(:attachment)
     end
 

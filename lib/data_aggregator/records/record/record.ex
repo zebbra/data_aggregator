@@ -259,7 +259,7 @@ defmodule DataAggregator.Records.Record do
       change set_attribute(:state, :imported)
       change set_attribute(:last_imported_at, &DateTime.utc_now/0)
 
-      change manage_relationship(:collection, :collection, type: :append)
+      change manage_relationship(:collection, type: :append)
     end
 
     create :import do

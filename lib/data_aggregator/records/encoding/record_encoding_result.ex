@@ -69,7 +69,7 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
       primary? true
       argument :record, :struct
 
-      change manage_relationship(:record, :record, type: :append)
+      change manage_relationship(:record, type: :append)
     end
 
     update :update do
@@ -77,7 +77,7 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
       argument :record, :struct
       require_atomic? false
 
-      change manage_relationship(:record, :record, type: :append)
+      change manage_relationship(:record, type: :append)
     end
   end
 

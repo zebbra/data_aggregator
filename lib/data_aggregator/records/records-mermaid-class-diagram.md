@@ -898,13 +898,15 @@ classDiagram
         UtcDatetimeUsec updated_at
         UUID attachment_id
         UUID error_log_id
+        UUID collection_id
         Atom state
         Attachment attachment
         Attachment error_log
+        Collection collection
         update(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_approved_count, ...)
         destroy()
         read()
-        create(String file_url)
+        create(Struct collection, String file_url)
         enqueue()
         set_running()
         set_failed(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_approved_count, ...)
@@ -1199,12 +1201,14 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID record_id
+        UUID collection_id
         Record record
+        Collection collection
         destroy()
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read(String sort)
-        create(Struct record, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
-        approve(Struct record, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        create(Struct record, Struct collection, Map ext_vernacular_names, Map ext_species_profile, ...)
+        approve(Struct record, Struct collection, Map ext_vernacular_names, Map ext_species_profile, ...)
         bulk_approve(Term rows)
     }
 
@@ -1218,6 +1222,8 @@ classDiagram
     Attachment -- Record
     Attachment -- Image
     Institution -- Collection
+    Approval -- Collection
+    ApprovedRecord -- Collection
     ApprovedRecord -- Record
     Collection -- Export
     Collection -- ImageUpload

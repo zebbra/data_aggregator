@@ -171,7 +171,7 @@ defmodule DataAggregator.Records.Import do
     create :create do
       primary? true
       argument :collection, :struct, allow_nil?: false
-      change manage_relationship(:collection, :collection, type: :append)
+      change manage_relationship(:collection, type: :append)
     end
 
     create :create_from_path do
@@ -179,7 +179,7 @@ defmodule DataAggregator.Records.Import do
       argument :collection, :struct, allow_nil?: false
       argument :path, :string, allow_nil?: false
       argument :filename, :string, allow_nil?: true
-      change manage_relationship(:collection, :collection, type: :append)
+      change manage_relationship(:collection, type: :append)
       change Import.Changes.CreateAttachment
       change Import.Changes.DetectColumns
       change Import.Changes.CountRows
@@ -273,7 +273,7 @@ defmodule DataAggregator.Records.Import do
       argument :error_log, :struct, allow_nil?: false
       require_atomic? false
 
-      change manage_relationship(:error_log, :error_log, type: :append)
+      change manage_relationship(:error_log, type: :append)
       change load(:error_log)
     end
 

@@ -33,8 +33,8 @@ defmodule DataAggregator.Records.Import.Record do
       primary? true
       argument :import, :struct, allow_nil?: true
       argument :record, :struct, allow_nil?: true
-      change manage_relationship(:import, :import, type: :append)
-      change manage_relationship(:record, :record, type: :append)
+      change manage_relationship(:import, type: :append)
+      change manage_relationship(:record, type: :append)
       upsert? true
       upsert_fields [:import_id, :record_id]
     end

@@ -24,39 +24,56 @@ defmodule DataAggregator.ApprovedRecordTest do
     end
 
     test "read!/0 returns all approved_records" do
+      collection = collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
+
+      approved_record_one =
+        approved_record_fixture(%{collection: collection}, %{
+          mte_catalog_number: "approved_record1"
+        })
+
+      approved_record_two =
+        approved_record_fixture(%{collection: collection}, %{
+          mte_catalog_number: "approved_record2"
+        })
+
       created = [
-        approved_record_fixture(),
-        approved_record_fixture()
+        approved_record_one,
+        approved_record_two
       ]
 
-      persisted = ApprovedRecord.read!(page: false)
+      persisted = ApprovedRecord.read!(page: false, tenant: approved_record_one.collection)
 
       assert_lists_equal(
         created,
         persisted,
-        &assert_structs_equal(&1, &2, [:id])
+        &assert_structs_equal(&1, &2, [:id, :collection_id])
       )
     end
 
     test "get_by_id!/1 returns the approved_record with given id" do
       created = approved_record_fixture()
-      persisted = ApprovedRecord.get_by_id!(created.id)
+      persisted = ApprovedRecord.get_by_id!(created.id, tenant: created.collection)
 
-      assert_structs_equal(created, persisted, [:id])
+      assert_structs_equal(created, persisted, [:id, :collection_id])
     end
 
     test "create/1 with valid data creates a approved_record" do
       record = record_fixture()
 
       attrs = %{
-        record: record
+        record: record,
+        collection: record.collection
       }
 
-      assert {:ok, %ApprovedRecord{} = result} = ApprovedRecord.create(attrs)
+      assert {:ok, %ApprovedRecord{} = result} =
+               ApprovedRecord.create(attrs, tenant: record.collection)
+
+      ApprovedRecord.create(attrs, tenant: record.collection)
 
       approved_record = Ash.load!(result, [:record])
 
       assert approved_record.record.id == record.id
+      assert approved_record.collection.id == record.collection.id
     end
 
     test "create/1 with invalid data returns error changeset" do
@@ -74,11 +91,8 @@ defmodule DataAggregator.ApprovedRecordTest do
       assert {:ok, %ApprovedRecord{} = approved_record} =
                ApprovedRecord.update(approved_record, update_attrs)
 
-      assert ApprovedRecord.get_by_id!(approved_record.id).mte_catalog_number ==
-               "approved_record2"
-
-      assert ApprovedRecord.get_by_id!(approved_record.id).tax_scientific_name ==
-               "New Name"
+      assert approved_record.mte_catalog_number == "approved_record2"
+      assert approved_record.tax_scientific_name == "New Name"
     end
 
     test "update/2 with invalid data returns error changeset" do
@@ -93,7 +107,7 @@ defmodule DataAggregator.ApprovedRecordTest do
       assert :ok = ApprovedRecord.destroy(approved_record)
 
       assert_raise Ash.Error.Query.NotFound, fn ->
-        ApprovedRecord.get_by_id!(approved_record.id)
+        ApprovedRecord.get_by_id!(approved_record.id, tenant: approved_record.collection)
       end
     end
 

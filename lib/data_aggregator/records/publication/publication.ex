@@ -104,7 +104,7 @@ defmodule DataAggregator.Records.Publication do
       primary? true
       argument :collection, :struct, allow_nil?: false
 
-      change manage_relationship(:collection, :collection, type: :append)
+      change manage_relationship(:collection, type: :append)
     end
 
     update :enqueue do
@@ -169,7 +169,7 @@ defmodule DataAggregator.Records.Publication do
       require_atomic? false
 
       argument :attachment, :struct, allow_nil?: false
-      change manage_relationship(:attachment, :attachment, type: :append)
+      change manage_relationship(:attachment, type: :append)
       change load(:attachment)
     end
 

@@ -480,4 +480,8 @@ defmodule DataAggregator.Records.Collection do
       delete :destroy
     end
   end
+
+  defimpl Ash.ToTenant do
+    def to_tenant(%{id: id}, _resource), do: id
+  end
 end

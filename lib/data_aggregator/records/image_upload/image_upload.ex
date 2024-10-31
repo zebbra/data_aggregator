@@ -227,7 +227,7 @@ defmodule DataAggregator.Records.ImageUpload do
     create :create do
       primary? true
       argument :collection, :struct, allow_nil?: false
-      change manage_relationship(:collection, :collection, type: :append)
+      change manage_relationship(:collection, type: :append)
     end
 
     create :create_from_path do
@@ -235,7 +235,7 @@ defmodule DataAggregator.Records.ImageUpload do
       argument :collection, :struct, allow_nil?: false
       argument :path, :string, allow_nil?: false
       argument :filename, :string, allow_nil?: true
-      change manage_relationship(:collection, :collection, type: :append)
+      change manage_relationship(:collection, type: :append)
       change ImageUpload.Changes.ValidateFile
       change ImageUpload.Changes.CreateAttachment
     end

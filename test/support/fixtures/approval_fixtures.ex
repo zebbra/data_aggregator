@@ -17,16 +17,28 @@ defmodule DataAggregator.ApprovalFixtures do
 
     attachment = Attachment.import_from_path!(path)
 
-    %{file_url: attachment.url}
-    |> Map.merge(attrs)
-    |> Approval.create!()
+    params =
+      %{file_url: attachment.url}
+      |> Map.merge(attrs)
+      |> Map.put_new_lazy(:collection, fn ->
+        RecordsFixtures.collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
+      end)
+
+    Approval.create!(params, tenant: params.collection)
   end
 
   @doc """
   Generate an approved_record
   """
-  def approved_record_fixture(attrs \\ %{}) do
-    record = RecordsFixtures.record_fixture()
+  def approved_record_fixture(attrs \\ %{}, record_attrs \\ %{}) do
+    collection =
+      Map.get(
+        attrs,
+        :collection,
+        RecordsFixtures.collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
+      )
+
+    record = RecordsFixtures.record_fixture(Map.put(record_attrs, :collection, collection))
 
     attributes = [:extra_data] ++ DataAggregator.DarwinCore.Schema.prefixed_attribute_names()
 
@@ -35,6 +47,7 @@ defmodule DataAggregator.ApprovalFixtures do
     |> Map.merge(attrs)
     |> Map.take(attributes)
     |> Map.put_new_lazy(:record, fn -> record end)
-    |> ApprovedRecord.create!()
+    |> Map.put_new_lazy(:collection, fn -> record.collection end)
+    |> ApprovedRecord.create!(tenant: record.collection)
   end
 end

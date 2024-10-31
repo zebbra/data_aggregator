@@ -103,7 +103,7 @@ defmodule DataAggregator.Records.EncodedRecord do
       change Encoding.Changes.SetMandatoryAttributes
       change Encoding.Changes.SetOptionalAttributes
 
-      change manage_relationship(:record, :record, type: :append)
+      change manage_relationship(:record, type: :append)
     end
 
     update :add_image_url do
