@@ -120,7 +120,11 @@ defmodule DataAggregator.WorkflowTest do
       [import: import, actor: actor]
     end
 
-    test "import workflow performs as expected", %{import: import, actor: actor} do
+    test "import workflow performs as expected", %{
+      import: import,
+      actor: actor,
+      collection: tenant
+    } do
       assert import.state == :imported
       import = Ash.load!(import, [:records_count])
       assert import.records_count == 6
@@ -142,7 +146,7 @@ defmodule DataAggregator.WorkflowTest do
       # record create -> import versions for each record have been created
       assert_create_import_versions(records, actor)
       # no encoded_records versions should have been created
-      assert_no_encode_verions()
+      assert_no_encode_verions(tenant)
 
       # update the states of the records so we can test the workflow
       update_states(records)
@@ -168,7 +172,7 @@ defmodule DataAggregator.WorkflowTest do
       # assert that we removed the update versions
       assert_create_import_versions(records, actor)
       # no encoded_records versions should have been created
-      assert_no_encode_verions()
+      assert_no_encode_verions(tenant)
 
       import = Ash.update!(import, %{state: :pending})
       assert import.state == :pending
@@ -190,7 +194,7 @@ defmodule DataAggregator.WorkflowTest do
       # record create -> import versions for each record have been created a second time
       assert_create_import_versions(records, actor, 2)
       # no encoded_records versions should have been created
-      assert_no_encode_verions()
+      assert_no_encode_verions(tenant)
     end
   end
 
@@ -208,7 +212,11 @@ defmodule DataAggregator.WorkflowTest do
       [import: import, actor: actor]
     end
 
-    test "encoding workflow performs as expected", %{import: import, actor: actor} do
+    test "encoding workflow performs as expected", %{
+      import: import,
+      actor: actor,
+      collection: tenant
+    } do
       assert import.state == :imported
       import = Ash.load!(import, [:records_count])
       assert import.records_count == 6
@@ -230,7 +238,7 @@ defmodule DataAggregator.WorkflowTest do
       # record create -> import versions for each record have been created
       assert_create_import_versions(records, actor)
       # no encoded_records versions should have been created
-      assert_no_encode_verions()
+      assert_no_encode_verions(tenant)
 
       encode_records(records, actor)
       records = Ash.read!(Record, load: [:paper_trail_versions])
@@ -250,7 +258,7 @@ defmodule DataAggregator.WorkflowTest do
       # no new records versions should have been created
       assert_create_import_versions(records, actor)
       # encoded_record versions for each record have been created
-      assert_encode_versions(actor)
+      assert_encode_versions(actor, tenant)
     end
   end
 
@@ -287,7 +295,8 @@ defmodule DataAggregator.WorkflowTest do
     test "publishing workflow performs as expected", %{
       publication: publication,
       records: records,
-      actor: actor
+      actor: actor,
+      collection: tenant
     } do
       # Sanity check
       assert length(records) == 6
@@ -306,7 +315,7 @@ defmodule DataAggregator.WorkflowTest do
       # no new records versions should have been created
       assert_create_import_versions(records, actor)
       # encoded_record versions for each record have been created
-      assert_encode_versions(actor)
+      assert_encode_versions(actor, tenant)
 
       perform_job(Publisher, %{id: publication.id, user_id: actor.id})
 
@@ -355,7 +364,7 @@ defmodule DataAggregator.WorkflowTest do
       end
 
       # no new records versions should have been created
-      assert_encode_versions(actor)
+      assert_encode_versions(actor, tenant)
     end
   end
 
@@ -398,7 +407,8 @@ defmodule DataAggregator.WorkflowTest do
     test "publishing workflow performs as expected", %{
       publication: publication,
       records: records,
-      actor: actor
+      actor: actor,
+      collection: tenant
     } do
       # Sanity check
       assert length(records) == 6
@@ -417,7 +427,7 @@ defmodule DataAggregator.WorkflowTest do
       # no new records versions should have been created
       assert_create_import_versions(records, actor)
       # encoded_record versions for each record have been created
-      assert_encode_versions(actor)
+      assert_encode_versions(actor, tenant)
 
       perform_job(Publisher, %{id: publication.id, user_id: actor.id})
 
@@ -466,7 +476,7 @@ defmodule DataAggregator.WorkflowTest do
       end
 
       # no new records versions should have been created
-      assert_encode_versions(actor)
+      assert_encode_versions(actor, tenant)
     end
   end
 
@@ -571,8 +581,8 @@ defmodule DataAggregator.WorkflowTest do
   end
 
   # versions for one encoding iteration
-  defp assert_encode_versions(actor) do
-    encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions])
+  defp assert_encode_versions(actor, tenant) do
+    encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions], tenant: tenant)
     assert length(encoded_records) == 6
 
     versions =
@@ -597,8 +607,8 @@ defmodule DataAggregator.WorkflowTest do
     end
   end
 
-  defp assert_no_encode_verions do
-    encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions])
+  defp assert_no_encode_verions(tenant) do
+    encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions], tenant: tenant)
     assert length(encoded_records) == 6
 
     versions =

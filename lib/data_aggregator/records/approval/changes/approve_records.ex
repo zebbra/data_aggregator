@@ -7,6 +7,7 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
 
   alias Ash.BulkResult
   alias Ash.Changeset
+  alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records
@@ -17,12 +18,12 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_action(changeset, &approve_records/1, append?: true)
+  def change(%Changeset{} = changeset, _opts, ctx) do
+    Changeset.before_action(changeset, &approve_records(&1, ctx), append?: true)
   end
 
-  @spec approve_records(Changeset.t()) :: Changeset.t()
-  defp approve_records(changeset) do
+  @spec approve_records(Changeset.t(), Context.t()) :: Changeset.t()
+  defp approve_records(changeset, ctx) do
     file_url = Changeset.get_attribute(changeset, :file_url)
 
     dwca_file = Helpers.fetch_file_from_url(file_url)
@@ -32,7 +33,7 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
     with {:ok, df} <- Explorer.DataFrame.load_csv(csv_content),
          {:ok, stream} <- stream_from_dataframe(df),
          {:ok, stream} <- ensure_records(stream) do
-      approve_in_chunks(changeset, stream)
+      approve_in_chunks(changeset, stream, ctx)
     else
       {:error, error} ->
         Logger.debug("CSV could not be read or it was empty")
@@ -41,8 +42,8 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
     end
   end
 
-  @spec approve_in_chunks(Changeset.t(), Enum.t()) :: Changeset.t()
-  defp approve_in_chunks(%Changeset{} = changeset, rows) do
+  @spec approve_in_chunks(Changeset.t(), Enum.t(), Context.t()) :: Changeset.t()
+  defp approve_in_chunks(%Changeset{} = changeset, rows, ctx) do
     chunk_size = Records.approval_batch_size()
 
     Logger.debug("Approving records in chunks of #{chunk_size} rows ...")
@@ -55,14 +56,14 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
     |> Enum.with_index()
     |> Stream.map(&Helpers.convert_headers_of_chunk(&1, attribute_name_pairs))
     |> Stream.map(&Helpers.add_raw_record_to_chunk/1)
-    |> Stream.map(&approve_chunk(&1, changeset))
+    |> Stream.map(&approve_chunk(&1, ctx))
     |> reduce_approval_results(changeset)
     |> notify_infospecies()
   end
 
-  @spec approve_chunk({[map()], integer()}, Changeset.t()) ::
+  @spec approve_chunk({[map()], integer()}, Context.t()) ::
           {BulkResult.t(), [map()], [{map(), [Ash.Error.t()]}]}
-  defp approve_chunk({chunk, index}, changeset) do
+  defp approve_chunk({chunk, index}, %{tenant: tenant}) do
     Logger.debug("Approving chunk ##{index} with #{length(chunk)} rows ...")
 
     max_concurrency = Records.import_max_concurrency()
@@ -84,7 +85,7 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
 
     Logger.debug("Approving #{length(valid)} valid rows ...")
 
-    res = ApprovedRecord.bulk_approve!(Enum.reverse(valid), tenant: changeset.tenant)
+    res = ApprovedRecord.bulk_approve!(Enum.reverse(valid), tenant: tenant)
 
     {res, valid, invalid}
   end

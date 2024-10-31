@@ -31,21 +31,21 @@ defmodule DataAggregator.Records.Import.Workers.Importer do
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"id" => id, "user_id" => user_id}}) do
-    with {:ok, import} <- Import.get_by_id(id) do
+    with {:ok, import} <- Import.get_by_id(id, load: :collection) do
       perform_with_actor(import, User.get_by_id!(user_id))
     end
   end
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"id" => id}}) do
-    with {:ok, import} <- Import.get_by_id(id) do
+    with {:ok, import} <- Import.get_by_id(id, load: :collection) do
       perform_with_actor(import)
     end
   end
 
   defp perform_with_actor(import, actor \\ nil) do
     Logger.debug("Importing #{inspect(import.id)} ...")
-    Import.import(import, actor: actor, authorize?: false)
+    Import.import(import, actor: actor, authorize?: false, tenant: import.collection)
   end
 
   @impl Oban.Worker

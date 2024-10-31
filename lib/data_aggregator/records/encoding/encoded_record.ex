@@ -20,6 +20,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
   alias __MODULE__
   alias DataAggregator.DarwinCore
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
@@ -52,6 +53,11 @@ defmodule DataAggregator.Records.EncodedRecord do
       destination_attribute :usage_key
       public? true
     end
+
+    belongs_to :collection, Collection do
+      allow_nil? false
+      public? true
+    end
   end
 
   paper_trail do
@@ -59,8 +65,9 @@ defmodule DataAggregator.Records.EncodedRecord do
     store_action_name? true
 
     ignore_attributes [:inserted_at, :updated_at]
-    ignore_actions [:create]
+    ignore_actions [:create, :destroy]
 
+    attributes_as_attributes [:collection_id]
     reference_source? true
 
     mixin DataAggregator.Records.EncodedRecordVersionMixin
@@ -90,6 +97,7 @@ defmodule DataAggregator.Records.EncodedRecord do
     create :create do
       primary? true
       argument :record, :struct, allow_nil?: false
+      argument :collection, :struct, allow_nil?: false
 
       upsert? true
 
@@ -104,6 +112,7 @@ defmodule DataAggregator.Records.EncodedRecord do
       change Encoding.Changes.SetOptionalAttributes
 
       change manage_relationship(:record, type: :append)
+      change manage_relationship(:collection, type: :append)
     end
 
     update :add_image_url do
@@ -116,6 +125,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
   identities do
     identity :record_mte_catalog_number, [:record_id, :mte_catalog_number]
+    identity :by_collection, [:id, :collection_id]
   end
 
   code_interface do
@@ -133,7 +143,13 @@ defmodule DataAggregator.Records.EncodedRecord do
     repo DataAggregator.Repo
 
     references do
-      reference :record, on_delete: :delete, on_update: :update, index?: true
+      reference :collection, on_delete: :delete, on_update: :update
+
+      reference :record,
+        on_delete: :delete,
+        on_update: :update,
+        index?: true,
+        match_with: [collection_id: :collection_id]
     end
   end
 
@@ -152,5 +168,10 @@ defmodule DataAggregator.Records.EncodedRecord do
       patch :update
       delete :destroy
     end
+  end
+
+  multitenancy do
+    strategy :attribute
+    attribute :collection_id
   end
 end

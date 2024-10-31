@@ -338,12 +338,14 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID record_id
+        UUID collection_id
         Record record
         SwissSpecies[] swiss_species
+        Collection collection
         destroy()
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read(String sort)
-        create(Struct record, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        create(Struct record, Struct collection, Map ext_vernacular_names, Map ext_species_profile, ...)
         add_image_url(Struct image, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
     }
     class RecordEncodingResult {
@@ -875,15 +877,16 @@ classDiagram
         UUID id
         Atom version_action_type
         Atom version_action_name
+        UUID collection_id
         UUID version_source_id
         Map changes
         UUID user_id
         EncodedRecord version_source
         User user
         destroy()
-        update(Atom version_action_type, Atom version_action_name, UUID version_source_id, Map changes, ...)
+        update(Atom version_action_type, Atom version_action_name, UUID collection_id, UUID version_source_id, ...)
         read()
-        create(Atom version_action_type, Atom version_action_name, UUID version_source_id, Map changes, ...)
+        create(Atom version_action_type, Atom version_action_name, UUID collection_id, UUID version_source_id, ...)
     }
     class Approval {
         UUID id
@@ -1225,6 +1228,7 @@ classDiagram
     Approval -- Collection
     ApprovedRecord -- Collection
     ApprovedRecord -- Record
+    Collection -- EncodedRecord
     Collection -- Export
     Collection -- ImageUpload
     Collection -- Import

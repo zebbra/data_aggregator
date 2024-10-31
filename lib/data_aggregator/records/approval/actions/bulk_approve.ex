@@ -11,7 +11,7 @@ defmodule DataAggregator.Records.Approval.Actions.BulkApprove do
   require Logger
 
   @impl true
-  def run(input, _opts, _ctx) do
+  def run(input, _opts, %{tenant: tenant}) do
     %{rows: rows} = input.arguments
 
     max_concurrency = Records.import_max_concurrency()
@@ -27,7 +27,7 @@ defmodule DataAggregator.Records.Approval.Actions.BulkApprove do
         return_records?: true,
         max_concurrency: max_concurrency,
         batch_size: batch_size,
-        tenant: input.tenant
+        tenant: tenant
       )
 
     {:ok, result}

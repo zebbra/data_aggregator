@@ -9,6 +9,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Activity
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalog
@@ -16,6 +17,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   require Ash.Query
 
   attr :record, Record, required: true
+  attr :tenant, Collection, required: true
 
   def activity_feed(assigns) do
     assigns = assign_activities(assigns)
@@ -194,7 +196,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   defp assign_activities(assigns) do
-    assign(assigns, :record, Ash.load!(assigns.record, :encoded_record, lazy?: true))
+    assign(
+      assigns,
+      :record,
+      Ash.load!(assigns.record, :encoded_record, lazy?: true, tenant: assigns.tenant)
+    )
 
     record_versions = record_versions(assigns)
     encoded_record_versions = encoded_record_versions(assigns)
@@ -282,6 +288,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     EncodedRecord.Version
     |> Ash.Query.for_read(:read)
     |> Ash.Query.load([:version_source, :user])
+    |> Ash.Query.set_tenant(assigns.tenant)
     |> Ash.Query.filter(version_source_id == ^encoded_record_id)
     |> Ash.read!()
   end

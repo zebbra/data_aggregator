@@ -85,10 +85,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   def handle_params(params, _url, socket) do
     layer = params |> Map.get("layer", "approval") |> coalesce_layer()
     actor = get_actor(socket)
+    tenant = get_tenant(socket)
 
     socket
     |> register_async_keys()
-    |> start_async(:results, fn -> list_records(params, actor) end)
+    |> start_async(:results, fn ->
+      list_records(params, actor, tenant)
+    end)
     |> assign(:layer, layer)
     |> apply_action(socket.assigns.live_action, params)
     |> noreply()
@@ -648,7 +651,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               </div>
             </details>
           </div>
-          <.activity_feed :if={@record_tab == "changes"} record={@selected_record} />
+          <.activity_feed
+            :if={@record_tab == "changes"}
+            record={@selected_record}
+            tenant={@collection}
+          />
           <div :if={@record_tab == "encodings"} class="px-6 pt-4 lg:px-8">
             <h2 class="pb-2">
               <%= ~t"Record encodings"m %>
@@ -809,7 +816,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             id="record_filters"
             label={~t"records"m}
             meta={@meta.result}
-            collection_id={@collection.id}
+            collection={@collection}
             path={~p"/collections/#{@collection}/records?layer=#{@layer}"}
           />
         </.modal>
@@ -855,7 +862,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_event("record:select", %{"id" => id}, socket) do
     actor = get_actor(socket)
-    record = get_record(id, actor)
+    tenant = get_tenant(socket)
+    record = get_record(id, actor, tenant)
 
     socket =
       socket
@@ -1033,8 +1041,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     assign(socket, :page_title, ~t"Collection Records"m)
   end
 
-  defp list_records(params, actor, opts \\ [action: :by_collection]) do
+  defp list_records(params, actor, tenant, opts \\ [action: :by_collection]) do
     opts = Keyword.put(opts, :actor, actor)
+    opts = Keyword.put(opts, :tenant, tenant)
     opts = maybe_put_tsvector(Map.get(params, "layer"), opts)
 
     record_select =
@@ -1081,8 +1090,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     AshPagify.validate_and_run(query, params, opts, params["id"])
   end
 
-  defp get_record(id, actor) do
-    Record.get_by_id!(id, load: @load, actor: actor)
+  defp get_record(id, actor, tenant) do
+    Record.get_by_id!(id, load: @load, actor: actor, tenant: tenant)
   end
 
   defp assign_search(socket, nil) do

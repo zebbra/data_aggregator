@@ -26,11 +26,12 @@ defmodule DataAggregator.GbifIUCNRedlistEncodingTest do
     test "encode/2 for :gbif_iucn_redlist catalog which identified an extincted species", %{
       extincted_record: record
     } do
-      {:ok, record} = Record.encode(record, :gbif_iucn_redlist)
+      {:ok, record} = Record.encode(record, :gbif_iucn_redlist, tenant: record.collection_id)
 
       assert record !== nil
 
-      assert {:ok, encoded_record} = EncodedRecord.get_by_record(record.id)
+      assert {:ok, encoded_record} =
+               EncodedRecord.get_by_record(record.id, tenant: record.collection_id)
 
       assert {:ok, record} =
                Record.get_by_id(record.id, load: [:iucn_redlist])
@@ -46,11 +47,12 @@ defmodule DataAggregator.GbifIUCNRedlistEncodingTest do
     test "encode/2 for :gbif_iucn_redlist catalog which identified an not_evaluated species", %{
       not_evaluated_record: record
     } do
-      {:ok, record} = Record.encode(record, :gbif_iucn_redlist)
+      {:ok, record} = Record.encode(record, :gbif_iucn_redlist, tenant: record.collection_id)
 
       assert record !== nil
 
-      assert {:ok, encoded_record} = EncodedRecord.get_by_record(record.id)
+      assert {:ok, encoded_record} =
+               EncodedRecord.get_by_record(record.id, tenant: record.collection_id)
 
       assert {:ok, record} =
                Record.get_by_id(record.id, load: [:iucn_redlist])
@@ -69,7 +71,7 @@ defmodule DataAggregator.GbifIUCNRedlistEncodingTest do
       record = update_record_fixtures!(record, %{tax_taxon_id: nil})
 
       {{:ok, record}, logs} =
-        with_log(fn -> Record.encode(record, :gbif_iucn_redlist) end)
+        with_log(fn -> Record.encode(record, :gbif_iucn_redlist, tenant: record.collection_id) end)
 
       assert record.state === :failed
 

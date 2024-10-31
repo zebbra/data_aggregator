@@ -242,7 +242,7 @@ defmodule DataAggregator.ExportTest do
           header_source: header_source
         })
 
-      case Collection.export(export) do
+      case Collection.export(export, tenant: collection) do
         {:ok, result} ->
           %{body: body} = Req.get!(result.attachment.url)
 

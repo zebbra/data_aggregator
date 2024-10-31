@@ -27,11 +27,12 @@ defmodule DataAggregator.AddInstitutionCodeEncodingTest do
          %{
            record_fixture: record_fixture
          } do
-      {:ok, record} = Record.encode(record_fixture, :add_institution_code)
+      {:ok, record} =
+        Record.encode(record_fixture, :add_institution_code, tenant: record_fixture.collection)
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record.id)
+      encoded_record = EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection)
       assert encoded_record !== nil
 
       assert_map_includes(encoded_record, %{
@@ -47,7 +48,8 @@ defmodule DataAggregator.AddInstitutionCodeEncodingTest do
          %{
            record_fixture_failing: record_fixture_failing
          } do
-      {:ok, encoded_record} = Record.encode(record_fixture_failing, :add_institution_code)
+      {:ok, encoded_record} =
+        Record.encode(record_fixture_failing, :add_institution_code, tenant: record_fixture_failing.collection)
 
       assert_map_includes(encoded_record, %{
         oth_institution_id: nil,

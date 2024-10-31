@@ -11,7 +11,7 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
   require Logger
 
   @impl true
-  def run(input, _opts, %{actor: actor}) do
+  def run(input, _opts, %{actor: actor, tenant: tenant}) do
     %{import: import, rows: rows} = input.arguments
 
     # Eager load the imports collection to avoid N+1 queries when
@@ -38,7 +38,8 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
             batch_size: batch_size,
             timeout: :timer.minutes(5),
             actor: actor,
-            authorize?: false
+            authorize?: false,
+            tenant: tenant
           )
         end,
         :millisecond

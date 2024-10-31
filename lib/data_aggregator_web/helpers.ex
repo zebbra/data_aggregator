@@ -126,4 +126,8 @@ defmodule DataAggregatorWeb.Helpers do
   @spec get_actor(Socket.t() | map()) :: User.t()
   def get_actor(%Socket{assigns: %{current_user: %User{} = actor}}), do: actor
   def get_actor(%{current_user: %User{} = actor}), do: actor
+
+  @spec get_tenant(Socket.t() | map()) :: String.t()
+  def get_tenant(%Socket{assigns: %{collection: tenant}}), do: tenant
+  def get_tenant(%{collection: tenant}), do: tenant
 end

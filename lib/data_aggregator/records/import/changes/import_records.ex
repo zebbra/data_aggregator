@@ -50,7 +50,7 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
     |> error_if_nothing_imported()
   end
 
-  defp import_chunk(import, {chunk, index}, %{actor: actor}) do
+  defp import_chunk(import, {chunk, index}, %{actor: actor, tenant: tenant}) do
     max_concurrency = Records.import_max_concurrency()
 
     Logger.info("Importing chunk ##{index} with #{length(chunk)} rows (concurrency: #{max_concurrency}) ...")
@@ -68,7 +68,13 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
     end
 
     Logger.info("Importing #{length(valid)} valid rows ...")
-    res = Record.bulk_import!(import, Enum.reverse(valid), actor: actor, authorize?: false)
+
+    res =
+      Record.bulk_import!(import, Enum.reverse(valid),
+        actor: actor,
+        authorize?: false,
+        tenant: tenant
+      )
 
     {res, length(valid), length(invalid)}
   end

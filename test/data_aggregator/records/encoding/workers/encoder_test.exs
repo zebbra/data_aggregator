@@ -35,7 +35,8 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
 
       assert record.state == :encoded
 
-      encoded_record = EncodedRecord.get_by_record!(record.id)
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: correct_record.collection_id)
 
       assert_map_includes(encoded_record, %{
         tax_class: "Aves",
@@ -71,7 +72,8 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
 
       assert record.state == :failed
 
-      encoded_record = EncodedRecord.get_by_record!(record.id)
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: correct_record.collection_id)
 
       assert_map_includes(encoded_record, %{
         tax_class: "Aves",

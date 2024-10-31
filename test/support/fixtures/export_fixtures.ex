@@ -32,17 +32,21 @@ defmodule DataAggregator.ExportFixtures do
   end
 
   def exportable_record(collection, attrs \\ %{}) do
-    exportable_record_attrs()
-    |> Map.merge(attrs)
-    |> Map.put_new_lazy(:collection, fn -> collection end)
-    |> Record.create!()
+    params =
+      exportable_record_attrs()
+      |> Map.merge(attrs)
+      |> Map.put_new_lazy(:collection, fn -> collection end)
+
+    Record.create!(params, tenant: params.collection)
   end
 
   def unexportable_record(collection) do
-    exportable_record_attrs()
-    |> Map.put_new_lazy(:collection, fn -> collection end)
-    |> Map.delete(:tax_kingdom)
-    |> Record.create!()
+    params =
+      exportable_record_attrs()
+      |> Map.put_new_lazy(:collection, fn -> collection end)
+      |> Map.delete(:tax_kingdom)
+
+    Record.create!(params, tenant: params.collection)
   end
 
   def exportable_record_attrs do

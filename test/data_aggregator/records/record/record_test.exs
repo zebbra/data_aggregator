@@ -52,13 +52,15 @@ defmodule DataAggregator.Records.RecordTest do
     end
 
     test "create/1 with valid data creates a record" do
+      collection = collection_fixture()
+
       attrs = %{
         mte_catalog_number: "record1",
         tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083",
-        collection: collection_fixture()
+        collection: collection
       }
 
-      assert {:ok, %Record{} = record} = Record.create(attrs)
+      assert {:ok, %Record{} = record} = Record.create(attrs, tenant: collection)
 
       record = Ash.load!(record, [:paper_trail_versions, :encoded_record])
 
@@ -112,7 +114,10 @@ defmodule DataAggregator.Records.RecordTest do
       assert :ok = Record.destroy(record)
 
       assert_raise NotFound, fn -> Record.get_by_id!(record.id) end
-      assert_raise NotFound, fn -> EncodedRecord.get_by_id!(encoded_record.id) end
+
+      assert_raise NotFound, fn ->
+        EncodedRecord.get_by_id!(encoded_record.id, tenant: record.collection_id)
+      end
     end
 
     test "destroy/1 deletes the record and it's record_encoding_results" do
@@ -181,7 +186,7 @@ defmodule DataAggregator.Records.RecordTest do
         some_extra_data: "Extra"
       }
 
-      assert {:ok, record} = Record.import(import, params)
+      assert {:ok, record} = Record.import(import, params, tenant: import.collection)
       {:ok, record} = Ash.load(record, [:imports])
 
       assert_lists_equal(
@@ -216,7 +221,7 @@ defmodule DataAggregator.Records.RecordTest do
         some_extra_data: "Extra"
       }
 
-      assert {:ok, record} = Record.import(import, params)
+      assert {:ok, record} = Record.import(import, params, tenant: import.collection)
 
       updated_params = %{
         mte_catalog_number: "ex-123",
@@ -224,7 +229,9 @@ defmodule DataAggregator.Records.RecordTest do
         some_other_extra_data: "Other Extra"
       }
 
-      assert {:ok, updated_record} = Record.import(import, updated_params)
+      assert {:ok, updated_record} =
+               Record.import(import, updated_params, tenant: import.collection)
+
       {:ok, updated_record} = Ash.load(updated_record, :imports)
 
       assert_lists_equal(
@@ -255,7 +262,7 @@ defmodule DataAggregator.Records.RecordTest do
         some_extra_data: "Extra"
       }
 
-      assert {:ok, record} = Record.import(import, params)
+      assert {:ok, record} = Record.import(import, params, tenant: import.collection)
 
       updated_params = %{
         mte_catalog_number: "ex-123",
@@ -265,7 +272,9 @@ defmodule DataAggregator.Records.RecordTest do
 
       other_import = Import.create!(record.collection)
 
-      assert {:ok, updated_record} = Record.import(other_import, updated_params)
+      assert {:ok, updated_record} =
+               Record.import(other_import, updated_params, tenant: import.collection)
+
       {:ok, updated_record} = Ash.load(updated_record, :imports)
 
       assert_lists_equal(
@@ -291,7 +300,7 @@ defmodule DataAggregator.Records.RecordTest do
         tax_scientific_name: "Example"
       }
 
-      record = Record.import!(import, params)
+      record = Record.import!(import, params, tenant: import.collection)
 
       other_collection =
         collection_fixture(%{
@@ -303,7 +312,7 @@ defmodule DataAggregator.Records.RecordTest do
 
       other_import = Import.create!(other_collection)
 
-      assert {:ok, other_record} = Record.import(other_import, params)
+      assert {:ok, other_record} = Record.import(other_import, params, tenant: import.collection)
 
       refute record.id == other_record.id
 

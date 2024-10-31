@@ -38,12 +38,14 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   @spec encode(Record.t() | EncodedRecord.t(), atom(), Context.t()) :: EncodingResult.t()
   def encode(record_or_encoded_record, catalog, ctx)
 
-  def encode(%Record{} = record, catalog, ctx) when catalog == :gbif_taxonomy do
+  def encode(%Record{} = record, catalog, %{tenant: tenant} = ctx) when catalog == :gbif_taxonomy do
     attributes =
       [
         :extra_data,
         :iucn_redlist_category
       ] ++ DataAggregator.DarwinCore.Schema.prefixed_attribute_names()
+
+    record = Ash.load!(record, [:collection], lazy?: true)
 
     encoded_record =
       EncodedRecord.create!(
@@ -51,13 +53,15 @@ defmodule DataAggregator.Records.Encoding.Strategy do
         |> Map.from_struct()
         |> Map.take(attributes)
         |> Map.put_new_lazy(:record, fn -> record end)
+        |> Map.put_new_lazy(:collection, fn -> record.collection end),
+        tenant: tenant
       )
 
     encode(encoded_record, catalog, ctx)
   end
 
-  def encode(%Record{} = record, catalog, ctx) do
-    encoded_record = EncodedRecord.get_by_record!(record.id)
+  def encode(%Record{} = record, catalog, %{tenant: tenant} = ctx) do
+    encoded_record = EncodedRecord.get_by_record!(record.id, tenant: tenant)
     encode(encoded_record, catalog, ctx)
   end
 
@@ -65,58 +69,58 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     encoded_record
     |> GbifTaxonomyStrategy.apply_strategy(ctx)
     |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog)
+    |> handle_encoding_result(encoded_record, catalog, ctx)
   end
 
   def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :swiss_species do
     encoded_record
     |> SwissSpeciesStrategy.apply_strategy(ctx)
     |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog)
+    |> handle_encoding_result(encoded_record, catalog, ctx)
   end
 
   def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :geo_reverse do
     encoded_record
     |> ReverseGeoEncodingStrategy.apply_strategy(ctx)
     |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog)
+    |> handle_encoding_result(encoded_record, catalog, ctx)
   end
 
   def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :geo_forward do
     encoded_record
     |> ForwardGeoEncodingStrategy.apply_strategy(ctx)
     |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog)
+    |> handle_encoding_result(encoded_record, catalog, ctx)
   end
 
   def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :gbif_iucn_redlist do
     encoded_record
     |> IUCNRedlistStrategy.apply_strategy(ctx)
     |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog)
+    |> handle_encoding_result(encoded_record, catalog, ctx)
   end
 
   def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :add_institution_code do
     encoded_record
     |> AddInstitutionCodeStrategy.apply_strategy(ctx)
     |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog)
+    |> handle_encoding_result(encoded_record, catalog, ctx)
   end
 
   def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :relate_images do
     encoded_record
     |> RelateImagesStrategy.apply_strategy(ctx)
     |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog)
+    |> handle_encoding_result(encoded_record, catalog, ctx)
   end
 
   def encode(%EncodedRecord{} = encoded_record, catalog, _ctx) do
     {:error, "no encoding strategy found for catalog: #{inspect(catalog)}", encoded_record}
   end
 
-  @spec handle_encoding_result(EncodingResult.t(), EncodedRecord.t(), atom()) ::
+  @spec handle_encoding_result(EncodingResult.t(), EncodedRecord.t(), atom(), Context.t()) ::
           EncodingResult.t()
-  defp handle_encoding_result(encoding_result, old_record, catalog) do
+  defp handle_encoding_result(encoding_result, old_record, catalog, ctx) do
     attrs =
       %{
         catalog: catalog
@@ -134,7 +138,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
         {:ok, unchanged_record}
 
       {:error, error, encoding_result} ->
-        create_error_result(attrs, catalog, old_record, error)
+        create_error_result(attrs, catalog, old_record, error, ctx)
 
         {:error, error, encoding_result}
     end
@@ -163,9 +167,9 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     |> RecordEncodingResult.create!()
   end
 
-  defp create_error_result(attrs, catalog, old_record, error) do
+  defp create_error_result(attrs, catalog, old_record, error, %{tenant: tenant}) do
     record = Ash.load!(old_record, [:record], lazy?: true).record
-    new_record = EncodedRecord.get_by_record!(record.id)
+    new_record = EncodedRecord.get_by_record!(record.id, tenant: tenant)
 
     err_msg = get_err_msg(error)
 

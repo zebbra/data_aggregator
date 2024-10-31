@@ -30,21 +30,26 @@ defmodule DataAggregator.Records.ImageUpload.Workers.Mapper do
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"id" => id, "user_id" => user_id}}) do
-    with {:ok, image_upload} <- ImageUpload.get_by_id(id) do
+    with {:ok, image_upload} <- ImageUpload.get_by_id(id, load: :collection) do
       perform_with_actor(image_upload, User.get_by_id!(user_id))
     end
   end
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"id" => id}}) do
-    with {:ok, image_upload} <- ImageUpload.get_by_id(id) do
+    with {:ok, image_upload} <- ImageUpload.get_by_id(id, load: :collection) do
       perform_with_actor(image_upload)
     end
   end
 
   defp perform_with_actor(image_upload, actor \\ nil) do
     Logger.debug("Mapping #{inspect(image_upload.id)} ...")
-    ImageUpload.map(image_upload, actor: actor, authorize?: false)
+
+    ImageUpload.map(image_upload,
+      actor: actor,
+      authorize?: false,
+      tenant: image_upload.collection
+    )
   end
 
   @impl Oban.Worker

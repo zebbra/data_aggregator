@@ -13,7 +13,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
     Changeset.before_action(changeset, &map_images(&1, ctx))
   end
 
-  defp map_images(%Changeset{data: image_upload} = changeset, %{actor: actor} = _ctx) do
+  defp map_images(%Changeset{data: image_upload} = changeset, %{actor: actor, tenant: tenant} = _ctx) do
     Logger.info("Mapping images for #{inspect(image_upload.id)} ...")
 
     image_upload =
@@ -30,7 +30,11 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
         matching_record ->
           Logger.info("Record found for image #{image.attachment.filename}")
 
-          Record.add_image(matching_record, image, actor: actor, authorize?: false)
+          Record.add_image(matching_record, image,
+            actor: actor,
+            authorize?: false,
+            tenant: tenant
+          )
       end
     end)
 

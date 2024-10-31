@@ -12,14 +12,14 @@ defmodule DataAggregator.Records.Export.Changes.ExportRecords do
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_action(changeset, &export_records/1, append?: true)
+  def change(%Changeset{} = changeset, _opts, ctx) do
+    Changeset.before_action(changeset, &export_records(&1, ctx), append?: true)
   end
 
-  defp export_records(%Changeset{data: original_export} = changeset) do
+  defp export_records(%Changeset{data: original_export} = changeset, %{tenant: tenant}) do
     export = Ash.load!(original_export, [:collection])
 
-    case Collection.export(export) do
+    case Collection.export(export, tenant: tenant) do
       {:ok, export} -> add_success(changeset, export)
       {:error, error} -> add_error(changeset, error, export)
     end
