@@ -1029,12 +1029,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       collection: collection,
       rows_count: Ash.count!(count_query)
     }
-    |> Publication.create!(actor: actor)
+    |> Publication.create!(actor: actor, tenant: collection)
     |> Publication.enqueue(actor: actor)
   end
 
   defp create_and_enqueue(collection, query, _count_query, :approval, actor) do
-    Collection.approve(collection, query, actor: actor)
+    Collection.approve(collection, query, actor: actor, tenant: collection)
   end
 
   defp apply_action(socket, :index, _params) do

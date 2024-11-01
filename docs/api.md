@@ -594,8 +594,7 @@ classDiagram
         update(String name, Atom channel, UtcDatetime published_at, UtcDatetime started_at, ...)
         destroy()
         read()
-        by_collection(String collection_id, String sort)
-        active_by_collection(String collection_id)
+        active()
         create(Struct collection, String name, Atom channel, UtcDatetime published_at, ...)
         enqueue()
         add_publication_progress(Integer published)
@@ -2987,8 +2986,7 @@ erDiagram
 | **update** | _update_ | <ul><li><b>name</b> <i>String</i> attribute</li><li><b>channel</b> <i>Atom</i> attribute</li><li><b>published_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>published_count</b> <i>Integer</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
-| **by_collection** | _read_ | <ul><li><b>collection_id</b> <i>String</i> </li><li><b>sort</b> <i>String</i> </li></ul> |  |
-| **active_by_collection** | _read_ | <ul><li><b>collection_id</b> <i>String</i> </li></ul> |  |
+| **active** | _read_ | <ul></ul> |  |
 | **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>name</b> <i>String</i> attribute</li><li><b>channel</b> <i>Atom</i> attribute</li><li><b>published_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>published_count</b> <i>Integer</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **enqueue** | _update_ | <ul></ul> |  |
 | **add_publication_progress** | _update_ | <ul><li><b>published</b> <i>Integer</i> </li></ul> |  |

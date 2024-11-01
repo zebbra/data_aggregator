@@ -132,8 +132,8 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     # from the previous publication
 
     active_publication =
-      collection_id
-      |> Publication.query_to_active_by_collection()
+      Publication.query_to_active()
+      |> Ash.Query.set_tenant(collection_id)
       |> Ash.read_one!()
 
     if active_publication do
@@ -152,8 +152,8 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     # account for this case as it is not a common use case.
     cancel_all_jobs(Job.query_to_publications_by_collection(collection_id))
 
-    collection_id
-    |> Publication.query_to_active_by_collection()
+    Publication.query_to_active()
+    |> Ash.Query.set_tenant(collection_id)
     |> Ash.bulk_update!(
       :update,
       %{state: :failed, finished_at: DateTime.utc_now()}

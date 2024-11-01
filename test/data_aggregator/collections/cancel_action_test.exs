@@ -362,12 +362,15 @@ defmodule DataAggregator.Collections.CancelActionTest do
         }
 
         publication =
-          Publication.create!(%{
-            name: "Publication Fast Track 1",
-            channel: :fast_track,
-            records_query: query,
-            collection: collection
-          })
+          Publication.create!(
+            %{
+              name: "Publication Fast Track 1",
+              channel: :fast_track,
+              records_query: query,
+              collection: collection
+            },
+            tenant: collection
+          )
 
         assert {:ok, publication} = Publication.enqueue(publication)
 
@@ -386,7 +389,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
         )
 
         Collection.cancel_action!(collection)
-        publication = Publication.get_by_id!(publication.id)
+        publication = Publication.get_by_id!(publication.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert publication.state === :failed
@@ -411,12 +414,15 @@ defmodule DataAggregator.Collections.CancelActionTest do
         }
 
         publication =
-          Publication.create!(%{
-            name: "Publication Fast Track 1",
-            channel: :fast_track,
-            records_query: query,
-            collection: collection
-          })
+          Publication.create!(
+            %{
+              name: "Publication Fast Track 1",
+              channel: :fast_track,
+              records_query: query,
+              collection: collection
+            },
+            tenant: collection
+          )
 
         assert publication.state === :pending
 
@@ -427,7 +433,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         Collection.cancel_action!(collection)
 
-        publication = Publication.get_by_id!(publication.id)
+        publication = Publication.get_by_id!(publication.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert publication.state === :pending
@@ -447,22 +453,28 @@ defmodule DataAggregator.Collections.CancelActionTest do
         }
 
         publication =
-          Publication.create!(%{
-            name: "Publication Approval 1",
-            channel: :approval,
-            records_query: query,
-            collection: collection,
-            center: "infofauna"
-          })
+          Publication.create!(
+            %{
+              name: "Publication Approval 1",
+              channel: :approval,
+              records_query: query,
+              collection: collection,
+              center: "infofauna"
+            },
+            tenant: collection
+          )
 
         publication2 =
-          Publication.create!(%{
-            name: "Publication Approval 2",
-            channel: :approval,
-            records_query: query,
-            collection: collection,
-            center: "infofauna"
-          })
+          Publication.create!(
+            %{
+              name: "Publication Approval 2",
+              channel: :approval,
+              records_query: query,
+              collection: collection,
+              center: "infofauna"
+            },
+            tenant: collection
+          )
 
         assert {:ok, publication} = Publication.enqueue(publication)
         assert {:ok, publication2} = Publication.enqueue(publication2)
@@ -489,8 +501,8 @@ defmodule DataAggregator.Collections.CancelActionTest do
         )
 
         Collection.cancel_action!(collection)
-        publication = Publication.get_by_id!(publication.id)
-        publication2 = Publication.get_by_id!(publication2.id)
+        publication = Publication.get_by_id!(publication.id, tenant: collection)
+        publication2 = Publication.get_by_id!(publication2.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert publication.state === :failed
@@ -517,13 +529,16 @@ defmodule DataAggregator.Collections.CancelActionTest do
         }
 
         publication =
-          Publication.create!(%{
-            name: "Publication Approving 1",
-            channel: :approval,
-            records_query: query,
-            collection: collection,
-            center: "infofauna"
-          })
+          Publication.create!(
+            %{
+              name: "Publication Approving 1",
+              channel: :approval,
+              records_query: query,
+              collection: collection,
+              center: "infofauna"
+            },
+            tenant: collection
+          )
 
         assert publication.state === :pending
 
@@ -534,7 +549,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         Collection.cancel_action!(collection)
 
-        publication = Publication.get_by_id!(publication.id)
+        publication = Publication.get_by_id!(publication.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert publication.state === :pending

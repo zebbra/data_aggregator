@@ -85,15 +85,18 @@ defmodule DataAggregator.RegisterAtGbifTest do
       }
 
       publication =
-        Publication.create!(%{
-          name: "Publication Fast Track",
-          channel: :fast_track,
-          records_query: query,
-          collection: collection
-        })
+        Publication.create!(
+          %{
+            name: "Publication Fast Track",
+            channel: :fast_track,
+            records_query: query,
+            collection: collection
+          },
+          tenant: collection
+        )
 
       {:ok, publication} = Collection.publish(publication)
-      publication = Ash.load!(publication, [:attachment])
+      publication = Ash.load!(publication, [:attachment], tenant: collection)
 
       [
         collection: collection,

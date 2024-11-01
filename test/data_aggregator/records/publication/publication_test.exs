@@ -106,44 +106,59 @@ defmodule DataAggregator.PublicationTest do
       }
 
       publication =
-        Publication.create!(%{
-          name: "Publication Fast Track 2",
-          channel: :fast_track,
-          records_query: query,
-          collection: collection
-        })
+        Publication.create!(
+          %{
+            name: "Publication Fast Track 2",
+            channel: :fast_track,
+            records_query: query,
+            collection: collection
+          },
+          tenant: collection
+        )
 
       publicatoin_1 =
-        Publication.create!(%{
-          name: "Publication register collection failing",
-          channel: :fast_track,
-          records_query: query,
-          collection: collection_register_collection_failing
-        })
+        Publication.create!(
+          %{
+            name: "Publication register collection failing",
+            channel: :fast_track,
+            records_query: query,
+            collection: collection_register_collection_failing
+          },
+          tenant: collection_register_collection_failing
+        )
 
       publication_2 =
-        Publication.create!(%{
-          name: "Publication create endpoint failing",
-          channel: :fast_track,
-          records_query: query,
-          collection: collection_create_endpoint_failing
-        })
+        Publication.create!(
+          %{
+            name: "Publication create endpoint failing",
+            channel: :fast_track,
+            records_query: query,
+            collection: collection_create_endpoint_failing
+          },
+          tenant: collection_create_endpoint_failing
+        )
 
       publication_3 =
-        Publication.create!(%{
-          name: "Publication get endpoints failing, delete endpoint failing",
-          channel: :fast_track,
-          records_query: query,
-          collection: collection_get_endpoints_failing
-        })
+        Publication.create!(
+          %{
+            name: "Publication get endpoints failing, delete endpoint failing",
+            channel: :fast_track,
+            records_query: query,
+            collection: collection_get_endpoints_failing
+          },
+          tenant: collection_get_endpoints_failing
+        )
 
       publication_4 =
-        Publication.create!(%{
-          name: "Publication get endpoints success, delete endpoint failing",
-          channel: :fast_track,
-          records_query: query,
-          collection: collection_delete_endpoint_failing
-        })
+        Publication.create!(
+          %{
+            name: "Publication get endpoints success, delete endpoint failing",
+            channel: :fast_track,
+            records_query: query,
+            collection: collection_delete_endpoint_failing
+          },
+          tenant: collection_delete_endpoint_failing
+        )
 
       [
         collection: collection,
@@ -257,8 +272,8 @@ defmodule DataAggregator.PublicationTest do
       Oban.Testing.with_testing_mode(:manual, fn ->
         assert {:error, %Invalid{}} = Publication.run(publication)
 
-        publication = Publication.get_by_id!(publication.id)
         collection = Collection.get_by_id!(publication.collection_id)
+        publication = Publication.get_by_id!(publication.id, tenant: collection)
 
         query = AshPagify.query_for_filters_map(Record, publication.records_query)
 
@@ -343,7 +358,7 @@ defmodule DataAggregator.PublicationTest do
 
     defp assert_not_enqueued(publication) do
       assert {:error, %Invalid{}} = Publication.enqueue(publication)
-      publication = Publication.get_by_id!(publication.id)
+      publication = Publication.get_by_id!(publication.id, tenant: publication.collection)
       assert publication.state == :pending
       refute_enqueued(worker: Publisher, args: %{id: publication.id})
     end

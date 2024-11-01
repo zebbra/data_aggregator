@@ -15,7 +15,7 @@ defmodule DataAggregator.Records.Actions.Approve do
   require Logger
 
   @impl true
-  def run(input, _opts, ctx) do
+  def run(input, _opts, %{actor: actor, tenant: tenant}) do
     collection = input.arguments.collection
     query = input.arguments.query
 
@@ -42,8 +42,8 @@ defmodule DataAggregator.Records.Actions.Approve do
             rows_count: rows_count,
             center: center
           }
-          |> Publication.create!()
-          |> Publication.enqueue(actor: ctx.actor, authorize?: false)
+          |> Publication.create!(tenant: tenant)
+          |> Publication.enqueue(actor: actor, authorize?: false)
         end
 
         {center, rows_count}

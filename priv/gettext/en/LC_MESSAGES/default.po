@@ -1226,117 +1226,117 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Components"
 msgid "Unknown"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:152
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:254
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:269
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:153
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:255
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:270
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:332
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:338
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Collection Publications"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:215
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:216
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Created at"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:151
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:259
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:152
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:260
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Delete"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:80
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:81
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Exports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:112
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:208
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:113
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:209
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "File"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:347
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:354
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Get started by publishing records."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:76
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:77
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Imports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:346
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:353
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "No publications"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:164
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:172
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:165
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:173
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Publication"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:303
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:308
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Publication deleted successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:72
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:127
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:73
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:128
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:218
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:219
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Rows"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:145
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:195
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:146
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:196
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Run"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:115
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:116
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Size"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:121
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:235
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:122
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:236
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Started at"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:106
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:107
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "State"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:230
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:231
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "rows"
@@ -1348,8 +1348,8 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Components"
 msgid "Approval"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:109
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:205
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:110
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:206
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Channel"
@@ -1367,7 +1367,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Components"
 msgid "Processing"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:220
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:221
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Done"
@@ -1464,7 +1464,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Actions"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:136
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:137
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Actions"
@@ -1496,14 +1496,14 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "State:"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:166
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:167
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Publication status details."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:182
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:198
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:183
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:199
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "State:"
@@ -1699,7 +1699,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Components"
 msgid "Publication"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:84
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:85
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Publications and Approvals"
@@ -1877,37 +1877,37 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Yes, delete collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:291
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:295
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "A publication for this collection is already in process"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:354
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:361
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Approval started in background"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:357
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:364
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Publication started in background"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:270
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:271
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Yes, delete publication"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/subscriptions.ex:118
+#: lib/data_aggregator_web/live/collection_live/publication/subscriptions.ex:121
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Subscriptions"
 msgid "The publication failed, please try again"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/subscriptions.ex:122
+#: lib/data_aggregator_web/live/collection_live/publication/subscriptions.ex:125
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Subscriptions"
 msgid "The publication has been completed"
@@ -3870,7 +3870,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Image Upload"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:89
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:90
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Image Upload"
@@ -3974,7 +3974,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Something went wrong"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/publication/index.ex:51
+#: lib/data_aggregator_web/live/collection_live/publication/index.ex:52
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Something went wrong"

@@ -98,7 +98,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           collection: collection,
           center: :infofauna
         }
-        |> Publication.create!()
+        |> Publication.create!(tenant: collection)
         |> Publication.update_attachment!(Attachment.import_from_path!("test/support/fixtures/files/approval_dwca.zip"))
 
       [collection: collection, records: records, query: query, publication: publication]

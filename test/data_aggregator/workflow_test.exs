@@ -301,12 +301,15 @@ defmodule DataAggregator.WorkflowTest do
       }
 
       publication =
-        Publication.create!(%{
-          name: "publication-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-          channel: :fast_track,
-          collection: collection,
-          records_query: query
-        })
+        Publication.create!(
+          %{
+            name: "publication-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+            channel: :fast_track,
+            collection: collection,
+            records_query: query
+          },
+          tenant: collection
+        )
 
       [publication: publication, actor: actor, records: records]
     end
@@ -336,9 +339,13 @@ defmodule DataAggregator.WorkflowTest do
       # encoded_record versions for each record have been created
       assert_encode_versions(actor, tenant)
 
-      perform_job(Publisher, %{id: publication.id, user_id: actor.id})
+      perform_job(Publisher, %{
+        id: publication.id,
+        collection_id: publication.collection_id,
+        user_id: actor.id
+      })
 
-      publication = Publication.get_by_id!(publication.id)
+      publication = Publication.get_by_id!(publication.id, tenant: tenant)
 
       assert publication.state == :done
       assert publication.channel == :fast_track
@@ -416,13 +423,16 @@ defmodule DataAggregator.WorkflowTest do
       }
 
       publication =
-        Publication.create!(%{
-          name: "approval-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-          channel: :approval,
-          collection: collection,
-          records_query: query,
-          center: "infofauna"
-        })
+        Publication.create!(
+          %{
+            name: "approval-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+            channel: :approval,
+            collection: collection,
+            records_query: query,
+            center: "infofauna"
+          },
+          tenant: collection
+        )
 
       [publication: publication, actor: actor, records: records]
     end
@@ -452,9 +462,13 @@ defmodule DataAggregator.WorkflowTest do
       # encoded_record versions for each record have been created
       assert_encode_versions(actor, tenant)
 
-      perform_job(Publisher, %{id: publication.id, user_id: actor.id})
+      perform_job(Publisher, %{
+        id: publication.id,
+        collection_id: publication.collection_id,
+        user_id: actor.id
+      })
 
-      publication = Publication.get_by_id!(publication.id)
+      publication = Publication.get_by_id!(publication.id, tenant: tenant)
 
       assert publication.state == :done
       assert publication.channel == :approval

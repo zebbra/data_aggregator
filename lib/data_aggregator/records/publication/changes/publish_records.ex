@@ -16,11 +16,11 @@ defmodule DataAggregator.Records.Publication.Changes.PublishRecords do
     Changeset.before_transaction(changeset, &publish_records(&1, ctx), append?: true)
   end
 
-  defp publish_records(%Changeset{data: original_publication} = changeset, %{actor: actor}) do
+  defp publish_records(%Changeset{data: original_publication} = changeset, %{actor: actor, tenant: tenant}) do
     publication = Ash.load!(original_publication, [:collection])
 
-    case Collection.publish(publication, actor: actor, authorize?: false) do
-      {:ok, publication} -> add_success(changeset, publication)
+    case Collection.publish(publication, actor: actor, authorize?: false, tenant: tenant) do
+      {:ok, publication} -> add_success(changeset, publication, tenant)
       {:error, error} -> add_error(changeset, error, publication)
     end
   end
@@ -31,8 +31,8 @@ defmodule DataAggregator.Records.Publication.Changes.PublishRecords do
     Changeset.add_error(changeset, error)
   end
 
-  defp add_success(changeset, publication) do
-    publication = Publication.get_by_id!(publication.id)
+  defp add_success(changeset, publication, tenant) do
+    publication = Publication.get_by_id!(publication.id, tenant: tenant)
     Logger.info("Successfully published #{publication.published_count} records")
 
     changeset

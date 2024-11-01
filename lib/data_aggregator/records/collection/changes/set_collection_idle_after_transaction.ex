@@ -31,8 +31,8 @@ defmodule DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransa
     cond do
       collection.state == :approving ->
         active_approvals =
-          collection.id
-          |> Publication.query_to_by_collection()
+          Publication
+          |> Ash.Query.set_tenant(collection)
           |> Ash.Query.filter(state in [:queued, :running])
           |> Ash.count!()
 

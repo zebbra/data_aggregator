@@ -27,8 +27,8 @@ defmodule DataAggregator.Records.Approval.Changes.EnqueueApprover do
     end
   end
 
-  defp insert_job(%Approval{id: id}) do
-    %{id: id}
+  defp insert_job(%Approval{id: id, collection_id: collection_id}) do
+    %{id: id, collection_id: collection_id}
     |> Approval.Workers.Approver.new()
     |> Oban.insert()
   end
