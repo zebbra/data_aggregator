@@ -568,8 +568,7 @@ classDiagram
         set_mapping_failed()
         cancel_mapping()
         read(String sort)
-        by_collection(String collection_id, String sort)
-        active_by_collection(String collection_id)
+        active()
         create(Struct collection, UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, ...)
         create_from_path(Struct collection, String path, String filename)
     }
@@ -2949,8 +2948,7 @@ erDiagram
 | **set_mapping_failed** | _update_ | <ul></ul> |  |
 | **cancel_mapping** | _update_ | <ul></ul> |  |
 | **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
-| **by_collection** | _read_ | <ul><li><b>collection_id</b> <i>String</i> </li><li><b>sort</b> <i>String</i> </li></ul> |  |
-| **active_by_collection** | _read_ | <ul><li><b>collection_id</b> <i>String</i> </li></ul> |  |
+| **active** | _read_ | <ul></ul> |  |
 | **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>invalid_file_infos</b> <i>Map[]</i> attribute</li><li><b>mapping_identifier</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **create_from_path** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>path</b> <i>String</i> </li><li><b>filename</b> <i>String</i> </li></ul> |  |
 

@@ -112,9 +112,9 @@
         "match_type": null,
         "match_with": null,
         "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
         },
         "name": "record_images_image_upload_id_fkey",
         "on_delete": "delete",
@@ -133,7 +133,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "DCEBD7D3B90F9987258747AF8E1BF42FF04346ED5CEC84329F94AEB5479B58E0",
+  "hash": "F7BF997DA296AD2B0D5B9423EEB3F15007B1191DEEA88E2C445B0EA8F7799DEE",
   "identities": [],
   "multitenancy": {
     "attribute": null,

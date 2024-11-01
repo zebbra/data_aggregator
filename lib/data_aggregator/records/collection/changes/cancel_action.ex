@@ -82,8 +82,8 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     cancel_all_jobs(Job.query_to_image_mappings_by_collection(collection_id))
 
     active_image_mapping =
-      collection_id
-      |> ImageUpload.query_to_active_by_collection()
+      ImageUpload.query_to_active()
+      |> Ash.Query.set_tenant(collection_id)
       |> Ash.read_one!()
 
     if active_image_mapping do

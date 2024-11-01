@@ -146,7 +146,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
         )
 
         Collection.cancel_action!(collection)
-        image_upload = ImageUpload.get_by_id!(image_upload.id)
+        image_upload = ImageUpload.get_by_id!(image_upload.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert image_upload.state === :mapping_failed
@@ -177,7 +177,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         Collection.cancel_action!(collection)
 
-        image_upload = ImageUpload.get_by_id!(image_upload.id)
+        image_upload = ImageUpload.get_by_id!(image_upload.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert image_upload.state === :extracted

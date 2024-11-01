@@ -479,8 +479,7 @@ classDiagram
         set_mapping_failed()
         cancel_mapping()
         read(String sort)
-        by_collection(String collection_id, String sort)
-        active_by_collection(String collection_id)
+        active()
         create(Struct collection, UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, ...)
         create_from_path(Struct collection, String path, String filename)
     }

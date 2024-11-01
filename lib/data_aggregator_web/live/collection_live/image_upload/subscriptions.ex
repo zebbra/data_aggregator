@@ -8,7 +8,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
 
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection_light: 2, busy_action: 1]
   import DataAggregatorWeb.CollectionLive.ImageUpload.Helpers
-  import DataAggregatorWeb.Helpers, only: [get_actor: 1]
+  import DataAggregatorWeb.Helpers, only: [get_actor: 1, get_tenant: 1]
 
   alias Ash.Notifier.Notification
   alias DataAggregator.PubSub
@@ -79,15 +79,20 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
   end
 
   defp handle_image_upload_created(%Notification{data: image_upload}, socket) do
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+
     image_upload =
-      ImageUpload.get_by_id!(image_upload.id, load: @load_all, actor: get_actor(socket))
+      ImageUpload.get_by_id!(image_upload.id, load: @load_all, actor: actor, tenant: tenant)
 
     {:noreply, stream_insert(socket, :results, image_upload, at: 0)}
   end
 
   defp handle_image_upload_updated(%Notification{data: %{id: id, collection_id: collection_id}}, socket, event) do
-    image_upload = ImageUpload.get_by_id!(id, load: @load_all, actor: get_actor(socket))
-    collection = get_collection_light(collection_id, get_actor(socket))
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+    image_upload = ImageUpload.get_by_id!(id, load: @load_all, actor: actor, tenant: tenant)
+    collection = get_collection_light(collection_id, actor)
 
     socket =
       socket
