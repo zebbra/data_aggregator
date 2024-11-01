@@ -33,9 +33,12 @@ defmodule DataAggregator.RecordEncodingResultFixture do
     Generate a record_encoding_result.
   """
   def record_encoding_result_fixture(attrs \\ %{}) do
+    record = Map.get(attrs, :record, record_fixture())
+
     @record_encoding_result_defaults
     |> Map.merge(attrs)
-    |> Map.put_new_lazy(:record, fn -> record_fixture() end)
-    |> RecordEncodingResult.create!()
+    |> Map.put_new_lazy(:record, fn -> record end)
+    |> Map.put_new_lazy(:collection, fn -> record.collection end)
+    |> RecordEncodingResult.create!(tenant: record.collection)
   end
 end

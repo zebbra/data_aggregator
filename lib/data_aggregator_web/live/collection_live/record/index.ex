@@ -868,7 +868,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     socket =
       socket
       |> assign(:selected_record, record)
-      |> assign(:record_encoding_results, RecordEncodingResult.filter_by_record!(id))
+      |> assign(
+        :record_encoding_results,
+        RecordEncodingResult.filter_by_record!(id, tenant: tenant)
+      )
       |> assign(:attrs_in_categories, attrs_by_category_in_layers(record))
 
     {:noreply, socket}

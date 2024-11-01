@@ -121,7 +121,7 @@ defmodule DataAggregator.Records.RecordTest do
     end
 
     test "destroy/1 deletes the record and it's record_encoding_results" do
-      record_encoding_result = Ash.load!(record_encoding_result_fixture(), [:record])
+      record_encoding_result = record_encoding_result_fixture()
       record = record_encoding_result.record
 
       assert :ok = Record.destroy(record)
@@ -129,7 +129,9 @@ defmodule DataAggregator.Records.RecordTest do
       assert_raise NotFound, fn -> Record.get_by_id!(record.id) end
 
       assert_raise NotFound, fn ->
-        RecordEncodingResult.get_by_id!(record_encoding_result.id)
+        RecordEncodingResult.get_by_id!(record_encoding_result.id,
+          tenant: record_encoding_result.collection
+        )
       end
     end
 

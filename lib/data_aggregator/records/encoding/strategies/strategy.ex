@@ -128,12 +128,12 @@ defmodule DataAggregator.Records.Encoding.Strategy do
 
     case encoding_result do
       {:ok, new_record} ->
-        create_success_result(attrs, catalog, old_record, new_record)
+        create_success_result(attrs, catalog, old_record, new_record, ctx)
 
         {:ok, new_record}
 
       {:unchanged, unchanged_record} ->
-        create_unchanged_result(attrs, catalog, old_record, unchanged_record)
+        create_unchanged_result(attrs, catalog, old_record, unchanged_record, ctx)
 
         {:ok, unchanged_record}
 
@@ -144,19 +144,22 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     end
   end
 
-  defp create_success_result(attrs, catalog, old_record, new_record) do
-    record = Ash.load!(old_record, [:record], lazy?: true).record
+  defp create_success_result(attrs, catalog, old_record, new_record, %{tenant: tenant}) do
+    %{record: record, collection: collection} =
+      Ash.load!(old_record, [:record, :collection], lazy?: true)
 
     attrs
     |> put_input_values(catalog, old_record)
     |> put_output_values(catalog, new_record)
     |> Map.put(:state, :success)
     |> Map.put(:record, record)
-    |> RecordEncodingResult.create!()
+    |> Map.put(:collection, collection)
+    |> RecordEncodingResult.create!(tenant: tenant)
   end
 
-  defp create_unchanged_result(attrs, catalog, old_record, unchanged_record) do
-    record = Ash.load!(old_record, [:record], lazy?: true).record
+  defp create_unchanged_result(attrs, catalog, old_record, unchanged_record, %{tenant: tenant}) do
+    %{record: record, collection: collection} =
+      Ash.load!(old_record, [:record, :collection], lazy?: true)
 
     attrs
     |> put_input_values(catalog, old_record)
@@ -164,11 +167,14 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     |> Map.put(:state, :unchanged)
     |> Map.put(:message, "no changes during encoding")
     |> Map.put(:record, record)
-    |> RecordEncodingResult.create!()
+    |> Map.put(:collection, collection)
+    |> RecordEncodingResult.create!(tenant: tenant)
   end
 
   defp create_error_result(attrs, catalog, old_record, error, %{tenant: tenant}) do
-    record = Ash.load!(old_record, [:record], lazy?: true).record
+    %{record: record, collection: collection} =
+      Ash.load!(old_record, [:record, :collection], lazy?: true)
+
     new_record = EncodedRecord.get_by_record!(record.id, tenant: tenant)
 
     err_msg = get_err_msg(error)
@@ -179,7 +185,8 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     |> Map.put(:state, :error)
     |> Map.put(:message, err_msg)
     |> Map.put(:record, record)
-    |> RecordEncodingResult.create!()
+    |> Map.put(:collection, collection)
+    |> RecordEncodingResult.create!(tenant: tenant)
   end
 
   defp get_err_msg(error) when is_binary(error) == true, do: error

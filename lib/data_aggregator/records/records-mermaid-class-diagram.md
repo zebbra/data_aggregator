@@ -358,12 +358,13 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID record_id
+        UUID collection_id
         Record record
+        Collection collection
         destroy()
         read()
         filter_by_record(String record_id)
-        filter_by_collection(String collection_id)
-        create(Struct record, Map input, Map output, String message, ...)
+        create(Struct record, Struct collection, Map input, Map output, ...)
         update(Struct record, Map input, Map output, String message, ...)
     }
     class Export {
@@ -1227,6 +1228,7 @@ classDiagram
     ApprovedRecord -- Collection
     ApprovedRecord -- Record
     Collection -- EncodedRecord
+    Collection -- RecordEncodingResult
     Collection -- Export
     Collection -- ImageUpload
     Collection -- Import

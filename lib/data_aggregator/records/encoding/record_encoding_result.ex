@@ -8,7 +8,7 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
     domain: DataAggregator.Records,
     extensions: [AshUUID]
 
-  alias DataAggregator.Records.Actions
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Encoding.EncodingResultState
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalog
@@ -45,7 +45,15 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
   end
 
   relationships do
-    belongs_to :record, Record, public?: true
+    belongs_to :record, Record do
+      public? true
+      allow_nil? false
+    end
+
+    belongs_to :collection, Collection do
+      public? true
+      allow_nil? false
+    end
   end
 
   actions do
@@ -59,17 +67,13 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
       prepare build(sort: [inserted_at: :desc])
     end
 
-    read :filter_by_collection do
-      argument :collection_id, :string, allow_nil?: false
-
-      manual Actions.EncodingResultsByCollection
-    end
-
     create :create do
       primary? true
-      argument :record, :struct
+      argument :record, :struct, allow_nil?: false
+      argument :collection, :struct, allow_nil?: false
 
       change manage_relationship(:record, type: :append)
+      change manage_relationship(:collection, type: :append)
     end
 
     update :update do
@@ -88,7 +92,6 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :filter_by_record, args: [:record_id]
-    define :filter_by_collection, args: [:collection_id]
   end
 
   postgres do
@@ -96,7 +99,18 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
     repo DataAggregator.Repo
 
     references do
-      reference :record, on_delete: :delete, on_update: :update, index?: true
+      reference :collection, on_delete: :delete, on_update: :update
+
+      reference :record,
+        on_delete: :delete,
+        on_update: :update,
+        index?: true,
+        match_with: [collection_id: :collection_id]
     end
+  end
+
+  multitenancy do
+    strategy :attribute
+    attribute :collection_id
   end
 end

@@ -447,12 +447,13 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID record_id
+        UUID collection_id
         Record record
+        Collection collection
         destroy()
         read()
         filter_by_record(String record_id)
-        filter_by_collection(String collection_id)
-        create(Struct record, Map input, Map output, String message, ...)
+        create(Struct record, Struct collection, Map input, Map output, ...)
         update(Struct record, Map input, Map output, String message, ...)
     }
     class Export {
@@ -1316,6 +1317,7 @@ classDiagram
     ApprovedRecord -- Collection
     ApprovedRecord -- Record
     Collection -- EncodedRecord
+    Collection -- RecordEncodingResult
     Collection -- Export
     Collection -- ImageUpload
     Collection -- Import
@@ -1661,6 +1663,7 @@ erDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID record_id
+        UUID collection_id
     }
     Export {
         UUID id
@@ -2375,6 +2378,7 @@ erDiagram
     ApprovedRecord ||--|| Collection : ""
     ApprovedRecord ||--|| Record : ""
     Collection ||--|| EncodedRecord : ""
+    Collection ||--|| RecordEncodingResult : ""
     Collection ||--|| Export : ""
     Collection ||--|| ImageUpload : ""
     Collection ||--|| Import : ""
@@ -2791,6 +2795,7 @@ erDiagram
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
 | **record_id** | UUID |  |
+| **collection_id** | UUID |  |
 
 #### Actions
 
@@ -2799,9 +2804,8 @@ erDiagram
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
 | **filter_by_record** | _read_ | <ul><li><b>record_id</b> <i>String</i> </li></ul> |  |
-| **filter_by_collection** | _read_ | <ul><li><b>collection_id</b> <i>String</i> </li></ul> |  |
-| **create** | _create_ | <ul><li><b>record</b> <i>Struct</i> </li><li><b>input</b> <i>Map</i> attribute</li><li><b>output</b> <i>Map</i> attribute</li><li><b>message</b> <i>String</i> attribute</li><li><b>catalog</b> <i>Catalog</i> attribute</li><li><b>state</b> <i>EncodingResultState</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li></ul> |  |
-| **update** | _update_ | <ul><li><b>record</b> <i>Struct</i> </li><li><b>input</b> <i>Map</i> attribute</li><li><b>output</b> <i>Map</i> attribute</li><li><b>message</b> <i>String</i> attribute</li><li><b>catalog</b> <i>Catalog</i> attribute</li><li><b>state</b> <i>EncodingResultState</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li></ul> |  |
+| **create** | _create_ | <ul><li><b>record</b> <i>Struct</i> </li><li><b>collection</b> <i>Struct</i> </li><li><b>input</b> <i>Map</i> attribute</li><li><b>output</b> <i>Map</i> attribute</li><li><b>message</b> <i>String</i> attribute</li><li><b>catalog</b> <i>Catalog</i> attribute</li><li><b>state</b> <i>EncodingResultState</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>record</b> <i>Struct</i> </li><li><b>input</b> <i>Map</i> attribute</li><li><b>output</b> <i>Map</i> attribute</li><li><b>message</b> <i>String</i> attribute</li><li><b>catalog</b> <i>Catalog</i> attribute</li><li><b>state</b> <i>EncodingResultState</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li></ul> |  |
 
 ### Export
 
