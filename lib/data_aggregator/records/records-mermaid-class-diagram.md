@@ -442,12 +442,14 @@ classDiagram
     class Record {
         UUID import_id
         UUID record_id
+        UUID collection_id
         Import import
         Record record
-        update(UUID import_id, UUID record_id)
+        Collection collection
+        update(UUID import_id, UUID record_id, UUID collection_id)
         destroy()
         read()
-        create(Struct import, Struct record, UUID import_id, UUID record_id)
+        create(Struct import, Struct record, Struct collection, UUID import_id, ...)
     }
     class ImageUpload {
         UUID id
@@ -1230,6 +1232,7 @@ classDiagram
     Collection -- Export
     Collection -- ImageUpload
     Collection -- Import
+    Collection -- Record
     Collection -- Publication
     Collection -- Record
     EncodedRecord -- Version
