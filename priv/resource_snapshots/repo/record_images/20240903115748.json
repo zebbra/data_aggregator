@@ -83,6 +83,37 @@
         "match_type": null,
         "match_with": null,
         "multitenancy": {
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
+        },
+        "name": "record_images_image_upload_id_fkey",
+        "on_delete": "delete",
+        "on_update": "update",
+        "primary_key?": true,
+        "schema": "public",
+        "table": "image_uploads"
+      },
+      "size": null,
+      "source": "image_upload_id",
+      "type": "uuid"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": true,
+        "match_type": null,
+        "match_with": {
+          "collection_id": "collection_id"
+        },
+        "multitenancy": {
           "attribute": null,
           "global": null,
           "strategy": null
@@ -99,7 +130,7 @@
       "type": "uuid"
     },
     {
-      "allow_nil?": true,
+      "allow_nil?": false,
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
@@ -108,23 +139,23 @@
         "destination_attribute": "id",
         "destination_attribute_default": null,
         "destination_attribute_generated": null,
-        "index?": true,
+        "index?": false,
         "match_type": null,
         "match_with": null,
         "multitenancy": {
-          "attribute": "collection_id",
-          "global": false,
-          "strategy": "attribute"
+          "attribute": null,
+          "global": null,
+          "strategy": null
         },
-        "name": "record_images_image_upload_id_fkey",
+        "name": "record_images_collection_id_fkey",
         "on_delete": "delete",
         "on_update": "update",
         "primary_key?": true,
         "schema": "public",
-        "table": "image_uploads"
+        "table": "collections"
       },
       "size": null,
-      "source": "image_upload_id",
+      "source": "collection_id",
       "type": "uuid"
     }
   ],
@@ -133,12 +164,12 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "F7BF997DA296AD2B0D5B9423EEB3F15007B1191DEEA88E2C445B0EA8F7799DEE",
+  "hash": "FD0FF0205E736653C38B837D085995A46C26D5CA1419D5C971C80F2E1142923F",
   "identities": [],
   "multitenancy": {
-    "attribute": null,
-    "global": null,
-    "strategy": null
+    "attribute": "collection_id",
+    "global": false,
+    "strategy": "attribute"
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,

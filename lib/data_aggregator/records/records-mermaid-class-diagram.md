@@ -848,13 +848,15 @@ classDiagram
         UUID attachment_id
         UUID record_id
         UUID image_upload_id
+        UUID collection_id
         Attachment attachment
         Record record
         ImageUpload image_upload
+        Collection collection
         destroy()
-        update(Integer size, UUID attachment_id, UUID record_id, UUID image_upload_id)
+        update(Integer size, UUID attachment_id, UUID record_id, UUID image_upload_id, ...)
         read()
-        create(Integer size, UUID attachment_id, UUID record_id, UUID image_upload_id)
+        create(Integer size, UUID attachment_id, UUID record_id, UUID image_upload_id, ...)
     }
     class Version {
         UUID id
@@ -1235,6 +1237,7 @@ classDiagram
     Collection -- Record
     Collection -- Publication
     Collection -- Record
+    Collection -- Image
     EncodedRecord -- Version
     EncodedRecord -- Record
     EncodedRecord -- SwissSpecies

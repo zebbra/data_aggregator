@@ -937,13 +937,15 @@ classDiagram
         UUID attachment_id
         UUID record_id
         UUID image_upload_id
+        UUID collection_id
         Attachment attachment
         Record record
         ImageUpload image_upload
+        Collection collection
         destroy()
-        update(Integer size, UUID attachment_id, UUID record_id, UUID image_upload_id)
+        update(Integer size, UUID attachment_id, UUID record_id, UUID image_upload_id, ...)
         read()
-        create(Integer size, UUID attachment_id, UUID record_id, UUID image_upload_id)
+        create(Integer size, UUID attachment_id, UUID record_id, UUID image_upload_id, ...)
     }
     class Version {
         UUID id
@@ -1324,6 +1326,7 @@ classDiagram
     Collection -- Record
     Collection -- Publication
     Collection -- Record
+    Collection -- Image
     EncodedRecord -- Version
     EncodedRecord -- Record
     EncodedRecord -- SwissSpecies
@@ -2041,6 +2044,7 @@ erDiagram
         UUID attachment_id
         UUID record_id
         UUID image_upload_id
+        UUID collection_id
     }
     Version {
         UUID id
@@ -2385,6 +2389,7 @@ erDiagram
     Collection ||--|| Record : ""
     Collection ||--|| Publication : ""
     Collection ||--|| Record : ""
+    Collection ||--|| Image : ""
     EncodedRecord ||--|| Version : ""
     EncodedRecord ||--|| Record : ""
     EncodedRecord ||--|| SwissSpecies : ""
@@ -3350,15 +3355,16 @@ the `DataAggregator.Records.Record.import/2` action.
 | **attachment_id** | UUID |  |
 | **record_id** | UUID |  |
 | **image_upload_id** | UUID |  |
+| **collection_id** | UUID |  |
 
 #### Actions
 
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
 | **destroy** | _destroy_ | <ul></ul> |  |
-| **update** | _update_ | <ul><li><b>size</b> <i>Integer</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li><li><b>image_upload_id</b> <i>UUID</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>size</b> <i>Integer</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li><li><b>image_upload_id</b> <i>UUID</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>size</b> <i>Integer</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li><li><b>image_upload_id</b> <i>UUID</i> attribute</li></ul> |  |
+| **create** | _create_ | <ul><li><b>size</b> <i>Integer</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li><li><b>image_upload_id</b> <i>UUID</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li></ul> |  |
 
 ### Version
 
