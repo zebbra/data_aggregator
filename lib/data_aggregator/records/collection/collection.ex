@@ -206,17 +206,7 @@ defmodule DataAggregator.Records.Collection do
 
   actions do
     default_accept :*
-    defaults [:update]
-
-    read :read do
-      primary? true
-      argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true,
-                 countable: true,
-                 required?: false,
-                 keyset?: true
-    end
+    defaults [:read, :update]
 
     create :create do
       primary? true

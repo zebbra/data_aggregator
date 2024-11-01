@@ -138,17 +138,7 @@ defmodule DataAggregator.Records.Import do
 
   actions do
     default_accept :*
-    defaults [:destroy, :update]
-
-    read :read do
-      primary? true
-      argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true,
-                 countable: true,
-                 required?: false,
-                 keyset?: true
-    end
+    defaults [:read, :destroy, :update]
 
     read :active do
       filter expr(state in [:importing, :import_queued])

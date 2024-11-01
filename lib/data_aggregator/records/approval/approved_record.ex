@@ -52,13 +52,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
 
   actions do
     default_accept :*
-    defaults [:update, :destroy]
-
-    read :read do
-      primary? true
-      argument :sort, :string, allow_nil?: true
-      pagination offset?: true, countable: true, required?: false
-    end
+    defaults [:read, :update, :destroy]
 
     create :create do
       primary? true

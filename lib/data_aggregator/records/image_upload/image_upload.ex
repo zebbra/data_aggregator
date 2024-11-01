@@ -95,7 +95,7 @@ defmodule DataAggregator.Records.ImageUpload do
 
   actions do
     default_accept :*
-    defaults [:destroy, :update]
+    defaults [:read, :destroy, :update]
 
     update :update_mapping_identifier do
       accept [:mapping_identifier]
@@ -194,16 +194,6 @@ defmodule DataAggregator.Records.ImageUpload do
 
       change transition_state(:mapping_failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
-    end
-
-    read :read do
-      primary? true
-      argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true,
-                 countable: true,
-                 required?: false,
-                 keyset?: true
     end
 
     read :active do

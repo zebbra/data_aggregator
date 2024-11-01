@@ -26,7 +26,7 @@ classDiagram
         Record[] records
         ImageUpload[] image_uploads
         update(Integer items_to_digitize, String owner, String name, String code, ...)
-        read(String sort)
+        read()
         create(Integer items_to_digitize, String owner, String name, String code, ...)
         update_import_mapping(Map[] import_mapping)
         touch(Integer items_to_digitize, String owner, String name, String code, ...)
@@ -344,7 +344,7 @@ classDiagram
         Collection collection
         destroy()
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
-        read(String sort)
+        read()
         create(Struct record, Struct collection, Map ext_vernacular_names, Map ext_species_profile, ...)
         add_image_url(Struct image, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
     }
@@ -386,7 +386,7 @@ classDiagram
         Collection collection
         Attachment attachment
         destroy()
-        read(String sort)
+        read()
         active()
         create(Struct collection, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
         update_mapping(Map mapping, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
@@ -423,7 +423,7 @@ classDiagram
         Record[] records
         update(Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, Integer rows_count, ...)
         destroy()
-        read(String sort)
+        read()
         active()
         create(Struct collection, Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, ...)
         create_from_path(Struct collection, String path, String filename)
@@ -467,6 +467,7 @@ classDiagram
         Attachment[] image_attachments
         update(UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, Atom mapping_identifier, ...)
         destroy()
+        read()
         update_mapping_identifier(Atom mapping_identifier)
         enqueue_extraction()
         extract()
@@ -479,7 +480,6 @@ classDiagram
         set_mapped()
         set_mapping_failed()
         cancel_mapping()
-        read(String sort)
         active()
         create(Struct collection, UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, ...)
         create_from_path(Struct collection, String path, String filename)
@@ -819,7 +819,7 @@ classDiagram
         Attachment[] image_attachments
         EncodedRecord encoded_record
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
-        read(String sort)
+        read()
         by_collection(String collection_id, String sort)
         encoding_by_collection(String collection_id)
         create(Struct collection, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
@@ -1207,7 +1207,7 @@ classDiagram
         Collection collection
         destroy()
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
-        read(String sort)
+        read()
         create(Struct record, Struct collection, Map ext_vernacular_names, Map ext_species_profile, ...)
         approve(Struct record, Struct collection, Map ext_vernacular_names, Map ext_species_profile, ...)
         bulk_approve(Term rows)
