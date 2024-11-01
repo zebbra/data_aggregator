@@ -175,7 +175,7 @@ defmodule DataAggregator.Records.RecordTest do
     end
 
     setup %{collection: collection} do
-      import = Import.create!(collection)
+      import = Import.create!(collection, tenant: collection)
       [import: import]
     end
 
@@ -270,7 +270,7 @@ defmodule DataAggregator.Records.RecordTest do
         some_other_extra_data: "Other Extra"
       }
 
-      other_import = Import.create!(record.collection)
+      other_import = Import.create!(record.collection, tenant: record.collection)
 
       assert {:ok, updated_record} =
                Record.import(other_import, updated_params, tenant: import.collection)
@@ -310,7 +310,7 @@ defmodule DataAggregator.Records.RecordTest do
           grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa473"
         })
 
-      other_import = Import.create!(other_collection)
+      other_import = Import.create!(other_collection, tenant: other_collection)
 
       assert {:ok, other_record} = Record.import(other_import, params, tenant: import.collection)
 

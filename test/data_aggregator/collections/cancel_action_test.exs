@@ -61,7 +61,10 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         import =
           collection
-          |> Import.create_from_path!("test/support/fixtures/files/museum-dataset-import-example-xs.csv")
+          |> Import.create_from_path!(
+            "test/support/fixtures/files/museum-dataset-import-example-xs.csv",
+            tenant: collection
+          )
           |> Import.update_mapping!(@valid_mapping)
 
         assert {:ok, import} = Import.enqueue_import(import)
@@ -81,7 +84,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
         )
 
         Collection.cancel_action!(collection)
-        import = Import.get_by_id!(import.id)
+        import = Import.get_by_id!(import.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert import.state === :failed
@@ -100,7 +103,10 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         import =
           collection
-          |> Import.create_from_path!("test/support/fixtures/files/museum-dataset-import-example-xs.csv")
+          |> Import.create_from_path!(
+            "test/support/fixtures/files/museum-dataset-import-example-xs.csv",
+            tenant: collection
+          )
           |> Import.update_mapping!(@valid_mapping)
 
         assert import.state === :pending
@@ -112,7 +118,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         Collection.cancel_action!(collection)
 
-        import = Import.get_by_id!(import.id)
+        import = Import.get_by_id!(import.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert import.state === :pending

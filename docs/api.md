@@ -513,8 +513,7 @@ classDiagram
         update(Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, Integer rows_count, ...)
         destroy()
         read(String sort)
-        by_collection(String collection_id, String sort)
-        active_by_collection(String collection_id)
+        active()
         create(Struct collection, Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, ...)
         create_from_path(Struct collection, String path, String filename)
         update_mapping(Column[] columns)
@@ -2880,8 +2879,7 @@ erDiagram
 | **update** | _update_ | <ul><li><b>columns</b> <i>Column[]</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>rows_valid_count</b> <i>Integer</i> attribute</li><li><b>rows_invalid_count</b> <i>Integer</i> attribute</li><li><b>rows_imported_count</b> <i>Integer</i> attribute</li><li><b>rows_error_count</b> <i>Integer</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>error_log_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
-| **by_collection** | _read_ | <ul><li><b>collection_id</b> <i>String</i> </li><li><b>sort</b> <i>String</i> </li></ul> |  |
-| **active_by_collection** | _read_ | <ul><li><b>collection_id</b> <i>String</i> </li></ul> |  |
+| **active** | _read_ | <ul></ul> |  |
 | **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>columns</b> <i>Column[]</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>rows_valid_count</b> <i>Integer</i> attribute</li><li><b>rows_invalid_count</b> <i>Integer</i> attribute</li><li><b>rows_imported_count</b> <i>Integer</i> attribute</li><li><b>rows_error_count</b> <i>Integer</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>error_log_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **create_from_path** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>path</b> <i>String</i> </li><li><b>filename</b> <i>String</i> </li></ul> |  |
 | **update_mapping** | _update_ | <ul><li><b>columns</b> <i>Column[]</i> attribute</li></ul> |  |

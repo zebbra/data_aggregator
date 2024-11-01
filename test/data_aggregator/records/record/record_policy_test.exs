@@ -33,7 +33,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
           grscicoll_reference: RestAPIStub.grscicoll_reference()
         })
 
-      import_same = Import.create!(collection_same)
+      import_same = Import.create!(collection_same, tenant: collection_same)
 
       record_same =
         record_fixture(%{
@@ -47,7 +47,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
           grscicoll_reference: RestAPIStub.other_grscicoll_reference()
         })
 
-      import_other = Import.create!(collection_other)
+      import_other = Import.create!(collection_other, tenant: collection_other)
 
       record_other =
         record_fixture(%{
@@ -171,7 +171,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
           grscicoll_reference: RestAPIStub.grscicoll_reference()
         })
 
-      import_same = Import.create!(collection_same)
+      import_same = Import.create!(collection_same, tenant: collection_same)
 
       record_same =
         record_fixture(%{
@@ -301,7 +301,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
           grscicoll_reference: RestAPIStub.grscicoll_reference()
         })
 
-      import_same = Import.create!(collection_same)
+      import_same = Import.create!(collection_same, tenant: collection_same)
 
       record_same =
         record_fixture(%{
@@ -434,7 +434,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
           grscicoll_reference: RestAPIStub.grscicoll_reference()
         })
 
-      import_same = Import.create!(collection_same)
+      import_same = Import.create!(collection_same, tenant: collection_same)
 
       record_same =
         record_fixture(%{

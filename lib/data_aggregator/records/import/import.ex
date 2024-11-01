@@ -150,22 +150,8 @@ defmodule DataAggregator.Records.Import do
                  keyset?: true
     end
 
-    read :by_collection do
-      argument :collection_id, :string, allow_nil?: false
-      argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true,
-                 countable: true,
-                 required?: false,
-                 keyset?: true
-
-      filter expr(collection_id == ^arg(:collection_id))
-    end
-
-    read :active_by_collection do
-      argument :collection_id, :string, allow_nil?: false
-
-      filter expr(collection_id == ^arg(:collection_id) and state in [:importing, :import_queued])
+    read :active do
+      filter expr(state in [:importing, :import_queued])
     end
 
     create :create do
@@ -303,8 +289,7 @@ defmodule DataAggregator.Records.Import do
     define :read
     define :update
     define :get_by_id, action: :read, get_by: [:id]
-    define :by_collection, args: [:collection_id]
-    define :active_by_collection, args: [:collection_id]
+    define :active
     define :create, args: [:collection]
     define :create_from_path, args: [:collection, :path]
     define :update_mapping, args: [:columns]
@@ -340,5 +325,10 @@ defmodule DataAggregator.Records.Import do
       index :read
       post :create_from_path
     end
+  end
+
+  multitenancy do
+    strategy :attribute
+    attribute :collection_id
   end
 end

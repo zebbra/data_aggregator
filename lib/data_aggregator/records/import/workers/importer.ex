@@ -32,15 +32,15 @@ defmodule DataAggregator.Records.Import.Workers.Importer do
   require Logger
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"id" => id, "user_id" => user_id}}) do
-    with {:ok, import} <- Import.get_by_id(id, load: :collection) do
+  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id, "user_id" => user_id}}) do
+    with {:ok, import} <- Import.get_by_id(id, load: :collection, tenant: collection_id) do
       perform_with_actor(import, User.get_by_id!(user_id))
     end
   end
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"id" => id}}) do
-    with {:ok, import} <- Import.get_by_id(id, load: :collection) do
+  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id}}) do
+    with {:ok, import} <- Import.get_by_id(id, load: :collection, tenant: collection_id) do
       perform_with_actor(import)
     end
   end

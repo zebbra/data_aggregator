@@ -14,9 +14,9 @@
         "match_type": null,
         "match_with": null,
         "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
         },
         "name": "import_records_import_id_fkey",
         "on_delete": "delete",
@@ -95,7 +95,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "EC4AAF8F91ADBD10483521E3239840526F29BDA31D6606CC3D6E0A3777784DC8",
+  "hash": "4E879AF40C191AE708D03B4433E67995291F1FD3F2419189E6FEC8F903874B6D",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",

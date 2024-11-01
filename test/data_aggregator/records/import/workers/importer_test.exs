@@ -39,7 +39,7 @@ defmodule DataAggregator.Records.Import.Workers.ImporterTest do
     setup %{collection: collection, path: path} do
       import =
         collection
-        |> Import.create_from_path!(path)
+        |> Import.create_from_path!(path, tenant: collection)
         |> Import.update_mapping!(@valid_mapping)
 
       [import: import]
@@ -47,7 +47,7 @@ defmodule DataAggregator.Records.Import.Workers.ImporterTest do
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"
     test "succeeds with a valid file", %{import: import} do
-      {:ok, import} = perform_job(Importer, %{id: import.id})
+      {:ok, import} = perform_job(Importer, %{id: import.id, collection_id: import.collection_id})
 
       assert import.state == :imported
       assert import.records_count == 2
@@ -60,7 +60,7 @@ defmodule DataAggregator.Records.Import.Workers.ImporterTest do
     } do
       assert collection.records_count == 0
 
-      {:ok, import} = perform_job(Importer, %{id: import.id})
+      {:ok, import} = perform_job(Importer, %{id: import.id, collection_id: import.collection_id})
 
       assert import.state == :imported
       assert import.records_count == 2
@@ -79,7 +79,10 @@ defmodule DataAggregator.Records.Import.Workers.ImporterTest do
     test "fails with invalid mapping", %{import: import} do
       import = Import.update_mapping!(import, @invalid_mapping)
 
-      {result, logs} = with_log(fn -> perform_job(Importer, %{id: import.id}) end)
+      {result, logs} =
+        with_log(fn ->
+          perform_job(Importer, %{id: import.id, collection_id: import.collection_id})
+        end)
 
       assert {:ok, import} = result
       assert import.state == :failed

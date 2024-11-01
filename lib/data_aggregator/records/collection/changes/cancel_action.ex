@@ -67,8 +67,8 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     cancel_all_jobs(Job.query_to_imports_by_collection(collection_id))
 
     active_import =
-      collection_id
-      |> Import.query_to_active_by_collection()
+      Import.query_to_active()
+      |> Ash.Query.set_tenant(collection_id)
       |> Ash.read_one!()
 
     if active_import do

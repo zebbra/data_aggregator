@@ -23,7 +23,7 @@ defmodule DataAggregator.Records.Import.Actions.UpdateMappingTest do
   end
 
   setup %{collection: collection, path: path} do
-    import = Import.create_from_path!(collection, path)
+    import = Import.create_from_path!(collection, path, tenant: collection)
     [import: import]
   end
 

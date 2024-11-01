@@ -248,7 +248,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
   end
 
   defp handle_upload(collection, path, %UploadEntry{} = entry) do
-    Import.create_from_path(collection, path, %{filename: entry.client_name})
+    Import.create_from_path(collection, path, %{filename: entry.client_name}, tenant: collection)
   end
 
   defp handle_flash(socket, import) when is_nil(import) == false do

@@ -112,10 +112,15 @@ defmodule DataAggregator.WorkflowTest do
 
       import =
         collection
-        |> Import.create_from_path!(path)
+        |> Import.create_from_path!(path, tenant: collection)
         |> Import.update_mapping!(@mapping)
 
-      {:ok, import} = perform_job(Importer, %{id: import.id, user_id: actor.id})
+      {:ok, import} =
+        perform_job(Importer, %{
+          id: import.id,
+          collection_id: import.collection_id,
+          user_id: actor.id
+        })
 
       [import: import, actor: actor]
     end
@@ -177,7 +182,12 @@ defmodule DataAggregator.WorkflowTest do
       import = Ash.update!(import, %{state: :pending})
       assert import.state == :pending
 
-      perform_job(Importer, %{id: import.id, user_id: actor.id})
+      perform_job(Importer, %{
+        id: import.id,
+        collection_id: import.collection_id,
+        user_id: actor.id
+      })
+
       records = Ash.read!(Record, load: [:paper_trail_versions])
       assert length(records) == 6
 
@@ -204,10 +214,15 @@ defmodule DataAggregator.WorkflowTest do
 
       import =
         collection
-        |> Import.create_from_path!(path)
+        |> Import.create_from_path!(path, tenant: collection)
         |> Import.update_mapping!(@mapping)
 
-      {:ok, import} = perform_job(Importer, %{id: import.id, user_id: actor.id})
+      {:ok, import} =
+        perform_job(Importer, %{
+          id: import.id,
+          collection_id: import.collection_id,
+          user_id: actor.id
+        })
 
       [import: import, actor: actor]
     end
@@ -268,10 +283,14 @@ defmodule DataAggregator.WorkflowTest do
 
       import =
         collection
-        |> Import.create_from_path!(path)
+        |> Import.create_from_path!(path, tenant: collection)
         |> Import.update_mapping!(@mapping)
 
-      perform_job(Importer, %{id: import.id, user_id: actor.id})
+      perform_job(Importer, %{
+        id: import.id,
+        collection_id: import.collection_id,
+        user_id: actor.id
+      })
 
       encode_records(Ash.read!(Record, load: [:paper_trail_versions]), actor)
       records = Ash.read!(Record, load: [:paper_trail_versions])
@@ -374,10 +393,14 @@ defmodule DataAggregator.WorkflowTest do
 
       import =
         collection
-        |> Import.create_from_path!(path)
+        |> Import.create_from_path!(path, tenant: collection)
         |> Import.update_mapping!(@mapping)
 
-      perform_job(Importer, %{id: import.id, user_id: actor.id})
+      perform_job(Importer, %{
+        id: import.id,
+        collection_id: import.collection_id,
+        user_id: actor.id
+      })
 
       encode_records(Ash.read!(Record, load: [:paper_trail_versions]), actor)
       records = Ash.read!(Record, load: [:paper_trail_versions])
