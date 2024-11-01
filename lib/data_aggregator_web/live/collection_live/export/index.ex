@@ -261,8 +261,9 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
   @impl true
   def handle_event("export:run", %{"id" => id}, socket) do
     actor = get_actor(socket)
+    tenant = get_tenant(socket)
 
-    case id |> Export.get_by_id!(actor: actor) |> Export.enqueue(actor: actor) do
+    case id |> Export.get_by_id!(actor: actor, tenant: tenant) |> Export.enqueue(actor: actor) do
       {:ok, _} ->
         {:noreply, put_flash(socket, :info, ~t"Export started in background"m)}
 
@@ -314,10 +315,10 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
     |> assign(:export, nil)
   end
 
-  defp list_exports(params, actor, tenant, opts \\ [load: @load, action: :by_collection]) do
+  defp list_exports(params, actor, tenant, opts \\ [load: @load]) do
     opts = Keyword.put_new(opts, :actor, actor)
     opts = Keyword.put_new(opts, :tenant, tenant)
-    AshPagify.validate_and_run(Export, params, opts, params["id"])
+    AshPagify.validate_and_run(Export, params, opts)
   end
 
   attr :collection, :any

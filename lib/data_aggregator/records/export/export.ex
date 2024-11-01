@@ -89,24 +89,20 @@ defmodule DataAggregator.Records.Export do
 
   actions do
     default_accept :*
-    defaults [:read, :destroy]
+    defaults [:destroy]
 
-    read :by_collection do
-      argument :collection_id, :string, allow_nil?: false
+    read :read do
+      primary? true
       argument :sort, :string, allow_nil?: true
 
       pagination offset?: true,
                  countable: true,
                  required?: false,
                  keyset?: true
-
-      filter expr(collection_id == ^arg(:collection_id))
     end
 
-    read :active_by_collection do
-      argument :collection_id, :string, allow_nil?: false
-
-      filter expr(collection_id == ^arg(:collection_id) and state in [:running, :queued])
+    read :active do
+      filter expr(state in [:running, :queued])
     end
 
     create :create do
@@ -217,8 +213,7 @@ defmodule DataAggregator.Records.Export do
 
   code_interface do
     define :read
-    define :by_collection, args: [:collection_id]
-    define :active_by_collection, args: [:collection_id]
+    define :active
     define :create
     define :update
     define :destroy

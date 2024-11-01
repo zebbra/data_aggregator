@@ -1076,7 +1076,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Are you sure?"
 msgstr "Bist Du sicher?"
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:313
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:314
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Collection Exports"
@@ -1102,7 +1102,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Export"
 msgstr "Exportieren"
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:283
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:284
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Export deleted successfully"
@@ -1121,13 +1121,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "File"
 msgstr "Datei"
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:329
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:330
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Get started by exporting records."
 msgstr "Beginne, indem Du einen Datensatz exportierst"
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:328
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:329
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "No exports"
@@ -1793,13 +1793,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.FormComponent"
 msgid "required to choose an option"
 msgstr "obligatorisch, wähle eine Option"
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:270
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:271
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "An export for this collection is already in process"
 msgstr "Ein Export für diese Sammlung ist bereits im Gange"
 
-#: lib/data_aggregator_web/live/collection_live/export/index.ex:267
+#: lib/data_aggregator_web/live/collection_live/export/index.ex:268
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Export started in background"

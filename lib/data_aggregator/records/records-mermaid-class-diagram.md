@@ -386,9 +386,8 @@ classDiagram
         Collection collection
         Attachment attachment
         destroy()
-        read()
-        by_collection(String collection_id, String sort)
-        active_by_collection(String collection_id)
+        read(String sort)
+        active()
         create(Struct collection, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
         update_mapping(Map mapping, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
         update(Struct[] records, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
