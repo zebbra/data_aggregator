@@ -34,7 +34,7 @@ defmodule DataAggregator.GbifIUCNRedlistEncodingTest do
                EncodedRecord.get_by_record(record.id, tenant: record.collection_id)
 
       assert {:ok, record} =
-               Record.get_by_id(record.id, load: [:iucn_redlist])
+               Record.get_by_id(record.id, load: [:iucn_redlist], tenant: record.collection_id)
 
       assert encoded_record.iucn_redlist_category === "EX"
 
@@ -55,7 +55,7 @@ defmodule DataAggregator.GbifIUCNRedlistEncodingTest do
                EncodedRecord.get_by_record(record.id, tenant: record.collection_id)
 
       assert {:ok, record} =
-               Record.get_by_id(record.id, load: [:iucn_redlist])
+               Record.get_by_id(record.id, load: [:iucn_redlist], tenant: record.collection_id)
 
       assert encoded_record.iucn_redlist_category === "NE"
 

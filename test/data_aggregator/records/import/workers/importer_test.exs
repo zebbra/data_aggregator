@@ -68,7 +68,7 @@ defmodule DataAggregator.Records.Import.Workers.ImporterTest do
       collection = Collection.get_by_id!(collection.id)
       assert collection.records_count == 2
 
-      [record | _] = Record.by_collection!(collection.id)
+      [record | _] = Record |> Ash.Query.set_tenant(collection) |> Ash.read!()
       Record.destroy(record)
 
       collection = Collection.get_by_id!(collection.id)

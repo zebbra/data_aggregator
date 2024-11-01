@@ -28,7 +28,10 @@ defmodule DataAggregator.Records.Actions.Approve do
             encoded_record: %{swiss_species: %{center: %{eq: center}}}
           }).filters
 
-        count_query = AshPagify.query_for_filters_map(Record, records_query)
+        count_query =
+          Record
+          |> AshPagify.query_for_filters_map(records_query)
+          |> Ash.Query.set_tenant(tenant)
 
         rows_count = Ash.count!(count_query)
 

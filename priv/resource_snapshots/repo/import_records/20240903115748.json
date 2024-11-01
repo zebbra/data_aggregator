@@ -45,9 +45,9 @@
           "collection_id": "collection_id"
         },
         "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
         },
         "name": "import_records_record_id_fkey",
         "on_delete": "delete",
@@ -95,7 +95,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "4E879AF40C191AE708D03B4433E67995291F1FD3F2419189E6FEC8F903874B6D",
+  "hash": "148BE3016F59E5819E76CE42742C2BB05E129901D73CABFFCA7BC0E9E351AC1C",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",

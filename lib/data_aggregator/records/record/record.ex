@@ -180,7 +180,7 @@ defmodule DataAggregator.Records.Record do
     ignore_actions [:destroy]
     on_actions [:update, :update_fast_track_status, :update_approval_status]
 
-    attributes_as_attributes [:mte_catalog_number, :tax_scientific_name]
+    attributes_as_attributes [:mte_catalog_number, :tax_scientific_name, :collection_id]
     reference_source? true
 
     mixin DataAggregator.Records.RecordVersionMixin
@@ -221,22 +221,8 @@ defmodule DataAggregator.Records.Record do
     default_accept :*
     defaults [:read, :update]
 
-    read :by_collection do
-      argument :collection_id, :string, allow_nil?: false
-      argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true,
-                 countable: true,
-                 required?: false,
-                 keyset?: true
-
-      filter expr(collection_id == ^arg(:collection_id))
-    end
-
-    read :encoding_by_collection do
-      argument :collection_id, :string, allow_nil?: false
-
-      filter expr(collection_id == ^arg(:collection_id) and state in [:encoding, :queued])
+    read :encoding do
+      filter expr(state in [:encoding, :queued])
     end
 
     create :create do
@@ -402,8 +388,7 @@ defmodule DataAggregator.Records.Record do
 
   code_interface do
     define :read
-    define :by_collection, args: [:collection_id]
-    define :encoding_by_collection, args: [:collection_id]
+    define :encoding
     define :create
     define :import, args: [:import, :params]
     define :bulk_import, args: [:import, :rows]
@@ -452,7 +437,7 @@ defmodule DataAggregator.Records.Record do
     repo DataAggregator.Repo
 
     references do
-      reference :collection, on_delete: :delete, on_update: :update, index?: true
+      reference :collection, on_delete: :delete, on_update: :update
     end
 
     custom_indexes do
@@ -471,5 +456,10 @@ defmodule DataAggregator.Records.Record do
       patch :update
       delete :destroy
     end
+  end
+
+  multitenancy do
+    strategy :attribute
+    attribute :collection_id
   end
 end

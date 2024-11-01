@@ -96,9 +96,9 @@
           "collection_id": "collection_id"
         },
         "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
         },
         "name": "record_encoding_results_record_id_fkey",
         "on_delete": "delete",
@@ -146,7 +146,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "3D3032E03F8A332F051142A696F45FB0BE5C426DF694F6659DF25AB856D4D4A6",
+  "hash": "29677CE46A824293A596B8DC750C87174DFE5890545AD94E135C591822076791",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",

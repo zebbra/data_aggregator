@@ -167,7 +167,11 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
     collection = Ash.load!(collection, [:records_to_export_query], lazy?: true)
 
     records_to_export_query = filter_map(ash_pagify, collection.records_to_export_query, layer)
-    count_query = AshPagify.query_for_filters_map(Record, records_to_export_query)
+
+    count_query =
+      Record
+      |> AshPagify.query_for_filters_map(records_to_export_query)
+      |> Ash.Query.set_tenant(collection)
 
     rows_count = Ash.count!(count_query)
 

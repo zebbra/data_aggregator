@@ -821,8 +821,7 @@ classDiagram
         EncodedRecord encoded_record
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read()
-        by_collection(String collection_id, String sort)
-        encoding_by_collection(String collection_id)
+        encoding()
         create(Struct collection, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         import(Struct import, Map params, Map ext_vernacular_names, Map ext_species_profile, ...)
         enqueue_encoder()
@@ -864,6 +863,7 @@ classDiagram
         Atom version_action_name
         String mte_catalog_number
         String tax_scientific_name
+        UUID collection_id
         UUID version_source_id
         Map changes
         UUID user_id

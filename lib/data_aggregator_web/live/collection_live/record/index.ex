@@ -938,7 +938,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     collection = Ash.load!(collection, [:fast_track_query], lazy?: true, actor: actor)
 
     fast_track_query = filter_map(ash_pagify, collection.fast_track_query, socket.assigns.layer)
-    count_query = AshPagify.query_for_filters_map(Record, fast_track_query)
+
+    count_query =
+      Record
+      |> AshPagify.query_for_filters_map(fast_track_query)
+      |> Ash.Query.set_tenant(collection)
 
     case create_and_enqueue(collection, fast_track_query, count_query, :fast_track, actor) do
       {:ok, _} ->
@@ -970,7 +974,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     collection = Ash.load!(collection, [:approval_query], lazy?: true, actor: actor)
 
     approval_query = filter_map(ash_pagify, collection.approval_query, socket.assigns.layer)
-    count_query = AshPagify.query_for_filters_map(Record, approval_query)
+
+    count_query =
+      Record
+      |> AshPagify.query_for_filters_map(approval_query)
+      |> Ash.Query.set_tenant(collection)
 
     case create_and_enqueue(collection, approval_query, count_query, :approval, actor) do
       {:ok, _} ->
@@ -1044,7 +1052,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     assign(socket, :page_title, ~t"Collection Records"m)
   end
 
-  defp list_records(params, actor, tenant, opts \\ [action: :by_collection]) do
+  defp list_records(params, actor, tenant, opts \\ []) do
     opts = Keyword.put(opts, :actor, actor)
     opts = Keyword.put(opts, :tenant, tenant)
     opts = maybe_put_tsvector(Map.get(params, "layer"), opts)

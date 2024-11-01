@@ -43,7 +43,7 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
   end
 
   @spec approve_in_chunks(Changeset.t(), Enum.t(), Context.t()) :: Changeset.t()
-  defp approve_in_chunks(%Changeset{} = changeset, rows, ctx) do
+  defp approve_in_chunks(%Changeset{} = changeset, rows, %{tenant: tenant} = ctx) do
     chunk_size = Records.approval_batch_size()
 
     Logger.debug("Approving records in chunks of #{chunk_size} rows ...")
@@ -55,7 +55,7 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
     |> Stream.chunk_every(chunk_size)
     |> Enum.with_index()
     |> Stream.map(&Helpers.convert_headers_of_chunk(&1, attribute_name_pairs))
-    |> Stream.map(&Helpers.add_raw_record_to_chunk/1)
+    |> Stream.map(&Helpers.add_raw_record_to_chunk(&1, tenant))
     |> Stream.map(&approve_chunk(&1, ctx))
     |> reduce_approval_results(changeset)
     |> notify_infospecies()

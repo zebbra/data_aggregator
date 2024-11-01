@@ -59,15 +59,24 @@ defmodule DataAggregator.Records.RecordPolicyTest do
         import_same: import_same,
         record_same: record_same,
         import_other: import_other,
-        record_other: record_other
+        record_other: record_other,
+        collection_same: collection_same,
+        collection_other: collection_other
       ]
     end
 
-    test "can read all", %{actor: actor} do
+    test "can read all", %{
+      actor: actor,
+      collection_same: collection_same,
+      collection_other: collection_other
+    } do
       assert Record.can_read?(actor)
 
-      records = Record.read!(actor: actor)
-      assert length(records) == 2
+      records = Record.read!(actor: actor, tenant: collection_same)
+      assert length(records) == 1
+
+      records = Record.read!(actor: actor, tenant: collection_other)
+      assert length(records) == 1
     end
 
     test "can create record with same institution", %{
@@ -194,15 +203,22 @@ defmodule DataAggregator.Records.RecordPolicyTest do
         actor: actor,
         import_same: import_same,
         record_same: record_same,
-        record_other: record_other
+        record_other: record_other,
+        collection_same: collection_same,
+        collection_other: collection_other
       ]
     end
 
-    test "can read all", %{actor: actor} do
+    test "can read all", %{actor: actor, collection_same: tenant} do
       assert Record.can_read?(actor)
 
-      records = Record.read!(actor: actor)
+      records = Record.read!(actor: actor, tenant: tenant)
       assert length(records) == 1
+    end
+
+    test "cannot read from other collection", %{actor: actor, collection_other: tenant} do
+      records = Record.read!(actor: actor, tenant: tenant)
+      assert Enum.empty?(records)
     end
 
     test "cannot create record with same institution", %{
@@ -324,15 +340,22 @@ defmodule DataAggregator.Records.RecordPolicyTest do
         actor: actor,
         import_same: import_same,
         record_same: record_same,
-        record_other: record_other
+        record_other: record_other,
+        collection_same: collection_same,
+        collection_other: collection_other
       ]
     end
 
-    test "can read all", %{actor: actor} do
+    test "can read all", %{actor: actor, collection_same: tenant} do
       assert Record.can_read?(actor)
 
-      records = Record.read!(actor: actor)
+      records = Record.read!(actor: actor, tenant: tenant)
       assert length(records) == 1
+    end
+
+    test "cannot read from other collection", %{actor: actor, collection_other: tenant} do
+      records = Record.read!(actor: actor, tenant: tenant)
+      assert Enum.empty?(records)
     end
 
     test "can create record with same institution", %{
@@ -457,15 +480,22 @@ defmodule DataAggregator.Records.RecordPolicyTest do
         actor: actor,
         import_same: import_same,
         record_same: record_same,
-        record_other: record_other
+        record_other: record_other,
+        collection_same: collection_same,
+        collection_other: collection_other
       ]
     end
 
-    test "can read all", %{actor: actor} do
+    test "can read all", %{actor: actor, collection_same: tenant} do
       assert Record.can_read?(actor)
 
-      records = Record.read!(actor: actor)
+      records = Record.read!(actor: actor, tenant: tenant)
       assert length(records) == 1
+    end
+
+    test "cannot read from other collection", %{actor: actor, collection_other: tenant} do
+      records = Record.read!(actor: actor, tenant: tenant)
+      assert Enum.empty?(records)
     end
 
     test "can create record with same institution", %{

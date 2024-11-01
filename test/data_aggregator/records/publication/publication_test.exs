@@ -174,7 +174,7 @@ defmodule DataAggregator.PublicationTest do
     test "publish/1 successful", %{
       publication: publication
     } do
-      {:ok, publication} = Collection.publish(publication)
+      {:ok, publication} = Collection.publish(publication, tenant: publication.collection)
 
       %{body: body} = Req.get!(publication.attachment.url)
 
@@ -215,7 +215,8 @@ defmodule DataAggregator.PublicationTest do
     test "publish/1 fails at register collection", %{
       publication_1: publication_1
     } do
-      {:error, %Invalid{errors: errors}} = Collection.publish(publication_1)
+      {:error, %Invalid{errors: errors}} =
+        Collection.publish(publication_1, tenant: publication_1.collection)
 
       assert Enum.any?(errors, fn error ->
                String.contains?(error.message, "Error during collection registering")
@@ -226,7 +227,8 @@ defmodule DataAggregator.PublicationTest do
     test "publish/1 fails at create endpoint", %{
       publication_2: publication_2
     } do
-      {:error, %Invalid{errors: errors}} = Collection.publish(publication_2)
+      {:error, %Invalid{errors: errors}} =
+        Collection.publish(publication_2, tenant: publication_2.collection)
 
       assert Enum.any?(errors, fn error ->
                String.contains?(error.message, "Error during endpoint creation")
@@ -237,7 +239,8 @@ defmodule DataAggregator.PublicationTest do
     test "publish/1 fails at get endpoints", %{
       publication_3: publication_3
     } do
-      {:error, %Invalid{errors: errors}} = Collection.publish(publication_3)
+      {:error, %Invalid{errors: errors}} =
+        Collection.publish(publication_3, tenant: publication_3.collection)
 
       assert Enum.any?(errors, fn error ->
                String.contains?(error.message, "Error fetching existing endpoints")
@@ -248,7 +251,8 @@ defmodule DataAggregator.PublicationTest do
     test "publish/1 fails at delete endpoint", %{
       publication_4: publication_4
     } do
-      {:error, %Invalid{errors: errors}} = Collection.publish(publication_4)
+      {:error, %Invalid{errors: errors}} =
+        Collection.publish(publication_4, tenant: publication_4.collection)
 
       assert Enum.any?(errors, fn error ->
                String.contains?(error.message, "Error deleting endpoint")
@@ -275,7 +279,10 @@ defmodule DataAggregator.PublicationTest do
         collection = Collection.get_by_id!(publication.collection_id)
         publication = Publication.get_by_id!(publication.id, tenant: collection)
 
-        query = AshPagify.query_for_filters_map(Record, publication.records_query)
+        query =
+          Record
+          |> AshPagify.query_for_filters_map(publication.records_query)
+          |> Ash.Query.set_tenant(collection)
 
         records =
           query

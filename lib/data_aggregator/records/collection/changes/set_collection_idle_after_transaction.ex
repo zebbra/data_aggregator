@@ -49,6 +49,7 @@ defmodule DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransa
 
           records_count =
             Record
+            |> Ash.Query.set_tenant(collection)
             |> Ash.Query.filter(collection_id == ^collection_id)
             |> Ash.count!()
 

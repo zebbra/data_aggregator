@@ -134,7 +134,7 @@ defmodule DataAggregator.WorkflowTest do
       import = Ash.load!(import, [:records_count])
       assert import.records_count == 6
 
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
@@ -156,7 +156,7 @@ defmodule DataAggregator.WorkflowTest do
       # update the states of the records so we can test the workflow
       update_states(records)
 
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
@@ -188,7 +188,7 @@ defmodule DataAggregator.WorkflowTest do
         user_id: actor.id
       })
 
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
@@ -236,7 +236,7 @@ defmodule DataAggregator.WorkflowTest do
       import = Ash.load!(import, [:records_count])
       assert import.records_count == 6
 
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
@@ -256,7 +256,7 @@ defmodule DataAggregator.WorkflowTest do
       assert_no_encode_verions(tenant)
 
       encode_records(records, actor)
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
@@ -292,8 +292,8 @@ defmodule DataAggregator.WorkflowTest do
         user_id: actor.id
       })
 
-      encode_records(Ash.read!(Record, load: [:paper_trail_versions]), actor)
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      encode_records(Ash.read!(Record, load: [:paper_trail_versions], tenant: collection), actor)
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: collection)
 
       query = %{
         collection: %{id: %{eq: collection.id}},
@@ -351,7 +351,7 @@ defmodule DataAggregator.WorkflowTest do
       assert publication.channel == :fast_track
       assert publication.published_count == 6
 
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
@@ -409,8 +409,8 @@ defmodule DataAggregator.WorkflowTest do
         user_id: actor.id
       })
 
-      encode_records(Ash.read!(Record, load: [:paper_trail_versions]), actor)
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      encode_records(Ash.read!(Record, load: [:paper_trail_versions], tenant: collection), actor)
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: collection)
 
       # we cant set the relation from encoed_record to swiss_species as we
       # cant create a fixture for swiss_species as the module is copied
@@ -474,7 +474,7 @@ defmodule DataAggregator.WorkflowTest do
       assert publication.channel == :approval
       assert publication.published_count == 6
 
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
@@ -520,7 +520,12 @@ defmodule DataAggregator.WorkflowTest do
   defp encode_records(records, actor) do
     Enum.each(records, fn record ->
       expect_correct_swiss_species_api_call()
-      perform_job(Encoder, %{id: record.id, user_id: actor.id})
+
+      perform_job(Encoder, %{
+        id: record.id,
+        collection_id: record.collection_id,
+        user_id: actor.id
+      })
     end)
   end
 

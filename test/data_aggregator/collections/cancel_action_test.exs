@@ -298,7 +298,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
         # in testing mode we need to manually poll the worker
         refute_enqueued(worker: EncodingStatePoller)
 
-        correct_record = Record.get_by_id!(correct_record.id)
+        correct_record = Record.get_by_id!(correct_record.id, tenant: collection)
         assert correct_record.state === :imported
 
         records_enqueuer_job =
@@ -315,11 +315,11 @@ defmodule DataAggregator.Collections.CancelActionTest do
         collection = Collection.get_by_id!(collection.id)
         assert collection.state === :encoding
 
-        correct_record = Record.get_by_id!(correct_record.id)
+        correct_record = Record.get_by_id!(correct_record.id, tenant: collection)
         assert correct_record.state === :queued
 
         Collection.cancel_action!(collection)
-        correct_record = Record.get_by_id!(correct_record.id)
+        correct_record = Record.get_by_id!(correct_record.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert correct_record.state === :failed

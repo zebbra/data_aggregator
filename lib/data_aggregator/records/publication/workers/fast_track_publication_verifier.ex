@@ -7,6 +7,7 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
   ## Arguments
 
   * `id` - the ID of the record to check on the gbif portal
+  * `collection_id` - the ID of the collection the record belongs to
 
   """
   use Oban.Worker, queue: :publication_verifications, max_attempts: 10
@@ -25,11 +26,12 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
   @day 24 * @hour
 
   @impl true
-  def perform(%Oban.Job{args: %{"id" => id}}) do
-    record = id |> Record.get_by_id!() |> Record.check_if_fast_track_pubished!()
+  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id}}) do
+    record =
+      id |> Record.get_by_id!(tenant: collection_id) |> Record.check_if_fast_track_pubished!()
 
     if scheduler_active?() && record.fast_track_status != :published do
-      %{id: id, collection_id: record.collection_id}
+      %{id: id, collection_id: collection_id}
       |> FastTrackPublicationVerifier.new(schedule_in: publication_interval_minutes())
       |> Oban.insert!()
 

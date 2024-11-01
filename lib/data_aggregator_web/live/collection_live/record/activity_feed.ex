@@ -277,6 +277,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     Record.Version
     |> Ash.Query.for_read(:read)
     |> Ash.Query.load([:version_source, :user])
+    |> Ash.Query.set_tenant(assigns.tenant)
     |> Ash.Query.filter(version_source_id == ^assigns.record.id)
     |> Ash.read!()
   end

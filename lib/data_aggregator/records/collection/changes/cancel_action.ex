@@ -116,11 +116,12 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     cancel_all_jobs(Job.query_to_encodings_by_collection(collection_id))
 
     # Update all records which are in encoding / queued state to failed
-    collection_id
-    |> Record.query_to_encoding_by_collection()
+    Record.query_to_encoding()
+    |> Ash.Query.set_tenant(collection_id)
     |> Ash.bulk_update!(
       :update,
-      %{state: :failed}
+      %{state: :failed},
+      tenant: collection_id
     )
 
     changeset

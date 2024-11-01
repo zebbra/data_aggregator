@@ -7,13 +7,14 @@ defmodule DataAggregator.DarwinCore.Publication.ResourceRelationshipFile do
   @behaviour DataAggregator.DarwinCore.Publication.DwcaFile
 
   alias DataAggregator.DarwinCore.Publication.DwcaFile
+  alias DataAggregator.Records.Collection
 
-  @spec create(Ash.Query.t(), String.t()) :: {:ok, any()} | {:error, any()}
-  def create(query, path) do
+  @spec create(Ash.Query.t(), String.t(), Collection.t()) :: {:ok, any()} | {:error, any()}
+  def create(query, path, tenant) do
     path = "#{path}/resource_relationship.csv"
 
     # TODO: this is an extension file coming from json data, so it should be created differently
-    file = DwcaFile.create_file!(:resource_relationship, query, path)
+    file = DwcaFile.create_file!(:resource_relationship, query, path, tenant)
 
     {:ok, file}
   end

@@ -81,6 +81,37 @@
         "destination_attribute_generated": null,
         "index?": true,
         "match_type": null,
+        "match_with": {
+          "collection_id": "collection_id"
+        },
+        "multitenancy": {
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
+        },
+        "name": "record_images_record_id_fkey",
+        "on_delete": "delete",
+        "on_update": "update",
+        "primary_key?": true,
+        "schema": "public",
+        "table": "records"
+      },
+      "size": null,
+      "source": "record_id",
+      "type": "uuid"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": true,
+        "match_type": null,
         "match_with": null,
         "multitenancy": {
           "attribute": "collection_id",
@@ -96,37 +127,6 @@
       },
       "size": null,
       "source": "image_upload_id",
-      "type": "uuid"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "index?": true,
-        "match_type": null,
-        "match_with": {
-          "collection_id": "collection_id"
-        },
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "record_images_record_id_fkey",
-        "on_delete": "delete",
-        "on_update": "update",
-        "primary_key?": true,
-        "schema": "public",
-        "table": "records"
-      },
-      "size": null,
-      "source": "record_id",
       "type": "uuid"
     },
     {
@@ -164,7 +164,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "FD0FF0205E736653C38B837D085995A46C26D5CA1419D5C971C80F2E1142923F",
+  "hash": "DF67C9FE9F01CACDCADEDF041B320C3A75250FC113C18D25B9FEBC1C48C96B2A",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",

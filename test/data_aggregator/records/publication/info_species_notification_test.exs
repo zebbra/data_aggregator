@@ -108,8 +108,13 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       collection: collection,
       publication: publication
     } do
+      query =
+        Record
+        |> Ash.Query.filter_input(publication.records_query)
+        |> Ash.Query.set_tenant(publication.collection)
+
       {:ok, publication} =
-        InfoSpecies.notify(publication, Ash.Query.filter_input(Record, publication.records_query))
+        InfoSpecies.notify(publication, query)
 
       assert publication.channel == :approval
       assert publication.collection_id == collection.id
@@ -119,10 +124,15 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
     test "Collection.approve/2 all records have an updated last_approval_started_at date", %{
       publication: publication
     } do
-      {:ok, _publication} =
-        InfoSpecies.notify(publication, Ash.Query.filter_input(Record, publication.records_query))
+      query =
+        Record
+        |> Ash.Query.filter_input(publication.records_query)
+        |> Ash.Query.set_tenant(publication.collection)
 
-      assert {:ok, records} = Record.read()
+      {:ok, _publication} =
+        InfoSpecies.notify(publication, query)
+
+      assert {:ok, records} = Record.read(tenant: publication.collection)
       assert length(records) == 5
 
       Enum.each(records, fn record ->
@@ -135,10 +145,15 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
     } do
       publication = Publication.update!(publication, %{channel: :fast_track})
 
-      {:error, "Channel has to be :approval to be published to infospecies"} =
-        InfoSpecies.notify(publication, publication.records_query)
+      query =
+        Record
+        |> Ash.Query.filter_input(publication.records_query)
+        |> Ash.Query.set_tenant(publication.collection)
 
-      assert {:ok, records} = Record.read()
+      {:error, "Channel has to be :approval to be published to infospecies"} =
+        InfoSpecies.notify(publication, query)
+
+      assert {:ok, records} = Record.read(tenant: publication.collection)
       assert length(records) == 5
 
       Enum.each(records, fn record ->

@@ -2910,7 +2910,7 @@
         "destination_attribute": "id",
         "destination_attribute_default": null,
         "destination_attribute_generated": null,
-        "index?": true,
+        "index?": false,
         "match_type": null,
         "match_with": null,
         "multitenancy": {
@@ -2980,26 +2980,8 @@
   ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "444D16C45576A67C34032D80E2ABE6042C1C345FFCCD23F20F299E7919326E9E",
+  "hash": "DF1262C23D13091870A67F640483440EB1E5ABD144EA6096D700526B9D43676A",
   "identities": [
-    {
-      "all_tenants?": false,
-      "base_filter": null,
-      "index_name": "records_collection_mte_catalog_number_index",
-      "keys": [
-        {
-          "type": "atom",
-          "value": "collection_id"
-        },
-        {
-          "type": "atom",
-          "value": "mte_catalog_number"
-        }
-      ],
-      "name": "collection_mte_catalog_number",
-      "nils_distinct?": true,
-      "where": null
-    },
     {
       "all_tenants?": false,
       "base_filter": null,
@@ -3017,12 +2999,30 @@
       "name": "by_collection",
       "nils_distinct?": true,
       "where": null
+    },
+    {
+      "all_tenants?": false,
+      "base_filter": null,
+      "index_name": "records_collection_mte_catalog_number_index",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "collection_id"
+        },
+        {
+          "type": "atom",
+          "value": "mte_catalog_number"
+        }
+      ],
+      "name": "collection_mte_catalog_number",
+      "nils_distinct?": true,
+      "where": null
     }
   ],
   "multitenancy": {
-    "attribute": null,
-    "global": null,
-    "strategy": null
+    "attribute": "collection_id",
+    "global": false,
+    "strategy": "attribute"
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,

@@ -13,10 +13,13 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   require Logger
 
   @impl true
-  def run(input, _opts, ctx) do
+  def run(input, _opts, %{tenant: tenant} = ctx) do
     export = Ash.load!(input.arguments.export, [:collection])
 
-    query = AshPagify.query_for_filters_map(Record, export.records_query)
+    query =
+      Record
+      |> AshPagify.query_for_filters_map(export.records_query)
+      |> Ash.Query.set_tenant(tenant)
 
     data_layer = export.data_layer
     header_source = export.header_source

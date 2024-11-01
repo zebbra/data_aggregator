@@ -115,7 +115,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
     collection = Ash.load!(collection, [:approval_query], lazy?: true, actor: actor)
 
     approval_query = filter_map(ash_pagify, collection.approval_query, socket.assigns.layer)
-    count_query = AshPagify.query_for_filters_map(Record, approval_query)
+
+    count_query =
+      Record
+      |> AshPagify.query_for_filters_map(approval_query)
+      |> Ash.Query.set_tenant(collection)
+
     count = Ash.count!(count_query)
 
     infospecies_centers = InfospeciesCenters.get_center_names()
@@ -127,7 +132,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
             encoded_record: %{swiss_species: %{center: %{eq: center}}}
           }).filters
 
-        center_count_query = AshPagify.query_for_filters_map(Record, records_query)
+        center_count_query =
+          Record
+          |> AshPagify.query_for_filters_map(records_query)
+          |> Ash.Query.set_tenant(collection)
+
         center_rows_count = Ash.count!(center_count_query)
 
         %{name: InfospeciesCenters.translate_center(center), count: center_rows_count}

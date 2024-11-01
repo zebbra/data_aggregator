@@ -31,7 +31,8 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
     } do
       expect_correct_swiss_species_api_call()
 
-      {:ok, record} = perform_job(Encoder, %{id: correct_record.id})
+      {:ok, record} =
+        perform_job(Encoder, %{id: correct_record.id, collection_id: correct_record.collection_id})
 
       assert record.state == :encoded
 
@@ -68,7 +69,8 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
       correct_record = update_record_fixtures!(correct_record, %{loc_country: nil})
       expect_correct_swiss_species_api_call()
 
-      {:ok, record} = perform_job(Encoder, %{id: correct_record.id})
+      {:ok, record} =
+        perform_job(Encoder, %{id: correct_record.id, collection_id: correct_record.collection_id})
 
       assert record.state == :failed
 

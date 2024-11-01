@@ -38,15 +38,15 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
     if there is no error, a success tuple is returned containing the encoded record
   """
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"id" => id, "user_id" => user_id}}) do
-    with {:ok, record} <- Record.get_by_id(id, load: :collection) do
+  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id, "user_id" => user_id}}) do
+    with {:ok, record} <- Record.get_by_id(id, load: :collection, tenant: collection_id) do
       perform_with_actor(record, User.get_by_id!(user_id))
     end
   end
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"id" => id}}) do
-    with {:ok, record} <- Record.get_by_id(id, load: :collection) do
+  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id}}) do
+    with {:ok, record} <- Record.get_by_id(id, load: :collection, tenant: collection_id) do
       perform_with_actor(record)
     end
   end

@@ -42,10 +42,10 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
   describe "DataAggregator.Records.Import.import/1" do
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs-encoding.csv"
-    test "succeeds with a valid file", %{import: import} do
+    test "succeeds with a valid file", %{import: import, collection: collection} do
       assert import.rows_count == 18
 
-      import = Import.import!(import, tenant: import.collection)
+      import = Import.import!(import, tenant: collection)
 
       assert import.state == :imported
       assert import.records_count == 18
@@ -55,7 +55,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert import.rows_invalid_count == 0
       assert import.rows_imported_count == 18
 
-      assert record = hd(Record.read!())
+      assert record = Record |> Ash.Query.set_tenant(collection) |> Ash.read!() |> hd()
       assert record.eve_event_date != nil
     end
 

@@ -2906,9 +2906,9 @@
           "collection_id": "collection_id"
         },
         "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
         },
         "name": "encoded_records_record_id_fkey",
         "on_delete": "delete",
@@ -2956,26 +2956,8 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "26464B516CE696F236314391CF3D5278D785BE5DF26A159DD5A3AC2FECA04EFB",
+  "hash": "53DDD704DA9CD3DC9E24CA23D8F634C99E2E4C1836DCA86FC528183194040BEA",
   "identities": [
-    {
-      "all_tenants?": false,
-      "base_filter": null,
-      "index_name": "encoded_records_record_mte_catalog_number_index",
-      "keys": [
-        {
-          "type": "atom",
-          "value": "record_id"
-        },
-        {
-          "type": "atom",
-          "value": "mte_catalog_number"
-        }
-      ],
-      "name": "record_mte_catalog_number",
-      "nils_distinct?": true,
-      "where": null
-    },
     {
       "all_tenants?": false,
       "base_filter": null,
@@ -2991,6 +2973,24 @@
         }
       ],
       "name": "by_collection",
+      "nils_distinct?": true,
+      "where": null
+    },
+    {
+      "all_tenants?": false,
+      "base_filter": null,
+      "index_name": "encoded_records_record_mte_catalog_number_index",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "record_id"
+        },
+        {
+          "type": "atom",
+          "value": "mte_catalog_number"
+        }
+      ],
+      "name": "record_mte_catalog_number",
       "nils_distinct?": true,
       "where": null
     }
