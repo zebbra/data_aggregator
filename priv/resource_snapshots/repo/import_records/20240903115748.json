@@ -64,7 +64,7 @@
       "allow_nil?": false,
       "default": "nil",
       "generated?": false,
-      "primary_key?": false,
+      "primary_key?": true,
       "references": {
         "deferrable": false,
         "destination_attribute": "id",
@@ -95,7 +95,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "148BE3016F59E5819E76CE42742C2BB05E129901D73CABFFCA7BC0E9E351AC1C",
+  "hash": "32CE448B1C6B4FA02169DE05A64911E57D5DDEB0C3885E7CCB53C96D1973DAA6",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",

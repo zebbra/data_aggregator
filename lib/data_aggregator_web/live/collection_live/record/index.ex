@@ -3,11 +3,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Record.Subscriptions
 
+  import Ash.Expr
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
   import DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
 
   import DataAggregatorWeb.CollectionLive.Helpers,
-    only: [get_collection_light: 2, get_collection_full: 2, busy_action: 1, cancel_action: 2]
+    only: [get_collection_light: 2, busy_action: 1, cancel_action: 2]
 
   import DataAggregatorWeb.CollectionLive.Record.ActivityFeed
   import DataAggregatorWeb.CollectionLive.Record.Components
@@ -62,18 +63,34 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   defp assign_scope_stats(socket) do
-    %{collection: collection, current_user: current_user} = socket.assigns
+    %{collection: collection} = socket.assigns
 
     assign_async(
       socket,
       [:records_count_not_approved, :records_count_not_encoded, :records_count_not_published],
       fn ->
-        collection = get_collection_full(collection.id, current_user)
+        count_not_encoded =
+          Record
+          |> Ash.Query.set_tenant(collection)
+          |> Ash.Query.filter(expr(not_encoded == true))
+          |> Ash.count!()
+
+        count_not_published =
+          Record
+          |> Ash.Query.set_tenant(collection)
+          |> Ash.Query.filter(expr(not_published == true))
+          |> Ash.count!()
+
+        count_not_approved =
+          Record
+          |> Ash.Query.set_tenant(collection)
+          |> Ash.Query.filter(expr(not_approved == true))
+          |> Ash.count!()
 
         stats = %{
-          records_count_not_approved: collection.records_count_not_approved,
-          records_count_not_encoded: collection.records_count_not_encoded,
-          records_count_not_published: collection.records_count_not_published
+          records_count_not_approved: count_not_approved,
+          records_count_not_encoded: count_not_encoded,
+          records_count_not_published: count_not_published
         }
 
         {:ok, stats}
@@ -880,7 +897,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_event("record:delete", %{"id" => id}, socket) do
     actor = get_actor(socket)
-    record = Record.get_by_id!(id, actor: actor)
+    tenant = get_tenant(socket)
+    record = Record.get_by_id!(id, actor: actor, tenant: tenant)
     :ok = Record.destroy(record, actor: actor)
 
     {:noreply,

@@ -25,6 +25,7 @@ defmodule DataAggregator.Records.Record.Image do
     belongs_to :image_upload, ImageUpload, public?: true
 
     belongs_to :collection, Collection do
+      primary_key? true
       public? true
       allow_nil? false
     end
@@ -62,6 +63,10 @@ defmodule DataAggregator.Records.Record.Image do
 
   json_api do
     type "record_image"
+
+    primary_key do
+      keys [:id, :collection_id]
+    end
 
     routes do
       base "/record_images"

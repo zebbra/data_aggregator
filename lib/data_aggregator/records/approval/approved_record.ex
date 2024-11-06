@@ -40,6 +40,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
     end
 
     belongs_to :collection, Collection do
+      primary_key? true
       allow_nil? false
       public? true
     end
@@ -138,7 +139,7 @@ defmodule DataAggregator.Records.ApprovedRecord do
     type "approved_record"
 
     primary_key do
-      keys [:id]
+      keys [:id, :collection_id]
     end
 
     routes do

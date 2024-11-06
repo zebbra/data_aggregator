@@ -51,6 +51,7 @@ defmodule DataAggregator.Records.Encoding.RecordEncodingResult do
     end
 
     belongs_to :collection, Collection do
+      primary_key? true
       public? true
       allow_nil? false
     end

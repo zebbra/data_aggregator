@@ -26,6 +26,7 @@ defmodule DataAggregator.Records.Import.Record do
     end
 
     belongs_to :collection, Collection do
+      primary_key? true
       allow_nil? false
       public? true
     end
@@ -44,7 +45,7 @@ defmodule DataAggregator.Records.Import.Record do
       change manage_relationship(:record, type: :append)
       change manage_relationship(:collection, type: :append)
       upsert? true
-      upsert_fields [:import_id, :record_id]
+      upsert_fields [:collection_id, :import_id, :record_id]
     end
   end
 

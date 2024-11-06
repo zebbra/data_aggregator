@@ -19,8 +19,12 @@ defmodule DataAggregator.Records.Collection.Workers.EncodingStatePoller do
   """
   use Oban.Worker, queue: :encoders, max_attempts: 1
 
-  alias DataAggregator.Records.Collection
+  import Ash.Expr
 
+  alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Record
+
+  require Ash.Query
   require Logger
 
   @impl Worker
@@ -38,8 +42,8 @@ defmodule DataAggregator.Records.Collection.Workers.EncodingStatePoller do
     # give it a bit of time to start encoding
     if attempt == 1, do: :timer.sleep(:timer.seconds(1))
 
-    collection = Collection.get_by_id!(id, load: [:encoding_state])
-    state = collection.encoding_state
+    collection = Collection.get_by_id!(id)
+    state = encoding_state(collection)
 
     if state == :encoding do
       Logger.info("Collection #{id} is still encoding, snoozing for 5 seconds...")
@@ -48,5 +52,47 @@ defmodule DataAggregator.Records.Collection.Workers.EncodingStatePoller do
       Logger.info("Collection #{id} is done encoding (#{state}), setting to idle ...")
       Collection.set_idle_encoding(collection)
     end
+  end
+
+  defp encoding_state(collection) do
+    count_encoded = records_count_encoded(collection)
+
+    cond do
+      count_encoded == collection.records_count ->
+        :encoded
+
+      records_count_queued_or_encoding(collection) > 0 ->
+        :encoding
+
+      records_count_failed(collection) > 0 ->
+        :failed
+
+      collection.records_count > count_encoded ->
+        :incomplete
+
+      true ->
+        :unknown
+    end
+  end
+
+  defp records_count_encoded(collection) do
+    Record
+    |> Ash.Query.set_tenant(collection)
+    |> Ash.Query.filter(expr(state == :encoded))
+    |> Ash.count!()
+  end
+
+  defp records_count_queued_or_encoding(collection) do
+    Record
+    |> Ash.Query.set_tenant(collection)
+    |> Ash.Query.filter(expr(state in [:queued, :encoding]))
+    |> Ash.count!()
+  end
+
+  defp records_count_failed(collection) do
+    Record
+    |> Ash.Query.set_tenant(collection)
+    |> Ash.Query.filter(expr(state == :failed))
+    |> Ash.count!()
   end
 end

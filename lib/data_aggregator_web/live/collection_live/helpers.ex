@@ -35,19 +35,8 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
     :busy
   ]
 
-  @load_full @load_light ++
-               [
-                 :records_count_not_encoded,
-                 :records_count_not_published,
-                 :records_count_not_approved
-               ]
-
   def get_collection_light(id, actor) do
     Collection.get_by_id!(id, load: @load_light, actor: actor)
-  end
-
-  def get_collection_full(id, actor) do
-    Collection.get_by_id!(id, load: @load_full, actor: actor)
   end
 
   def busy_action("set_importing"), do: "dataset:import"

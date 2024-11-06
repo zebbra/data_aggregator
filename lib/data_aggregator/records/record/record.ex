@@ -95,6 +95,10 @@ defmodule DataAggregator.Records.Record do
 
   relationships do
     belongs_to :collection, Collection do
+      # We can't mark this as primary_key? true due to the limitations
+      # of ash_paper_trail. In database schema (and also in the snapshots)
+      # this is a primary key, so please make sure to account for this if
+      # you change your model (most important in your migrations).
       allow_nil? false
       public? true
     end
@@ -162,6 +166,23 @@ defmodule DataAggregator.Records.Record do
     calculate :tsvector, AshPostgres.Tsvector, expr(tsv)
 
     calculate :encoded_tsvector, AshPostgres.Tsvector, expr(encoded_record.tsv)
+
+    calculate :not_encoded,
+              :boolean,
+              expr(
+                state == :imported or
+                  state == :queued or
+                  state == :encoding or
+                  state == :failed
+              )
+
+    calculate :not_published,
+              :boolean,
+              expr(fast_track_status != :published)
+
+    calculate :not_approved,
+              :boolean,
+              expr(approval_status != :approved)
   end
 
   paper_trail do

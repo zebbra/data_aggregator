@@ -7,6 +7,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
   use DataAggregatorWeb, :verified_routes
   use DataAggregatorWeb.Gettext
 
+  import Ash.Expr
   import DataAggregatorWeb.CollectionLive.Helpers
   import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [maybe_put_tsvector: 2]
   import DataAggregatorWeb.Helpers, only: [get_actor: 1, get_tenant: 1]
@@ -18,6 +19,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
   alias Phoenix.LiveView.AsyncResult
   alias Phoenix.LiveView.Socket
 
+  require Ash.Query
   require Logger
 
   @collection_action_events ~w(
@@ -130,7 +132,25 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
   end
 
   defp maybe_reload_collection(socket, true) do
-    collection = get_collection_full(socket.assigns.collection.id, get_actor(socket))
+    %{collection: collection} = socket.assigns
+
+    count_not_encoded =
+      Record
+      |> Ash.Query.set_tenant(collection)
+      |> Ash.Query.filter(expr(not_encoded == true))
+      |> Ash.count!()
+
+    count_not_published =
+      Record
+      |> Ash.Query.set_tenant(collection)
+      |> Ash.Query.filter(expr(not_published == true))
+      |> Ash.count!()
+
+    count_not_approved =
+      Record
+      |> Ash.Query.set_tenant(collection)
+      |> Ash.Query.filter(expr(not_approved == true))
+      |> Ash.count!()
 
     %{
       records_count_not_approved: origin_records_count_not_approved,
@@ -142,15 +162,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
     |> assign(:collection, collection)
     |> assign(
       :records_count_not_approved,
-      AsyncResult.ok(origin_records_count_not_approved, collection.records_count_not_approved)
+      AsyncResult.ok(origin_records_count_not_approved, count_not_approved)
     )
     |> assign(
       :records_count_not_encoded,
-      AsyncResult.ok(origin_records_count_not_encoded, collection.records_count_not_encoded)
+      AsyncResult.ok(origin_records_count_not_encoded, count_not_encoded)
     )
     |> assign(
       :records_count_not_published,
-      AsyncResult.ok(origin_records_count_not_published, collection.records_count_not_published)
+      AsyncResult.ok(origin_records_count_not_published, count_not_published)
     )
   end
 
