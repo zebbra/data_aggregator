@@ -9,6 +9,7 @@ defmodule DataAggregator.ApprovalTest do
   alias Ash.Error.Invalid
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Approval
+  alias DataAggregator.RecordsFixtures
 
   require Logger
 
@@ -24,26 +25,28 @@ defmodule DataAggregator.ApprovalTest do
     end
 
     test "read!/0 returns all approvals" do
+      collection = RecordsFixtures.collection_fixture()
+
       created = [
-        approval_fixture(),
-        approval_fixture()
+        approval_fixture(%{collection: collection}),
+        approval_fixture(%{collection: collection})
       ]
 
-      persisted = Approval.read!(page: false)
+      persisted = Approval.read!(page: false, tenant: collection)
 
       assert_lists_equal(
         created,
         persisted,
-        &assert_structs_equal(&1, &2, [:id])
+        &assert_structs_equal(&1, &2, [:id, :collection_id])
       )
     end
 
     test "get_by_id!/1 returns the approval with given id" do
       created = approval_fixture()
 
-      persisted = Approval.get_by_id!(created.id)
+      persisted = Approval.get_by_id!(created.id, tenant: created.collection)
 
-      assert_structs_equal(created, persisted, [:id])
+      assert_structs_equal(created, persisted, [:id, :collection_id])
     end
 
     test "create/1 with invalid data returns error changeset" do
@@ -71,8 +74,11 @@ defmodule DataAggregator.ApprovalTest do
 
     test "destroy/1 deletes the approval" do
       approval = approval_fixture()
-      assert :ok = Approval.destroy(approval)
-      assert_raise Ash.Error.Query.NotFound, fn -> Approval.get_by_id!(approval.id) end
+      assert :ok = Approval.destroy(approval, tenant: approval.collection)
+
+      assert_raise Ash.Error.Query.NotFound, fn ->
+        Approval.get_by_id!(approval.id, tenant: approval.collection)
+      end
     end
 
     test "destroy/1 with invalid id returns error" do

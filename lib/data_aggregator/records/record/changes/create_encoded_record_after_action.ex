@@ -26,7 +26,7 @@ defmodule DataAggregator.Records.Record.Changes.CreateEncodedRecordAfterAction d
   end
 
   @impl true
-  def after_batch(batch, _opts, _context) do
+  def after_batch(batch, _opts, %{tenant: tenant}) do
     records = Enum.map(batch, fn {_, record} -> record end)
 
     params =
@@ -36,6 +36,7 @@ defmodule DataAggregator.Records.Record.Changes.CreateEncodedRecordAfterAction d
         |> Map.take(@attributes)
         |> Map.filter(fn {_, v} -> v != nil end)
         |> Map.put(:record, record)
+        |> Map.put(:collection, record.collection)
       end
 
     # use the same batch size as the import
@@ -46,7 +47,11 @@ defmodule DataAggregator.Records.Record.Changes.CreateEncodedRecordAfterAction d
 
     Logger.info("Creating #{length(params)} encoded records (batch size: #{batch_size}) ...")
 
-    Ash.bulk_create!(params, EncodedRecord, :create, batch_size: batch_size)
+    Ash.bulk_create!(params, EncodedRecord, :create,
+      batch_size: batch_size,
+      return_errors?: true,
+      tenant: tenant
+    )
 
     :ok
   end

@@ -46,11 +46,12 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
     image_upload: image_upload,
     collection: collection
   } do
-    assert {:ok, image_upload} = ImageUpload.map(image_upload)
+    assert {:ok, image_upload} = ImageUpload.map(image_upload, tenant: collection)
 
     image_upload = Ash.load!(image_upload, [:images, :mapped_images, :unmapped_images])
 
-    collection = Ash.load!(collection, records: [:images, :image_attachments, :encoded_record])
+    collection =
+      Ash.load!(collection, [records: [:images, :image_attachments, :encoded_record]], tenant: collection)
 
     assert {"catalogNumber1_1.jpg", "catalogNumber1"} in image_upload.mapped_images
     assert {"catalogNumber1_2.jpg", "catalogNumber1"} in image_upload.mapped_images

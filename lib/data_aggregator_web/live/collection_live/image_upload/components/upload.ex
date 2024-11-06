@@ -251,7 +251,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
   end
 
   defp handle_upload(collection, path, %UploadEntry{} = entry) do
-    ImageUpload.create_from_path(collection, path, %{filename: entry.client_name})
+    ImageUpload.create_from_path(collection, path, %{filename: entry.client_name}, tenant: collection)
   end
 
   defp handle_flash(socket, image_upload) when is_nil(image_upload) == false do

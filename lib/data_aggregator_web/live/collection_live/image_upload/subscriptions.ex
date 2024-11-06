@@ -8,7 +8,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
 
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection_light: 2, busy_action: 1]
   import DataAggregatorWeb.CollectionLive.ImageUpload.Helpers
-  import DataAggregatorWeb.Helpers, only: [get_actor: 1]
+  import DataAggregatorWeb.Helpers, only: [get_actor: 1, get_tenant: 1]
 
   alias Ash.Notifier.Notification
   alias DataAggregator.PubSub
@@ -64,7 +64,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
         handle_image_upload_created(notification, socket)
 
       topic == "image_upload:#{id}:updated" and event in @image_upload_update_events ->
-        handle_image_upload_updated(notification, socket, event)
+        handle_image_upload_updated(notification, socket)
 
       topic == "image_upload:#{id}:destroyed" ->
         handle_image_upload_destroyed(notification, socket)
@@ -79,22 +79,26 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
   end
 
   defp handle_image_upload_created(%Notification{data: image_upload}, socket) do
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+
     image_upload =
-      ImageUpload.get_by_id!(image_upload.id, load: @load_all, actor: get_actor(socket))
+      ImageUpload.get_by_id!(image_upload.id, load: @load_all, actor: actor, tenant: tenant)
 
     {:noreply, stream_insert(socket, :results, image_upload, at: 0)}
   end
 
-  defp handle_image_upload_updated(%Notification{data: %{id: id, collection_id: collection_id}}, socket, event) do
-    image_upload = ImageUpload.get_by_id!(id, load: @load_all, actor: get_actor(socket))
-    collection = get_collection_light(collection_id, get_actor(socket))
+  defp handle_image_upload_updated(%Notification{data: %{id: id, collection_id: collection_id}}, socket) do
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+    image_upload = ImageUpload.get_by_id!(id, load: @load_all, actor: actor, tenant: tenant)
+    collection = get_collection_light(collection_id, actor)
 
     socket =
       socket
       |> assign(:busy, collection.busy)
       |> assign(:busy_action, busy_action(collection))
       |> maybe_assign_selected_image_upload(image_upload)
-      |> set_notification(event)
       |> stream_insert(:results, image_upload, at: 0)
 
     {:noreply, socket}
@@ -121,10 +125,6 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
   defp maybe_assign_selected_image_upload(%{assigns: %{selected_image_upload: nil}} = socket, _image_upload), do: socket
 
   defp maybe_assign_selected_image_upload(socket, image_upload), do: assign(socket, :selected_image_upload, image_upload)
-
-  defp set_notification(socket, _event) do
-    put_flash(socket, :info, ~t"Image Upload event"m)
-  end
 
   defp refresh(socket) do
     %{assigns: %{collection: %{id: id}, meta: %{ash_pagify: ash_pagify, opts: opts}}} = socket

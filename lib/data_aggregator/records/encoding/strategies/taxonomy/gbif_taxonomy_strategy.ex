@@ -3,6 +3,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     Encode Records with the gbif taxonomy catalog
   """
 
+  import DataAggregator.Helpers, only: [maybe_performant_load_record: 2]
+
   alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Gbif
   alias DataAggregator.Records.EncodedRecord
@@ -166,8 +168,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   end
 
   defp check_parameters(params, encoded_record) do
-    encoded_record = Ash.load!(encoded_record, [:record], lazy?: true)
-    record = Ash.load!(encoded_record.record, [:collection], lazy?: true)
+    tenant = encoded_record.collection_id
+    encoded_record = maybe_performant_load_record(encoded_record, tenant)
+    record = Ash.load!(encoded_record.record, [:collection], lazy?: true, tenant: tenant)
 
     # check if there is at least a kingdom parameter set
     case add_kingdom_fallback(params, record) do

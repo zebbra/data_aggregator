@@ -7,12 +7,13 @@ defmodule DataAggregator.DarwinCore.Publication.ReleveFile do
   @behaviour DataAggregator.DarwinCore.Publication.DwcaFile
 
   alias DataAggregator.DarwinCore.Publication.DwcaFile
+  alias DataAggregator.Records.Collection
 
-  @spec create(Ash.Query.t(), String.t()) :: {:ok, any()} | {:error, any()}
-  def create(query, path) do
+  @spec create(Ash.Query.t(), String.t(), Collection.t()) :: {:ok, any()} | {:error, any()}
+  def create(query, path, tenant) do
     path = path <> "/releve.csv"
 
-    file = DwcaFile.create_file!(:releve, query, path)
+    file = DwcaFile.create_file!(:releve, query, path, tenant)
 
     {:ok, file}
   end

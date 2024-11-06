@@ -25,22 +25,25 @@ defmodule DataAggregator.Records.Export.Workers.ExportTest do
       exportable_record(collection)
 
       export =
-        Export.create!(%{
-          name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-          collection: collection,
-          mapping: @mapping,
-          records_query: collection.records_to_export_query,
-          data_layer: :raw,
-          header_source: :custom_selection
-        })
+        Export.create!(
+          %{
+            name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+            collection: collection,
+            mapping: @mapping,
+            records_query: collection.records_to_export_query,
+            data_layer: :raw,
+            header_source: :custom_selection
+          },
+          tenant: collection
+        )
 
       [export: export]
     end
 
     test "export success", %{export: export} do
-      perform_job(Export.Workers.Exporter, %{id: export.id})
+      perform_job(Export.Workers.Exporter, %{id: export.id, collection_id: export.collection.id})
 
-      export = Export.get_by_id!(export.id)
+      export = Export.get_by_id!(export.id, tenant: export.collection)
 
       assert export.state == :exported
       assert export.exported_count == 2

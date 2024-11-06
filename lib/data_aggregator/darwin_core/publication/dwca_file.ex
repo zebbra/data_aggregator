@@ -7,17 +7,18 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   alias DataAggregator.DarwinCore.Schema.Category
   alias DataAggregator.DarwinCore.Schema.DwcAttribute
   alias DataAggregator.Misc.FlatFileUtils
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
-  @callback create(query :: Ash.Query.t(), path :: String.t()) ::
+  @callback create(query :: Ash.Query.t(), path :: String.t(), tenant :: Collection.t()) ::
               {:ok, file :: any()} | {:error, reason :: any}
 
   @doc """
   Creates a file with the given extension file type (e.g. :core) and the data from the query at the given path
   """
-  @spec create_file!(atom(), Ash.Query.t(), String.t()) :: any()
-  def create_file!(extension_type, query, path) do
+  @spec create_file!(atom(), Ash.Query.t(), String.t(), Collection.t()) :: any()
+  def create_file!(extension_type, query, path, tenant) do
     header_fields = file_mapping(extension_type)
 
     headers = get_only_column_headers(header_fields)
@@ -26,7 +27,7 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
 
     query
     |> Ash.stream!(page: false)
-    |> Stream.map(&map_record(&1, record_attributes))
+    |> Stream.map(&map_record(&1, record_attributes, tenant))
     |> Stream.map(&FlatFileUtils.map_data_to_headers(&1, header_fields, Schema.dwc_transformers()))
     |> FlatFileUtils.store_on_disk!(path, headers)
   end
@@ -63,11 +64,11 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   end
 
   # gives you a map of all relevant record attributes and its values
-  @spec map_record(Record.t(), list()) :: map()
-  defp map_record(record, record_attributes) do
+  @spec map_record(Record.t(), list(), Collection.t()) :: map()
+  defp map_record(record, record_attributes, tenant) do
     raw_layer = get_raw_layer(record, record_attributes)
 
-    encoded_layer = get_encoded_layer(record, record_attributes)
+    encoded_layer = get_encoded_layer(record, record_attributes, tenant)
 
     Map.merge(raw_layer, encoded_layer, fn _key, val1, val2 ->
       case val2 do
@@ -130,10 +131,13 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
     record |> Map.from_struct() |> Map.take(record_attributes)
   end
 
-  defp get_encoded_layer(record, record_attributes) do
-    case EncodedRecord.get_by_record(record.id) do
-      {:ok, encoded_record} -> encoded_record |> Map.from_struct() |> Map.take(record_attributes)
-      {:error, _} -> Map.new()
+  defp get_encoded_layer(record, record_attributes, tenant) do
+    case EncodedRecord.get_by_record(record.id, tenant: tenant) do
+      {:ok, encoded_record} ->
+        encoded_record |> Map.from_struct() |> Map.take(record_attributes)
+
+      {:error, _} ->
+        Map.new()
     end
   end
 end

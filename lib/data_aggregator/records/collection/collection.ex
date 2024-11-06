@@ -100,28 +100,6 @@ defmodule DataAggregator.Records.Collection do
               ),
               public?: true
 
-    calculate :encoding_state,
-              :atom,
-              expr(
-                cond do
-                  records_count_encoded == records_count ->
-                    :encoded
-
-                  records_count_encoding > 0 or
-                      records_count_encoding_queued > 0 ->
-                    :encoding
-
-                  records_count_failed > 0 ->
-                    :failed
-
-                  records_count > records_count_encoded ->
-                    :incomplete
-
-                  true ->
-                    :unknown
-                end
-              )
-
     calculate :records_to_export_query, :map, Calculations.RecordsToExport
     calculate :fast_track_query, :map, Calculations.FastTrackQuery
     calculate :approval_query, :map, Calculations.ApprovalQuery
@@ -133,47 +111,6 @@ defmodule DataAggregator.Records.Collection do
     calculate :approving, :boolean, expr(state == :approving)
     calculate :deleting, :boolean, expr(state == :deleting)
     calculate :busy, :boolean, expr(state != :idle)
-  end
-
-  aggregates do
-    count :imports_count, :imports
-
-    count :records_count_not_encoded, :records do
-      filter expr(
-               state == :imported or
-                 state == :queued or
-                 state == :encoding or
-                 state == :failed
-             )
-    end
-
-    count :records_count_not_published, :records do
-      filter expr(fast_track_status != :published)
-    end
-
-    count :records_count_not_approved, :records do
-      filter expr(approval_status != :approved)
-    end
-
-    count :records_count_imported, :records do
-      filter expr(state == :imported)
-    end
-
-    count :records_count_encoding_queued, :records do
-      filter expr(state == :queued)
-    end
-
-    count :records_count_encoding, :records do
-      filter expr(state == :encoding)
-    end
-
-    count :records_count_encoded, :records do
-      filter expr(state == :encoded)
-    end
-
-    count :records_count_failed, :records do
-      filter expr(state == :failed)
-    end
   end
 
   state_machine do
@@ -206,17 +143,7 @@ defmodule DataAggregator.Records.Collection do
 
   actions do
     default_accept :*
-    defaults [:update]
-
-    read :read do
-      primary? true
-      argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true,
-                 countable: true,
-                 required?: false,
-                 keyset?: true
-    end
+    defaults [:read, :update]
 
     create :create do
       primary? true
@@ -479,5 +406,9 @@ defmodule DataAggregator.Records.Collection do
       patch :update
       delete :destroy
     end
+  end
+
+  defimpl Ash.ToTenant do
+    def to_tenant(%{id: id}, _resource), do: id
   end
 end

@@ -23,7 +23,8 @@ defmodule DataAggregator.Records.ImageUpload.CreateFromPathTest do
     assert {:ok, image_upload} =
              ImageUpload.create_from_path(
                collection,
-               "test/support/fixtures/files/image_upload_test_catalog_number.zip"
+               "test/support/fixtures/files/image_upload_test_catalog_number.zip",
+               tenant: collection
              )
 
     assert image_upload.state == :new
@@ -37,7 +38,8 @@ defmodule DataAggregator.Records.ImageUpload.CreateFromPathTest do
     assert {:error, %Invalid{errors: errors}} =
              ImageUpload.create_from_path(
                collection,
-               "test/support/fixtures/files/invalid.zip"
+               "test/support/fixtures/files/invalid.zip",
+               tenant: collection
              )
 
     assert Enum.any?(errors, fn error ->
@@ -51,7 +53,8 @@ defmodule DataAggregator.Records.ImageUpload.CreateFromPathTest do
     assert {:error, %Invalid{errors: errors}} =
              ImageUpload.create_from_path(
                collection,
-               "test/support/fixtures/files/extracted_images/catalogNumber1_1.jpg"
+               "test/support/fixtures/files/extracted_images/catalogNumber1_1.jpg",
+               tenant: collection
              )
 
     assert Enum.any?(errors, fn error ->

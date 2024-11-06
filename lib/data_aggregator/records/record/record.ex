@@ -95,6 +95,10 @@ defmodule DataAggregator.Records.Record do
 
   relationships do
     belongs_to :collection, Collection do
+      # We can't mark this as primary_key? true due to the limitations
+      # of ash_paper_trail. In database schema (and also in the snapshots)
+      # this is a primary key, so please make sure to account for this if
+      # you change your model (most important in your migrations).
       allow_nil? false
       public? true
     end
@@ -117,6 +121,7 @@ defmodule DataAggregator.Records.Record do
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
       public? true
+      filter expr(collection_id == parent(collection_id))
     end
   end
 
@@ -162,6 +167,23 @@ defmodule DataAggregator.Records.Record do
     calculate :tsvector, AshPostgres.Tsvector, expr(tsv)
 
     calculate :encoded_tsvector, AshPostgres.Tsvector, expr(encoded_record.tsv)
+
+    calculate :not_encoded,
+              :boolean,
+              expr(
+                state == :imported or
+                  state == :queued or
+                  state == :encoding or
+                  state == :failed
+              )
+
+    calculate :not_published,
+              :boolean,
+              expr(fast_track_status != :published)
+
+    calculate :not_approved,
+              :boolean,
+              expr(approval_status != :approved)
   end
 
   paper_trail do
@@ -180,7 +202,7 @@ defmodule DataAggregator.Records.Record do
     ignore_actions [:destroy]
     on_actions [:update, :update_fast_track_status, :update_approval_status]
 
-    attributes_as_attributes [:mte_catalog_number, :tax_scientific_name]
+    attributes_as_attributes [:mte_catalog_number, :tax_scientific_name, :collection_id]
     reference_source? true
 
     mixin DataAggregator.Records.RecordVersionMixin
@@ -219,34 +241,10 @@ defmodule DataAggregator.Records.Record do
 
   actions do
     default_accept :*
-    defaults [:update]
+    defaults [:read, :update]
 
-    read :read do
-      primary? true
-      argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true,
-                 countable: true,
-                 required?: false,
-                 keyset?: true
-    end
-
-    read :by_collection do
-      argument :collection_id, :string, allow_nil?: false
-      argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true,
-                 countable: true,
-                 required?: false,
-                 keyset?: true
-
-      filter expr(collection_id == ^arg(:collection_id))
-    end
-
-    read :encoding_by_collection do
-      argument :collection_id, :string, allow_nil?: false
-
-      filter expr(collection_id == ^arg(:collection_id) and state in [:encoding, :queued])
+    read :encoding do
+      filter expr(state in [:encoding, :queued])
     end
 
     create :create do
@@ -259,7 +257,7 @@ defmodule DataAggregator.Records.Record do
       change set_attribute(:state, :imported)
       change set_attribute(:last_imported_at, &DateTime.utc_now/0)
 
-      change manage_relationship(:collection, :collection, type: :append)
+      change manage_relationship(:collection, type: :append)
     end
 
     create :import do
@@ -407,12 +405,12 @@ defmodule DataAggregator.Records.Record do
 
   identities do
     identity :collection_mte_catalog_number, [:collection_id, :mte_catalog_number]
+    identity :by_collection, [:id, :collection_id]
   end
 
   code_interface do
     define :read
-    define :by_collection, args: [:collection_id]
-    define :encoding_by_collection, args: [:collection_id]
+    define :encoding
     define :create
     define :import, args: [:import, :params]
     define :bulk_import, args: [:import, :rows]
@@ -461,7 +459,7 @@ defmodule DataAggregator.Records.Record do
     repo DataAggregator.Repo
 
     references do
-      reference :collection, on_delete: :delete, on_update: :update, index?: true
+      reference :collection, on_delete: :delete, on_update: :update
     end
 
     custom_indexes do
@@ -480,5 +478,10 @@ defmodule DataAggregator.Records.Record do
       patch :update
       delete :destroy
     end
+  end
+
+  multitenancy do
+    strategy :attribute
+    attribute :collection_id
   end
 end

@@ -131,7 +131,7 @@
       "type": "utc_datetime_usec"
     },
     {
-      "allow_nil?": true,
+      "allow_nil?": false,
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
@@ -204,12 +204,12 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "612860EA2DAD9A54080689CC61100477E28B309244F6A84C468C4E80F1D3AE64",
+  "hash": "E6AF866CFE8182FDBD59B22C8D32FF10B1AF6259764CCB33470660A14BA85846",
   "identities": [],
   "multitenancy": {
-    "attribute": null,
-    "global": null,
-    "strategy": null
+    "attribute": "collection_id",
+    "global": false,
+    "strategy": "attribute"
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,

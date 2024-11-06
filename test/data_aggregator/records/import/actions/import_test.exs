@@ -34,7 +34,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
   setup %{collection: collection, path: path} do
     import =
       collection
-      |> Import.create_from_path!(path)
+      |> Import.create_from_path!(path, tenant: collection)
       |> Import.update_mapping!(@valid_mapping)
 
     [import: import, path: path]
@@ -42,10 +42,10 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
   describe "DataAggregator.Records.Import.import/1" do
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs-encoding.csv"
-    test "succeeds with a valid file", %{import: import} do
+    test "succeeds with a valid file", %{import: import, collection: collection} do
       assert import.rows_count == 18
 
-      import = Import.import!(import)
+      import = Import.import!(import, tenant: collection)
 
       assert import.state == :imported
       assert import.records_count == 18
@@ -55,7 +55,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert import.rows_invalid_count == 0
       assert import.rows_imported_count == 18
 
-      assert record = hd(Record.read!())
+      assert record = Record |> Ash.Query.set_tenant(collection) |> Ash.read!() |> hd()
       assert record.eve_event_date != nil
     end
 
@@ -66,7 +66,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
     } do
       assert collection.records_count == 0
 
-      Import.import!(import)
+      Import.import!(import, tenant: collection)
 
       collection = Collection.get_by_id!(collection.id)
       assert collection.records_count == 18
@@ -74,7 +74,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
     @tag path: "test/support/fixtures/files/invalid-records-small.csv"
     test "fails with a file with some invalid records", %{import: import} do
-      {result, _logs} = with_log(fn -> Import.import(import) end)
+      {result, _logs} = with_log(fn -> Import.import(import, tenant: import.collection) end)
       assert {:ok, import} = result
 
       assert import.state == :failed
@@ -97,7 +97,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       import = Import.update_mapping!(import, custom_mapping)
 
-      assert {result, logs} = with_log(fn -> Import.import(import) end)
+      assert {result, logs} = with_log(fn -> Import.import(import, tenant: import.collection) end)
 
       assert {:ok, import} = result
 
@@ -118,7 +118,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"
     @tag capture_log: true
     test "cannot be run multiple times", %{import: import} do
-      assert {:ok, import} = Import.import(import)
+      assert {:ok, import} = Import.import(import, tenant: import.collection)
       assert import.state == :imported
       assert import.records_count == 2
       assert import.rows_imported_count == 2
@@ -133,7 +133,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       import: import,
       path: path
     } do
-      assert {:ok, import} = Import.import(import)
+      assert {:ok, import} = Import.import(import, tenant: import.collection)
 
       column_names = Enum.map(import.columns, & &1.name)
       column_order = DataAggregator.Records.Import.Changes.DetectColumns.column_order(path)
@@ -150,7 +150,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       import = Import.update_mapping!(import, custom_mapping)
 
-      assert {result, logs} = with_log(fn -> Import.import(import) end)
+      assert {result, logs} = with_log(fn -> Import.import(import, tenant: import.collection) end)
       assert {:ok, import} = result
 
       assert logs =~ "Found 1/2 invalid rows. Adding error to changeset"
@@ -175,7 +175,7 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       import = Import.update_mapping!(import, custom_mapping)
 
-      assert {result, logs} = with_log(fn -> Import.import(import) end)
+      assert {result, logs} = with_log(fn -> Import.import(import, tenant: import.collection) end)
       assert {:ok, import} = result
 
       assert logs =~ "Found 1/1 invalid rows. Adding error to changeset"

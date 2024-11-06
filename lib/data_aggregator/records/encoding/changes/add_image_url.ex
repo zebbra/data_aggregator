@@ -25,7 +25,7 @@ defmodule DataAggregator.Records.Encoding.Changes.AddImageUrl do
     else
       Logger.info("Adding image to mte_associated_media on encoded record.")
 
-      Changeset.change_attribute(
+      Changeset.force_change_attribute(
         changeset,
         :mte_associated_media,
         maybe_concatenate(associated_media, image.attachment.url)

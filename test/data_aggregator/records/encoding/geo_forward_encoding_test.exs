@@ -27,11 +27,14 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
          %{
            record_fixture: record_fixture
          } do
-      {:ok, record} = Record.encode(record_fixture, :geo_forward)
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_forward, tenant: record_fixture.collection_id)
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record.id)
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
       assert encoded_record !== nil
 
       assert_map_includes(encoded_record, %{
@@ -59,11 +62,14 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
           loc_state_province: nil
         })
 
-      {:ok, record} = Record.encode(record_fixture, :geo_forward)
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_forward, tenant: record_fixture.collection_id)
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record.id)
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
       assert encoded_record !== nil
 
       assert_map_includes(encoded_record, %{
@@ -96,11 +102,14 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
           loc_state_province: "Vaud"
         })
 
-      {:ok, record} = Record.encode(record_fixture, :geo_forward)
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_forward, tenant: record_fixture.collection_id)
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record.id)
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
       assert encoded_record !== nil
 
       assert_map_includes(encoded_record, %{
@@ -137,11 +146,13 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
         })
 
       {{:ok, _record}, logs} =
-        with_log(fn -> Record.encode(record_fixture, :geo_forward) end)
+        with_log(fn ->
+          Record.encode(record_fixture, :geo_forward, tenant: record_fixture.collection_id)
+        end)
 
       encoded_record =
         record_fixture.id
-        |> EncodedRecord.get_by_record!()
+        |> EncodedRecord.get_by_record!(tenant: record_fixture.collection_id)
         |> Ash.load!([:record])
 
       assert_map_includes(encoded_record, %{

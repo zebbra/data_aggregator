@@ -2910,7 +2910,7 @@
         "destination_attribute": "id",
         "destination_attribute_default": null,
         "destination_attribute_generated": null,
-        "index?": true,
+        "index?": false,
         "match_type": null,
         "match_with": null,
         "multitenancy": {
@@ -2980,8 +2980,26 @@
   ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "3146BC465FA31B12B2659870755F98B6F235A020E1E6F3B4429C0717BD4E5D62",
+  "hash": "DF1262C23D13091870A67F640483440EB1E5ABD144EA6096D700526B9D43676A",
   "identities": [
+    {
+      "all_tenants?": false,
+      "base_filter": null,
+      "index_name": "records_by_collection_index",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "id"
+        },
+        {
+          "type": "atom",
+          "value": "collection_id"
+        }
+      ],
+      "name": "by_collection",
+      "nils_distinct?": true,
+      "where": null
+    },
     {
       "all_tenants?": false,
       "base_filter": null,
@@ -3002,9 +3020,9 @@
     }
   ],
   "multitenancy": {
-    "attribute": null,
-    "global": null,
-    "strategy": null
+    "attribute": "collection_id",
+    "global": false,
+    "strategy": "attribute"
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,

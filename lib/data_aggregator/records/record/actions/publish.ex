@@ -23,10 +23,13 @@ defmodule DataAggregator.Records.Actions.Publish do
   require Logger
 
   @impl true
-  def run(input, _opts, ctx) do
+  def run(input, _opts, %{tenant: tenant} = ctx) do
     publication = input.arguments.publication
 
-    query = AshPagify.query_for_filters_map(Record, publication.records_query)
+    query =
+      Record
+      |> AshPagify.query_for_filters_map(publication.records_query)
+      |> Ash.Query.set_tenant(tenant)
 
     set_publication_status(
       query,
@@ -37,26 +40,26 @@ defmodule DataAggregator.Records.Actions.Publish do
 
     path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
 
-    CoreFile.create(query, path)
+    CoreFile.create(query, path, tenant)
 
-    EmlFile.create(publication.collection, path)
+    EmlFile.create(publication.collection, path, tenant)
 
-    MaterialSampleFile.create(query, path)
-    PreservationFile.create(query, path)
-    ReleveFile.create(query, path)
+    MaterialSampleFile.create(query, path, tenant)
+    PreservationFile.create(query, path, tenant)
+    ReleveFile.create(query, path, tenant)
 
-    MetaFile.create(publication.collection, path)
+    MetaFile.create(publication.collection, path, tenant)
 
     # TODO: implement the following files, they contain of attributes from json fields,
     # and therefore need to be implemented in a different way
 
-    # ChronometricAgeFile.create(query, path)
-    # DistributionFile.create(query, path)
-    # PermitFile.create(query, path)
-    # ReferencesFile.create(query, path)
-    # ResourceRelationshipFile.create(query, path)
-    # SpeciesProfileFile.create(query, path)
-    # VernacularNamesFile.create(query, path)
+    # ChronometricAgeFile.create(query, path, tenant)
+    # DistributionFile.create(query, path, tenant)
+    # PermitFile.create(query, path, tenant)
+    # ReferencesFile.create(query, path, tenant)
+    # ResourceRelationshipFile.create(query, path, tenant)
+    # SpeciesProfileFile.create(query, path, tenant)
+    # VernacularNamesFile.create(query, path, tenant)
 
     attachment = path |> FlatFileUtils.create_zip!() |> FlatFileUtils.store_on_s3!()
 
@@ -95,7 +98,10 @@ defmodule DataAggregator.Records.Actions.Publish do
     e ->
       publication = input.arguments.publication
 
-      query = AshPagify.query_for_filters_map(Record, publication.records_query)
+      query =
+        Record
+        |> AshPagify.query_for_filters_map(publication.records_query)
+        |> Ash.Query.set_tenant(tenant)
 
       Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(e)}")
 

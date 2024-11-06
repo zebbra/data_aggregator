@@ -14,6 +14,8 @@ defmodule DataAggregator.Records.Import.Workers.Importer do
   ## Arguments
 
   * `id` - the ID of the import to run
+  * `collection_id` - the ID of the collection to import
+  * `user_id` - the ID of the user to run the import as (optional)
 
   ## Timeouts
 
@@ -30,22 +32,22 @@ defmodule DataAggregator.Records.Import.Workers.Importer do
   require Logger
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"id" => id, "user_id" => user_id}}) do
-    with {:ok, import} <- Import.get_by_id(id) do
+  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id, "user_id" => user_id}}) do
+    with {:ok, import} <- Import.get_by_id(id, load: :collection, tenant: collection_id) do
       perform_with_actor(import, User.get_by_id!(user_id))
     end
   end
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"id" => id}}) do
-    with {:ok, import} <- Import.get_by_id(id) do
+  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id}}) do
+    with {:ok, import} <- Import.get_by_id(id, load: :collection, tenant: collection_id) do
       perform_with_actor(import)
     end
   end
 
   defp perform_with_actor(import, actor \\ nil) do
     Logger.debug("Importing #{inspect(import.id)} ...")
-    Import.import(import, actor: actor, authorize?: false)
+    Import.import(import, actor: actor, authorize?: false, tenant: import.collection)
   end
 
   @impl Oban.Worker

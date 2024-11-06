@@ -356,8 +356,17 @@ defmodule DataAggregator.MixProject do
       "repo.lint": [
         "ash_postgres.generate_migrations --check"
       ],
+      "repo.dry_run": [
+        "ash_postgres.generate_migrations --dry-run"
+      ],
+      "repo.squash": [
+        "ash_postgres.squash_snapshots --into first"
+      ],
       "catalogs.import": [
         "run priv/repo/catalogs/init.exs"
+      ],
+      "users.create": [
+        "run priv/repo/users/init.exs"
       ],
 
       # Run tests

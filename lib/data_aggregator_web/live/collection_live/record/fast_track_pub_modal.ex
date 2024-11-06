@@ -122,7 +122,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal do
     collection = Ash.load!(collection, [:fast_track_query], lazy?: true, actor: actor)
 
     fast_track_query = filter_map(ash_pagify, collection.fast_track_query, socket.assigns.layer)
-    count_query = AshPagify.query_for_filters_map(Record, fast_track_query)
+
+    count_query =
+      Record
+      |> AshPagify.query_for_filters_map(fast_track_query)
+      |> Ash.Query.set_tenant(collection)
 
     assign(socket, :count, Ash.count!(count_query))
   end

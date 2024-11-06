@@ -4,18 +4,23 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   """
   use Ash.Resource.Actions.Implementation
 
+  alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
+  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
 
   require Logger
 
   @impl true
-  def run(input, _opts, _ctx) do
+  def run(input, _opts, %{tenant: tenant} = ctx) do
     export = Ash.load!(input.arguments.export, [:collection])
 
-    query = AshPagify.query_for_filters_map(Record, export.records_query)
+    query =
+      Record
+      |> AshPagify.query_for_filters_map(export.records_query)
+      |> Ash.Query.set_tenant(tenant)
 
     data_layer = export.data_layer
     header_source = export.header_source
@@ -32,7 +37,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
     attachment =
       query
       |> Ash.stream!(page: false)
-      |> Stream.map(&map_record(&1, mapping, export, data_layer))
+      |> Stream.map(&map_record(&1, mapping, export, data_layer, ctx))
       |> Stream.map(
         &FlatFileUtils.map_data_to_headers(
           &1,
@@ -61,17 +66,24 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   end
 
   # map the record to the given mapping and report progress on the export.
-  @spec map_record(Record.t(), map(), Export.t(), atom()) :: map()
-  defp map_record(record, mapping, export, :raw) do
+  @spec map_record(Record.t(), map(), Export.t(), atom(), Context.t()) :: map()
+  defp map_record(record, mapping, export, :raw, _ctx) do
     Export.add_export_progress(export, 1)
 
     record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
   end
 
-  defp map_record(record, mapping, export, :encoded) do
+  defp map_record(record, mapping, export, :encoded, %{tenant: tenant}) do
     Export.add_export_progress(export, 1)
 
-    record = Ash.load!(record, [:encoded_record])
+    record =
+      case record.encoded_record do
+        %Ash.NotLoaded{} ->
+          %{record | encoded_record: EncodedRecord.get_by_record!(record.id, tenant: tenant)}
+
+        _ ->
+          record
+      end
 
     map_layers(record, mapping)
   end

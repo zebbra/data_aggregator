@@ -32,7 +32,7 @@ defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
 
       import =
         collection
-        |> Import.create_from_path!(path)
+        |> Import.create_from_path!(path, tenant: collection)
         |> Import.update_mapping!(mapping)
 
       [collection: collection, import: import]
@@ -109,7 +109,7 @@ defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
 
     defp assert_not_enqueued(import) do
       assert {:error, %Ash.Error.Invalid{}} = Import.enqueue_import(import)
-      import = Import.get_by_id!(import.id)
+      import = Import.get_by_id!(import.id, tenant: import.collection)
       assert import.state == :pending
       refute_enqueued(worker: Importer, args: %{id: import.id})
     end

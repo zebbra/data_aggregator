@@ -54,7 +54,6 @@ Logger.configure(level: :info)
 {:ok, collection} = Collection.create(%{name: "My Collection", owner: "John Doe", grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472"})
 
 collection
-|> Ash.load!([:records_count])
 |> render_struct(keys: [:id, :name, :records_count])
 ```
 
@@ -67,7 +66,7 @@ example_file |> Explorer.DataFrame.from_csv!()
 
 ```elixir
 # create an import using the file
-{:ok, import} = Import.create_from_path(collection, example_file)
+{:ok, import} = Import.create_from_path(collection, example_file, tenant: collection)
 
 # render the struct
 import |> render_struct()

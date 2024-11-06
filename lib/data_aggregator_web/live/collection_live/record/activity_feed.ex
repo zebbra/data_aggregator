@@ -5,10 +5,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   import DataAggregatorWeb.CollectionLive.Record.Components,
     only: [publication_state_badge: 1, approval_state_badge: 1]
 
-  import DataAggregatorWeb.RecordLive.Helpers, only: [get_dwc_field: 1]
+  import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [get_dwc_field: 1]
 
   alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Activity
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalog
@@ -16,6 +17,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   require Ash.Query
 
   attr :record, Record, required: true
+  attr :tenant, Collection, required: true
 
   def activity_feed(assigns) do
     assigns = assign_activities(assigns)
@@ -194,7 +196,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   defp assign_activities(assigns) do
-    assign(assigns, :record, Ash.load!(assigns.record, :encoded_record, lazy?: true))
+    %{tenant: tenant, record: record} = assigns
+
+    record =
+      case record.encoded_record do
+        %Ash.NotLoaded{} ->
+          %{record | encoded_record: EncodedRecord.get_by_record!(record.id, tenant: tenant)}
+
+        _ ->
+          record
+      end
+
+    assign(assigns, :record, record)
 
     record_versions = record_versions(assigns)
     encoded_record_versions = encoded_record_versions(assigns)
@@ -271,6 +284,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     Record.Version
     |> Ash.Query.for_read(:read)
     |> Ash.Query.load([:version_source, :user])
+    |> Ash.Query.set_tenant(assigns.tenant)
     |> Ash.Query.filter(version_source_id == ^assigns.record.id)
     |> Ash.read!()
   end
@@ -282,6 +296,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     EncodedRecord.Version
     |> Ash.Query.for_read(:read)
     |> Ash.Query.load([:version_source, :user])
+    |> Ash.Query.set_tenant(assigns.tenant)
     |> Ash.Query.filter(version_source_id == ^encoded_record_id)
     |> Ash.read!()
   end

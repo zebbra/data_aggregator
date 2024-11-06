@@ -33,8 +33,12 @@ defmodule DataAggregator.Records.Approval do
 
   relationships do
     belongs_to :attachment, Attachment, public?: true
-
     belongs_to :error_log, Attachment, public?: true
+
+    belongs_to :collection, Collection do
+      public? true
+      allow_nil? false
+    end
   end
 
   calculations do
@@ -73,10 +77,12 @@ defmodule DataAggregator.Records.Approval do
     defaults [:read, :destroy, :update]
 
     create :create do
-      accept [:file_url]
       primary? true
+      accept [:file_url]
+      argument :collection, :struct, allow_nil?: false
 
       change Changes.SetCount
+      change manage_relationship(:collection, type: :append)
     end
 
     update :enqueue do
@@ -132,7 +138,7 @@ defmodule DataAggregator.Records.Approval do
       require_atomic? false
 
       argument :attachment, :struct, allow_nil?: false
-      change manage_relationship(:attachment, :attachment, type: :append)
+      change manage_relationship(:attachment, type: :append)
       change load(:attachment)
     end
 
@@ -164,7 +170,7 @@ defmodule DataAggregator.Records.Approval do
       argument :error_log, :struct, allow_nil?: false
       require_atomic? false
 
-      change manage_relationship(:error_log, :error_log, type: :append)
+      change manage_relationship(:error_log, type: :append)
       change load(:error_log)
     end
   end
@@ -190,6 +196,7 @@ defmodule DataAggregator.Records.Approval do
     repo DataAggregator.Repo
 
     references do
+      reference :collection, on_delete: :delete, on_update: :update
       reference :attachment, on_delete: :delete, on_update: :update, index?: true
     end
   end
@@ -208,5 +215,10 @@ defmodule DataAggregator.Records.Approval do
 
       patch :enqueue, route: "/:id/enqueue"
     end
+  end
+
+  multitenancy do
+    strategy :attribute
+    attribute :collection_id
   end
 end

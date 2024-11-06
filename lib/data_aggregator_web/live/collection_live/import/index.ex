@@ -38,7 +38,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    case list_imports(params, get_actor(socket)) do
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+
+    case list_imports(params, actor, tenant) do
       {:ok, {records, meta}} ->
         socket
         |> assign(meta: meta)
@@ -481,8 +484,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   @impl true
   def handle_event("import:run", %{"id" => id}, socket) do
     actor = get_actor(socket)
+    tenant = get_tenant(socket)
 
-    case id |> Import.get_by_id!(actor: actor) |> Import.enqueue_import(actor: actor) do
+    case id
+         |> Import.get_by_id!(actor: actor, tenant: tenant)
+         |> Import.enqueue_import(actor: actor) do
       {:ok, _} ->
         {:noreply, put_flash(socket, :info, ~t"Import started in background")}
 
@@ -494,7 +500,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   @impl true
   def handle_event("import:delete", %{"id" => id}, socket) do
     actor = get_actor(socket)
-    import = Import.get_by_id!(id, actor: actor)
+    tenant = get_tenant(socket)
+    import = Import.get_by_id!(id, actor: actor, tenant: tenant)
     :ok = Import.destroy(import, actor: actor)
 
     {:noreply,
@@ -514,11 +521,14 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   @impl true
   def handle_event("import:select", %{"id" => id}, socket) do
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+
     socket =
       assign(
         socket,
         :selected_import,
-        Import.get_by_id!(id, load: @load_import, actor: get_actor(socket))
+        Import.get_by_id!(id, load: @load_import, actor: actor, tenant: tenant)
       )
 
     {:noreply, socket}
@@ -547,7 +557,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   end
 
   defp apply_action(socket, :edit, %{"import_id" => id}) do
-    import = Import.get_by_id!(id, load: @load_import, actor: get_actor(socket))
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+    import = Import.get_by_id!(id, load: @load_import, actor: actor, tenant: tenant)
 
     socket
     |> assign(:page_title, ~t"Edit Import"m)
@@ -556,7 +568,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   end
 
   defp apply_action(socket, :summary, %{"id" => collection_id, "import_id" => id}) do
-    import = Import.get_by_id!(id, load: @load_import, actor: get_actor(socket))
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+    import = Import.get_by_id!(id, load: @load_import, actor: actor, tenant: tenant)
 
     if Enum.empty?(import.missing_mappings) do
       socket
@@ -569,9 +583,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     end
   end
 
-  defp list_imports(params, actor, opts \\ [load: @load, action: :by_collection]) do
+  defp list_imports(params, actor, tenant, opts \\ [load: @load]) do
     opts = Keyword.put_new(opts, :actor, actor)
-    AshPagify.validate_and_run(Import, params, opts, params["id"])
+    opts = Keyword.put_new(opts, :tenant, tenant)
+    AshPagify.validate_and_run(Import, params, opts)
   end
 
   attr :collection, :any

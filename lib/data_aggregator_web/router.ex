@@ -72,8 +72,6 @@ defmodule DataAggregatorWeb.Router do
       get "/collecitons/:id/image_uploads/log/:image_upload_id/download",
           ImageUploadController,
           :download_log
-
-      live "/records", RecordLive.Index, :index
     end
 
     ash_authentication_live_session :collection_digitizer_required,

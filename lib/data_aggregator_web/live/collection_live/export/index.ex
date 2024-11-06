@@ -36,8 +36,9 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
     actor = get_actor(socket)
+    tenant = get_tenant(socket)
 
-    case list_exports(params, actor) do
+    case list_exports(params, actor, tenant) do
       {:ok, {records, meta}} ->
         socket
         |> assign(meta: meta)
@@ -260,8 +261,9 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
   @impl true
   def handle_event("export:run", %{"id" => id}, socket) do
     actor = get_actor(socket)
+    tenant = get_tenant(socket)
 
-    case id |> Export.get_by_id!(actor: actor) |> Export.enqueue(actor: actor) do
+    case id |> Export.get_by_id!(actor: actor, tenant: tenant) |> Export.enqueue(actor: actor) do
       {:ok, _} ->
         {:noreply, put_flash(socket, :info, ~t"Export started in background"m)}
 
@@ -273,8 +275,9 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
   @impl true
   def handle_event("export:delete", %{"id" => id}, socket) do
     actor = get_actor(socket)
-    export = Export.get_by_id!(id, actor: actor)
-    :ok = Export.destroy(export, actor: actor)
+    tenant = get_tenant(socket)
+    export = Export.get_by_id!(id, actor: actor, tenant: tenant)
+    :ok = Export.destroy(export, actor: actor, tenant: tenant)
 
     {:noreply,
      socket
@@ -294,9 +297,14 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
   @impl true
   def handle_event("export:select", %{"id" => id}, socket) do
     actor = get_actor(socket)
+    tenant = get_tenant(socket)
 
     socket =
-      assign(socket, :selected_export, Export.get_by_id!(id, load: @load_export, actor: actor))
+      assign(
+        socket,
+        :selected_export,
+        Export.get_by_id!(id, load: @load_export, actor: actor, tenant: tenant)
+      )
 
     {:noreply, socket}
   end
@@ -307,9 +315,10 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
     |> assign(:export, nil)
   end
 
-  defp list_exports(params, actor, opts \\ [load: @load, action: :by_collection]) do
+  defp list_exports(params, actor, tenant, opts \\ [load: @load]) do
     opts = Keyword.put_new(opts, :actor, actor)
-    AshPagify.validate_and_run(Export, params, opts, params["id"])
+    opts = Keyword.put_new(opts, :tenant, tenant)
+    AshPagify.validate_and_run(Export, params, opts)
   end
 
   attr :collection, :any

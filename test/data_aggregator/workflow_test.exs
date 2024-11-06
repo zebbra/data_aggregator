@@ -112,20 +112,29 @@ defmodule DataAggregator.WorkflowTest do
 
       import =
         collection
-        |> Import.create_from_path!(path)
+        |> Import.create_from_path!(path, tenant: collection)
         |> Import.update_mapping!(@mapping)
 
-      {:ok, import} = perform_job(Importer, %{id: import.id, user_id: actor.id})
+      {:ok, import} =
+        perform_job(Importer, %{
+          id: import.id,
+          collection_id: import.collection_id,
+          user_id: actor.id
+        })
 
       [import: import, actor: actor]
     end
 
-    test "import workflow performs as expected", %{import: import, actor: actor} do
+    test "import workflow performs as expected", %{
+      import: import,
+      actor: actor,
+      collection: tenant
+    } do
       assert import.state == :imported
       import = Ash.load!(import, [:records_count])
       assert import.records_count == 6
 
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
@@ -142,12 +151,12 @@ defmodule DataAggregator.WorkflowTest do
       # record create -> import versions for each record have been created
       assert_create_import_versions(records, actor)
       # no encoded_records versions should have been created
-      assert_no_encode_verions()
+      assert_no_encode_verions(tenant)
 
       # update the states of the records so we can test the workflow
       update_states(records)
 
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
@@ -168,13 +177,18 @@ defmodule DataAggregator.WorkflowTest do
       # assert that we removed the update versions
       assert_create_import_versions(records, actor)
       # no encoded_records versions should have been created
-      assert_no_encode_verions()
+      assert_no_encode_verions(tenant)
 
       import = Ash.update!(import, %{state: :pending})
       assert import.state == :pending
 
-      perform_job(Importer, %{id: import.id, user_id: actor.id})
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      perform_job(Importer, %{
+        id: import.id,
+        collection_id: import.collection_id,
+        user_id: actor.id
+      })
+
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
@@ -190,7 +204,7 @@ defmodule DataAggregator.WorkflowTest do
       # record create -> import versions for each record have been created a second time
       assert_create_import_versions(records, actor, 2)
       # no encoded_records versions should have been created
-      assert_no_encode_verions()
+      assert_no_encode_verions(tenant)
     end
   end
 
@@ -200,20 +214,29 @@ defmodule DataAggregator.WorkflowTest do
 
       import =
         collection
-        |> Import.create_from_path!(path)
+        |> Import.create_from_path!(path, tenant: collection)
         |> Import.update_mapping!(@mapping)
 
-      {:ok, import} = perform_job(Importer, %{id: import.id, user_id: actor.id})
+      {:ok, import} =
+        perform_job(Importer, %{
+          id: import.id,
+          collection_id: import.collection_id,
+          user_id: actor.id
+        })
 
       [import: import, actor: actor]
     end
 
-    test "encoding workflow performs as expected", %{import: import, actor: actor} do
+    test "encoding workflow performs as expected", %{
+      import: import,
+      actor: actor,
+      collection: tenant
+    } do
       assert import.state == :imported
       import = Ash.load!(import, [:records_count])
       assert import.records_count == 6
 
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
@@ -230,10 +253,10 @@ defmodule DataAggregator.WorkflowTest do
       # record create -> import versions for each record have been created
       assert_create_import_versions(records, actor)
       # no encoded_records versions should have been created
-      assert_no_encode_verions()
+      assert_no_encode_verions(tenant)
 
       encode_records(records, actor)
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
@@ -250,7 +273,7 @@ defmodule DataAggregator.WorkflowTest do
       # no new records versions should have been created
       assert_create_import_versions(records, actor)
       # encoded_record versions for each record have been created
-      assert_encode_versions(actor)
+      assert_encode_versions(actor, tenant)
     end
   end
 
@@ -260,13 +283,17 @@ defmodule DataAggregator.WorkflowTest do
 
       import =
         collection
-        |> Import.create_from_path!(path)
+        |> Import.create_from_path!(path, tenant: collection)
         |> Import.update_mapping!(@mapping)
 
-      perform_job(Importer, %{id: import.id, user_id: actor.id})
+      perform_job(Importer, %{
+        id: import.id,
+        collection_id: import.collection_id,
+        user_id: actor.id
+      })
 
-      encode_records(Ash.read!(Record, load: [:paper_trail_versions]), actor)
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      encode_records(Ash.read!(Record, load: [:paper_trail_versions], tenant: collection), actor)
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: collection)
 
       query = %{
         collection: %{id: %{eq: collection.id}},
@@ -274,12 +301,15 @@ defmodule DataAggregator.WorkflowTest do
       }
 
       publication =
-        Publication.create!(%{
-          name: "publication-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-          channel: :fast_track,
-          collection: collection,
-          records_query: query
-        })
+        Publication.create!(
+          %{
+            name: "publication-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+            channel: :fast_track,
+            collection: collection,
+            records_query: query
+          },
+          tenant: collection
+        )
 
       [publication: publication, actor: actor, records: records]
     end
@@ -287,7 +317,8 @@ defmodule DataAggregator.WorkflowTest do
     test "publishing workflow performs as expected", %{
       publication: publication,
       records: records,
-      actor: actor
+      actor: actor,
+      collection: tenant
     } do
       # Sanity check
       assert length(records) == 6
@@ -306,17 +337,21 @@ defmodule DataAggregator.WorkflowTest do
       # no new records versions should have been created
       assert_create_import_versions(records, actor)
       # encoded_record versions for each record have been created
-      assert_encode_versions(actor)
+      assert_encode_versions(actor, tenant)
 
-      perform_job(Publisher, %{id: publication.id, user_id: actor.id})
+      perform_job(Publisher, %{
+        id: publication.id,
+        collection_id: publication.collection_id,
+        user_id: actor.id
+      })
 
-      publication = Publication.get_by_id!(publication.id)
+      publication = Publication.get_by_id!(publication.id, tenant: tenant)
 
       assert publication.state == :done
       assert publication.channel == :fast_track
       assert publication.published_count == 6
 
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
@@ -355,7 +390,7 @@ defmodule DataAggregator.WorkflowTest do
       end
 
       # no new records versions should have been created
-      assert_encode_versions(actor)
+      assert_encode_versions(actor, tenant)
     end
   end
 
@@ -365,13 +400,17 @@ defmodule DataAggregator.WorkflowTest do
 
       import =
         collection
-        |> Import.create_from_path!(path)
+        |> Import.create_from_path!(path, tenant: collection)
         |> Import.update_mapping!(@mapping)
 
-      perform_job(Importer, %{id: import.id, user_id: actor.id})
+      perform_job(Importer, %{
+        id: import.id,
+        collection_id: import.collection_id,
+        user_id: actor.id
+      })
 
-      encode_records(Ash.read!(Record, load: [:paper_trail_versions]), actor)
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      encode_records(Ash.read!(Record, load: [:paper_trail_versions], tenant: collection), actor)
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: collection)
 
       # we cant set the relation from encoed_record to swiss_species as we
       # cant create a fixture for swiss_species as the module is copied
@@ -384,13 +423,16 @@ defmodule DataAggregator.WorkflowTest do
       }
 
       publication =
-        Publication.create!(%{
-          name: "approval-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-          channel: :approval,
-          collection: collection,
-          records_query: query,
-          center: "infofauna"
-        })
+        Publication.create!(
+          %{
+            name: "approval-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+            channel: :approval,
+            collection: collection,
+            records_query: query,
+            center: "infofauna"
+          },
+          tenant: collection
+        )
 
       [publication: publication, actor: actor, records: records]
     end
@@ -398,7 +440,8 @@ defmodule DataAggregator.WorkflowTest do
     test "publishing workflow performs as expected", %{
       publication: publication,
       records: records,
-      actor: actor
+      actor: actor,
+      collection: tenant
     } do
       # Sanity check
       assert length(records) == 6
@@ -417,17 +460,21 @@ defmodule DataAggregator.WorkflowTest do
       # no new records versions should have been created
       assert_create_import_versions(records, actor)
       # encoded_record versions for each record have been created
-      assert_encode_versions(actor)
+      assert_encode_versions(actor, tenant)
 
-      perform_job(Publisher, %{id: publication.id, user_id: actor.id})
+      perform_job(Publisher, %{
+        id: publication.id,
+        collection_id: publication.collection_id,
+        user_id: actor.id
+      })
 
-      publication = Publication.get_by_id!(publication.id)
+      publication = Publication.get_by_id!(publication.id, tenant: tenant)
 
       assert publication.state == :done
       assert publication.channel == :approval
       assert publication.published_count == 6
 
-      records = Ash.read!(Record, load: [:paper_trail_versions])
+      records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
@@ -466,14 +513,19 @@ defmodule DataAggregator.WorkflowTest do
       end
 
       # no new records versions should have been created
-      assert_encode_versions(actor)
+      assert_encode_versions(actor, tenant)
     end
   end
 
   defp encode_records(records, actor) do
     Enum.each(records, fn record ->
       expect_correct_swiss_species_api_call()
-      perform_job(Encoder, %{id: record.id, user_id: actor.id})
+
+      perform_job(Encoder, %{
+        id: record.id,
+        collection_id: record.collection_id,
+        user_id: actor.id
+      })
     end)
   end
 
@@ -571,8 +623,8 @@ defmodule DataAggregator.WorkflowTest do
   end
 
   # versions for one encoding iteration
-  defp assert_encode_versions(actor) do
-    encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions])
+  defp assert_encode_versions(actor, tenant) do
+    encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions], tenant: tenant)
     assert length(encoded_records) == 6
 
     versions =
@@ -597,8 +649,8 @@ defmodule DataAggregator.WorkflowTest do
     end
   end
 
-  defp assert_no_encode_verions do
-    encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions])
+  defp assert_no_encode_verions(tenant) do
+    encoded_records = Ash.read!(EncodedRecord, load: [:paper_trail_versions], tenant: tenant)
     assert length(encoded_records) == 6
 
     versions =

@@ -18,7 +18,7 @@ defmodule DataAggregator.ImageUploadFixtures do
   def image_upload_fixture(collection, attrs \\ %{}) do
     attrs = Map.merge(@image_upload_defaults, attrs)
 
-    ImageUpload.create_from_path!(collection, attrs[:path])
+    ImageUpload.create_from_path!(collection, attrs[:path], tenant: collection)
   end
 
   @doc """

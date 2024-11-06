@@ -20,20 +20,21 @@ defmodule DataAggregator.Records.Record.Changes.RelateImport do
   end
 
   @impl Change
-  def after_batch(batch, _opts, _ctx) do
+  def after_batch(batch, _opts, ctx) do
     import_record_args = fn {changeset, record} ->
       import = Changeset.get_argument(changeset, :import)
-      %{import: import, record: record}
+      import = Ash.load!(import, :collection, lazy?: true)
+      %{import: import, record: record, collection: import.collection}
     end
 
     batch
     |> Stream.map(import_record_args)
-    |> bulk_create_import_records!()
+    |> bulk_create_import_records!(ctx)
 
     Enum.map(batch, fn {_, record} -> {:ok, record} end)
   end
 
-  defp bulk_create_import_records!(stream) do
+  defp bulk_create_import_records!(stream, %{tenant: tenant}) do
     # use the same batch size as the import
     batch_size = DataAggregator.Records.import_batch_size()
 
@@ -43,7 +44,8 @@ defmodule DataAggregator.Records.Record.Changes.RelateImport do
     Ash.bulk_create!(stream, Import.Record, :create,
       batch_size: batch_size,
       return_records?: true,
-      return_errors?: true
+      return_errors?: true,
+      tenant: tenant
     )
   end
 end
