@@ -5,6 +5,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
 
   use DataAggregatorWeb, :live_component
 
+  import DataAggregator.Records.ImageUpload.Helpers
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
 
@@ -91,6 +92,16 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
                     </p>
                     <p class="text-xs/5 text-base-content/60">
                       <%= pretty_max_file_size(@uploads.file.max_file_size) %>
+                    </p>
+                    <br />
+                    <p class="text-xs/5 text-base-content/60">
+                      <%= ~t"With images of type"m %>
+                    </p>
+                    <p class="text-xs/5 text-base-content/60">
+                      <%= pretty_accept_list(accepted_image_extensions()) %>
+                    </p>
+                    <p class="text-xs/5 text-base-content/60">
+                      <%= pretty_max_file_size(max_image_size()) %>
                     </p>
                   </div>
                 </div>
@@ -267,6 +278,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
     term
     |> String.split(",")
     |> Enum.map_join(", ", &(&1 |> String.replace(~r/^\./, "") |> String.upcase()))
+  end
+
+  defp pretty_accept_list(term) when is_list(term) do
+    Enum.map_join(term, ", ", &(&1 |> String.replace(~r/^\./, "") |> String.upcase()))
   end
 
   defp pretty_accept_list(_), do: nil
