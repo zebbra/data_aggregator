@@ -31,8 +31,8 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
          {:unzip, {:ok, _}} <- {:unzip, unzip_cached_file(cached_file, temp_path)},
          {:ok, temp_path} <- maybe_enter_single_subdirectory(temp_path),
          {:validate, invalid_file_infos} <- {:validate, validate_files(temp_path)},
-         {:add_invalid_file_info, changeset} <-
-           {:add_invalid_file_info, Changeset.change_attribute(changeset, :invalid_file_infos, invalid_file_infos)},
+         changeset =
+           Changeset.force_change_attribute(changeset, :invalid_file_infos, invalid_file_infos),
          {:attachments, attachments} <-
            {:attachments, create_attachments(temp_path)} do
       Changeset.manage_relationship(changeset, :image_attachments, attachments, type: :create)
@@ -96,7 +96,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
       {:error, :file_hidden, _ext} ->
         Logger.info("Hidden file detected: #{file}")
         Logger.info("Deleting file: #{temp_path}/#{file}")
-        File.rm!(temp_path <> "/" <> file)
+        File.rm_rf!(temp_path <> "/" <> file)
         {:ok, nil}
 
       {:error, :file_size, size} ->
