@@ -669,7 +669,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Remove mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/summary.ex:127
+#: lib/data_aggregator_web/live/collection_live/import/components/summary.ex:129
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Summary"
 msgid "Import started in background"
@@ -1768,7 +1768,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Update mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/summary.ex:133
+#: lib/data_aggregator_web/live/collection_live/import/components/summary.ex:135
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Summary"
 msgid "An import for this collection is already in process"

@@ -6,7 +6,6 @@ defmodule DataAggregator.Helpers do
   import Ash.Expr
 
   alias DataAggregator.Accounts.User
-  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
 
   require Ash.Query
@@ -61,7 +60,6 @@ defmodule DataAggregator.Helpers do
   @doc """
   Loads the record relation for a given resource if it is not already loaded.
   """
-  @spec maybe_performant_load_record(Ash.Resource.t(), Collection.t()) :: Ash.Resource.t() | nil
   def maybe_performant_load_record(resource, tenant, load \\ nil)
 
   def maybe_performant_load_record(%{record: %Ash.NotLoaded{}, record_id: record_id} = resource, tenant, load) do
