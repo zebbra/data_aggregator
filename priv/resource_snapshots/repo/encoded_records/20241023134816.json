@@ -2953,10 +2953,43 @@
   ],
   "base_filter": null,
   "check_constraints": [],
-  "custom_indexes": [],
+  "custom_indexes": [
+    {
+      "all_tenants?": false,
+      "concurrently": false,
+      "error_fields": [
+        "loc_continent",
+        "tax_kingdom",
+        "tax_phylum"
+      ],
+      "fields": [
+        {
+          "type": "atom",
+          "value": "loc_continent"
+        },
+        {
+          "type": "atom",
+          "value": "tax_kingdom"
+        },
+        {
+          "type": "atom",
+          "value": "tax_phylum"
+        }
+      ],
+      "include": null,
+      "message": null,
+      "name": null,
+      "nulls_distinct": true,
+      "prefix": null,
+      "table": null,
+      "unique": false,
+      "using": null,
+      "where": null
+    }
+  ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "53DDD704DA9CD3DC9E24CA23D8F634C99E2E4C1836DCA86FC528183194040BEA",
+  "hash": "1A6136BC590A0A12725930A6A89FE20BB0C81777D8207128C082A25D411440DB",
   "identities": [
     {
       "all_tenants?": false,

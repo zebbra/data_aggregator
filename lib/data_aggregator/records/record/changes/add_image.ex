@@ -19,8 +19,13 @@ defmodule DataAggregator.Records.Record.Changes.AddImage do
   defp add_image(%Changeset{arguments: %{image: image}, data: record} = changeset, %{actor: actor, tenant: tenant} = _ctx) do
     changeset = Changeset.manage_relationship(changeset, :images, [image], type: :append)
 
-    record = Ash.load!(record, :encoded_record, tenant: tenant)
-    EncodedRecord.add_image_url(record.encoded_record, image, actor: actor)
+    encoded_record =
+      case record.encoded_record do
+        %Ash.NotLoaded{} -> EncodedRecord.get_by_record!(record.id, tenant: tenant)
+        encoded_record -> encoded_record
+      end
+
+    EncodedRecord.add_image_url(encoded_record, image, actor: actor)
 
     changeset
   end

@@ -3,6 +3,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
     Encode Records with the geo location api (opencagedata) to receive reverse encoded geo locations
   """
 
+  import DataAggregator.Helpers, only: [maybe_performant_load_record: 2]
+
   alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Misc.Coordinates
   alias DataAggregator.Opencage
@@ -23,8 +25,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
     lookup the geo encoding api and return the encoded record
   """
   @spec apply_strategy(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
-  def apply_strategy(encoded_record, ctx) do
-    encoded_record = Ash.load!(encoded_record, [:record], lazy?: true)
+  def apply_strategy(encoded_record, %{tenant: tenant} = ctx) do
+    encoded_record = maybe_performant_load_record(encoded_record, tenant)
 
     case process_encoded_record(encoded_record, ctx) do
       {:ok, encoded_record} ->

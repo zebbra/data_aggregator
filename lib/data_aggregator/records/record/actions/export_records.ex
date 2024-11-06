@@ -7,6 +7,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
+  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
 
@@ -75,7 +76,14 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
   defp map_record(record, mapping, export, :encoded, %{tenant: tenant}) do
     Export.add_export_progress(export, 1)
 
-    record = Ash.load!(record, [:encoded_record], tenant: tenant)
+    record =
+      case record.encoded_record do
+        %Ash.NotLoaded{} ->
+          %{record | encoded_record: EncodedRecord.get_by_record!(record.id, tenant: tenant)}
+
+        _ ->
+          record
+      end
 
     map_layers(record, mapping)
   end

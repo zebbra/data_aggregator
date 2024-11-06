@@ -32,13 +32,18 @@ defmodule DataAggregator.ApprovalFixtures do
   """
   def approved_record_fixture(attrs \\ %{}, record_attrs \\ %{}) do
     collection =
-      Map.get(
-        attrs,
-        :collection,
+      if Map.has_key?(attrs, :collection) do
+        Map.get(attrs, :collection)
+      else
         RecordsFixtures.collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
-      )
+      end
 
-    record = RecordsFixtures.record_fixture(Map.put(record_attrs, :collection, collection))
+    record =
+      if Map.has_key?(attrs, :record) do
+        Map.get(attrs, :record)
+      else
+        RecordsFixtures.record_fixture(Map.put(record_attrs, :collection, collection))
+      end
 
     attributes = [:extra_data] ++ DataAggregator.DarwinCore.Schema.prefixed_attribute_names()
 

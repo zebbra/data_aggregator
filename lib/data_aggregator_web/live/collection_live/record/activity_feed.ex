@@ -5,7 +5,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   import DataAggregatorWeb.CollectionLive.Record.Components,
     only: [publication_state_badge: 1, approval_state_badge: 1]
 
-  import DataAggregatorWeb.RecordLive.Helpers, only: [get_dwc_field: 1]
+  import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [get_dwc_field: 1]
 
   alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Activity
@@ -196,11 +196,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   defp assign_activities(assigns) do
-    assign(
-      assigns,
-      :record,
-      Ash.load!(assigns.record, :encoded_record, lazy?: true, tenant: assigns.tenant)
-    )
+    %{tenant: tenant, record: record} = assigns
+
+    record =
+      case record.encoded_record do
+        %Ash.NotLoaded{} ->
+          %{record | encoded_record: EncodedRecord.get_by_record!(record.id, tenant: tenant)}
+
+        _ ->
+          record
+      end
+
+    assign(assigns, :record, record)
 
     record_versions = record_versions(assigns)
     encoded_record_versions = encoded_record_versions(assigns)

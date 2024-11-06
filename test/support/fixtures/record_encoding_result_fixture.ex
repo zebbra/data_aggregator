@@ -33,7 +33,12 @@ defmodule DataAggregator.RecordEncodingResultFixture do
     Generate a record_encoding_result.
   """
   def record_encoding_result_fixture(attrs \\ %{}) do
-    record = Map.get(attrs, :record, record_fixture())
+    record =
+      if Map.has_key?(attrs, :record) do
+        attrs[:record]
+      else
+        record_fixture()
+      end
 
     @record_encoding_result_defaults
     |> Map.merge(attrs)

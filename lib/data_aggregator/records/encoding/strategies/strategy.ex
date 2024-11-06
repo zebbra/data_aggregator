@@ -14,6 +14,8 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     or the `DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy` module
   """
 
+  import DataAggregator.Helpers, only: [maybe_performant_load_record: 3]
+
   alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
@@ -120,50 +122,50 @@ defmodule DataAggregator.Records.Encoding.Strategy do
 
   @spec handle_encoding_result(EncodingResult.t(), EncodedRecord.t(), atom(), Context.t()) ::
           EncodingResult.t()
-  defp handle_encoding_result(encoding_result, old_record, catalog, ctx) do
+  defp handle_encoding_result(encoding_result, old_encoded_record, catalog, ctx) do
     attrs =
       %{
         catalog: catalog
       }
 
     case encoding_result do
-      {:ok, new_record} ->
-        create_success_result(attrs, catalog, old_record, new_record, ctx)
+      {:ok, new_encoded_record} ->
+        create_success_result(attrs, catalog, old_encoded_record, new_encoded_record, ctx)
 
-        {:ok, new_record}
+        {:ok, new_encoded_record}
 
-      {:unchanged, unchanged_record} ->
-        create_unchanged_result(attrs, catalog, old_record, unchanged_record, ctx)
+      {:unchanged, unchanged_encoded_record} ->
+        create_unchanged_result(attrs, catalog, old_encoded_record, unchanged_encoded_record, ctx)
 
-        {:ok, unchanged_record}
+        {:ok, unchanged_encoded_record}
 
       {:error, error, encoding_result} ->
-        create_error_result(attrs, catalog, old_record, error, ctx)
+        create_error_result(attrs, catalog, old_encoded_record, error, ctx)
 
         {:error, error, encoding_result}
     end
   end
 
-  defp create_success_result(attrs, catalog, old_record, new_record, %{tenant: tenant}) do
-    %{record: record, collection: collection} =
-      Ash.load!(old_record, [:record, :collection], lazy?: true)
+  defp create_success_result(attrs, catalog, old_encoded_record, new_encoded_record, %{tenant: tenant}) do
+    %{record: %{collection: collection} = record} =
+      maybe_performant_load_record(old_encoded_record, tenant, :collection)
 
     attrs
-    |> put_input_values(catalog, old_record)
-    |> put_output_values(catalog, new_record)
+    |> put_input_values(catalog, old_encoded_record)
+    |> put_output_values(catalog, new_encoded_record)
     |> Map.put(:state, :success)
     |> Map.put(:record, record)
     |> Map.put(:collection, collection)
     |> RecordEncodingResult.create!(tenant: tenant)
   end
 
-  defp create_unchanged_result(attrs, catalog, old_record, unchanged_record, %{tenant: tenant}) do
-    %{record: record, collection: collection} =
-      Ash.load!(old_record, [:record, :collection], lazy?: true)
+  defp create_unchanged_result(attrs, catalog, old_encoded_record, unchanged_encoded_record, %{tenant: tenant}) do
+    %{record: %{collection: collection} = record} =
+      maybe_performant_load_record(old_encoded_record, tenant, :collection)
 
     attrs
-    |> put_input_values(catalog, old_record)
-    |> put_output_values(catalog, unchanged_record)
+    |> put_input_values(catalog, old_encoded_record)
+    |> put_output_values(catalog, unchanged_encoded_record)
     |> Map.put(:state, :unchanged)
     |> Map.put(:message, "no changes during encoding")
     |> Map.put(:record, record)
@@ -171,16 +173,16 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     |> RecordEncodingResult.create!(tenant: tenant)
   end
 
-  defp create_error_result(attrs, catalog, old_record, error, %{tenant: tenant}) do
-    %{record: record, collection: collection} =
-      Ash.load!(old_record, [:record, :collection], lazy?: true)
+  defp create_error_result(attrs, catalog, old_encoded_record, error, %{tenant: tenant}) do
+    %{record: %{collection: collection} = record} =
+      maybe_performant_load_record(old_encoded_record, tenant, :collection)
 
     new_record = EncodedRecord.get_by_record!(record.id, tenant: tenant)
 
     err_msg = get_err_msg(error)
 
     attrs
-    |> put_input_values(catalog, old_record)
+    |> put_input_values(catalog, old_encoded_record)
     |> put_output_values(catalog, new_record)
     |> Map.put(:state, :error)
     |> Map.put(:message, err_msg)

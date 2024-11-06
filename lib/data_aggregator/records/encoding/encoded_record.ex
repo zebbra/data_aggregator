@@ -46,6 +46,7 @@ defmodule DataAggregator.Records.EncodedRecord do
     belongs_to :record, Record do
       allow_nil? false
       public? true
+      filter expr(collection_id == parent(collection_id))
     end
 
     has_many :swiss_species, SwissSpecies do
@@ -148,6 +149,10 @@ defmodule DataAggregator.Records.EncodedRecord do
         on_update: :update,
         index?: true,
         match_with: [collection_id: :collection_id]
+    end
+
+    custom_indexes do
+      index [:loc_continent, :tax_kingdom, :tax_phylum]
     end
   end
 

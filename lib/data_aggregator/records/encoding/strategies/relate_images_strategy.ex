@@ -3,6 +3,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.RelateImagesStrategy do
     Encode Records to relate with records images
   """
 
+  import DataAggregator.Helpers, only: [maybe_performant_load_record: 3]
+
   alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
@@ -17,9 +19,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.RelateImagesStrategy do
     lookup the associated images from the record and return the encoded record
   """
   @spec apply_strategy(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
-  def apply_strategy(encoded_record, ctx) do
+  def apply_strategy(encoded_record, %{tenant: tenant} = ctx) do
     # Load the record and its images
-    encoded_record = Ash.load!(encoded_record, [record: [images: :attachment]], lazy?: true)
+    encoded_record = maybe_performant_load_record(encoded_record, tenant, images: :attachment)
 
     process_encoded_record(encoded_record, ctx)
   end

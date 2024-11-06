@@ -121,6 +121,7 @@ defmodule DataAggregator.Records.Record do
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
       public? true
+      filter expr(collection_id == parent(collection_id))
     end
   end
 

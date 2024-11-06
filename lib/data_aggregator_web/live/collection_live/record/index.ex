@@ -16,14 +16,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   import DataAggregatorWeb.CollectionLive.Record.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
-  import DataAggregatorWeb.RecordLive.Helpers,
-    only: [
-      attrs_by_category_in_layers: 1,
-      encoded_attribute: 2,
-      encoded_attribute: 3,
-      get_dwc_field: 1
-    ]
-
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.Encoding.RecordEncodingResult

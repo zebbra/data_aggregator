@@ -20,13 +20,13 @@ defmodule DataAggregator.ExportFixtures do
   """
   def export_fixture(attrs \\ %{}) do
     collection =
-      Map.get(
-        attrs,
-        :collection,
+      if Map.has_key?(attrs, :collection) do
+        Map.get(attrs, :collection)
+      else
         Ash.load!(collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()}), [
           :records_to_export_query
         ])
-      )
+      end
 
     params =
       @export_defaults

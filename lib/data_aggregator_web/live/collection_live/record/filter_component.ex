@@ -5,11 +5,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   use DataAggregatorWeb, :live_component
   use DataAggregatorWeb.Filters
 
-  import DataAggregator.Helpers, only: [distinct: 2]
+  import DataAggregator.Helpers, only: [distinct_ecto: 3]
 
   alias AshPagify.FilterForm
   alias AshPhoenix.FilterForm.Predicate
-  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
   require Ash.Query
@@ -393,29 +392,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   end
 
   defp loc_continent_options(collection) do
-    distinct(
-      EncodedRecord
-      |> Ash.Query.set_tenant(collection)
-      |> Ash.Query.filter(record.collection_id == ^collection.id),
-      :loc_continent
-    )
+    distinct_ecto(:loc_continent, :encoded_records, collection)
   end
 
   defp tax_kingdom_options(collection) do
-    distinct(
-      EncodedRecord
-      |> Ash.Query.set_tenant(collection)
-      |> Ash.Query.filter(record.collection_id == ^collection.id),
-      :tax_kingdom
-    )
+    distinct_ecto(:tax_kingdom, :encoded_records, collection)
   end
 
   defp tax_phylum_options(collection) do
-    distinct(
-      EncodedRecord
-      |> Ash.Query.set_tenant(collection)
-      |> Ash.Query.filter(record.collection_id == ^collection.id),
-      :tax_phylum
-    )
+    distinct_ecto(:tax_phylum, :encoded_records, collection)
   end
 end
