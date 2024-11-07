@@ -142,7 +142,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
       socket.assigns
 
     collection = Ash.load!(collection, [:records_to_export_query], lazy?: true)
-
+    actor = get_actor(socket)
     records_to_export_query = filter_map(ash_pagify, collection.records_to_export_query, layer)
 
     %{
@@ -155,7 +155,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
       data_layer: params["data_layer"]
     }
     |> Export.create!(tenant: collection)
-    |> Export.enqueue()
+    |> Export.enqueue(%{started_by_id: actor.id})
   end
 
   defp assign_form(socket) do

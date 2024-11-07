@@ -116,11 +116,20 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         <:col :let={{_id, import}} label={~t"Size"m}>
           <.attachment_download_badge attachment={import.attachment} />
         </:col>
+        <:col :let={{_id, import}} field={:inserted_at} label={~t"Created at"m}>
+          <%= format_datetime(import.inserted_at, format: :short) %>
+        </:col>
+        <:col :let={{_id, import}} field={:created_by} label={~t"Created by"m}>
+          <%= maybe_set_user(import.created_by) %>
+        </:col>
         <:col :let={{_id, import}} field={:started_at} label={~t"Started at"m}>
           <%= format_datetime(import.started_at, format: :short) %>
           <div :if={import.duration} class="text-base-content/60 text-xs">
             <%= import.duration %>
           </div>
+        </:col>
+        <:col :let={{_id, import}} field={:started_by} label={~t"Started by"m}>
+          <%= maybe_set_user(import.started_by) %>
         </:col>
         <:col
           :let={{_id, import}}
@@ -241,6 +250,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                 badge
               />
             </:item>
+            <:item title={~t"Created by"m}>
+              <%= maybe_set_user(@selected_import.created_by) %>
+            </:item>
             <:item title={~t"Created at"m}>
               <%= format_datetime(@selected_import.inserted_at) %>
             </:item>
@@ -316,6 +328,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               </div>
             </:item>
 
+            <:item title={~t"Started by"m}>
+              <%= maybe_set_user(@selected_import.started_by) %>
+            </:item>
             <:item title={~t"Started at"m}>
               <div :if={@selected_import.finished_at == nil}>
                 <%= format_datetime(@selected_import.started_at) %>
@@ -488,7 +503,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
     case id
          |> Import.get_by_id!(actor: actor, tenant: tenant)
-         |> Import.enqueue_import(actor: actor) do
+         |> Import.enqueue_import(%{started_by_id: actor.id}, actor: actor) do
       {:ok, _} ->
         {:noreply, put_flash(socket, :info, ~t"Import started in background")}
 

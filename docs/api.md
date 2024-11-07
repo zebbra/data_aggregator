@@ -386,9 +386,11 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID collection_id
+        UUID started_by_id
         UUID attachment_id
         Atom state
         Collection collection
+        User started_by
         Attachment attachment
         destroy()
         read()
@@ -396,7 +398,7 @@ classDiagram
         create(Struct collection, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
         update_mapping(Map mapping, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
         update(Struct[] records, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
-        enqueue()
+        enqueue(UUID started_by_id)
         add_export_progress(Integer exported)
         set_running()
         set_failed()
@@ -418,11 +420,15 @@ classDiagram
         Integer rows_imported_count
         Integer rows_error_count
         UUID collection_id
+        UUID created_by_id
+        UUID started_by_id
         UUID attachment_id
         UUID error_log_id
         Atom state
         Integer records_count
         Collection collection
+        User created_by
+        User started_by
         Attachment attachment
         Attachment error_log
         Record[] records
@@ -431,10 +437,10 @@ classDiagram
         read()
         active()
         create(Struct collection, Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, ...)
-        create_from_path(Struct collection, String path, String filename)
+        create_from_path(Struct collection, String path, String filename, UUID created_by_id)
         update_mapping(Column[] columns)
         add_validation_progress(Integer valid, Integer invalid)
-        enqueue_import()
+        enqueue_import(UUID started_by_id)
         import()
         set_importing()
         add_import_progress(Integer imported)
@@ -464,9 +470,13 @@ classDiagram
         Map[] invalid_file_infos
         Atom mapping_identifier
         UUID collection_id
+        UUID created_by_id
+        UUID started_by_id
         UUID attachment_id
         Atom state
         Collection collection
+        User created_by
+        User started_by
         Attachment attachment
         Image[] images
         Attachment[] image_attachments
@@ -479,7 +489,7 @@ classDiagram
         set_extracting()
         set_extracted()
         set_extraction_failed()
-        enqueue_mapping()
+        enqueue_mapping(UUID started_by_id)
         map()
         set_mapping()
         set_mapped()
@@ -487,7 +497,7 @@ classDiagram
         cancel_mapping()
         active()
         create(Struct collection, UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, ...)
-        create_from_path(Struct collection, String path, String filename)
+        create_from_path(Struct collection, String path, String filename, UUID created_by_id)
     }
     class Publication {
         UUID id
@@ -503,16 +513,18 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID collection_id
+        UUID started_by_id
         UUID attachment_id
         Atom state
         Collection collection
+        User started_by
         Attachment attachment
         update(String name, Atom channel, UtcDatetime published_at, UtcDatetime started_at, ...)
         destroy()
         read()
         active()
         create(Struct collection, String name, Atom channel, UtcDatetime published_at, ...)
-        enqueue()
+        enqueue(UUID started_by_id)
         add_publication_progress(Integer published)
         set_running()
         set_failed(String name, Atom channel, UtcDatetime published_at, UtcDatetime started_at, ...)
@@ -1221,6 +1233,10 @@ classDiagram
     }
 
     User -- Version
+    User -- Export
+    User -- ImageUpload
+    User -- Import
+    User -- Publication
     User -- Version
     Attachment -- Approval
     Attachment -- Export
@@ -1596,6 +1612,7 @@ erDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID collection_id
+        UUID started_by_id
         UUID attachment_id
         Atom state
     }
@@ -1612,6 +1629,8 @@ erDiagram
         Integer rows_imported_count
         Integer rows_error_count
         UUID collection_id
+        UUID created_by_id
+        UUID started_by_id
         UUID attachment_id
         UUID error_log_id
         Atom state
@@ -1631,6 +1650,8 @@ erDiagram
         ArrayOfMap invalid_file_infos
         Atom mapping_identifier
         UUID collection_id
+        UUID created_by_id
+        UUID started_by_id
         UUID attachment_id
         Atom state
     }
@@ -1648,6 +1669,7 @@ erDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID collection_id
+        UUID started_by_id
         UUID attachment_id
         Atom state
     }
@@ -2283,6 +2305,10 @@ erDiagram
     }
 
     User ||--|| Version : ""
+    User ||--|| Export : ""
+    User ||--|| ImageUpload : ""
+    User ||--|| Import : ""
+    User ||--|| Publication : ""
     User ||--|| Version : ""
     Attachment ||--|| Approval : ""
     Attachment ||--|| Export : ""
@@ -2746,6 +2772,7 @@ erDiagram
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
 | **collection_id** | UUID |  |
+| **started_by_id** | UUID |  |
 | **attachment_id** | UUID |  |
 | **state** | Atom |  |
 
@@ -2756,10 +2783,10 @@ erDiagram
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
 | **active** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>exported_count</b> <i>Integer</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>header_source</b> <i>HeaderSourceType</i> attribute</li><li><b>data_layer</b> <i>DataLayerType</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
-| **update_mapping** | _update_ | <ul><li><b>mapping</b> <i>Map</i> </li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>exported_count</b> <i>Integer</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>header_source</b> <i>HeaderSourceType</i> attribute</li><li><b>data_layer</b> <i>DataLayerType</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
-| **update** | _update_ | <ul><li><b>records</b> <i>Struct[]</i> </li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>exported_count</b> <i>Integer</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>header_source</b> <i>HeaderSourceType</i> attribute</li><li><b>data_layer</b> <i>DataLayerType</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
-| **enqueue** | _update_ | <ul></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>exported_count</b> <i>Integer</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>header_source</b> <i>HeaderSourceType</i> attribute</li><li><b>data_layer</b> <i>DataLayerType</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **update_mapping** | _update_ | <ul><li><b>mapping</b> <i>Map</i> </li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>exported_count</b> <i>Integer</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>header_source</b> <i>HeaderSourceType</i> attribute</li><li><b>data_layer</b> <i>DataLayerType</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>records</b> <i>Struct[]</i> </li><li><b>name</b> <i>String</i> attribute</li><li><b>exported_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>mapping</b> <i>Map</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>exported_count</b> <i>Integer</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>header_source</b> <i>HeaderSourceType</i> attribute</li><li><b>data_layer</b> <i>DataLayerType</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **enqueue** | _update_ | <ul><li><b>started_by_id</b> <i>UUID</i> attribute</li></ul> |  |
 | **add_export_progress** | _update_ | <ul><li><b>exported</b> <i>Integer</i> </li></ul> |  |
 | **set_running** | _update_ | <ul></ul> |  |
 | **set_failed** | _update_ | <ul></ul> |  |
@@ -2788,6 +2815,8 @@ erDiagram
 | **rows_imported_count** | Integer |  |
 | **rows_error_count** | Integer |  |
 | **collection_id** | UUID |  |
+| **created_by_id** | UUID |  |
+| **started_by_id** | UUID |  |
 | **attachment_id** | UUID |  |
 | **error_log_id** | UUID |  |
 | **state** | Atom |  |
@@ -2796,15 +2825,15 @@ erDiagram
 
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
-| **update** | _update_ | <ul><li><b>columns</b> <i>Column[]</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>rows_valid_count</b> <i>Integer</i> attribute</li><li><b>rows_invalid_count</b> <i>Integer</i> attribute</li><li><b>rows_imported_count</b> <i>Integer</i> attribute</li><li><b>rows_error_count</b> <i>Integer</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>error_log_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>columns</b> <i>Column[]</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>rows_valid_count</b> <i>Integer</i> attribute</li><li><b>rows_invalid_count</b> <i>Integer</i> attribute</li><li><b>rows_imported_count</b> <i>Integer</i> attribute</li><li><b>rows_error_count</b> <i>Integer</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>created_by_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>error_log_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
 | **active** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>columns</b> <i>Column[]</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>rows_valid_count</b> <i>Integer</i> attribute</li><li><b>rows_invalid_count</b> <i>Integer</i> attribute</li><li><b>rows_imported_count</b> <i>Integer</i> attribute</li><li><b>rows_error_count</b> <i>Integer</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>error_log_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
-| **create_from_path** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>path</b> <i>String</i> </li><li><b>filename</b> <i>String</i> </li></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>columns</b> <i>Column[]</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>rows_valid_count</b> <i>Integer</i> attribute</li><li><b>rows_invalid_count</b> <i>Integer</i> attribute</li><li><b>rows_imported_count</b> <i>Integer</i> attribute</li><li><b>rows_error_count</b> <i>Integer</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>created_by_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>error_log_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **create_from_path** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>path</b> <i>String</i> </li><li><b>filename</b> <i>String</i> </li><li><b>created_by_id</b> <i>UUID</i> attribute</li></ul> |  |
 | **update_mapping** | _update_ | <ul><li><b>columns</b> <i>Column[]</i> attribute</li></ul> |  |
 | **add_validation_progress** | _update_ | <ul><li><b>valid</b> <i>Integer</i> </li><li><b>invalid</b> <i>Integer</i> </li></ul> |  |
-| **enqueue_import** | _update_ | <ul></ul> |  |
+| **enqueue_import** | _update_ | <ul><li><b>started_by_id</b> <i>UUID</i> attribute</li></ul> |  |
 | **import** | _update_ | <ul></ul> |  |
 | **set_importing** | _update_ | <ul></ul> |  |
 | **add_import_progress** | _update_ | <ul><li><b>imported</b> <i>Integer</i> </li></ul> |  |
@@ -2850,6 +2879,8 @@ erDiagram
 | **invalid_file_infos** | Map[] |  |
 | **mapping_identifier** | Atom |  |
 | **collection_id** | UUID |  |
+| **created_by_id** | UUID |  |
+| **started_by_id** | UUID |  |
 | **attachment_id** | UUID |  |
 | **state** | Atom |  |
 
@@ -2857,7 +2888,7 @@ erDiagram
 
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
-| **update** | _update_ | <ul><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>invalid_file_infos</b> <i>Map[]</i> attribute</li><li><b>mapping_identifier</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>invalid_file_infos</b> <i>Map[]</i> attribute</li><li><b>mapping_identifier</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>created_by_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
 | **update_mapping_identifier** | _update_ | <ul><li><b>mapping_identifier</b> <i>Atom</i> attribute</li></ul> |  |
@@ -2866,15 +2897,15 @@ erDiagram
 | **set_extracting** | _update_ | <ul></ul> |  |
 | **set_extracted** | _update_ | <ul></ul> |  |
 | **set_extraction_failed** | _update_ | <ul></ul> |  |
-| **enqueue_mapping** | _update_ | <ul></ul> |  |
+| **enqueue_mapping** | _update_ | <ul><li><b>started_by_id</b> <i>UUID</i> attribute</li></ul> |  |
 | **map** | _update_ | <ul></ul> |  |
 | **set_mapping** | _update_ | <ul></ul> |  |
 | **set_mapped** | _update_ | <ul></ul> |  |
 | **set_mapping_failed** | _update_ | <ul></ul> |  |
 | **cancel_mapping** | _update_ | <ul></ul> |  |
 | **active** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>invalid_file_infos</b> <i>Map[]</i> attribute</li><li><b>mapping_identifier</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
-| **create_from_path** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>path</b> <i>String</i> </li><li><b>filename</b> <i>String</i> </li></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>invalid_file_infos</b> <i>Map[]</i> attribute</li><li><b>mapping_identifier</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>created_by_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **create_from_path** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>path</b> <i>String</i> </li><li><b>filename</b> <i>String</i> </li><li><b>created_by_id</b> <i>UUID</i> attribute</li></ul> |  |
 
 ### Publication
 
@@ -2897,6 +2928,7 @@ erDiagram
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
 | **collection_id** | UUID |  |
+| **started_by_id** | UUID |  |
 | **attachment_id** | UUID |  |
 | **state** | Atom |  |
 
@@ -2904,15 +2936,15 @@ erDiagram
 
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
-| **update** | _update_ | <ul><li><b>name</b> <i>String</i> attribute</li><li><b>channel</b> <i>Atom</i> attribute</li><li><b>published_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>published_count</b> <i>Integer</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>name</b> <i>String</i> attribute</li><li><b>channel</b> <i>Atom</i> attribute</li><li><b>published_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>published_count</b> <i>Integer</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
 | **active** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>name</b> <i>String</i> attribute</li><li><b>channel</b> <i>Atom</i> attribute</li><li><b>published_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>published_count</b> <i>Integer</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
-| **enqueue** | _update_ | <ul></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>name</b> <i>String</i> attribute</li><li><b>channel</b> <i>Atom</i> attribute</li><li><b>published_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>published_count</b> <i>Integer</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **enqueue** | _update_ | <ul><li><b>started_by_id</b> <i>UUID</i> attribute</li></ul> |  |
 | **add_publication_progress** | _update_ | <ul><li><b>published</b> <i>Integer</i> </li></ul> |  |
 | **set_running** | _update_ | <ul></ul> |  |
-| **set_failed** | _update_ | <ul><li><b>name</b> <i>String</i> attribute</li><li><b>channel</b> <i>Atom</i> attribute</li><li><b>published_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>published_count</b> <i>Integer</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **set_failed** | _update_ | <ul><li><b>name</b> <i>String</i> attribute</li><li><b>channel</b> <i>Atom</i> attribute</li><li><b>published_at</b> <i>UtcDatetime</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>published_count</b> <i>Integer</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **run** | _update_ | <ul></ul> |  |
 | **set_done** | _update_ | <ul></ul> |  |
 | **update_attachment** | _update_ | <ul><li><b>attachment</b> <i>Struct</i> </li></ul> |  |
@@ -3913,7 +3945,7 @@ classDiagram
         sign_in_with_password(CiString email, String password)
         get_by_subject(String subject)
         destroy()
-        read(String sort)
+        read()
         update(String password, String[] roles, String first_name, String last_name, ...)
         set_password(String password)
         register_with_password(String password, String[] roles, String first_name, String last_name, ...)
@@ -3980,7 +4012,7 @@ erDiagram
 | **sign_in_with_password** | _read_ | <ul><li><b>email</b> <i>CiString</i> The identity to use for retrieving the user.</li><li><b>password</b> <i>String</i> The password to check for the matching user.</li></ul> | Attempt to sign in using a username and password. |
 | **get_by_subject** | _read_ | <ul><li><b>subject</b> <i>String</i> </li></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
-| **read** | _read_ | <ul><li><b>sort</b> <i>String</i> </li></ul> |  |
+| **read** | _read_ | <ul></ul> |  |
 | **update** | _update_ | <ul><li><b>password</b> <i>String</i> </li><li><b>roles</b> <i>String[]</i> attribute</li><li><b>first_name</b> <i>String</i> attribute</li><li><b>last_name</b> <i>String</i> attribute</li><li><b>email</b> <i>CiString</i> attribute</li><li><b>phone</b> <i>String</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li></ul> |  |
 | **set_password** | _update_ | <ul><li><b>password</b> <i>String</i> </li></ul> |  |
 | **register_with_password** | _create_ | <ul><li><b>password</b> <i>String</i> </li><li><b>roles</b> <i>String[]</i> attribute</li><li><b>first_name</b> <i>String</i> attribute</li><li><b>last_name</b> <i>String</i> attribute</li><li><b>email</b> <i>CiString</i> attribute</li><li><b>phone</b> <i>String</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li></ul> |  |

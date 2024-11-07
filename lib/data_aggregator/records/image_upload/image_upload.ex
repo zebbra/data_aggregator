@@ -10,6 +10,7 @@ defmodule DataAggregator.Records.ImageUpload do
     notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
@@ -41,6 +42,8 @@ defmodule DataAggregator.Records.ImageUpload do
       public? true
     end
 
+    belongs_to :created_by, User, public?: true
+    belongs_to :started_by, User, public?: true
     belongs_to :attachment, Attachment, public?: true
 
     has_many :images, Record.Image, public?: true
@@ -143,7 +146,7 @@ defmodule DataAggregator.Records.ImageUpload do
     end
 
     update :enqueue_mapping do
-      accept []
+      accept [:started_by_id]
       require_atomic? false
 
       change ImageUpload.Changes.SetCollectionMappingBeforeTransaction
@@ -207,7 +210,7 @@ defmodule DataAggregator.Records.ImageUpload do
     end
 
     create :create_from_path do
-      accept []
+      accept [:created_by_id]
       argument :collection, :struct, allow_nil?: false
       argument :path, :string, allow_nil?: false
       argument :filename, :string, allow_nil?: true

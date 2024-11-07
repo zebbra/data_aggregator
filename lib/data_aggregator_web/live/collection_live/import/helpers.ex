@@ -10,6 +10,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Helpers do
       :missing_mappings,
       :attachment_filename,
       :attachment_byte_size,
+      :created_by,
+      :started_by,
       attachment: [:filename, :url, :byte_size]
     ]
   end

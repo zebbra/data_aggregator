@@ -46,7 +46,7 @@ defmodule DataAggregator.Records.Actions.Approve do
             center: center
           }
           |> Publication.create!(tenant: tenant)
-          |> Publication.enqueue(actor: actor, authorize?: false)
+          |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor, authorize?: false)
         end
 
         {center, rows_count}

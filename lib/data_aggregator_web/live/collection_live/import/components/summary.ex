@@ -122,7 +122,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
   def handle_event("import:run", _params, socket) do
     actor = get_actor(socket)
 
-    case Import.enqueue_import(socket.assigns.import, actor: actor) do
+    case Import.enqueue_import(socket.assigns.import, %{started_by_id: actor.id}, actor: actor) do
       {:ok, _} ->
         {:noreply,
          socket
