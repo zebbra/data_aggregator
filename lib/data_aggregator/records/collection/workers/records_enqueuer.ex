@@ -2,7 +2,7 @@ defmodule DataAggregator.Records.Collection.Workers.RecordsEnqueuer do
   @moduledoc """
   `Oban.Worker` to perform `DataAggregator.Records.Collection.enqueue_encoding/2` asynchronously.
 
-  Usually this is not used directly, but rather through `DataAggregator.Records.Collection.enqueue_encoding/1`:
+  Usually this is not used directly, but rather through `DataAggregator.Records.Collection.enqueue_encoding/2`:
 
   ```elixir
   {:ok, collection} =

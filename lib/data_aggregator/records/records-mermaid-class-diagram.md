@@ -345,7 +345,7 @@ classDiagram
         destroy()
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read()
-        create(Struct record, Struct collection, Map ext_vernacular_names, Map ext_species_profile, ...)
+        create(Struct record, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         add_image_url(Struct image, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
     }
     class RecordEncodingResult {

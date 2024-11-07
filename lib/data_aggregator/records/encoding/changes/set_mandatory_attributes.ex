@@ -30,7 +30,10 @@ defmodule DataAggregator.Records.Encoding.Changes.SetMandatoryAttributes do
   defp assign_mandatory_attributes(changeset, record) do
     mandatory_values = Map.take(record, record_attribute_name_keys())
 
-    Changeset.change_attributes(changeset, mandatory_values)
+    changeset
+    |> Changeset.change_attributes(mandatory_values)
+    |> Changeset.change_attribute(:record_id, record.id)
+    |> Changeset.change_attribute(:collection_id, record.collection_id)
   end
 
   defp record_attribute_name_keys do
