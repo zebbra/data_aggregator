@@ -30,6 +30,12 @@ spec:
                 name: {{ .Values.envSecret }}
             - configMapRef:
                 name: {{ include "aggregator.fullname" . }}
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ include "aggregator.fullname" . }}-pg-app"
+                  key: uri
           command:
             - /bin/sh
           args:

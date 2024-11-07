@@ -1,0 +1,25 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ include "aggregator.fullname" . }}-pg
+  labels: {{- include "aggregator.labels" . | nindent 4 }}
+spec:
+  instances: 2
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.0
+
+  enableSuperuserAccess: true
+
+  bootstrap:
+    initdb:
+      database: aggregator
+
+  storage:
+    size: 10Gi
+
+  resources:
+    limits:
+      cpu: 8000m
+      memory: 16Gi
+    requests:
+      cpu: 200m
+      memory: 8Gi
