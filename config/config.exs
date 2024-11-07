@@ -83,7 +83,7 @@ config :data_aggregator, Oban,
   ],
   queues: [
     imports: 1,
-    encoders: 1,
+    encoders: 5,
     exports: 1,
     publications: 1,
     publication_verifications: 1,
