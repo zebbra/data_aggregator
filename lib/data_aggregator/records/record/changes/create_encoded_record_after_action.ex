@@ -36,7 +36,6 @@ defmodule DataAggregator.Records.Record.Changes.CreateEncodedRecordAfterAction d
         |> Map.take(@attributes)
         |> Map.filter(fn {_, v} -> v != nil end)
         |> Map.put(:record, record)
-        |> Map.put(:collection, record.collection)
       end
 
     # use the same batch size as the import

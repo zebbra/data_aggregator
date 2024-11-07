@@ -125,6 +125,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
             <%= publication.duration %>
           </div>
         </:col>
+        <:col :let={{_id, publication}} field={:started_by} label={~t"Started by"m}>
+          <%= maybe_set_user(publication.started_by) %>
+        </:col>
         <:col :let={{_id, publication}} field={:rows_count} label={~t"Records"m} class="text-right">
           <%= format_number(publication.rows_count, format: :short) %>
         </:col>
@@ -233,6 +236,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
               </div>
             </:item>
 
+            <:item title={~t"Started by"m}>
+              <%= maybe_set_user(@selected_publication.started_by) %>
+            </:item>
             <:item title={~t"Started at"m}>
               <div :if={@selected_publication.finished_at == nil}>
                 <%= format_datetime(@selected_publication.started_at) %>
@@ -287,7 +293,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
 
     case id
          |> Publication.get_by_id!(actor: actor, tenant: tenant)
-         |> Publication.enqueue(actor: actor) do
+         |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor) do
       {:ok, publication} ->
         {:noreply, put_flash(socket, :info, publication_success_message(publication))}
 

@@ -31,9 +31,7 @@ defmodule DataAggregator.EncodingFixtures do
       |> Map.merge(attrs)
       |> Map.put_new_lazy(:record, fn -> record_fixture() end)
 
-    params = Map.put_new_lazy(params, :collection, fn -> params.record.collection end)
-
-    EncodedRecord.create!(params, tenant: params.collection)
+    EncodedRecord.create!(params, tenant: params.record.collection, load: [:collection, :record])
   end
 
   @doc """

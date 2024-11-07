@@ -54,10 +54,7 @@ defmodule DataAggregator.EncodedRecordTest do
     test "create/1 with valid data creates a encoded_record" do
       record = record_fixture()
 
-      attrs = %{
-        record: record,
-        collection: record.collection
-      }
+      attrs = %{record: record}
 
       assert {:ok, %EncodedRecord{} = result} =
                EncodedRecord.create(attrs, tenant: record.collection)

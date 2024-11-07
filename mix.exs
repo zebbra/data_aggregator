@@ -143,9 +143,6 @@ defmodule DataAggregator.MixProject do
       "Taxonomy API": [
         ~r/^DataAggregator\.Taxonomy/
       ],
-      "Platform API": [
-        ~r/^DataAggregator\.Platform/
-      ],
       "Records API": [
         ~r/^DataAggregator\.Records/
       ],

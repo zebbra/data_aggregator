@@ -112,7 +112,6 @@ config :data_aggregator, :logger, [
 
 config :data_aggregator,
   ash_domains: [
-    DataAggregator.Platform,
     DataAggregator.Records,
     DataAggregator.Taxonomy,
     DataAggregator.Files,

@@ -96,7 +96,6 @@ defmodule DataAggregator.Records.EncodedRecord do
     create :create do
       primary? true
       argument :record, :struct, allow_nil?: false
-      argument :collection, :struct, allow_nil?: false
 
       upsert? true
 
@@ -109,9 +108,6 @@ defmodule DataAggregator.Records.EncodedRecord do
 
       change Encoding.Changes.SetMandatoryAttributes
       change Encoding.Changes.SetOptionalAttributes
-
-      change manage_relationship(:record, type: :append)
-      change manage_relationship(:collection, type: :append)
     end
 
     update :add_image_url do

@@ -720,6 +720,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             meta={@meta.result}
             busy={@busy}
             layer={@layer}
+            current_user={@current_user}
           />
         </.modal>
 
@@ -1051,7 +1052,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       rows_count: Ash.count!(count_query)
     }
     |> Publication.create!(actor: actor, tenant: collection)
-    |> Publication.enqueue(actor: actor)
+    |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor)
   end
 
   defp create_and_enqueue(collection, query, _count_query, :approval, actor) do

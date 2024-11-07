@@ -25,7 +25,7 @@ defmodule DataAggregator.HelpersTest do
     collection = collection_fixture()
     record = record_fixture(%{collection: collection})
     approved_record = approved_record_fixture(%{collection: collection, record: record})
-    encoded_record = encoded_record_fixture(%{record: record, collection: collection})
+    encoded_record = encoded_record_fixture(%{record: record})
 
     record_encoding_result =
       record_encoding_result_fixture(%{record: record, collection: collection})

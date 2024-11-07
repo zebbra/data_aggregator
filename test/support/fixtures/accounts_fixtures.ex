@@ -13,23 +13,6 @@ defmodule DataAggregator.AccountsFixtures do
     password: "secret42"
   }
 
-  @default_admin %User{
-    first_name: "Admin",
-    roles: ["admin"],
-    email: "admin@example.com",
-    hashed_password: "secret42"
-  }
-
-  def default_admin do
-    @default_admin
-  end
-
-  def default_admin_map do
-    @default_admin
-    |> Map.from_struct()
-    |> Map.take([:id, :roles, :institution_id])
-  end
-
   @doc """
   Generate a user
   """

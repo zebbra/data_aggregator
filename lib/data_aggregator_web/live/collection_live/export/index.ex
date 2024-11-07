@@ -117,6 +117,9 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
             <%= export.duration %>
           </div>
         </:col>
+        <:col :let={{_id, export}} field={:started_by} label={~t"Started by"m}>
+          <%= maybe_set_user(export.started_by) %>
+        </:col>
         <:col :let={{_id, export}} field={:rows_count} label={~t"Records"m} class="text-right">
           <%= format_number(export.rows_count, format: :short) %>
         </:col>
@@ -214,6 +217,9 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
               </div>
             </:item>
 
+            <:item title={~t"Started by"m}>
+              <%= maybe_set_user(@selected_export.started_by) %>
+            </:item>
             <:item title={~t"Started at"m}>
               <div :if={@selected_export.finished_at == nil}>
                 <%= format_datetime(@selected_export.started_at) %>
@@ -263,7 +269,9 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
     actor = get_actor(socket)
     tenant = get_tenant(socket)
 
-    case id |> Export.get_by_id!(actor: actor, tenant: tenant) |> Export.enqueue(actor: actor) do
+    case id
+         |> Export.get_by_id!(actor: actor, tenant: tenant)
+         |> Export.enqueue(%{started_by_id: actor.id}, actor: actor) do
       {:ok, _} ->
         {:noreply, put_flash(socket, :info, ~t"Export started in background"m)}
 

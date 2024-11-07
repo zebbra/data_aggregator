@@ -60,17 +60,7 @@ defmodule DataAggregator.Accounts.User do
   end
 
   actions do
-    defaults [:destroy]
-
-    read :read do
-      primary? true
-      argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true,
-                 countable: true,
-                 required?: false,
-                 keyset?: true
-    end
+    defaults [:read, :destroy]
 
     update :update do
       change set_context(%{strategy_name: :password})

@@ -47,15 +47,12 @@ defmodule DataAggregator.Records.Encoding.Strategy do
         :iucn_redlist_category
       ] ++ DataAggregator.DarwinCore.Schema.prefixed_attribute_names()
 
-    record = Ash.load!(record, [:collection], lazy?: true)
-
     encoded_record =
       EncodedRecord.create!(
         record
         |> Map.from_struct()
         |> Map.take(attributes)
-        |> Map.put_new_lazy(:record, fn -> record end)
-        |> Map.put_new_lazy(:collection, fn -> record.collection end),
+        |> Map.put(:record, record),
         tenant: tenant
       )
 

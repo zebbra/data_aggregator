@@ -159,6 +159,35 @@
         "destination_attribute": "id",
         "destination_attribute_default": null,
         "destination_attribute_generated": null,
+        "index?": false,
+        "match_type": null,
+        "match_with": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "publications_started_by_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "users"
+      },
+      "size": null,
+      "source": "started_by_id",
+      "type": "uuid"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
         "index?": true,
         "match_type": null,
         "match_with": null,
@@ -194,7 +223,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "D088AFCDB902C29244297BF29C8200D18FDDF749FDCB881C9844DEA6CE17ED45",
+  "hash": "E3345EF5CF47BB35058397B31DD64B435D66A88601D4066934633F0C8A4F3ED2",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",
