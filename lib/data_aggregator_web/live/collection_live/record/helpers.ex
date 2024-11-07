@@ -44,16 +44,4 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   def path_helper(collection, layer, meta, scope) do
     build_scope_path(~p"/collections/#{collection}/records?layer=#{layer}", meta, scope)
   end
-
-  def attributes_with_data(attributes) do
-    Enum.filter(attributes, fn %{name: _, imported: imported, encoded: encoded} ->
-      imported != "-" || encoded != "-"
-    end)
-  end
-
-  def category_has_data?(category) do
-    Enum.any?(category.attributes, fn %{imported: imported, encoded: encoded} ->
-      imported != "-" || encoded != "-"
-    end)
-  end
 end

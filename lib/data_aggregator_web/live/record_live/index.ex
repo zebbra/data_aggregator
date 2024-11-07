@@ -13,6 +13,7 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   alias DataAggregator.Records.Record
 
   @load [:collection, :encoded_record]
+  @coordinate_attribute_names ~w(swissCoordinatesLv03_x swissCoordinatesLv03_y swissCoordinatesLv95_x swissCoordinatesLv95_y)
 
   @impl true
   def mount(_params, _session, socket) do
@@ -115,7 +116,10 @@ defmodule DataAggregatorWeb.RecordLive.Index do
           size="xl"
         >
           <%= for category <- @attrs_in_categories do %>
-            <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 open:first:border-t lg:pl-4">
+            <details
+              :if={category_has_data?(category)}
+              class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 open:first:border-t lg:pl-4"
+            >
               <summary class="collapse-title">
                 <%= category.label %>
               </summary>
@@ -126,16 +130,16 @@ defmodule DataAggregatorWeb.RecordLive.Index do
                 <.table
                   opts={[container_attrs: [class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8 pb-4"]]}
                   id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
-                  items={category.attributes}
+                  items={attributes_with_data(category.attributes)}
                 >
                   <:col :let={attribute} label={~t"Name"} class="font-semibold">
                     <%= attribute.name %>
                   </:col>
                   <:col :let={attribute} label={~t"Imported"}>
-                    <%= attribute.imported %>
+                    <%= format_value(attribute.imported, attribute.name) %>
                   </:col>
                   <:col :let={attribute} label={~t"Encoded"}>
-                    <%= attribute.encoded %>
+                    <%= format_value(attribute.encoded, attribute.name) %>
                   </:col>
                 </.table>
               </div>
@@ -209,6 +213,15 @@ defmodule DataAggregatorWeb.RecordLive.Index do
   defp get_record(id) do
     Record.get_by_id!(id, load: @load)
   end
+
+  defp format_value(value, attribute_name) when attribute_name in @coordinate_attribute_names do
+    case format_coordinate(value) do
+      value when is_float(value) -> Float.round(value, 2)
+      value -> value
+    end
+  end
+
+  defp format_value(value, _), do: value
 
   def no_results_content(assigns \\ %{}) do
     ~H"""

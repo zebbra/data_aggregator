@@ -368,7 +368,7 @@
       "references": null,
       "size": null,
       "source": "pvn_preservation_temperature",
-      "type": "text"
+      "type": "float"
     },
     {
       "allow_nil?": true,
@@ -1257,7 +1257,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "loc_swiss_coordinates_y",
+      "source": "loc_swiss_coordinates_lv95_y",
       "type": "float"
     },
     {
@@ -1267,7 +1267,27 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "loc_swiss_coordinates_x",
+      "source": "loc_swiss_coordinates_lv95_x",
+      "type": "float"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "loc_swiss_coordinates_lv03_y",
+      "type": "float"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "loc_swiss_coordinates_lv03_x",
       "type": "float"
     },
     {
@@ -1438,7 +1458,7 @@
       "references": null,
       "size": null,
       "source": "loc_coordinate_uncertainty_in_meters",
-      "type": "bigint"
+      "type": "float"
     },
     {
       "allow_nil?": true,
@@ -1478,7 +1498,7 @@
       "references": null,
       "size": null,
       "source": "loc_maximum_distance_above_surface_in_meters",
-      "type": "bigint"
+      "type": "float"
     },
     {
       "allow_nil?": true,
@@ -1488,7 +1508,7 @@
       "references": null,
       "size": null,
       "source": "loc_minimum_distance_above_surface_in_meters",
-      "type": "bigint"
+      "type": "float"
     },
     {
       "allow_nil?": true,
@@ -1508,7 +1528,7 @@
       "references": null,
       "size": null,
       "source": "loc_maximum_depth_in_meters",
-      "type": "bigint"
+      "type": "float"
     },
     {
       "allow_nil?": true,
@@ -1518,7 +1538,7 @@
       "references": null,
       "size": null,
       "source": "loc_minimum_depth_in_meters",
-      "type": "bigint"
+      "type": "float"
     },
     {
       "allow_nil?": true,
@@ -1548,7 +1568,7 @@
       "references": null,
       "size": null,
       "source": "loc_maximum_elevation_in_meters",
-      "type": "bigint"
+      "type": "float"
     },
     {
       "allow_nil?": true,
@@ -1558,7 +1578,7 @@
       "references": null,
       "size": null,
       "source": "loc_minimum_elevation_in_meters",
-      "type": "bigint"
+      "type": "float"
     },
     {
       "allow_nil?": true,
@@ -2468,7 +2488,7 @@
       "references": null,
       "size": null,
       "source": "eve_tree_layer_height_in_meters",
-      "type": "bigint"
+      "type": "float"
     },
     {
       "allow_nil?": true,
@@ -2518,7 +2538,7 @@
       "references": null,
       "size": null,
       "source": "eve_inclination_in_degrees",
-      "type": "bigint"
+      "type": "float"
     },
     {
       "allow_nil?": true,
@@ -2528,7 +2548,7 @@
       "references": null,
       "size": null,
       "source": "eve_herb_layer_height_in_centimeters",
-      "type": "bigint"
+      "type": "float"
     },
     {
       "allow_nil?": true,
@@ -2855,7 +2875,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "92144B8802F061FAE91D30B0A6A3345144BC66D06FD57D6966D050EEFB573FCD",
+  "hash": "CF5123A6F7343959F96048F79F92C120C656F32C60EE119507666766D65336B1",
   "identities": [
     {
       "all_tenants?": false,
