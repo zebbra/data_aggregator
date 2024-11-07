@@ -65,14 +65,12 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
           assert length(record.images) == 2
           assert length(record.image_attachments) == 2
 
-          regex1 =
-            ~r/^[^|]*catalogNumber1_1\.jpg\s*\|\s*[^|]*catalogNumber1_2\.jpg$/
-
-          regex2 =
-            ~r/^[^|]*catalogNumber1_2\.jpg\s*\|\s*[^|]*catalogNumber1_1\.jpg$/
-
-          assert Regex.match?(regex1, record.encoded_record.mte_associated_media) or
-                   Regex.match?(regex2, record.encoded_record.mte_associated_media)
+          Enum.each(record.images, fn image ->
+            assert String.contains?(
+                     record.encoded_record.mte_associated_media,
+                     System.get_env("BASE_URL") <> "/images/" <> image.id
+                   )
+          end)
 
           Enum.each(record.image_attachments, fn image_attachment ->
             assert image_attachment.filename in ["catalogNumber1_1.jpg", "catalogNumber1_2.jpg"]
@@ -82,8 +80,12 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
           assert length(record.images) == 1
           assert length(record.image_attachments) == 1
 
-          regex = ~r/^[^|]*catalogNumber2\.jpg$/
-          assert Regex.match?(regex, record.encoded_record.mte_associated_media)
+          Enum.each(record.images, fn image ->
+            assert String.contains?(
+                     record.encoded_record.mte_associated_media,
+                     System.get_env("BASE_URL") <> "/images/" <> image.id
+                   )
+          end)
 
           assert record.image_attachments |> List.first() |> Map.get(:filename) ==
                    "catalogNumber2.jpg"
@@ -98,8 +100,12 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
           assert length(record.images) == 1
           assert length(record.image_attachments) == 1
 
-          regex = ~r/^[^|]*catalogNumber4\.jpeg$/
-          assert Regex.match?(regex, record.encoded_record.mte_associated_media)
+          Enum.each(record.images, fn image ->
+            assert String.contains?(
+                     record.encoded_record.mte_associated_media,
+                     System.get_env("BASE_URL") <> "/images/" <> image.id
+                   )
+          end)
 
           assert record.image_attachments |> List.first() |> Map.get(:filename) ==
                    "catalogNumber4.jpeg"

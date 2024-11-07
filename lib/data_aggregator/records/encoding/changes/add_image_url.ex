@@ -5,6 +5,8 @@ defmodule DataAggregator.Records.Encoding.Changes.AddImageUrl do
 
   use Ash.Resource.Change
 
+  import DataAggregator.Records.ImageUpload.Helpers, only: [construct_image_url: 1]
+
   alias Ash.Changeset
 
   require Logger
@@ -18,8 +20,9 @@ defmodule DataAggregator.Records.Encoding.Changes.AddImageUrl do
     Logger.info("Adding image url to encoded record ...")
 
     associated_media = Changeset.get_attribute(changeset, :mte_associated_media) || ""
+    image_url = construct_image_url(image.id)
 
-    if String.contains?(associated_media, image.attachment.url) do
+    if String.contains?(associated_media, image_url) do
       Logger.info("Image already in mte_associated_media on encoded record.")
       changeset
     else
@@ -28,7 +31,7 @@ defmodule DataAggregator.Records.Encoding.Changes.AddImageUrl do
       Changeset.force_change_attribute(
         changeset,
         :mte_associated_media,
-        maybe_concatenate(associated_media, image.attachment.url)
+        maybe_concatenate(associated_media, image_url)
       )
     end
   end
