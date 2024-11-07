@@ -17,10 +17,8 @@ classDiagram
         CollectionType type
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
-        UUID institution_id
         Atom state
         Float digitizing_progress
-        Institution institution
         Import[] imports
         Export[] exports
         Record[] records
@@ -1225,7 +1223,6 @@ classDiagram
     Attachment -- Publication
     Attachment -- Record
     Attachment -- Image
-    Institution -- Collection
     Approval -- Collection
     ApprovedRecord -- Collection
     ApprovedRecord -- Record

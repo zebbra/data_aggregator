@@ -1,88 +1,5 @@
 # Domain Documentation
 
-## Domain DataAggregator.Platform
-
-### Class Diagram
-
-```mermaid
-classDiagram
-    class Institution {
-        UUID id
-        String name
-        String code
-        String address
-        String zip_code
-        String city
-        String country
-        String mail
-        String tel
-        String contact_person
-        String grscicoll_reference
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-        destroy()
-        update(String name, String code, String address, String zip_code, ...)
-        read()
-        create(String name, String code, String address, String zip_code, ...)
-    }
-```
-
-### ER Diagram
-
-```mermaid
-erDiagram
-    Institution {
-        UUID id
-        String name
-        String code
-        String address
-        String zip_code
-        String city
-        String country
-        String mail
-        String tel
-        String contact_person
-        String grscicoll_reference
-        UtcDatetimeUsec inserted_at
-        UtcDatetimeUsec updated_at
-    }
-```
-
-### Resources
-
-- [Institution](#institution)
-
-### Institution
-
-
-
-#### Attributes
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| **id** | UUID |  |
-| **name** | String |  |
-| **code** | String | an iternationally valid code to identify the institution |
-| **address** | String |  |
-| **zip_code** | String |  |
-| **city** | String |  |
-| **country** | String |  |
-| **mail** | String |  |
-| **tel** | String |  |
-| **contact_person** | String |  |
-| **grscicoll_reference** | String | a code to identify the institution in the GrSciColl database |
-| **inserted_at** | UtcDatetimeUsec |  |
-| **updated_at** | UtcDatetimeUsec |  |
-
-#### Actions
-
-| Name | Type | Input | Description |
-| ---- | ---- | ----- | ----------- |
-| **destroy** | _destroy_ | <ul></ul> |  |
-| **update** | _update_ | <ul><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>address</b> <i>String</i> attribute</li><li><b>zip_code</b> <i>String</i> attribute</li><li><b>city</b> <i>String</i> attribute</li><li><b>country</b> <i>String</i> attribute</li><li><b>mail</b> <i>String</i> attribute</li><li><b>tel</b> <i>String</i> attribute</li><li><b>contact_person</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li></ul> |  |
-| **read** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>address</b> <i>String</i> attribute</li><li><b>zip_code</b> <i>String</i> attribute</li><li><b>city</b> <i>String</i> attribute</li><li><b>country</b> <i>String</i> attribute</li><li><b>mail</b> <i>String</i> attribute</li><li><b>tel</b> <i>String</i> attribute</li><li><b>contact_person</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li></ul> |  |
-
 ## Domain DataAggregator.Records
 
 ### Class Diagram
@@ -106,10 +23,8 @@ classDiagram
         CollectionType type
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
-        UUID institution_id
         Atom state
         Float digitizing_progress
-        Institution institution
         Import[] imports
         Export[] exports
         Record[] records
@@ -1314,7 +1229,6 @@ classDiagram
     Attachment -- Publication
     Attachment -- Record
     Attachment -- Image
-    Institution -- Collection
     Approval -- Collection
     ApprovedRecord -- Collection
     ApprovedRecord -- Record
@@ -1360,7 +1274,6 @@ erDiagram
         CollectionType type
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
-        UUID institution_id
         Atom state
         Float digitizing_progress
     }
@@ -2378,7 +2291,6 @@ erDiagram
     Attachment ||--|| Publication : ""
     Attachment ||--|| Record : ""
     Attachment ||--|| Image : ""
-    Institution ||--|| Collection : ""
     Approval ||--|| Collection : ""
     ApprovedRecord ||--|| Collection : ""
     ApprovedRecord ||--|| Record : ""
@@ -2444,19 +2356,18 @@ erDiagram
 | **type** | CollectionType |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
-| **institution_id** | UUID |  |
 | **state** | Atom |  |
 
 #### Actions
 
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
-| **update** | _update_ | <ul><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>records_count</b> <i>Integer</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>records_count</b> <i>Integer</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>records_count</b> <i>Integer</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **create** | _create_ | <ul><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>records_count</b> <i>Integer</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **update_import_mapping** | _update_ | <ul><li><b>import_mapping</b> <i>Map[]</i> attribute</li></ul> |  |
-| **touch** | _update_ | <ul><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>records_count</b> <i>Integer</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
-| **register_at_gbif** | _update_ | <ul><li><b>dwca_file_url</b> <i>String</i> </li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>records_count</b> <i>Integer</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **touch** | _update_ | <ul><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>records_count</b> <i>Integer</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **register_at_gbif** | _update_ | <ul><li><b>dwca_file_url</b> <i>String</i> </li><li><b>items_to_digitize</b> <i>Integer</i> attribute</li><li><b>owner</b> <i>String</i> attribute</li><li><b>name</b> <i>String</i> attribute</li><li><b>code</b> <i>String</i> attribute</li><li><b>grscicoll_reference</b> <i>String</i> attribute</li><li><b>grscicoll_institution_key</b> <i>String</i> attribute</li><li><b>grscicoll_institution_code</b> <i>String</i> attribute</li><li><b>grscicoll_institution_name</b> <i>String</i> attribute</li><li><b>description</b> <i>String</i> attribute</li><li><b>gbif_dataset_key</b> <i>String</i> attribute</li><li><b>import_mapping</b> <i>Map[]</i> attribute</li><li><b>records_count</b> <i>Integer</i> attribute</li><li><b>type</b> <i>CollectionType</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **set_mapping** | _update_ | <ul></ul> |  |
 | **set_importing** | _update_ | <ul></ul> |  |
 | **set_exporting** | _update_ | <ul></ul> |  |

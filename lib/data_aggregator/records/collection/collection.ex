@@ -80,8 +80,6 @@ defmodule DataAggregator.Records.Collection do
   end
 
   relationships do
-    belongs_to :institution, DataAggregator.Platform.Institution, public?: true
-
     has_many :imports, DataAggregator.Records.Import, public?: true
     has_many :exports, DataAggregator.Records.Export, public?: true
     has_many :records, DataAggregator.Records.Record, public?: true
