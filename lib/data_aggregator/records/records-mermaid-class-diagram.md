@@ -380,9 +380,11 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID collection_id
+        UUID started_by_id
         UUID attachment_id
         Atom state
         Collection collection
+        User started_by
         Attachment attachment
         destroy()
         read()
@@ -390,7 +392,7 @@ classDiagram
         create(Struct collection, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
         update_mapping(Map mapping, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
         update(Struct[] records, String name, UtcDatetime exported_at, UtcDatetime started_at, ...)
-        enqueue()
+        enqueue(UUID started_by_id)
         add_export_progress(Integer exported)
         set_running()
         set_failed()
@@ -412,11 +414,15 @@ classDiagram
         Integer rows_imported_count
         Integer rows_error_count
         UUID collection_id
+        UUID created_by_id
+        UUID started_by_id
         UUID attachment_id
         UUID error_log_id
         Atom state
         Integer records_count
         Collection collection
+        User created_by
+        User started_by
         Attachment attachment
         Attachment error_log
         Record[] records
@@ -425,10 +431,10 @@ classDiagram
         read()
         active()
         create(Struct collection, Column[] columns, UtcDatetime started_at, UtcDatetime finished_at, ...)
-        create_from_path(Struct collection, String path, String filename)
+        create_from_path(Struct collection, String path, String filename, UUID created_by_id)
         update_mapping(Column[] columns)
         add_validation_progress(Integer valid, Integer invalid)
-        enqueue_import()
+        enqueue_import(UUID started_by_id)
         import()
         set_importing()
         add_import_progress(Integer imported)
@@ -458,9 +464,13 @@ classDiagram
         Map[] invalid_file_infos
         Atom mapping_identifier
         UUID collection_id
+        UUID created_by_id
+        UUID started_by_id
         UUID attachment_id
         Atom state
         Collection collection
+        User created_by
+        User started_by
         Attachment attachment
         Image[] images
         Attachment[] image_attachments
@@ -473,7 +483,7 @@ classDiagram
         set_extracting()
         set_extracted()
         set_extraction_failed()
-        enqueue_mapping()
+        enqueue_mapping(UUID started_by_id)
         map()
         set_mapping()
         set_mapped()
@@ -481,7 +491,7 @@ classDiagram
         cancel_mapping()
         active()
         create(Struct collection, UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, ...)
-        create_from_path(Struct collection, String path, String filename)
+        create_from_path(Struct collection, String path, String filename, UUID created_by_id)
     }
     class Publication {
         UUID id
@@ -497,16 +507,18 @@ classDiagram
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID collection_id
+        UUID started_by_id
         UUID attachment_id
         Atom state
         Collection collection
+        User started_by
         Attachment attachment
         update(String name, Atom channel, UtcDatetime published_at, UtcDatetime started_at, ...)
         destroy()
         read()
         active()
         create(Struct collection, String name, Atom channel, UtcDatetime published_at, ...)
-        enqueue()
+        enqueue(UUID started_by_id)
         add_publication_progress(Integer published)
         set_running()
         set_failed(String name, Atom channel, UtcDatetime published_at, UtcDatetime started_at, ...)
@@ -1215,6 +1227,10 @@ classDiagram
     }
 
     User -- Version
+    User -- Export
+    User -- ImageUpload
+    User -- Import
+    User -- Publication
     User -- Version
     Attachment -- Approval
     Attachment -- Export

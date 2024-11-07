@@ -10,6 +10,7 @@ defmodule DataAggregator.Records.Publication do
     notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
@@ -39,6 +40,7 @@ defmodule DataAggregator.Records.Publication do
       allow_nil? false
     end
 
+    belongs_to :started_by, User, public?: true
     belongs_to :attachment, Attachment, public?: true
   end
 
@@ -98,7 +100,7 @@ defmodule DataAggregator.Records.Publication do
     end
 
     update :enqueue do
-      accept []
+      accept [:started_by_id]
       require_atomic? false
 
       change Changes.SetCollectionPublishingBeforeTransaction

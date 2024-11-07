@@ -228,8 +228,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
   end
 
   defp consume(socket, collection) do
+    actor = get_actor(socket)
+
     consume_uploaded_entries(socket, :file, fn %{path: path}, entry ->
-      case handle_upload(collection, path, entry) do
+      case handle_upload(collection, path, entry, actor) do
         {:ok, image_upload} ->
           {:ok, image_upload}
 
@@ -250,8 +252,13 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
     end
   end
 
-  defp handle_upload(collection, path, %UploadEntry{} = entry) do
-    ImageUpload.create_from_path(collection, path, %{filename: entry.client_name}, tenant: collection)
+  defp handle_upload(collection, path, %UploadEntry{} = entry, actor) do
+    ImageUpload.create_from_path(
+      collection,
+      path,
+      %{filename: entry.client_name, created_by_id: actor.id},
+      tenant: collection
+    )
   end
 
   defp handle_flash(socket, image_upload) when is_nil(image_upload) == false do

@@ -127,11 +127,17 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
         <:col :let={{_id, image_upload}} field={:mapping_identifier} label={~t"Mapping identifier"m}>
           <%= Schema.dwc_field_from_prefixed_attribute_name(image_upload.mapping_identifier) %>
         </:col>
-        <:col :let={{_id, image_upload}} field={:started_at} label={~t"Created at"m}>
+        <:col :let={{_id, image_upload}} field={:inserted_at} label={~t"Created at"m}>
           <%= format_datetime(image_upload.inserted_at, format: :short) %>
+        </:col>
+        <:col :let={{_id, image_upload}} field={:created_by} label={~t"Created by"m}>
+          <%= maybe_set_user(image_upload.created_by) %>
         </:col>
         <:col :let={{_id, image_upload}} field={:started_at} label={~t"Started at"m}>
           <%= format_datetime(image_upload.started_at, format: :short) %>
+        </:col>
+        <:col :let={{_id, image_upload}} field={:started_by} label={~t"Started by"m}>
+          <%= maybe_set_user(image_upload.started_by) %>
         </:col>
 
         <:action
@@ -184,8 +190,14 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
                 @selected_image_upload.mapping_identifier
               ) %>
             </:item>
+            <:item title={~t"Created by"m}>
+              <%= maybe_set_user(@selected_image_upload.created_by) %>
+            </:item>
             <:item title={~t"Created at"m}>
               <%= format_datetime(@selected_image_upload.inserted_at) %>
+            </:item>
+            <:item title={~t"Started by"m}>
+              <%= maybe_set_user(@selected_image_upload.started_by) %>
             </:item>
             <:item title={~t"Started at"m}>
               <%= format_datetime(@selected_image_upload.started_at) %>

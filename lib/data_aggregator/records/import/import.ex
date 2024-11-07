@@ -16,6 +16,7 @@ defmodule DataAggregator.Records.Import do
     notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
@@ -56,6 +57,8 @@ defmodule DataAggregator.Records.Import do
       public? true
     end
 
+    belongs_to :created_by, User, public?: true
+    belongs_to :started_by, User, public?: true
     belongs_to :attachment, Attachment, public?: true
     belongs_to :error_log, Attachment, public?: true
 
@@ -151,7 +154,7 @@ defmodule DataAggregator.Records.Import do
     end
 
     create :create_from_path do
-      accept []
+      accept [:created_by_id]
       argument :collection, :struct, allow_nil?: false
       argument :path, :string, allow_nil?: false
       argument :filename, :string, allow_nil?: true
@@ -184,7 +187,7 @@ defmodule DataAggregator.Records.Import do
     end
 
     update :enqueue_import do
-      accept []
+      accept [:started_by_id]
       require_atomic? false
 
       change Import.Changes.SetCollectionImportingBeforeTransaction
