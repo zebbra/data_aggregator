@@ -555,10 +555,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               occurrence_id={@selected_record.occ_occurrence_id}
               fast_track_status={@selected_record.fast_track_status}
             />
-            <div class="mt-4 flex space-x-2">
-              <.encoding_state_badge state={@selected_record.state} />
-              <.publication_state_badge state={@selected_record.fast_track_status} />
-              <.approval_state_badge state={@selected_record.approval_status} />
+            <div class="mt-4 flex space-x-2 max-sm:hidden">
+              <.encoding_state_badge state={@selected_record.state} tooltip={false} />
+              <.publication_state_badge state={@selected_record.fast_track_status} tooltip={false} />
+              <.approval_state_badge state={@selected_record.approval_status} tooltip={false} />
             </div>
           </:additional_header_content>
 
