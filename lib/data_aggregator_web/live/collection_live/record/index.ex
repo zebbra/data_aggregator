@@ -960,8 +960,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         {:noreply,
          socket
          |> assign(:agreed, false)
-         |> put_flash(:info, ~t"Publication started in background"m)
-         |> push_navigate(to: ~p"/collections/#{collection.id}/publications")}
+         |> update(:show_fast_track_pub, &(!&1))
+         |> put_flash(:info, ~t"Publication started in background"m)}
 
       {:error, _} ->
         {:noreply,
@@ -995,8 +995,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       {:ok, _} ->
         {:noreply,
          socket
-         |> put_flash(:info, ~t"Approval started in background"m)
-         |> push_navigate(to: ~p"/collections/#{collection.id}/publications")}
+         |> update(:show_approval_pub, &(!&1))
+         |> put_flash(:info, ~t"Approval started in background"m)}
 
       {:error, _} ->
         {:noreply, put_flash(socket, :error, ~t"An approval for this collection is already in process"m)}
