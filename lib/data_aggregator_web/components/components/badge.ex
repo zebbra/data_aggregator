@@ -33,6 +33,7 @@ defmodule DataAggregatorWeb.Components.Badge do
       class={[
         "inline-flex h-8 items-center space-x-1.5 whitespace-nowrap rounded-full px-1.5 py-1 text-sm font-medium ring-1 ring-inset",
         badge_color_class(@color),
+        cursor_style(@rest),
         @class
       ]}
       {@rest}
@@ -51,4 +52,10 @@ defmodule DataAggregatorWeb.Components.Badge do
   defp badge_color_class("orange"), do: "bg-warning/10 text-warning ring-warning/20 tooltip-warning"
 
   defp badge_color_class(_), do: "bg-base-300 text-base-content/60 ring-base-content/30"
+
+  defp cursor_style(%{:"data-tip" => data_tip}) when data_tip != nil do
+    "cursor-help"
+  end
+
+  defp cursor_style(_), do: nil
 end

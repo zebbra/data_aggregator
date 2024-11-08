@@ -139,7 +139,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     ~H"""
     <div
       class={[
-        "tooltip tooltip-top max-w-32 flex h-8 justify-evenly rounded-full p-2",
+        "tooltip tooltip-top max-w-32 flex h-8 cursor-help justify-evenly rounded-full p-2",
         level_indicator(@level)
       ]}
       data-tip={level_translation(@level)}

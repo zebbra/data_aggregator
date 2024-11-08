@@ -314,7 +314,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           label={picture_th_label()}
         >
           <div
-            class="tooltip tooltip-right"
+            class="tooltip tooltip-right cursor-help"
             data-tip={
               if record.encoded_record.mte_associated_media,
                 do: ~t"Images available"m,
@@ -345,7 +345,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           directions={{:asc, :desc_nils_last}}
         >
           <div
-            class="tooltip tooltip-right"
+            class="tooltip tooltip-right cursor-help"
             data-tip={
               if record.iucn_redlist,
                 do: ~t"According to IUCN an endangered species"m,
