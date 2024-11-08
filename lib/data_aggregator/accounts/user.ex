@@ -130,7 +130,7 @@ defmodule DataAggregator.Accounts.User do
   end
 
   validations do
-    validate match(:email, ~r/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/) do
+    validate match(:email, ~r/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/) do
       message ~t"is not a valid email address"m
     end
   end
