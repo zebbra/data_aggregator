@@ -268,6 +268,8 @@ defmodule DataAggregator.WorkflowTest do
         %{state: :encoded, fast_track_status: :not_published, approval_status: :not_approved}
       ]
 
+      # assert we detected all changes
+      assert_changes(records)
       # assert that the records are in the correct state
       assert_states_equal(expected, records)
       # no new records versions should have been created
@@ -667,5 +669,96 @@ defmodule DataAggregator.WorkflowTest do
 
     expected_length = 0
     assert length(versions) == expected_length
+  end
+
+  defp assert_changes(records) do
+    changes =
+      records
+      |> hd()
+      |> Ash.load!([changes: [transform?: true, escape_nil?: true]], strict?: true, lazy?: true)
+      |> Map.get(:changes)
+
+    expected = [
+      tax_taxon_id: %{
+        name: "taxonID",
+        imported: "-",
+        encoded: 2_435_194,
+        category_name: "tax"
+      },
+      tax_scientific_name: %{
+        name: "scientificName",
+        imported: "Anergates atratulus (Schenck, 1852)",
+        encoded: "Oenanthe Vieillot, 1816",
+        category_name: "tax"
+      },
+      tax_family: %{
+        name: "family",
+        imported: "-",
+        encoded: "Muscicapidae",
+        category_name: "tax"
+      },
+      tax_genus: %{
+        name: "genus",
+        imported: "Anergates",
+        encoded: "Oenanthe",
+        category_name: "tax"
+      },
+      tax_order: %{
+        name: "order",
+        imported: "-",
+        encoded: "Passeriformes",
+        category_name: "tax"
+      },
+      loc_continent: %{
+        name: "continent",
+        imported: "-",
+        encoded: "Europe",
+        category_name: "loc"
+      },
+      oth_institution_code: %{
+        name: "institutionCode",
+        imported: "NATUREUM:DZ",
+        encoded: "Z",
+        category_name: "oth"
+      },
+      oth_institution_id: %{
+        name: "institutionID",
+        imported: "-",
+        encoded: "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+        category_name: "oth"
+      },
+      tax_accepted_name_usage: %{
+        name: "acceptedNameUsage",
+        imported: "-",
+        encoded: "Enantiulus dentigerus (Verhoeff, 1901)",
+        category_name: "tax"
+      },
+      tax_class: %{
+        name: "class",
+        imported: "-",
+        encoded: "Aves",
+        category_name: "tax"
+      },
+      tax_phylum: %{
+        name: "phylum",
+        imported: "-",
+        encoded: "Chordata",
+        category_name: "tax"
+      },
+      tax_taxon_id_ch: %{
+        name: "taxonIdCH",
+        imported: "-",
+        encoded: 15_311,
+        category_name: "tax"
+      },
+      iucn_redlist_category: %{
+        name: :iucn_redlist_category,
+        imported: "-",
+        encoded: "EX",
+        category_name: "iucn"
+      }
+    ]
+
+    assert_lists_equal(expected, changes)
   end
 end
