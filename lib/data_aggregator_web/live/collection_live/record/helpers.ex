@@ -9,6 +9,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
 
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.Record
+  alias DataAggregator.Taxonomy.Catalog
+
+  @transformers Schema.dwc_transformers()
 
   def busy?(action, busy_action), do: action == busy_action
 
@@ -47,17 +50,64 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   end
 
   def attrs_by_category(record) do
+    record = Ash.load!(record, :encoded_record, lazy?: true)
+    output_dwc_fields = Catalog.get_all_output_dwc_attributes()
+
     record
-    |> Ash.load!([changes: [transform?: true, escape_nil?: true]], lazy?: true, strict?: true)
+    |> Map.keys()
+    |> Enum.filter(&imported_or_encoded?(&1, record, output_dwc_fields))
+    |> Enum.map(fn key ->
+      imported_value = record |> Map.get(key) |> maybe_transform_value(key)
+      encoded_value = record.encoded_record |> Map.get(key) |> maybe_transform_value(key)
+
+      encoded_value =
+        if encoded_value == imported_value and not Enum.member?(output_dwc_fields, key) do
+          "-"
+        else
+          encoded_value
+        end
+
+      %{
+        name: get_dwc_field(key),
+        category_name: key |> Atom.to_string() |> String.split("_") |> List.first(),
+        imported: imported_value,
+        encoded: encoded_value
+      }
+    end)
     |> by_category()
   end
 
-  defp by_category(%{changes: changes}) do
-    grouped = Enum.group_by(changes, &(&1 |> elem(1) |> Map.get(:category_name)), &elem(&1, 1))
+  defp imported_or_encoded?(key, record, output_dwc_fields) do
+    cond do
+      Map.get(record, key) not in ["", nil] ->
+        true
+
+      Enum.member?(output_dwc_fields, key) and
+          Map.get(record.encoded_record, key) not in ["", nil] ->
+        true
+
+      true ->
+        false
+    end
+  end
+
+  defp maybe_transform_value(value, key) do
+    if @transformers[key] do
+      value |> @transformers[key].() |> escape_nil()
+    else
+      escape_nil(value)
+    end
+  end
+
+  defp escape_nil(value) when value in [nil, ""], do: "-"
+  defp escape_nil(value), do: value
+
+  defp by_category(changes) do
+    grouped = Enum.group_by(changes, &Map.get(&1, :category_name), & &1)
 
     category_names =
       changes
-      |> Enum.map(fn {_key, %{category_name: category_name}} -> category_name end)
+      |> Enum.map(fn %{category_name: category_name} -> category_name end)
       |> Enum.uniq()
 
     Schema.categories()
