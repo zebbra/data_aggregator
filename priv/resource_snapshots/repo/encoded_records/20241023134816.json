@@ -2922,11 +2922,13 @@
         "destination_attribute_generated": null,
         "index?": true,
         "match_type": null,
-        "match_with": null,
+        "match_with": {
+          "collection_id": "collection_id"
+        },
         "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
         },
         "name": "encoded_records_record_id_fkey",
         "on_delete": "delete",
@@ -2938,15 +2940,95 @@
       "size": null,
       "source": "record_id",
       "type": "uuid"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": false,
+        "match_type": null,
+        "match_with": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "encoded_records_collection_id_fkey",
+        "on_delete": "delete",
+        "on_update": "update",
+        "primary_key?": true,
+        "schema": "public",
+        "table": "collections"
+      },
+      "size": null,
+      "source": "collection_id",
+      "type": "uuid"
     }
   ],
   "base_filter": null,
   "check_constraints": [],
-  "custom_indexes": [],
+  "custom_indexes": [
+    {
+      "all_tenants?": false,
+      "concurrently": false,
+      "error_fields": [
+        "loc_continent",
+        "tax_kingdom",
+        "tax_phylum"
+      ],
+      "fields": [
+        {
+          "type": "atom",
+          "value": "loc_continent"
+        },
+        {
+          "type": "atom",
+          "value": "tax_kingdom"
+        },
+        {
+          "type": "atom",
+          "value": "tax_phylum"
+        }
+      ],
+      "include": null,
+      "message": null,
+      "name": null,
+      "nulls_distinct": true,
+      "prefix": null,
+      "table": null,
+      "unique": false,
+      "using": null,
+      "where": null
+    }
+  ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "9E0C8DCB2FD27B3645546BABE223B941E1D3F02F15E6DED58E373F9452ABD4DD",
+  "hash": "1A6136BC590A0A12725930A6A89FE20BB0C81777D8207128C082A25D411440DB",
   "identities": [
+    {
+      "all_tenants?": false,
+      "base_filter": null,
+      "index_name": "encoded_records_by_collection_index",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "id"
+        },
+        {
+          "type": "atom",
+          "value": "collection_id"
+        }
+      ],
+      "name": "by_collection",
+      "nils_distinct?": true,
+      "where": null
+    },
     {
       "all_tenants?": false,
       "base_filter": null,
@@ -2967,9 +3049,9 @@
     }
   ],
   "multitenancy": {
-    "attribute": null,
-    "global": null,
-    "strategy": null
+    "attribute": "collection_id",
+    "global": false,
+    "strategy": "attribute"
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,

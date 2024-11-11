@@ -38,8 +38,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
     actor = get_actor(socket)
+    tenant = get_tenant(socket)
 
-    case list_publications(params, actor) do
+    case list_publications(params, actor, tenant) do
       {:ok, {publications, meta}} ->
         socket
         |> assign(meta: meta)
@@ -84,6 +85,10 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
           label={~t"Publications and Approvals"m}
           active
         />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/image_uploads"}
+          label={~t"Image Upload"m}
+        />
       </.secondary_navigation>
 
       <.table
@@ -119,6 +124,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
           <div :if={publication.duration} class="text-base-content/60 text-xs">
             <%= publication.duration %>
           </div>
+        </:col>
+        <:col :let={{_id, publication}} field={:started_by} label={~t"Started by"m}>
+          <%= maybe_set_user(publication.started_by) %>
         </:col>
         <:col :let={{_id, publication}} field={:rows_count} label={~t"Records"m} class="text-right">
           <%= format_number(publication.rows_count, format: :short) %>
@@ -228,6 +236,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
               </div>
             </:item>
 
+            <:item title={~t"Started by"m}>
+              <%= maybe_set_user(@selected_publication.started_by) %>
+            </:item>
             <:item title={~t"Started at"m}>
               <div :if={@selected_publication.finished_at == nil}>
                 <%= format_datetime(@selected_publication.started_at) %>
@@ -278,8 +289,11 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   @impl true
   def handle_event("publication:run", %{"id" => id}, socket) do
     actor = get_actor(socket)
+    tenant = get_tenant(socket)
 
-    case id |> Publication.get_by_id!(actor: actor) |> Publication.enqueue(actor: actor) do
+    case id
+         |> Publication.get_by_id!(actor: actor, tenant: tenant)
+         |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor) do
       {:ok, publication} ->
         {:noreply, put_flash(socket, :info, publication_success_message(publication))}
 
@@ -291,8 +305,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   @impl true
   def handle_event("publication:delete", %{"id" => id}, socket) do
     actor = get_actor(socket)
-    publication = Publication.get_by_id!(id, actor: actor)
-    :ok = Publication.destroy(publication, actor: actor)
+    tenant = get_tenant(socket)
+    publication = Publication.get_by_id!(id, actor: actor, tenant: tenant)
+    :ok = Publication.destroy(publication, actor: actor, tenant: tenant)
 
     {:noreply,
      socket
@@ -312,12 +327,13 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   @impl true
   def handle_event("publication:select", %{"id" => id}, socket) do
     actor = get_actor(socket)
+    tenant = get_tenant(socket)
 
     socket =
       assign(
         socket,
         :selected_publication,
-        Publication.get_by_id!(id, load: @load_publication, actor: actor)
+        Publication.get_by_id!(id, load: @load_publication, actor: actor, tenant: tenant)
       )
 
     {:noreply, socket}
@@ -329,9 +345,10 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
     |> assign(:publication, nil)
   end
 
-  defp list_publications(params, actor, opts \\ [load: @load, action: :by_collection]) do
+  defp list_publications(params, actor, tenant, opts \\ [load: @load]) do
     opts = Keyword.put_new(opts, :actor, actor)
-    AshPagify.validate_and_run(Publication, params, opts, params["id"])
+    opts = Keyword.put_new(opts, :tenant, tenant)
+    AshPagify.validate_and_run(Publication, params, opts)
   end
 
   attr :collection, :any

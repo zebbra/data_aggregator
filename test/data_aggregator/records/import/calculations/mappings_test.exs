@@ -26,7 +26,7 @@ defmodule DataAggregator.Records.Import.Calculations.MappingsTest do
 
   setup %{collection: collection} do
     import =
-      Import.create_from_path!(collection, @path)
+      Import.create_from_path!(collection, @path, tenant: collection)
 
     %{import: import}
   end

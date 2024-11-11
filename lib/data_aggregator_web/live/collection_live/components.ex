@@ -57,6 +57,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
 
   defp state_translation(state) do
     case state do
+      :mapping -> ~t"Mapping"m
       :importing -> ~t"Importing"m
       :exporting -> ~t"Exporting"m
       :encoding -> ~t"Encoding"m

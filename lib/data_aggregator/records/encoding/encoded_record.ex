@@ -20,6 +20,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
   alias __MODULE__
   alias DataAggregator.DarwinCore
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
@@ -45,11 +46,21 @@ defmodule DataAggregator.Records.EncodedRecord do
     belongs_to :record, Record do
       allow_nil? false
       public? true
+      filter expr(collection_id == parent(collection_id))
     end
 
     has_many :swiss_species, SwissSpecies do
       source_attribute :tax_taxon_id
       destination_attribute :usage_key
+      public? true
+    end
+
+    belongs_to :collection, Collection do
+      # We can't mark this as primary_key? true due to the limitations
+      # of ash_paper_trail. In database schema (and also in the snapshots)
+      # this is a primary key, so please make sure to account for this if
+      # you change your model (most important in your migrations).
+      allow_nil? false
       public? true
     end
   end
@@ -59,8 +70,9 @@ defmodule DataAggregator.Records.EncodedRecord do
     store_action_name? true
 
     ignore_attributes [:inserted_at, :updated_at]
-    ignore_actions [:create]
+    ignore_actions [:create, :destroy]
 
+    attributes_as_attributes [:collection_id]
     reference_source? true
 
     mixin DataAggregator.Records.EncodedRecordVersionMixin
@@ -79,13 +91,7 @@ defmodule DataAggregator.Records.EncodedRecord do
 
   actions do
     default_accept :*
-    defaults [:update, :destroy]
-
-    read :read do
-      primary? true
-      argument :sort, :string, allow_nil?: true
-      pagination offset?: true, countable: true, required?: false
-    end
+    defaults [:read, :update, :destroy]
 
     create :create do
       primary? true
@@ -102,19 +108,26 @@ defmodule DataAggregator.Records.EncodedRecord do
 
       change Encoding.Changes.SetMandatoryAttributes
       change Encoding.Changes.SetOptionalAttributes
+    end
 
-      change manage_relationship(:record, :record, type: :append)
+    update :add_image_url do
+      argument :image, :struct, allow_nil?: false
+      require_atomic? false
+
+      change Encoding.Changes.AddImageUrl
     end
   end
 
   identities do
     identity :record_mte_catalog_number, [:record_id, :mte_catalog_number]
+    identity :by_collection, [:id, :collection_id]
   end
 
   code_interface do
     define :read
     define :create
     define :update
+    define :add_image_url, args: [:image]
     define :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :get_by_record, action: :read, get_by: [:record_id]
@@ -125,7 +138,17 @@ defmodule DataAggregator.Records.EncodedRecord do
     repo DataAggregator.Repo
 
     references do
-      reference :record, on_delete: :delete, on_update: :update, index?: true
+      reference :collection, on_delete: :delete, on_update: :update
+
+      reference :record,
+        on_delete: :delete,
+        on_update: :update,
+        index?: true,
+        match_with: [collection_id: :collection_id]
+    end
+
+    custom_indexes do
+      index [:loc_continent, :tax_kingdom, :tax_phylum]
     end
   end
 
@@ -144,5 +167,10 @@ defmodule DataAggregator.Records.EncodedRecord do
       patch :update
       delete :destroy
     end
+  end
+
+  multitenancy do
+    strategy :attribute
+    attribute :collection_id
   end
 end

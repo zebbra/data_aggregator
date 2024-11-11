@@ -164,35 +164,6 @@
       "type": "utc_datetime_usec"
     },
     {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "index?": false,
-        "match_type": null,
-        "match_with": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "collections_institution_id_fkey",
-        "on_delete": null,
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "institutions"
-      },
-      "size": null,
-      "source": "institution_id",
-      "type": "uuid"
-    },
-    {
       "allow_nil?": false,
       "default": "\"idle\"",
       "generated?": false,
@@ -208,7 +179,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "D93C2EBA989EA2179C6DBE03EE1012B14DE7EB09BC463F623DA927667E719C14",
+  "hash": "D862A133CFBBE617FF740A42713EDB9BEDB1602A3576A53345380030D55DA7D3",
   "identities": [],
   "multitenancy": {
     "attribute": null,

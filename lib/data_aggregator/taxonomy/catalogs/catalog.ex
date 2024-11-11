@@ -4,7 +4,8 @@ catalogs = [
   :geo_reverse,
   :geo_forward,
   :gbif_iucn_redlist,
-  :add_institution_code
+  :add_institution_code,
+  :relate_images
 ]
 
 defmodule DataAggregator.Taxonomy.Catalog do
@@ -29,6 +30,7 @@ defmodule DataAggregator.Taxonomy.Catalog do
       :geo_forward -> "Geo Forward"
       :gbif_iucn_redlist -> "GBIF IUCN Redlist"
       :add_institution_code -> "Add Institution Code"
+      :relate_images -> "Relate Images"
       _ -> throw("no translation defined for catalog: #{catalog}")
     end
   end
@@ -58,6 +60,9 @@ defmodule DataAggregator.Taxonomy.Catalog do
         []
 
       :add_institution_code ->
+        []
+
+      :relate_images ->
         []
 
       _ ->
@@ -127,6 +132,9 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:oth_institution_code, :grscicoll_institution_code}
         ]
 
+      :relate_images ->
+        [{:mte_associated_media, :mte_associated_media}]
+
       _ ->
         throw("no output attributes defined for catalog: #{catalog}")
     end
@@ -134,5 +142,11 @@ defmodule DataAggregator.Taxonomy.Catalog do
 
   def get_output_dwc_attributes(catalog) do
     catalog |> get_output_attributes() |> Enum.map(fn {key, _value} -> key end)
+  end
+
+  def get_all_output_dwc_attributes do
+    get_catalogs()
+    |> Enum.flat_map(&get_output_dwc_attributes/1)
+    |> Enum.uniq()
   end
 end

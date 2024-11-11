@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.Approval.Helpers do
   alias DataAggregator.Records
   alias DataAggregator.Records.Approval
   alias DataAggregator.Records.ApprovedRecord
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
 
   require Logger
@@ -77,15 +78,17 @@ defmodule DataAggregator.Records.Approval.Helpers do
   @doc """
   Adds the raw record to each params map of the chunk
   """
-  @spec add_raw_record_to_chunk({[map()], integer()}) :: {[map()], integer()}
-  def add_raw_record_to_chunk(chunk) do
+  @spec add_raw_record_to_chunk({[map()], integer()}, Collection.t()) :: {[map()], integer()}
+  def add_raw_record_to_chunk(chunk, tenant) do
     {rows, index} = chunk
 
     rows =
       Enum.map(rows, fn row ->
-        case Record.get_by_mte_catalog_number(row.mte_catalog_number) do
+        case Record.get_by_mte_catalog_number(row.mte_catalog_number, tenant: tenant) do
           {:ok, record} ->
-            Map.put(row, :record, record)
+            row
+            |> Map.put(:record, record)
+            |> Map.put(:collection_id, record.collection_id)
 
           {:error, _} ->
             row

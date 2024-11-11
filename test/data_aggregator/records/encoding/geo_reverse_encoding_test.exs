@@ -27,11 +27,13 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
          %{
            record_fixture: record_fixture
          } do
-      {:ok, record} = Record.encode(record_fixture, :geo_reverse)
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record.id)
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: 46.086797,
@@ -65,11 +67,13 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
           loc_swiss_coordinates_lv03_y: nil
         })
 
-      {:ok, record} = Record.encode(record_fixture, :geo_reverse)
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record.id)
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
 
       assert_map_includes(encoded_record, %{
         loc_swiss_coordinates_lv95_x: nil,
@@ -103,11 +107,13 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
           loc_swiss_coordinates_lv03_y: 199_508.5872802814
         })
 
-      {:ok, record} = Record.encode(record_fixture, :geo_reverse)
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record.id)
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: 46.946659297095934,
@@ -141,11 +147,13 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
           loc_swiss_coordinates_lv03_y: nil
         })
 
-      {:ok, record} = Record.encode(record_fixture, :geo_reverse)
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record.id)
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: 46.946659297095934,
@@ -179,11 +187,13 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
           loc_swiss_coordinates_lv03_y: nil
         })
 
-      {:ok, record} = Record.encode(record_fixture, :geo_reverse)
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record.id)
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: nil,
@@ -217,11 +227,13 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
           loc_swiss_coordinates_lv03_y: nil
         })
 
-      {:ok, record} = Record.encode(record_fixture, :geo_reverse)
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
 
       assert record !== nil
 
-      encoded_record = EncodedRecord.get_by_record!(record.id)
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: 46.946659297095934,
@@ -256,9 +268,11 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
         })
 
       {{:ok, _record}, logs} =
-        with_log(fn -> Record.encode(record_fixture, :geo_reverse) end)
+        with_log(fn ->
+          Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
+        end)
 
-      encoded_record = Record.get_by_id!(record_fixture.id)
+      encoded_record = Record.get_by_id!(record_fixture.id, tenant: record_fixture.collection_id)
 
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: 4242.4242,

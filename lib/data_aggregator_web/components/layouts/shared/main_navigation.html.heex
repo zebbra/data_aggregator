@@ -35,18 +35,6 @@
           <span class="md:hidden lg:inline"><%= ~t"Collections"m %></span>
         </.link>
       </li>
-      <li>
-        <.link
-          navigate={~p"/records"}
-          class={[
-            "flex md:flex-col md:p-3 active:!bg-primary",
-            @current == "records" && "bg-primary text-primary-content hover:bg-primary"
-          ]}
-        >
-          <.icon name="hero-bug-ant" />
-          <span class="md:hidden lg:inline"><%= ~t"Records"m %></span>
-        </.link>
-      </li>
       <%= if DataAggregator.Accounts.User.can_read?(@current_user) do %>
         <li>
           <.link

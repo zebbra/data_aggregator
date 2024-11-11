@@ -2852,11 +2852,13 @@
         "destination_attribute_generated": null,
         "index?": true,
         "match_type": null,
-        "match_with": null,
+        "match_with": {
+          "collection_id": "collection_id"
+        },
         "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
         },
         "name": "approved_records_record_id_fkey",
         "on_delete": "delete",
@@ -2868,6 +2870,35 @@
       "size": null,
       "source": "record_id",
       "type": "uuid"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": true,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": false,
+        "match_type": null,
+        "match_with": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "approved_records_collection_id_fkey",
+        "on_delete": "delete",
+        "on_update": "update",
+        "primary_key?": true,
+        "schema": "public",
+        "table": "collections"
+      },
+      "size": null,
+      "source": "collection_id",
+      "type": "uuid"
     }
   ],
   "base_filter": null,
@@ -2875,7 +2906,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "CF5123A6F7343959F96048F79F92C120C656F32C60EE119507666766D65336B1",
+  "hash": "9230BA75B1479835AEA9308D54AE9DB50C5058AED06ABB562B375D829EFAFBEC",
   "identities": [
     {
       "all_tenants?": false,
@@ -2897,9 +2928,9 @@
     }
   ],
   "multitenancy": {
-    "attribute": null,
-    "global": null,
-    "strategy": null
+    "attribute": "collection_id",
+    "global": false,
+    "strategy": "attribute"
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,

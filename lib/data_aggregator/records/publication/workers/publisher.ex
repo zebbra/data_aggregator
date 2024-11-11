@@ -14,6 +14,8 @@ defmodule DataAggregator.Records.Publication.Workers.Publisher do
   ## Arguments
 
   * `id` - the ID of the publication to run
+  * `collection_id` - the ID of the collection to publish
+  * `user_id` - the ID of the user to run the publication as (optional)
 
   """
 
@@ -26,22 +28,22 @@ defmodule DataAggregator.Records.Publication.Workers.Publisher do
   require Logger
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"id" => id, "user_id" => user_id}}) do
-    with {:ok, publication} <- Publication.get_by_id(id) do
+  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id, "user_id" => user_id}}) do
+    with {:ok, publication} <- Publication.get_by_id(id, load: :collection, tenant: collection_id) do
       perform_with_actor(publication, User.get_by_id!(user_id))
     end
   end
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"id" => id}}) do
-    with {:ok, publication} <- Publication.get_by_id(id) do
+  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id}}) do
+    with {:ok, publication} <- Publication.get_by_id(id, load: :collection, tenant: collection_id) do
       perform_with_actor(publication)
     end
   end
 
   defp perform_with_actor(publication, actor \\ nil) do
     Logger.info("Running publication #{inspect(publication.id)} ...")
-    Publication.run(publication, actor: actor, authorize?: false)
+    Publication.run(publication, actor: actor, authorize?: false, tenant: publication.collection)
   end
 
   @impl Oban.Worker

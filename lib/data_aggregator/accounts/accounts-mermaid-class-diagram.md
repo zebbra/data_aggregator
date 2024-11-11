@@ -5,11 +5,11 @@ classDiagram
         String first_name
         String last_name
         String phone
-        sign_in_with_token_for_password(String token)
+        sign_in_with_token(String token)
         sign_in_with_password(CiString email, String password)
         get_by_subject(String subject)
         destroy()
-        read(String sort)
+        read()
         update(String password, String[] roles, String first_name, String last_name, ...)
         set_password(String password)
         register_with_password(String password, String[] roles, String first_name, String last_name, ...)

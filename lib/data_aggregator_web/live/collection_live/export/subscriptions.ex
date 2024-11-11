@@ -8,6 +8,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
 
   import DataAggregatorWeb.CollectionLive.Export.Helpers
   import DataAggregatorWeb.CollectionLive.Helpers, only: [busy_action: 1]
+  import DataAggregatorWeb.Helpers, only: [get_tenant: 1]
 
   alias Ash.Notifier.Notification
   alias DataAggregator.PubSub
@@ -21,6 +22,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
   @load_all load_all()
   @update_events ~w(set_running set_exported set_failed)
   @collection_action_events ~w(
+    set_mapping
     set_importing
     set_exporting
     set_encoding
@@ -75,12 +77,12 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
   end
 
   defp handle_export_created(%Notification{data: export}, socket) do
-    export = Ash.load!(export, @load, lazy?: true)
+    export = Ash.load!(export, @load, lazy?: true, tenant: get_tenant(socket))
     {:noreply, stream_insert(socket, :results, export, at: 0)}
   end
 
   defp handle_export_updated(%Notification{data: %{id: id}}, socket, event) do
-    export = Export.get_by_id!(id, load: @load_all)
+    export = Export.get_by_id!(id, load: @load_all, tenant: get_tenant(socket))
 
     socket =
       socket

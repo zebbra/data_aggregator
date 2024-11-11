@@ -20,29 +20,39 @@ defmodule DataAggregator.ExportFixtures do
   """
   def export_fixture(attrs \\ %{}) do
     collection =
-      Ash.load!(collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()}), [
-        :records_to_export_query
-      ])
+      if Map.has_key?(attrs, :collection) do
+        Map.get(attrs, :collection)
+      else
+        Ash.load!(collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()}), [
+          :records_to_export_query
+        ])
+      end
 
-    @export_defaults
-    |> Map.merge(attrs)
-    |> Map.put_new_lazy(:collection, fn -> collection end)
-    |> Map.put(:records_query, collection.records_to_export_query)
-    |> Export.create!()
+    params =
+      @export_defaults
+      |> Map.merge(attrs)
+      |> Map.put_new_lazy(:collection, fn -> collection end)
+      |> Map.put(:records_query, collection.records_to_export_query)
+
+    Export.create!(params, tenant: params.collection)
   end
 
   def exportable_record(collection, attrs \\ %{}) do
-    exportable_record_attrs()
-    |> Map.merge(attrs)
-    |> Map.put_new_lazy(:collection, fn -> collection end)
-    |> Record.create!()
+    params =
+      exportable_record_attrs()
+      |> Map.merge(attrs)
+      |> Map.put_new_lazy(:collection, fn -> collection end)
+
+    Record.create!(params, tenant: params.collection)
   end
 
   def unexportable_record(collection) do
-    exportable_record_attrs()
-    |> Map.put_new_lazy(:collection, fn -> collection end)
-    |> Map.delete(:tax_kingdom)
-    |> Record.create!()
+    params =
+      exportable_record_attrs()
+      |> Map.put_new_lazy(:collection, fn -> collection end)
+      |> Map.delete(:tax_kingdom)
+
+    Record.create!(params, tenant: params.collection)
   end
 
   def exportable_record_attrs do
@@ -66,7 +76,7 @@ defmodule DataAggregator.ExportFixtures do
       records: records
     }
     |> Map.put(:records_query, collection.records_to_export_query)
-    |> Export.create!()
+    |> Export.create!(tenant: collection)
     |> Export.update_mapping(mapping)
   end
 

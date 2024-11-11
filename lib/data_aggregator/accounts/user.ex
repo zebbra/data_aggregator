@@ -60,17 +60,7 @@ defmodule DataAggregator.Accounts.User do
   end
 
   actions do
-    defaults [:destroy]
-
-    read :read do
-      primary? true
-      argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true,
-                 countable: true,
-                 required?: false,
-                 keyset?: true
-    end
+    defaults [:read, :destroy]
 
     update :update do
       change set_context(%{strategy_name: :password})
@@ -140,7 +130,7 @@ defmodule DataAggregator.Accounts.User do
   end
 
   validations do
-    validate match(:email, ~r/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/) do
+    validate match(:email, ~r/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/) do
       message ~t"is not a valid email address"m
     end
   end

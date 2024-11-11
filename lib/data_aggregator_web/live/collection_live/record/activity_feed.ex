@@ -5,10 +5,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   import DataAggregatorWeb.CollectionLive.Record.Components,
     only: [publication_state_badge: 1, approval_state_badge: 1]
 
-  import DataAggregatorWeb.RecordLive.Helpers, only: [get_dwc_field: 1]
+  import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [get_dwc_field: 1]
 
   alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Activity
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalog
@@ -16,6 +17,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   require Ash.Query
 
   attr :record, Record, required: true
+  attr :tenant, Collection, required: true
 
   def activity_feed(assigns) do
     assigns = assign_activities(assigns)
@@ -34,7 +36,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   attr :activity, Activity, required: true
 
-  def activity_feed_element(%{activity: activity} = assigns) when activity.name in [:import, :update] do
+  def activity_feed_element(%{activity: activity} = assigns) when activity.name in [:import, :update, :add_image_url] do
     ~H"""
     <div class="grid w-full grid-cols-9 gap-y-4">
       <div class="bg-base-100 size-6 relative flex items-center justify-center">
@@ -132,7 +134,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
               :set_encoded,
               :set_encoding_failed,
               :update_approval_status,
-              :update_fast_track_status
+              :update_fast_track_status,
+              :add_image_url
             ] do
     ~H"""
     <.badge
@@ -161,7 +164,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     """
   end
 
-  defp activity_text(%{activity: activity} = assigns) when activity.name in [:import, :update] do
+  defp activity_text(%{activity: activity} = assigns) when activity.name in [:import, :update, :add_image_url] do
     ~H"""
     <span class="font-medium">
       <%= text(@activity.name, @activity.content) %>
@@ -193,7 +196,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   defp assign_activities(assigns) do
-    assign(assigns, :record, Ash.load!(assigns.record, :encoded_record, lazy?: true))
+    %{tenant: tenant, record: record} = assigns
+
+    record =
+      case record.encoded_record do
+        %Ash.NotLoaded{} ->
+          %{record | encoded_record: EncodedRecord.get_by_record!(record.id, tenant: tenant)}
+
+        _ ->
+          record
+      end
+
+    assign(assigns, :record, record)
 
     record_versions = record_versions(assigns)
     encoded_record_versions = encoded_record_versions(assigns)
@@ -238,6 +252,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   defp version_source(%{version_action_name: :update} = version), do: version_source_from_catalog(version.changes)
 
+  defp version_source(%{version_action_name: :add_image_url}), do: ~t"Image Upload"
+
   defp version_source(_), do: nil
 
   defp version_source_from_catalog(%{} = changes) when changes == %{}, do: ~t"Unknown"
@@ -268,6 +284,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     Record.Version
     |> Ash.Query.for_read(:read)
     |> Ash.Query.load([:version_source, :user])
+    |> Ash.Query.set_tenant(assigns.tenant)
     |> Ash.Query.filter(version_source_id == ^assigns.record.id)
     |> Ash.read!()
   end
@@ -279,6 +296,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     EncodedRecord.Version
     |> Ash.Query.for_read(:read)
     |> Ash.Query.load([:version_source, :user])
+    |> Ash.Query.set_tenant(assigns.tenant)
     |> Ash.Query.filter(version_source_id == ^encoded_record_id)
     |> Ash.read!()
   end
@@ -311,6 +329,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       _ -> "hero-check-badge"
     end
   end
+
+  def icon_lookup(:add_image_url, _), do: "hero-photo"
 
   def icon_lookup(_, _), do: "hero-question-mark-circle-solid"
 
@@ -369,6 +389,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
+  def icon_tooltip(:add_image_url, _), do: ~t"associatedMedia was updated"m
+
   def icon_tooltip(_, _), do: nil
 
   defp text(:import, _), do: ~t"A data import was updating the record"m
@@ -399,6 +421,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       _ -> ~t"Approval status was updated"m
     end
   end
+
+  defp text(:add_image_url, _), do: ~t"associatedMedia was updated"m
 
   defp text(name, _), do: name
 
@@ -459,6 +483,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       _ -> "green"
     end
   end
+
+  def badge_color(:add_image_url, _), do: "green"
 
   def badge_color(_, _), do: "gray"
 end

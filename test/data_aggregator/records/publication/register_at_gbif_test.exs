@@ -85,15 +85,18 @@ defmodule DataAggregator.RegisterAtGbifTest do
       }
 
       publication =
-        Publication.create!(%{
-          name: "Publication Fast Track",
-          channel: :fast_track,
-          records_query: query,
-          collection: collection
-        })
+        Publication.create!(
+          %{
+            name: "Publication Fast Track",
+            channel: :fast_track,
+            records_query: query,
+            collection: collection
+          },
+          tenant: collection
+        )
 
-      {:ok, publication} = Collection.publish(publication)
-      publication = Ash.load!(publication, [:attachment])
+      {:ok, publication} = Collection.publish(publication, tenant: collection)
+      publication = Ash.load!(publication, [:attachment], tenant: collection)
 
       [
         collection: collection,
@@ -176,7 +179,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
       {{:error, error}, logs} =
         with_log(fn -> Record.check_if_fast_track_pubished(record_to_check) end)
 
-      record = Record.get_by_id!(record_to_check.id)
+      record = Record.get_by_id!(record_to_check.id, tenant: collection)
 
       assert record.fast_track_status === :in_publication
       assert %Invalid{} = error
@@ -197,7 +200,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
       {{:error, error}, logs} =
         with_log(fn -> Record.check_if_fast_track_pubished(record_to_check) end)
 
-      record = Record.get_by_id!(record_to_check.id)
+      record = Record.get_by_id!(record_to_check.id, tenant: collection)
 
       assert record.fast_track_status === :in_publication
       assert %Invalid{} = error

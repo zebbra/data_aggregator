@@ -78,10 +78,18 @@ config :data_aggregator, DataAggregatorWeb.Gettext, default_locale: "en"
 config :data_aggregator, Oban,
   repo: DataAggregator.Repo,
   plugins: [
-    {Oban.Plugins.Pruner, max_age: 5, limit: 1000, interval: 1_000 * 60 * 5},
+    {Oban.Plugins.Pruner, max_age: 5, limit: 10_000, interval: 1_000 * 60},
     {Oban.Plugins.Lifeline, interval: :timer.seconds(60), rescue_after: :timer.minutes(60)}
   ],
-  queues: [imports: 1, encoders: 1, exports: 1, publications: 1, publication_verifications: 1]
+  queues: [
+    imports: 1,
+    encoders: 5,
+    exports: 1,
+    publications: 1,
+    publication_verifications: 1,
+    extractions: 1,
+    mappings: 1
+  ]
 
 config :data_aggregator, :ash_uuid,
   version: 7,
@@ -104,7 +112,6 @@ config :data_aggregator, :logger, [
 
 config :data_aggregator,
   ash_domains: [
-    DataAggregator.Platform,
     DataAggregator.Records,
     DataAggregator.Taxonomy,
     DataAggregator.Files,

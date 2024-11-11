@@ -1,7 +1,7 @@
 defmodule DataAggregator.MixProject do
   use Mix.Project
 
-  @version "0.9.2"
+  @version "0.9.4"
 
   def project do
     [
@@ -143,9 +143,6 @@ defmodule DataAggregator.MixProject do
       "Taxonomy API": [
         ~r/^DataAggregator\.Taxonomy/
       ],
-      "Platform API": [
-        ~r/^DataAggregator\.Platform/
-      ],
       "Records API": [
         ~r/^DataAggregator\.Records/
       ],
@@ -210,8 +207,6 @@ defmodule DataAggregator.MixProject do
       {:ash, "~> 3.4", override: true},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
-      # Remove once v0.2.37 is available
-      {:ash_sql, git: "https://github.com/ash-project/ash_sql.git", override: true},
       {:ash_postgres, "~> 2.4", override: true},
       {:ash_state_machine, "~> 0.2"},
       {:ash_uuid, "~> 1.1"},
@@ -358,8 +353,17 @@ defmodule DataAggregator.MixProject do
       "repo.lint": [
         "ash_postgres.generate_migrations --check"
       ],
+      "repo.dry_run": [
+        "ash_postgres.generate_migrations --dry-run"
+      ],
+      "repo.squash": [
+        "ash_postgres.squash_snapshots --into first"
+      ],
       "catalogs.import": [
         "run priv/repo/catalogs/init.exs"
+      ],
+      "users.create": [
+        "run priv/repo/users/init.exs"
       ],
 
       # Run tests

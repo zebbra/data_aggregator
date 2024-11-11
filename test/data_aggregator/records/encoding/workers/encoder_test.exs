@@ -31,11 +31,13 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
     } do
       expect_correct_swiss_species_api_call()
 
-      {:ok, record} = perform_job(Encoder, %{id: correct_record.id})
+      {:ok, record} =
+        perform_job(Encoder, %{id: correct_record.id, collection_id: correct_record.collection_id})
 
       assert record.state == :encoded
 
-      encoded_record = EncodedRecord.get_by_record!(record.id)
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: correct_record.collection_id)
 
       assert_map_includes(encoded_record, %{
         tax_class: "Aves",
@@ -67,11 +69,13 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
       correct_record = update_record_fixtures!(correct_record, %{loc_country: nil})
       expect_correct_swiss_species_api_call()
 
-      {:ok, record} = perform_job(Encoder, %{id: correct_record.id})
+      {:ok, record} =
+        perform_job(Encoder, %{id: correct_record.id, collection_id: correct_record.collection_id})
 
       assert record.state == :failed
 
-      encoded_record = EncodedRecord.get_by_record!(record.id)
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: correct_record.collection_id)
 
       assert_map_includes(encoded_record, %{
         tax_class: "Aves",

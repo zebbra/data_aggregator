@@ -7,7 +7,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
 
   import AshPagify.Components, only: [build_path: 2, build_scope_path: 3]
 
+  alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.Record
+  alias DataAggregator.Taxonomy.Catalog
+
+  @transformers Schema.dwc_transformers()
 
   def busy?(action, busy_action), do: action == busy_action
 
@@ -44,4 +48,99 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   def path_helper(collection, layer, meta, scope) do
     build_scope_path(~p"/collections/#{collection}/records?layer=#{layer}", meta, scope)
   end
+
+  def attrs_by_category(record) do
+    record = Ash.load!(record, :encoded_record, lazy?: true)
+    output_dwc_fields = Catalog.get_all_output_dwc_attributes()
+
+    record
+    |> Map.keys()
+    |> Enum.filter(&imported_or_encoded?(&1, record, output_dwc_fields))
+    |> Enum.map(fn key ->
+      imported_value = record |> Map.get(key) |> maybe_transform_value(key)
+      encoded_value = record.encoded_record |> Map.get(key) |> maybe_transform_value(key)
+
+      encoded_value =
+        if encoded_value == imported_value and not Enum.member?(output_dwc_fields, key) do
+          "-"
+        else
+          encoded_value
+        end
+
+      %{
+        name: get_dwc_field(key),
+        category_name: key |> Atom.to_string() |> String.split("_") |> List.first(),
+        imported: imported_value,
+        encoded: encoded_value
+      }
+    end)
+    |> by_category()
+  end
+
+  defp imported_or_encoded?(key, record, output_dwc_fields) do
+    cond do
+      Map.get(record, key) not in ["", nil] ->
+        true
+
+      Enum.member?(output_dwc_fields, key) and
+          Map.get(record.encoded_record, key) not in ["", nil] ->
+        true
+
+      true ->
+        false
+    end
+  end
+
+  defp maybe_transform_value(value, key) do
+    if @transformers[key] do
+      value |> @transformers[key].() |> escape_nil()
+    else
+      escape_nil(value)
+    end
+  end
+
+  defp escape_nil(value) when value in [nil, ""], do: "-"
+  defp escape_nil(value), do: value
+
+  defp by_category(changes) do
+    grouped = Enum.group_by(changes, &Map.get(&1, :category_name), & &1)
+
+    category_names =
+      changes
+      |> Enum.map(fn %{category_name: category_name} -> category_name end)
+      |> Enum.uniq()
+
+    Schema.categories()
+    |> Enum.filter(fn category -> Enum.member?(category_names, Atom.to_string(category.name)) end)
+    |> Enum.map(fn category ->
+      %{
+        label: category.label,
+        description: category.description,
+        attributes: grouped[Atom.to_string(category.name)]
+      }
+    end)
+  end
+
+  @spec encoded_attribute(Record.t(), atom(), String.t() | nil) :: any()
+  def encoded_attribute(record, attribute, layer \\ nil)
+  def encoded_attribute(record, attribute, "import"), do: Map.get(record, attribute)
+
+  def encoded_attribute(record, attribute, _) do
+    if record.encoded_record == nil do
+      Map.get(record, attribute)
+    else
+      record.encoded_record |> Map.get(attribute) |> value_for_record_attribute()
+    end
+  end
+
+  def get_dwc_field("fast_track_status"), do: "publicationStatus"
+  def get_dwc_field("approval_status"), do: "approvalStatus"
+
+  def get_dwc_field(prefixed_attribute_name) do
+    Schema.dwc_field_from_prefixed_attribute_name(prefixed_attribute_name)
+  end
+
+  defp value_for_record_attribute(value) when is_nil(value), do: "-"
+  defp value_for_record_attribute(value) when value === "", do: "-"
+  defp value_for_record_attribute(value), do: value
 end

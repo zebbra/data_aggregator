@@ -7,13 +7,14 @@ defmodule DataAggregator.DarwinCore.Publication.PermitFile do
   @behaviour DataAggregator.DarwinCore.Publication.DwcaFile
 
   alias DataAggregator.DarwinCore.Publication.DwcaFile
+  alias DataAggregator.Records.Collection
 
-  @spec create(Ash.Query.t(), String.t()) :: {:ok, any()} | {:error, any()}
-  def create(query, path) do
+  @spec create(Ash.Query.t(), String.t(), Collection.t()) :: {:ok, any()} | {:error, any()}
+  def create(query, path, tenant) do
     path = "#{path}/permit.csv"
 
     # TODO: this is an extension file coming from json data, so it should be created differently
-    file = DwcaFile.create_file!(:permit, query, path)
+    file = DwcaFile.create_file!(:permit, query, path, tenant)
 
     {:ok, file}
   end

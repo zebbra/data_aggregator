@@ -10,6 +10,7 @@ defmodule DataAggregator.Records.Export do
     notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
@@ -42,7 +43,12 @@ defmodule DataAggregator.Records.Export do
   end
 
   relationships do
-    belongs_to :collection, Collection, public?: true
+    belongs_to :collection, Collection do
+      public? true
+      allow_nil? false
+    end
+
+    belongs_to :started_by, User, public?: true
     belongs_to :attachment, Attachment, public?: true
   end
 
@@ -87,29 +93,15 @@ defmodule DataAggregator.Records.Export do
     default_accept :*
     defaults [:read, :destroy]
 
-    read :by_collection do
-      argument :collection_id, :string, allow_nil?: false
-      argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true,
-                 countable: true,
-                 required?: false,
-                 keyset?: true
-
-      filter expr(collection_id == ^arg(:collection_id))
-    end
-
-    read :active_by_collection do
-      argument :collection_id, :string, allow_nil?: false
-
-      filter expr(collection_id == ^arg(:collection_id) and state in [:running, :queued])
+    read :active do
+      filter expr(state in [:running, :queued])
     end
 
     create :create do
       primary? true
       argument :collection, :struct, allow_nil?: false
 
-      change manage_relationship(:collection, :collection, type: :append)
+      change manage_relationship(:collection, type: :append)
     end
 
     update :update_mapping do
@@ -126,7 +118,7 @@ defmodule DataAggregator.Records.Export do
     end
 
     update :enqueue do
-      accept []
+      accept [:started_by_id]
       require_atomic? false
 
       change Changes.SetCollectionExportingBeforeTransaction
@@ -187,7 +179,7 @@ defmodule DataAggregator.Records.Export do
       argument :attachment, :struct, allow_nil?: false
       require_atomic? false
 
-      change manage_relationship(:attachment, :attachment, type: :append)
+      change manage_relationship(:attachment, type: :append)
       change load(:attachment)
     end
 
@@ -213,8 +205,7 @@ defmodule DataAggregator.Records.Export do
 
   code_interface do
     define :read
-    define :by_collection, args: [:collection_id]
-    define :active_by_collection, args: [:collection_id]
+    define :active
     define :create
     define :update
     define :destroy
@@ -252,5 +243,10 @@ defmodule DataAggregator.Records.Export do
       patch :update
       delete :destroy
     end
+  end
+
+  multitenancy do
+    strategy :attribute
+    attribute :collection_id
   end
 end

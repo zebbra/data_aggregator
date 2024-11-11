@@ -5,6 +5,8 @@ defmodule DataAggregator.Records.Approval.Changes.UpdateRawRecordStateAfterActio
 
   use Ash.Resource.Change
 
+  import DataAggregator.Helpers, only: [maybe_performant_load_record: 2]
+
   alias Ash.Changeset
   alias DataAggregator.Records.Record
 
@@ -17,8 +19,8 @@ defmodule DataAggregator.Records.Approval.Changes.UpdateRawRecordStateAfterActio
     end)
   end
 
-  defp set_approved(approved_record, %{actor: actor}) do
-    approved_record = Ash.load!(approved_record, [:record], lazy?: true)
+  defp set_approved(approved_record, %{actor: actor, tenant: tenant}) do
+    approved_record = maybe_performant_load_record(approved_record, tenant)
 
     Record.update_approval_status!(approved_record.record, :approved,
       actor: actor,

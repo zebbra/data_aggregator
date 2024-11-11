@@ -28,7 +28,7 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
     end
 
     test "with valid file", %{collection: collection} do
-      {:ok, import} = Import.create_from_path(collection, @valid_path)
+      {:ok, import} = Import.create_from_path(collection, @valid_path, tenant: collection)
 
       assert import.state == :pending
       assert import.rows_count == 891
@@ -67,7 +67,8 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
     end
 
     test "with custom filename", %{collection: collection} do
-      {:ok, import} = Import.create_from_path(collection, @valid_path, %{filename: "custom.csv"})
+      {:ok, import} =
+        Import.create_from_path(collection, @valid_path, %{filename: "custom.csv"}, tenant: collection)
 
       assert import.attachment_filename == "custom.csv"
     end
@@ -96,7 +97,7 @@ defmodule DataAggregator.Records.Import.Actions.CreateFromPathTest do
 
     test "with non-existing file", %{collection: collection} do
       path = "test/this-file-does-not-exist.csv"
-      {:error, error} = Import.create_from_path(collection, path)
+      {:error, error} = Import.create_from_path(collection, path, tenant: collection)
 
       assert_invalid_path(
         error,

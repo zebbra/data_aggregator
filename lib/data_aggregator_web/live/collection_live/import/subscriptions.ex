@@ -8,7 +8,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
 
   import DataAggregatorWeb.CollectionLive.Helpers, only: [get_collection_light: 2, busy_action: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers
-  import DataAggregatorWeb.Helpers, only: [get_actor: 1]
+  import DataAggregatorWeb.Helpers, only: [get_actor: 1, get_tenant: 1]
 
   alias Ash.Notifier.Notification
   alias DataAggregator.PubSub
@@ -22,6 +22,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
 
   @import_update_events ~w(set_importing set_imported set_failed update_mapping add_import_progress)
   @collection_action_events ~w(
+    set_mapping
+    set_importing
     set_exporting
     set_encoding
     set_fast_track_publishing
@@ -76,13 +78,17 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
   end
 
   defp handle_import_created(%Notification{data: import}, socket) do
-    import = Import.get_by_id!(import.id, load: @load_all, actor: get_actor(socket))
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+    import = Import.get_by_id!(import.id, load: @load_all, actor: actor, tenant: tenant)
     {:noreply, stream_insert(socket, :results, import, at: 0)}
   end
 
   defp handle_import_updated(%Notification{data: %{id: id, collection_id: collection_id}}, socket, event) do
-    import = Import.get_by_id!(id, load: @load_all, actor: get_actor(socket))
-    collection = get_collection_light(collection_id, get_actor(socket))
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+    import = Import.get_by_id!(id, load: @load_all, actor: actor, tenant: tenant)
+    collection = get_collection_light(collection_id, actor)
 
     socket =
       socket

@@ -138,4 +138,14 @@ defmodule DataAggregatorWeb.Helpers do
   @spec get_actor(Socket.t() | map()) :: User.t()
   def get_actor(%Socket{assigns: %{current_user: %User{} = actor}}), do: actor
   def get_actor(%{current_user: %User{} = actor}), do: actor
+
+  @spec get_tenant(Socket.t() | map()) :: String.t()
+  def get_tenant(%Socket{assigns: %{collection: tenant}}), do: tenant
+  def get_tenant(%{collection: tenant}), do: tenant
+
+  def maybe_set_user(%User{first_name: first_name, last_name: last_name}) when first_name != nil and last_name != nil,
+    do: "#{first_name} #{last_name}"
+
+  def maybe_set_user(%User{email: email}) when email != nil, do: email
+  def maybe_set_user(_), do: Phoenix.HTML.raw("&mdash;")
 end

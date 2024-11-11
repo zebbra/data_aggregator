@@ -8,6 +8,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Subscriptions do
 
   import DataAggregatorWeb.CollectionLive.Helpers, only: [busy_action: 1]
   import DataAggregatorWeb.CollectionLive.Publication.Helpers
+  import DataAggregatorWeb.Helpers, only: [get_tenant: 1]
 
   alias Ash.Notifier.Notification
   alias DataAggregator.PubSub
@@ -21,6 +22,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Subscriptions do
   @load_all load_all()
   @update_events ~w(set_running set_done set_failed)
   @collection_action_events ~w(
+    set_mapping
     set_importing
     set_exporting
     set_encoding
@@ -75,12 +77,14 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Subscriptions do
   end
 
   defp handle_publication_created(%Notification{data: publication}, socket) do
-    publication = Ash.load!(publication, @load, lazy?: true)
+    tenant = get_tenant(socket)
+    publication = Ash.load!(publication, @load, lazy?: true, tenant: tenant)
     {:noreply, stream_insert(socket, :results, publication, at: 0)}
   end
 
   defp handle_publication_updated(%Notification{data: %{id: id}}, socket, event) do
-    publication = Publication.get_by_id!(id, load: @load_all)
+    tenant = get_tenant(socket)
+    publication = Publication.get_by_id!(id, load: @load_all, tenant: tenant)
 
     socket =
       socket

@@ -81,7 +81,7 @@
       "type": "utc_datetime_usec"
     },
     {
-      "allow_nil?": true,
+      "allow_nil?": false,
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
@@ -92,11 +92,13 @@
         "destination_attribute_generated": null,
         "index?": true,
         "match_type": null,
-        "match_with": null,
+        "match_with": {
+          "collection_id": "collection_id"
+        },
         "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
         },
         "name": "record_encoding_results_record_id_fkey",
         "on_delete": "delete",
@@ -108,6 +110,35 @@
       "size": null,
       "source": "record_id",
       "type": "uuid"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": true,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": false,
+        "match_type": null,
+        "match_with": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "record_encoding_results_collection_id_fkey",
+        "on_delete": "delete",
+        "on_update": "update",
+        "primary_key?": true,
+        "schema": "public",
+        "table": "collections"
+      },
+      "size": null,
+      "source": "collection_id",
+      "type": "uuid"
     }
   ],
   "base_filter": null,
@@ -115,12 +146,12 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "444927BB362A365FBFE0EDD31CEFC39017264D3F9E725B66CA0BD2C46350E352",
+  "hash": "D1EB7D590C7CFDAEA209170DBA0FBCB5068CEDD137E4596C1AB474237D109D60",
   "identities": [],
   "multitenancy": {
-    "attribute": null,
-    "global": null,
-    "strategy": null
+    "attribute": "collection_id",
+    "global": false,
+    "strategy": "attribute"
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,

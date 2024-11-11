@@ -3,6 +3,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.AddInstitutionCodeStrategy do
     Encode Records with the grscicoll institution data from its collectoin
   """
 
+  import DataAggregator.Helpers, only: [maybe_performant_load_record: 3]
+
   alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
@@ -18,9 +20,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.AddInstitutionCodeStrategy do
     lookup the grscicoll institution data from the collection and return the encoded record
   """
   @spec apply_strategy(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
-  def apply_strategy(encoded_record, ctx) do
+  def apply_strategy(encoded_record, %{tenant: tenant} = ctx) do
     # Load the record and its collection
-    encoded_record = Ash.load!(encoded_record, record: :collection)
+    encoded_record = maybe_performant_load_record(encoded_record, tenant, :collection)
 
     case process_encoded_record(encoded_record, ctx) do
       {:ok, encoded_record} ->

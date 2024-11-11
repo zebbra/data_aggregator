@@ -5,11 +5,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   use DataAggregatorWeb, :live_component
   use DataAggregatorWeb.Filters
 
-  import DataAggregator.Helpers, only: [distinct: 2]
+  import DataAggregator.Helpers, only: [distinct_ecto: 3]
 
   alias AshPagify.FilterForm
   alias AshPhoenix.FilterForm.Predicate
-  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
   require Ash.Query
@@ -345,10 +344,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
 
   @impl true
   def update_count(socket, filter_form_params, reset) do
-    %{collection_id: collection_id, meta: meta} = socket.assigns
+    %{collection: collection, meta: meta} = socket.assigns
 
-    query =
-      Ash.Query.filter_input(Record, %{"collection_id" => collection_id})
+    query = Ash.Query.set_tenant(Record, collection)
 
     count = FilterForm.count(meta, filter_form_params, reset, query)
 
@@ -386,31 +384,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   defp assign_options(socket) do
     assign_new(socket, :distinct_options, fn ->
       %{
-        loc_continent: loc_continent_options(socket.assigns.collection_id),
-        tax_kingdom: tax_kingdom_options(socket.assigns.collection_id),
-        tax_phylum: tax_phylum_options(socket.assigns.collection_id)
+        loc_continent: loc_continent_options(socket.assigns.collection),
+        tax_kingdom: tax_kingdom_options(socket.assigns.collection),
+        tax_phylum: tax_phylum_options(socket.assigns.collection)
       }
     end)
   end
 
-  defp loc_continent_options(collection_id) do
-    distinct(
-      Ash.Query.filter(EncodedRecord, record.collection_id == ^collection_id),
-      :loc_continent
-    )
+  defp loc_continent_options(collection) do
+    distinct_ecto(:loc_continent, :encoded_records, collection)
   end
 
-  defp tax_kingdom_options(collection_id) do
-    distinct(
-      Ash.Query.filter(EncodedRecord, record.collection_id == ^collection_id),
-      :tax_kingdom
-    )
+  defp tax_kingdom_options(collection) do
+    distinct_ecto(:tax_kingdom, :encoded_records, collection)
   end
 
-  defp tax_phylum_options(collection_id) do
-    distinct(
-      Ash.Query.filter(EncodedRecord, record.collection_id == ^collection_id),
-      :tax_phylum
-    )
+  defp tax_phylum_options(collection) do
+    distinct_ecto(:tax_phylum, :encoded_records, collection)
   end
 end

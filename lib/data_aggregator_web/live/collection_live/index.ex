@@ -103,7 +103,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
                 "#{collection.digitizing_progress |> Decimal.from_float() |> Decimal.round(1)}%"}
           >
             <progress
-              class="progress progress-primary min-w-32"
+              class="progress progress-primary min-w-32 cursor-help"
               value={collection.digitizing_progress}
               max="100"
             />

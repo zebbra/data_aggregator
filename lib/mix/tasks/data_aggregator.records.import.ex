@@ -72,7 +72,7 @@ defmodule Mix.Tasks.DataAggregator.Records.Import do
 
     import =
       collection
-      |> Import.create_from_path!(file)
+      |> Import.create_from_path!(file, tenant: collection)
       |> Import.update_mapping!(@mapping)
 
     Mix.shell().info("Importing records ...")

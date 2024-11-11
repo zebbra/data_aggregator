@@ -5,6 +5,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
   use Mimic
 
   import DataAggregator.EncodingFixtures
+  import DataAggregator.ImageUploadFixtures
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.Gbif
@@ -15,6 +16,8 @@ defmodule DataAggregator.Collections.CancelActionTest do
   alias DataAggregator.Records.Collection.Workers.RecordsEnqueuer
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Export.Workers.Exporter
+  alias DataAggregator.Records.ImageUpload
+  alias DataAggregator.Records.ImageUpload.Workers.Mapper
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.Import.Workers.Importer
   alias DataAggregator.Records.Publication
@@ -58,7 +61,10 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         import =
           collection
-          |> Import.create_from_path!("test/support/fixtures/files/museum-dataset-import-example-xs.csv")
+          |> Import.create_from_path!(
+            "test/support/fixtures/files/museum-dataset-import-example-xs.csv",
+            tenant: collection
+          )
           |> Import.update_mapping!(@valid_mapping)
 
         assert {:ok, import} = Import.enqueue_import(import)
@@ -78,7 +84,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
         )
 
         Collection.cancel_action!(collection)
-        import = Import.get_by_id!(import.id)
+        import = Import.get_by_id!(import.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert import.state === :failed
@@ -97,7 +103,10 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         import =
           collection
-          |> Import.create_from_path!("test/support/fixtures/files/museum-dataset-import-example-xs.csv")
+          |> Import.create_from_path!(
+            "test/support/fixtures/files/museum-dataset-import-example-xs.csv",
+            tenant: collection
+          )
           |> Import.update_mapping!(@valid_mapping)
 
         assert import.state === :pending
@@ -109,7 +118,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         Collection.cancel_action!(collection)
 
-        import = Import.get_by_id!(import.id)
+        import = Import.get_by_id!(import.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert import.state === :pending
@@ -119,19 +128,87 @@ defmodule DataAggregator.Collections.CancelActionTest do
       end)
     end
 
+    test "cancels an image mapping job and sets the image_upload to failed and the collection to idle" do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        collection = collection_fixture()
+
+        image_upload =
+          image_upload_fixture_extracted(collection)
+
+        assert {:ok, image_upload} = ImageUpload.enqueue_mapping(image_upload)
+
+        collection = Collection.set_mapping!(collection)
+        assert collection.state === :mapping
+        assert image_upload.state === :mapping_queued
+
+        active_job =
+          collection.id |> Job.query_to_image_mappings_by_collection() |> Ash.read_one!()
+
+        assert active_job.state === :available
+
+        assert_enqueued(
+          worker: Mapper,
+          args: %{id: image_upload.id, collection_id: image_upload.collection_id}
+        )
+
+        Collection.cancel_action!(collection)
+        image_upload = ImageUpload.get_by_id!(image_upload.id, tenant: collection)
+        collection = Collection.get_by_id!(collection.id)
+
+        assert image_upload.state === :mapping_failed
+        assert collection.state === :idle
+
+        cancelled_job =
+          collection.id |> Job.query_to_image_mappings_by_collection() |> Ash.read_one!()
+
+        assert cancelled_job.state === :cancelled
+      end)
+    end
+
+    test "cancels an image mapping with no active mapping and no mapping job and sets collection to idle" do
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        collection = collection_fixture(%{state: :mapping})
+
+        assert collection.state === :mapping
+
+        image_upload =
+          image_upload_fixture_extracted(collection)
+
+        assert image_upload.state === :extracted
+
+        refute_enqueued(
+          worker: Mapper,
+          args: %{id: image_upload.id, collection_id: image_upload.collection_id}
+        )
+
+        Collection.cancel_action!(collection)
+
+        image_upload = ImageUpload.get_by_id!(image_upload.id, tenant: collection)
+        collection = Collection.get_by_id!(collection.id)
+
+        assert image_upload.state === :extracted
+        assert collection.state === :idle
+
+        refute collection.id |> Job.query_to_image_mappings_by_collection() |> Ash.read_one!()
+      end)
+    end
+
     test "cancels an export job and sets the export to failed and the collection to idle" do
       Oban.Testing.with_testing_mode(:manual, fn ->
         collection = collection_fixture()
 
         export =
-          Export.create!(%{
-            name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-            collection: collection,
-            mapping: @mapping,
-            records_query: collection.records_to_export_query,
-            data_layer: :raw,
-            header_source: :custom_selection
-          })
+          Export.create!(
+            %{
+              name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+              collection: collection,
+              mapping: @mapping,
+              records_query: collection.records_to_export_query,
+              data_layer: :raw,
+              header_source: :custom_selection
+            },
+            tenant: collection
+          )
 
         assert {:ok, export} = Export.enqueue(export)
 
@@ -150,7 +227,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
         )
 
         Collection.cancel_action!(collection)
-        export = Export.get_by_id!(export.id)
+        export = Export.get_by_id!(export.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert export.state === :failed
@@ -168,14 +245,17 @@ defmodule DataAggregator.Collections.CancelActionTest do
         assert collection.state === :exporting
 
         export =
-          Export.create!(%{
-            name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-            collection: collection,
-            mapping: @mapping,
-            records_query: collection.records_to_export_query,
-            data_layer: :raw,
-            header_source: :custom_selection
-          })
+          Export.create!(
+            %{
+              name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+              collection: collection,
+              mapping: @mapping,
+              records_query: collection.records_to_export_query,
+              data_layer: :raw,
+              header_source: :custom_selection
+            },
+            tenant: collection
+          )
 
         assert export.state === :pending
 
@@ -186,7 +266,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         Collection.cancel_action!(collection)
 
-        export = Export.get_by_id!(export.id)
+        export = Export.get_by_id!(export.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert export.state === :pending
@@ -218,7 +298,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
         # in testing mode we need to manually poll the worker
         refute_enqueued(worker: EncodingStatePoller)
 
-        correct_record = Record.get_by_id!(correct_record.id)
+        correct_record = Record.get_by_id!(correct_record.id, tenant: collection)
         assert correct_record.state === :imported
 
         records_enqueuer_job =
@@ -235,11 +315,11 @@ defmodule DataAggregator.Collections.CancelActionTest do
         collection = Collection.get_by_id!(collection.id)
         assert collection.state === :encoding
 
-        correct_record = Record.get_by_id!(correct_record.id)
+        correct_record = Record.get_by_id!(correct_record.id, tenant: collection)
         assert correct_record.state === :queued
 
         Collection.cancel_action!(collection)
-        correct_record = Record.get_by_id!(correct_record.id)
+        correct_record = Record.get_by_id!(correct_record.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert correct_record.state === :failed
@@ -282,12 +362,15 @@ defmodule DataAggregator.Collections.CancelActionTest do
         }
 
         publication =
-          Publication.create!(%{
-            name: "Publication Fast Track 1",
-            channel: :fast_track,
-            records_query: query,
-            collection: collection
-          })
+          Publication.create!(
+            %{
+              name: "Publication Fast Track 1",
+              channel: :fast_track,
+              records_query: query,
+              collection: collection
+            },
+            tenant: collection
+          )
 
         assert {:ok, publication} = Publication.enqueue(publication)
 
@@ -306,7 +389,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
         )
 
         Collection.cancel_action!(collection)
-        publication = Publication.get_by_id!(publication.id)
+        publication = Publication.get_by_id!(publication.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert publication.state === :failed
@@ -331,12 +414,15 @@ defmodule DataAggregator.Collections.CancelActionTest do
         }
 
         publication =
-          Publication.create!(%{
-            name: "Publication Fast Track 1",
-            channel: :fast_track,
-            records_query: query,
-            collection: collection
-          })
+          Publication.create!(
+            %{
+              name: "Publication Fast Track 1",
+              channel: :fast_track,
+              records_query: query,
+              collection: collection
+            },
+            tenant: collection
+          )
 
         assert publication.state === :pending
 
@@ -347,7 +433,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         Collection.cancel_action!(collection)
 
-        publication = Publication.get_by_id!(publication.id)
+        publication = Publication.get_by_id!(publication.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert publication.state === :pending
@@ -367,22 +453,28 @@ defmodule DataAggregator.Collections.CancelActionTest do
         }
 
         publication =
-          Publication.create!(%{
-            name: "Publication Approval 1",
-            channel: :approval,
-            records_query: query,
-            collection: collection,
-            center: "infofauna"
-          })
+          Publication.create!(
+            %{
+              name: "Publication Approval 1",
+              channel: :approval,
+              records_query: query,
+              collection: collection,
+              center: "infofauna"
+            },
+            tenant: collection
+          )
 
         publication2 =
-          Publication.create!(%{
-            name: "Publication Approval 2",
-            channel: :approval,
-            records_query: query,
-            collection: collection,
-            center: "infofauna"
-          })
+          Publication.create!(
+            %{
+              name: "Publication Approval 2",
+              channel: :approval,
+              records_query: query,
+              collection: collection,
+              center: "infofauna"
+            },
+            tenant: collection
+          )
 
         assert {:ok, publication} = Publication.enqueue(publication)
         assert {:ok, publication2} = Publication.enqueue(publication2)
@@ -409,8 +501,8 @@ defmodule DataAggregator.Collections.CancelActionTest do
         )
 
         Collection.cancel_action!(collection)
-        publication = Publication.get_by_id!(publication.id)
-        publication2 = Publication.get_by_id!(publication2.id)
+        publication = Publication.get_by_id!(publication.id, tenant: collection)
+        publication2 = Publication.get_by_id!(publication2.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert publication.state === :failed
@@ -437,13 +529,16 @@ defmodule DataAggregator.Collections.CancelActionTest do
         }
 
         publication =
-          Publication.create!(%{
-            name: "Publication Approving 1",
-            channel: :approval,
-            records_query: query,
-            collection: collection,
-            center: "infofauna"
-          })
+          Publication.create!(
+            %{
+              name: "Publication Approving 1",
+              channel: :approval,
+              records_query: query,
+              collection: collection,
+              center: "infofauna"
+            },
+            tenant: collection
+          )
 
         assert publication.state === :pending
 
@@ -454,7 +549,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         Collection.cancel_action!(collection)
 
-        publication = Publication.get_by_id!(publication.id)
+        publication = Publication.get_by_id!(publication.id, tenant: collection)
         collection = Collection.get_by_id!(collection.id)
 
         assert publication.state === :pending

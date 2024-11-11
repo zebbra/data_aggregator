@@ -18,6 +18,7 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
   alias Ash.Changeset
   alias DataAggregator.Jobs.Job
   alias DataAggregator.Records.Export
+  alias DataAggregator.Records.ImageUpload
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
@@ -36,6 +37,9 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     case state do
       :importing ->
         cancel_import(changeset)
+
+      :mapping ->
+        cancel_image_mapping(changeset)
 
       :exporting ->
         cancel_export(changeset)
@@ -63,8 +67,8 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     cancel_all_jobs(Job.query_to_imports_by_collection(collection_id))
 
     active_import =
-      collection_id
-      |> Import.query_to_active_by_collection()
+      Import.query_to_active()
+      |> Ash.Query.set_tenant(collection_id)
       |> Ash.read_one!()
 
     if active_import do
@@ -74,12 +78,27 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     changeset
   end
 
+  defp cancel_image_mapping(%Changeset{data: %{id: collection_id}} = changeset) do
+    cancel_all_jobs(Job.query_to_image_mappings_by_collection(collection_id))
+
+    active_image_mapping =
+      ImageUpload.query_to_active()
+      |> Ash.Query.set_tenant(collection_id)
+      |> Ash.read_one!()
+
+    if active_image_mapping do
+      ImageUpload.cancel_mapping!(active_image_mapping)
+    end
+
+    changeset
+  end
+
   defp cancel_export(%Changeset{data: %{id: collection_id}} = changeset) do
     cancel_all_jobs(Job.query_to_exports_by_collection(collection_id))
 
     active_export =
-      collection_id
-      |> Export.query_to_active_by_collection()
+      Export.query_to_active()
+      |> Ash.Query.set_tenant(collection_id)
       |> Ash.read_one!()
 
     if active_export do
@@ -97,11 +116,12 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     cancel_all_jobs(Job.query_to_encodings_by_collection(collection_id))
 
     # Update all records which are in encoding / queued state to failed
-    collection_id
-    |> Record.query_to_encoding_by_collection()
+    Record.query_to_encoding()
+    |> Ash.Query.set_tenant(collection_id)
     |> Ash.bulk_update!(
       :update,
-      %{state: :failed}
+      %{state: :failed},
+      tenant: collection_id
     )
 
     changeset
@@ -113,8 +133,8 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     # from the previous publication
 
     active_publication =
-      collection_id
-      |> Publication.query_to_active_by_collection()
+      Publication.query_to_active()
+      |> Ash.Query.set_tenant(collection_id)
       |> Ash.read_one!()
 
     if active_publication do
@@ -133,8 +153,8 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     # account for this case as it is not a common use case.
     cancel_all_jobs(Job.query_to_publications_by_collection(collection_id))
 
-    collection_id
-    |> Publication.query_to_active_by_collection()
+    Publication.query_to_active()
+    |> Ash.Query.set_tenant(collection_id)
     |> Ash.bulk_update!(
       :update,
       %{state: :failed, finished_at: DateTime.utc_now()}

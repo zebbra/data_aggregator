@@ -9,6 +9,8 @@ defmodule DataAggregator.Records.Record.Image do
     extensions: [AshUUID, AshJsonApi.Resource]
 
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.ImageUpload
   alias DataAggregator.Records.Record
 
   attributes do
@@ -20,6 +22,13 @@ defmodule DataAggregator.Records.Record.Image do
   relationships do
     belongs_to :attachment, Attachment, public?: true
     belongs_to :record, Record, public?: true
+    belongs_to :image_upload, ImageUpload, public?: true
+
+    belongs_to :collection, Collection do
+      primary_key? true
+      public? true
+      allow_nil? false
+    end
   end
 
   actions do
@@ -40,13 +49,24 @@ defmodule DataAggregator.Records.Record.Image do
     repo DataAggregator.Repo
 
     references do
-      reference :record, on_delete: :delete, on_update: :update, index?: true
       reference :attachment, on_delete: :delete, on_update: :update, index?: true
+      reference :image_upload, on_delete: :delete, on_update: :update, index?: true
+      reference :collection, on_delete: :delete, on_update: :update
+
+      reference :record,
+        on_delete: :delete,
+        on_update: :update,
+        index?: true,
+        match_with: [collection_id: :collection_id]
     end
   end
 
   json_api do
     type "record_image"
+
+    primary_key do
+      keys [:id, :collection_id]
+    end
 
     routes do
       base "/record_images"
@@ -57,5 +77,10 @@ defmodule DataAggregator.Records.Record.Image do
       patch :update
       delete :destroy
     end
+  end
+
+  multitenancy do
+    strategy :attribute
+    attribute :collection_id
   end
 end

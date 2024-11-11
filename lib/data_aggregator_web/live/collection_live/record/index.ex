@@ -3,25 +3,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Record.Subscriptions
 
+  import Ash.Expr
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
   import DataAggregatorWeb.CollectionLive.Encoding.Components, only: [encoding_state_badge: 1]
 
   import DataAggregatorWeb.CollectionLive.Helpers,
-    only: [get_collection_light: 2, get_collection_full: 2, busy_action: 1, cancel_action: 2]
+    only: [get_collection_light: 2, busy_action: 1, cancel_action: 2]
 
   import DataAggregatorWeb.CollectionLive.Record.ActivityFeed
   import DataAggregatorWeb.CollectionLive.Record.Components
   import DataAggregatorWeb.CollectionLive.Record.Components.Toolbar, only: [toolbar: 1]
   import DataAggregatorWeb.CollectionLive.Record.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
-
-  import DataAggregatorWeb.RecordLive.Helpers,
-    only: [
-      attrs_by_category_in_layers: 1,
-      encoded_attribute: 2,
-      encoded_attribute: 3,
-      get_dwc_field: 1
-    ]
 
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.CollectionType
@@ -63,18 +56,34 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   defp assign_scope_stats(socket) do
-    %{collection: collection, current_user: current_user} = socket.assigns
+    %{collection: collection} = socket.assigns
 
     assign_async(
       socket,
       [:records_count_not_approved, :records_count_not_encoded, :records_count_not_published],
       fn ->
-        collection = get_collection_full(collection.id, current_user)
+        count_not_encoded =
+          Record
+          |> Ash.Query.set_tenant(collection)
+          |> Ash.Query.filter(expr(not_encoded == true))
+          |> Ash.count!()
+
+        count_not_published =
+          Record
+          |> Ash.Query.set_tenant(collection)
+          |> Ash.Query.filter(expr(not_published == true))
+          |> Ash.count!()
+
+        count_not_approved =
+          Record
+          |> Ash.Query.set_tenant(collection)
+          |> Ash.Query.filter(expr(not_approved == true))
+          |> Ash.count!()
 
         stats = %{
-          records_count_not_approved: collection.records_count_not_approved,
-          records_count_not_encoded: collection.records_count_not_encoded,
-          records_count_not_published: collection.records_count_not_published
+          records_count_not_approved: count_not_approved,
+          records_count_not_encoded: count_not_encoded,
+          records_count_not_published: count_not_published
         }
 
         {:ok, stats}
@@ -86,10 +95,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   def handle_params(params, _url, socket) do
     layer = params |> Map.get("layer", "approval") |> coalesce_layer()
     actor = get_actor(socket)
+    tenant = get_tenant(socket)
 
     socket
     |> register_async_keys()
-    |> start_async(:results, fn -> list_records(params, actor) end)
+    |> start_async(:results, fn ->
+      list_records(params, actor, tenant)
+    end)
     |> assign(:layer, layer)
     |> apply_action(socket.assigns.live_action, params)
     |> noreply()
@@ -173,6 +185,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/publications"}
           label={~t"Publications and Approvals"m}
+        />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/image_uploads"}
+          label={~t"Image Upload"m}
         />
       </.secondary_navigation>
 
@@ -296,24 +312,27 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <:col
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :picture)}
-          field={:mte_associated_media}
           label={picture_th_label()}
         >
           <div
-            class="tooltip tooltip-right"
+            class="tooltip tooltip-right cursor-help"
             data-tip={
-              if record.mte_associated_media,
+              if record.encoded_record.mte_associated_media,
                 do: ~t"Images available"m,
                 else: ~t"No images uploaded yet"m
             }
           >
             <.icon
-              name={if record.mte_associated_media, do: "hero-camera-mini", else: "hero-camera"}
+              name={
+                if record.encoded_record.mte_associated_media,
+                  do: "hero-camera-mini",
+                  else: "hero-camera"
+              }
               class={
                 class_names([
                   "size-5",
-                  record.mte_associated_media === nil && "text-base-content",
-                  record.mte_associated_media !== nil && "text-success"
+                  record.encoded_record.mte_associated_media === nil && "text-base-content",
+                  record.encoded_record.mte_associated_media !== nil && "text-success"
                 ])
               }
             />
@@ -327,7 +346,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           directions={{:asc, :desc_nils_last}}
         >
           <div
-            class="tooltip tooltip-right"
+            class="tooltip tooltip-right cursor-help"
             data-tip={
               if record.iucn_redlist,
                 do: ~t"According to IUCN an endangered species"m,
@@ -537,10 +556,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               occurrence_id={@selected_record.occ_occurrence_id}
               fast_track_status={@selected_record.fast_track_status}
             />
-            <div class="mt-4 flex space-x-2">
-              <.encoding_state_badge state={@selected_record.state} />
-              <.publication_state_badge state={@selected_record.fast_track_status} />
-              <.approval_state_badge state={@selected_record.approval_status} />
+            <div class="mt-4 flex space-x-2 max-sm:hidden">
+              <.encoding_state_badge state={@selected_record.state} tooltip={false} />
+              <.publication_state_badge state={@selected_record.fast_track_status} tooltip={false} />
+              <.approval_state_badge state={@selected_record.approval_status} tooltip={false} />
             </div>
           </:additional_header_content>
 
@@ -576,17 +595,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 <.mids_level_indicator level={@selected_record.mids_level} />
               </:item>
             </.list>
-            <div :if={@selected_record.mte_associated_media} class="pb-4">
+            <div :if={@selected_record.encoded_record.mte_associated_media} class="pb-4">
               <.first_associated_media
-                associated_media={@selected_record.mte_associated_media}
+                associated_media={@selected_record.encoded_record.mte_associated_media}
                 class="border-black-white/10 border-b py-8"
               />
             </div>
             <%= for category <- @attrs_in_categories do %>
-              <details
-                :if={category_has_data?(category)}
-                class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:first:border-t lg:pl-4"
-              >
+              <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:first:border-t lg:pl-4">
                 <summary class="collapse-title">
                   <%= category.label %>
                 </summary>
@@ -599,7 +615,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                       container_attrs: [class: "overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
                     ]}
                     id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
-                    items={attributes_with_data(category.attributes)}
+                    items={category.attributes}
                   >
                     <:col :let={attribute} label={~t"Name"} class="font-semibold">
                       <%= attribute.name %>
@@ -642,7 +658,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               </div>
             </details>
           </div>
-          <.activity_feed :if={@record_tab == "changes"} record={@selected_record} />
+          <.activity_feed
+            :if={@record_tab == "changes"}
+            record={@selected_record}
+            tenant={@collection}
+          />
           <div :if={@record_tab == "encodings"} class="px-6 pt-4 lg:px-8">
             <h2 class="pb-2">
               <%= ~t"Record encodings"m %>
@@ -698,6 +718,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             meta={@meta.result}
             busy={@busy}
             layer={@layer}
+            current_user={@current_user}
           />
         </.modal>
 
@@ -803,7 +824,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             id="record_filters"
             label={~t"records"m}
             meta={@meta.result}
-            collection_id={@collection.id}
+            collection={@collection}
             path={~p"/collections/#{@collection}/records?layer=#{@layer}"}
           />
         </.modal>
@@ -849,13 +870,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_event("record:select", %{"id" => id}, socket) do
     actor = get_actor(socket)
-    record = get_record(id, actor)
+    tenant = get_tenant(socket)
+    record = get_record(id, actor, tenant)
 
     socket =
       socket
       |> assign(:selected_record, record)
-      |> assign(:record_encoding_results, RecordEncodingResult.filter_by_record!(id))
-      |> assign(:attrs_in_categories, attrs_by_category_in_layers(record))
+      |> assign(
+        :record_encoding_results,
+        RecordEncodingResult.filter_by_record!(id, tenant: tenant)
+      )
+      |> assign(:attrs_in_categories, attrs_by_category(record))
 
     {:noreply, socket}
   end
@@ -863,7 +888,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_event("record:delete", %{"id" => id}, socket) do
     actor = get_actor(socket)
-    record = Record.get_by_id!(id, actor: actor)
+    tenant = get_tenant(socket)
+    record = Record.get_by_id!(id, actor: actor, tenant: tenant)
     :ok = Record.destroy(record, actor: actor)
 
     {:noreply,
@@ -921,15 +947,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     collection = Ash.load!(collection, [:fast_track_query], lazy?: true, actor: actor)
 
     fast_track_query = filter_map(ash_pagify, collection.fast_track_query, socket.assigns.layer)
-    count_query = AshPagify.query_for_filters_map(Record, fast_track_query)
+
+    count_query =
+      Record
+      |> AshPagify.query_for_filters_map(fast_track_query)
+      |> Ash.Query.set_tenant(collection)
 
     case create_and_enqueue(collection, fast_track_query, count_query, :fast_track, actor) do
       {:ok, _} ->
         {:noreply,
          socket
          |> assign(:agreed, false)
-         |> put_flash(:info, ~t"Publication started in background"m)
-         |> push_navigate(to: ~p"/collections/#{collection.id}/publications")}
+         |> update(:show_fast_track_pub, &(!&1))
+         |> put_flash(:info, ~t"Publication started in background"m)}
 
       {:error, _} ->
         {:noreply,
@@ -953,14 +983,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     collection = Ash.load!(collection, [:approval_query], lazy?: true, actor: actor)
 
     approval_query = filter_map(ash_pagify, collection.approval_query, socket.assigns.layer)
-    count_query = AshPagify.query_for_filters_map(Record, approval_query)
+
+    count_query =
+      Record
+      |> AshPagify.query_for_filters_map(approval_query)
+      |> Ash.Query.set_tenant(collection)
 
     case create_and_enqueue(collection, approval_query, count_query, :approval, actor) do
       {:ok, _} ->
         {:noreply,
          socket
-         |> put_flash(:info, ~t"Approval started in background"m)
-         |> push_navigate(to: ~p"/collections/#{collection.id}/publications")}
+         |> update(:show_approval_pub, &(!&1))
+         |> put_flash(:info, ~t"Approval started in background"m)}
 
       {:error, _} ->
         {:noreply, put_flash(socket, :error, ~t"An approval for this collection is already in process"m)}
@@ -1015,20 +1049,21 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       collection: collection,
       rows_count: Ash.count!(count_query)
     }
-    |> Publication.create!(actor: actor)
-    |> Publication.enqueue(actor: actor)
+    |> Publication.create!(actor: actor, tenant: collection)
+    |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor)
   end
 
   defp create_and_enqueue(collection, query, _count_query, :approval, actor) do
-    Collection.approve(collection, query, actor: actor)
+    Collection.approve(collection, query, actor: actor, tenant: collection)
   end
 
   defp apply_action(socket, :index, _params) do
     assign(socket, :page_title, ~t"Collection Records"m)
   end
 
-  defp list_records(params, actor, opts \\ [action: :by_collection]) do
+  defp list_records(params, actor, tenant, opts \\ []) do
     opts = Keyword.put(opts, :actor, actor)
+    opts = Keyword.put(opts, :tenant, tenant)
     opts = maybe_put_tsvector(Map.get(params, "layer"), opts)
 
     record_select =
@@ -1059,19 +1094,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         :updated_at
       ]
 
-    encoded_record_select = [
-      :tax_scientific_name,
-      :loc_state_province,
-      :loc_country_code,
-      :loc_decimal_latitude,
-      :loc_decimal_longitude
-    ]
-
     opts =
       Keyword.put(opts, :load, [
         :mids_level,
         :iucn_redlist,
-        encoded_record: encoded_record_select
+        :encoded_record
       ])
 
     query =
@@ -1083,8 +1110,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     AshPagify.validate_and_run(query, params, opts, params["id"])
   end
 
-  defp get_record(id, actor) do
-    Record.get_by_id!(id, load: @load, actor: actor)
+  defp get_record(id, actor, tenant) do
+    Record.get_by_id!(id, load: @load, actor: actor, tenant: tenant)
   end
 
   defp assign_search(socket, nil) do

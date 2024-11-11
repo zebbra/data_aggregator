@@ -4,7 +4,6 @@ defmodule DataAggregatorApi.JsonApi.Router do
   use AshJsonApi.Router,
     # The api modules you want to serve
     domains: [
-      DataAggregator.Platform,
       DataAggregator.Records,
       DataAggregator.Taxonomy
     ],
