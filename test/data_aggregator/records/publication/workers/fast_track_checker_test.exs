@@ -25,7 +25,11 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
     test "succeeds a unpublished record to check if its published on gbif", %{
       not_published_record: not_published_record
     } do
-      {:ok, record} = perform_job(FastTrackPublicationVerifier, %{id: not_published_record.id})
+      {:ok, record} =
+        perform_job(FastTrackPublicationVerifier, %{
+          id: not_published_record.id,
+          collection_id: not_published_record.collection_id
+        })
 
       assert record.fast_track_status == :published
     end
@@ -34,7 +38,12 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
       published_record: published_record
     } do
       {{:ok, record}, logs} =
-        with_log(fn -> perform_job(FastTrackPublicationVerifier, %{id: published_record.id}) end)
+        with_log(fn ->
+          perform_job(FastTrackPublicationVerifier, %{
+            id: published_record.id,
+            collection_id: published_record.collection_id
+          })
+        end)
 
       assert record.fast_track_status == :published
 

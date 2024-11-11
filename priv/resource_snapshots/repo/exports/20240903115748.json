@@ -131,7 +131,7 @@
       "type": "utc_datetime_usec"
     },
     {
-      "allow_nil?": true,
+      "allow_nil?": false,
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
@@ -157,6 +157,35 @@
       },
       "size": null,
       "source": "collection_id",
+      "type": "uuid"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": false,
+        "match_type": null,
+        "match_with": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "exports_started_by_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "users"
+      },
+      "size": null,
+      "source": "started_by_id",
       "type": "uuid"
     },
     {
@@ -204,12 +233,12 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "612860EA2DAD9A54080689CC61100477E28B309244F6A84C468C4E80F1D3AE64",
+  "hash": "B971BDC0656E2E4C3ED09953A1807115012653D5FBEB4A3F3AFB1CBA95A81444",
   "identities": [],
   "multitenancy": {
-    "attribute": null,
-    "global": null,
-    "strategy": null
+    "attribute": "collection_id",
+    "global": false,
+    "strategy": "attribute"
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,

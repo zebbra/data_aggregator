@@ -31,8 +31,8 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
          {:unzip, {:ok, _}} <- {:unzip, unzip_cached_file(cached_file, temp_path)},
          {:ok, temp_path} <- maybe_enter_single_subdirectory(temp_path),
          {:validate, invalid_file_infos} <- {:validate, validate_files(temp_path)},
-         changeset =
-           Changeset.force_change_attribute(changeset, :invalid_file_infos, invalid_file_infos),
+         {:add_invalid_file_info, changeset} <-
+           add_invalid_file_info(changeset, invalid_file_infos),
          {:attachments, attachments} <-
            {:attachments, create_attachments(temp_path)} do
       Changeset.manage_relationship(changeset, :image_attachments, attachments, type: :create)
@@ -49,6 +49,10 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
       error ->
         add_error(changeset, "Error during file extraction: #{error}")
     end
+  end
+
+  defp add_invalid_file_info(changeset, invalid_file_infos) do
+    {:add_invalid_file_info, Changeset.force_change_attribute(changeset, :invalid_file_infos, invalid_file_infos)}
   end
 
   defp unzip_cached_file(cached_file, temp_path) do

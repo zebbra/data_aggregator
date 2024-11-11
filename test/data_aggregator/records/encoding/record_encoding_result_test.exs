@@ -23,72 +23,68 @@ defmodule DataAggregator.RecordEncodingResultTest do
     end
 
     test "read!/0 returns all record_encoding_results" do
+      collection = collection_fixture()
+
       created = [
-        record_encoding_result_fixture(),
-        record_encoding_result_fixture()
+        record_encoding_result_fixture(%{
+          record: record_fixture(%{collection: collection, mte_catalog_number: "record1"})
+        }),
+        record_encoding_result_fixture(%{
+          record: record_fixture(%{collection: collection, mte_catalog_number: "record2"})
+        })
       ]
 
-      persisted = RecordEncodingResult.read!(page: false)
+      persisted = RecordEncodingResult.read!(page: false, tenant: collection)
 
       assert_lists_equal(
         created,
         persisted,
-        &assert_structs_equal(&1, &2, [:id])
+        &assert_structs_equal(&1, &2, [:id, :collection_id])
       )
     end
 
     test "get_by_id!/1 returns the record_encoding_result with given id" do
       created = record_encoding_result_fixture()
-      persisted = RecordEncodingResult.get_by_id!(created.id)
+      persisted = RecordEncodingResult.get_by_id!(created.id, tenant: created.collection)
 
       assert_structs_equal(created, persisted, [:id])
     end
 
     test "filter_by_record!/1 returns all record_encoding_results for the given collection" do
-      record_encoding_result_fixture()
-      record_encoding_result_fixture()
-
-      record = record_fixture()
-
-      attrs = Map.put_new_lazy(get_default_attrs(), :record, fn -> record end)
-      created = RecordEncodingResult.create!(attrs)
-
-      encoding_result = hd(RecordEncodingResult.filter_by_record!(record.id))
-
-      assert_structs_equal(created, encoding_result, [:id])
-    end
-
-    test "filter_by_collection!/1 returns all record_encoding_results for the given collection" do
-      record_encoding_result_fixture()
+      record_encoding_result_one = record_encoding_result_fixture()
       record_encoding_result_fixture()
 
-      record = record_fixture()
+      attrs =
+        Map.merge(get_default_attrs(), %{
+          record: record_encoding_result_one.record,
+          collection: record_encoding_result_one.collection
+        })
 
-      attrs = Map.put_new_lazy(get_default_attrs(), :record, fn -> record end)
+      created = RecordEncodingResult.create!(attrs, tenant: record_encoding_result_one.collection)
 
-      created = [
-        RecordEncodingResult.create!(attrs),
-        RecordEncodingResult.create!(attrs),
-        RecordEncodingResult.create!(attrs)
-      ]
+      encoding_result =
+        hd(
+          RecordEncodingResult.filter_by_record!(record_encoding_result_one.record.id,
+            tenant: record_encoding_result_one.collection
+          )
+        )
 
-      encoding_results = RecordEncodingResult.filter_by_collection!(record.collection_id)
-
-      assert_lists_equal(
-        created,
-        encoding_results,
-        &assert_structs_equal(&1, &2, [:id])
-      )
+      assert_structs_equal(created, encoding_result, [:id, :collection_id])
     end
 
     test "create/1 with valid data creates a record_encoding_result" do
       record = record_fixture()
 
-      attrs = Map.put_new_lazy(get_default_attrs(), :record, fn -> record end)
+      attrs =
+        Map.merge(get_default_attrs(), %{
+          record: record,
+          collection: record.collection
+        })
 
-      assert {:ok, %RecordEncodingResult{} = result} = RecordEncodingResult.create(attrs)
+      assert {:ok, %RecordEncodingResult{} = result} =
+               RecordEncodingResult.create(attrs, tenant: record.collection)
 
-      record_encoding_result = Ash.load!(result, [:record])
+      record_encoding_result = Ash.load!(result, [:record], tenant: record.collection)
 
       assert record_encoding_result.record.id == record.id
     end
@@ -132,7 +128,9 @@ defmodule DataAggregator.RecordEncodingResultTest do
       assert :ok = RecordEncodingResult.destroy(record_encoding_result)
 
       assert_raise Ash.Error.Query.NotFound, fn ->
-        RecordEncodingResult.get_by_id!(record_encoding_result.id)
+        RecordEncodingResult.get_by_id!(record_encoding_result.id,
+          tenant: record_encoding_result.collection
+        )
       end
     end
 

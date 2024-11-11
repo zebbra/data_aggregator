@@ -24,23 +24,29 @@ defmodule DataAggregator.EncodedRecordTest do
     end
 
     test "read!/0 returns all encoded_records" do
+      collection = collection_fixture()
+
       created = [
-        encoded_record_fixture(),
-        encoded_record_fixture()
+        encoded_record_fixture(%{
+          record: record_fixture(%{collection: collection, mte_catalog_number: "record1"})
+        }),
+        encoded_record_fixture(%{
+          record: record_fixture(%{collection: collection, mte_catalog_number: "record2"})
+        })
       ]
 
-      persisted = EncodedRecord.read!(page: false)
+      persisted = EncodedRecord.read!(page: false, tenant: collection)
 
       assert_lists_equal(
         created,
         persisted,
-        &assert_structs_equal(&1, &2, [:id])
+        &assert_structs_equal(&1, &2, [:id, :collection_id])
       )
     end
 
     test "get_by_id!/1 returns the encoded_record with given id" do
       created = encoded_record_fixture()
-      persisted = EncodedRecord.get_by_id!(created.id)
+      persisted = EncodedRecord.get_by_id!(created.id, tenant: created.collection)
 
       assert_structs_equal(created, persisted, [:id])
     end
@@ -48,13 +54,12 @@ defmodule DataAggregator.EncodedRecordTest do
     test "create/1 with valid data creates a encoded_record" do
       record = record_fixture()
 
-      attrs = %{
-        record: record
-      }
+      attrs = %{record: record}
 
-      assert {:ok, %EncodedRecord{} = result} = EncodedRecord.create(attrs)
+      assert {:ok, %EncodedRecord{} = result} =
+               EncodedRecord.create(attrs, tenant: record.collection)
 
-      encoded_record = Ash.load!(result, [:record])
+      encoded_record = Ash.load!(result, [:record], tenant: record.collection)
 
       assert encoded_record.record.id == record.id
     end
@@ -74,7 +79,7 @@ defmodule DataAggregator.EncodedRecordTest do
       assert {:ok, %EncodedRecord{} = encoded_record} =
                EncodedRecord.update(encoded_record, update_attrs)
 
-      assert EncodedRecord.get_by_id!(encoded_record.id).mte_catalog_number ==
+      assert EncodedRecord.get_by_id!(encoded_record.id, tenant: encoded_record.collection).mte_catalog_number ==
                "encoded_record2"
     end
 
@@ -86,7 +91,10 @@ defmodule DataAggregator.EncodedRecordTest do
     test "destroy/1 deletes the encoded_record" do
       encoded_record = encoded_record_fixture()
       assert :ok = EncodedRecord.destroy(encoded_record)
-      assert_raise Ash.Error.Query.NotFound, fn -> EncodedRecord.get_by_id!(encoded_record.id) end
+
+      assert_raise Ash.Error.Query.NotFound, fn ->
+        EncodedRecord.get_by_id!(encoded_record.id, tenant: encoded_record.collection)
+      end
     end
 
     test "destroy/1 with invalid id returns error" do

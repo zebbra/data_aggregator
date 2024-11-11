@@ -4,8 +4,8 @@ defmodule DataAggregatorWeb.ImageUploadController do
   alias DataAggregator.Records.ImageUpload
   alias DataAggregator.Records.Record.Image
 
-  def show_image(conn, %{"image_id" => image_id}) do
-    case Image.get_by_id(image_id, load: [attachment: :url]) do
+  def show_image(conn, %{"collection_id" => collection_id, "image_id" => image_id}) do
+    case Image.get_by_id(image_id, load: [attachment: :url], tenant: collection_id) do
       {:error, _error} ->
         put_status(conn, :not_found)
 
@@ -14,12 +14,13 @@ defmodule DataAggregatorWeb.ImageUploadController do
     end
   end
 
-  def download_log(conn, %{"image_upload_id" => id}) do
+  def download_log(conn, %{"image_upload_id" => id, "id" => collection_id}) do
     case ImageUpload.get_by_id(id,
            load: [
              :mapped_images,
              :unmapped_images
-           ]
+           ],
+           tenant: collection_id
          ) do
       {:error, _error} ->
         put_status(conn, :not_found)

@@ -42,6 +42,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ include "aggregator.fullname" . }}-pg-app"
+                  key: uri
           envFrom:
             - secretRef:
                 name: {{ .Values.envSecret }}

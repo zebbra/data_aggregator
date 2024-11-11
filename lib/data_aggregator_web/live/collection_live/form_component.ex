@@ -113,17 +113,23 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
   def handle_event("collection:save", %{"collection" => params}, socket) do
     socket =
       case Form.submit(socket.assigns.form, params: params) do
-        {:ok, _} ->
+        {:ok, collection} ->
           message =
             case socket.assigns.action do
               :new -> ~t"Collection created successfully"m
               :edit -> ~t"Collection updated successfully"m
             end
 
-          socket
-          |> push_event("submit:close", %{})
-          |> push_patch(to: socket.assigns.patch)
-          |> put_flash(:info, message)
+          socket =
+            socket
+            |> push_event("submit:close", %{})
+            |> put_flash(:info, message)
+
+          if socket.assigns.action == :new do
+            push_navigate(socket, to: ~p"/collections/#{collection.id}/records")
+          else
+            push_patch(socket, to: socket.assigns.patch)
+          end
 
         {:error, form} ->
           assign(socket, :form, form)

@@ -5,6 +5,87 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [0.9.4](https://github.com/zebbra/data_aggregator/compare/v0.9.3...0.9.4) (2024-11-08)
+
+
+
+
+### Features:
+
+* redirects: change for collection/publication/approval create actions
+
+* user: validate and fix email on first modal step
+
+* helm: use CloudNativePG cluster
+
+* started_by: added relationships
+
+* table_partition: performance tweaks
+
+* table_partition: create partitions
+
+* table_partition: add multi-tenancy to records and records_versions
+
+* table_partition: add multi-tenancy to record_images
+
+* table_partition: add multi-tenancy to record_encoding_results
+
+* table_partition: add multi-tenancy to publications
+
+* table_partition: add multi-tenancy to imports
+
+* table_partition: add multi-tenancy to import_records
+
+* table_partition: add multi-tenancy to image_uploads
+
+* table_partition: add multi-tenancy to exports
+
+* table_partition: add multi-tenancy to encoded_records and it's versions
+
+* table_partition: add multi-tenancy to approvals and approved_records
+
+* table_partition: prepare records by adding a unique index on id,collection_id
+
+* images: add relate_images encoding strategy
+
+* image-upload: integrate into cancel action logic
+
+* image-upload: support hidden files and single subdiredctories
+
+* image-upload: small ui changes.
+
+* image-upload: set collection busy when mapping images
+
+* image-upload: add activity feed for add_image_url change
+
+* image-upload: conditional edit text/icons depending on first run or rerun
+
+* kill-switch: implemented logic to abort import,export,encode,publish,approve actions
+
+* image-upload: add info text to mapping modal.
+
+* image-upload: rename and recolor image upload state
+
+* image-upload: Add log download button to summary
+
+* image-upload: validate and delete files when extracting.
+
+* image-upload: add file mapping and tests.
+
+* image-upload: add file extraction after zip upload
+
+* image-upload: First steps implementing image upload
+
+### Bug Fixes:
+
+* jobs: increase pruner limit to 10_000
+
+* linting error
+
+### Performance Improvements:
+
+* records table: use generated db columns and assign_async operations
+
 ## [0.9.3](https://github.com/zebbra/data_aggregator/compare/v0.9.2...0.9.3) (2024-10-30)
 
 

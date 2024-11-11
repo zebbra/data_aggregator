@@ -14,6 +14,7 @@ defmodule DataAggregator.Records.Export.Workers.Exporter do
   ## Arguments
 
   * `id` - the ID of the export to run
+  * `collection_id` - the ID of the collection to export
 
   """
 
@@ -25,10 +26,10 @@ defmodule DataAggregator.Records.Export.Workers.Exporter do
   require Logger
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"id" => id}}) do
-    with {:ok, export} <- Export.get_by_id(id) do
+  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id}}) do
+    with {:ok, export} <- Export.get_by_id(id, load: :collection, tenant: collection_id) do
       Logger.info("Running export #{inspect(export.id)} ...")
-      Export.run(export)
+      Export.run(export, tenant: export.collection)
     end
   end
 

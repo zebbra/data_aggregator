@@ -15,7 +15,7 @@ defmodule DataAggregator.Records.Actions.Approve do
   require Logger
 
   @impl true
-  def run(input, _opts, ctx) do
+  def run(input, _opts, %{actor: actor, tenant: tenant}) do
     collection = input.arguments.collection
     query = input.arguments.query
 
@@ -28,7 +28,10 @@ defmodule DataAggregator.Records.Actions.Approve do
             encoded_record: %{swiss_species: %{center: %{eq: center}}}
           }).filters
 
-        count_query = AshPagify.query_for_filters_map(Record, records_query)
+        count_query =
+          Record
+          |> AshPagify.query_for_filters_map(records_query)
+          |> Ash.Query.set_tenant(tenant)
 
         rows_count = Ash.count!(count_query)
 
@@ -42,8 +45,8 @@ defmodule DataAggregator.Records.Actions.Approve do
             rows_count: rows_count,
             center: center
           }
-          |> Publication.create!()
-          |> Publication.enqueue(actor: ctx.actor, authorize?: false)
+          |> Publication.create!(tenant: tenant)
+          |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor, authorize?: false)
         end
 
         {center, rows_count}

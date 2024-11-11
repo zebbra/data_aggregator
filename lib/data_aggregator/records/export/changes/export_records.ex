@@ -12,15 +12,15 @@ defmodule DataAggregator.Records.Export.Changes.ExportRecords do
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_action(changeset, &export_records/1, append?: true)
+  def change(%Changeset{} = changeset, _opts, ctx) do
+    Changeset.before_action(changeset, &export_records(&1, ctx), append?: true)
   end
 
-  defp export_records(%Changeset{data: original_export} = changeset) do
-    export = Ash.load!(original_export, [:collection])
+  defp export_records(%Changeset{data: original_export} = changeset, %{tenant: tenant}) do
+    export = Ash.load!(original_export, [:collection], tenant: tenant)
 
-    case Collection.export(export) do
-      {:ok, export} -> add_success(changeset, export)
+    case Collection.export(export, tenant: tenant) do
+      {:ok, export} -> add_success(changeset, export, tenant)
       {:error, error} -> add_error(changeset, error, export)
     end
   end
@@ -31,8 +31,8 @@ defmodule DataAggregator.Records.Export.Changes.ExportRecords do
     Changeset.add_error(changeset, error)
   end
 
-  defp add_success(changeset, export) do
-    export = Export.get_by_id!(export.id)
+  defp add_success(changeset, export, tenant) do
+    export = Export.get_by_id!(export.id, tenant: tenant)
     Logger.info("Successfully exported #{export.exported_count} records")
 
     changeset

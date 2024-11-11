@@ -1,7 +1,7 @@
 defmodule DataAggregator.MixProject do
   use Mix.Project
 
-  @version "0.9.3"
+  @version "0.9.4"
 
   def project do
     [
@@ -142,9 +142,6 @@ defmodule DataAggregator.MixProject do
       ],
       "Taxonomy API": [
         ~r/^DataAggregator\.Taxonomy/
-      ],
-      "Platform API": [
-        ~r/^DataAggregator\.Platform/
       ],
       "Records API": [
         ~r/^DataAggregator\.Records/
@@ -356,8 +353,17 @@ defmodule DataAggregator.MixProject do
       "repo.lint": [
         "ash_postgres.generate_migrations --check"
       ],
+      "repo.dry_run": [
+        "ash_postgres.generate_migrations --dry-run"
+      ],
+      "repo.squash": [
+        "ash_postgres.squash_snapshots --into first"
+      ],
       "catalogs.import": [
         "run priv/repo/catalogs/init.exs"
+      ],
+      "users.create": [
+        "run priv/repo/users/init.exs"
       ],
 
       # Run tests

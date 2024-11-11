@@ -39,7 +39,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
 
   @impl true
   def handle_params(%{"id" => id} = params, _url, socket) do
-    case list_image_uploads(params, get_actor(socket)) do
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+
+    case list_image_uploads(params, actor, tenant) do
       {:ok, {results, meta}} ->
         socket
         |> assign(meta: meta)
@@ -124,11 +127,17 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
         <:col :let={{_id, image_upload}} field={:mapping_identifier} label={~t"Mapping identifier"m}>
           <%= Schema.dwc_field_from_prefixed_attribute_name(image_upload.mapping_identifier) %>
         </:col>
-        <:col :let={{_id, image_upload}} field={:started_at} label={~t"Created at"m}>
+        <:col :let={{_id, image_upload}} field={:inserted_at} label={~t"Created at"m}>
           <%= format_datetime(image_upload.inserted_at, format: :short) %>
+        </:col>
+        <:col :let={{_id, image_upload}} field={:created_by} label={~t"Created by"m}>
+          <%= maybe_set_user(image_upload.created_by) %>
         </:col>
         <:col :let={{_id, image_upload}} field={:started_at} label={~t"Started at"m}>
           <%= format_datetime(image_upload.started_at, format: :short) %>
+        </:col>
+        <:col :let={{_id, image_upload}} field={:started_by} label={~t"Started by"m}>
+          <%= maybe_set_user(image_upload.started_by) %>
         </:col>
 
         <:action
@@ -181,8 +190,14 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
                 @selected_image_upload.mapping_identifier
               ) %>
             </:item>
+            <:item title={~t"Created by"m}>
+              <%= maybe_set_user(@selected_image_upload.created_by) %>
+            </:item>
             <:item title={~t"Created at"m}>
               <%= format_datetime(@selected_image_upload.inserted_at) %>
+            </:item>
+            <:item title={~t"Started by"m}>
+              <%= maybe_set_user(@selected_image_upload.started_by) %>
             </:item>
             <:item title={~t"Started at"m}>
               <%= format_datetime(@selected_image_upload.started_at) %>
@@ -260,8 +275,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
   @impl true
   def handle_event("image_upload:delete", %{"id" => id}, socket) do
     actor = get_actor(socket)
-    image_upload = ImageUpload.get_by_id!(id, actor: actor)
-    :ok = ImageUpload.destroy(image_upload, actor: actor)
+    tenant = get_tenant(socket)
+    image_upload = ImageUpload.get_by_id!(id, actor: actor, tenant: tenant)
+    :ok = ImageUpload.destroy(image_upload, actor: actor, tenant: tenant)
 
     {:noreply,
      socket
@@ -278,7 +294,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
 
   @impl true
   def handle_event("image_upload:select", %{"id" => id}, socket) do
-    image_upload = ImageUpload.get_by_id!(id, actor: get_actor(socket), load: @load)
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+    image_upload = ImageUpload.get_by_id!(id, actor: actor, tenant: tenant, load: @load)
 
     {:noreply, assign(socket, selected_image_upload: image_upload)}
   end
@@ -294,7 +312,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
   end
 
   defp apply_action(socket, :edit, %{"image_upload_id" => id}) do
-    image_upload = ImageUpload.get_by_id!(id, actor: get_actor(socket))
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+    image_upload = ImageUpload.get_by_id!(id, actor: actor, tenant: tenant)
 
     socket
     |> assign(:page_title, ~t"Edit Image Upload"m)
@@ -302,16 +322,19 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
   end
 
   defp apply_action(socket, :summary, %{"image_upload_id" => id}) do
-    image_upload = ImageUpload.get_by_id!(id, actor: get_actor(socket), load: @load)
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+    image_upload = ImageUpload.get_by_id!(id, actor: actor, tenant: tenant, load: @load)
 
     socket
     |> assign(:page_title, ~t"Image Upload Summary"m)
     |> assign(:image_upload, image_upload)
   end
 
-  defp list_image_uploads(params, actor, opts \\ [load: @load, action: :by_collection]) do
+  defp list_image_uploads(params, actor, tenant, opts \\ [load: @load]) do
     opts = Keyword.put_new(opts, :actor, actor)
-    AshPagify.validate_and_run(ImageUpload, params, opts, params["id"])
+    opts = Keyword.put_new(opts, :tenant, tenant)
+    AshPagify.validate_and_run(ImageUpload, params, opts)
   end
 
   defp edit_data_tip(%ImageUpload{state: :mapped}), do: ~t"Edit for rerun"m

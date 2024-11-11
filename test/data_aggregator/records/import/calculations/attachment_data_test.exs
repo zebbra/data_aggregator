@@ -32,7 +32,7 @@ defmodule DataAggregator.Records.Import.Calculations.AttachmentDataTest do
   setup %{collection: collection} do
     import =
       collection
-      |> Import.create_from_path!(@path)
+      |> Import.create_from_path!(@path, tenant: collection)
       |> Import.update_mapping!(@mapping)
 
     %{import: import}

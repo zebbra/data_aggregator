@@ -2,6 +2,22 @@
 
 Setup your machine to start contributing code
 
+## Overview
+
+- [Database](#database)
+  - [Native installation](#native-installation)
+  - [docker setup](#docker-setup)
+- [OSX system dependencies](#install-osx-system-dependencies)
+- [Project structure](#project-structure)
+- [Start coding](#start-coding)
+  - [Working with and modifying the database](#working-with-and-modifying-the-database)
+  - [Table partitions](#table-partitions)
+- [CI/CD](#cicd)
+- [Editors](#editors)
+  - [vscode](#vscode)
+  - [zed](#zed)
+- [Contribution](#contribution)
+
 ## Database
 
 you need a running postgres 15 instance on your local machine
@@ -107,6 +123,28 @@ mix repo.migrate
 ```
 
 after you have successfully applied the changes to the database, ensure committing the migration files to the git repository.
+
+### Table partitions
+
+Due to performance issues we introduced table partitions for all resources related to records. The partitions inherit their parent table schema and are splitted by collection_id. Following tables are partitioned:
+
+- approved_records
+- encoded_records
+- encoded_record_versions
+- import_records
+- record_encoding_results
+- record_images
+- records
+- record_versions
+
+For table partitioning to work we need to include the collection_id into the primary key constraint. However, for the following resources this is not possible due to the limitations of ash_paper_trail:
+
+- encoded_records
+- encoded_record_versions
+- records
+- record_versions
+
+For those resources we created the composite primary key (collection_id, id) manually in the [migration file](../priv/repo/migrations/20241105144203_create_records_partitions.exs). This means, that the database schema is not in sync with the resource dsl / snapshot. Please account for this when working with those resources (eg. when creating new migrations).
 
 ## CI/CD
 

@@ -95,7 +95,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
   def handle_event("mapping:run", _params, socket) do
     actor = get_actor(socket)
 
-    case ImageUpload.enqueue_mapping(socket.assigns.image_upload, actor: actor) do
+    case ImageUpload.enqueue_mapping(socket.assigns.image_upload, %{started_by_id: actor.id}, actor: actor) do
       {:ok, _} ->
         {:noreply,
          socket

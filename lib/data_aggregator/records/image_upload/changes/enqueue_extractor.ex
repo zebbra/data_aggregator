@@ -29,14 +29,14 @@ defmodule DataAggregator.Records.ImageUpload.Changes.EnqueueExtractor do
     end
   end
 
-  defp insert_job(%ImageUpload{id: id}, %User{id: user_id}) do
-    %{id: id, user_id: user_id}
+  defp insert_job(%ImageUpload{id: id, collection_id: collection_id}, %User{id: user_id}) do
+    %{id: id, collection_id: collection_id, user_id: user_id}
     |> Extractor.new()
     |> Oban.insert()
   end
 
-  defp insert_job(%ImageUpload{id: id}, _) do
-    %{id: id}
+  defp insert_job(%ImageUpload{id: id, collection_id: collection_id}, _) do
+    %{id: id, collection_id: collection_id}
     |> Extractor.new()
     |> Oban.insert()
   end

@@ -44,7 +44,10 @@ defmodule DataAggregator.TestHelpers do
   """
   def update_record_fixtures!(record_fixture, update_set) do
     record_fixture = Record.update!(record_fixture, update_set)
-    encoded_record = EncodedRecord.get_by_record!(record_fixture.id)
+
+    encoded_record =
+      EncodedRecord.get_by_record!(record_fixture.id, tenant: record_fixture.collection)
+
     EncodedRecord.update!(encoded_record, update_set)
     record_fixture
   end

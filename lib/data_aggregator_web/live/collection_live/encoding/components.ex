@@ -27,6 +27,7 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Components do
   attr :reason, :string, default: nil
   attr :icon, :string, default: nil
   attr :icon_class, :string, default: nil
+  attr :tooltip, :boolean, default: true
 
   def encoding_state_badge(assigns) do
     {icon, icon_class} = state_badge_icon(assigns.state)
@@ -38,9 +39,14 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Components do
 
     ~H"""
     <.badge
-      class="tooltip before:text-xs"
+      class={
+        class_names([
+          "before:text-xs",
+          @tooltip and "tooltip"
+        ])
+      }
       color={state_color(@state)}
-      data-tip={state_badge_tooltip(@state, @reason, @small)}
+      data-tip={if @tooltip, do: state_badge_tooltip(@state, @reason, @small), else: nil}
     >
       <.icon name={@icon} class={class_names([@icon_class, "size-5"])} />
       <span :if={!@small} class="truncate pr-1.5"><%= state_translation(@state) %></span>

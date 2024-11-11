@@ -41,6 +41,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
         phx-target={@myself}
         phx-change="user:validate"
         modal
+        novalidate
       >
         <%!-- user data --%>
         <.fieldset :if={@step != :summary} id="user" class={unless @step == :user, do: "hidden"} modal>
@@ -88,7 +89,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
               />
             </div>
 
-            <div class="grid gap-8 sm:grid-cols-2">
+            <div class="grid gap-8 pb-8 sm:grid-cols-2">
               <.field
                 type={password_type(@password_hidden?)}
                 field={@form[:password]}
@@ -112,7 +113,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
             </div>
           </.fieldgroup>
           <:actions modal>
-            <button class="btn btn-primary" type="button" phx-click="user:next" phx-target={@myself}>
+            <button class="btn btn-primary" type="submit">
               <%= ~t"Next"m %>
             </button>
             <button
@@ -237,19 +238,29 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
 
   @impl true
   def handle_event("user:validate", %{"user" => params}, socket) do
-    roles = params["roles"] || []
-    roles = Enum.reject(roles, &(&1 == ""))
-    params = Map.put(params, "roles", roles)
+    params = escape_roles(params)
 
     form = Form.validate(socket.assigns.form, params)
     {:noreply, assign(socket, :form, form)}
   end
 
   @impl true
+  def handle_event("user:save", %{"user" => params}, %{assigns: %{step: :user}} = socket) do
+    params = escape_roles(params)
+
+    form = Form.validate(socket.assigns.form, params)
+    socket = assign(socket, :form, form)
+
+    if form.source.valid? do
+      {:noreply, assign(socket, step: :role)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  @impl true
   def handle_event("user:save", %{"user" => params}, socket) do
-    roles = params["roles"] || []
-    roles = Enum.reject(roles, &(&1 == ""))
-    params = Map.put(params, "roles", roles)
+    params = escape_roles(params)
 
     socket =
       case Form.submit(socket.assigns.form, params: params) do
@@ -366,5 +377,11 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
     if !Enum.member?(current_user.roles, "admin") do
       ["admin"]
     end
+  end
+
+  defp escape_roles(params) do
+    roles = params["roles"] || []
+    roles = Enum.reject(roles, &(&1 == ""))
+    Map.put(params, "roles", roles)
   end
 end

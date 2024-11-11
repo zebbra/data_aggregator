@@ -29,11 +29,13 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
     } do
       expect_correct_swiss_species_api_call()
 
-      {:ok, encoded_record} = Record.encode(correct_record, :swiss_species)
+      {:ok, encoded_record} =
+        Record.encode(correct_record, :swiss_species, tenant: correct_record.collection_id)
 
       assert encoded_record !== nil
 
-      lookedup_encoded_record = EncodedRecord.get_by_record!(encoded_record.id)
+      lookedup_encoded_record =
+        EncodedRecord.get_by_record!(encoded_record.id, tenant: correct_record.collection_id)
 
       assert lookedup_encoded_record !== nil
       assert lookedup_encoded_record.tax_taxon_id_ch === 15_311
@@ -52,9 +54,11 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
     test "encode/2 for :swiss_species catalog which returns ok but no matching record",
          %{invalid_record: invalid_record} do
       {{:ok, record}, logs} =
-        with_log(fn -> Record.encode(invalid_record, :swiss_species) end)
+        with_log(fn ->
+          Record.encode(invalid_record, :swiss_species, tenant: invalid_record.collection_id)
+        end)
 
-      encoded_record = Record.get_by_id!(invalid_record.id)
+      encoded_record = Record.get_by_id!(invalid_record.id, tenant: invalid_record.collection_id)
 
       assert encoded_record.state === :encoded
       assert record != nil
@@ -67,9 +71,12 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       expect_failing_swiss_species_api_call()
 
       {{:ok, record}, logs} =
-        with_log(fn -> Record.encode(invalid_record, :swiss_species) end)
+        with_log(fn ->
+          Record.encode(invalid_record, :swiss_species, tenant: invalid_record.collection_id)
+        end)
 
-      record = Record.get_by_id!(record.id, load: [:encoded])
+      record =
+        Record.get_by_id!(record.id, load: [:encoded], tenant: invalid_record.collection_id)
 
       assert record.encoded == false
       assert logs =~ "Error while encoding the encoded_record"
@@ -81,9 +88,13 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       correct_record: correct_record
     } do
       {{:ok, record}, logs} =
-        with_log(fn -> Record.encode(correct_record, :unknown) end)
+        with_log(fn ->
+          Record.encode(correct_record, :unknown, tenant: correct_record.collection_id)
+        end)
 
-      record = Record.get_by_id!(record.id, load: [:encoded])
+      record =
+        Record.get_by_id!(record.id, load: [:encoded], tenant: correct_record.collection_id)
+
       assert record.encoded == false
 
       assert logs =~ "no encoding strategy found for catalog: :unknown"
@@ -94,10 +105,10 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       correct_record: record
     } do
       record = update_record_fixtures!(record, %{tax_taxon_id: nil})
-      Record.encode(record, :swiss_species)
+      Record.encode(record, :swiss_species, tenant: record.collection_id)
 
       {{:ok, record}, logs} =
-        with_log(fn -> Record.encode(record, :swiss_species) end)
+        with_log(fn -> Record.encode(record, :swiss_species, tenant: record.collection_id) end)
 
       assert record.state === :failed
 

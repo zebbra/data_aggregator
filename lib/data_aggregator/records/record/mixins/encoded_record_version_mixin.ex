@@ -31,7 +31,8 @@ defmodule DataAggregator.Records.EncodedRecordVersionMixin do
             on_delete: :delete,
             on_update: :update,
             index?: true,
-            deferrable: true
+            deferrable: true,
+            match_with: [collection_id: :collection_id]
 
           reference :user,
             on_delete: :nilify,

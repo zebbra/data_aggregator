@@ -70,6 +70,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       :stale
     ]
 
+  attr :tooltip, :boolean, default: true
+
   def publication_state_badge(assigns) do
     assigns =
       assigns
@@ -78,9 +80,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
 
     ~H"""
     <.badge
-      class="tooltip"
+      class={if @tooltip, do: "tooltip", else: nil}
       color={ActivityFeed.badge_color(@name, @content)}
-      data-tip={ActivityFeed.icon_tooltip(@name, @content)}
+      data-tip={if @tooltip, do: ActivityFeed.icon_tooltip(@name, @content), else: nil}
     >
       <.icon name={ActivityFeed.icon_lookup(@name, @content)} class="size-5 shrink-0" />
       <span class="text-nowrap pr-1.5">
@@ -101,6 +103,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       :stale
     ]
 
+  attr :tooltip, :boolean, default: true
+
   def approval_state_badge(assigns) do
     assigns =
       assigns
@@ -109,9 +113,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
 
     ~H"""
     <.badge
-      class="tooltip"
+      class={if @tooltip, do: "tooltip", else: nil}
       color={ActivityFeed.badge_color(@name, @content)}
-      data-tip={ActivityFeed.icon_tooltip(@name, @content)}
+      data-tip={if @tooltip, do: ActivityFeed.icon_tooltip(@name, @content), else: nil}
     >
       <.icon name={ActivityFeed.icon_lookup(@name, @content)} class="size-5 shrink-0" />
       <span class="text-nowrap pr-1.5">
@@ -135,7 +139,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     ~H"""
     <div
       class={[
-        "tooltip tooltip-top max-w-32 flex h-8 justify-evenly rounded-full p-2",
+        "tooltip tooltip-top max-w-32 flex h-8 cursor-help justify-evenly rounded-full p-2",
         level_indicator(@level)
       ]}
       data-tip={level_translation(@level)}

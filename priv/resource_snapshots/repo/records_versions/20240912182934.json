@@ -55,6 +55,16 @@
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "collection_id",
+      "type": "uuid"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
       "references": {
         "deferrable": true,
         "destination_attribute": "id",
@@ -62,11 +72,13 @@
         "destination_attribute_generated": null,
         "index?": true,
         "match_type": null,
-        "match_with": null,
+        "match_with": {
+          "collection_id": "collection_id"
+        },
         "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
         },
         "name": "records_versions_version_source_id_fkey",
         "on_delete": "delete",
@@ -144,12 +156,12 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "9DD736314489C3A871D24AFD9E1A22C9C50607BBC537E5C7BC2F67BBC5AF7167",
+  "hash": "7C3DFB1F68E3787B825727CA2296F98F814F3CBA7DBA95E324E74643A9516626",
   "identities": [],
   "multitenancy": {
-    "attribute": null,
-    "global": null,
-    "strategy": null
+    "attribute": "collection_id",
+    "global": false,
+    "strategy": "attribute"
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,

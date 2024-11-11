@@ -8,8 +8,8 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
   alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records.Collection
 
-  @spec create(Collection.t(), String.t()) :: {:ok, String.t()} | {:error, any()}
-  def create(collection, path) do
+  @spec create(Collection.t(), String.t(), Collection.t()) :: {:ok, String.t()} | {:error, any()}
+  def create(collection, path, _tenant) do
     with false <- collection.grscicoll_reference == nil,
          false <- collection.grscicoll_reference == "",
          {:ok, grscicoll_data} <-

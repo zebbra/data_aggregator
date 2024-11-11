@@ -30,37 +30,41 @@ defmodule DataAggregator.Records.RecordTest do
     end
 
     test "read!/0 returns all records" do
+      collection = collection_fixture()
+
       created = [
-        record_fixture(),
-        record_fixture()
+        record_fixture(%{collection: collection, mte_catalog_number: "record1"}),
+        record_fixture(%{collection: collection, mte_catalog_number: "record2"})
       ]
 
-      persisted = Record.read!(page: false)
+      persisted = Record.read!(page: false, tenant: collection)
 
       assert_lists_equal(
         created,
         persisted,
-        &assert_structs_equal(&1, &2, [:id])
+        &assert_structs_equal(&1, &2, [:id, :collection_id])
       )
     end
 
     test "get_by_id!/1 returns the record with given id" do
       created = record_fixture()
-      persisted = Record.get_by_id!(created.id)
+      persisted = Record.get_by_id!(created.id, tenant: created.collection)
 
       assert_structs_equal(created, persisted, [:id])
     end
 
     test "create/1 with valid data creates a record" do
+      collection = collection_fixture()
+
       attrs = %{
         mte_catalog_number: "record1",
         tax_scientific_name: "06809dc5-f143-459a-be1a-6f03e63fc083",
-        collection: collection_fixture()
+        collection: collection
       }
 
-      assert {:ok, %Record{} = record} = Record.create(attrs)
+      assert {:ok, %Record{} = record} = Record.create(attrs, tenant: collection)
 
-      record = Ash.load!(record, [:paper_trail_versions, :encoded_record])
+      record = Ash.load!(record, [:paper_trail_versions, :encoded_record], tenant: collection)
 
       assert length(record.paper_trail_versions) == 1
       assert record.occ_occurrence_id === record.mte_catalog_number
@@ -73,8 +77,10 @@ defmodule DataAggregator.Records.RecordTest do
     end
 
     test "create/1 with invalid data returns error changeset" do
+      collection = collection_fixture()
+
       assert {:error, %Invalid{}} =
-               Record.create(Map.put(@invalid_attrs, :collection, collection_fixture()))
+               Record.create(Map.put(@invalid_attrs, :collection, collection), tenant: collection)
     end
 
     test "update/2 with valid data updates the record" do
@@ -87,44 +93,54 @@ defmodule DataAggregator.Records.RecordTest do
 
       assert {:ok, %Record{} = _record} = Record.update(record, update_attrs)
 
-      record = Ash.load!(record, [:paper_trail_versions])
+      record = Ash.load!(record, [:paper_trail_versions], tenant: record.collection)
 
       assert length(record.paper_trail_versions) == 2
     end
 
     test "update/2 with invalid data returns error changeset" do
-      record = record_fixture()
+      collection = collection_fixture()
+      record = record_fixture(%{collection: collection})
 
       assert {:error, %Invalid{}} =
-               Record.update(record, Map.put(@invalid_attrs, :collection, collection_fixture()))
+               Record.update(record, Map.put(@invalid_attrs, :collection, collection))
     end
 
     test "destroy/1 deletes the record" do
       record = record_fixture()
-      assert :ok = Record.destroy(record)
-      assert_raise NotFound, fn -> Record.get_by_id!(record.id) end
+      assert :ok = Record.destroy(record, tenant: record.collection)
+      assert_raise NotFound, fn -> Record.get_by_id!(record.id, tenant: record.collection) end
     end
 
     test "destroy/1 deletes the record and it's encoded_record" do
-      encoded_record = Ash.load!(encoded_record_fixture(), [:record])
+      encoded_record = encoded_record_fixture()
       record = encoded_record.record
 
-      assert :ok = Record.destroy(record)
+      assert :ok = Record.destroy(record, tenant: encoded_record.collection)
 
-      assert_raise NotFound, fn -> Record.get_by_id!(record.id) end
-      assert_raise NotFound, fn -> EncodedRecord.get_by_id!(encoded_record.id) end
+      assert_raise NotFound, fn ->
+        Record.get_by_id!(record.id, tenant: encoded_record.collection)
+      end
+
+      assert_raise NotFound, fn ->
+        EncodedRecord.get_by_id!(encoded_record.id, tenant: encoded_record.collection)
+      end
     end
 
     test "destroy/1 deletes the record and it's record_encoding_results" do
-      record_encoding_result = Ash.load!(record_encoding_result_fixture(), [:record])
+      record_encoding_result = record_encoding_result_fixture()
       record = record_encoding_result.record
 
-      assert :ok = Record.destroy(record)
-
-      assert_raise NotFound, fn -> Record.get_by_id!(record.id) end
+      assert :ok = Record.destroy(record, tenant: record_encoding_result.collection)
 
       assert_raise NotFound, fn ->
-        RecordEncodingResult.get_by_id!(record_encoding_result.id)
+        Record.get_by_id!(record.id, tenant: record_encoding_result.collection)
+      end
+
+      assert_raise NotFound, fn ->
+        RecordEncodingResult.get_by_id!(record_encoding_result.id,
+          tenant: record_encoding_result.collection
+        )
       end
     end
 
@@ -139,9 +155,9 @@ defmodule DataAggregator.Records.RecordTest do
         |> Record.update!(update_attrs)
         |> Ash.load!([:paper_trail_versions])
 
-      assert :ok = Record.destroy(record)
+      assert :ok = Record.destroy(record, tenant: record.collection)
 
-      assert_raise NotFound, fn -> Record.get_by_id!(record.id) end
+      assert_raise NotFound, fn -> Record.get_by_id!(record.id, tenant: record.collection) end
 
       # TODO: Test versions are actually deleted, which is not easy because they are
       # deleted at the end of the transaction
@@ -170,7 +186,7 @@ defmodule DataAggregator.Records.RecordTest do
     end
 
     setup %{collection: collection} do
-      import = Import.create!(collection)
+      import = Import.create!(collection, tenant: collection)
       [import: import]
     end
 
@@ -181,7 +197,7 @@ defmodule DataAggregator.Records.RecordTest do
         some_extra_data: "Extra"
       }
 
-      assert {:ok, record} = Record.import(import, params)
+      assert {:ok, record} = Record.import(import, params, tenant: import.collection)
       {:ok, record} = Ash.load(record, [:imports])
 
       assert_lists_equal(
@@ -216,7 +232,7 @@ defmodule DataAggregator.Records.RecordTest do
         some_extra_data: "Extra"
       }
 
-      assert {:ok, record} = Record.import(import, params)
+      assert {:ok, record} = Record.import(import, params, tenant: import.collection)
 
       updated_params = %{
         mte_catalog_number: "ex-123",
@@ -224,7 +240,9 @@ defmodule DataAggregator.Records.RecordTest do
         some_other_extra_data: "Other Extra"
       }
 
-      assert {:ok, updated_record} = Record.import(import, updated_params)
+      assert {:ok, updated_record} =
+               Record.import(import, updated_params, tenant: import.collection)
+
       {:ok, updated_record} = Ash.load(updated_record, :imports)
 
       assert_lists_equal(
@@ -255,7 +273,7 @@ defmodule DataAggregator.Records.RecordTest do
         some_extra_data: "Extra"
       }
 
-      assert {:ok, record} = Record.import(import, params)
+      assert {:ok, record} = Record.import(import, params, tenant: import.collection)
 
       updated_params = %{
         mte_catalog_number: "ex-123",
@@ -263,9 +281,11 @@ defmodule DataAggregator.Records.RecordTest do
         some_other_extra_data: "Other Extra"
       }
 
-      other_import = Import.create!(record.collection)
+      other_import = Import.create!(record.collection, tenant: record.collection)
 
-      assert {:ok, updated_record} = Record.import(other_import, updated_params)
+      assert {:ok, updated_record} =
+               Record.import(other_import, updated_params, tenant: import.collection)
+
       {:ok, updated_record} = Ash.load(updated_record, :imports)
 
       assert_lists_equal(
@@ -291,7 +311,7 @@ defmodule DataAggregator.Records.RecordTest do
         tax_scientific_name: "Example"
       }
 
-      record = Record.import!(import, params)
+      record = Record.import!(import, params, tenant: import.collection)
 
       other_collection =
         collection_fixture(%{
@@ -301,9 +321,9 @@ defmodule DataAggregator.Records.RecordTest do
           grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa473"
         })
 
-      other_import = Import.create!(other_collection)
+      other_import = Import.create!(other_collection, tenant: other_collection)
 
-      assert {:ok, other_record} = Record.import(other_import, params)
+      assert {:ok, other_record} = Record.import(other_import, params, tenant: other_collection)
 
       refute record.id == other_record.id
 

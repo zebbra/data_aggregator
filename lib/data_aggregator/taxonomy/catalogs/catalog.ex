@@ -141,4 +141,10 @@ defmodule DataAggregator.Taxonomy.Catalog do
   def get_output_dwc_attributes(catalog) do
     catalog |> get_output_attributes() |> Enum.map(fn {key, _value} -> key end)
   end
+
+  def get_all_output_dwc_attributes do
+    get_catalogs()
+    |> Enum.flat_map(&get_output_dwc_attributes/1)
+    |> Enum.uniq()
+  end
 end

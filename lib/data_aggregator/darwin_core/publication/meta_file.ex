@@ -15,8 +15,8 @@ defmodule DataAggregator.DarwinCore.Publication.MetaFile do
     releve: {"releve.csv", "http://rs.tdwg.org/dwc/terms/Event"}
   ]
 
-  @spec create(Collection.t(), String.t()) :: {:ok, String.t()} | {:error, any()}
-  def create(_collection, path) do
+  @spec create(Collection.t(), String.t(), Collection.t()) :: {:ok, String.t()} | {:error, any()}
+  def create(_collection, path, _tenant) do
     path = path <> "/meta.xml"
 
     create_meta_file(build(), path)

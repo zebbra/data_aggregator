@@ -4,7 +4,10 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   """
   use Ash.Resource.Actions.Implementation
 
+  import DataAggregator.Helpers, only: [maybe_performant_load_record: 2]
+
   alias Ash.Resource.Actions.Implementation.Context
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingActionResult
   alias DataAggregator.Records.Encoding.EncodingResult
@@ -32,7 +35,7 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
     # update_state/1 returns an EncodingActionResult.t() (record)
     case record
          |> Strategy.encode(catalog, ctx)
-         |> update_state(previous_state) do
+         |> update_state(previous_state, ctx) do
       {:ok, record} ->
         Logger.debug(
           "[#{catalog}] Encoding for record #{record.id} with catalog: #{to_string(catalog)} finished with result: #{inspect(record)}"
@@ -52,11 +55,11 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
   # set the state the processed record to `:encoded` or `:failed` and return it
   # keep track if a previous state was failed. In that case, set the state to `:failed`
   # even if the encoding was successful
-  @spec update_state(EncodingResult.t(), atom()) :: EncodingActionResult.t()
-  defp update_state(encoding_result, previous_state) do
+  @spec update_state(EncodingResult.t(), atom(), Context.t()) :: EncodingActionResult.t()
+  defp update_state(encoding_result, previous_state, %{tenant: tenant}) do
     case encoding_result do
       {:ok, encoded_record} ->
-        record = get_record(encoded_record)
+        record = get_record(encoded_record, tenant)
 
         record =
           if previous_state === :failed,
@@ -66,17 +69,16 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
         {:ok, record}
 
       {:error, error, encoded_record} ->
-        record = get_record(encoded_record)
+        record = get_record(encoded_record, tenant)
 
         {:error, error, set_failed_state!(record)}
     end
   end
 
   # returns the encoded record from the result, or nil, if there was an error
-  @spec get_record(EncodedRecord.t()) :: Record.t()
-  defp get_record(encoded_record) do
-    with_record = Ash.load!(encoded_record, [:record], lazy?: true)
-    with_record.record
+  @spec get_record(EncodedRecord.t(), Collection.t()) :: Record.t()
+  defp get_record(encoded_record, tenant) do
+    maybe_performant_load_record(encoded_record, tenant).record
   end
 
   # update state of records to `:encoding`

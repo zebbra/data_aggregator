@@ -10,6 +10,7 @@ defmodule DataAggregator.Records.ImageUpload do
     notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
@@ -41,6 +42,8 @@ defmodule DataAggregator.Records.ImageUpload do
       public? true
     end
 
+    belongs_to :created_by, User, public?: true
+    belongs_to :started_by, User, public?: true
     belongs_to :attachment, Attachment, public?: true
 
     has_many :images, Record.Image, public?: true
@@ -95,7 +98,7 @@ defmodule DataAggregator.Records.ImageUpload do
 
   actions do
     default_accept :*
-    defaults [:destroy, :update]
+    defaults [:read, :destroy, :update]
 
     update :update_mapping_identifier do
       accept [:mapping_identifier]
@@ -143,7 +146,7 @@ defmodule DataAggregator.Records.ImageUpload do
     end
 
     update :enqueue_mapping do
-      accept []
+      accept [:started_by_id]
       require_atomic? false
 
       change ImageUpload.Changes.SetCollectionMappingBeforeTransaction
@@ -196,46 +199,22 @@ defmodule DataAggregator.Records.ImageUpload do
       change set_attribute(:finished_at, &DateTime.utc_now/0)
     end
 
-    read :read do
-      primary? true
-      argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true,
-                 countable: true,
-                 required?: false,
-                 keyset?: true
-    end
-
-    read :by_collection do
-      argument :collection_id, :string, allow_nil?: false
-      argument :sort, :string, allow_nil?: true
-
-      pagination offset?: true,
-                 countable: true,
-                 required?: false,
-                 keyset?: true
-
-      filter expr(collection_id == ^arg(:collection_id))
-    end
-
-    read :active_by_collection do
-      argument :collection_id, :string, allow_nil?: false
-
-      filter expr(collection_id == ^arg(:collection_id) and state in [:mapping, :mapping_queued])
+    read :active do
+      filter expr(state in [:mapping, :mapping_queued])
     end
 
     create :create do
       primary? true
       argument :collection, :struct, allow_nil?: false
-      change manage_relationship(:collection, :collection, type: :append)
+      change manage_relationship(:collection, type: :append)
     end
 
     create :create_from_path do
-      accept []
+      accept [:created_by_id]
       argument :collection, :struct, allow_nil?: false
       argument :path, :string, allow_nil?: false
       argument :filename, :string, allow_nil?: true
-      change manage_relationship(:collection, :collection, type: :append)
+      change manage_relationship(:collection, type: :append)
       change ImageUpload.Changes.ValidateFile
       change ImageUpload.Changes.CreateAttachment
     end
@@ -258,8 +237,7 @@ defmodule DataAggregator.Records.ImageUpload do
   code_interface do
     define :read
     define :get_by_id, action: :read, get_by: [:id]
-    define :by_collection, args: [:collection_id]
-    define :active_by_collection, args: [:collection_id]
+    define :active
     define :create, args: [:collection]
     define :create_from_path, args: [:collection, :path]
     define :destroy
@@ -296,5 +274,10 @@ defmodule DataAggregator.Records.ImageUpload do
       index :read
       post :create_from_path
     end
+  end
+
+  multitenancy do
+    strategy :attribute
+    attribute :collection_id
   end
 end

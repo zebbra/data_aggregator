@@ -8,7 +8,6 @@ defmodule DataAggregator.Records.Export.RunnerTest do
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.Gbif
-  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Export
 
   describe "DataAggregator.Records.Export.Exporter.perform/1" do
@@ -28,16 +27,17 @@ defmodule DataAggregator.Records.Export.RunnerTest do
       unexportable_record(collection)
 
       export =
-        %{
-          name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-          collection: collection,
-          mapping: @valid_custom_mapping,
-          records_query: collection.records_to_export_query,
-          data_layer: :raw,
-          header_source: :custom_selection
-        }
-        |> Export.create!()
-        |> Collection.export!()
+        Export.create!(
+          %{
+            name: "export-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+            collection: collection,
+            mapping: @valid_custom_mapping,
+            records_query: collection.records_to_export_query,
+            data_layer: :raw,
+            header_source: :custom_selection
+          },
+          tenant: collection
+        )
 
       [export: export]
     end
@@ -45,9 +45,10 @@ defmodule DataAggregator.Records.Export.RunnerTest do
     test "succeeds with a valid mapping", %{
       export: export
     } do
-      perform_job(Export.Workers.Exporter, %{id: export.id})
+      perform_job(Export.Workers.Exporter, %{id: export.id, collection_id: export.collection.id})
 
-      export_with_attachment = Export.get_by_id!(export.id, load: [:attachment])
+      export_with_attachment =
+        Export.get_by_id!(export.id, load: [:attachment], tenant: export.collection)
 
       assert export_with_attachment.attachment.url != nil
       assert export_with_attachment.state == :exported

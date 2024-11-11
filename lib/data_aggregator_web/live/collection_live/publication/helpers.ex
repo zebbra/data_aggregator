@@ -8,6 +8,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Helpers do
       :duration,
       :attachment_filename,
       :attachment_byte_size,
+      :started_by,
       attachment: [:filename, :url, :byte_size]
     ]
   end

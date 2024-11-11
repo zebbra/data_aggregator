@@ -26,11 +26,13 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
     test "encode/2 for :gbif_taxonomy catalog which returns the encoded_record", %{
       correct_record: correct_record
     } do
-      {:ok, encoded_record} = Record.encode(correct_record, :gbif_taxonomy)
+      {:ok, encoded_record} =
+        Record.encode(correct_record, :gbif_taxonomy, tenant: correct_record.collection_id)
 
       assert encoded_record !== nil
 
-      lookedup_encoded_record = EncodedRecord.get_by_record!(encoded_record.id)
+      lookedup_encoded_record =
+        EncodedRecord.get_by_record!(encoded_record.id, tenant: correct_record.collection_id)
 
       assert lookedup_encoded_record !== nil
 
@@ -52,7 +54,9 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
     test "encode/2 for :gbif_taxonomy catalog which returns the failed_record and the error",
          %{invalid_record: invalid_record} do
       {{:error, error}, logs} =
-        with_log(fn -> Record.encode(invalid_record, :gbif_taxonomy) end)
+        with_log(fn ->
+          Record.encode(invalid_record, :gbif_taxonomy, tenant: invalid_record.collection_id)
+        end)
 
       encoded_record = Record.get_by_id!(invalid_record.id)
 
