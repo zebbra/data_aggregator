@@ -45,7 +45,7 @@ defmodule DataAggregator.Records.Record.Calculations.Changes do
     |> Ash.Query.sort(version_inserted_at: :asc)
     |> Ash.read!()
     |> Enum.map(& &1.changes)
-    |> Enum.reduce(&Map.merge/2)
+    |> Enum.reduce(%{}, &Map.merge/2)
     |> AshPagify.Misc.atomize_keys(depth: 1, existing?: true)
   end
 
