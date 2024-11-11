@@ -601,10 +601,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               />
             </div>
             <%= for category <- @attrs_in_categories do %>
-              <details
-                :if={category_has_data?(category)}
-                class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:first:border-t lg:pl-4"
-              >
+              <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:first:border-t lg:pl-4">
                 <summary class="collapse-title">
                   <%= category.label %>
                 </summary>
@@ -617,7 +614,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                       container_attrs: [class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
                     ]}
                     id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
-                    items={attributes_with_data(category.attributes)}
+                    items={category.attributes}
                   >
                     <:col :let={attribute} label={~t"Name"} class="font-semibold">
                       <%= attribute.name %>
@@ -882,7 +879,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         :record_encoding_results,
         RecordEncodingResult.filter_by_record!(id, tenant: tenant)
       )
-      |> assign(:attrs_in_categories, attrs_by_category_in_layers(record))
+      |> assign(:attrs_in_categories, attrs_by_category(record))
 
     {:noreply, socket}
   end

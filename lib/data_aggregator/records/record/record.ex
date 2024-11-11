@@ -34,6 +34,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.PublicationStatusType
+  alias DataAggregator.Records.Record.Calculations
   alias DataAggregator.Records.Record.Changes
 
   require Ash.Expr
@@ -184,6 +185,11 @@ defmodule DataAggregator.Records.Record do
     calculate :not_approved,
               :boolean,
               expr(approval_status != :approved)
+
+    calculate :changes, :map, Calculations.Changes do
+      argument :transform?, :boolean, allow_nil?: true, default: false
+      argument :escape_nil?, :boolean, allow_nil?: true, default: false
+    end
   end
 
   paper_trail do

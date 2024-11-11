@@ -10,8 +10,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.Record
 
-  @transformers Schema.dwc_transformers()
-
   def busy?(action, busy_action), do: action == busy_action
 
   def filter_map(ash_pagify, query, layer) do
@@ -48,55 +46,29 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     build_scope_path(~p"/collections/#{collection}/records?layer=#{layer}", meta, scope)
   end
 
-  def attributes_with_data(attributes) do
-    Enum.filter(attributes, fn %{name: _, imported: imported, encoded: encoded} ->
-      imported != "-" || encoded != "-"
+  def attrs_by_category(record) do
+    record
+    |> Ash.load!([changes: [transform?: true, escape_nil?: true]], lazy?: true, strict?: true)
+    |> by_category()
+  end
+
+  defp by_category(%{changes: changes}) do
+    grouped = Enum.group_by(changes, &(&1 |> elem(1) |> Map.get(:category_name)), &elem(&1, 1))
+
+    category_names =
+      changes
+      |> Enum.map(fn {_key, %{category_name: category_name}} -> category_name end)
+      |> Enum.uniq()
+
+    Schema.categories()
+    |> Enum.filter(fn category -> Enum.member?(category_names, Atom.to_string(category.name)) end)
+    |> Enum.map(fn category ->
+      %{
+        label: category.label,
+        description: category.description,
+        attributes: grouped[Atom.to_string(category.name)]
+      }
     end)
-  end
-
-  def category_has_data?(category) do
-    Enum.any?(category.attributes, fn %{imported: imported, encoded: encoded} ->
-      imported != "-" || encoded != "-"
-    end)
-  end
-
-  def attrs_by_category_in_layers(record) do
-    for category <- Schema.categories() do
-      attributes =
-        for dwc_attribute <- category.dwc_attributes do
-          attribute = String.to_existing_atom("#{category.name}_#{dwc_attribute.attribute.name}")
-
-          %{
-            name: dwc_attribute.dwc_field || dwc_attribute.attribute.name,
-            imported:
-              record
-              |> imported_attribute(attribute)
-              |> maybe_transform_value(attribute),
-            encoded:
-              record
-              |> encoded_attribute(attribute)
-              |> maybe_transform_value(attribute)
-          }
-        end
-
-      %{label: category.label, description: category.description, attributes: attributes}
-    end
-  end
-
-  defp maybe_transform_value(value, attribute_name) do
-    case @transformers[attribute_name] do
-      nil -> value
-      transformer -> transformer.(value)
-    end
-  end
-
-  @spec imported_attribute(Record.t(), atom()) :: any()
-  def imported_attribute(record, attribute) do
-    if record == nil do
-      "-"
-    else
-      record |> Map.get(attribute) |> value_for_record_attribute()
-    end
   end
 
   @spec encoded_attribute(Record.t(), atom(), String.t() | nil) :: any()
