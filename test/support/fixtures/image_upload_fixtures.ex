@@ -27,6 +27,19 @@ defmodule DataAggregator.ImageUploadFixtures do
     collection |> image_upload_fixture(attrs) |> ImageUpload.extract!()
   end
 
+  def image_upload_fixture_extracted_complete(collection, attrs \\ %{}) do
+    attrs =
+      Map.put(
+        attrs,
+        :path,
+        "test/support/fixtures/files/image_upload_test_catalog_number_complete.zip"
+      )
+
+    collection
+    |> image_upload_fixture(attrs)
+    |> ImageUpload.extract!()
+  end
+
   @doc """
   Generate an image_upload with mapped images
   """

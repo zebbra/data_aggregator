@@ -35,18 +35,40 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
     image_upload =
       image_upload_fixture_extracted(collection)
 
+    image_upload_complete =
+      image_upload_fixture_extracted_complete(collection)
+
     [
       image_upload: image_upload,
+      image_upload_complete: image_upload_complete,
       collection: collection
     ]
   end
 
+  test "map/1 successful with complete mapping", %{
+    image_upload_complete: image_upload,
+    collection: collection
+  } do
+    assert {:ok, image_upload} = ImageUpload.map(image_upload, tenant: collection)
+
+    assert image_upload.state == :mapped
+
+    image_upload = Ash.load!(image_upload, [:images, :mapped_images, :unmapped_images])
+
+    assert {"catalogNumber1_1.jpg", "catalogNumber1"} in image_upload.mapped_images
+    assert {"catalogNumber1_2.jpg", "catalogNumber1"} in image_upload.mapped_images
+    assert {"catalogNumber2.jpg", "catalogNumber2"} in image_upload.mapped_images
+    assert {"catalogNumber4.jpeg", "catalogNumber4"} in image_upload.mapped_images
+  end
+
   @tag timeout: :infinity
-  test "map/1 successful", %{
+  test "map/1 successful with incomplete mapping", %{
     image_upload: image_upload,
     collection: collection
   } do
     assert {:ok, image_upload} = ImageUpload.map(image_upload, tenant: collection)
+
+    assert image_upload.state == :mapping_incomplete
 
     image_upload = Ash.load!(image_upload, [:images, :mapped_images, :unmapped_images])
 

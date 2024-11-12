@@ -3357,55 +3357,55 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Image Upload"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:80
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:84
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Extracting"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:84
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:88
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Extraction failed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:78
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:82
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Extraction queued"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:83
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:87
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Finished"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:81
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:85
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:85
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:89
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Mapping failed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:79
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:83
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Mapping queued"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:77
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:81
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "New"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:82
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:86
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Ready for Mapping"
@@ -3961,4 +3961,10 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "With images of type"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:90
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
+msgid "Incomplete"
 msgstr ""
