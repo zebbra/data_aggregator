@@ -40,7 +40,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
       assert_map_includes(encoded_record, %{
         loc_continent: "Europe",
         loc_country: "Switzerland",
-        loc_country_code: "ch",
+        loc_country_code: "CH",
         loc_state_province: "Bern",
         loc_municipality: nil
       })
@@ -75,11 +75,13 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: nil,
         loc_decimal_longitude: nil,
-        loc_swiss_coordinates_x: nil,
-        loc_swiss_coordinates_y: nil,
+        loc_swiss_coordinates_lv03_x: nil,
+        loc_swiss_coordinates_lv03_y: nil,
+        loc_swiss_coordinates_lv95_x: nil,
+        loc_swiss_coordinates_lv95_y: nil,
         loc_continent: "Europe",
         loc_country: "Switzerland",
-        loc_country_code: "ch",
+        loc_country_code: "CH",
         loc_locality: "Niesen",
         loc_municipality: nil,
         loc_state_province: nil
@@ -97,7 +99,7 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
           loc_locality: "Europe",
           loc_continent: "Europe",
           loc_country: "Switzerland",
-          loc_country_code: "ch",
+          loc_country_code: "CH",
           loc_municipality: "Lausanne",
           loc_state_province: "Vaud"
         })
@@ -115,12 +117,14 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: nil,
         loc_decimal_longitude: nil,
-        loc_swiss_coordinates_x: nil,
-        loc_swiss_coordinates_y: nil,
+        loc_swiss_coordinates_lv03_x: nil,
+        loc_swiss_coordinates_lv03_y: nil,
+        loc_swiss_coordinates_lv95_x: nil,
+        loc_swiss_coordinates_lv95_y: nil,
         loc_locality: "Europe",
         loc_continent: "Europe",
         loc_country: "Switzerland",
-        loc_country_code: "ch",
+        loc_country_code: "CH",
         loc_municipality: "Lausanne",
         loc_state_province: "Vaud"
       })
@@ -136,8 +140,10 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
         update_record_fixtures!(record_fixture, %{
           loc_decimal_latitude: nil,
           loc_decimal_longitude: nil,
-          loc_swiss_coordinates_x: nil,
-          loc_swiss_coordinates_y: nil,
+          loc_swiss_coordinates_lv03_x: nil,
+          loc_swiss_coordinates_lv03_y: nil,
+          loc_swiss_coordinates_lv95_x: nil,
+          loc_swiss_coordinates_lv95_y: nil,
           loc_continent: nil,
           loc_country: nil,
           loc_country_code: nil,
@@ -158,8 +164,10 @@ defmodule DataAggregator.ForwardGeoEncodingTest do
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: nil,
         loc_decimal_longitude: nil,
-        loc_swiss_coordinates_x: nil,
-        loc_swiss_coordinates_y: nil,
+        loc_swiss_coordinates_lv03_x: nil,
+        loc_swiss_coordinates_lv03_y: nil,
+        loc_swiss_coordinates_lv95_x: nil,
+        loc_swiss_coordinates_lv95_y: nil,
         loc_continent: nil,
         loc_country: nil,
         loc_country_code: nil,

@@ -83,7 +83,7 @@ classDiagram
         String pvn_storage_name
         String pvn_preservation_type
         String pvn_sequence
-        String pvn_preservation_temperature
+        Float pvn_preservation_temperature
         String pvn_preservation_special_mode
         String pvn_preservation_quality
         String pvn_preservation_mode_text
@@ -172,8 +172,10 @@ classDiagram
         String mte_parent_material_entity_id
         String mte_anatomical_description
         String mte_material_entity_id
-        Float loc_swiss_coordinates_y
-        Float loc_swiss_coordinates_x
+        Float loc_swiss_coordinates_lv95_y
+        Float loc_swiss_coordinates_lv95_x
+        Float loc_swiss_coordinates_lv03_y
+        Float loc_swiss_coordinates_lv03_x
         String loc_georeference_verification_status
         String loc_georeference_remarks
         String loc_georeference_sources
@@ -190,19 +192,19 @@ classDiagram
         String loc_verbatim_coordinates
         Float loc_point_radius_spatial_fit
         Float loc_coordinate_precision
-        Integer loc_coordinate_uncertainty_in_meters
+        Float loc_coordinate_uncertainty_in_meters
         String loc_geodetic_datum
         String loc_location_remarks
         String loc_location_according_to
-        Integer loc_maximum_distance_above_surface_in_meters
-        Integer loc_minimum_distance_above_surface_in_meters
+        Float loc_maximum_distance_above_surface_in_meters
+        Float loc_minimum_distance_above_surface_in_meters
         String loc_verbatim_depth
-        Integer loc_maximum_depth_in_meters
-        Integer loc_minimum_depth_in_meters
+        Float loc_maximum_depth_in_meters
+        Float loc_minimum_depth_in_meters
         String loc_vertical_datum
         String loc_verbatim_elevation
-        Integer loc_maximum_elevation_in_meters
-        Integer loc_minimum_elevation_in_meters
+        Float loc_maximum_elevation_in_meters
+        Float loc_minimum_elevation_in_meters
         String loc_country_code
         String loc_municipality
         String loc_county
@@ -293,13 +295,13 @@ classDiagram
         Integer eve_end_of_period_year
         Integer eve_end_of_period_month
         Integer eve_end_of_period_day
-        Integer eve_tree_layer_height_in_meters
+        Float eve_tree_layer_height_in_meters
         String eve_syntaxon_name
         String eve_project
         Boolean eve_mosses_identified
         Boolean eve_lichens_identified
-        Integer eve_inclination_in_degrees
-        Integer eve_herb_layer_height_in_centimeters
+        Float eve_inclination_in_degrees
+        Float eve_herb_layer_height_in_centimeters
         String eve_event_remarks
         String eve_field_notes
         String eve_habitat
@@ -564,7 +566,7 @@ classDiagram
         String pvn_storage_name
         String pvn_preservation_type
         String pvn_sequence
-        String pvn_preservation_temperature
+        Float pvn_preservation_temperature
         String pvn_preservation_special_mode
         String pvn_preservation_quality
         String pvn_preservation_mode_text
@@ -653,8 +655,10 @@ classDiagram
         String mte_parent_material_entity_id
         String mte_anatomical_description
         String mte_material_entity_id
-        Float loc_swiss_coordinates_y
-        Float loc_swiss_coordinates_x
+        Float loc_swiss_coordinates_lv95_y
+        Float loc_swiss_coordinates_lv95_x
+        Float loc_swiss_coordinates_lv03_y
+        Float loc_swiss_coordinates_lv03_x
         String loc_georeference_verification_status
         String loc_georeference_remarks
         String loc_georeference_sources
@@ -671,19 +675,19 @@ classDiagram
         String loc_verbatim_coordinates
         Float loc_point_radius_spatial_fit
         Float loc_coordinate_precision
-        Integer loc_coordinate_uncertainty_in_meters
+        Float loc_coordinate_uncertainty_in_meters
         String loc_geodetic_datum
         String loc_location_remarks
         String loc_location_according_to
-        Integer loc_maximum_distance_above_surface_in_meters
-        Integer loc_minimum_distance_above_surface_in_meters
+        Float loc_maximum_distance_above_surface_in_meters
+        Float loc_minimum_distance_above_surface_in_meters
         String loc_verbatim_depth
-        Integer loc_maximum_depth_in_meters
-        Integer loc_minimum_depth_in_meters
+        Float loc_maximum_depth_in_meters
+        Float loc_minimum_depth_in_meters
         String loc_vertical_datum
         String loc_verbatim_elevation
-        Integer loc_maximum_elevation_in_meters
-        Integer loc_minimum_elevation_in_meters
+        Float loc_maximum_elevation_in_meters
+        Float loc_minimum_elevation_in_meters
         String loc_country_code
         String loc_municipality
         String loc_county
@@ -774,13 +778,13 @@ classDiagram
         Integer eve_end_of_period_year
         Integer eve_end_of_period_month
         Integer eve_end_of_period_day
-        Integer eve_tree_layer_height_in_meters
+        Float eve_tree_layer_height_in_meters
         String eve_syntaxon_name
         String eve_project
         Boolean eve_mosses_identified
         Boolean eve_lichens_identified
-        Integer eve_inclination_in_degrees
-        Integer eve_herb_layer_height_in_centimeters
+        Float eve_inclination_in_degrees
+        Float eve_herb_layer_height_in_centimeters
         String eve_event_remarks
         String eve_field_notes
         String eve_habitat
@@ -968,7 +972,7 @@ classDiagram
         String pvn_storage_name
         String pvn_preservation_type
         String pvn_sequence
-        String pvn_preservation_temperature
+        Float pvn_preservation_temperature
         String pvn_preservation_special_mode
         String pvn_preservation_quality
         String pvn_preservation_mode_text
@@ -1057,8 +1061,10 @@ classDiagram
         String mte_parent_material_entity_id
         String mte_anatomical_description
         String mte_material_entity_id
-        Float loc_swiss_coordinates_y
-        Float loc_swiss_coordinates_x
+        Float loc_swiss_coordinates_lv95_y
+        Float loc_swiss_coordinates_lv95_x
+        Float loc_swiss_coordinates_lv03_y
+        Float loc_swiss_coordinates_lv03_x
         String loc_georeference_verification_status
         String loc_georeference_remarks
         String loc_georeference_sources
@@ -1075,19 +1081,19 @@ classDiagram
         String loc_verbatim_coordinates
         Float loc_point_radius_spatial_fit
         Float loc_coordinate_precision
-        Integer loc_coordinate_uncertainty_in_meters
+        Float loc_coordinate_uncertainty_in_meters
         String loc_geodetic_datum
         String loc_location_remarks
         String loc_location_according_to
-        Integer loc_maximum_distance_above_surface_in_meters
-        Integer loc_minimum_distance_above_surface_in_meters
+        Float loc_maximum_distance_above_surface_in_meters
+        Float loc_minimum_distance_above_surface_in_meters
         String loc_verbatim_depth
-        Integer loc_maximum_depth_in_meters
-        Integer loc_minimum_depth_in_meters
+        Float loc_maximum_depth_in_meters
+        Float loc_minimum_depth_in_meters
         String loc_vertical_datum
         String loc_verbatim_elevation
-        Integer loc_maximum_elevation_in_meters
-        Integer loc_minimum_elevation_in_meters
+        Float loc_maximum_elevation_in_meters
+        Float loc_minimum_elevation_in_meters
         String loc_country_code
         String loc_municipality
         String loc_county
@@ -1178,13 +1184,13 @@ classDiagram
         Integer eve_end_of_period_year
         Integer eve_end_of_period_month
         Integer eve_end_of_period_day
-        Integer eve_tree_layer_height_in_meters
+        Float eve_tree_layer_height_in_meters
         String eve_syntaxon_name
         String eve_project
         Boolean eve_mosses_identified
         Boolean eve_lichens_identified
-        Integer eve_inclination_in_degrees
-        Integer eve_herb_layer_height_in_centimeters
+        Float eve_inclination_in_degrees
+        Float eve_herb_layer_height_in_centimeters
         String eve_event_remarks
         String eve_field_notes
         String eve_habitat
