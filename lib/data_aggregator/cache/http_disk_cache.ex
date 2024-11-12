@@ -13,11 +13,7 @@ defmodule DataAggregator.Cache.HttpDiskCache do
   # accepted http states for caching according to rfc-editor.org/rfc/rfc7231
   @cachable_response_states [200, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501]
 
-  @default_http_cache_dir Application.compile_env(
-                            :data_aggregator,
-                            :http_cache_path,
-                            "#{DataAggregator.priv_dir()}/cache/#{Application.compile_env(:data_aggregator, :env)}/http"
-                          )
+  @default_cache_dir "#{DataAggregator.priv_dir()}/cache/#{Application.compile_env(:data_aggregator, :env)}/http"
 
   def attach(%Req.Request{} = request, options \\ []) do
     request
@@ -76,10 +72,18 @@ defmodule DataAggregator.Cache.HttpDiskCache do
     end
   end
 
+  defp cache_dir do
+    Application.env(
+      :data_aggregator,
+      :http_cache_path,
+      @default_cache_dir
+    )
+  end
+
   # https://github.com/wojtekmach/req/blob/102b9aa6c6ff66f00403054a0093c4f06f6abc2f/lib/req/steps.ex#L1268
   defp cache_path(request) do
     cache_dir =
-      request.options[:cache_dir] || @default_http_cache_dir
+      request.options[:cache_dir] || cache_dir()
 
     cache_key =
       Enum.join(
