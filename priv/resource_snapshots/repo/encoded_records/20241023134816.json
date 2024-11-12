@@ -177,6 +177,16 @@
       "primary_key?": false,
       "references": null,
       "size": null,
+      "source": "oth_modified",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
       "source": "oth_modified_by",
       "type": "text"
     },
@@ -3009,7 +3019,7 @@
   ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "1A6136BC590A0A12725930A6A89FE20BB0C81777D8207128C082A25D411440DB",
+  "hash": "7E335275A10160B4E9892967A8CEC27F11BFB66F18F4DA202AE1986F8D7E23D3",
   "identities": [
     {
       "all_tenants?": false,

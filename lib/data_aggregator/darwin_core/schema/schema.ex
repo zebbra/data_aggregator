@@ -1785,6 +1785,12 @@ oth_attributes = [
     attribute: %Attribute{name: :modified_by, type: :string, allow_nil?: true}
   },
   %{
+    dwc_field: "modified",
+    dwc_link: nil,
+    dwca_file: :modified,
+    attribute: %Attribute{name: :modified, type: :string, allow_nil?: true}
+  },
+  %{
     dwc_field: "ownerInstitutionCode",
     dwc_link: "http://rs.tdwg.org/dwc/terms/ownerInstitutionCode",
     dwca_file: :core,

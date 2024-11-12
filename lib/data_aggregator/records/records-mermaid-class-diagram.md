@@ -64,6 +64,7 @@ classDiagram
         String oth_type
         String oth_rights_holder
         String oth_owner_institution_code
+        String oth_modified
         String oth_modified_by
         String oth_license
         String oth_language
@@ -547,6 +548,7 @@ classDiagram
         String oth_type
         String oth_rights_holder
         String oth_owner_institution_code
+        String oth_modified
         String oth_modified_by
         String oth_license
         String oth_language
@@ -953,6 +955,7 @@ classDiagram
         String oth_type
         String oth_rights_holder
         String oth_owner_institution_code
+        String oth_modified
         String oth_modified_by
         String oth_license
         String oth_language
