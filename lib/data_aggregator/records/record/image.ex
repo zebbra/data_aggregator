@@ -31,6 +31,10 @@ defmodule DataAggregator.Records.Record.Image do
     end
   end
 
+  calculations do
+    calculate :image_url, :string, Record.Calculations.ImageUrl
+  end
+
   actions do
     default_accept :*
     defaults [:create, :read, :update, :destroy]

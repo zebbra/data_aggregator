@@ -6,7 +6,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.RelateImagesStrategy do
   import DataAggregator.Helpers, only: [maybe_performant_load_record: 3]
 
   import DataAggregator.Records.ImageUpload.Helpers,
-    only: [construct_image_url: 2, construct_associated_media: 2]
+    only: [construct_associated_media: 2]
 
   alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Records.EncodedRecord
@@ -33,8 +33,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.RelateImagesStrategy do
   defp process_encoded_record(encoded_record, ctx) do
     new_associated_media =
       Enum.reduce(encoded_record.record.images, encoded_record.mte_associated_media, fn image, acc ->
-        image_url = construct_image_url(encoded_record.collection_id, image.id)
-        construct_associated_media(acc, image_url)
+        construct_associated_media(acc, image)
       end)
 
     {:ok,

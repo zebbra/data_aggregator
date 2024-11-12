@@ -40,7 +40,7 @@ defmodule DataAggregator.Records.Encoding.RelateImagesTest do
          %{
            record_fixture_no_mapping: record
          } do
-      record = Ash.load!(record, [:encoded_record, images: :attachment])
+      record = Ash.load!(record, [:encoded_record, images: [:attachment, :image_url]])
 
       assert record.images == []
       assert record.encoded_record.mte_associated_media == nil
@@ -57,21 +57,20 @@ defmodule DataAggregator.Records.Encoding.RelateImagesTest do
          %{
            record_fixture: record_fixture
          } do
-      record_fixture = Ash.load!(record_fixture, [:encoded_record, images: :attachment])
+      record_fixture =
+        Ash.load!(record_fixture, [:encoded_record, images: [:attachment, :image_url]])
 
       Enum.each(record_fixture.images, fn image ->
         assert String.contains?(
                  record_fixture.encoded_record.mte_associated_media,
-                 System.get_env("BASE_URL") <>
-                   "/collections/" <>
-                   record_fixture.collection_id <> "/image_uploads/images/" <> image.id
+                 image.image_url
                )
       end)
 
       {:ok, record} =
         Record.encode(record_fixture, :relate_images, tenant: record_fixture.collection_id)
 
-      record = Ash.load!(record, :encoded_record)
+      record = Ash.load!(record, [:encoded_record, images: [:attachment, :image_url]])
 
       assert record.encoded_record.mte_associated_media != nil
 
@@ -81,9 +80,7 @@ defmodule DataAggregator.Records.Encoding.RelateImagesTest do
       Enum.each(record.images, fn image ->
         assert String.contains?(
                  record.encoded_record.mte_associated_media,
-                 System.get_env("BASE_URL") <>
-                   "/collections/" <>
-                   record.collection_id <> "/image_uploads/images/" <> image.id
+                 image.image_url
                )
       end)
     end
@@ -103,7 +100,7 @@ defmodule DataAggregator.Records.Encoding.RelateImagesTest do
       {:ok, record} =
         Record.encode(record, :relate_images, tenant: record.collection_id)
 
-      record = Ash.load!(record, :encoded_record)
+      record = Ash.load!(record, [:encoded_record, images: [:attachment, :image_url]])
 
       assert record.encoded_record.mte_associated_media != nil
 
@@ -113,9 +110,7 @@ defmodule DataAggregator.Records.Encoding.RelateImagesTest do
       Enum.each(record.images, fn image ->
         assert String.contains?(
                  record.encoded_record.mte_associated_media,
-                 System.get_env("BASE_URL") <>
-                   "/collections/" <>
-                   record.collection_id <> "/image_uploads/images/" <> image.id
+                 image.image_url
                )
       end)
     end

@@ -3952,11 +3952,6 @@ msgstr ""
 msgid "For example: 'catalogNumber001_01.jpg' maps to a record where its catalogNumber is 'catalogNumber001'."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/mapping.ex:57
-#, elixir-autogen, elixir-format
-msgid "The mapping identifier links image filenames to records by matching the part before an underscore (or the file extension if no underscore exists) with a chosen attribute, like catalogNumber."
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:98
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
@@ -3967,4 +3962,9 @@ msgstr ""
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Incomplete"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/mapping.ex:57
+#, elixir-autogen, elixir-format, fuzzy
+msgid "The mapping identifier links image filenames to records by matching the part before an underscore (or the file extension if no underscore exists) with a chosen attribute, like catalogNumber, materialEntitiyId or occurenceId."
 msgstr ""

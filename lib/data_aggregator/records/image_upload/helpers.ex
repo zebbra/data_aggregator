@@ -7,14 +7,13 @@ defmodule DataAggregator.Records.ImageUpload.Helpers do
   @max_image_size 5_242_880
   def max_image_size, do: @max_image_size
 
-  def construct_image_url(collection_id, image_id) do
-    System.get_env("BASE_URL") <>
-      "/collections/" <> collection_id <> "/image_uploads/images/" <> image_id
+  def construct_associated_media(nil, image) do
+    image |> Ash.load!(:image_url) |> Map.get(:image_url)
   end
 
-  def construct_associated_media(nil, image_url), do: image_url
+  def construct_associated_media(original_associated_media, image) do
+    image_url = image |> Ash.load!(:image_url) |> Map.get(:image_url)
 
-  def construct_associated_media(original_associated_media, image_url) do
     if String.contains?(original_associated_media, image_url) do
       original_associated_media
     else

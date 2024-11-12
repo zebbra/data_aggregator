@@ -73,7 +73,11 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
     image_upload = Ash.load!(image_upload, [:images, :mapped_images, :unmapped_images])
 
     collection =
-      Ash.load!(collection, [records: [:images, :image_attachments, :encoded_record]], tenant: collection)
+      Ash.load!(
+        collection,
+        [records: [:image_attachments, :encoded_record, images: :image_url]],
+        tenant: collection
+      )
 
     assert {"catalogNumber1_1.jpg", "catalogNumber1"} in image_upload.mapped_images
     assert {"catalogNumber1_2.jpg", "catalogNumber1"} in image_upload.mapped_images
@@ -91,9 +95,7 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
           Enum.each(record.images, fn image ->
             assert String.contains?(
                      record.encoded_record.mte_associated_media,
-                     System.get_env("BASE_URL") <>
-                       "/collections/" <>
-                       record.collection_id <> "/image_uploads/images/" <> image.id
+                     image.image_url
                    )
           end)
 
@@ -108,9 +110,7 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
           Enum.each(record.images, fn image ->
             assert String.contains?(
                      record.encoded_record.mte_associated_media,
-                     System.get_env("BASE_URL") <>
-                       "/collections/" <>
-                       record.collection_id <> "/image_uploads/images/" <> image.id
+                     image.image_url
                    )
           end)
 
@@ -130,9 +130,7 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
           Enum.each(record.images, fn image ->
             assert String.contains?(
                      record.encoded_record.mte_associated_media,
-                     System.get_env("BASE_URL") <>
-                       "/collections/" <>
-                       record.collection_id <> "/image_uploads/images/" <> image.id
+                     image.image_url
                    )
           end)
 
