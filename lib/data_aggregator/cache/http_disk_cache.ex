@@ -73,7 +73,7 @@ defmodule DataAggregator.Cache.HttpDiskCache do
   end
 
   defp cache_dir do
-    Application.env(
+    Application.get_env(
       :data_aggregator,
       :http_cache_path,
       @default_cache_dir
