@@ -11,4 +11,21 @@ defmodule DataAggregator.Records.ImageUpload.Helpers do
     System.get_env("BASE_URL") <>
       "/collections/" <> collection_id <> "/image_uploads/images/" <> image_id
   end
+
+  def construct_associated_media(nil, image_url), do: image_url
+
+  def construct_associated_media(original_associated_media, image_url) do
+    if String.contains?(original_associated_media, image_url) do
+      original_associated_media
+    else
+      maybe_concatenate(original_associated_media, image_url)
+    end
+  end
+
+  defp maybe_concatenate(associated_media, new_url) do
+    case associated_media do
+      "" -> new_url
+      _ -> "#{associated_media} | #{new_url}"
+    end
+  end
 end
