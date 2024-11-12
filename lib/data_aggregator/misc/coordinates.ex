@@ -47,10 +47,7 @@ defmodule DataAggregator.Misc.Coordinates do
   """
   @spec lv03_to_wgs84!(Coordinates.t()) :: Coordinates.t()
   def lv03_to_wgs84!(coord) do
-    y = coord.e + 2_000_000.0
-    x = coord.n + 1_000_000.0
-
-    lv95_to_wgs84!(%Coordinates{e: y, n: x})
+    coord |> lv03_to_lv95!() |> lv95_to_wgs84!()
   end
 
   @doc """
@@ -89,12 +86,7 @@ defmodule DataAggregator.Misc.Coordinates do
   """
   @spec wgs84_to_lv03!(Coordinates.t()) :: Coordinates.t()
   def wgs84_to_lv03!(coord) do
-    %Coordinates{e: e, n: n} = wgs84_to_lv95!(coord)
-
-    y = e - 2_000_000.0
-    x = n - 1_000_000.0
-
-    %Coordinates{e: y, n: x}
+    coord |> wgs84_to_lv95!() |> lv95_to_lv03!()
   end
 
   @spec lv95_to_lv03!(Coordinates.t()) :: Coordinates.t()

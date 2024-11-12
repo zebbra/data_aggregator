@@ -150,6 +150,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
     do: throw("No valid response (status #{response.status}) from geo api")
 
   @spec upcase_country_code(map()) :: map()
+  defp upcase_country_code(%{"country_code" => nil} = update_params), do: update_params
+
   defp upcase_country_code(%{"country_code" => _country_code} = update_params) do
     Map.update!(update_params, "country_code", &String.upcase/1)
   end

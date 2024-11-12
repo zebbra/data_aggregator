@@ -86,18 +86,6 @@ defmodule DataAggregatorWeb.Helpers do
 
   def format_coordinate(val), do: val
 
-  def attributes_with_data(attributes) do
-    Enum.filter(attributes, fn %{name: _, imported: imported, encoded: encoded} ->
-      imported != "-" || encoded != "-"
-    end)
-  end
-
-  def category_has_data?(category) do
-    Enum.any?(category.attributes, fn %{imported: imported, encoded: encoded} ->
-      imported != "-" || encoded != "-"
-    end)
-  end
-
   @doc ~S"""
   Returns a string of class names from a list of class names.
 
