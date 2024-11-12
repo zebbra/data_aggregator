@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Actions.ExportRecords do
+defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
   @moduledoc """
   Custom action to export records
   """
@@ -32,7 +32,8 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
         header_source
       )
 
-    headers = mapping |> get_header_labels() |> Enum.map(fn {_, v} -> v end)
+    header_labels = get_header_labels(mapping)
+    headers = Enum.map(header_labels, fn {_, v} -> v end)
 
     attachment =
       query
@@ -41,7 +42,7 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
       |> Stream.map(
         &FlatFileUtils.map_data_to_headers(
           &1,
-          get_header_labels(mapping),
+          header_labels,
           Schema.dwc_transformers()
         )
       )
