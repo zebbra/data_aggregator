@@ -28,6 +28,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @load [:encoded_record, :mids_level, :iucn_redlist]
   @async_keys [:meta, :results]
+  @coordinate_attribute_names ~w(swissCoordinatesLv03_x swissCoordinatesLv03_y swissCoordinatesLv95_x swissCoordinatesLv95_y)
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
@@ -611,7 +612,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   </p>
                   <.table
                     opts={[
-                      container_attrs: [class: "no-scrollbar overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
+                      container_attrs: [class: "overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
                     ]}
                     id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
                     items={category.attributes}
@@ -620,10 +621,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                       <%= attribute.name %>
                     </:col>
                     <:col :let={attribute} label={~t"Imported"}>
-                      <%= attribute.imported %>
+                      <%= format_value(attribute.imported, attribute.name) %>
                     </:col>
                     <:col :let={attribute} label={~t"Encoded"}>
-                      <%= attribute.encoded %>
+                      <%= format_value(attribute.encoded, attribute.name) %>
                     </:col>
                   </.table>
                 </div>
@@ -1138,6 +1139,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       |> noreply()
     end
   end
+
+  defp format_value(value, attribute_name) when attribute_name in @coordinate_attribute_names do
+    case format_coordinate(value) do
+      value when is_float(value) -> Float.round(value, 2)
+      value -> value
+    end
+  end
+
+  defp format_value(value, _), do: value
 
   defp coalesce_search(nil), do: ""
   defp coalesce_search(search), do: search

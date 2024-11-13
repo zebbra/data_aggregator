@@ -53,6 +53,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
       |> fetch_if_coords_available()
       |> add_swiss_coordinates(encoded_record)
       |> add_intl_coords(encoded_record)
+      |> upcase_country_code()
       |> add_municipality_and_city()
       |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)
     }
@@ -77,15 +78,20 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
     intl_lat = encoded_record.loc_decimal_latitude
     intl_long = encoded_record.loc_decimal_longitude
 
-    swiss_lat = encoded_record.loc_swiss_coordinates_y
-    swiss_long = encoded_record.loc_swiss_coordinates_x
+    swiss_lat_lv03 = encoded_record.loc_swiss_coordinates_lv03_y
+    swiss_long_lv03 = encoded_record.loc_swiss_coordinates_lv03_x
+    swiss_lat_lv95 = encoded_record.loc_swiss_coordinates_lv95_y
+    swiss_long_lv95 = encoded_record.loc_swiss_coordinates_lv95_x
 
     cond do
       intl_lat != nil and intl_long != nil ->
         {:ok, %{n: intl_lat, e: intl_long}}
 
-      swiss_lat != nil and swiss_long != nil ->
-        {:ok, Coordinates.lv95_to_wgs84!(%Coordinates{n: swiss_lat, e: swiss_long})}
+      swiss_lat_lv95 != nil and swiss_long_lv95 != nil ->
+        {:ok, Coordinates.lv95_to_wgs84!(%Coordinates{n: swiss_lat_lv95, e: swiss_long_lv95})}
+
+      swiss_lat_lv03 != nil and swiss_long_lv03 != nil ->
+        {:ok, Coordinates.lv03_to_wgs84!(%Coordinates{n: swiss_lat_lv03, e: swiss_long_lv03})}
 
       true ->
         {:error, "no coordinates found on encoded_record #{encoded_record.id}"}
@@ -163,27 +169,60 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
       # if the country is not switzerland we don't need the swiss coordinates
       switzerland?(update_params, encoded_record) == false ->
         update_params
-        |> Map.put("loc_swiss_coordinates_x", nil)
-        |> Map.put("loc_swiss_coordinates_y", nil)
+        |> Map.put("loc_swiss_coordinates_lv03_x", nil)
+        |> Map.put("loc_swiss_coordinates_lv03_y", nil)
+        |> Map.put("loc_swiss_coordinates_lv95_x", nil)
+        |> Map.put("loc_swiss_coordinates_lv95_y", nil)
 
       encoded_record.loc_decimal_latitude != nil and
           encoded_record.loc_decimal_longitude != nil ->
-        swiss_coords =
+        swiss_coords_lv95 =
           Coordinates.wgs84_to_lv95!(%Coordinates{
             e: encoded_record.loc_decimal_longitude,
             n: encoded_record.loc_decimal_latitude
           })
 
-        update_params
-        |> Map.put("loc_swiss_coordinates_x", swiss_coords.e)
-        |> Map.put("loc_swiss_coordinates_y", swiss_coords.n)
+        swiss_coord_lv03 =
+          Coordinates.wgs84_to_lv03!(%Coordinates{
+            e: encoded_record.loc_decimal_longitude,
+            n: encoded_record.loc_decimal_latitude
+          })
 
-      encoded_record.loc_swiss_coordinates_x != nil and
-          encoded_record.loc_swiss_coordinates_y != nil ->
+        update_params
+        |> Map.put("loc_swiss_coordinates_lv95_x", swiss_coords_lv95.e)
+        |> Map.put("loc_swiss_coordinates_lv95_y", swiss_coords_lv95.n)
+        |> Map.put("loc_swiss_coordinates_lv03_x", swiss_coord_lv03.e)
+        |> Map.put("loc_swiss_coordinates_lv03_y", swiss_coord_lv03.n)
+
+      encoded_record.loc_swiss_coordinates_lv95_x != nil and
+          encoded_record.loc_swiss_coordinates_lv95_y != nil ->
+        swiss_coords_lv03 =
+          Coordinates.lv95_to_lv03!(%Coordinates{
+            e: encoded_record.loc_swiss_coordinates_lv95_x,
+            n: encoded_record.loc_swiss_coordinates_lv95_y
+          })
+
         # we need to set the coordinates here, otherwise they will be overwritten with nil
         update_params
-        |> Map.put("loc_swiss_coordinates_x", encoded_record.loc_swiss_coordinates_x)
-        |> Map.put("loc_swiss_coordinates_y", encoded_record.loc_swiss_coordinates_y)
+        |> Map.put("loc_swiss_coordinates_lv95_x", encoded_record.loc_swiss_coordinates_lv95_x)
+        |> Map.put("loc_swiss_coordinates_lv95_y", encoded_record.loc_swiss_coordinates_lv95_y)
+        |> Map.put("loc_swiss_coordinates_lv03_x", swiss_coords_lv03.e)
+        |> Map.put("loc_swiss_coordinates_lv03_y", swiss_coords_lv03.n)
+
+      encoded_record.loc_swiss_coordinates_lv03_x != nil and
+          encoded_record.loc_swiss_coordinates_lv03_y != nil ->
+        swiss_coords_lv95 =
+          Coordinates.lv03_to_lv95!(%Coordinates{
+            e: encoded_record.loc_swiss_coordinates_lv03_x,
+            n: encoded_record.loc_swiss_coordinates_lv03_y
+          })
+
+        # we need to set the coordinates here, otherwise they will be overwritten with nil
+        update_params
+        |> Map.put("loc_swiss_coordinates_lv03_x", encoded_record.loc_swiss_coordinates_lv03_x)
+        |> Map.put("loc_swiss_coordinates_lv03_y", encoded_record.loc_swiss_coordinates_lv03_y)
+        |> Map.put("loc_swiss_coordinates_lv95_x", swiss_coords_lv95.e)
+        |> Map.put("loc_swiss_coordinates_lv95_y", swiss_coords_lv95.n)
 
       true ->
         update_params
@@ -207,15 +246,36 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
     country == "switzerland" or country_code == "ch"
   end
 
+  @spec upcase_country_code(map()) :: map()
+  defp upcase_country_code(%{"country_code" => nil} = update_params), do: update_params
+
+  defp upcase_country_code(%{"country_code" => _country_code} = update_params) do
+    Map.update!(update_params, "country_code", &String.upcase/1)
+  end
+
+  defp upcase_country_code(update_params), do: update_params
+
   @spec add_intl_coords(map(), EncodedRecord.t()) :: map()
   defp add_intl_coords(update_params, encoded_record) do
     cond do
-      encoded_record.loc_swiss_coordinates_x != nil and
-          encoded_record.loc_swiss_coordinates_y != nil ->
+      encoded_record.loc_swiss_coordinates_lv95_x != nil and
+          encoded_record.loc_swiss_coordinates_lv95_y != nil ->
         intl_coords =
           Coordinates.lv95_to_wgs84!(%Coordinates{
-            e: encoded_record.loc_swiss_coordinates_x,
-            n: encoded_record.loc_swiss_coordinates_y
+            e: encoded_record.loc_swiss_coordinates_lv95_x,
+            n: encoded_record.loc_swiss_coordinates_lv95_y
+          })
+
+        update_params
+        |> Map.put("loc_decimal_longitude", intl_coords.e)
+        |> Map.put("loc_decimal_latitude", intl_coords.n)
+
+      encoded_record.loc_swiss_coordinates_lv03_x != nil and
+          encoded_record.loc_swiss_coordinates_lv03_y != nil ->
+        intl_coords =
+          Coordinates.lv03_to_wgs84!(%Coordinates{
+            e: encoded_record.loc_swiss_coordinates_lv03_x,
+            n: encoded_record.loc_swiss_coordinates_lv03_y
           })
 
         update_params

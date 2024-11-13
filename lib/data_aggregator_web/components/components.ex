@@ -141,7 +141,7 @@ defmodule DataAggregatorWeb.Components do
     [
       container: true,
       container_attrs: [
-        class: "no-scrollbar overflow-x-auto py-4"
+        class: "overflow-x-auto py-4"
       ],
       no_results_content: "",
       loading_content: loading_content(),
