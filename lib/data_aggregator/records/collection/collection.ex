@@ -13,7 +13,6 @@ defmodule DataAggregator.Records.Collection do
   import DataAggregator.Checks.Custom
 
   alias __MODULE__
-  alias DataAggregator.Records
   alias DataAggregator.Records.Calculations
   alias DataAggregator.Records.Collection.Actions
   alias DataAggregator.Records.Collection.Changes

@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
 
   @load load()
   @load_all load_all()
-  @update_events ~w(set_running set_exported set_failed)
+  @update_events ~w(set_running set_exported set_failed add_export_progress)
   @collection_action_events ~w(
     set_mapping
     set_importing
@@ -113,7 +113,13 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Subscriptions do
 
   defp maybe_assign_selected_export(%{assigns: %{selected_export: nil}} = socket, _export), do: socket
 
-  defp maybe_assign_selected_export(socket, export), do: assign(socket, :selected_export, export)
+  defp maybe_assign_selected_export(socket, export) do
+    if socket.assigns.selected_export.id == export.id do
+      assign(socket, :selected_export, export)
+    else
+      socket
+    end
+  end
 
   defp set_notification(socket, "set_failed") do
     put_flash(socket, :error, ~t"The export failed, please try again"m)

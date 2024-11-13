@@ -71,4 +71,37 @@ defmodule DataAggregator.Application do
     DataAggregatorWeb.Endpoint.config_change(changed, removed)
     :ok
   end
+
+  # defp telemetry_config do
+  #   [
+  #     metrics: telemetry_metrics(),
+  #     backend: %TelemetryUI.Backend.EctoPostgres{
+  #       repo: DataAggregator.Repo,
+  #       pruner_threshold: [months: -1],
+  #       pruner_interval_ms: 84_000,
+  #       max_buffer_size: 10_000,
+  #       flush_interval_ms: 10_000
+  #     }
+  #   ]
+  # end
+
+  # defp telemetry_metrics do
+  #   import TelemetryUI.Metrics
+
+  #   [
+  #     # Ash
+  #     count_over_time("ash.records.create.stop.duration",
+  #       tags: [:resource_short_name, :action],
+  #       unit: {:native, :millisecond}
+  #     ),
+  #     count_over_time("ash.records.update.stop.duration",
+  #       tags: [:resource_short_name, :action],
+  #       unit: {:native, :millisecond}
+  #     ),
+  #     count_over_time("ash.records.read.stop.duration",
+  #       tags: [:resource_short_name, :action],
+  #       unit: {:native, :millisecond}
+  #     )
+  #   ]
+  # end
 end

@@ -1,6 +1,11 @@
 defmodule DataAggregator.Misc.ThrottledCounter do
-  @moduledoc false
+  @moduledoc """
+  A GenServer that counts events and triggers a callback at a throttled interval.
+  """
+
   use GenServer
+
+  import DataAggregator.Guards
 
   require Logger
 
@@ -20,10 +25,23 @@ defmodule DataAggregator.Misc.ThrottledCounter do
     GenServer.start_link(__MODULE__, opts)
   end
 
+  @spec increment(pid(), integer) :: :ok
   def increment(pid, value \\ 1) do
     GenServer.cast(pid, {:increment, value})
   end
 
+  @spec count_each(Enumerable.t(), pid()) :: Enumerable.t()
+  def count_each(enum, pid)
+
+  def count_each(enum, pid) when is_list(enum) do
+    increment(pid, length(enum))
+  end
+
+  def count_each(stream, pid) when is_stream(stream) do
+    Stream.each(stream, fn _ -> increment(pid) end)
+  end
+
+  @spec stop(pid()) :: :ok
   def stop(pid) do
     Logger.debug("[#{inspect(pid)}] Stopping counter ...")
     GenServer.call(pid, :stop)
@@ -66,12 +84,11 @@ defmodule DataAggregator.Misc.ThrottledCounter do
   defp noreply(state), do: {:noreply, state}
 
   defp trigger_callback(%{count: 0} = state) do
-    Logger.debug("[#{inspect(self())}] Not triggering callback")
     state
   end
 
   defp trigger_callback(%{callback: callback, count: count} = state) when is_function(callback, 1) do
-    Logger.debug("[#{inspect(self())}] Triggering callback with count: #{count}")
+    Logger.debug("[#{inspect(self())}] Triggering counter callback with count: #{count}")
     callback.(count)
     %{state | count: 0}
   end
