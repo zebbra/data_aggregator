@@ -1,20 +1,19 @@
-defmodule DataAggregator.Records.Actions.ExportRecords do
+defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
   @moduledoc """
   Custom action to export records
   """
   use Ash.Resource.Actions.Implementation
 
-  alias Ash.Resource.Actions.Implementation.Context
+  alias DataAggregator.Counter
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
-  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
 
   require Logger
 
   @impl true
-  def run(input, _opts, %{tenant: tenant} = ctx) do
+  def run(input, _opts, %{tenant: tenant} = _ctx) do
     export = Ash.load!(input.arguments.export, [:collection])
 
     query =
@@ -32,22 +31,32 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
         header_source
       )
 
-    headers = mapping |> get_header_labels() |> Enum.map(fn {_, v} -> v end)
+    header_labels = get_header_labels(mapping)
+    headers = Enum.map(header_labels, fn {_, v} -> v end)
+
+    {:ok, counter} = Counter.start(&Export.add_export_progress(export, &1))
+
+    load =
+      case data_layer do
+        :encoded -> [:encoded_record]
+        _ -> []
+      end
 
     attachment =
       query
-      |> Ash.stream!(page: false)
-      |> Stream.map(&map_record(&1, mapping, export, data_layer, ctx))
-      |> Stream.map(
-        &FlatFileUtils.map_data_to_headers(
-          &1,
-          get_header_labels(mapping),
-          Schema.dwc_transformers()
-        )
-      )
+      |> Ash.stream!(stream_with: :keyset, batch_size: 1000, load: load)
+      |> Task.async_stream(fn record ->
+        record
+        |> map_record(mapping, data_layer)
+        |> FlatFileUtils.map_data_to_headers(header_labels, Schema.dwc_transformers())
+      end)
+      |> Stream.map(fn {:ok, record} -> record end)
+      |> Counter.count_each(counter)
       |> create_file!(headers)
       |> FlatFileUtils.create_zip!()
       |> FlatFileUtils.store_on_s3!()
+
+    Counter.stop(counter)
 
     with {:ok, export} <- Export.update_mapping(export, mapping) do
       Export.update_attachment(export, attachment)
@@ -65,26 +74,14 @@ defmodule DataAggregator.Records.Actions.ExportRecords do
     directory
   end
 
-  # map the record to the given mapping and report progress on the export.
-  @spec map_record(Record.t(), map(), Export.t(), atom(), Context.t()) :: map()
-  defp map_record(record, mapping, export, :raw, _ctx) do
-    Export.add_export_progress(export, 1)
+  # map the record to the given mapping
+  @spec map_record(Record.t(), map(), atom()) :: map()
 
+  defp map_record(record, mapping, :raw) do
     record |> Map.from_struct() |> Map.take(get_data_attributes(mapping))
   end
 
-  defp map_record(record, mapping, export, :encoded, %{tenant: tenant}) do
-    Export.add_export_progress(export, 1)
-
-    record =
-      case record.encoded_record do
-        %Ash.NotLoaded{} ->
-          %{record | encoded_record: EncodedRecord.get_by_record!(record.id, tenant: tenant)}
-
-        _ ->
-          record
-      end
-
+  defp map_record(record, mapping, :encoded) do
     map_layers(record, mapping)
   end
 

@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Actions.Approve do
+defmodule DataAggregator.Records.Collection.Actions.Approve do
   @moduledoc """
   Custom action to start an approval process for a selection of records towards infospecies. It groups all records selected
   by a given query according to their infospecies center creates a Publication resource and calls the Collection.publish action for
