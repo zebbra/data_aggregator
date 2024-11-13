@@ -48,6 +48,9 @@ config :ash_pagify,
   pagination: [opts: {DataAggregatorWeb.Components, :pagination_opts}],
   table: [opts: {DataAggregatorWeb.Components, :table_opts}]
 
+# Use an async counter for imports, exports, etc.
+config :data_aggregator, DataAggregator.Counter, backend: DataAggregator.Counter.Async
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

@@ -9,6 +9,9 @@ config :ash, :validate_api_config_inclusion?, false
 config :ash, :validate_api_resource_inclusion?, false
 config :ash, warn_on_transaction_hooks?: false
 
+# Use an inline counter for imports, exports, etc.
+config :data_aggregator, DataAggregator.Counter, backend: DataAggregator.Counter.Inline
+
 # Cache files in the test environment
 config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/test/cache"
 

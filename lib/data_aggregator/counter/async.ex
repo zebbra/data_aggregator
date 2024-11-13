@@ -1,22 +1,19 @@
-defmodule DataAggregator.Misc.ThrottledCounter do
-  @moduledoc """
-  A GenServer that counts events and triggers a callback at a throttled interval.
-  """
+defmodule DataAggregator.Counter.Async do
+  @moduledoc false
 
+  use DataAggregator.Counter.Backend
   use GenServer
 
-  import DataAggregator.Guards
+  alias DataAggregator.Counter.Backend
 
   require Logger
-
-  @type callback_fn :: (integer -> any)
 
   @default_interval :timer.seconds(1)
 
   ## Client API
 
-  @spec start(callback_fn, Keyword.t()) :: GenServer.on_start()
-  def start(callback, opts \\ []) do
+  @impl Backend
+  def start(callback, opts) do
     opts =
       opts
       |> Keyword.put(:callback, callback)
@@ -25,23 +22,12 @@ defmodule DataAggregator.Misc.ThrottledCounter do
     GenServer.start_link(__MODULE__, opts)
   end
 
-  @spec increment(pid(), integer) :: :ok
+  @impl Backend
   def increment(pid, value \\ 1) do
     GenServer.cast(pid, {:increment, value})
   end
 
-  @spec count_each(Enumerable.t(), pid()) :: Enumerable.t()
-  def count_each(enum, pid)
-
-  def count_each(enum, pid) when is_list(enum) do
-    increment(pid, length(enum))
-  end
-
-  def count_each(stream, pid) when is_stream(stream) do
-    Stream.each(stream, fn _ -> increment(pid) end)
-  end
-
-  @spec stop(pid()) :: :ok
+  @impl Backend
   def stop(pid) do
     Logger.debug("[#{inspect(pid)}] Stopping counter ...")
     GenServer.call(pid, :stop)
@@ -49,9 +35,10 @@ defmodule DataAggregator.Misc.ThrottledCounter do
 
   ## Server Callbacks
 
+  @impl GenServer
   def init(opts) do
     callback = Keyword.fetch!(opts, :callback)
-    interval = Keyword.fetch!(opts, :interval)
+    interval = Keyword.get(opts, :interval, @default_interval)
 
     Logger.debug("[#{inspect(self())}] Starting throttled counter with (interval: #{inspect(interval)})")
 
@@ -60,12 +47,14 @@ defmodule DataAggregator.Misc.ThrottledCounter do
     |> ok()
   end
 
+  @impl GenServer
   def handle_cast({:increment, value}, %{count: count} = state) do
     state
     |> Map.put(:count, count + value)
     |> noreply()
   end
 
+  @impl GenServer
   def handle_info(:trigger_callback, state) do
     state
     |> trigger_callback()
@@ -73,15 +62,13 @@ defmodule DataAggregator.Misc.ThrottledCounter do
     |> noreply()
   end
 
+  @impl GenServer
   def handle_call(:stop, _from, state) do
     state = trigger_callback(state)
     {:stop, :normal, :ok, state}
   end
 
   ## Private functions
-
-  defp ok(state), do: {:ok, state}
-  defp noreply(state), do: {:noreply, state}
 
   defp trigger_callback(%{count: 0} = state) do
     state
@@ -97,4 +84,7 @@ defmodule DataAggregator.Misc.ThrottledCounter do
     Process.send_after(self(), :trigger_callback, state.interval)
     state
   end
+
+  defp ok(state), do: {:ok, state}
+  defp noreply(state), do: {:noreply, state}
 end

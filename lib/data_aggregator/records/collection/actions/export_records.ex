@@ -4,9 +4,9 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
   """
   use Ash.Resource.Actions.Implementation
 
+  alias DataAggregator.Counter
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
-  alias DataAggregator.Misc.ThrottledCounter
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.Record
 
@@ -34,8 +34,7 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
     header_labels = get_header_labels(mapping)
     headers = Enum.map(header_labels, fn {_, v} -> v end)
 
-    {:ok, counter} =
-      ThrottledCounter.start(&Export.add_export_progress(export, &1))
+    {:ok, counter} = Counter.start(&Export.add_export_progress(export, &1))
 
     load =
       case data_layer do
@@ -52,12 +51,12 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
         |> FlatFileUtils.map_data_to_headers(header_labels, Schema.dwc_transformers())
       end)
       |> Stream.map(fn {:ok, record} -> record end)
-      |> ThrottledCounter.count_each(counter)
+      |> Counter.count_each(counter)
       |> create_file!(headers)
       |> FlatFileUtils.create_zip!()
       |> FlatFileUtils.store_on_s3!()
 
-    ThrottledCounter.stop(counter)
+    Counter.stop(counter)
 
     with {:ok, export} <- Export.update_mapping(export, mapping) do
       Export.update_attachment(export, attachment)
