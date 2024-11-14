@@ -756,6 +756,12 @@ defmodule DataAggregator.WorkflowTest do
         imported: "-",
         encoded: "EX",
         category_name: "iucn"
+      },
+      loc_country_code: %{
+        name: "countryCode",
+        imported: "ch",
+        encoded: "CH",
+        category_name: "loc"
       }
     ]
 

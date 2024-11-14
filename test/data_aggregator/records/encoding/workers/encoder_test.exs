@@ -55,7 +55,7 @@ defmodule DataAggregator.Records.Import.Workers.EncoderTest do
         loc_municipality: nil,
         loc_state_province: "Bern",
         loc_continent: "Europe",
-        loc_country_code: "ch",
+        loc_country_code: "CH",
         iucn_redlist_category: "EX",
         oth_institution_id: "5b487a79-76ef-4615-93d9-f4ea25a40c33",
         oth_institution_code: "Z"

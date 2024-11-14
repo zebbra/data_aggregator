@@ -13,8 +13,8 @@ defmodule DataAggregator.Records.Collection do
   import DataAggregator.Checks.Custom
 
   alias __MODULE__
-  alias DataAggregator.Records
   alias DataAggregator.Records.Calculations
+  alias DataAggregator.Records.Collection.Actions
   alias DataAggregator.Records.Collection.Changes
   alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.Validations
@@ -262,14 +262,14 @@ defmodule DataAggregator.Records.Collection do
     action :export, :map do
       argument :export, :struct, allow_nil?: false
 
-      run Records.Actions.ExportRecords
+      run Actions.ExportRecords
     end
 
     # starts the publication process to the SwissNatColl portal for the given query of records
     action :publish, :map do
       argument :publication, :struct, allow_nil?: false
 
-      run Records.Actions.Publish
+      run Actions.Publish
     end
 
     # starts the approval process towards infospecies for the given query of records
@@ -277,7 +277,7 @@ defmodule DataAggregator.Records.Collection do
       argument :collection, :struct, allow_nil?: false
       argument :query, :map, allow_nil?: false
 
-      run Records.Actions.Approve
+      run Actions.Approve
     end
   end
 

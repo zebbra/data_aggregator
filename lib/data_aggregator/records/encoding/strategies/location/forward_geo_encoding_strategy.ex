@@ -60,6 +60,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
       encoded_record
       |> build_params()
       |> fetch_if_params_available()
+      |> upcase_country_code()
       |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)
     }
   catch
@@ -147,6 +148,15 @@ defmodule DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy do
 
   defp parse_response(response) when response.status != 200,
     do: throw("No valid response (status #{response.status}) from geo api")
+
+  @spec upcase_country_code(map()) :: map()
+  defp upcase_country_code(%{"country_code" => nil} = update_params), do: update_params
+
+  defp upcase_country_code(%{"country_code" => _country_code} = update_params) do
+    Map.update!(update_params, "country_code", &String.upcase/1)
+  end
+
+  defp upcase_country_code(update_params), do: update_params
 
   @spec handle_error(String.t(), map()) :: :ok
   defp handle_error(encoded_record_id, error) do
