@@ -12,7 +12,7 @@ defmodule DataAggregator.Records.ImageUpload.Helpers do
   end
 
   def construct_associated_media(original_associated_media, image) do
-    image_url = image |> Ash.load!(:image_url) |> Map.get(:image_url)
+    image_url = image |> Ash.load!(:image_url) |> Map.get(:image_url, "")
 
     if String.contains?(original_associated_media, image_url) do
       original_associated_media
@@ -20,6 +20,8 @@ defmodule DataAggregator.Records.ImageUpload.Helpers do
       maybe_concatenate(original_associated_media, image_url)
     end
   end
+
+  defp maybe_concatenate(associated_media, ""), do: associated_media
 
   defp maybe_concatenate(associated_media, new_url) do
     case associated_media do
