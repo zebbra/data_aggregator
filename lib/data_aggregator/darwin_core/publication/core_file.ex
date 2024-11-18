@@ -6,14 +6,13 @@ defmodule DataAggregator.DarwinCore.Publication.CoreFile do
   @behaviour DataAggregator.DarwinCore.Publication.DwcaFile
 
   alias DataAggregator.DarwinCore.Publication.DwcaFile
-  alias DataAggregator.Records.Collection
 
-  @spec create(Ash.Query.t(), String.t(), Collection.t()) :: {:ok, any()} | {:error, any()}
-  def create(query, path, tenant) do
+  @spec create(Enumerable.t(), String.t()) :: Enumerable.t()
+  def create(stream, path) do
     path = path <> "/core.csv"
 
-    DwcaFile.create_file!(:core, query, path, tenant)
+    DwcaFile.create_file!(:core, stream, path)
 
-    {:ok, path}
+    stream
   end
 end

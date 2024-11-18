@@ -6,6 +6,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   use Ash.Resource.Actions.Implementation
 
   alias Ash.Resource.Actions.Implementation.Context
+  alias DataAggregator.Counter
   alias DataAggregator.DarwinCore.Publication.CoreFile
   alias DataAggregator.DarwinCore.Publication.EmlFile
   alias DataAggregator.DarwinCore.Publication.MaterialSampleFile
@@ -31,47 +32,39 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       |> AshPagify.query_for_filters_map(publication.records_query)
       |> Ash.Query.set_tenant(tenant)
 
-    set_publication_status(
-      query,
-      :publishing,
-      publication,
-      ctx
-    )
-
     path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
+    EmlFile.create(publication.collection, path)
+    MetaFile.create(publication.collection, path)
 
-    CoreFile.create(query, path, tenant)
+    {:ok, counter} = Counter.start(&Publication.add_publication_progress(publication, &1))
 
-    EmlFile.create(publication.collection, path, tenant)
+    # @Hannes: the idea here is to pass on the stream to each file creator. Not sure if this
+    # approach is valid as we use do something like this in the file creators:
+    #
+    # DwcaFile.create_file!(:multimedia, stream, path)
+    #
+    # stream
+    #
+    # So we consume the stream but return the original stream afterwards. Not sure if this
+    # is a good idea?
+    query
+    |> Ash.stream!(stream_with: :keyset, batch_size: 1000, load: :encoded_record)
+    |> set_publication_status(:publishing, publication, ctx)
+    |> CoreFile.create(path)
+    |> MaterialSampleFile.create(path)
+    |> PreservationFile.create(path)
+    |> ReleveFile.create(path)
+    |> set_publication_status(:in_publication, publication, ctx)
+    # @Hannes: without this step, the counter does not increase. However, if we do it like this
+    # the counter is inceased after all batches have been processed... so there is something fishy
+    |> Enum.to_list()
+    |> Counter.count_each(counter)
 
-    MaterialSampleFile.create(query, path, tenant)
-    PreservationFile.create(query, path, tenant)
-    ReleveFile.create(query, path, tenant)
-
-    MetaFile.create(publication.collection, path, tenant)
-
-    # TODO: implement the following files, they contain of attributes from json fields,
-    # and therefore need to be implemented in a different way
-
-    # ChronometricAgeFile.create(query, path, tenant)
-    # DistributionFile.create(query, path, tenant)
-    # PermitFile.create(query, path, tenant)
-    # ReferencesFile.create(query, path, tenant)
-    # ResourceRelationshipFile.create(query, path, tenant)
-    # SpeciesProfileFile.create(query, path, tenant)
-    # VernacularNamesFile.create(query, path, tenant)
+    Counter.stop(counter)
 
     attachment = path |> FlatFileUtils.create_zip!() |> FlatFileUtils.store_on_s3!()
-
     # remove file from local tmp dir, as it is now stored on s3
     File.rm_rf(path)
-
-    set_publication_status(
-      query,
-      :in_publication,
-      publication,
-      ctx
-    )
 
     publication =
       publication
@@ -86,7 +79,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
         Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(error)}")
 
         set_publication_status(
-          query,
+          Ash.stream!(query, stream_with: :keyset, batch_size: 1000),
           :publication_failed,
           publication,
           ctx
@@ -106,7 +99,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(e)}")
 
       set_publication_status(
-        query,
+        Ash.stream!(query, stream_with: :keyset, batch_size: 1000),
         :publication_failed,
         publication,
         ctx
@@ -115,42 +108,31 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       {:error, e}
   end
 
-  @spec queue_records_for_verification(Ash.Query.t()) :: :ok
-  defp queue_records_for_verification(query) do
-    query
-    |> Ash.stream!(page: false)
-    |> Enum.each(&Record.enqueue_fast_track_checker/1)
+  @spec set_publication_status(Enumerable.t(), atom(), Publication.t(), Context.t()) ::
+          Enumerable.t()
+  defp set_publication_status(stream, status, publication, %{actor: actor, tenant: tenant}) do
+    action =
+      if publication.channel == :fast_track,
+        do: :update_fast_track_status,
+        else: :update_approval_status
+
+    status = if action == :update_approval_status, do: translate_status(status), else: status
+
+    max_concurrency = Records.import_max_concurrency()
+    batch_size = ceil(Records.import_batch_size() / max_concurrency)
+
+    Ash.bulk_update(stream, action, %{status: status},
+      actor: actor,
+      authorize?: false,
+      domain: Records,
+      resource: Record,
+      tenant: tenant,
+      max_concurrency: max_concurrency,
+      batch_size: batch_size
+    )
+
+    stream
   end
-
-  @spec set_publication_status(Ash.Query.t(), atom(), Publication.t(), Context.t()) :: :ok
-  defp set_publication_status(query, status, publication, ctx) do
-    query
-    |> Ash.stream!(page: false)
-    |> Enum.each(&update_record!(&1, status, publication, ctx))
-  end
-
-  @spec update_record!(Record.t(), atom(), Publication.t(), Context.t()) :: any()
-  defp update_record!(record, status, publication, ctx) do
-    maybe_add_publication_progress!(publication, status)
-
-    update_status!(publication.channel, status, record, ctx)
-  end
-
-  defp maybe_add_publication_progress!(publication, state) when state in [:in_publication, :publication_failed] do
-    if Records.execute_async?() do
-      Task.start(fn -> Publication.add_publication_progress!(publication, 1) end)
-    else
-      Publication.add_publication_progress!(publication, 1)
-    end
-  end
-
-  defp maybe_add_publication_progress!(_, _), do: :ok
-
-  defp update_status!(:fast_track, status, record, %{actor: actor}),
-    do: Record.update_fast_track_status!(record, status, actor: actor, authorize?: false)
-
-  defp update_status!(:approval, status, record, %{actor: actor}),
-    do: Record.update_approval_status!(record, translate_status(status), actor: actor, authorize?: false)
 
   defp translate_status(:publishing), do: :approving
   defp translate_status(:in_publication), do: :in_approval
@@ -174,5 +156,12 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
          :ok <- queue_records_for_verification(query) do
       {:ok, publication}
     end
+  end
+
+  @spec queue_records_for_verification(Ash.Query.t()) :: :ok
+  defp queue_records_for_verification(query) do
+    query
+    |> Ash.stream!(stream_with: :keyset, batch_size: 1000)
+    |> Enum.each(&Record.enqueue_fast_track_checker/1)
   end
 end

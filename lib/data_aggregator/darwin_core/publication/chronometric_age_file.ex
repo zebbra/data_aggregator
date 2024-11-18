@@ -7,15 +7,14 @@ defmodule DataAggregator.DarwinCore.Publication.ChronometricAgeFile do
   @behaviour DataAggregator.DarwinCore.Publication.DwcaFile
 
   alias DataAggregator.DarwinCore.Publication.DwcaFile
-  alias DataAggregator.Records.Collection
 
-  @spec create(Ash.Query.t(), String.t(), Collection.t()) :: {:ok, any()} | {:error, any()}
-  def create(query, path, tenant) do
+  @spec create(Enumerable.t(), String.t()) :: Enumerable.t()
+  def create(stream, path) do
     path = "#{path}/chronometric_age.csv"
 
     # TODO: this is an extension file coming from json data, so it should be created differently
-    file = DwcaFile.create_file!(:chronometric_age, query, path, tenant)
+    DwcaFile.create_file!(:chronometric_age, stream, path)
 
-    {:ok, file}
+    stream
   end
 end
