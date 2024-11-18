@@ -100,6 +100,10 @@ defmodule DataAggregatorWeb.Router do
            :summary
     end
 
+    get "/collections/:collection_id/image_uploads/images/:image_id",
+        ImageUploadController,
+        :show_image
+
     auth_routes(AuthController, User, path: "/auth")
     sign_out_route AuthController
 
