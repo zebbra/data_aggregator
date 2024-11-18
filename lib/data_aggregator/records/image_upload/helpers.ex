@@ -8,11 +8,11 @@ defmodule DataAggregator.Records.ImageUpload.Helpers do
   def max_image_size, do: @max_image_size
 
   def construct_associated_media(nil, image) do
-    image |> Ash.load!(:image_url) |> Map.get(:image_url)
+    image |> Ash.load!(:image_url, lazy?: true) |> Map.get(:image_url)
   end
 
   def construct_associated_media(original_associated_media, image) do
-    image_url = image |> Ash.load!(:image_url) |> Map.get(:image_url, "")
+    image_url = image |> Ash.load!(:image_url, lazy?: true) |> Map.get(:image_url, "")
 
     if String.contains?(original_associated_media, image_url) do
       original_associated_media
@@ -22,11 +22,6 @@ defmodule DataAggregator.Records.ImageUpload.Helpers do
   end
 
   defp maybe_concatenate(associated_media, ""), do: associated_media
-
-  defp maybe_concatenate(associated_media, new_url) do
-    case associated_media do
-      "" -> new_url
-      _ -> "#{associated_media} | #{new_url}"
-    end
-  end
+  defp maybe_concatenate("", new_url), do: new_url
+  defp maybe_concatenate(associated_media, new_url), do: "#{associated_media} | #{new_url}"
 end
