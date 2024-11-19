@@ -121,15 +121,29 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   @doc """
   Stores the given data in a file on the local disk
   """
-  @spec store_on_disk!(map(), String.t(), [String.t()]) :: any()
-  def store_on_disk!(data, path, headers) do
+  @spec store_on_disk!(map(), String.t() | File.file_descriptor(), [String.t()]) ::
+          any()
+  def store_on_disk!(data, path, headers) when is_binary(path) do
     file =
       path
-      |> File.open!([:write, :utf8])
+      |> open_file!()
       |> store_local_file(data, headers)
 
-    File.close(file)
+    close_file(file)
 
     file
+  end
+
+  def store_on_disk!(data, file, headers) do
+    data = if is_list(data), do: data, else: [data]
+    store_local_file(file, data, headers)
+  end
+
+  def open_file!(path) do
+    File.open!(path, [:write, :utf8])
+  end
+
+  def close_file(file) do
+    File.close(file)
   end
 end

@@ -7,13 +7,21 @@ defmodule DataAggregator.DarwinCore.Publication.PreservationFile do
   @behaviour DataAggregator.DarwinCore.Publication.DwcaFile
 
   alias DataAggregator.DarwinCore.Publication.DwcaFile
+  alias DataAggregator.Misc.FlatFileUtils
 
-  @spec create(Enumerable.t(), String.t()) :: Enumerable.t()
-  def create(stream, path) do
-    path = path <> "/preservation.csv"
+  def open_file!(path) do
+    path = "#{path}/preservation.csv"
+    header_fields = DwcaFile.file_mapping(:core)
+    headers = DwcaFile.get_only_column_headers(header_fields)
+    record_attributes = DwcaFile.record_attributes(:core)
 
-    DwcaFile.create_file!(:preservation, stream, path)
+    file = FlatFileUtils.open_file!(path)
 
-    stream
+    %DwcaFile{
+      file_descriptor: file,
+      header_fields: header_fields,
+      headers: headers,
+      record_attributes: record_attributes
+    }
   end
 end

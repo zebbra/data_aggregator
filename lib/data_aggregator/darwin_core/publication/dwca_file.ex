@@ -9,27 +9,21 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records.Record
 
-  @callback create(stream :: Enumerable.t(), path :: String.t()) :: Enumerable.t()
+  defstruct [:file_descriptor, :header_fields, :headers, :record_attributes]
+  @type t() :: %__MODULE__{}
+
+  @callback open_file!(String.t()) :: t()
 
   @doc """
-  Creates a file with the given extension file type (e.g. :core) and the data from the query at the given path
+  Writes a given record to a file with the given extension file type (e.g. :core) and the data from the query
+  and the given file descriptor.
   """
-  @spec create_file!(atom(), Enumerable.t(), String.t()) :: any()
-  def create_file!(extension_type, stream, path) do
-    header_fields = file_mapping(extension_type)
-
-    headers = get_only_column_headers(header_fields)
-
-    record_attributes = record_attributes(extension_type)
-
-    stream
-    |> Task.async_stream(fn record ->
-      record
-      |> map_record(record_attributes)
-      |> FlatFileUtils.map_data_to_headers(header_fields, Schema.dwc_transformers())
-    end)
-    |> Stream.map(fn {:ok, record} -> record end)
-    |> FlatFileUtils.store_on_disk!(path, headers)
+  @spec write_file!(any(), t()) :: any()
+  def write_file!(record, meta) do
+    record
+    |> map_record(meta.record_attributes)
+    |> FlatFileUtils.map_data_to_headers(meta.header_fields, Schema.dwc_transformers())
+    |> FlatFileUtils.store_on_disk!(meta.file_descriptor, meta.headers)
   end
 
   @spec get_only_column_headers(list()) :: keyword()
@@ -123,7 +117,7 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
 
   # returns a list of all record attributes which are relevant for the given file type
   @spec record_attributes(atom()) :: list()
-  defp record_attributes(file_type) do
+  def record_attributes(file_type) do
     Enum.map(file_mapping(file_type), fn {k, _v} -> k end)
   end
 

@@ -8,6 +8,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Counter
   alias DataAggregator.DarwinCore.Publication.CoreFile
+  alias DataAggregator.DarwinCore.Publication.DwcaFile
   alias DataAggregator.DarwinCore.Publication.EmlFile
   alias DataAggregator.DarwinCore.Publication.MaterialSampleFile
   alias DataAggregator.DarwinCore.Publication.MetaFile
@@ -38,27 +39,25 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
     {:ok, counter} = Counter.start(&Publication.add_publication_progress(publication, &1))
 
-    # @Hannes: the idea here is to pass on the stream to each file creator. Not sure if this
-    # approach is valid as we use do something like this in the file creators:
-    #
-    # DwcaFile.create_file!(:multimedia, stream, path)
-    #
-    # stream
-    #
-    # So we consume the stream but return the original stream afterwards. Not sure if this
-    # is a good idea?
+    file_metas = [
+      CoreFile.open_file!(path),
+      MaterialSampleFile.open_file!(path),
+      PreservationFile.open_file!(path),
+      ReleveFile.open_file!(path)
+    ]
+
     query
     |> Ash.stream!(stream_with: :keyset, batch_size: 1000, load: :encoded_record)
     |> set_publication_status(:publishing, publication, ctx)
-    |> CoreFile.create(path)
-    |> MaterialSampleFile.create(path)
-    |> PreservationFile.create(path)
-    |> ReleveFile.create(path)
-    |> set_publication_status(:in_publication, publication, ctx)
-    # @Hannes: without this step, the counter does not increase. However, if we do it like this
-    # the counter is inceased after all batches have been processed... so there is something fishy
-    |> Enum.to_list()
+    |> Task.async_stream(fn record ->
+      Enum.each(file_metas, &DwcaFile.write_file!(record, &1))
+      record
+    end)
+    |> Stream.map(fn {:ok, record} -> record end)
     |> Counter.count_each(counter)
+    |> set_publication_status(:in_publication, publication, ctx)
+
+    Enum.each(file_metas, &FlatFileUtils.close_file(&1.file_descriptor))
 
     Counter.stop(counter)
 
