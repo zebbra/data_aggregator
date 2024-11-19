@@ -1,9 +1,9 @@
-import { TomOption } from "tom-select/dist/types/types";
-import * as TomSelectUsedKeys from "tom-select/src/constants";
-import TomSelect from "tom-select/dist/js/tom-select.base.js";
-import TomSelect_checkbox_options from "tom-select/dist/js/plugins/checkbox_options";
-import TomSelect_dropdown_input from "tom-select/dist/js/plugins/dropdown_input";
-import TomSelect_remove_button from "tom-select/dist/js/plugins/remove_button.js";
+import type { TomInput, TomOption } from "tom-select/dist/esm/types/core.js";
+import * as TomSelectUsedKeys from "tom-select/dist/esm/constants.js";
+import TomSelect from "tom-select/base";
+import TomSelect_checkbox_options from "tom-select/dist/esm/plugins/checkbox_options/plugin.js";
+import TomSelect_dropdown_input from "tom-select/dist/esm/plugins/dropdown_input/plugin.js";
+import TomSelect_remove_button from "tom-select/dist/esm/plugins/remove_button/plugin.js";
 
 import { Hook, makeHook } from "./hook";
 import TomSelect_badge_counter from "../tom-select/src/plugins/counter_badge/plugin";
@@ -110,7 +110,7 @@ class ComboboxHook extends Hook {
     const options = JSON.parse(el.dataset.options || "{}");
     const plugins = JSON.parse(el.dataset.plugins || "[]");
     const globalOpts = window[el.dataset.globalOptions || "tomSelectDefaults"];
-    const selectEl = el.querySelector("select.combobox");
+    const selectEl = el.querySelector("select.combobox") as TomInput;
     const remoteOptionsEventName = el.dataset.remoteOptionsEventName;
 
     const addText = options.addText || "Add";
