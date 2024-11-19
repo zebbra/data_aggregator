@@ -4,14 +4,14 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
   """
   use Ash.Resource.Change
 
+  import DataAggregator.Records.ImageUpload.Helpers
+
   alias Ash.Changeset
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records.ImageUpload
 
   require Logger
 
-  @accepted_image_extensions ~w(.jpg .jpeg .png .bmp .tiff .svg .webp)
-  @max_image_size 5_000_000
   @ignored_os_folders ~w(__MACOSX)
 
   @impl true
@@ -100,11 +100,14 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
       {:error, :file_hidden, _ext} ->
         Logger.info("Hidden file detected: #{file}")
         Logger.info("Deleting file: #{temp_path}/#{file}")
-        File.rm!(temp_path <> "/" <> file)
+        File.rm_rf!(temp_path <> "/" <> file)
         {:ok, nil}
 
       {:error, :file_size, size} ->
-        Logger.info("File size (#{size}) exceeds maximum allowed size of #{@max_image_size}")
+        Logger.info(
+          "File size (#{size}) exceeds maximum allowed size of #{DataAggregatorWeb.Helpers.format_bytes(max_image_size())}"
+        )
+
         Logger.info("Deleting file: #{temp_path}/#{file}")
         File.rm!(temp_path <> "/" <> file)
         %{filename: file, reason: :file_size}
@@ -127,7 +130,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
   defp validate_not_hidden(_), do: :ok
 
   defp validate_size(size) do
-    if size <= @max_image_size do
+    if size <= max_image_size() do
       :ok
     else
       {:error, :file_size, size}
@@ -135,7 +138,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
   end
 
   defp validate_extension(ext) do
-    if ext in @accepted_image_extensions do
+    if ext in accepted_image_extensions() do
       :ok
     else
       {:error, :file_extension, ext}

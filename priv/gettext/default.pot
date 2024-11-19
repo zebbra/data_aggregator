@@ -3335,22 +3335,12 @@ msgctxt "DataAggregatorWeb.CollectionLive.Helpers"
 msgid "Cancel publication"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/mapping.ex:60
-#, elixir-autogen, elixir-format
-msgid "For example: 'catalogName001_01.jpg' maps to a record where its catalogName is 'catalogName001'."
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:217
 #, elixir-autogen, elixir-format
 msgid "Logfile"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/mapping.ex:57
-#, elixir-autogen, elixir-format
-msgid "The mapping identifier links image filenames to records by matching the part before an underscore (or the file extension if no underscore exists) with a chosen attribute, like catalogName."
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:44
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:45
 #, elixir-autogen, elixir-format
 msgid "Upload Images"
 msgstr ""
@@ -3367,55 +3357,55 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Index"
 msgid "Image Upload"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:80
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:84
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Extracting"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:84
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:88
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Extraction failed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:78
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:82
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Extraction queued"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:83
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:87
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Finished"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:81
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:85
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:85
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:89
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Mapping failed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:79
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:83
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Mapping queued"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:77
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:81
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "New"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:82
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:86
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Ready for Mapping"
@@ -3535,103 +3525,103 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary"
 msgid "files"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:64
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:65
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "An error has occured"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:329
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:344
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "An error has occurred"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:139
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:150
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:84
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:85
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Choose a file"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:270
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:281
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "File upload failed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:136
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:147
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Next"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:46
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:47
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Please provide your zip file containing images to upload to this collection."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:325
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:340
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Please select a file"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:134
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:145
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Save..."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:68
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:69
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Show more"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:326
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:341
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Too large"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:136
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:147
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Uploading..."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:328
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:343
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "You have selected an unacceptable file type"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:327
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:342
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "You have selected too many files"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:110
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:121
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "close"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:87
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:88
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "or drag and drop"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:285
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:300
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "up to %{max_file_size}"
@@ -3955,4 +3945,26 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Started by"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/mapping.ex:60
+#, elixir-autogen, elixir-format
+msgid "For example: 'catalogNumber001_01.jpg' maps to a record where its catalogNumber is 'catalogNumber001'."
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/upload.ex:98
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
+msgid "With images of type"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components.ex:90
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
+msgid "Incomplete"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/mapping.ex:57
+#, elixir-autogen, elixir-format
+msgid "The mapping identifier links image filenames to records by matching the part before an underscore (or the file extension if no underscore exists) with a chosen attribute, like catalogNumber, materialEntitiyId or occurenceId."
 msgstr ""
