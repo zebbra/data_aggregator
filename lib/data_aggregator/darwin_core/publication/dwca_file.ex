@@ -18,13 +18,18 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   Writes a given record to a file with the given extension file type (e.g. :core) and the data from the query
   and the given file descriptor.
   """
-  @spec write_file!(any(), t()) :: any()
-  def write_file!(record, meta) do
+  @spec write_file!(any(), t(), [String.t()] | [{atom(), String.t()}] | boolean()) :: any()
+  def write_file!(record, meta, headers) do
     record
     |> map_record(meta.record_attributes)
     |> FlatFileUtils.map_data_to_headers(meta.header_fields, Schema.dwc_transformers())
-    |> FlatFileUtils.store_on_disk!(meta.file_descriptor, meta.headers)
+    |> maybe_flatten(headers)
+    |> FlatFileUtils.store_on_disk!(meta.file_descriptor, headers)
   end
+
+  defp maybe_flatten(data_with_headers, false), do: Stream.map(data_with_headers, fn {_k, v} -> v end)
+
+  defp maybe_flatten(data_with_headers, _), do: data_with_headers
 
   @spec get_only_column_headers(list()) :: keyword()
   def get_only_column_headers(header_fields) do

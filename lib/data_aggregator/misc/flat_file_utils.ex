@@ -101,7 +101,11 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   @doc """
   Stores the given data in a CSV file on the local disk
   """
-  @spec store_local_file(any(), map() | [map()], [String.t()] | [{atom(), String.t()}]) :: any()
+  @spec store_local_file(
+          any(),
+          map() | [map()],
+          [String.t()] | [{atom(), String.t()}] | boolean()
+        ) :: any()
   def store_local_file(file, data_with_headers, headers) do
     data_with_headers
     |> CSV.encode(separator: ?,, headers: headers)
@@ -121,7 +125,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   @doc """
   Stores the given data in a file on the local disk
   """
-  @spec store_on_disk!(map(), String.t() | File.file_descriptor(), [String.t()]) ::
+  @spec store_on_disk!(map(), String.t() | File.file_descriptor(), [String.t()] | boolean()) ::
           any()
   def store_on_disk!(data, path, headers) when is_binary(path) do
     file =
