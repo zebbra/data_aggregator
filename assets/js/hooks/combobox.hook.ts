@@ -112,7 +112,7 @@ class ComboboxHook extends Hook {
     this.init(this.el);
   }
 
-  init(el: HTMLElement): void {
+  async init(el: HTMLElement): Promise<void> {
     const options = JSON.parse(el.dataset.options || "{}");
     const plugins = JSON.parse(el.dataset.plugins || "[]");
     const globalOpts = window[el.dataset.globalOptions || "tomSelectDefaults"];
@@ -208,6 +208,11 @@ class ComboboxHook extends Hook {
 
     if (el.dataset.portal) {
       const targetId = el.dataset.portal;
+      if (!targetId) {
+        console.warn("No portal target id specified");
+        return;
+      }
+
       const portalTarget = document.getElementById(targetId) as HTMLElement;
 
       if (!portalTarget) {
@@ -218,6 +223,23 @@ class ComboboxHook extends Hook {
       const hook = this;
       const attachToEl = el.querySelector(".combobox-wrapper") as HTMLElement;
       const floatingEl = el.querySelector(".ts-dropdown") as HTMLElement;
+
+      if (!floatingEl) {
+        console.warn("Could not find floating element");
+        return;
+      }
+
+      if (!attachToEl) {
+        console.warn("Could not find attachTo element");
+        return;
+      }
+
+      await Promise.all(
+        attachToEl
+          .getAnimations()
+          .filter((a) => a instanceof CSSTransition)
+          .map((a) => new Promise((resolve) => (a.onfinish = resolve)))
+      );
 
       // ensure to set the placement to top if the data-ts-dropup attribute is set to true
       if (
