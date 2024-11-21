@@ -146,7 +146,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
           >
             <%= if @uploading, do: ~t"Uploading..."m, else: ~t"Next"m %>
           </button>
-          <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
+          <button type="button" class="btn btn-ghost" onclick="image_upload_modal.close()">
             <%= ~t"Cancel"m %>
           </button>
         </:actions>
