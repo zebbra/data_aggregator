@@ -195,7 +195,7 @@ defmodule DataAggregator.MixProject do
   defp deps do
     [
       # Phoenix Framework
-      {:bandit, "~> 1.5.5"},
+      {:bandit, "~> 1.6.0"},
       {:phoenix, "~> 1.7.14"},
       {:phoenix_ecto, "~> 4.6"},
       {:phoenix_html, "~> 4.1"},
