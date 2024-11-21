@@ -20,8 +20,9 @@ declare global {
   window.storybook = { Hooks };
 
   onInitialPageLoad(() => {
-    const current = currentThemeFromLocation();
-    if (current) applyTheme(current);
+    const selectedMode = selectedColorMode();
+    const actualMode = actualColorMode(selectedMode);
+    toggleColorModeClass(actualMode);
     registerThemeSelect();
     registerConsoleLoggerListener();
   });
@@ -33,41 +34,35 @@ function registerConsoleLoggerListener() {
   });
 }
 
-function currentThemeFromLocation() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("theme");
-}
-
 function registerThemeSelect() {
-  const themes = document.getElementsByClassName("psb-theme");
-
-  for (let i = 0; i < themes.length; i++) {
-    themes[i].addEventListener("click", (e) => {
-      const theme = sanitizeTheme(eventTheme(e));
-      applyTheme(theme);
-    });
-  }
+  window.addEventListener("psb:set-color-mode", (e) =>
+    onSetColorMode(e as CustomEvent)
+  );
 }
 
-function eventTheme(e: Event) {
-  return (e.target as any)?.text || (e.target as any)?.innerText;
+function onSetColorMode(e: CustomEvent) {
+  const selectedMode = e.detail.mode || "system";
+  const actualMode = actualColorMode(selectedMode);
+  toggleColorModeClass(actualMode);
 }
 
-function sanitizeTheme(theme?: string) {
-  switch (theme?.trim().toLowerCase()) {
-    case "light":
-      return "light";
-    case "dark":
-      return "dark";
-    default:
-      return "system";
-  }
+function selectedColorMode() {
+  return localStorage.getItem("psb_selected_color_mode") || "system";
 }
 
-function applyTheme(theme: string) {
-  if (theme == "system") {
-    document.documentElement.removeAttribute("data-theme");
+function actualColorMode(selectedMode: string) {
+  if (
+    selectedMode == "system" &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  ) {
+    return "dark";
+  } else if (selectedMode == "dark") {
+    return "dark";
   } else {
-    document.documentElement.setAttribute("data-theme", theme);
+    return "light";
   }
+}
+
+function toggleColorModeClass(mode: "dark" | "light") {
+  document.documentElement.dataset.theme = mode;
 }

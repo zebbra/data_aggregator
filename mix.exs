@@ -195,13 +195,13 @@ defmodule DataAggregator.MixProject do
   defp deps do
     [
       # Phoenix Framework
-      {:bandit, "~> 1.5.5"},
+      {:bandit, "~> 1.6.0"},
       {:phoenix, "~> 1.7.14"},
       {:phoenix_ecto, "~> 4.6"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:phoenix_live_view, "~> 1.0.0-rc.5", override: true},
-      {:phoenix_storybook, "~> 0.6.3"},
+      {:phoenix_storybook, "~> 0.7.1"},
 
       # Ash Framework
       {:ash, "~> 3.4", override: true},

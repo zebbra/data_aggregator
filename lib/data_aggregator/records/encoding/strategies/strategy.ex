@@ -48,13 +48,11 @@ defmodule DataAggregator.Records.Encoding.Strategy do
       ] ++ DataAggregator.DarwinCore.Schema.prefixed_attribute_names()
 
     encoded_record =
-      EncodedRecord.create!(
-        record
-        |> Map.from_struct()
-        |> Map.take(attributes)
-        |> Map.put(:record, record),
-        tenant: tenant
-      )
+      record
+      |> Map.from_struct()
+      |> Map.take(attributes)
+      |> Map.put(:record, record)
+      |> EncodedRecord.create!(tenant: tenant)
 
     encode(encoded_record, catalog, ctx)
   end
