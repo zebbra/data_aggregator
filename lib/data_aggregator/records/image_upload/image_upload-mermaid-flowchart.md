@@ -7,7 +7,10 @@ extracted --> mapping_queued: enqueue_mapping
 mapping_queued --> mapping: map
 mapping --> mapped: map
 mapped --> mapping_queued: enqueue_mapping
+mapped --> mapping_incomplete: set_mapping_incomplete
+mapping_incomplete --> mapping_queued: enqueue_mapping
 mapping --> mapped: set_mapped
+mapping --> mapping_incomplete: set_mapping_incomplete
 mapping --> mapping_failed: set_mapping_failed
 mapping_failed --> mapping_queued: enqueue_mapping
 mapping --> mapping_failed: cancel_mapping

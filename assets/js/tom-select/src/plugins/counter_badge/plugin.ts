@@ -1,5 +1,5 @@
-import type TomSelect from "tom-select";
-import { getDom } from "tom-select/src/vanilla";
+import type TomSelect from "tom-select/base";
+import { getDom } from "tom-select/dist/esm/vanilla.js";
 
 export default function (this: TomSelect) {
   this.hook("after", "setupTemplates", () => {

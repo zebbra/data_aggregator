@@ -44,7 +44,18 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
   defp matching_record?(record, image, identifier) do
     parts = String.split(image.attachment.filename, "_")
     # incase the there is no - in the name split for the .
-    parts = parts |> List.first() |> String.split(".")
-    List.first(parts) == Map.get(record, identifier)
+    part_to_match =
+      if length(parts) == 1 do
+        parts
+        |> List.first()
+        |> String.split(".")
+        # remove the file extension
+        |> List.delete_at(-1)
+        |> Enum.join(".")
+      else
+        List.first(parts)
+      end
+
+    part_to_match == Map.get(record, identifier)
   end
 end

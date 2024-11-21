@@ -8,9 +8,5 @@ defmodule DataAggregatorWeb.Storybook do
     css_path: "/assets/storybook.css",
     js_path: "/assets/storybook.js",
     sandbox_class: "data-aggregator",
-    themes: [
-      default: [name: "Default"],
-      light: [name: "Light"],
-      dark: [name: "Dark"]
-    ]
+    color_mode: true
 end

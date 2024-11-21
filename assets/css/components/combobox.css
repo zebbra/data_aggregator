@@ -139,11 +139,15 @@
   @apply bg-base-100 border-base-content/20 absolute z-10 w-full border px-0 pb-2;
 }
 
-[data-ts_dropup="false"] .ts-dropdown {
+[data-ts_dropup="false"] .ts-dropdown,
+.dropdown.ts-dropdown {
   @apply top-full rounded-b-lg border-t-0 shadow-2xl;
 }
 [data-ts_dropup="true"] .ts-dropdown {
   @apply bottom-full rounded-t-lg border-b-0;
+}
+.dropup.ts-dropdown {
+  @apply rounded-t-lg border-b-0;
 }
 
 .ts-dropdown-content {
@@ -191,7 +195,7 @@
   @apply text-base-content/75 border-base-content/5 pb-[5px] px-[8px] mt-3 mb-1 cursor-default border-b text-xs font-semibold;
 }
 
-.single .ts-dropdown .selected {
+.single.ts-dropdown .selected {
   @apply font-semibold;
 }
 
