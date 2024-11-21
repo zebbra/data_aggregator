@@ -496,6 +496,7 @@ classDiagram
         map()
         set_mapping()
         set_mapped()
+        set_mapping_incomplete()
         set_mapping_failed()
         cancel_mapping()
         active()
@@ -2922,6 +2923,7 @@ erDiagram
 | **map** | _update_ | <ul></ul> |  |
 | **set_mapping** | _update_ | <ul></ul> |  |
 | **set_mapped** | _update_ | <ul></ul> |  |
+| **set_mapping_incomplete** | _update_ | <ul></ul> |  |
 | **set_mapping_failed** | _update_ | <ul></ul> |  |
 | **cancel_mapping** | _update_ | <ul></ul> |  |
 | **active** | _read_ | <ul></ul> |  |

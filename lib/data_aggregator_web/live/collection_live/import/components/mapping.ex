@@ -153,6 +153,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                         hidden={column_form_visible?(column_form, @filter) == false}
                         inline
                         required
+                        data-portal="import_modal"
                       />
                     </section>
                   <% end %>
@@ -211,7 +212,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                       <.custom_field
                         type="combobox"
                         max_options={1000}
-                        dropup={true}
+                        dropup
                         label={Form.input_value(column_form, :name)}
                         field={column_form[:mapped_to]}
                         options={maybe_add_selected_attribute(column_form, @available_attributes)}

@@ -51,6 +51,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
                 placeholder={~t"Filter types"m}
                 prompt={~t"None"m}
                 required
+                data-portal="collection_modal"
               />
             </div>
             <div :if={@action == :new} class="grid grid-cols-1 gap-8 sm:grid-cols-1 sm:gap-4">
@@ -62,6 +63,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
                 placeholder={~t"Filter Collections"m}
                 prompt={~t"None"m}
                 required
+                data-portal="collection_modal"
               />
             </div>
             <.field
