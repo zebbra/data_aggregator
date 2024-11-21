@@ -211,7 +211,7 @@ defmodule DataAggregator.MixProject do
       {:ash_state_machine, "~> 0.2"},
       {:ash_uuid, "~> 1.1"},
       # Remove once bulk_actions are merged into ash_paper_trail
-      {:ash_paper_trail, git: "https://github.com/zebbra/ash_paper_trail.git", branch: "feature/bulk_actions"},
+      {:ash_paper_trail, "~> 0.3"},
       {:ash_pagify, "~> 1.2"},
       {:ash_authentication, "~> 4.0"},
       {:ash_authentication_phoenix, "~> 2.0"},
