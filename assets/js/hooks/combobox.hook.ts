@@ -4,6 +4,7 @@ import TomSelect from "tom-select/base";
 import TomSelect_checkbox_options from "tom-select/dist/esm/plugins/checkbox_options/plugin.js";
 import TomSelect_dropdown_input from "tom-select/dist/esm/plugins/dropdown_input/plugin.js";
 import TomSelect_remove_button from "tom-select/dist/esm/plugins/remove_button/plugin.js";
+import { autoUpdate, computePosition, offset } from "@floating-ui/dom";
 
 import { Hook, makeHook } from "./hook";
 import TomSelect_badge_counter from "../tom-select/src/plugins/counter_badge/plugin";
@@ -91,6 +92,11 @@ class ComboboxHook extends Hook {
     // Hide the first div child of this.el:
     this.el.querySelector(".combobox-wrapper")?.classList.add("hidden");
     this.tomSelect && this.tomSelect.destroy();
+
+    const hook = this;
+    if (typeof hook["cleanup"] === "function") {
+      hook["cleanup"]();
+    }
   }
 
   reinitialize(
@@ -199,6 +205,66 @@ class ComboboxHook extends Hook {
     });
 
     el.querySelector(".combobox-wrapper")?.classList.remove("opacity-0");
+
+    if (el.dataset.portal) {
+      const targetId = el.dataset.portal;
+      const portalTarget = document.getElementById(targetId) as HTMLElement;
+
+      if (!portalTarget) {
+        console.warn(`Could not find portal target with id: ${targetId}`);
+        return;
+      }
+
+      const hook = this;
+      const attachToEl = el.querySelector(".combobox-wrapper") as HTMLElement;
+      const floatingEl = el.querySelector(".ts-dropdown") as HTMLElement;
+
+      // ensure to set the placement to top if the data-ts-dropup attribute is set to true
+      if (
+        el.dataset.ts_dropup === "true" &&
+        el.dataset.placement === undefined
+      ) {
+        el.dataset.placement = "top";
+        floatingEl.classList.add("dropup");
+      } else {
+        floatingEl.classList.add("dropdown");
+      }
+
+      // ensure the floating element is attached to the portal root
+      portalTarget.appendChild(floatingEl);
+
+      // hydrate offset options once if they exist
+      if (el.dataset.floatOffset && hook["floatOffsetOpts"] === undefined) {
+        hook["floatOffsetOpts"] = JSON.parse(el.dataset.floatOffset);
+      }
+
+      if (attachToEl) {
+        const middleware = hook["floatOffsetOpts"]
+          ? [offset(hook["floatOffsetOpts"])]
+          : [];
+        const floatOpts: any = {
+          placement: el.dataset.placement || "bottom",
+          middleware,
+        };
+
+        const updatePosition = () =>
+          computePosition(attachToEl, floatingEl, floatOpts).then(
+            ({ x, y }) => {
+              const parentWidth = attachToEl.offsetWidth;
+              Object.assign(floatingEl.style, {
+                width: `${parentWidth}px`,
+                left: `${x}px`,
+                top: `${y}px`,
+              });
+            }
+          );
+
+        updatePosition();
+
+        // When the floating element is open on the screen
+        hook["cleanup"] = autoUpdate(attachToEl, floatingEl, updatePosition);
+      }
+    }
   }
 }
 

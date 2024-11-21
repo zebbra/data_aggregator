@@ -490,6 +490,7 @@ classDiagram
         map()
         set_mapping()
         set_mapped()
+        set_mapping_incomplete()
         set_mapping_failed()
         cancel_mapping()
         active()

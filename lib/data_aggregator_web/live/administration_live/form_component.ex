@@ -86,6 +86,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                 label={~t"Institution"m}
                 options={@grscicoll_institutions}
                 placeholder={~t"Select institutions"m}
+                data-portal="user_modal"
               />
             </div>
 
