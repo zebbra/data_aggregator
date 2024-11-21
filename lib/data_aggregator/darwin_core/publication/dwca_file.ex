@@ -9,33 +9,50 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records.Record
 
-  defstruct [:file_descriptor, :header_fields, :headers, :record_attributes]
+  defstruct [:file_descriptor, :header_fields, :headers, :record_attributes, :file_type]
   @type t() :: %__MODULE__{}
 
   @callback open_file!(String.t()) :: t()
+  @transformers Schema.dwc_transformers()
 
   @doc """
-  Writes a given record to a file with the given extension file type (e.g. :core) and the data from the query
-  and the given file descriptor.
+  Writes the given records to a DwCA file on disk. Transforms the data according to the
+  given header fields (from the meta) and transformers.
   """
-  @spec write_file!(any(), t(), [String.t()] | [{atom(), String.t()}] | boolean()) :: any()
-  def write_file!(record, meta, headers) do
-    record
-    |> map_record(meta.record_attributes)
-    |> FlatFileUtils.map_data_to_headers(meta.header_fields, Schema.dwc_transformers())
-    |> maybe_flatten(headers)
-    |> FlatFileUtils.store_on_disk!(meta.file_descriptor, headers)
+  @spec write_file!(Enumerable.t(), t()) :: any()
+  def write_file!(records, meta) do
+    records
+    |> Stream.map(&map_record(&1, meta.record_attributes))
+    |> Stream.map(&FlatFileUtils.map_data_to_headers_list(&1, meta.header_fields, @transformers))
+    |> FlatFileUtils.store_on_disk!(meta.file_descriptor)
   end
 
-  defp maybe_flatten(data_with_headers, false), do: Stream.map(data_with_headers, fn {_k, v} -> v end)
-
-  defp maybe_flatten(data_with_headers, _), do: data_with_headers
+  def write_headers(%__MODULE__{file_descriptor: file, headers: headers}) do
+    FlatFileUtils.store_on_disk!([headers], file)
+  end
 
   @spec get_only_column_headers(list()) :: keyword()
   def get_only_column_headers(header_fields) do
     header_fields
     |> set_id_as_first_column_header({:occ_occurrence_id, "occurrenceID"})
     |> Enum.map(fn {_k, v} -> v end)
+  end
+
+  # returns the headers mapped in order to the header_fields keys
+  # prepends the :occ_occurrence_id as the first column header
+  def reverse_header_fields(headers, header_fields) do
+    Enum.map(headers, fn header ->
+      if header == "occurrenceID" do
+        :occ_occurrence_id
+      else
+        header_key(header_fields, header)
+      end
+    end)
+  end
+
+  defp header_key(header_fields, header) do
+    {k, _v} = Enum.find(header_fields, fn {_k, v} -> v == header end)
+    k
   end
 
   @doc """

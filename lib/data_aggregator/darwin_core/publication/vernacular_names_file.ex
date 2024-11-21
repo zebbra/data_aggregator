@@ -11,17 +11,18 @@ defmodule DataAggregator.DarwinCore.Publication.VernacularNamesFile do
 
   def open_file!(path) do
     path = "#{path}/vernacular_names.csv"
-    header_fields = DwcaFile.file_mapping(:core)
+    header_fields = DwcaFile.file_mapping(:vernacular_names)
     headers = DwcaFile.get_only_column_headers(header_fields)
-    record_attributes = DwcaFile.record_attributes(:core)
+    record_attributes = DwcaFile.record_attributes(:vernacular_names)
 
     file = FlatFileUtils.open_file!(path)
 
     %DwcaFile{
       file_descriptor: file,
-      header_fields: header_fields,
+      header_fields: DwcaFile.reverse_header_fields(headers, header_fields),
       headers: headers,
-      record_attributes: record_attributes
+      record_attributes: record_attributes,
+      file_type: :vernacular_names
     }
   end
 end

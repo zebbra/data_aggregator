@@ -45,11 +45,14 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
     attachment =
       query
       |> Ash.stream!(stream_with: :keyset, batch_size: 1000, load: load)
-      |> Task.async_stream(fn record ->
-        record
-        |> map_record(mapping, data_layer)
-        |> FlatFileUtils.map_data_to_headers(header_labels, Schema.dwc_transformers())
-      end)
+      |> Task.async_stream(
+        fn record ->
+          record
+          |> map_record(mapping, data_layer)
+          |> FlatFileUtils.map_data_to_headers(header_labels, Schema.dwc_transformers())
+        end,
+        timeout: :timer.seconds(30)
+      )
       |> Stream.map(fn {:ok, record} -> record end)
       |> Counter.count_each(counter)
       |> create_file!(headers)

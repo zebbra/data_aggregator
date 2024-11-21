@@ -18,9 +18,10 @@ defmodule DataAggregator.DarwinCore.Publication.CoreFile do
 
     %DwcaFile{
       file_descriptor: file,
-      header_fields: header_fields,
+      header_fields: DwcaFile.reverse_header_fields(headers, header_fields),
       headers: headers,
-      record_attributes: record_attributes
+      record_attributes: record_attributes,
+      file_type: :core
     }
   end
 end

@@ -47,6 +47,26 @@ defmodule DataAggregator.Misc.FlatFileUtils do
     end)
   end
 
+  @doc """
+  Same as `map_data_to_headers/3`, but returns a list of values instead of a map
+  """
+  @spec map_data_to_headers_list(map(), list(), map() | nil) :: list()
+  def map_data_to_headers_list(record_data, header_fields, transformers \\ nil)
+
+  def map_data_to_headers_list(record_data, header_fields, nil) do
+    Enum.map(header_fields, fn k -> maybe_from_extra_data(record_data, k) end)
+  end
+
+  def map_data_to_headers_list(record_data, header_fields, transformers) do
+    Enum.map(header_fields, fn k ->
+      if Map.has_key?(transformers, k) do
+        record_data |> maybe_from_extra_data(k) |> transformers[k].()
+      else
+        maybe_from_extra_data(record_data, k)
+      end
+    end)
+  end
+
   defp maybe_from_extra_data(record, field) do
     if Map.has_key?(record, field) do
       Map.get(record, field)
@@ -125,8 +145,14 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   @doc """
   Stores the given data in a file on the local disk
   """
-  @spec store_on_disk!(map(), String.t() | File.file_descriptor(), [String.t()] | boolean()) ::
+  @spec store_on_disk!(
+          map() | list(),
+          String.t() | File.file_descriptor(),
+          [String.t()] | boolean() | nil
+        ) ::
           any()
+  def store_on_disk!(data, path_or_file, headers \\ false)
+
   def store_on_disk!(data, path, headers) when is_binary(path) do
     file =
       path
@@ -139,7 +165,6 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   end
 
   def store_on_disk!(data, file, headers) do
-    data = if is_list(data), do: data, else: [data]
     store_local_file(file, data, headers)
   end
 

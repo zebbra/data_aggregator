@@ -11,17 +11,18 @@ defmodule DataAggregator.DarwinCore.Publication.ReferencesFile do
 
   def open_file!(path) do
     path = "#{path}/references.csv"
-    header_fields = DwcaFile.file_mapping(:core)
+    header_fields = DwcaFile.file_mapping(:references)
     headers = DwcaFile.get_only_column_headers(header_fields)
-    record_attributes = DwcaFile.record_attributes(:core)
+    record_attributes = DwcaFile.record_attributes(:references)
 
     file = FlatFileUtils.open_file!(path)
 
     %DwcaFile{
       file_descriptor: file,
-      header_fields: header_fields,
+      header_fields: DwcaFile.reverse_header_fields(headers, header_fields),
       headers: headers,
-      record_attributes: record_attributes
+      record_attributes: record_attributes,
+      file_type: :references
     }
   end
 end

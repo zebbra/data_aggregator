@@ -46,25 +46,21 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       ReleveFile.open_file!(path)
     ]
 
-    # Write first record with headers to files
-    first_record = Ash.read_first!(query, load: :encoded_record)
-
-    if first_record != nil do
-      Enum.each(file_metas, &DwcaFile.write_file!(first_record, &1, true))
-    end
+    Enum.each(file_metas, &DwcaFile.write_headers(&1))
 
     query
     |> Ash.stream!(stream_with: :keyset, batch_size: 1000, load: :encoded_record)
     |> set_publication_status(:publishing, publication, ctx)
-    |> Task.async_stream(fn record ->
-      # Write all other records to files without headers (also skip first record)
-      if record.id != first_record.id do
-        Enum.each(file_metas, &DwcaFile.write_file!(record, &1, false))
-      end
+    |> Stream.chunk_every(1000)
+    |> Stream.flat_map(fn records ->
+      file_metas
+      |> Task.async_stream(&DwcaFile.write_file!(records, &1),
+        timeout: :timer.seconds(30)
+      )
+      |> Stream.run()
 
-      record
+      records
     end)
-    |> Stream.map(fn {:ok, record} -> record end)
     |> Counter.count_each(counter)
     |> set_publication_status(:in_publication, publication, ctx)
 
