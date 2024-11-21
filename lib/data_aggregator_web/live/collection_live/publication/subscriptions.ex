@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Subscriptions do
 
   @load load()
   @load_all load_all()
-  @update_events ~w(set_running set_done set_failed)
+  @update_events ~w(set_running set_done set_failed add_publication_progress)
   @collection_action_events ~w(
     set_mapping
     set_importing

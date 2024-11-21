@@ -47,6 +47,26 @@ defmodule DataAggregator.Misc.FlatFileUtils do
     end)
   end
 
+  @doc """
+  Same as `map_data_to_headers/3`, but returns a list of values instead of a map
+  """
+  @spec map_data_to_headers_list(map(), list(), map() | nil) :: list()
+  def map_data_to_headers_list(record_data, header_fields, transformers \\ nil)
+
+  def map_data_to_headers_list(record_data, header_fields, nil) do
+    Enum.map(header_fields, fn k -> maybe_from_extra_data(record_data, k) end)
+  end
+
+  def map_data_to_headers_list(record_data, header_fields, transformers) do
+    Enum.map(header_fields, fn k ->
+      if Map.has_key?(transformers, k) do
+        record_data |> maybe_from_extra_data(k) |> transformers[k].()
+      else
+        maybe_from_extra_data(record_data, k)
+      end
+    end)
+  end
+
   defp maybe_from_extra_data(record, field) do
     if Map.has_key?(record, field) do
       Map.get(record, field)
@@ -101,7 +121,11 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   @doc """
   Stores the given data in a CSV file on the local disk
   """
-  @spec store_local_file(any(), map() | [map()], [String.t()] | [{atom(), String.t()}]) :: any()
+  @spec store_local_file(
+          any(),
+          map() | [map()],
+          [String.t()] | [{atom(), String.t()}] | boolean()
+        ) :: any()
   def store_local_file(file, data_with_headers, headers) do
     data_with_headers
     |> CSV.encode(separator: ?,, headers: headers)
@@ -121,15 +145,34 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   @doc """
   Stores the given data in a file on the local disk
   """
-  @spec store_on_disk!(map(), String.t(), [String.t()]) :: any()
-  def store_on_disk!(data, path, headers) do
+  @spec store_on_disk!(
+          map() | list(),
+          String.t() | File.file_descriptor(),
+          [String.t()] | boolean() | nil
+        ) ::
+          any()
+  def store_on_disk!(data, path_or_file, headers \\ false)
+
+  def store_on_disk!(data, path, headers) when is_binary(path) do
     file =
       path
-      |> File.open!([:write, :utf8])
+      |> open_file!()
       |> store_local_file(data, headers)
 
-    File.close(file)
+    close_file(file)
 
     file
+  end
+
+  def store_on_disk!(data, file, headers) do
+    store_local_file(file, data, headers)
+  end
+
+  def open_file!(path) do
+    File.open!(path, [:write, :utf8])
+  end
+
+  def close_file(file) do
+    File.close(file)
   end
 end

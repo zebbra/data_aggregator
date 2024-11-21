@@ -72,7 +72,8 @@ defmodule DataAggregator.Records.Approval.Changes.ApproveRecords do
     {valid, invalid} =
       chunk
       |> Task.async_stream(&{&1, Helpers.valid_approval_row(&1)},
-        max_concurrency: max_concurrency
+        max_concurrency: max_concurrency,
+        timeout: :timer.seconds(30)
       )
       |> Enum.reduce({[], []}, fn
         {:ok, {row, {true, _errors}}}, {valid, invalid} -> {[row | valid], invalid}

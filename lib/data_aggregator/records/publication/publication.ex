@@ -180,6 +180,7 @@ defmodule DataAggregator.Records.Publication do
 
     publish_all :create, [[:collection_id, nil], "created"]
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
+    publish :add_publication_progress, [[:collection_id, nil], "updated", [:id, nil]]
     publish :set_running, [[:collection_id, nil], "updated", [:id, nil]]
     publish :set_done, [[:collection_id, nil], "updated", [:id, nil]]
     publish :set_failed, [[:collection_id, nil], "updated", [:id, nil]]

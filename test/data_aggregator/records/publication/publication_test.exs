@@ -208,7 +208,7 @@ defmodule DataAggregator.PublicationTest do
         %{"decimalLatitude" => nil, "decimalLongitude" => nil}
       ]
 
-      assert expected == transformed_attributes
+      assert_lists_equal(expected, transformed_attributes)
     end
 
     @tag capture_log: true

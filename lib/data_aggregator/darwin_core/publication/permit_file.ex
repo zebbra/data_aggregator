@@ -7,15 +7,22 @@ defmodule DataAggregator.DarwinCore.Publication.PermitFile do
   @behaviour DataAggregator.DarwinCore.Publication.DwcaFile
 
   alias DataAggregator.DarwinCore.Publication.DwcaFile
-  alias DataAggregator.Records.Collection
+  alias DataAggregator.Misc.FlatFileUtils
 
-  @spec create(Ash.Query.t(), String.t(), Collection.t()) :: {:ok, any()} | {:error, any()}
-  def create(query, path, tenant) do
+  def open_file!(path) do
     path = "#{path}/permit.csv"
+    header_fields = DwcaFile.file_mapping(:permit)
+    headers = DwcaFile.get_only_column_headers(header_fields)
+    record_attributes = DwcaFile.record_attributes(:permit)
 
-    # TODO: this is an extension file coming from json data, so it should be created differently
-    file = DwcaFile.create_file!(:permit, query, path, tenant)
+    file = FlatFileUtils.open_file!(path)
 
-    {:ok, file}
+    %DwcaFile{
+      file_descriptor: file,
+      header_fields: DwcaFile.reverse_header_fields(headers, header_fields),
+      headers: headers,
+      record_attributes: record_attributes,
+      file_type: :permit
+    }
   end
 end

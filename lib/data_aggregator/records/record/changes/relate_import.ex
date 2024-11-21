@@ -43,7 +43,7 @@ defmodule DataAggregator.Records.Record.Changes.RelateImport do
 
     Ash.bulk_create!(stream, Import.Record, :create,
       batch_size: batch_size,
-      return_records?: true,
+      return_records?: false,
       return_errors?: true,
       tenant: tenant
     )

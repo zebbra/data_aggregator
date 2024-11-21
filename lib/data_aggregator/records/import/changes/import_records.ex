@@ -57,7 +57,10 @@ defmodule DataAggregator.Records.Import.Changes.ImportRecords do
 
     {valid, invalid} =
       chunk
-      |> Task.async_stream(&{&1, valid_import_row?(import, &1)}, max_concurrency: max_concurrency)
+      |> Task.async_stream(&{&1, valid_import_row?(import, &1)},
+        max_concurrency: max_concurrency,
+        timeout: :timer.seconds(30)
+      )
       |> Enum.reduce({[], []}, fn
         {:ok, {row, true}}, {valid, invalid} -> {[row | valid], invalid}
         {:ok, {row, false}}, {valid, invalid} -> {valid, [row | invalid]}
