@@ -11,19 +11,19 @@
 msgid ""
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:78
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:80
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:119
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:121
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Collection created successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:120
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:122
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Collection updated successfully"
@@ -278,8 +278,8 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Collection Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:70
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:71
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:72
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:73
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Description"
@@ -616,19 +616,19 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Import deleted successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:167
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:168
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Additional columns"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:265
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:266
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:168
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:169
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Click on columns to add additional column to attribute mappings."
@@ -663,7 +663,7 @@ msgstr ""
 msgid "Search mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:239
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:240
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Remove mapping"
@@ -908,17 +908,17 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Add"
 msgstr ""
 
-#: lib/data_aggregator_web/components/components/combobox.ex:250
+#: lib/data_aggregator_web/components/components/combobox.ex:265
 #, elixir-autogen, elixir-format
 msgid "Add"
 msgstr ""
 
-#: lib/data_aggregator_web/components/components/combobox.ex:251
+#: lib/data_aggregator_web/components/components/combobox.ex:266
 #, elixir-autogen, elixir-format
 msgid "No results found for"
 msgstr ""
 
-#: lib/data_aggregator_web/components/components/combobox.ex:265
+#: lib/data_aggregator_web/components/components/combobox.ex:280
 #, elixir-autogen, elixir-format
 msgid "Remove this item"
 msgstr ""
@@ -948,7 +948,7 @@ msgid "Filter types"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/form_component.ex:52
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:63
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:64
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "None"
@@ -1338,13 +1338,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Record has a top quality. Add more data fields to improve your collections relevance"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:62
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:63
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Filter Collections"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:60
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:61
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "GrSciColl Collection"
@@ -1745,25 +1745,25 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Subscriptions"
 msgid "The export has been completed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:87
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:89
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Create collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/form_component.ex:88
+#: lib/data_aggregator_web/live/collection_live/form_component.ex:90
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Update collection"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:180
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:181
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Add all"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:262
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:263
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Update mapping"
@@ -2220,61 +2220,61 @@ msgctxt "DataAggregator.Accounts.User"
 msgid "is not a valid email address"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:334
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:335
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Add Role"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:332
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:333
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Add User"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:151
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:230
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:152
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:231
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Back"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:125
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:126
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Cancel"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:67
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:176
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:177
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "E-Mail"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:68
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:177
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:178
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Enter E-Mail"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:53
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:162
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:163
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Enter first name"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:60
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:169
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:170
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Enter last name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:97
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:206
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:98
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:207
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Enter password"
@@ -2287,48 +2287,48 @@ msgid "Enter phone number"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:52
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:161
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:162
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "First name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:111
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:112
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Generate Password"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:86
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:197
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:198
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Institution"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:59
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:168
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:169
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Last name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:117
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:148
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:118
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:149
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Next"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:96
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:205
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:97
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:206
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Password"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/form_component.ex:76
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:186
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:187
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Phone"
@@ -2340,7 +2340,7 @@ msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Select institutions"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:335
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:336
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Summary"
@@ -2494,25 +2494,25 @@ msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Administration"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:227
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:228
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Create user"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:227
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:228
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Update user"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:270
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:271
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "User created successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:271
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:272
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "User updated successfully"
@@ -3084,19 +3084,19 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components"
 msgid "Custom Attribute"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:495
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:496
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Auto-mapping could not detect any matching columns"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:456
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:457
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Collection mapping is empty"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:444
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:445
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Collection mapping not found"
@@ -3114,7 +3114,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Quick Start"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:274
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:275
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Reset mapping"
@@ -3126,13 +3126,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Select a column"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:218
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:219
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Select an attribute"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:470
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:471
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "The selected mapping isn't valid for the current import file"
@@ -3162,7 +3162,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "No encoding results available"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/form_component.ex:333
+#: lib/data_aggregator_web/live/administration_live/form_component.ex:334
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.FormComponent"
 msgid "Edit User"
@@ -3411,7 +3411,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components"
 msgid "Ready for Mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/mapping.ex:81
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/mapping.ex:82
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping"
 msgid "Cancel"
@@ -3441,7 +3441,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping"
 msgid "Select mapping identifier"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/image_upload/components/mapping.ex:78
+#: lib/data_aggregator_web/live/collection_live/image_upload/components/mapping.ex:79
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping"
 msgid "Update mapping"

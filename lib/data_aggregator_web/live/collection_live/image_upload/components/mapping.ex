@@ -68,6 +68,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
                 label={~t"Mapping Identifier"m}
                 options={@mapping_identifier_options}
                 placeholder={~t"Select mapping identifier"m}
+                data-portal="image_upload_modal"
               />
             </.fieldgroup>
           </.fieldset>
