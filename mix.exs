@@ -280,7 +280,7 @@ defmodule DataAggregator.MixProject do
 
       # Background Jobs
       {:oban, "~> 2.17"},
-      {:oban_live_dashboard, "~> 0.1.0"},
+      {:oban_live_dashboard, "~> 0.2.0"},
 
       # Monitoring and Tracing
       {:appsignal, "~> 2.8"},
