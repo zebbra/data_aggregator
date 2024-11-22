@@ -27,7 +27,6 @@ defmodule DataAggregator.Records.Record.Changes.SetImportedAfterAction do
     |> Enum.map(fn {_, record} -> record end)
     |> Ash.bulk_update!(:set_imported, %{},
       stream_batch_size: batch_size,
-      return_records?: false,
       return_errors?: true
     )
   end
