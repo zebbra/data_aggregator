@@ -38,19 +38,13 @@ defmodule DataAggregator.Records.Import.Record do
 
     create :create do
       primary? true
-      argument :import, :struct, allow_nil?: true
-      argument :record, :struct, allow_nil?: true
-      argument :collection, :struct, allow_nil?: true
-      change manage_relationship(:import, type: :append)
-      change manage_relationship(:record, type: :append)
-      change manage_relationship(:collection, type: :append)
       upsert? true
       upsert_fields [:collection_id, :import_id, :record_id]
     end
   end
 
   code_interface do
-    define :create, args: [:import, :record, :collection]
+    define :create, args: [:import_id, :record_id, :collection_id]
   end
 
   postgres do

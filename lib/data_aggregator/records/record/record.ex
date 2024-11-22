@@ -28,6 +28,7 @@ defmodule DataAggregator.Records.Record do
   alias __MODULE__
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Misc.BulkVersions
   alias DataAggregator.Records.ApprovalStatusType
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
@@ -205,8 +206,8 @@ defmodule DataAggregator.Records.Record do
       :state
     ]
 
-    ignore_actions [:destroy]
-    on_actions [:update, :update_fast_track_status, :update_approval_status]
+    ignore_actions [:create, :import, :destroy]
+    on_actions [:update_fast_track_status, :update_approval_status]
 
     attributes_as_attributes [:mte_catalog_number, :tax_scientific_name, :collection_id]
     reference_source? true
@@ -259,6 +260,7 @@ defmodule DataAggregator.Records.Record do
 
       change Changes.SetOccurrenceID
       change Changes.SetBasisOfRecord
+      change BulkVersions
       change Changes.CreateEncodedRecordAfterAction
       change set_attribute(:state, :imported)
       change set_attribute(:last_imported_at, &DateTime.utc_now/0)
@@ -283,6 +285,7 @@ defmodule DataAggregator.Records.Record do
       change Changes.SetBasisOfRecord
       change Changes.RelateImport
       change Changes.SetPublicationStale
+      change BulkVersions
       change Changes.CreateEncodedRecordAfterAction
       change set_attribute(:state, :imported)
       change set_attribute(:last_imported_at, &DateTime.utc_now/0)

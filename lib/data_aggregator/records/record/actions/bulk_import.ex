@@ -33,7 +33,6 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
           |> Stream.map(&%{import: import, params: &1})
           |> Ash.bulk_create!(Record, :import,
             return_errors?: true,
-            return_records?: false,
             max_concurrency: max_concurrency,
             batch_size: batch_size,
             timeout: :timer.minutes(5),
