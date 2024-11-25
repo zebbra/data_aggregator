@@ -462,7 +462,7 @@ classDiagram
         update(UUID import_id, UUID record_id, UUID collection_id)
         destroy()
         read()
-        create(Struct import, Struct record, Struct collection, UUID import_id, ...)
+        create(UUID import_id, UUID record_id, UUID collection_id)
     }
     class ImageUpload {
         UUID id
@@ -2883,7 +2883,7 @@ erDiagram
 | **update** | _update_ | <ul><li><b>import_id</b> <i>UUID</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>import</b> <i>Struct</i> </li><li><b>record</b> <i>Struct</i> </li><li><b>collection</b> <i>Struct</i> </li><li><b>import_id</b> <i>UUID</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li></ul> |  |
+| **create** | _create_ | <ul><li><b>import_id</b> <i>UUID</i> attribute</li><li><b>record_id</b> <i>UUID</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li></ul> |  |
 
 ### ImageUpload
 

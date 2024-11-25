@@ -456,7 +456,7 @@ classDiagram
         update(UUID import_id, UUID record_id, UUID collection_id)
         destroy()
         read()
-        create(Struct import, Struct record, Struct collection, UUID import_id, ...)
+        create(UUID import_id, UUID record_id, UUID collection_id)
     }
     class ImageUpload {
         UUID id
