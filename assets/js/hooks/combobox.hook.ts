@@ -1,9 +1,9 @@
 import type { TomInput, TomOption } from "tom-select/dist/esm/types/core.js";
 import * as TomSelectUsedKeys from "tom-select/dist/esm/constants.js";
 import TomSelect from "tom-select/base";
-import TomSelect_checkbox_options from "tom-select/dist/esm/plugins/checkbox_options/plugin.js";
-import TomSelect_dropdown_input from "tom-select/dist/esm/plugins/dropdown_input/plugin.js";
-import TomSelect_remove_button from "tom-select/dist/esm/plugins/remove_button/plugin.js";
+import TomSelect_checkbox_options from "tom-select/plugins/checkbox_options/plugin.js";
+import TomSelect_dropdown_input from "tom-select/plugins/dropdown_input/plugin.js";
+import TomSelect_remove_button from "tom-select/plugins/remove_button/plugin.js";
 import { autoUpdate, computePosition, offset } from "@floating-ui/dom";
 
 import { Hook, makeHook } from "./hook";

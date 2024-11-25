@@ -1,6 +1,7 @@
 import type { LiveSocket } from "phoenix_live_view";
+import { ViewHook } from "phoenix_live_view";
 
-export abstract class Hook {
+export abstract class Hook implements ViewHook {
   /**
    * Attribute referencing the bound DOM node.
    * [More information](https://hexdocs.pm/phoenix_live_view/0.20.4/js-interop.html#client-hooks-via-phx-hook)
