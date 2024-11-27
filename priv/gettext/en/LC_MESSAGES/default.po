@@ -190,13 +190,13 @@ msgctxt "DataAggregatorWeb.DashboardLive.Index"
 msgid "Dashboard"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:35
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:36
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Collections"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:35
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:36
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Collections"
@@ -2482,13 +2482,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "There are no collections yet for your institution"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:48
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:59
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Administration"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:48
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:59
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Administration"
@@ -2532,13 +2532,13 @@ msgstr ""
 msgid "Sign out"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:78
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:118
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Sign out"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:78
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:118
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Sign out"
@@ -3180,25 +3180,25 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal"
 msgid "The publisher of your data on GBIF is SwissNatColl, but your institution retains ownership of the data at all times."
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:59
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:80
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Guide"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:69
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:100
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Tutorials"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:59
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:80
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Guide"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:69
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:100
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Tutorials"
@@ -3967,4 +3967,28 @@ msgstr ""
 #: lib/data_aggregator_web/live/collection_live/image_upload/components/mapping.ex:57
 #, elixir-autogen, elixir-format, fuzzy
 msgid "The mapping identifier links image filenames to records by matching the part before an underscore (or the file extension if no underscore exists) with a chosen attribute, like catalogNumber, materialEntitiyId or occurenceId."
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:62
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:62
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Administration"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:39
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:39
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Collections"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:83
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:83
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Guide"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:103
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:103
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Tutorials"
 msgstr ""

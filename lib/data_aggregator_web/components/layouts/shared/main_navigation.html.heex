@@ -30,9 +30,19 @@
             "flex md:flex-col md:p-3 active:!bg-primary",
             @current == "collections" && "bg-primary text-primary-content hover:bg-primary"
           ]}
+          aria-describedby="collections_tooltip"
         >
           <.icon name="hero-squares-2x2" />
           <span class="md:hidden lg:inline"><%= ~t"Collections"m %></span>
+          <.fui_tooltip
+            id="collections_tooltip"
+            content={~t"Collections"}
+            visibility_class="hidden md:hidden lg:hidden"
+            show_class="md:block"
+            hide_class="md:hidden"
+            placement="right"
+            data-portal="portal_root_static"
+          />
         </.link>
       </li>
       <%= if DataAggregator.Accounts.User.can_read?(@current_user) do %>
@@ -43,9 +53,19 @@
               "flex md:flex-col md:p-3 active:!bg-primary",
               @current == "administration" && "bg-primary text-primary-content hover:bg-primary"
             ]}
+            aria-describedby="administration_tooltip"
           >
             <.icon name="hero-wrench-screwdriver" />
             <span class="md:hidden lg:inline"><%= ~t"Administration"m %></span>
+            <.fui_tooltip
+              id="administration_tooltip"
+              content={~t"Administration"}
+              visibility_class="hidden md:hidden lg:hidden"
+              show_class="md:block"
+              hide_class="md:hidden"
+              placement="right"
+              data-portal="portal_root_static"
+            />
           </.link>
         </li>
       <% end %>
@@ -54,9 +74,19 @@
           href="https://swissnatcoll.hp.gbif-staging.org/en/how-to-publish-data"
           class="flex md:flex-col md:p-3"
           target="_blank"
+          aria-describedby="guide_tooltip"
         >
           <.icon name="hero-book-open" />
           <span class="md:hidden lg:inline"><%= ~t"Guide"m %></span>
+          <.fui_tooltip
+            id="guide_tooltip"
+            content={~t"Guide"}
+            visibility_class="hidden md:hidden lg:hidden"
+            show_class="md:block"
+            hide_class="md:hidden"
+            placement="right"
+            data-portal="portal_root_static"
+          />
         </.link>
       </li>
       <li>
@@ -64,9 +94,19 @@
           href="https://swissnatcoll.hp.gbif-staging.org/en/tutorial-sessions"
           class="flex md:flex-col md:p-3"
           target="_blank"
+          aria-describedby="tutorials_tooltip"
         >
           <.icon name="hero-video-camera" />
           <span class="md:hidden lg:inline"><%= ~t"Tutorials"m %></span>
+          <.fui_tooltip
+            id="tutorials_tooltip"
+            content={~t"Tutorials"}
+            visibility_class="hidden md:hidden lg:hidden"
+            show_class="md:block"
+            hide_class="md:hidden"
+            placement="right"
+            data-portal="portal_root_static"
+          />
         </.link>
       </li>
     </ul>

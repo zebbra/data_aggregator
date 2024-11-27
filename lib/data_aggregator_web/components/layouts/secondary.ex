@@ -93,6 +93,9 @@ defmodule DataAggregatorWeb.Layouts.Secondary do
         <%= render_slot(portal) %>
       <% end %>
     </div>
+
+    <%!-- Same as portal_root but meant to be use for components with phx-update="ignore" --%>
+    <div id="portal_root_static" phx-update="ignore" class="isolate" />
     """
   end
 
