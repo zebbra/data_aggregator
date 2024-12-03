@@ -1665,7 +1665,7 @@ pvn_attributes = [
     dwc_field: "preservationTemperature",
     dwc_link: nil,
     dwca_file: :preservation,
-    attribute: %Attribute{name: :preservation_temperature, type: :float, allow_nil?: true}
+    attribute: %Attribute{name: :preservation_temperature, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "sequence",
