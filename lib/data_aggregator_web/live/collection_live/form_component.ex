@@ -75,9 +75,9 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
             />
           </.fieldgroup>
           <:actions modal>
-            <button type="submit" class="btn btn-primary"><%= submit_label(@action) %></button>
+            <button type="submit" class="btn btn-primary">{submit_label(@action)}</button>
             <button type="button" class="btn btn-ghost" onclick="collection_modal.close()">
-              <%= ~t"Cancel"m %>
+              {~t"Cancel"m}
             </button>
           </:actions>
         </.fieldset>

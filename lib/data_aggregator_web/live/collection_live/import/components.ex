@@ -56,7 +56,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
 
   def import_state_badge_label(assigns) do
     ~H"""
-    <span><%= state_translation(@state) %></span>
+    <span>{state_translation(@state)}</span>
     """
   end
 
@@ -116,7 +116,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
     ~H"""
     <div :if={@attributes == []} class="alert alert-success bg-success/10 text-success">
       <.icon name="hero-check-circle-solid" />
-      <span><%= ~t"All required attributes are mapped"m %></span>
+      <span>{~t"All required attributes are mapped"m}</span>
     </div>
 
     <div :if={@attributes != []} class="alert alert-error bg-error/10 text-error relative items-start">
@@ -124,15 +124,15 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
 
       <div>
         <h3 class="mb-4 flex items-center">
-          <%= ~t"The following mappings are required but missing:"m %>
+          {~t"The following mappings are required but missing:"m}
         </h3>
 
         <div class="flex flex-wrap gap-4 text-xs max-sm:justify-center">
           <div :for={{cat, attr} <- @attributes} class="inline-flex">
             <div class="bg-error text-error-content rounded-l px-2 py-1 uppercase">
-              <%= cat.name %>
+              {cat.name}
             </div>
-            <div class="bg-base-100 rounded-r px-2 py-1"><%= attr.dwc_field %></div>
+            <div class="bg-base-100 rounded-r px-2 py-1">{attr.dwc_field}</div>
           </div>
         </div>
       </div>
@@ -178,7 +178,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
         "rounded-l px-2 py-1 uppercase",
         if(@column.mapped?, do: "bg-info text-info-content", else: "bg-error text-white")
       ]}>
-        <%= @category %>
+        {@category}
       </div>
       <div class={[
         "rounded-r px-2 py-1",
@@ -187,7 +187,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
           else: "bg-error/10 text-error"
         )
       ]}>
-        <%= @name %>
+        {@name}
       </div>
     </div>
     """

@@ -68,7 +68,7 @@ defmodule Storybook.Styleguide.Colors do
       "rounded-box bg-base-100 border-base-content/10 text-base-content not-prose grid gap-3 border p-6",
       @class
     ]}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -91,9 +91,9 @@ defmodule Storybook.Styleguide.Colors do
         <span class="text-sm font-semibold">TXT</span>
       </div>
       <div class="text-base-content/50 font-mono flex flex-col text-xs">
-        <span><%= @text %></span>
-        <span><%= @bg %></span>
-        <span><%= @border %></span>
+        <span>{@text}</span>
+        <span>{@bg}</span>
+        <span>{@border}</span>
       </div>
     </div>
     """
@@ -105,8 +105,8 @@ defmodule Storybook.Styleguide.Colors do
   def heading(assigns) do
     ~H"""
     <div class="mb-6">
-      <h2 class="text-xl font-bold"><%= @title %></h2>
-      <p :if={@subtitle} class="text-base-content/50"><%= @subtitle %></p>
+      <h2 class="text-xl font-bold">{@title}</h2>
+      <p :if={@subtitle} class="text-base-content/50">{@subtitle}</p>
     </div>
     """
   end

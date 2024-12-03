@@ -74,19 +74,19 @@ defmodule Storybook.Examples.Components do
           }
         >
           <:col :let={user} label="Id" class="font-semibold">
-            <%= user.id %>
+            {user.id}
           </:col>
           <:col :let={user} label="First name">
-            <%= user.first_name %>
+            {user.first_name}
           </:col>
           <:col :let={user} label="Last name">
-            <%= user.last_name %>
+            {user.last_name}
           </:col>
           <:col :let={user} label="Email">
-            <%= user.email %>
+            {user.email}
           </:col>
           <:col :let={user} label="Age" class="text-right">
-            <%= user.age %>
+            {user.age}
           </:col>
 
           <:action :let={user} class="whitespace-nowrap text-right">
@@ -127,19 +127,19 @@ defmodule Storybook.Examples.Components do
         >
           <.list>
             <:item title="ID">
-              <%= @selected_user.id %>
+              {@selected_user.id}
             </:item>
             <:item title="First name">
-              <%= @selected_user.first_name %>
+              {@selected_user.first_name}
             </:item>
             <:item title="Last name">
-              <%= @selected_user.last_name %>
+              {@selected_user.last_name}
             </:item>
             <:item title="Email">
-              <%= @selected_user.email %>
+              {@selected_user.email}
             </:item>
             <:item title="Age">
-              <%= @selected_user.age %>
+              {@selected_user.age}
             </:item>
           </.list>
 

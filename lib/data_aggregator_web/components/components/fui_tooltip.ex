@@ -109,7 +109,7 @@ defmodule DataAggregatorWeb.Components.FuiTooltip do
       data-shift-opts={maybe_encode_opts(@shift_opts)}
       {@rest}
     >
-      <%= render_slot(@inner_block) || @content %>
+      {render_slot(@inner_block) || @content}
       <div :if={@arrow} id={"#{@id}_fui_arrow"} class="bg-[--tooltip-color] size-2 absolute rotate-45">
       </div>
     </div>

@@ -32,10 +32,10 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
       >
         <div class="h-full space-y-8 overflow-y-auto p-6">
           <p class="text-sm">
-            <%= mgettext(
+            {mgettext(
               "You are about to export %{rows_count} records. Please choose the column headers for your export file and the data layer to be exported.",
               rows_count: format_number(@rows_count)
-            ) %>
+            )}
           </p>
           <section class="border-black-white/25 flex flex-col rounded-lg border border-dashed p-6">
             <.fieldset legend={~t"Select your data headers"m}>
@@ -94,16 +94,16 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
           </section>
 
           <p class="text-base-content/60 mt-1 text-sm">
-            * <%= ~t"required to choose an option"m %>
+            * {~t"required to choose an option"m}
           </p>
         </div>
 
         <:actions modal>
           <button type="submit" class="btn btn-primary text-primary-content" disabled={@busy}>
-            <%= ~t"Start export"m %>
+            {~t"Start export"m}
           </button>
           <button type="button" class="btn btn-ghost" onclick="export_modal.close()">
-            <%= ~t"Cancel"m %>
+            {~t"Cancel"m}
           </button>
         </:actions>
       </.simple_form>

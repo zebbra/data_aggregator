@@ -71,8 +71,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             type="button"
             class="btn btn-error btn-sm"
           >
-            <.icon name="hero-stop-solid" class="size-4" />
-            <%= ~t"Cancel"m %>
+            <.icon name="hero-stop-solid" class="size-4" /> {~t"Cancel"m}
           </.link>
           <.link
             :if={@show_import_button}
@@ -87,7 +86,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             <% else %>
               <.icon name="hero-arrow-up-tray" class="size-4" />
             <% end %>
-            <%= ~t"Add"m %>
+            {~t"Add"m}
           </.link>
           <.link
             :if={@show_image_upload_button}
@@ -102,7 +101,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             <% else %>
               <.icon name="hero-arrow-up-tray" class="size-4" />
             <% end %>
-            <%= ~t"Add"m %>
+            {~t"Add"m}
           </.link>
         </div>
       </:breadcrumbs>
@@ -115,7 +114,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           ]}
         />
         <h2 class="text-base-content text-2xl font-bold tracking-tight max-sm:line-clamp-2 sm:hidden sm:truncate sm:text-3xl">
-          <%= "#{@collection.name} (#{@collection.code})" %>
+          {"#{@collection.name} (#{@collection.code})"}
         </h2>
       </:title>
       <:subtitle>
@@ -125,15 +124,14 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           target="_blank"
           href={"#{@gbif_dataset_base_url}/#{@collection.gbif_dataset_key}"}
         >
-          <%= ~t"Show on GBIF" %>
-          <.icon name="hero-arrow-top-right-on-square" class="size-4" />
+          {~t"Show on GBIF"} <.icon name="hero-arrow-top-right-on-square" class="size-4" />
         </.link>
 
         <div
           :if={@collection.gbif_dataset_key === nil}
           class="text-base-content/60 text-sm/6 flex max-w-4xl items-center gap-x-2 sm:mt-2"
         >
-          <%= @collection.code %>
+          {@collection.code}
         </div>
       </:subtitle>
       <:actions
@@ -147,8 +145,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           type="button"
           class="btn btn-error"
         >
-          <.icon name="hero-stop-solid" />
-          <%= busy_action_translation(@busy_action) %>
+          <.icon name="hero-stop-solid" /> {busy_action_translation(@busy_action)}
         </.link>
         <.link
           :if={@show_import_button}
@@ -163,7 +160,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <% else %>
             <.icon name="hero-arrow-up-tray" />
           <% end %>
-          <%= ~t"Import dataset"m %>
+          {~t"Import dataset"m}
         </.link>
         <.link
           :if={@show_image_upload_button}
@@ -178,7 +175,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <% else %>
             <.icon name="hero-arrow-up-tray" />
           <% end %>
-          <%= ~t"Upload Images"m %>
+          {~t"Upload Images"m}
         </.link>
       </:actions>
     </.page_header>

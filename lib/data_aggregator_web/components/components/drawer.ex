@@ -49,11 +49,11 @@ defmodule DataAggregatorWeb.Components.Drawer do
     <div class={["drawer", @overlay == false && "fix-drawer-pointer-events", @class]}>
       <input id={@id} type="checkbox" class="drawer-toggle" checked={@checked} />
       <div class={["drawer-content", @content_class]}>
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </div>
       <aside class={["drawer-side z-10", @side_class]}>
         <label :if={@overlay} for={@id} class="drawer-overlay" aria-label={"Close #{@id}"} />
-        <%= render_slot(@side) %>
+        {render_slot(@side)}
       </aside>
     </div>
     """

@@ -102,7 +102,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
               <.icon :if={@layer == "import"} name="hero-arrow-up-tray" />
               <.icon :if={@layer == "encoding"} name="hero-puzzle-piece" />
               <.icon :if={@layer == "approval"} name="hero-check-badge" />
-              <span class="max-lg:hidden"><%= current_layer_label(@layer) %></span>
+              <span class="max-lg:hidden">{current_layer_label(@layer)}</span>
             </summary>
           </:summary>
           <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-56 gap-1 border p-2 shadow-2xl">
@@ -112,7 +112,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
                 class={@layer == "approval" && "active"}
               >
                 <.icon name="hero-check-badge" class="size-5" />
-                <span class="font-[sans-serif]"><%= current_layer_label("approval") %></span>
+                <span class="font-[sans-serif]">{current_layer_label("approval")}</span>
               </.link>
             </li>
             <li>
@@ -121,7 +121,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
                 class={@layer == "encoding" && "active"}
               >
                 <.icon name="hero-puzzle-piece" class="size-5" />
-                <span class="font-[sans-serif]"><%= current_layer_label("encoding") %></span>
+                <span class="font-[sans-serif]">{current_layer_label("encoding")}</span>
               </.link>
             </li>
             <li>
@@ -130,7 +130,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
                 class={@layer == "import" && "active"}
               >
                 <.icon name="hero-arrow-up-tray" class="size-5" />
-                <span class="font-[sans-serif]"><%= current_layer_label("import") %></span>
+                <span class="font-[sans-serif]">{current_layer_label("import")}</span>
               </.link>
             </li>
           </ul>
@@ -139,7 +139,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
         <%!-- Filter --%>
         <div class="indicator">
           <span :if={@filters_count > 0} class="indicator-item badge badge-primary">
-            <%= @filters_count %>
+            {@filters_count}
           </span>
           <button
             phx-click="filter_form:toggle"
@@ -154,7 +154,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
             disabled={is_nil(@meta)}
           >
             <.icon name="hero-adjustments-vertical" />
-            <span class="max-lg:hidden"><%= ~t"Filters"m %></span>
+            <span class="max-lg:hidden">{~t"Filters"m}</span>
           </button>
         </div>
 
@@ -177,7 +177,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
             <li :for={{label, icon, action} <- @actions}>
               <button phx-click={action}>
                 <.icon name={icon} class="size-5" />
-                <span class="font-[sans-serif]"><%= action_label(label) %></span>
+                <span class="font-[sans-serif]">{action_label(label)}</span>
               </button>
             </li>
           </ul>
@@ -196,14 +196,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
             class="btn btn-outline border-base-content/20 max-sm:btn-square"
           >
             <.icon name={if @busy, do: "hero-cog-6-tooth-solid animate-spin", else: "hero-bars-3"} />
-            <span class="max-sm:hidden"><%= ~t"Actions"m %></span>
+            <span class="max-sm:hidden">{~t"Actions"m}</span>
           </summary>
         </:summary>
         <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-20 mt-14 w-44 gap-1 border p-2 shadow-2xl">
           <li :for={{label, icon, action} <- @actions}>
             <button phx-click={action}>
               <.icon name={icon} class="size-5" />
-              <span class="font-[sans-serif]"><%= action_label(label) %></span>
+              <span class="font-[sans-serif]">{action_label(label)}</span>
             </button>
           </li>
         </ul>
@@ -219,7 +219,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
         >
           <.icon :if={busy?(action, @busy_action) == false} name={icon} />
           <.icon :if={busy?(action, @busy_action)} name="hero-cog-6-tooth-solid animate-spin" />
-          <span class="max-sm:hidden"><%= action_label(label) %></span>
+          <span class="max-sm:hidden">{action_label(label)}</span>
         </button>
       </div>
     </div>

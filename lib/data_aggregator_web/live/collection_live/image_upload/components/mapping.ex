@@ -54,10 +54,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
                 </div>
                 <div>
                   <p class="text-sm">
-                    <%= ~t"The mapping identifier links image filenames to records by matching the part before an underscore (or the file extension if no underscore exists) with a chosen attribute, like catalogNumber, materialEntitiyId or occurenceId." %>
+                    {~t"The mapping identifier links image filenames to records by matching the part before an underscore (or the file extension if no underscore exists) with a chosen attribute, like catalogNumber, materialEntitiyId or occurenceId."}
                     <br />
                     <br />
-                    <%= ~t"For example: 'catalogNumber001_01.jpg' maps to a record where its catalogNumber is 'catalogNumber001'." %>
+                    {~t"For example: 'catalogNumber001_01.jpg' maps to a record where its catalogNumber is 'catalogNumber001'."}
                   </p>
                 </div>
               </div>
@@ -76,10 +76,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
 
         <:actions modal>
           <button type="submit" class="btn btn-primary">
-            <%= ~t"Update mapping"m %>
+            {~t"Update mapping"m}
           </button>
           <button type="button" class="btn btn-ghost" onclick="image_upload_modal.close()">
-            <%= ~t"Cancel"m %>
+            {~t"Cancel"m}
           </button>
         </:actions>
       </.simple_form>

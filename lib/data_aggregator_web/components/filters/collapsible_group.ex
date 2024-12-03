@@ -59,10 +59,10 @@ defmodule DataAggregatorWeb.Filters.CollapsibleGroup do
         phx-value-key={@key}
         phx-target={@target}
       >
-        <%= @title %>
+        {@title}
       </summary>
       <div class="collapse-content space-y-4 px-0 sm:space-y-6">
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </div>
     </details>
 

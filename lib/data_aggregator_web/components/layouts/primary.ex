@@ -55,7 +55,7 @@ defmodule DataAggregatorWeb.Layouts.Primary do
     <div id="portal_root" class="isolate">
       <.alert id="confirm_alert" size="xs" />
       <%= for portal <- @portal do %>
-        <%= render_slot(portal) %>
+        {render_slot(portal)}
       <% end %>
     </div>
 

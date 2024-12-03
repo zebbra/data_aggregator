@@ -72,7 +72,7 @@ defmodule DataAggregatorWeb.Blocks.Header do
     ~H"""
     <header class={["w-full", @class]}>
       <div :for={breadcrumbs <- @breadcrumbs} class={breadcrumbs[:class]}>
-        <%= render_slot(breadcrumbs) %>
+        {render_slot(breadcrumbs)}
       </div>
 
       <.section_heading
@@ -83,21 +83,20 @@ defmodule DataAggregatorWeb.Blocks.Header do
         fixed_min_height={@fixed_min_height}
         break_at={@break_at}
       >
-        <%= render_slot(@inner_block) %>
-
+        {render_slot(@inner_block)}
         <:title :for={title <- @title} class={title[:class]}>
-          <%= render_slot(title) %>
+          {render_slot(title)}
         </:title>
 
         <:subtitle :for={subtitle <- @subtitle} class={subtitle[:class]}>
-          <%= render_slot(subtitle) %>
+          {render_slot(subtitle)}
         </:subtitle>
 
         <:actions :for={action <- @actions} class={action[:class]}>
-          <%= render_slot(action) %>
+          {render_slot(action)}
         </:actions>
       </.section_heading>
-      <%= render_slot(@navbar) %>
+      {render_slot(@navbar)}
     </header>
     """
   end
@@ -180,22 +179,22 @@ defmodule DataAggregatorWeb.Blocks.Header do
           ]}
         >
           <%= if @text != nil do %>
-            <%= @text %>
+            {@text}
           <% else %>
-            <%= render_slot(@inner_block) %>
+            {render_slot(@inner_block)}
           <% end %>
         </.dynamic_tag>
         <%= if @title != [] do %>
-          <%= render_slot(@title) %>
+          {render_slot(@title)}
         <% end %>
         <p
           :if={@subtitle != [] || @description != nil}
           class={["text-base-content/60 max-w-4xl", heading_subtitle_size_class(@size)]}
         >
           <%= if @description != nil do %>
-            <%= @description %>
+            {@description}
           <% else %>
-            <%= render_slot(@subtitle) %>
+            {render_slot(@subtitle)}
           <% end %>
         </p>
       </div>
@@ -203,7 +202,7 @@ defmodule DataAggregatorWeb.Blocks.Header do
         :for={action <- @actions}
         class={["flex", break_size_action_class(@break_at), action[:class]]}
       >
-        <%= render_slot(@actions) %>
+        {render_slot(@actions)}
       </div>
     </div>
     """

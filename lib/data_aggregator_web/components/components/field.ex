@@ -102,7 +102,7 @@ defmodule DataAggregatorWeb.Components.Field do
       @hidden && "hidden"
     ]}>
       <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
+        {render_slot(@custom_label)}
       <% else %>
         <.label :if={@label} for={@id} label={@label} class="col-start-1 row-start-1 pb-0" {@rest} />
       <% end %>
@@ -128,7 +128,7 @@ defmodule DataAggregatorWeb.Components.Field do
       @hidden && "hidden"
     ]}>
       <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
+        {render_slot(@custom_label)}
       <% else %>
         <.label :if={@label} for={@id} label={@label} class="col-start-1 row-start-1 pb-0" {@rest} />
       <% end %>
@@ -155,7 +155,7 @@ defmodule DataAggregatorWeb.Components.Field do
     ]}>
       <.input {assigns} class="col-start-1 row-start-1 justify-self-center" />
       <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
+        {render_slot(@custom_label)}
       <% else %>
         <.label
           :if={@label}
@@ -186,7 +186,7 @@ defmodule DataAggregatorWeb.Components.Field do
       @hidden && "hidden"
     ]}>
       <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
+        {render_slot(@custom_label)}
       <% else %>
         <.label :if={@label} for={@id} label={@label} class="col-start-1 row-start-1 pb-0" {@rest} />
       <% end %>
@@ -213,7 +213,7 @@ defmodule DataAggregatorWeb.Components.Field do
     ]}>
       <.input class="col-start-1 row-start-1 justify-self-center" {assigns} />
       <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
+        {render_slot(@custom_label)}
       <% else %>
         <.label
           :if={@label}
@@ -237,7 +237,7 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <div class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @class, @hidden && "hidden"]}>
       <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
+        {render_slot(@custom_label)}
       <% else %>
         <.label :if={@label} for={@id} label={@label} class="sm:pb-0 sm:block self-center" {@rest} />
       <% end %>
@@ -261,7 +261,7 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <div class={["form-control grid-cols-[subgrid] grid sm:col-span-3", @class, @hidden && "hidden"]}>
       <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
+        {render_slot(@custom_label)}
       <% else %>
         <.label :if={@label} for={@id} label={@label} class="sm:pb-0 sm:block self-center" {@rest} />
       <% end %>
@@ -291,12 +291,11 @@ defmodule DataAggregatorWeb.Components.Field do
     <div class={["form-control w-full", @class, @hidden && "hidden"]}>
       <label for={@id} class="input input-bordered flex items-center gap-2">
         <%= if @label do %>
-          <%= @label %>
+          {@label}
         <% else %>
-          <%= render_slot(@before_input) %>
+          {render_slot(@before_input)}
         <% end %>
-        <.input {assigns} />
-        <%= render_slot(@after_input) %>
+        <.input {assigns} /> {render_slot(@after_input)}
       </label>
       <.description :if={@description} description={@description} class="mt-3" />
       <.errors errors={@errors} id={@id} class={is_nil(@description) && "mt-2"} />
@@ -308,7 +307,7 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <div class={["form-control w-full", @class, @hidden && "hidden"]}>
       <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
+        {render_slot(@custom_label)}
       <% else %>
         <.label :if={@label} for={@id} label={@label} {@rest} />
       <% end %>
@@ -393,7 +392,7 @@ defmodule DataAggregatorWeb.Components.Field do
   def custom_field(assigns) do
     ~H"""
     <div class={["form-control", @class, @hidden && "hidden"]}>
-      <%= render_slot(@content, assigns) %>
+      {render_slot(@content, assigns)}
     </div>
     """
   end
@@ -418,9 +417,9 @@ defmodule DataAggregatorWeb.Components.Field do
         @disabled && "text-base-content/50"
       ]}>
         <%= if @label do %>
-          <%= @label %>
+          {@label}
         <% else %>
-          <%= render_slot(@inner_block) %>
+          {render_slot(@inner_block)}
         <% end %>
       </span>
     </label>
@@ -439,9 +438,9 @@ defmodule DataAggregatorWeb.Components.Field do
     ~H"""
     <p class={["text-base-content/60 text-sm/6", @class]}>
       <%= if @description do %>
-        <%= @description %>
+        {@description}
       <% else %>
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       <% end %>
     </p>
     """
@@ -457,7 +456,7 @@ defmodule DataAggregatorWeb.Components.Field do
   def errors(assigns) do
     ~H"""
     <p :if={@errors != []} id={"#{@id}_error"} class={["text-base/6 sm:text-sm/6", @class]}>
-      <span :for={msg <- @errors} class="text-error"><%= msg %></span>
+      <span :for={msg <- @errors} class="text-error">{msg}</span>
     </p>
     """
   end

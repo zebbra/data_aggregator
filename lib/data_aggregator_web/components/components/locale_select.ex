@@ -27,9 +27,9 @@ defmodule DataAggregatorWeb.Components.LocaleSelect do
               }
             >
               <span class="badge badge-sm badge-outline font-mono text-[.6rem] pt-px pr-1 pl-1.5 font-bold tracking-widest opacity-50">
-                <%= option.short %>
+                {option.short}
               </span>
-              <span class="font-[sans-serif]"><%= option.name %></span>
+              <span class="font-[sans-serif]">{option.name}</span>
             </button>
           </li>
         </ul>

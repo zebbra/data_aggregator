@@ -140,7 +140,7 @@ defmodule DataAggregatorWeb.Components.Form do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} class={form_class(@modal, @rest)} {@rest}>
-      <%= render_slot(@inner_block, f) %>
+      {render_slot(@inner_block, f)}
       <.form_actions
         :for={action <- @actions}
         id={@id}
@@ -148,7 +148,7 @@ defmodule DataAggregatorWeb.Components.Form do
         footer_class={action[:class]}
         modal={action[:modal]}
       >
-        <%= render_slot(action) %>
+        {render_slot(action)}
       </.form_actions>
     </.form>
     """
@@ -160,7 +160,7 @@ defmodule DataAggregatorWeb.Components.Form do
   defp form_actions(%{modal: true} = assigns) do
     ~H"""
     <.modal_footer id={@id} gradient={@gradient} footer_class={@footer_class}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </.modal_footer>
     """
   end
@@ -168,7 +168,7 @@ defmodule DataAggregatorWeb.Components.Form do
   defp form_actions(assigns) do
     ~H"""
     <div class={@footer_class || "modal-action flex-row-reverse justify-start"}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -234,8 +234,8 @@ defmodule DataAggregatorWeb.Components.Form do
   def fieldset(assigns) do
     ~H"""
     <fieldset class={[fieldset_class(@modal), @class]} role="group" {@rest}>
-      <%= if @legend || @text, do: fieldset_legend(assigns) %>
-      <%= render_slot(@inner_block) %>
+      {if @legend || @text, do: fieldset_legend(assigns)}
+      {render_slot(@inner_block)}
       <.fieldset_footer
         :for={action <- @actions}
         id={@id}
@@ -243,7 +243,7 @@ defmodule DataAggregatorWeb.Components.Form do
         footer_class={action[:class]}
         modal={@modal}
       >
-        <%= render_slot(action) %>
+        {render_slot(action)}
       </.fieldset_footer>
     </fieldset>
     """
@@ -262,7 +262,7 @@ defmodule DataAggregatorWeb.Components.Form do
 
     ~H"""
     <.modal_header id={@id} gradient={@gradient}>
-      <%= fieldset_legend(assigns) %>
+      {fieldset_legend(assigns)}
     </.modal_header>
     """
   end
@@ -277,7 +277,7 @@ defmodule DataAggregatorWeb.Components.Form do
       align_items="center"
     >
       <:actions :for={action <- @legend_actions} class={action[:class]}>
-        <%= render_slot(action) %>
+        {render_slot(action)}
       </:actions>
     </.section_heading>
     """
@@ -286,7 +286,7 @@ defmodule DataAggregatorWeb.Components.Form do
   defp fieldset_footer(%{modal: true} = assigns) do
     ~H"""
     <.modal_footer id={@id} gradient={@gradient} footer_class={@footer_class}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </.modal_footer>
     """
   end
@@ -294,7 +294,7 @@ defmodule DataAggregatorWeb.Components.Form do
   defp fieldset_footer(assigns) do
     ~H"""
     <div class={@footer_class || "modal-action flex-row-reverse justify-start"}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -325,7 +325,7 @@ defmodule DataAggregatorWeb.Components.Form do
   def fieldgroup(assigns) do
     ~H"""
     <div class={[fieldgroup_class(@inline, @modal), @class]} data-slot="control">
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
