@@ -84,7 +84,7 @@ classDiagram
         String pvn_storage_name
         String pvn_preservation_type
         String pvn_sequence
-        Float pvn_preservation_temperature
+        String pvn_preservation_temperature
         String pvn_preservation_special_mode
         String pvn_preservation_quality
         String pvn_preservation_mode_text
@@ -569,7 +569,7 @@ classDiagram
         String pvn_storage_name
         String pvn_preservation_type
         String pvn_sequence
-        Float pvn_preservation_temperature
+        String pvn_preservation_temperature
         String pvn_preservation_special_mode
         String pvn_preservation_quality
         String pvn_preservation_mode_text
@@ -976,7 +976,7 @@ classDiagram
         String pvn_storage_name
         String pvn_preservation_type
         String pvn_sequence
-        Float pvn_preservation_temperature
+        String pvn_preservation_temperature
         String pvn_preservation_special_mode
         String pvn_preservation_quality
         String pvn_preservation_mode_text

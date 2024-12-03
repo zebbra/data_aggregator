@@ -378,7 +378,7 @@
       "references": null,
       "size": null,
       "source": "pvn_preservation_temperature",
-      "type": "float"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -2916,7 +2916,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "5CEDD722DC71DB4DC72F41FBD949B23CD30ED9E28A941E8BD2229BA9612EA89D",
+  "hash": "B3B9202242141788ED302F8AC93526592007B80202DBFC8574D627C323C7CA71",
   "identities": [
     {
       "all_tenants?": false,
