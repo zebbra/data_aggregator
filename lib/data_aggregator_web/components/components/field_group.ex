@@ -60,7 +60,7 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
     ~H"""
     <div class={["form-control w-full", @class, @hidden && "hidden"]}>
       <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
+        {render_slot(@custom_label)}
       <% else %>
         <.label :if={@label} for={@id} label={@label} {@rest} />
       <% end %>
@@ -137,7 +137,7 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
     ~H"""
     <div class={["form-control w-full", @class, @hidden && "hidden"]}>
       <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
+        {render_slot(@custom_label)}
       <% else %>
         <.label :if={@label} for={@id} label={@label} {@rest} />
       <% end %>
@@ -219,7 +219,7 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
     ~H"""
     <div class={["form-control w-full", @class, @hidden && "hidden"]}>
       <%= if @custom_label != [] do %>
-        <%= render_slot(@custom_label) %>
+        {render_slot(@custom_label)}
       <% else %>
         <.label :if={@label} for={@id} label={@label} {@rest} />
       <% end %>

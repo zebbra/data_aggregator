@@ -49,7 +49,7 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Components do
       data-tip={if @tooltip, do: state_badge_tooltip(@state, @reason, @small), else: nil}
     >
       <.icon name={@icon} class={class_names([@icon_class, "size-5"])} />
-      <span :if={!@small} class="truncate pr-1.5"><%= state_translation(@state) %></span>
+      <span :if={!@small} class="truncate pr-1.5">{state_translation(@state)}</span>
     </.badge>
     """
   end

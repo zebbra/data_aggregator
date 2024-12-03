@@ -109,13 +109,13 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
                 phx-target={@myself}
                 class="btn btn-outline border-base-content/20 sm:mt-8"
               >
-                <%= ~t"Generate Password"m %>
+                {~t"Generate Password"m}
               </button>
             </div>
           </.fieldgroup>
           <:actions modal>
             <button class="btn btn-primary" type="submit">
-              <%= ~t"Next"m %>
+              {~t"Next"m}
             </button>
             <button
               class="btn btn-ghost"
@@ -123,7 +123,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
               onclick="user_modal.close()"
               phx-target={@myself}
             >
-              <%= ~t"Cancel"m %>
+              {~t"Cancel"m}
             </button>
           </:actions>
         </.fieldset>
@@ -146,10 +146,10 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
           </.fieldgroup>
           <:actions modal>
             <button class="btn btn-primary" type="button" phx-click="user:next" phx-target={@myself}>
-              <%= ~t"Next"m %>
+              {~t"Next"m}
             </button>
             <button class="btn btn-ghost" type="button" phx-click="user:back" phx-target={@myself}>
-              <%= ~t"Back"m %>
+              {~t"Back"m}
             </button>
           </:actions>
         </.fieldset>
@@ -225,10 +225,10 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
           </.fieldgroup>
           <:actions modal>
             <button class="btn btn-primary" type="submit">
-              <%= if @action == :new, do: ~t"Create user"m, else: ~t"Update user"m %>
+              {if @action == :new, do: ~t"Create user"m, else: ~t"Update user"m}
             </button>
             <button class="btn btn-ghost" type="button" phx-click="user:back" phx-target={@myself}>
-              <%= ~t"Back"m %>
+              {~t"Back"m}
             </button>
           </:actions>
         </.fieldset>

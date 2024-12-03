@@ -45,17 +45,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
         </div>
       </div>
       <div class="text-sm/5 text-base-content/60 col-span-6 py-0.5">
-        <span class="text-base-content font-medium"><%= @activity.actor %></span>
+        <span class="text-base-content font-medium">{@activity.actor}</span>
         - <.activity_text activity={@activity} />
       </div>
       <div class="col-span-2 text-right">
         <time datetime={@activity.date_time} class="text-xs/5 text-base-content/60 py-0.5">
-          <%= format_datetime(@activity.date_time, format: :short) %>
+          {format_datetime(@activity.date_time, format: :short)}
         </time>
       </div>
       <div class="indicator col-start-2 col-end-10 w-auto">
         <span class="indicator-item end-2 badge badge-primary badge-sm translate-x-0">
-          <%= @activity.source %>
+          {@activity.source}
         </span>
         <div class="ring-base-content/20 w-full rounded-md pt-5 pb-4 ring-1">
           <.table
@@ -66,7 +66,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
             items={Enum.map(@activity.content, fn {k, v} -> %{attr: k, value: v} end)}
           >
             <:col :let={change} label={~t"Attribute"} class="font-semibold">
-              <%= get_dwc_field(change.attr) %>
+              {get_dwc_field(change.attr)}
             </:col>
             <:col :let={change} label={~t"Value"}>
               <.publication_state_badge
@@ -78,7 +78,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
                 state={String.to_existing_atom(change.value)}
               />
               <%= if change.attr not in ~w(approval_status fast_track_status) do %>
-                <%= inspect(change.value) %>
+                {inspect(change.value)}
               <% end %>
             </:col>
           </.table>
@@ -98,12 +98,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
         </div>
       </div>
       <div class="text-sm/5 text-base-content/60 col-span-6 py-0.5">
-        <span class="text-base-content font-medium"><%= @activity.actor %></span>
+        <span class="text-base-content font-medium">{@activity.actor}</span>
         - <.activity_text activity={@activity} />
       </div>
       <div class="col-span-2 text-right">
         <time datetime={@activity.date_time} class="text-xs/5 text-base-content/60 py-0.5">
-          <%= format_datetime(@activity.date_time, format: :short) %>
+          {format_datetime(@activity.date_time, format: :short)}
         </time>
       </div>
     </div>
@@ -120,8 +120,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
         </div>
       </div>
       <div class="text-sm/5 text-base-content/60 col-span-6 py-0.5">
-        <span class="text-base-content font-medium"><%= @activity.actor %></span>
-        - <span>unknown change: <%= @activity.name %></span>
+        <span class="text-base-content font-medium">{@activity.actor}</span>
+        - <span>unknown change: {@activity.name}</span>
       </div>
     </div>
     """
@@ -151,7 +151,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   defp activity_icon(%{activity: _activity} = assigns) do
     ~H"""
     <span>
-      <%= @activity.name %> - <%= inspect(@activity.content) %>
+      {@activity.name} - {inspect(@activity.content)}
     </span>
     """
   end
@@ -167,7 +167,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   defp activity_text(%{activity: activity} = assigns) when activity.name in [:import, :update, :add_image_url] do
     ~H"""
     <span class="font-medium">
-      <%= text(@activity.name, @activity.content) %>
+      {text(@activity.name, @activity.content)}
     </span>
     """
   end
@@ -176,13 +176,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
        when activity.name in [:set_encoded, :set_encoding_failed, :update_approval_status, :update_fast_track_status] do
     ~H"""
     <span class="font-medium">
-      <%= text(@activity.name, @activity.content) %>
+      {text(@activity.name, @activity.content)}
     </span>
     <.badge
       :if={badge_text(@activity.name, @activity.content)}
       color={badge_color(@activity.name, @activity.content)}
     >
-      <%= badge_text(@activity.name, @activity.content) %>
+      {badge_text(@activity.name, @activity.content)}
     </.badge>
     """
   end
@@ -190,7 +190,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   defp activity_text(assigns) do
     ~H"""
     <span>
-      <%= @activity.name %> - <%= inspect(@activity.content) %>
+      {@activity.name} - {inspect(@activity.content)}
     </span>
     """
   end

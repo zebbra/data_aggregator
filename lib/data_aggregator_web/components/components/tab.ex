@@ -14,7 +14,7 @@ defmodule DataAggregatorWeb.Components.Tab do
   def tabs(assigns) do
     ~H"""
     <div role="tablist" class={["tabs tabs-lifted", @class]}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -60,7 +60,7 @@ defmodule DataAggregatorWeb.Components.Tab do
         @class
       ]}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end

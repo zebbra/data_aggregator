@@ -41,12 +41,12 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
     ~H"""
     <.page current="administration" current_user={@current_user} open={@selected_user != nil}>
       <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
-        <%= ~t"Administration"m %>
+        {~t"Administration"m}
         <:actions>
           <.link patch={~p"/administration/new"} class="btn btn-primary max-sm:btn-sm">
             <.icon name="hero-user-plus" class="max-sm:size-4" />
-            <span class="max-sm:hidden"><%= ~t"Add User"m %></span>
-            <span class="sm:hidden"><%= ~t"Add"m %></span>
+            <span class="max-sm:hidden">{~t"Add User"m}</span>
+            <span class="sm:hidden">{~t"Add"m}</span>
           </.link>
         </:actions>
       </.page_header>
@@ -67,27 +67,27 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
         }
       >
         <:col :let={{_id, user}} field={:email} label={~t"Email"m}>
-          <%= user.email %>
+          {user.email}
         </:col>
         <:col :let={{_id, user}} field={:first_name} label={~t"First Name"m}>
-          <%= user.first_name %>
+          {user.first_name}
         </:col>
         <:col :let={{_id, user}} field={:last_name} label={~t"Last Name"m}>
-          <%= user.last_name %>
+          {user.last_name}
         </:col>
         <:col :let={{_id, user}} field={:phone} label={~t"Phone"m}>
-          <%= user.phone %>
+          {user.phone}
         </:col>
         <:col :let={{_id, user}} field={:roles} label={~t"Roles"m}>
           <%= for role <- user.roles do %>
             <.badge color="gray" class="mt-0.5">
-              <span class="px-1.5"><%= role %></span>
+              <span class="px-1.5">{role}</span>
             </.badge>
           <% end %>
         </:col>
         <:col :let={{_id, user}} label={~t"Institution"m}>
           <%= if user.institution_id do %>
-            <%= get_institution_name(user.institution_id) %>
+            {get_institution_name(user.institution_id)}
           <% end %>
         </:col>
         <:action
@@ -123,26 +123,26 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
         >
           <.list :if={@selected_user}>
             <:item title={~t"E-Mail"m}>
-              <%= @selected_user.email %>
+              {@selected_user.email}
             </:item>
             <:item title={~t"Institution"m}>
-              <%= @selected_user_institution["name"] %>
+              {@selected_user_institution["name"]}
             </:item>
             <:item title={~t"Address"m}>
               <p>
-                <%= @selected_user_institution["address"]["address"] %>
+                {@selected_user_institution["address"]["address"]}
               </p>
               <p>
-                <%= @selected_user_institution["address"]["postalCode"] %>
+                {@selected_user_institution["address"]["postalCode"]}
               </p>
               <p>
-                <%= @selected_user_institution["address"]["city"] %>
+                {@selected_user_institution["address"]["city"]}
               </p>
             </:item>
             <:item title={~t"Roles"m}>
               <%= for role <- @selected_user.roles do %>
                 <.badge color="gray" class="mt-0.5">
-                  <span class="px-1.5"><%= role %></span>
+                  <span class="px-1.5">{role}</span>
                 </.badge>
               <% end %>
             </:item>

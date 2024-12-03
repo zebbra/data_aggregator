@@ -112,16 +112,16 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           <.attachment_download_badge :if={export.attachment != nil} attachment={export.attachment} />
         </:col>
         <:col :let={{_id, export}} field={:started_at} label={~t"Started at"m}>
-          <%= format_datetime(export.started_at, format: :short) %>
+          {format_datetime(export.started_at, format: :short)}
           <div :if={export.duration} class="text-base-content/60 text-xs">
-            <%= export.duration %>
+            {export.duration}
           </div>
         </:col>
         <:col :let={{_id, export}} field={:started_by} label={~t"Started by"m}>
-          <%= maybe_set_user(export.started_by) %>
+          {maybe_set_user(export.started_by)}
         </:col>
         <:col :let={{_id, export}} field={:rows_count} label={~t"Records"m} class="text-right">
-          <%= format_number(export.rows_count, format: :short) %>
+          {format_number(export.rows_count, format: :short)}
         </:col>
 
         <:action
@@ -167,7 +167,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           >
             <:subtitle>
               <div :if={@selected_export.state == :pending} class="mt-1 flex items-center gap-x-2">
-                <span class="text-sm"><%= ~t"State:"m %></span>
+                <span class="text-sm">{~t"State:"m}</span>
                 <.export_state_badge export={@selected_export} />
               </div>
             </:subtitle>
@@ -179,11 +179,10 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
                 phx-click="export:run"
                 class="btn btn-primary max-sm:btn-sm"
               >
-                <.icon name="hero-play-circle-mini" class="size-6" />
-                <%= ~t"Run"m %>
+                <.icon name="hero-play-circle-mini" class="size-6" /> {~t"Run"m}
               </button>
               <div :if={can_run?(@selected_export) == false} class="flex items-center gap-x-2">
-                <span class="text-sm"><%= ~t"State:"m %></span>
+                <span class="text-sm">{~t"State:"m}</span>
                 <.export_state_badge export={@selected_export} />
               </div>
             </:actions>
@@ -198,9 +197,9 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
               />
             </:item>
             <:item title={~t"Created at"m}>
-              <%= format_datetime(@selected_export.inserted_at) %>
+              {format_datetime(@selected_export.inserted_at)}
             </:item>
-            <:item title={~t"Rows"m}><%= format_number(@selected_export.rows_count) %></:item>
+            <:item title={~t"Rows"m}>{format_number(@selected_export.rows_count)}</:item>
 
             <:item title={~t"Exported"m}>
               <div class="flex flex-col">
@@ -210,24 +209,24 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
                   class="w-full progress progress-primary"
                 />
                 <div>
-                  <%= format_number(@selected_export.exported_count) %> / <%= format_number(
+                  {format_number(@selected_export.exported_count)} / {format_number(
                     @selected_export.rows_count
-                  ) %> <%= ~t"rows"m %>
+                  )} {~t"rows"m}
                 </div>
               </div>
             </:item>
 
             <:item title={~t"Started by"m}>
-              <%= maybe_set_user(@selected_export.started_by) %>
+              {maybe_set_user(@selected_export.started_by)}
             </:item>
             <:item title={~t"Started at"m}>
               <div :if={@selected_export.finished_at == nil}>
-                <%= format_datetime(@selected_export.started_at) %>
+                {format_datetime(@selected_export.started_at)}
               </div>
               <div :if={@selected_export.finished_at != nil}>
-                <%= format_date_interval(@selected_export.started_at, @selected_export.finished_at) %>
+                {format_date_interval(@selected_export.started_at, @selected_export.finished_at)}
               </div>
-              <%= @selected_export.duration %>
+              {@selected_export.duration}
             </:item>
           </.list>
 
@@ -240,8 +239,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
               data-confirm_id="confirm_export_alert"
               disabled={can_delete?(@selected_export) == false}
             >
-              <.icon name="hero-x-circle-mini" class="size-6" />
-              <%= ~t"Delete"m %>
+              <.icon name="hero-x-circle-mini" class="size-6" /> {~t"Delete"m}
             </button>
           </:footer>
         </.slideover>

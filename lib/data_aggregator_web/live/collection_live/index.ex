@@ -40,7 +40,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
     ~H"""
     <.page current="collections" current_user={@current_user}>
       <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
-        <%= ~t"Collections"m %>
+        {~t"Collections"m}
         <:actions>
           <%= if Collection.can_create?(@current_user) do %>
             <.link
@@ -48,8 +48,8 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
               class="btn btn-primary max-sm:btn-sm"
             >
               <.icon name="hero-squares-2x2" class="max-sm:size-4" />
-              <span class="max-sm:hidden"><%= ~t"New collection"m %></span>
-              <span class="sm:hidden"><%= ~t"Add"m %></span>
+              <span class="max-sm:hidden">{~t"New collection"m}</span>
+              <span class="sm:hidden">{~t"Add"m}</span>
             </.link>
           <% end %>
         </:actions>
@@ -72,11 +72,11 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             navigate={~p"/collections/#{collection}/records"}
             class="link link-primary font-semibold link-hover"
           >
-            <%= collection.name %>
+            {collection.name}
           </.link>
         </:col>
         <:col :let={{_id, collection}} field={:code} label={~t"Code"m}>
-          <%= collection.code %>
+          {collection.code}
         </:col>
         <:col :let={{_id, collection}} field={:state} label={~t"State"m} class="text-center">
           <.collection_state_badge collection={collection} />
@@ -86,10 +86,10 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           field={:grscicoll_institution_code}
           label={~t"Institution Code"m}
         >
-          <%= collection.grscicoll_institution_code %>
+          {collection.grscicoll_institution_code}
         </:col>
         <:col :let={{_id, collection}} field={:grscicoll_institution_name} label={~t"Institution"m}>
-          <%= collection.grscicoll_institution_name %>
+          {collection.grscicoll_institution_name}
         </:col>
         <:col
           :let={{_id, collection}}
@@ -115,10 +115,10 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           label={~t"Records count / est."m}
           class="text-right"
         >
-          <%= inspect(collection.records_count) %> / <%= collection.items_to_digitize %>
+          {inspect(collection.records_count)} / {collection.items_to_digitize}
         </:col>
         <:col :let={{_id, collection}} field={:updated_at} label={~t"Updated At"m} class="text-right">
-          <%= format_datetime(collection.updated_at, format: :short) %>
+          {format_datetime(collection.updated_at, format: :short)}
         </:col>
 
         <:action

@@ -66,10 +66,10 @@ defmodule DataAggregatorWeb.Filters.ComboboxGroup do
     ~H"""
     <.fieldset class={@top_level && "border-black-white/10 border-b py-8"}>
       <.section_heading as="legend" size={@legend_size}>
-        <%= @title %>
+        {@title}
         <.clear_link :if={present?(@component.source)} component={@component} target={@target} />
         <:subtitle :if={@description}>
-          <%= @description %>
+          {@description}
         </:subtitle>
       </.section_heading>
       <.fieldgroup class="!mt-3">

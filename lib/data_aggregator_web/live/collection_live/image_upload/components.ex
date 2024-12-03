@@ -28,7 +28,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components do
 
   def image_upload_state_badge_label(assigns) do
     ~H"""
-    <span><%= state_translation(@state) %></span>
+    <span>{state_translation(@state)}</span>
     """
   end
 
