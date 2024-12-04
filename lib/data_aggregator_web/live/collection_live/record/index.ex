@@ -765,18 +765,27 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </.modal>
 
         <.modal
-          :if={@meta.ok?}
+          :if={@meta.ok? and @show_fast_track_pub}
           id="fast_track_pub_modal"
-          size="xl"
+          size="2xl"
           show={@show_fast_track_pub}
           responsive
           on_cancel={JS.push("fast_track_pub:toggle")}
-          on_confirm={JS.push("collection:fast_track_pub")}
           overflow="manual"
         >
-          <.live_component
+          <%!-- <.live_component
             :if={@show_fast_track_pub}
             module={DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal}
+            id="fast_track_pub_modal_component"
+            meta={@meta.result}
+            collection={@collection}
+            current_user={@current_user}
+            layer={@layer}
+            busy={@busy}
+            agreed={@agreed}
+          /> --%>
+          <.live_component
+            module={DataAggregatorWeb.CollectionLive.Publication.FastTrackModal}
             id="fast_track_pub_modal_component"
             meta={@meta.result}
             collection={@collection}
@@ -798,7 +807,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           overflow="manual"
         >
           <.live_component
-            :if={@show_approval_pub}
             module={DataAggregatorWeb.CollectionLive.Record.ApprovalModal}
             id="approval_pub_modal_component"
             meta={@meta.result}
@@ -953,20 +961,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       |> AshPagify.query_for_filters_map(fast_track_query)
       |> Ash.Query.set_tenant(collection)
 
-    case create_and_enqueue(collection, fast_track_query, count_query, :fast_track, actor) do
-      {:ok, _} ->
-        {:noreply,
-         socket
-         |> assign(:agreed, false)
-         |> update(:show_fast_track_pub, &(!&1))
-         |> put_flash(:info, ~t"Publication started in background"m)}
+    {:noreply, socket}
 
-      {:error, _} ->
-        {:noreply,
-         socket
-         |> assign(:agreed, false)
-         |> put_flash(:error, ~t"A publication for this collection is already in process"m)}
-    end
+    # case create_and_enqueue(collection, fast_track_query, count_query, :fast_track, actor) do
+    #   {:ok, _} ->
+    #     {:noreply,
+    #      socket
+    #      |> assign(:agreed, false)
+    #      |> update(:show_fast_track_pub, &(!&1))
+    #      |> put_flash(:info, ~t"Publication started in background"m)}
+
+    #   {:error, _} ->
+    #     {:noreply,
+    #      socket
+    #      |> assign(:agreed, false)
+    #      |> put_flash(:error, ~t"A publication for this collection is already in process"m)}
+    # end
   end
 
   @impl true
@@ -1034,6 +1044,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_event("toggle:agree", _, socket) do
     {:noreply, update(socket, :agreed, &(!&1))}
+  end
+
+  @impl true
+  def handle_info({"fast_track_pub:submit", _meta}, socket) do
+    {:noreply,
+     socket
+     |> assign(:show_fast_track_pub, false)
+     |> put_flash(:info, ~t"Approval started in background"m)}
   end
 
   @impl true

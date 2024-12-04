@@ -34,7 +34,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       |> Ash.Query.set_tenant(tenant)
 
     path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
-    EmlFile.create(publication.collection, path)
+    EmlFile.create(publication.collection, publication, path)
     MetaFile.create(publication.collection, path)
 
     {:ok, counter} = Counter.start(&Publication.add_publication_progress(publication, &1))
