@@ -65,7 +65,8 @@ defmodule DataAggregator.ExportFixtures do
       tax_kingdom: "Animalia",
       tax_taxon_id: 2_435_194,
       loc_decimal_latitude: 46.8182,
-      loc_decimal_longitude: 640_000.0
+      loc_decimal_longitude: 640_000.0,
+      ext_assertions: %{"1": 1}
     }
   end
 

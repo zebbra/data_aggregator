@@ -1146,6 +1146,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     end
   end
 
+  defp format_value(value, _) when is_map(value), do: format_map(value)
   defp format_value(value, _), do: value
 
   defp coalesce_search(nil), do: ""
