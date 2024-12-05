@@ -768,24 +768,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :if={@meta.ok? and @show_fast_track_pub}
           id="fast_track_pub_modal"
           size="2xl"
+          class="p-0"
           show={@show_fast_track_pub}
           responsive
           on_cancel={JS.push("fast_track_pub:toggle")}
           overflow="manual"
         >
-          <%!-- <.live_component
-            :if={@show_fast_track_pub}
-            module={DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal}
-            id="fast_track_pub_modal_component"
-            meta={@meta.result}
-            collection={@collection}
-            current_user={@current_user}
-            layer={@layer}
-            busy={@busy}
-            agreed={@agreed}
-          /> --%>
           <.live_component
-            module={DataAggregatorWeb.CollectionLive.Publication.FastTrackModal}
+            module={DataAggregatorWeb.CollectionLive.Record.FastTrackModal}
             id="fast_track_pub_modal_component"
             meta={@meta.result}
             collection={@collection}

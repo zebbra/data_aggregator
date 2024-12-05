@@ -19,7 +19,6 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
 
       xml_data = build(grscicoll_data, publication.license)
 
-      dbg(xml_data)
       create_eml_file(xml_data, path)
 
       {:ok, path}
@@ -140,7 +139,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
   end
 
   defp metadata_providers(meta_data) do
-    case persons(meta_data, "metadataProvider") do
+    case persons(meta_data, "metadataprovider") do
       [] ->
         []
 
