@@ -130,7 +130,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
           if socket.assigns.action == :new do
             push_navigate(socket, to: ~p"/collections/#{collection.id}/records")
           else
-            push_patch(socket, to: socket.assigns.patch)
+            push_navigate(socket, to: socket.assigns.patch)
           end
 
         {:error, form} ->

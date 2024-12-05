@@ -140,7 +140,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
   defp close_and_redirect(socket) do
     socket
     |> push_event("submit:close", %{})
-    |> push_patch(
+    |> push_navigate(
       to:
         build_path(
           ~p"/collections/#{socket.assigns.collection}/imports",
