@@ -138,11 +138,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
           <%= ~t"You are about to send"m %>
           <span class="font-bold">
             <%= mgettext(
-              "%{count} records",
-              count: format_number(@count)
+              "%{count} records from the %{layer} layer",
+              count: format_number(@count),
+              layer: @layer
             ) %>
           </span>
-          <%= ~t"to GBIF, making them publicly available. Make sure that the layer you are publishing corresponds to the filters you wish to use. Also, be aware that the records without a value for the "m %>
+          <%= ~t"to GBIF, making them publicly available. Make sure that the layer you are publishing corresponds to the filters you wish to use. Also, be aware that the records without a value for the"m %>
           <span class="font-bold"><%= ~t"kingdom "m %></span>
           <%= ~t"attribute will not be published."m %>
         </p>
@@ -380,11 +381,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
             <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
           </div>
           <p class="text-sm">
-            <%= ~t"The action of publishing data is irreversible and removing records after publication is not automatically supported by the Data Aggregator and requires manual intervention on GBIF. It is therefore "m %>
+            <%= ~t"The action of publishing data is irreversible and removing records after publication is not automatically supported by the Data Aggregator and requires manual intervention on GBIF. It is therefore"m %>
             <span class="text-sm font-bold">
               <%= ~t"your responsibility"m %>
             </span>
-            <%= ~t"to guarantee the quality of the data being served and to ensure that the dataset does not include sensitive information. Should you need to revise any dataset after publication, you will need to contact GBIF.ch "m %>
+            <%= ~t"to guarantee the quality of the data being served and to ensure that the dataset does not include sensitive information. Should you need to revise any dataset after publication, you will need to contact"m %>
+            <.link class="link link-primary link-hover" target="_blank" href="https://gbif.ch">
+              <%= ~t"GBIF.ch" %>
+              <.icon name="hero-arrow-top-right-on-square" class="size-4" />
+            </.link>
             <.link href="mailto:contact@gbif.ch" class="text-primary">
               <%= "(contact@gbif.ch)" %>
             </.link>

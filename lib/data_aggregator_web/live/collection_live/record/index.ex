@@ -19,7 +19,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.Encoding.RecordEncodingResult
-  alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalog
   alias Phoenix.LiveView.AsyncResult
@@ -939,37 +938,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
-  def handle_event("collection:fast_track_pub", _params, socket) do
-    %{collection: collection, meta: %{result: %{ash_pagify: ash_pagify}}} = socket.assigns
-    actor = get_actor(socket)
-    collection = Ash.load!(collection, [:fast_track_query], lazy?: true, actor: actor)
-
-    fast_track_query = filter_map(ash_pagify, collection.fast_track_query, socket.assigns.layer)
-
-    count_query =
-      Record
-      |> AshPagify.query_for_filters_map(fast_track_query)
-      |> Ash.Query.set_tenant(collection)
-
-    {:noreply, socket}
-
-    # case create_and_enqueue(collection, fast_track_query, count_query, :fast_track, actor) do
-    #   {:ok, _} ->
-    #     {:noreply,
-    #      socket
-    #      |> assign(:agreed, false)
-    #      |> update(:show_fast_track_pub, &(!&1))
-    #      |> put_flash(:info, ~t"Publication started in background"m)}
-
-    #   {:error, _} ->
-    #     {:noreply,
-    #      socket
-    #      |> assign(:agreed, false)
-    #      |> put_flash(:error, ~t"A publication for this collection is already in process"m)}
-    # end
-  end
-
-  @impl true
   def handle_event("approval_pub:toggle", _, socket) do
     socket = update(socket, :show_approval_pub, &(!&1))
 
@@ -1047,18 +1015,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_info({"filter_form:submit", _meta}, socket) do
     {:noreply, assign(socket, :show_filters, false)}
-  end
-
-  defp create_and_enqueue(collection, query, count_query, :fast_track, actor) do
-    %{
-      name: "pub-#{collection.name}-#{:os.system_time()}",
-      channel: :fast_track,
-      records_query: query,
-      collection: collection,
-      rows_count: Ash.count!(count_query)
-    }
-    |> Publication.create!(actor: actor, tenant: collection)
-    |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor)
   end
 
   defp create_and_enqueue(collection, query, _count_query, :approval, actor) do

@@ -102,6 +102,16 @@
     },
     {
       "allow_nil?": false,
+      "default": "\"cc0\"",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "license",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
       "default": "fragment(\"(now() AT TIME ZONE 'utc')\")",
       "generated?": false,
       "primary_key?": false,
@@ -223,7 +233,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "E3345EF5CF47BB35058397B31DD64B435D66A88601D4066934633F0C8A4F3ED2",
+  "hash": "305F0E543266C3A2FFFBB4A6BF5977E2A81559C3649DB90C6610DE93F38925F8",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",
