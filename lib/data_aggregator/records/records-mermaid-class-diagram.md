@@ -508,6 +508,7 @@ classDiagram
         Integer published_count
         Integer rows_count
         Atom center
+        PublicationLicenseType license
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID collection_id

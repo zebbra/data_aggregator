@@ -19,7 +19,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.Encoding.RecordEncodingResult
-  alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalog
   alias Phoenix.LiveView.AsyncResult
@@ -764,18 +763,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </.modal>
 
         <.modal
-          :if={@meta.ok?}
+          :if={@meta.ok? and @show_fast_track_pub}
           id="fast_track_pub_modal"
-          size="xl"
+          size="2xl"
+          class="p-0"
           show={@show_fast_track_pub}
           responsive
           on_cancel={JS.push("fast_track_pub:toggle")}
-          on_confirm={JS.push("collection:fast_track_pub")}
           overflow="manual"
         >
           <.live_component
-            :if={@show_fast_track_pub}
-            module={DataAggregatorWeb.CollectionLive.Record.FastTrackPubModal}
+            module={DataAggregatorWeb.CollectionLive.Record.FastTrackModal}
             id="fast_track_pub_modal_component"
             meta={@meta.result}
             collection={@collection}
@@ -797,7 +795,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           overflow="manual"
         >
           <.live_component
-            :if={@show_approval_pub}
             module={DataAggregatorWeb.CollectionLive.Record.ApprovalModal}
             id="approval_pub_modal_component"
             meta={@meta.result}
@@ -940,35 +937,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
-  def handle_event("collection:fast_track_pub", _params, socket) do
-    %{collection: collection, meta: %{result: %{ash_pagify: ash_pagify}}} = socket.assigns
-    actor = get_actor(socket)
-    collection = Ash.load!(collection, [:fast_track_query], lazy?: true, actor: actor)
-
-    fast_track_query = filter_map(ash_pagify, collection.fast_track_query, socket.assigns.layer)
-
-    count_query =
-      Record
-      |> AshPagify.query_for_filters_map(fast_track_query)
-      |> Ash.Query.set_tenant(collection)
-
-    case create_and_enqueue(collection, fast_track_query, count_query, :fast_track, actor) do
-      {:ok, _} ->
-        {:noreply,
-         socket
-         |> assign(:agreed, false)
-         |> update(:show_fast_track_pub, &(!&1))
-         |> put_flash(:info, ~t"Publication started in background"m)}
-
-      {:error, _} ->
-        {:noreply,
-         socket
-         |> assign(:agreed, false)
-         |> put_flash(:error, ~t"A publication for this collection is already in process"m)}
-    end
-  end
-
-  @impl true
   def handle_event("approval_pub:toggle", _, socket) do
     socket = update(socket, :show_approval_pub, &(!&1))
 
@@ -1036,20 +1004,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
-  def handle_info({"filter_form:submit", _meta}, socket) do
-    {:noreply, assign(socket, :show_filters, false)}
+  def handle_info({"fast_track_pub:submit", _meta}, socket) do
+    {:noreply,
+     socket
+     |> assign(:show_fast_track_pub, false)
+     |> put_flash(:info, ~t"Approval started in background"m)}
   end
 
-  defp create_and_enqueue(collection, query, count_query, :fast_track, actor) do
-    %{
-      name: "pub-#{collection.name}-#{:os.system_time()}",
-      channel: :fast_track,
-      records_query: query,
-      collection: collection,
-      rows_count: Ash.count!(count_query)
-    }
-    |> Publication.create!(actor: actor, tenant: collection)
-    |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor)
+  @impl true
+  def handle_info({"filter_form:submit", _meta}, socket) do
+    {:noreply, assign(socket, :show_filters, false)}
   end
 
   defp create_and_enqueue(collection, query, _count_query, :approval, actor) do

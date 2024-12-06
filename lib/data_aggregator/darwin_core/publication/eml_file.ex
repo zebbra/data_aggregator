@@ -7,16 +7,17 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
 
   alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Publication
 
-  @spec create(Collection.t(), String.t()) :: {:ok, String.t()} | {:error, any()}
-  def create(collection, path) do
+  @spec create(Collection.t(), Publication.t(), String.t()) :: {:ok, String.t()} | {:error, any()}
+  def create(collection, publication, path) do
     with false <- collection.grscicoll_reference == nil,
          false <- collection.grscicoll_reference == "",
          {:ok, grscicoll_data} <-
            RestAPI.get_one_collection(collection.grscicoll_reference) do
       path = path <> "/eml.xml"
 
-      xml_data = build(grscicoll_data)
+      xml_data = build(grscicoll_data, publication.license)
 
       create_eml_file(xml_data, path)
 
@@ -36,7 +37,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
     file
   end
 
-  defp build(meta_data) do
+  defp build(meta_data, license) do
     {:"eml:eml",
      [
        "xmlns:eml": "eml://ecoinformatics.org/eml-2.1.1",
@@ -47,13 +48,13 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
        scope: "system"
      ],
      [
-       dataset(meta_data)
+       dataset(meta_data, license)
      ]}
     |> document()
     |> generate(format: :none)
   end
 
-  defp dataset(meta_data) do
+  defp dataset(meta_data, license) do
     element(
       :dataset,
       [
@@ -69,9 +70,8 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
           ],
           intellectualRights: [
             element(
-              para:
-                {:safe,
-                 "This work is licensed under a <ulink url=\"http://creativecommons.org/licenses/by/4.0/legalcode\"><citetitle>Creative Commons Attribution (CC-BY) 4.0 License</citetitle></ulink>. "}
+              para: {:safe, intellectual_rights(license)}
+              #  "This work is licensed under a <ulink url=\"http://creativecommons.org/licenses/by/4.0/legalcode\"><citetitle>Creative Commons Attribution (CC-BY) 4.0 License</citetitle></ulink>. "}
             )
           ],
           distribution: [
@@ -104,6 +104,18 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
     ]
   end
 
+  defp intellectual_rights(:cc0),
+    do:
+      "This work is licensed under a <ulink url=\"https://creativecommons.org/publicdomain/zero/1.0/legalcode\"><citetitle>Creative Commons Attribution (CC0) 1.0 License</citetitle></ulink>. "
+
+  defp intellectual_rights(:cc_by),
+    do:
+      "This work is licensed under a <ulink url=\"http://creativecommons.org/licenses/by/4.0/legalcode\"><citetitle>Creative Commons Attribution (CC-BY) 4.0 License</citetitle></ulink>. "
+
+  defp intellectual_rights(:cc_by_nc),
+    do:
+      "This work is licensed under a <ulink url=\"https://creativecommons.org/licenses/by-nc/4.0/legalcode\"><citetitle>Creative Commons Attribution (CC-BY-NC) 4.0 License</citetitle></ulink>. "
+
   defp contacts(meta_data) do
     case persons(meta_data, "contact") do
       [] ->
@@ -127,7 +139,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
   end
 
   defp metadata_providers(meta_data) do
-    case persons(meta_data, "metadataProvider") do
+    case persons(meta_data, "metadataprovider") do
       [] ->
         []
 

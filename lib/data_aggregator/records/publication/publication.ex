@@ -15,6 +15,7 @@ defmodule DataAggregator.Records.Publication do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
   alias DataAggregator.Records.Publication.Changes
+  alias DataAggregator.Records.PublicationLicenseType
 
   @type t :: %Publication{}
 
@@ -30,6 +31,11 @@ defmodule DataAggregator.Records.Publication do
     attribute :published_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :rows_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :center, :atom, allow_nil?: true, public?: true
+
+    attribute :license, PublicationLicenseType,
+      allow_nil?: false,
+      default: :cc0,
+      public?: true
 
     timestamps public?: true, writable?: false
   end

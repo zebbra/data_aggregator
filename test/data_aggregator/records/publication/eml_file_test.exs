@@ -125,10 +125,11 @@ defmodule DataAggregator.EmlFileTest do
     end
 
     test "create/2 successful with contact and creator", %{
+      publication: publication,
       collection: collection,
       path: path
     } do
-      {:ok, path} = EmlFile.create(collection, path)
+      {:ok, path} = EmlFile.create(collection, publication, path)
 
       {:ok, xmldoc} = File.read(path)
 
@@ -144,10 +145,11 @@ defmodule DataAggregator.EmlFileTest do
     end
 
     test "create/2 successful no contact", %{
+      publication: publication,
       collection_no_contact: collection,
       path: path
     } do
-      {:ok, path} = EmlFile.create(collection, path)
+      {:ok, path} = EmlFile.create(collection, publication, path)
 
       {:ok, xmldoc} = File.read(path)
 
@@ -165,10 +167,11 @@ defmodule DataAggregator.EmlFileTest do
     end
 
     test "create/2 successful no creator", %{
+      publication: publication,
       collection_no_creator: collection,
       path: path
     } do
-      {:ok, path} = EmlFile.create(collection, path)
+      {:ok, path} = EmlFile.create(collection, publication, path)
 
       {:ok, xmldoc} = File.read(path)
 
@@ -182,10 +185,11 @@ defmodule DataAggregator.EmlFileTest do
     end
 
     test "create/2 successful no creator no contact", %{
+      publication: publication,
       collection_no_contact_creator: collection,
       path: path
     } do
-      {:ok, path} = EmlFile.create(collection, path)
+      {:ok, path} = EmlFile.create(collection, publication, path)
 
       {:ok, xmldoc} = File.read(path)
 
@@ -199,10 +203,11 @@ defmodule DataAggregator.EmlFileTest do
     end
 
     test "create/2 successful multiple contacts", %{
+      publication: publication,
       collection_multiple_contacts: collection,
       path: path
     } do
-      {:ok, path} = EmlFile.create(collection, path)
+      {:ok, path} = EmlFile.create(collection, publication, path)
 
       {:ok, xmldoc} = File.read(path)
 
