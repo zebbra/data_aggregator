@@ -86,6 +86,10 @@ defmodule DataAggregatorWeb.Helpers do
 
   def format_coordinate(val), do: val
 
+  def format_map(val)
+  def format_map(%{} = val), do: inspect(val)
+  def format_map(val), do: val
+
   @doc ~S"""
   Returns a string of class names from a list of class names.
 

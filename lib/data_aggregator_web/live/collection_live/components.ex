@@ -23,7 +23,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
     ~H"""
     <.badge class="pr-3" color={state_color(@state)}>
       <.collection_state_icon state={@state} />
-      <span><%= state_translation(@state) %></span>
+      <span>{state_translation(@state)}</span>
     </.badge>
     """
   end

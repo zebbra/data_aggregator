@@ -37,7 +37,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
         >
           <:actions>
             <div class="flex items-center gap-x-2">
-              <span class="text-sm max-sm:hidden"><%= ~t"State:"m %></span>
+              <span class="text-sm max-sm:hidden">{~t"State:"m}</span>
               <.image_upload_state_badge image_upload={@image_upload} />
             </div>
           </:actions>
@@ -51,17 +51,17 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
             <.attachment_download_badge attachment={@image_upload.attachment} />
           </:item>
           <:item title={~t"Created at"m}>
-            <%= format_datetime(@image_upload.inserted_at) %>
+            {format_datetime(@image_upload.inserted_at)}
           </:item>
           <:item title={~t"Invalid files"}>
-            <%= invalid_file_infos(@image_upload.invalid_file_infos) %>
+            {invalid_file_infos(@image_upload.invalid_file_infos)}
           </:item>
         </.list>
 
         <.section_heading text={~t"Mapping"m} size="md" class="pt-4" />
         <.list dense>
           <:item title={~t"Chosen Identifier"m}>
-            <%= Schema.dwc_field_from_prefixed_attribute_name(@image_upload.mapping_identifier) %>
+            {Schema.dwc_field_from_prefixed_attribute_name(@image_upload.mapping_identifier)}
           </:item>
         </.list>
       </div>
@@ -75,7 +75,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
           phx-value-id={@image_upload.id}
           phx-target={@myself}
         >
-          <%= run_mapping_text(@image_upload) %>
+          {run_mapping_text(@image_upload)}
         </button>
         <.link
           patch={
@@ -84,7 +84,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
           type="button"
           class="btn btn-ghost"
         >
-          <%= ~t"Back"m %>
+          {~t"Back"m}
         </.link>
       </.modal_footer>
     </div>
@@ -113,7 +113,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
   defp close_and_redirect(socket) do
     socket
     |> push_event("submit:close", %{})
-    |> push_patch(
+    |> push_navigate(
       to:
         build_path(
           ~p"/collections/#{socket.assigns.collection}/image_uploads",
@@ -136,10 +136,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
 
     ~H"""
     <div :if={length(@file_size_infos) > 0}>
-      <%= "#{length(@file_size_infos)} #{files_plural(length(@file_size_infos))} exeeded file size limit" %>
+      {"#{length(@file_size_infos)} #{files_plural(length(@file_size_infos))} exeeded file size limit"}
     </div>
     <div :if={length(@file_extension_infos) > 0}>
-      <%= "#{length(@file_extension_infos)} #{files_plural(length(@file_extension_infos))}  with invalid file extension" %>
+      {"#{length(@file_extension_infos)} #{files_plural(length(@file_extension_infos))}  with invalid file extension"}
     </div>
     """
   end

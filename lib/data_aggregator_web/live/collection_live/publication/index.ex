@@ -120,16 +120,16 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
           />
         </:col>
         <:col :let={{_id, publication}} field={:started_at} label={~t"Started at"m}>
-          <%= format_datetime(publication.started_at, format: :short) %>
+          {format_datetime(publication.started_at, format: :short)}
           <div :if={publication.duration} class="text-base-content/60 text-xs">
-            <%= publication.duration %>
+            {publication.duration}
           </div>
         </:col>
         <:col :let={{_id, publication}} field={:started_by} label={~t"Started by"m}>
-          <%= maybe_set_user(publication.started_by) %>
+          {maybe_set_user(publication.started_by)}
         </:col>
         <:col :let={{_id, publication}} field={:rows_count} label={~t"Records"m} class="text-right">
-          <%= format_number(publication.rows_count, format: :short) %>
+          {format_number(publication.rows_count, format: :short)}
         </:col>
 
         <:action
@@ -183,7 +183,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
                 :if={@selected_publication.state == :pending}
                 class="mt-1 flex items-center gap-x-2"
               >
-                <span class="text-sm"><%= ~t"State:"m %></span>
+                <span class="text-sm">{~t"State:"m}</span>
                 <.publication_state_badge publication={@selected_publication} />
               </div>
             </:subtitle>
@@ -195,11 +195,10 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
                 phx-click="publication:run"
                 class="btn btn-primary max-sm:btn-sm"
               >
-                <.icon name="hero-play-circle-mini" class="size-6" />
-                <%= ~t"Run"m %>
+                <.icon name="hero-play-circle-mini" class="size-6" /> {~t"Run"m}
               </button>
               <div :if={can_run?(@selected_publication) == false} class="flex items-center gap-x-2">
-                <span class="text-sm"><%= ~t"State:"m %></span>
+                <span class="text-sm">{~t"State:"m}</span>
                 <.publication_state_badge publication={@selected_publication} />
               </div>
             </:actions>
@@ -217,9 +216,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
               />
             </:item>
             <:item title={~t"Created at"m}>
-              <%= format_datetime(@selected_publication.inserted_at) %>
+              {format_datetime(@selected_publication.inserted_at)}
             </:item>
-            <:item title={~t"Rows"m}><%= format_number(@selected_publication.rows_count) %></:item>
+            <:item title={~t"Rows"m}>{format_number(@selected_publication.rows_count)}</:item>
 
             <:item title={~t"Done"m}>
               <div class="flex flex-col">
@@ -229,27 +228,27 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
                   class="w-full progress progress-primary"
                 />
                 <div>
-                  <%= format_number(@selected_publication.published_count) %> / <%= format_number(
+                  {format_number(@selected_publication.published_count)} / {format_number(
                     @selected_publication.rows_count
-                  ) %> <%= ~t"rows"m %>
+                  )} {~t"rows"m}
                 </div>
               </div>
             </:item>
 
             <:item title={~t"Started by"m}>
-              <%= maybe_set_user(@selected_publication.started_by) %>
+              {maybe_set_user(@selected_publication.started_by)}
             </:item>
             <:item title={~t"Started at"m}>
               <div :if={@selected_publication.finished_at == nil}>
-                <%= format_datetime(@selected_publication.started_at) %>
+                {format_datetime(@selected_publication.started_at)}
               </div>
               <div :if={@selected_publication.finished_at != nil}>
-                <%= format_date_interval(
+                {format_date_interval(
                   @selected_publication.started_at,
                   @selected_publication.finished_at
-                ) %>
+                )}
               </div>
-              <%= @selected_publication.duration %>
+              {@selected_publication.duration}
             </:item>
           </.list>
 
@@ -262,8 +261,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
               data-confirm_id="confirm_publication_alert"
               disbled={can_delete?(@selected_publication) == false}
             >
-              <.icon name="hero-x-circle-mini" class="size-6" />
-              <%= ~t"Delete"m %>
+              <.icon name="hero-x-circle-mini" class="size-6" /> {~t"Delete"m}
             </button>
           </:footer>
         </.slideover>

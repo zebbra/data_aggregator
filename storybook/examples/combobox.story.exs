@@ -177,7 +177,7 @@ defmodule Storybook.Examples.Combobox do
         <div>
           <.section_heading text="Single select event based" size="md" class="mb-2" />
           <.combobox id="single_event" options={@options} value={@selected} on-change />
-          <div class="text-base-content/60 mt-1">Selected: <%= @selected %></div>
+          <div class="text-base-content/60 mt-1">Selected: {@selected}</div>
         </div>
         <div>
           <.section_heading text="Multiple select event based" size="md" class="mb-2" />
@@ -188,7 +188,7 @@ defmodule Storybook.Examples.Combobox do
             on-change="select:users"
             multiple
           />
-          <div class="text-base-content/60 mt-1">Selected: <%= inspect(@users) %></div>
+          <div class="text-base-content/60 mt-1">Selected: {inspect(@users)}</div>
         </div>
         <div>
           <.section_heading text="Remote option search single" size="md" class="mb-2" />

@@ -59,14 +59,14 @@ defmodule DataAggregatorWeb.Components.Dropdown do
       phx-key="escape"
     >
       <%= if @summary != [] do %>
-        <%= render_slot(@summary) %>
+        {render_slot(@summary)}
       <% else %>
         <summary class="btn btn-ghost text-base-content/75 hover:text-base-content">
           <.icon :if={@icon} name={@icon} />
-          <span :if={@label}><%= @label %></span>
+          <span :if={@label}>{@label}</span>
         </summary>
       <% end %>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </details>
     """
   end
@@ -83,7 +83,7 @@ defmodule DataAggregatorWeb.Components.Dropdown do
         </summary>
       </:summary>
       <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 z-10 w-28 gap-1 border p-2 shadow-lg">
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </ul>
     </.dropdown>
     """

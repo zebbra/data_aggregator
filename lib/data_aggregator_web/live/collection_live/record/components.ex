@@ -27,15 +27,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         @active && "lg:text-primary/75 lg:group-hover:text-primary-content",
         @active == false && "lg:group-hover:text-base-100/80"
       ]}>
-        <%= @title %>
+        {@title}
       </div>
-      <div class={["stat-value max-lg:hidden"]}><%= format_percent(@value) %></div>
+      <div class={["stat-value max-lg:hidden"]}>{format_percent(@value)}</div>
       <div class={[
         "stat-desc max-lg:hidden",
         @active && "lg:text-primary/75 lg:group-hover:text-primary-content",
         @active == false && "lg:group-hover:text-base-100/80"
       ]}>
-        <%= @desc %>
+        {@desc}
       </div>
     </.link>
     """
@@ -47,7 +47,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     ~H"""
     <div class="btn btn-outline group border-base-content/20 animate-none lg:stat lg:border-base-content/20 lg:h-auto lg:text-left">
       <div class="truncate leading-4 lg:stat-title lg:group-hover:text-base-100/80">
-        <%= @title %>
+        {@title}
       </div>
       <div class={["stat-value max-lg:hidden"]}>
         <div class="skeleton my-2 h-6 w-24"></div>
@@ -86,7 +86,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     >
       <.icon name={ActivityFeed.icon_lookup(@name, @content)} class="size-5 shrink-0" />
       <span class="text-nowrap pr-1.5">
-        <%= ActivityFeed.badge_text(@name, @content) %>
+        {ActivityFeed.badge_text(@name, @content)}
       </span>
     </.badge>
     """
@@ -119,7 +119,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     >
       <.icon name={ActivityFeed.icon_lookup(@name, @content)} class="size-5 shrink-0" />
       <span class="text-nowrap pr-1.5">
-        <%= ActivityFeed.badge_text(@name, @content) %>
+        {ActivityFeed.badge_text(@name, @content)}
       </span>
     </.badge>
     """
@@ -182,7 +182,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     ~H"""
     <div class="my-auto flex space-x-3">
       <p class="text-base-content/60 text-sm/6 line-clamp-2 mt-1 max-w-4xl">
-        <%= @text %>
+        {@text}
       </p>
       <.link
         :if={@occurrence_id !== nil && @fast_track_status == :published}
@@ -190,8 +190,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         target="_blank"
         href={"#{gbif_base_url()}/occurrence/#{@occurrence_id}"}
       >
-        <%= ~t"Show on GBIF" %>
-        <.icon name="hero-arrow-top-right-on-square" class="size-4" />
+        {~t"Show on GBIF"} <.icon name="hero-arrow-top-right-on-square" class="size-4" />
       </.link>
     </div>
     """

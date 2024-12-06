@@ -57,12 +57,12 @@ defmodule DataAggregatorWeb.Filters.SimpleFilterForm do
       <div :if={@error} class="px-6 pt-8">
         <.collapsible_notification title="An error has occurred" color="red">
           <:action>
-            <%= ~t"Show more"m %>
+            {~t"Show more"m}
           </:action>
-          <%= @error %>
+          {@error}
           <ul class="mt-2">
             <li :for={{_, {message, _}} <- FilterForm.errors(@filter_form)}>
-              <%= message %>
+              {message}
             </li>
           </ul>
         </.collapsible_notification>
@@ -77,15 +77,14 @@ defmodule DataAggregatorWeb.Filters.SimpleFilterForm do
         class="contents"
       >
         <div class="h-full overflow-y-auto">
-          <%= render_slot(@components, filter_form) %>
+          {render_slot(@components, filter_form)}
         </div>
         <:actions class="justify-between" modal>
           <button disabled={@filter_form.valid? == false} type="submit" class="btn btn-primary">
             <.icon
               name="hero-cog-6-tooth-solid animate-spin"
               class="hidden opacity-0 phx-submit-loading:inline-flex phx-submit-loading:opacity-100 ease-linear duration-300"
-            />
-            <%= mgettext("Show %{count} %{label}", count: @count, label: @label) %>
+            /> {mgettext("Show %{count} %{label}", count: @count, label: @label)}
           </button>
           <button
             type="button"
@@ -93,7 +92,7 @@ defmodule DataAggregatorWeb.Filters.SimpleFilterForm do
             phx-target={@target}
             class="btn btn-ghost !-mx-4"
           >
-            <%= ~t"Clear all"m %>
+            {~t"Clear all"m}
           </button>
         </:actions>
       </.simple_form>

@@ -75,9 +75,9 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
             />
           </.fieldgroup>
           <:actions modal>
-            <button type="submit" class="btn btn-primary"><%= submit_label(@action) %></button>
+            <button type="submit" class="btn btn-primary">{submit_label(@action)}</button>
             <button type="button" class="btn btn-ghost" onclick="collection_modal.close()">
-              <%= ~t"Cancel"m %>
+              {~t"Cancel"m}
             </button>
           </:actions>
         </.fieldset>
@@ -130,7 +130,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
           if socket.assigns.action == :new do
             push_navigate(socket, to: ~p"/collections/#{collection.id}/records")
           else
-            push_patch(socket, to: socket.assigns.patch)
+            push_navigate(socket, to: socket.assigns.patch)
           end
 
         {:error, form} ->

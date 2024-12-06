@@ -66,9 +66,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
                 color="red"
               >
                 <:action>
-                  <%= ~t"Show more"m %>
+                  {~t"Show more"m}
                 </:action>
-                <%= @error_message %>
+                {@error_message}
               </.collapsible_notification>
               <section
                 phx-drop-target={@uploads.file.ref}
@@ -82,33 +82,33 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
                         for={@uploads.file.ref}
                         class="link link-primary link-hover rounded-md px-1 font-semibold focus-within:ring-primary focus-within:ring-2"
                       >
-                        <span><%= ~t"Choose a file"m %></span>
+                        <span>{~t"Choose a file"m}</span>
                         <.live_file_input upload={@uploads.file} class="sr-only" />
                       </label>
-                      <p class="pl-1"><%= ~t"or drag and drop"m %></p>
+                      <p class="pl-1">{~t"or drag and drop"m}</p>
                     </div>
                     <p class="text-xs/5 text-base-content/60">
-                      <%= pretty_accept_list(@uploads.file.accept) %>
+                      {pretty_accept_list(@uploads.file.accept)}
                     </p>
                     <p class="text-xs/5 text-base-content/60">
-                      <%= pretty_max_file_size(@uploads.file.max_file_size) %>
+                      {pretty_max_file_size(@uploads.file.max_file_size)}
                     </p>
                     <br />
                     <p class="text-xs/5 text-base-content/60">
-                      <%= ~t"With images of type"m %>
+                      {~t"With images of type"m}
                     </p>
                     <p class="text-xs/5 text-base-content/60">
-                      <%= pretty_accept_list(accepted_image_extensions()) %>
+                      {pretty_accept_list(accepted_image_extensions())}
                     </p>
                     <p class="text-xs/5 text-base-content/60">
-                      <%= pretty_max_file_size(max_image_size()) %>
+                      {pretty_max_file_size(max_image_size())}
                     </p>
                   </div>
                 </div>
 
                 <div class="text-base-content mt-4 space-y-2">
                   <article :for={entry <- @uploads.file.entries}>
-                    <span class="text-sm"><%= entry.client_name %></span>
+                    <span class="text-sm">{entry.client_name}</span>
 
                     <div class="flex items-center space-x-4">
                       <.progress value={entry.progress} class="progress-primary" />
@@ -126,7 +126,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
 
                     <div>
                       <%= for err <- upload_errors(@uploads.file, entry) do %>
-                        <p class="text-sm text-red-500"><%= error_to_string(err) %></p>
+                        <p class="text-sm text-red-500">{error_to_string(err)}</p>
                       <% end %>
                     </div>
                   </article>
@@ -144,10 +144,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
             }
             phx-disable-with={~t"Save..."m}
           >
-            <%= if @uploading, do: ~t"Uploading..."m, else: ~t"Next"m %>
+            {if @uploading, do: ~t"Uploading..."m, else: ~t"Next"m}
           </button>
           <button type="button" class="btn btn-ghost" onclick="image_upload_modal.close()">
-            <%= ~t"Cancel"m %>
+            {~t"Cancel"m}
           </button>
         </:actions>
       </.simple_form>

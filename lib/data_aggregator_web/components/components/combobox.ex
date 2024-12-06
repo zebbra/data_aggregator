@@ -200,8 +200,8 @@ defmodule DataAggregatorWeb.Components.Combobox do
       {@rest}
     >
       <select class="combobox-latest hidden" multiple={@multiple}>
-        <option :if={@prompt} value=""><%= @prompt %></option>
-        <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+        <option :if={@prompt} value="">{@prompt}</option>
+        {Phoenix.HTML.Form.options_for_select(@options, @value)}
       </select>
 
       <input
@@ -223,8 +223,8 @@ defmodule DataAggregatorWeb.Components.Combobox do
             {@rest}
             placeholder={@placeholder}
           >
-            <option :if={@prompt} value=""><%= @prompt %></option>
-            <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+            <option :if={@prompt} value="">{@prompt}</option>
+            {Phoenix.HTML.Form.options_for_select(@options, @value)}
           </select>
         </div>
       </div>

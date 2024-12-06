@@ -72,11 +72,11 @@ defmodule DataAggregatorWeb.Filters.RadioGroupFilter do
     ~H"""
     <.fieldset class={@top_level && "border-black-white/10 border-b py-8"}>
       <.section_heading as="legend" size={@legend_size}>
-        <%= @title %>
+        {@title}
         <.clear_link :if={present?(@component.source)} component={@component} target={@target} />
 
         <:subtitle :if={description?(@description, @option_descriptions, @component.source.value)}>
-          <%= Map.get(@option_descriptions, @component.source.value, @description) %>
+          {Map.get(@option_descriptions, @component.source.value, @description)}
         </:subtitle>
       </.section_heading>
       <.fieldgroup class={@pills == false && "sm:px-8"}>

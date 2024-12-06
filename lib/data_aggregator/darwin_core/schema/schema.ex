@@ -1,4 +1,4 @@
-import DataAggregatorWeb.Helpers, only: [format_coordinate: 1]
+import DataAggregatorWeb.Helpers, only: [format_coordinate: 1, format_map: 1]
 
 alias Ash.Resource.Attribute
 alias DataAggregator.DarwinCore.Schema.Category
@@ -1665,7 +1665,7 @@ pvn_attributes = [
     dwc_field: "preservationTemperature",
     dwc_link: nil,
     dwca_file: :preservation,
-    attribute: %Attribute{name: :preservation_temperature, type: :float, allow_nil?: true}
+    attribute: %Attribute{name: :preservation_temperature, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "sequence",
@@ -2409,7 +2409,16 @@ defmodule DataAggregator.DarwinCore.Schema do
   def dwc_transformers do
     %{
       loc_decimal_latitude: &format_coordinate/1,
-      loc_decimal_longitude: &format_coordinate/1
+      loc_decimal_longitude: &format_coordinate/1,
+      ext_vernacular_names: &format_map/1,
+      ext_species_profile: &format_map/1,
+      ext_species_distribution: &format_map/1,
+      ext_references: &format_map/1,
+      ext_resource_relationship: &format_map/1,
+      ext_permit: &format_map/1,
+      ext_chronometric: &format_map/1,
+      ext_assertions: &format_map/1,
+      ext_amplification: &format_map/1
     }
   end
 

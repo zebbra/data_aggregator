@@ -103,8 +103,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                 phx-target={@myself}
                 class="btn btn-outline border-base-content/20"
               >
-                <.icon name="hero-sparkles-mini" />
-                <%= ~t"Try auto-mapping"m %>
+                <.icon name="hero-sparkles-mini" /> {~t"Try auto-mapping"m}
               </button>
               <button
                 type="button"
@@ -112,11 +111,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                 phx-target={@myself}
                 class="btn btn-outline border-base-content/20"
               >
-                <.icon name="hero-arrow-path-solid" />
-                <%= ~t"Load existing mapping"m %>
+                <.icon name="hero-arrow-path-solid" /> {~t"Load existing mapping"m}
               </button>
               <p :if={@quick_start_error} class="text-error -mb-6 text-sm italic sm:col-span-2">
-                <%= @quick_start_error %>
+                {@quick_start_error}
               </p>
             </div>
           </section>
@@ -177,8 +175,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                   disabled={@invalid?}
                   class="btn btn-outline border-base-content/20"
                 >
-                  <.icon name="hero-plus-circle-mini" class="size-6" />
-                  <%= ~t"Add all"m %>
+                  <.icon name="hero-plus-circle-mini" class="size-6" /> {~t"Add all"m}
                 </button>
               </:legend_actions>
 
@@ -193,7 +190,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                 disabled={@invalid?}
                 class="bg-base-200 mr-2.5 mb-2 inline-flex cursor-pointer rounded px-2 py-1 text-sm first-of-type:mt-6 enabled:hover:bg-base-300 disabled:text-base-content/50"
               >
-                <%= col %>
+                {col}
               </button>
 
               <.fieldgroup class="grid grid-cols-1 items-center gap-x-4 sm:grid-cols-3 gap-y-8">
@@ -260,10 +257,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
         <:actions modal>
           <button type="submit" class="btn btn-primary">
-            <%= ~t"Update mapping"m %>
+            {~t"Update mapping"m}
           </button>
           <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
-            <%= ~t"Cancel"m %>
+            {~t"Cancel"m}
           </button>
           <div class="grow">
             <button
@@ -272,7 +269,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
               phx-target={@myself}
               class="btn btn-ghost !-mx-4"
             >
-              <%= ~t"Reset mapping"m %>
+              {~t"Reset mapping"m}
             </button>
           </div>
         </:actions>

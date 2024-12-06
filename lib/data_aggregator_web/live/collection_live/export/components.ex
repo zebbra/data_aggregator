@@ -50,7 +50,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Components do
 
   def export_state_badge_label(assigns) do
     ~H"""
-    <span><%= state_translation(@state) %></span>
+    <span>{state_translation(@state)}</span>
     """
   end
 

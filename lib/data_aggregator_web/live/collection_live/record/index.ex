@@ -370,7 +370,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:idf_type_status}
           label={~t"Typus"m}
         >
-          <%= record.idf_type_status %>
+          {record.idf_type_status}
         </:col>
         <:col
           :let={{_id, record}}
@@ -378,7 +378,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:tax_scientific_name}
           label={get_dwc_field(:tax_scientific_name)}
         >
-          <%= encoded_attribute(record, :tax_scientific_name, @layer) %>
+          {encoded_attribute(record, :tax_scientific_name, @layer)}
         </:col>
         <:col
           :let={{_id, record}}
@@ -386,7 +386,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:idf_verbatim_identification}
           label={get_dwc_field(:idf_verbatim_identification)}
         >
-          <%= record.idf_verbatim_identification %>
+          {record.idf_verbatim_identification}
         </:col>
         <:col
           :let={{_id, record}}
@@ -394,7 +394,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:occ_occurrence_id}
           label={get_dwc_field(:occ_occurrence_id)}
         >
-          <%= record.occ_occurrence_id %>
+          {record.occ_occurrence_id}
         </:col>
         <:col
           :let={{_id, record}}
@@ -402,7 +402,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:mte_catalog_number}
           label={get_dwc_field(:mte_catalog_number)}
         >
-          <%= record.mte_catalog_number %>
+          {record.mte_catalog_number}
         </:col>
         <:col
           :let={{_id, record}}
@@ -410,7 +410,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:eve_field_number}
           label={get_dwc_field(:eve_field_number)}
         >
-          <%= record.eve_field_number %>
+          {record.eve_field_number}
         </:col>
         <:col
           :let={{_id, record}}
@@ -418,7 +418,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:mte_recorded_by}
           label={get_dwc_field(:mte_recorded_by)}
         >
-          <%= record.mte_recorded_by %>
+          {record.mte_recorded_by}
         </:col>
         <:col
           :let={{_id, record}}
@@ -426,7 +426,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:idf_identified_by}
           label={get_dwc_field(:idf_identified_by)}
         >
-          <%= record.idf_identified_by %>
+          {record.idf_identified_by}
         </:col>
         <:col
           :let={{_id, record}}
@@ -434,7 +434,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:eve_event_date}
           label={get_dwc_field(:eve_event_date)}
         >
-          <%= record.eve_event_date %>
+          {record.eve_event_date}
         </:col>
         <:col
           :let={{_id, record}}
@@ -442,9 +442,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:loc_state_province}
           label={place_th_label()}
         >
-          <div><%= encoded_attribute(record, :loc_state_province, @layer) %></div>
+          <div>{encoded_attribute(record, :loc_state_province, @layer)}</div>
           <div class="text-base-content/75 text-xs">
-            <%= encoded_attribute(record, :loc_country_code, @layer) %>
+            {encoded_attribute(record, :loc_country_code, @layer)}
           </div>
         </:col>
         <:col
@@ -453,9 +453,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:loc_verbatim_elevation}
           label={elevation_th_label()}
         >
-          <div :if={record.loc_verbatim_elevation}><%= record.loc_verbatim_elevation %></div>
+          <div :if={record.loc_verbatim_elevation}>{record.loc_verbatim_elevation}</div>
           <div :if={record.loc_minimum_elevation_in_meters}>
-            <%= record.loc_minimum_elevation_in_meters %> / <%= record.loc_maximum_elevation_in_meters %>
+            {record.loc_minimum_elevation_in_meters} / {record.loc_maximum_elevation_in_meters}
           </div>
         </:col>
         <:col
@@ -466,10 +466,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           directions={{:asc, :desc_nils_last}}
         >
           <div>
-            <%= format_coordinate(encoded_attribute(record, :loc_decimal_latitude, @layer)) %>
+            {format_coordinate(encoded_attribute(record, :loc_decimal_latitude, @layer))}
           </div>
           <div>
-            <%= format_coordinate(encoded_attribute(record, :loc_decimal_longitude, @layer)) %>
+            {format_coordinate(encoded_attribute(record, :loc_decimal_longitude, @layer))}
           </div>
         </:col>
         <:col
@@ -515,7 +515,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           label={~t"Updated At"m}
           class="text-end"
         >
-          <%= format_datetime(record.updated_at, format: :medium) %>
+          {format_datetime(record.updated_at, format: :medium)}
         </:col>
 
         <:action
@@ -585,10 +585,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           <div :if={@record_tab == "data"} class="contents">
             <.list class="border-black-white/10 border-b">
               <:item title={~t"Imported"m}>
-                <%= format_datetime(@selected_record.last_imported_at) %>
+                {format_datetime(@selected_record.last_imported_at)}
               </:item>
               <:item title={~t"Last Changes"m}>
-                <%= format_datetime(@selected_record.updated_at) %>
+                {format_datetime(@selected_record.updated_at)}
               </:item>
               <:item title={~t"Quality"m}>
                 <.mids_level_indicator level={@selected_record.mids_level} />
@@ -603,11 +603,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <%= for category <- @attrs_in_categories do %>
               <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:first:border-t lg:pl-4">
                 <summary class="collapse-title">
-                  <%= category.label %>
+                  {category.label}
                 </summary>
                 <div class="collapse-content">
                   <p class="text-base-content/60 text-sm/6 line-clamp-2 max-w-4xl">
-                    <%= category.description %>
+                    {category.description}
                   </p>
                   <.table
                     opts={[
@@ -617,13 +617,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                     items={category.attributes}
                   >
                     <:col :let={attribute} label={~t"Name"} class="font-semibold">
-                      <%= attribute.name %>
+                      {attribute.name}
                     </:col>
                     <:col :let={attribute} label={~t"Imported"}>
-                      <%= format_value(attribute.imported, attribute.name) %>
+                      {format_value(attribute.imported, attribute.name)}
                     </:col>
                     <:col :let={attribute} label={~t"Encoded"}>
-                      <%= format_value(attribute.encoded, attribute.name) %>
+                      {format_value(attribute.encoded, attribute.name)}
                     </:col>
                   </.table>
                 </div>
@@ -634,11 +634,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:bg-base-300/30 open:first:border-t lg:pl-4"
             >
               <summary class="collapse-title">
-                <%= ~t"Custom Attributes"m %>
+                {~t"Custom Attributes"m}
               </summary>
               <div class="collapse-content">
                 <p class="text-base-content/60 text-sm/6 line-clamp-2 max-w-4xl">
-                  <%= ~t"Custom attributes are attributes that are not part of the darwin core standard."m %>
+                  {~t"Custom attributes are attributes that are not part of the darwin core standard."m}
                 </p>
                 <.table
                   opts={[
@@ -648,10 +648,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   items={Enum.map(@selected_record.extra_data, fn {k, v} -> %{name: k, value: v} end)}
                 >
                   <:col :let={attribute} label={~t"Name"} class="font-semibold">
-                    <%= attribute.name %>
+                    {attribute.name}
                   </:col>
                   <:col :let={attribute} label={~t"Value"}>
-                    <%= attribute.value %>
+                    {attribute.value}
                   </:col>
                 </.table>
               </div>
@@ -664,14 +664,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           />
           <div :if={@record_tab == "encodings"} class="px-6 pt-4 lg:px-8">
             <h2 class="pb-2">
-              <%= ~t"Record encodings"m %>
+              {~t"Record encodings"m}
             </h2>
             <div class="">
               <p class="text-base-content/60 text-sm/6 line-clamp-2 max-w-4xl">
                 <%= if Enum.any?(@record_encoding_results) do %>
-                  <%= ~t"Results by catalog"m %>
+                  {~t"Results by catalog"m}
                 <% else %>
-                  <%= ~t"No encoding results available"m %>
+                  {~t"No encoding results available"m}
                 <% end %>
               </p>
 
@@ -683,13 +683,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 items={@record_encoding_results}
               >
                 <:col :let={result} label={~t"Catalog"} class="font-semibold">
-                  <%= result.catalog %>
+                  {result.catalog}
                 </:col>
                 <:col :let={result} label={~t"State"} class="text-center">
                   <.encoding_state_badge reason={result.message} state={result.state} />
                 </:col>
                 <:col :let={result} label={~t"Created"} class="text-right">
-                  <%= format_datetime(result.inserted_at, format: :short) %>
+                  {format_datetime(result.inserted_at, format: :short)}
                 </:col>
               </.table>
             </div>
@@ -733,31 +733,30 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         >
           <div :if={@show_encode} class="contents">
             <p class="mb-4 text-sm">
-              <%= mgettext("You're about to encode %{count} records.",
+              {mgettext("You're about to encode %{count} records.",
                 count: format_number(@meta.result.total_count)
-              ) %>
+              )}
             </p>
             <p class="text-sm">
-              <%= ~t"These records will be encoded and enriched using the following resources."m %>
+              {~t"These records will be encoded and enriched using the following resources."m}
             </p>
             <ul class="mt-2 list-inside list-disc text-sm">
               <li :for={catalog <- Catalog.get_translated_catalogs()} class="text-info">
-                <span class="text-base-content"><%= catalog %></span>
+                <span class="text-base-content">{catalog}</span>
               </li>
             </ul>
             <p class="text-base-content/60 mt-4 text-sm">
-              <%= ~t"By clicking"m %>
-              <span class="text-base-content italic"><%= ~t"Encode"m %></span>
-              <%= ~t"the encoding will be triggered. No further action is required. Please note that this process may take some time."m %>
+              {~t"By clicking"m} <span class="text-base-content italic">{~t"Encode"m}</span>
+              {~t"the encoding will be triggered. No further action is required. Please note that this process may take some time."m}
             </p>
           </div>
           <:footer>
             <form method="dialog" class="contents">
               <button type="submit" value="confirm" class="btn btn-primary" disabled={@busy}>
-                <%= ~t"Encode"m %>
+                {~t"Encode"m}
               </button>
               <button class="btn btn-ghost">
-                <%= ~t"Cancel"m %>
+                {~t"Cancel"m}
               </button>
             </form>
           </:footer>
@@ -827,19 +826,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </.modal>
 
         <.alert id="confirm_record_alert" size="sm" label={~t"Yes, delete record"m}>
-          <p class="text-sm"><%= ~t"This will also delete the following associations:"m %></p>
+          <p class="text-sm">{~t"This will also delete the following associations:"m}</p>
           <ul class="mt-2 list-inside list-disc text-sm">
             <li class="text-info">
-              <span class="text-base-content"><%= ~t"Record encodings"m %></span>
+              <span class="text-base-content">{~t"Record encodings"m}</span>
             </li>
             <li class="text-info">
-              <span class="text-base-content"><%= ~t"Record encoding results"m %></span>
+              <span class="text-base-content">{~t"Record encoding results"m}</span>
             </li>
             <li class="text-info">
-              <span class="text-base-content"><%= ~t"Record imports"m %></span>
+              <span class="text-base-content">{~t"Record imports"m}</span>
             </li>
             <li class="text-info">
-              <span class="text-base-content"><%= ~t"Record images"m %></span>
+              <span class="text-base-content">{~t"Record images"m}</span>
             </li>
           </ul>
         </.alert>
@@ -1111,6 +1110,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     end
   end
 
+  defp format_value(value, _) when is_map(value), do: format_map(value)
   defp format_value(value, _), do: value
 
   defp coalesce_search(nil), do: ""
@@ -1118,23 +1118,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   def place_th_label(assigns \\ %{}) do
     ~H"""
-    <%= get_dwc_field(:loc_state_province) %>
-    <br />
-    <%= get_dwc_field(:loc_country_code) %>
+    {get_dwc_field(:loc_state_province)} <br /> {get_dwc_field(:loc_country_code)}
     """
   end
 
   def elevation_th_label(assigns \\ %{}) do
     ~H"""
-    <%= get_dwc_field(:loc_verbatim_elevation) %>
+    {get_dwc_field(:loc_verbatim_elevation)}
     """
   end
 
   def coordinates_th_label(assigns \\ %{}) do
     ~H"""
-    <%= get_dwc_field(:loc_decimal_latitude) %>
-    <br />
-    <%= get_dwc_field(:loc_decimal_longitude) %>
+    {get_dwc_field(:loc_decimal_latitude)} <br /> {get_dwc_field(:loc_decimal_longitude)}
     """
   end
 

@@ -37,8 +37,7 @@ defmodule DataAggregatorWeb.Components.Breadcrumbs do
               <.icon
                 :if={index == @length - 2}
                 name="hero-arrow-left-micro text-primary mr-1 sm:hidden"
-              />
-              <%= item[:label] %>
+              /> {item[:label]}
             </.link>
           </li>
         <% end %>

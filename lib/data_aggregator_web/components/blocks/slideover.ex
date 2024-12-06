@@ -90,10 +90,10 @@ defmodule DataAggregatorWeb.Blocks.Slideover do
             title_wrapper_class="lg:pl-8 !py-6"
           >
             <.section_heading>
-              <%= @title %>
-              <:subtitle :if={@subtitle}><%= @subtitle %></:subtitle>
+              {@title}
+              <:subtitle :if={@subtitle}>{@subtitle}</:subtitle>
             </.section_heading>
-            <%= render_slot(@additional_header_content) %>
+            {render_slot(@additional_header_content)}
           </.modal_header>
 
           <div
@@ -101,7 +101,7 @@ defmodule DataAggregatorWeb.Blocks.Slideover do
             phx-window-keydown={@on_cancel}
             phx-key="Escape"
           >
-            <%= render_slot(@inner_block) %>
+            {render_slot(@inner_block)}
           </div>
 
           <.modal_footer
@@ -110,7 +110,7 @@ defmodule DataAggregatorWeb.Blocks.Slideover do
             footer_class={class_names([footer[:class], "lg:px-8"])}
             gradient={@gradient}
           >
-            <%= render_slot(@footer) %>
+            {render_slot(@footer)}
           </.modal_footer>
         </div>
       </div>

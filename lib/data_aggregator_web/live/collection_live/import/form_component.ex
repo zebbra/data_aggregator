@@ -54,7 +54,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
         />
         <div class="modal-action">
           <button type="button" class="btn btn-primary" onclick="import_modal.close()">
-            <%= ~t"Back to imports"m %>
+            {~t"Back to imports"m}
           </button>
         </div>
       </div>
