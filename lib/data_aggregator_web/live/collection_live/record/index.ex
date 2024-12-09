@@ -763,7 +763,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </.modal>
 
         <.modal
-          :if={@meta.ok? and @show_fast_track_pub}
+          :if={@meta.ok?}
           id="fast_track_pub_modal"
           size="2xl"
           class="p-0"
@@ -773,6 +773,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           overflow="manual"
         >
           <.live_component
+            :if={@show_fast_track_pub}
             module={DataAggregatorWeb.CollectionLive.Record.FastTrackModal}
             id="fast_track_pub_modal_component"
             meta={@meta.result}
@@ -795,6 +796,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           overflow="manual"
         >
           <.live_component
+            :if={@show_approval_pub}
             module={DataAggregatorWeb.CollectionLive.Record.ApprovalModal}
             id="approval_pub_modal_component"
             meta={@meta.result}
@@ -1001,14 +1003,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   @impl true
   def handle_event("toggle:agree", _, socket) do
     {:noreply, update(socket, :agreed, &(!&1))}
-  end
-
-  @impl true
-  def handle_info({"fast_track_pub:submit", _meta}, socket) do
-    {:noreply,
-     socket
-     |> assign(:show_fast_track_pub, false)
-     |> put_flash(:info, ~t"Approval started in background"m)}
   end
 
   @impl true

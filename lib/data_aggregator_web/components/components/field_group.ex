@@ -36,6 +36,8 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
 
   attr :options, :list, doc: "the options to pass to `DataAggregatorWeb.Components.FieldGroup.options_for_group/1`"
 
+  attr :as_atoms, :boolean, default: false, doc: "whether to keep the atom option values"
+
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
   attr :class, :string, default: nil, doc: "additional css class for input"
   attr :hidden, :boolean, default: false, doc: "whether the field is hidden"
@@ -70,7 +72,7 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
       <.errors errors={@errors} id={@id} class={is_nil(@description) && "mb-2"} />
       <div class="grid grid-flow-row sm:grid-cols-2 sm:gap-x-2">
         <div
-          :for={{label, value} <- options_for_group(@options)}
+          :for={{label, value} <- options_for_group(@options, @as_atoms)}
           class="flex cursor-pointer justify-between gap-4 py-2 sm:flex-row-reverse sm:justify-end"
         >
           <.label for={"#{@name}-#{value}"} label={label} class="cursor-pointer min-w-0 flex-1" />
@@ -112,6 +114,8 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
 
   attr :options, :list, doc: "the options to pass to `DataAggregatorWeb.Components.FieldGroup.options_for_group/1`"
 
+  attr :as_atoms, :boolean, default: false, doc: "whether to keep the atom option values"
+
   attr :class, :string, default: nil, doc: "additional css class for input"
   attr :hidden, :boolean, default: false, doc: "whether the field is hidden"
 
@@ -150,7 +154,7 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
         @pills == false && "join grid auto-cols-fr grid-flow-col"
       ]}>
         <input
-          :for={{label, value} <- options_for_group(@options)}
+          :for={{label, value} <- options_for_group(@options, @as_atoms)}
           type="radio"
           id={"#{@name}-#{value}"}
           name={@name}
@@ -193,6 +197,8 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
 
   attr :options, :list, doc: "the options to pass to `DataAggregatorWeb.Components.FieldGroup.options_for_group/1`"
 
+  attr :as_atoms, :boolean, default: false, doc: "whether to keep the atom option values"
+
   attr :hidden_options, :list, default: nil, doc: "list of options that should be hidden"
 
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
@@ -229,7 +235,7 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
       <.errors errors={@errors} id={@id} class={is_nil(@description) && "mb-2"} />
       <div class="grid grid-flow-row sm:grid-cols-2 sm:gap-x-2">
         <div
-          :for={{label, value} <- options_for_group(@options)}
+          :for={{label, value} <- options_for_group(@options, @as_atoms)}
           class="flex cursor-pointer justify-between gap-4 py-2 sm:flex-row-reverse sm:justify-end"
         >
           <%= if hidden_option?(value, @hidden_options) do %>
@@ -295,6 +301,15 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
         {"fr", "fr"}
       ]
 
+  Simple array of atoms are supported (keep atom values):
+
+      iex> options_for_group([:uk, :se, :fr], true)
+      [
+        {"uk", :uk},
+        {"se", :se},
+        {"fr", :fr}
+      ]
+
   Key value pairs are also supported:
 
       iex> options_for_group([[key: "UK", value: "uk"], [key: "Sweden", value: "se"], [key: "France", value: "fr"]])
@@ -303,11 +318,20 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
         {"Sweden", "se"},
         {"France", "fr"}
       ]
+
+  Key value pairs are also supported (keep atom values):
+
+      iex> options_for_group([[key: "UK", value: :uk], [key: "Sweden", value: :se], [key: "France", value: :fr]], true)
+      [
+        {"UK", :uk},
+        {"Sweden", :se},
+        {"France", :fr}
+      ]
   """
-  def options_for_group(options) do
+  def options_for_group(options, atoms? \\ false) do
     Enum.map(options, fn
       {key, value} ->
-        {to_string(key), to_string(value)}
+        {to_string(key), maybe_stringify(value, atoms?)}
 
       options when is_list(options) ->
         {option_key, options} = Keyword.pop(options, :key)
@@ -322,15 +346,19 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
           raise ArgumentError,
                 "expected :value key when building <group options> from keyword list: #{inspect(options)}"
 
-        {to_string(option_key), to_string(option_value)}
+        {to_string(option_key), maybe_stringify(option_value, atoms?)}
 
       str when is_binary(str) ->
         {str, str}
 
       atom when is_atom(atom) ->
-        {Atom.to_string(atom), Atom.to_string(atom)}
+        {Atom.to_string(atom), maybe_stringify(atom, atoms?)}
     end)
   end
+
+  defp maybe_stringify(val, false) when is_atom(val), do: Atom.to_string(val)
+  defp maybe_stringify(val, false), do: to_string(val)
+  defp maybe_stringify(val, true), do: val
 
   @doc """
   Returns true if the value is checked, false otherwise.

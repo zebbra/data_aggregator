@@ -7,6 +7,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
 
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [filter_map: 3]
+  import DataAggregatorWeb.Components.FieldGroup, only: [radio_group: 1]
 
   alias AshPhoenix.Form
   alias DataAggregator.Gbif.RestAPI
@@ -26,61 +27,78 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket |> assign(assigns) |> assign_count() |> assign_grscicoll_data() |> assign_form()}
+    socket =
+      socket
+      |> assign(assigns)
+      |> assign_count()
+      |> assign_grscicoll_data()
+      |> assign_form()
+
+    {:ok, socket}
   end
 
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="mb-0 contents">
+    <div class="contents">
+      <.modal_header id={@id}>
+        <.stepper current={@step} steps={3} />
+        <.section_heading text={modal_title(@step)} class="mt-4" />
+      </.modal_header>
+
       <.simple_form
         for={@form}
-        phx-change="publication:change"
-        phx-submit="publication:submit"
-        phx-target={@myself}
         id="publication-form"
-        modal
+        class="contents"
+        phx-target={@myself}
+        phx-change="publication:validate"
+        phx-submit="publication:submit"
         novalidate
       >
-        <.modal_header id={@id}>
-          <.stepper current={@step} steps={3} />
-          <.section_heading text={modal_title(@step)} class="mt-4" />
-        </.modal_header>
-        <div class="h-full space-y-12 overflow-y-auto">
-          <.fieldset id="publication" modal>
+        <div class="h-full space-y-12 overflow-y-auto px-6 py-8">
+          <.fieldset>
             {body(assigns, 1)}
             {body(assigns, 2)}
             {body(assigns, 3)}
-
-            <:actions modal>
-              {footer(assigns)}
-            </:actions>
           </.fieldset>
         </div>
+        <:actions modal>
+          {footer(assigns)}
+        </:actions>
       </.simple_form>
     </div>
     """
   end
 
   @impl true
-  def handle_event("publication:next", _params, %{assigns: %{step: step}} = socket) do
-    {:noreply, assign(socket, :step, step + 1)}
+  def handle_event("publication:next", _params, socket) do
+    socket
+    |> update(:step, &(&1 + 1))
+    |> noreply()
   end
 
   @impl true
-  def handle_event("publication:back", _params, %{assigns: %{step: step}} = socket) do
-    {:noreply, assign(socket, :step, step - 1)}
+  def handle_event("publication:back", _params, socket) do
+    socket
+    |> update(:step, &(&1 - 1))
+    |> noreply()
   end
 
   @impl true
   def handle_event("toggle:agree", _params, socket) do
-    {:noreply, assign(socket, :agreed, !socket.assigns.agreed)}
+    socket
+    |> update(:agreed, &(!&1))
+    |> noreply()
   end
 
   @impl true
-  def handle_event("publication:change", params, socket) do
+  def handle_event("publication:validate", %{"publication" => params}, socket) do
+    form = socket.assigns.form
+    form = Form.validate(form, params)
+
     socket =
       socket
+      |> assign(:form, form)
       |> maybe_assign_creation_option(params)
       |> maybe_assign_dataset_key(params)
 
@@ -109,13 +127,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
         rows_count: Ash.count!(count_query)
       })
 
-    params
-    |> Publication.create!(tenant: collection)
-    |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor)
+    socket = update(socket, :agreed, &(!&1))
 
-    send(self(), {"fast_track_pub:submit", %{}})
+    case params
+         |> Publication.create!(tenant: collection)
+         |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor) do
+      {:error, _} ->
+        {:noreply, put_flash(socket, :error, ~t"A publication for this collection is already in process"m)}
 
-    {:noreply, socket |> assign(:agreed, false) |> push_event("submit:close", %{})}
+      {:ok, _} ->
+        socket
+        |> put_flash(:info, ~t"Publication started in background"m)
+        |> push_navigate(to: build_path(~p"/collections/#{socket.assigns.collection}/records", socket.assigns.meta))
+        |> noreply()
+    end
   end
 
   @impl true
@@ -133,7 +158,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
   defp body(assigns, 1) do
     ~H"""
     <div class={unless @step == 1, do: "hidden"}>
-      <div class="h-full space-y-4 overflow-y-auto p-6">
+      <div class="space-y-4">
         <p class="text-sm">
           {~t"You are about to send"m}
           <span class="font-bold">
@@ -245,106 +270,91 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
   defp body(assigns, 2) do
     ~H"""
     <div class={unless @step == 2, do: "hidden"}>
-      <div class="h-full overflow-y-auto overflow-x-hidden px-6 py-1">
-        <.section_heading
-          text={~t"Dataset"m}
-          description={~t"Basic metadata regarding the dataset."m}
-          size="md"
-          class="pt-4"
-        />
-
-        <.list dense>
-          <:item title={~t"Title"m}>
-            {"#{@grscicoll_data["name"]} (#{@grscicoll_data["code"]}) of #{@grscicoll_data["institutionName"]}"}
-          </:item>
-          <:item title={~t"Publisher"m}>
-            <.link
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-primary"
-              href="https://www.gbif.org/publisher/9661d20d-86b6-4485-8948-f3c86b022fa7"
-            >
-              {"SwissNatColl"}
-            </.link>
-          </:item>
-          <:item
-            :if={
-              persons(@grscicoll_data, "creator") ++ persons(@grscicoll_data, "metadataprovider") !=
-                []
-            }
-            title={~t"Authors"}
+      <.section_heading
+        text={~t"Dataset"m}
+        description={~t"Basic metadata regarding the dataset."m}
+        size="md"
+      />
+      <.list dense>
+        <:item title={~t"Title"m}>
+          {"#{@grscicoll_data["name"]} (#{@grscicoll_data["code"]}) of #{@grscicoll_data["institutionName"]}"}
+        </:item>
+        <:item title={~t"Publisher"m}>
+          <.link
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-primary"
+            href="https://www.gbif.org/publisher/9661d20d-86b6-4485-8948-f3c86b022fa7"
           >
-            <div :for={
-              person <-
-                (persons(@grscicoll_data, "creator") ++ persons(@grscicoll_data, "metadataprovider"))
-                |> Enum.uniq()
-            }>
-              {person}
-            </div>
-          </:item>
-        </.list>
+            {"SwissNatColl"}
+          </.link>
+        </:item>
+        <:item
+          :if={
+            persons(@grscicoll_data, "creator") ++ persons(@grscicoll_data, "metadataprovider") !=
+              []
+          }
+          title={~t"Authors"}
+        >
+          <div :for={
+            person <-
+              (persons(@grscicoll_data, "creator") ++ persons(@grscicoll_data, "metadataprovider"))
+              |> Enum.uniq()
+          }>
+            {person}
+          </div>
+        </:item>
+      </.list>
 
-        <.section_heading
-          text={~t"Institution and contact Information"m}
-          description={~t"Metadata regarding the institution and contacts based on GrSciColl."m}
-          size="md"
-          class="pt-4"
-        />
-        <.list dense>
-          <:item title={~t"Institution"m}>
-            {@grscicoll_data["institutionName"]}
-          </:item>
-          <:item title={~t"Institution Code"}>
-            {@grscicoll_data["code"]}
-          </:item>
-          <:item title={~t"Address"}>
-            <div>
-              <p>{@grscicoll_data["address"]["address"]}</p>
-              <p>
-                {@grscicoll_data["address"]["postalCode"]} {@grscicoll_data["address"]["city"]}
-              </p>
-              <p>{@grscicoll_data["address"]["country"]}</p>
-            </div>
-          </:item>
-          <:item :if={persons(@grscicoll_data, "creator") != []} title={~t"Originator"}>
-            <div :for={person <- persons(@grscicoll_data, "creator")}>
-              {person}
-            </div>
-          </:item>
-          <:item
-            :if={persons(@grscicoll_data, "metadataprovider") != []}
-            title={~t"Metadata Provider"}
-          >
-            <div :for={person <- persons(@grscicoll_data, "metadataprovider")}>
-              {person}
-            </div>
-          </:item>
-          <:item
-            :if={persons(@grscicoll_data, "contact") != []}
-            title={~t"Administrative point of contact"}
-          >
-            <div :for={person <- persons(@grscicoll_data, "contact")}>
-              {person}
-            </div>
-          </:item>
-        </.list>
+      <.section_heading
+        text={~t"Institution and contact Information"m}
+        description={~t"Metadata regarding the institution and contacts based on GrSciColl."m}
+        size="md"
+        class="pt-4"
+      />
+      <.list dense>
+        <:item title={~t"Institution"m}>
+          {@grscicoll_data["institutionName"]}
+        </:item>
+        <:item title={~t"Institution Code"}>
+          {@grscicoll_data["code"]}
+        </:item>
+        <:item title={~t"Address"}>
+          <div>
+            <p>{@grscicoll_data["address"]["address"]}</p>
+            <p>
+              {@grscicoll_data["address"]["postalCode"]} {@grscicoll_data["address"]["city"]}
+            </p>
+            <p>{@grscicoll_data["address"]["country"]}</p>
+          </div>
+        </:item>
+        <:item :if={persons(@grscicoll_data, "creator") != []} title={~t"Originator"}>
+          <div :for={person <- persons(@grscicoll_data, "creator")}>
+            {person}
+          </div>
+        </:item>
+        <:item :if={persons(@grscicoll_data, "metadataprovider") != []} title={~t"Metadata Provider"}>
+          <div :for={person <- persons(@grscicoll_data, "metadataprovider")}>
+            {person}
+          </div>
+        </:item>
+        <:item
+          :if={persons(@grscicoll_data, "contact") != []}
+          title={~t"Administrative point of contact"}
+        >
+          <div :for={person <- persons(@grscicoll_data, "contact")}>
+            {person}
+          </div>
+        </:item>
+      </.list>
 
-        <.section_heading
-          text={~t"Intellectual property rights"m}
-          description={~t"Please choose under what license this publication and dataset is covered."m}
-          size="md"
-          class="pt-4"
-        />
-        <div class="grid grid-cols-1 pb-4">
-          <.field
-            type="combobox"
-            field={@form[:license]}
-            options={[{"CC BY", :cc_by}, {"CC0", :cc0}, {"CC BY-NC", :cc_by_nc}]}
-            placeholder={~t"Select institutions"m}
-            data-portal="fast_track_pub_modal"
-          />
-        </div>
-      </div>
+      <.section_heading text={~t"Intellectual property rights"m} size="md" class="pt-4 pb-1" />
+      <.radio_group
+        field={@form[:license]}
+        options={[{"CC BY", :cc_by}, {"CC0", :cc0}, {"CC BY-NC", :cc_by_nc}]}
+        as_atoms
+        description={~t"Please choose under what license this publication and dataset is covered."m}
+      />
     </div>
     """
   end
@@ -352,7 +362,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
   defp body(assigns, 3) do
     ~H"""
     <div class={unless @step == 3, do: "hidden"}>
-      <div class="h-full space-y-4 overflow-y-auto p-6">
+      <div class="space-y-4">
         <p class="text-sm">
           {~t"You are about to"m}
           <span class="font-bold">
@@ -448,7 +458,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
     <button type="button" class="btn btn-primary" phx-click="publication:next" phx-target={@myself}>
       {~t"Next"m}
     </button>
-    <button class="btn btn-ghost">
+    <button type="button" class="btn btn-ghost" onclick="fast_track_pub_modal.close()">
       {~t"Cancel"m}
     </button>
     """
@@ -459,7 +469,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
     <button type="button" class="btn btn-primary" phx-click="publication:next" phx-target={@myself}>
       {~t"Next"m}
     </button>
-    <button type="button" class="btn btn-primary" phx-click="publication:back" phx-target={@myself}>
+    <button type="button" class="btn btn-ghost" phx-click="publication:back" phx-target={@myself}>
       {~t"Back"m}
     </button>
     """
