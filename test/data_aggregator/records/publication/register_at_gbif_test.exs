@@ -110,7 +110,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
       publication: publication
     } do
       {:ok, collection} =
-        Collection.register_at_gbif(collection, publication.attachment.url)
+        Collection.register_at_gbif(collection, publication.attachment.url, nil)
 
       assert collection.gbif_dataset_key === "1234-1234-1234-1234"
     end
@@ -124,7 +124,9 @@ defmodule DataAggregator.RegisterAtGbifTest do
       end)
 
       {{:error, error}, logs} =
-        with_log(fn -> Collection.register_at_gbif(collection, publication.attachment.url) end)
+        with_log(fn ->
+          Collection.register_at_gbif(collection, publication.attachment.url, nil)
+        end)
 
       assert collection.gbif_dataset_key === nil
       assert %Invalid{} = error
@@ -141,7 +143,9 @@ defmodule DataAggregator.RegisterAtGbifTest do
       end)
 
       {{:error, error}, logs} =
-        with_log(fn -> Collection.register_at_gbif(collection, publication.attachment.url) end)
+        with_log(fn ->
+          Collection.register_at_gbif(collection, publication.attachment.url, nil)
+        end)
 
       assert collection.gbif_dataset_key === nil
       assert %Invalid{} = error

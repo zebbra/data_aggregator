@@ -17,6 +17,7 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
     dwca_file_url = Changeset.get_argument(changeset, :dwca_file_url)
+    existing_dataset_key = Changeset.get_argument(changeset, :existing_dataset_key)
     gbif_dataset_key = Changeset.get_attribute(changeset, :gbif_dataset_key)
 
     dataset_name =
@@ -26,7 +27,7 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
         Changeset.get_attribute(changeset, :grscicoll_institution_name)
       )
 
-    case register_at_gbif(gbif_dataset_key, dataset_name, dwca_file_url) do
+    case register_at_gbif(gbif_dataset_key, dataset_name, dwca_file_url, existing_dataset_key) do
       {:ok, dataset_key} ->
         Changeset.change_attribute(changeset, :gbif_dataset_key, to_string(dataset_key))
 
@@ -54,20 +55,36 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
     "#{collection_name} (#{collection_code}) of #{institution_name}"
   end
 
-  @spec register_at_gbif(String.t() | nil, String.t(), String.t()) ::
+  @spec register_at_gbif(String.t() | nil, String.t(), String.t(), String.t()) ::
           registered_collection()
-  defp register_at_gbif(_gbif_dataset_key, nil, _dwca_file_url), do: {:error, "Dataset name is missing"}
+  defp register_at_gbif(_gbif_dataset_key, nil, _dwca_file_url, _existing_dataset_key),
+    do: {:error, "Dataset name is missing"}
 
-  defp register_at_gbif(gbif_dataset_key, dataset_name, dwca_file_url) do
-    if gbif_dataset_key do
-      {:ok, gbif_dataset_key}
-      |> create_endpoint(dwca_file_url)
-      |> delete_old_endpoints()
-    else
-      dataset_name
-      |> register_collection()
-      |> create_endpoint(dwca_file_url)
-      |> delete_old_endpoints()
+  defp register_at_gbif(gbif_dataset_key, dataset_name, dwca_file_url, existing_dataset_key) do
+    cond do
+      gbif_dataset_key ->
+        Logger.debug("This collection already has a dataset key: #{gbif_dataset_key}, we can directly create an endpoint")
+
+        {:ok, gbif_dataset_key}
+        |> create_endpoint(dwca_file_url)
+        |> delete_old_endpoints()
+
+      existing_dataset_key ->
+        Logger.debug(
+          "This colleciton does not have a dataset key. We use an existing dataset key instead of registering this collection"
+        )
+
+        {:ok, existing_dataset_key}
+        |> create_endpoint(dwca_file_url)
+        |> delete_old_endpoints()
+
+      true ->
+        Logger.debug("This collection does not have a dataset key. We need to register it first")
+
+        dataset_name
+        |> register_collection()
+        |> create_endpoint(dwca_file_url)
+        |> delete_old_endpoints()
     end
   end
 

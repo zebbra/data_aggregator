@@ -28,7 +28,7 @@ classDiagram
         create(Integer items_to_digitize, String owner, String name, String code, ...)
         update_import_mapping(Map[] import_mapping)
         touch(Integer items_to_digitize, String owner, String name, String code, ...)
-        register_at_gbif(String dwca_file_url, Integer items_to_digitize, String owner, String name, ...)
+        register_at_gbif(String dwca_file_url, String existing_dataset_key, Integer items_to_digitize, String owner, ...)
         set_mapping()
         set_importing()
         set_exporting()
@@ -508,6 +508,7 @@ classDiagram
         Integer published_count
         Integer rows_count
         Atom center
+        String existing_dataset_key
         PublicationLicenseType license
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at

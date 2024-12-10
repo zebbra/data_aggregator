@@ -101,6 +101,16 @@
       "type": "text"
     },
     {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "existing_dataset_key",
+      "type": "text"
+    },
+    {
       "allow_nil?": false,
       "default": "\"cc0\"",
       "generated?": false,
@@ -233,7 +243,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "305F0E543266C3A2FFFBB4A6BF5977E2A81559C3649DB90C6610DE93F38925F8",
+  "hash": "45FA72769A369CDD4BEEBCF3F5EA4DBE74F408BFDA7BC2EC7022E9A12900BD2E",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",

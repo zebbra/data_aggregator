@@ -82,7 +82,8 @@ defmodule DataAggregator.Gbif.RestAPI do
   @doc """
   Get a single entity (collection or institution) from the GrSciColl API, according to its key
   """
-  @spec get_grscicoll_entity(String.t(), :collection | :institution) :: Api.response_body()
+  @spec get_grscicoll_entity(String.t(), :collection | :institution | :dataset) ::
+          Api.response_body()
   def get_grscicoll_entity(key, kind) do
     req = HttpDiskCache.attach(Req.new())
 
