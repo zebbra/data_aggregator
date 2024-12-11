@@ -53,6 +53,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
         phx-target={@myself}
         phx-change="publication:validate"
         phx-submit="publication:submit"
+        onkeydown="return event.key != 'Enter';"
         novalidate
       >
         <div class="h-full space-y-12 overflow-y-auto px-6 py-8">
@@ -262,11 +263,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
                         type="button"
                         class="btn btn-primary"
                         phx-click="existing_dataset_key:check"
+                        phx-keydown="existing_dataset_key:check"
+                        phx-key="Enter"
                         phx-target={@myself}
                         disabled={
                           (@dataset != nil and @dataset.loading != nil) or
-                            @form.params["existing_dataset_key"] == nil or
-                            @form.params["existing_dataset_key"] == ""
+                            blank?(@form.params["existing_dataset_key"])
                         }
                       >
                         <%= if @dataset != nil and @dataset.loading do %>
