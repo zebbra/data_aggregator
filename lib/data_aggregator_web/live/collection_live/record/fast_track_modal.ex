@@ -21,8 +21,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
      |> assign(:step, 1)
      |> assign(:agreed, false)
      |> assign(:creation_option, "new")
-     |> assign(:dataset_key, nil)
-     |> assign(:dataset_key_valid, nil)}
+     |> assign(:dataset, nil)
+     |> assign(:target_dataset_name, nil)}
   end
 
   @impl true
@@ -53,6 +53,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
         phx-target={@myself}
         phx-change="publication:validate"
         phx-submit="publication:submit"
+        onkeydown="return event.key != 'Enter';"
         novalidate
       >
         <div class="h-full space-y-12 overflow-y-auto px-6 py-8">
@@ -92,17 +93,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
   end
 
   @impl true
-  def handle_event("publication:validate", %{"publication" => params}, socket) do
+  def handle_event("publication:validate", %{"publication" => params, "_target" => target}, socket) do
+    socket =
+      if target == ["publication", "existing_dataset_key"] do
+        socket |> assign(:dataset, nil) |> assign(:target_dataset_name, nil)
+      else
+        socket
+      end
+
     form = socket.assigns.form
     form = Form.validate(form, params)
 
-    socket =
-      socket
-      |> assign(:form, form)
-      |> maybe_assign_creation_option(params)
-      |> maybe_assign_dataset_key(params)
-
-    {:noreply, socket}
+    socket
+    |> assign(:form, form)
+    |> noreply()
   end
 
   @impl true
@@ -144,11 +148,33 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
   end
 
   @impl true
-  def handle_event("dataset_key:check", _params, socket) do
-    # Check if the dataset key is valid
+  def handle_event("non_form_data:change", %{"target_dataset_name" => target_dataset_name}, socket) do
+    {:noreply, assign(socket, :target_dataset_name, target_dataset_name)}
+  end
 
-    # TODO: Implement the check
-    {:noreply, assign(socket, :dataset_key_valid, true)}
+  @impl true
+  def handle_event("non_form_data:change", %{"creation_option" => creation_option}, socket) do
+    {:noreply, assign(socket, :creation_option, creation_option)}
+  end
+
+  @impl true
+  def handle_event("existing_dataset_key:check", _params, socket) do
+    existing_dataset_key = socket.assigns.form.params["existing_dataset_key"]
+    # Check if the dataset key is valid
+    socket
+    |> assign_async(:dataset, fn ->
+      case RestAPI.get_grscicoll_entity(
+             existing_dataset_key,
+             :dataset
+           ) do
+        {:ok, dataset} ->
+          {:ok, %{dataset: dataset}}
+
+        {:error, _} ->
+          {:ok, %{dataset: nil}}
+      end
+    end)
+    |> noreply()
   end
 
   defp modal_title(1), do: ~t"Publication of Records"
@@ -208,6 +234,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
               id="creation_option_1"
               label={~t"Create new dataset"m}
               description={~t"A new dataset will be created on GBIF."m}
+              phx-change="non_form_data:change"
               checked={@creation_option == "new"}
               value="new"
             />
@@ -217,16 +244,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
               id="creation_option_2"
               label={~t"Use existing dataset"m}
               description={~t"Your records will be published into an existing dataset on GBIF."m}
+              phx-change="non_form_data:change"
               checked={@creation_option == "existing"}
               value="existing"
-              disabled
             />
             <%= if @creation_option == "existing" do %>
               <div class="pl-10">
                 <.custom_field
+                  field={@form[:existing_dataset_key]}
                   type="text"
-                  name="dataset_key"
-                  value={@dataset_key}
                   placeholder={~t"Dataset Key"m}
                   class="pb-6"
                 >
@@ -236,17 +262,29 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
                       <button
                         type="button"
                         class="btn btn-primary"
-                        phx-click="dataset_key:check"
+                        phx-click="existing_dataset_key:check"
+                        phx-keydown="existing_dataset_key:check"
+                        phx-key="Enter"
                         phx-target={@myself}
+                        disabled={
+                          (@dataset != nil and @dataset.loading != nil) or
+                            blank?(@form.params["existing_dataset_key"])
+                        }
                       >
-                        {~t"Check"m}
+                        <%= if @dataset != nil and @dataset.loading do %>
+                          {~t"Checking..."}
+                        <% else %>
+                          {~t"Check"m}
+                        <% end %>
                       </button>
                     </div>
-                    <%= unless @dataset_key_valid == nil do %>
-                      <%= if @dataset_key_valid == true do %>
+                    <%= unless @dataset == nil or @dataset.loading do %>
+                      <%= if @dataset.result != nil do %>
                         <p id={"#{@id}_success"} class="text-base/6 mt-1 sm:text-sm/6">
                           <span class="text-success">
-                            {~t"Dataset {datasetName} was found"m}
+                            {mgettext("Dataset \"%{dataset_title}\" was found",
+                              dataset_title: @dataset.result["title"]
+                            )}
                           </span>
                         </p>
                       <% else %>
@@ -255,9 +293,31 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
                     <% end %>
                   </:content>
                 </.custom_field>
-                <p class="text-sm">
-                  {~t"For security reasons: Please provide your institution code and the institution code of the dataset you are going to publish into."m}
-                </p>
+                <%= if @dataset != nil and @dataset.result != nil do %>
+                  <p class="pb-3 text-sm">
+                    {~t"For security reasons: Please type in the name of the target dataset you are going to publish into."m}
+                  </p>
+                  <.field
+                    value={@target_dataset_name}
+                    name="target_dataset_name"
+                    placeholder={~t"Name of target dataset"m}
+                    phx-change="non_form_data:change"
+                    class={
+                      if @target_dataset_name == @dataset.result["title"] do
+                        "[&_span]:text-success"
+                      else
+                        "[&_span]:text-error"
+                      end
+                    }
+                    icon_end={
+                      if @target_dataset_name == @dataset.result["title"] do
+                        "hero-check"
+                      else
+                        "hero-x-mark"
+                      end
+                    }
+                  />
+                <% end %>
               </div>
             <% end %>
           </.fieldgroup>
@@ -383,7 +443,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
         </p>
         <.list dense>
           <:item title={~t"Dataset Title"m}>
-            {"#{@grscicoll_data["name"]} (#{@grscicoll_data["code"]}) of #{@grscicoll_data["institutionName"]}"}
+            <%= if @creation_option == "new" do %>
+              {"#{@grscicoll_data["name"]} (#{@grscicoll_data["code"]}) of #{@grscicoll_data["institutionName"]}"}
+            <% else %>
+              <%= if @dataset != nil do %>
+                {"#{@dataset.result["title"]}"}
+              <% else %>
+                {~t"loading..."m}
+              <% end %>
+            <% end %>
           </:item>
         </.list>
         <div class="flex">
@@ -455,7 +523,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
 
   defp footer(%{step: 1} = assigns) do
     ~H"""
-    <button type="button" class="btn btn-primary" phx-click="publication:next" phx-target={@myself}>
+    <button
+      disabled={dataset_validation_valid?(assigns) == false}
+      type="button"
+      class="btn btn-primary"
+      phx-click="publication:next"
+      phx-target={@myself}
+    >
       {~t"Next"m}
     </button>
     <button type="button" class="btn btn-ghost" onclick="fast_track_pub_modal.close()">
@@ -511,6 +585,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
     )
   end
 
+  defp dataset_validation_valid?(assigns) do
+    assigns.creation_option == "new" or
+      (assigns.dataset != nil and assigns.dataset.result != nil and
+         assigns.target_dataset_name == assigns.dataset.result["title"])
+  end
+
   defp assign_count(socket) do
     %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
     actor = get_actor(socket)
@@ -532,16 +612,4 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
 
     assign(socket, :grscicoll_data, grscicoll_data)
   end
-
-  defp maybe_assign_creation_option(socket, %{"creation_option" => creation_option}) do
-    assign(socket, :creation_option, creation_option)
-  end
-
-  defp maybe_assign_creation_option(socket, _params), do: socket
-
-  defp maybe_assign_dataset_key(socket, %{"dataset_key" => dataset_key}) do
-    assign(socket, :dataset_key, dataset_key)
-  end
-
-  defp maybe_assign_dataset_key(socket, _params), do: socket
 end

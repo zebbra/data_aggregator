@@ -158,7 +158,11 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
   defp register(%Publication{channel: :fast_track} = publication, query) do
     with {:ok, _collection} <-
-           Collection.register_at_gbif(publication.collection, publication.attachment.url),
+           Collection.register_at_gbif(
+             publication.collection,
+             publication.attachment.url,
+             publication.existing_dataset_key
+           ),
          :ok <- queue_records_for_verification(query) do
       {:ok, publication}
     end

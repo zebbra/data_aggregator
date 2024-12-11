@@ -759,9 +759,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     end)
   end
 
-  defp blank?(val) when val in [nil, "", []], do: true
-  defp blank?(_), do: false
-
   defp mapping_valid?(%Import{mappings: mappings}) do
     Enum.all?(@mandatory_attributes, fn attribute ->
       Enum.any?(mappings, &(&1.mapped_to == attribute))

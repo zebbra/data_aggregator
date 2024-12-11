@@ -159,6 +159,7 @@ defmodule DataAggregator.Records.Collection do
 
     update :register_at_gbif do
       argument :dwca_file_url, :string, allow_nil?: false
+      argument :existing_dataset_key, :string, allow_nil?: true
       require_atomic? false
 
       change Changes.RegisterAtGbif
@@ -316,7 +317,7 @@ defmodule DataAggregator.Records.Collection do
     define :export, action: :export, args: [:export]
     define :publish, args: [:publication]
     define :approve, args: [:collection, :query]
-    define :register_at_gbif, args: [:dwca_file_url]
+    define :register_at_gbif, args: [:dwca_file_url, :existing_dataset_key]
 
     define :set_mapping
     define :set_importing

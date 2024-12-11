@@ -140,4 +140,7 @@ defmodule DataAggregatorWeb.Helpers do
 
   def maybe_set_user(%User{email: email}) when email != nil, do: email
   def maybe_set_user(_), do: Phoenix.HTML.raw("&mdash;")
+
+  def blank?(val) when val in [nil, "", []], do: true
+  def blank?(_), do: false
 end

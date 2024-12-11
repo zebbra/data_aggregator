@@ -250,6 +250,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
               </div>
               {@selected_publication.duration}
             </:item>
+            <:item title={~t"License"m}>
+              {@selected_publication.license}
+            </:item>
           </.list>
 
           <:footer :if={Collection.can_set_fast_track_publishing?(@current_user, @collection)}>

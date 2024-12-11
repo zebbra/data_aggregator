@@ -44,6 +44,10 @@ defmodule DataAggregator.Api.Helpers do
     grscicoll_api_base_url() <> "/institution/#{key}"
   end
 
+  def grscicoll_entity_by_key_url(key, :dataset) do
+    gbif_api_base_url() <> "/dataset/#{key}"
+  end
+
   @spec grscicoll_entities_url(atom()) :: String.t()
   def grscicoll_entities_url(:collection) do
     grscicoll_api_base_url() <> "/collection"
