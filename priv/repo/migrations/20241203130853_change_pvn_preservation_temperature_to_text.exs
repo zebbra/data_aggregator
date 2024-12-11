@@ -8,30 +8,30 @@ defmodule DataAggregator.Repo.Migrations.ChangePvnPreservationTemperatureToText 
   use Ecto.Migration
 
   def up do
-    alter table(:records) do
-      modify :pvn_preservation_temperature, :text
-    end
+    # alter table(:records) do
+    #   modify :pvn_preservation_temperature, :text
+    # end
 
-    alter table(:encoded_records) do
-      modify :pvn_preservation_temperature, :text
-    end
+    # alter table(:encoded_records) do
+    #   modify :pvn_preservation_temperature, :text
+    # end
 
-    alter table(:approved_records) do
-      modify :pvn_preservation_temperature, :text
-    end
+    # alter table(:approved_records) do
+    #   modify :pvn_preservation_temperature, :text
+    # end
   end
 
   def down do
-    alter table(:approved_records) do
-      modify :pvn_preservation_temperature, :float
-    end
+    # alter table(:approved_records) do
+    #   modify :pvn_preservation_temperature, :float
+    # end
 
-    alter table(:encoded_records) do
-      modify :pvn_preservation_temperature, :float
-    end
+    # alter table(:encoded_records) do
+    #   modify :pvn_preservation_temperature, :float
+    # end
 
-    alter table(:records) do
-      modify :pvn_preservation_temperature, :float
-    end
+    # alter table(:records) do
+    #   modify :pvn_preservation_temperature, :float
+    # end
   end
 end

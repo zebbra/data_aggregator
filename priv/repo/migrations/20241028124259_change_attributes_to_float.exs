@@ -19,8 +19,7 @@ defmodule DataAggregator.Repo.Migrations.ChangeAttributesToFloat do
       ALTER COLUMN loc_maximum_depth_in_meters TYPE float USING loc_maximum_depth_in_meters::double precision,
       ALTER COLUMN loc_minimum_distance_above_surface_in_meters TYPE float USING loc_minimum_distance_above_surface_in_meters::double precision,
       ALTER COLUMN loc_maximum_distance_above_surface_in_meters TYPE float USING loc_maximum_distance_above_surface_in_meters::double precision,
-      ALTER COLUMN loc_coordinate_uncertainty_in_meters TYPE float USING loc_coordinate_uncertainty_in_meters::double precision,
-      ALTER COLUMN pvn_preservation_temperature TYPE float USING pvn_preservation_temperature::double precision;
+      ALTER COLUMN loc_coordinate_uncertainty_in_meters TYPE float USING loc_coordinate_uncertainty_in_meters::double precision;
     """
 
     execute """
@@ -34,8 +33,7 @@ defmodule DataAggregator.Repo.Migrations.ChangeAttributesToFloat do
       ALTER COLUMN loc_maximum_depth_in_meters TYPE float USING loc_maximum_depth_in_meters::double precision,
       ALTER COLUMN loc_minimum_distance_above_surface_in_meters TYPE float USING loc_minimum_distance_above_surface_in_meters::double precision,
       ALTER COLUMN loc_maximum_distance_above_surface_in_meters TYPE float USING loc_maximum_distance_above_surface_in_meters::double precision,
-      ALTER COLUMN loc_coordinate_uncertainty_in_meters TYPE float USING loc_coordinate_uncertainty_in_meters::double precision,
-      ALTER COLUMN pvn_preservation_temperature TYPE float USING pvn_preservation_temperature::double precision;
+      ALTER COLUMN loc_coordinate_uncertainty_in_meters TYPE float USING loc_coordinate_uncertainty_in_meters::double precision;
     """
 
     execute """
@@ -49,8 +47,7 @@ defmodule DataAggregator.Repo.Migrations.ChangeAttributesToFloat do
       ALTER COLUMN loc_maximum_depth_in_meters TYPE float USING loc_maximum_depth_in_meters::double precision,
       ALTER COLUMN loc_minimum_distance_above_surface_in_meters TYPE float USING loc_minimum_distance_above_surface_in_meters::double precision,
       ALTER COLUMN loc_maximum_distance_above_surface_in_meters TYPE float USING loc_maximum_distance_above_surface_in_meters::double precision,
-      ALTER COLUMN loc_coordinate_uncertainty_in_meters TYPE float USING loc_coordinate_uncertainty_in_meters::double precision,
-      ALTER COLUMN pvn_preservation_temperature TYPE float USING pvn_preservation_temperature::double precision;
+      ALTER COLUMN loc_coordinate_uncertainty_in_meters TYPE float USING loc_coordinate_uncertainty_in_meters::double precision;
     """
   end
 
@@ -66,8 +63,7 @@ defmodule DataAggregator.Repo.Migrations.ChangeAttributesToFloat do
       ALTER COLUMN loc_maximum_depth_in_meters TYPE bigint,
       ALTER COLUMN loc_minimum_distance_above_surface_in_meters TYPE bigint,
       ALTER COLUMN loc_maximum_distance_above_surface_in_meters TYPE bigint,
-      ALTER COLUMN loc_coordinate_uncertainty_in_meters TYPE bigint,
-      ALTER COLUMN pvn_preservation_temperature TYPE text;
+      ALTER COLUMN loc_coordinate_uncertainty_in_meters TYPE bigint;
     """
 
     execute """
@@ -81,8 +77,7 @@ defmodule DataAggregator.Repo.Migrations.ChangeAttributesToFloat do
       ALTER COLUMN loc_maximum_depth_in_meters TYPE bigint,
       ALTER COLUMN loc_minimum_distance_above_surface_in_meters TYPE bigint,
       ALTER COLUMN loc_maximum_distance_above_surface_in_meters TYPE bigint,
-      ALTER COLUMN loc_coordinate_uncertainty_in_meters TYPE bigint,
-      ALTER COLUMN pvn_preservation_temperature TYPE text;
+      ALTER COLUMN loc_coordinate_uncertainty_in_meters TYPE bigint;
     """
 
     execute """
@@ -96,8 +91,7 @@ defmodule DataAggregator.Repo.Migrations.ChangeAttributesToFloat do
       ALTER COLUMN loc_maximum_depth_in_meters TYPE bigint,
       ALTER COLUMN loc_minimum_distance_above_surface_in_meters TYPE bigint,
       ALTER COLUMN loc_maximum_distance_above_surface_in_meters TYPE bigint,
-      ALTER COLUMN loc_coordinate_uncertainty_in_meters TYPE bigint,
-      ALTER COLUMN pvn_preservation_temperature TYPE text;
+      ALTER COLUMN loc_coordinate_uncertainty_in_meters TYPE bigint;
     """
   end
 end
