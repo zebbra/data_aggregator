@@ -55,7 +55,7 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
     "#{collection_name} (#{collection_code}) of #{institution_name}"
   end
 
-  @spec register_at_gbif(String.t() | nil, String.t(), String.t(), String.t()) ::
+  @spec register_at_gbif(String.t() | nil, String.t(), String.t(), String.t() | nil) ::
           registered_collection()
   defp register_at_gbif(_gbif_dataset_key, nil, _dwca_file_url, _existing_dataset_key),
     do: {:error, "Dataset name is missing"}

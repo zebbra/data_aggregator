@@ -295,7 +295,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
                 </.custom_field>
                 <%= if @dataset != nil and @dataset.result != nil do %>
                   <p class="pb-3 text-sm">
-                    {~t"For security reasons: Please provide your institution code and the institution code of the dataset you are going to publish into."m}
+                    {~t"For security reasons: Please type in the name of the target dataset you are going to publish into."m}
                   </p>
                   <.field
                     value={@target_dataset_name}
