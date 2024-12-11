@@ -5,6 +5,157 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [0.10.7](https://github.com/zebbra/data_aggregator/compare/v0.10.6...0.10.7) (2024-12-11)
+
+
+
+
+### Features:
+
+* publication: add funcitonality of choosing existing dataset keys on publication
+
+* publication: use updated texts for modal
+
+* publication: finish basic publication modal (override existing or create new dataset). Using an existing is blocked for now
+
+* publication: change metadata in eml file creation and tests
+
+* floating_tooltip: implemented with portal to and floating_ui
+
+* bulk_versions: use for import create records versions
+
+* publications: first work on performance improvements
+
+* images: add calculation for proxy image url
+
+* image-uplad: add incomplete status when there are unmapped images
+
+* image-upload: fix relate image upload encoding strategy. Add tests
+
+* oth_modified: added new dwc field
+
+* changes: display only changed values during encoding
+
+* redirects: change for collection/publication/approval create actions
+
+* user: validate and fix email on first modal step
+
+* image-upload: save proxy image address to associatedMedia. Handle proxy to return attachment url
+
+* helm: use CloudNativePG cluster
+
+* started_by: added relationships
+
+* table_partition: performance tweaks
+
+* table_partition: create partitions
+
+* table_partition: add multi-tenancy to records and records_versions
+
+* table_partition: add multi-tenancy to record_images
+
+* table_partition: add multi-tenancy to record_encoding_results
+
+* table_partition: add multi-tenancy to publications
+
+* table_partition: add multi-tenancy to imports
+
+* table_partition: add multi-tenancy to import_records
+
+* table_partition: add multi-tenancy to image_uploads
+
+* table_partition: add multi-tenancy to exports
+
+* table_partition: add multi-tenancy to encoded_records and it's versions
+
+* table_partition: add multi-tenancy to approvals and approved_records
+
+* table_partition: prepare records by adding a unique index on id,collection_id
+
+* images: add relate_images encoding strategy
+
+* image-upload: integrate into cancel action logic
+
+* image-upload: support hidden files and single subdiredctories
+
+* geo-encoding: use lv03 and lv95 swiss coords. Add logic to geo-reverse encoding.
+
+* geo_encoding: upcase country code on forward/reverse geo encoding
+
+* change some attributes from integer/text to float
+
+* image-upload: small ui changes.
+
+* image-upload: set collection busy when mapping images
+
+* image-upload: add activity feed for add_image_url change
+
+* image-upload: conditional edit text/icons depending on first run or rerun
+
+* kill-switch: implemented logic to abort import,export,encode,publish,approve actions
+
+* image-upload: add info text to mapping modal.
+
+* image-upload: rename and recolor image upload state
+
+* image-upload: Add log download button to summary
+
+* image-upload: validate and delete files when extracting.
+
+* image-upload: add file mapping and tests.
+
+* image-upload: add file extraction after zip upload
+
+* image-upload: First steps implementing image upload
+
+### Bug Fixes:
+
+* migrations: delete unused migration
+
+* migrations: remove faulty migrations
+
+* publication_modal: change help text
+
+* publish: improve modal workflow
+
+* live_view: push_navigate change for release 1.0
+
+* ext: sidepanel display and export
+
+* image_upload_dialog: change dialog close refernce to image_upload_modal
+
+* combobox: wait for transitions to finish before portaling
+
+* tom-select: use new paths to require modules
+
+* image-mapping: fix image mapping logic for files that contain periods
+
+* image-upload: add edge case handling
+
+* refactor and test counter
+
+* throttle export progress updates
+
+* http cache typo
+
+* remove cache path compile env dependency
+
+* small fixes
+
+* sidepanel: display all imported and only changed encoded values
+
+* changes: handle reduce of empty list
+
+* jobs: increase pruner limit to 10_000
+
+* image-upload: handle hidden folders
+
+* linting error
+
+### Performance Improvements:
+
+* records table: use generated db columns and assign_async operations
+
 ## [0.10.6](https://github.com/zebbra/data_aggregator/compare/v0.10.5...0.10.6) (2024-12-09)
 
 
