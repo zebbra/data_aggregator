@@ -6,13 +6,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
   use DataAggregatorWeb, :live_component
 
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
-  import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [filter_map: 3]
+
+  import DataAggregatorWeb.CollectionLive.Record.Helpers,
+    only: [
+      filter_map: 3,
+      checked_fast_track_query: 2,
+      count_from_query: 2
+    ]
+
   import DataAggregatorWeb.Components.FieldGroup, only: [radio_group: 1]
 
   alias AshPhoenix.Form
   alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records.Publication
-  alias DataAggregator.Records.Record
 
   @impl true
   def mount(socket) do
@@ -30,7 +36,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
     socket =
       socket
       |> assign(assigns)
-      |> assign_count()
+      |> assign_counts()
       |> assign_grscicoll_data()
       |> assign_form()
 
@@ -117,18 +123,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
 
     fast_track_query = filter_map(ash_pagify, collection.fast_track_query, socket.assigns.layer)
 
-    count_query =
-      Record
-      |> AshPagify.query_for_filters_map(fast_track_query)
-      |> Ash.Query.set_tenant(collection)
+    # filter for records that pass the fast track check (country is set, or no coordinates are set)
+    checked_fast_track_query = checked_fast_track_query(fast_track_query, socket.assigns.layer)
+    checked_fast_track_count = count_from_query(checked_fast_track_query, collection)
 
     params =
       Map.merge(params, %{
         name: "pub-#{socket.assigns.collection.name}-#{:os.system_time()}",
         channel: :fast_track,
-        records_query: fast_track_query,
+        records_query: checked_fast_track_query,
         collection: collection,
-        rows_count: Ash.count!(count_query)
+        rows_count: checked_fast_track_count
       })
 
     socket = update(socket, :agreed, &(!&1))
@@ -190,7 +195,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
           <span class="font-bold">
             {mgettext(
               "%{count} records from the %{layer} layer",
-              count: format_number(@count),
+              count: format_number(@checked_fast_track_count),
               layer: @layer
             )}
           </span>
@@ -198,6 +203,23 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
           <span class="font-bold">{~t"kingdom "m}</span>
           {~t"attribute will not be published."m}
         </p>
+
+        <div :if={@total_count - @checked_fast_track_count > 0} class="flex">
+          <div class="mr-4 flex-shrink-0">
+            <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
+          </div>
+          <p class="text-sm">
+            {~t"There are"m}
+            <span class="text-sm font-bold">
+              {mgettext(
+                "%{count} records",
+                count: format_number(@total_count - @checked_fast_track_count)
+              )}
+            </span>
+            {~t"that will not be published, because they did not pass the fast track check, and might contain sensitive information."m}
+            {~t"Please run the encoding step, and run the publication on another layer than the 'import layer' to prevent this."m}
+          </p>
+        </div>
 
         <%= if @collection.gbif_dataset_key do %>
           <div class="flex">
@@ -435,8 +457,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
           {~t"and send"m}
           <span class="font-bold">
             {mgettext(
-              "%{count} records",
-              count: format_number(@count)
+              "%{checked_fast_track_count} records",
+              checked_fast_track_count: format_number(@checked_fast_track_count)
             )}
           </span>
           {~t"to GBIF"m}
@@ -591,19 +613,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
          assigns.target_dataset_name == assigns.dataset.result["title"])
   end
 
-  defp assign_count(socket) do
+  defp assign_counts(socket) do
     %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
     actor = get_actor(socket)
     collection = Ash.load!(collection, [:fast_track_query], lazy?: true, actor: actor)
 
-    fast_track_query = filter_map(ash_pagify, collection.fast_track_query, socket.assigns.layer)
+    fast_track_query =
+      filter_map(ash_pagify, collection.fast_track_query, socket.assigns.layer)
 
-    count_query =
-      Record
-      |> AshPagify.query_for_filters_map(fast_track_query)
-      |> Ash.Query.set_tenant(collection)
+    total_count = count_from_query(fast_track_query, collection)
 
-    assign(socket, :count, Ash.count!(count_query))
+    checked_fast_track_query = checked_fast_track_query(fast_track_query, socket.assigns.layer)
+    checked_fast_track_count = count_from_query(checked_fast_track_query, collection)
+
+    socket
+    |> assign(:total_count, total_count)
+    |> assign(:checked_fast_track_count, checked_fast_track_count)
   end
 
   defp assign_grscicoll_data(socket) do
