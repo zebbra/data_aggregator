@@ -124,27 +124,29 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   def checked_fast_track_query(fast_track_query, "import" = _layer) do
     AshPagify.merge_filters(%AshPagify{filters: fast_track_query}, %{
       or: [
-        loc_country: %{is_nil: false},
-        and: [
-          %{
-            or: [
-              %{loc_decimal_latitude: %{is_nil: true}},
-              %{loc_decimal_longitude: %{is_nil: true}}
-            ]
-          },
-          %{
-            or: [
-              %{loc_swiss_coordinates_lv95_y: %{is_nil: true}},
-              %{loc_swiss_coordinates_lv95_x: %{is_nil: true}}
-            ]
-          },
-          %{
-            or: [
-              %{loc_swiss_coordinates_lv03_y: %{is_nil: true}},
-              %{loc_swiss_coordinates_lv03_x: %{is_nil: true}}
-            ]
-          }
-        ]
+        %{loc_country: %{is_nil: false}},
+        %{
+          and: [
+            %{
+              or: [
+                %{loc_decimal_latitude: %{is_nil: true}},
+                %{loc_decimal_longitude: %{is_nil: true}}
+              ]
+            },
+            %{
+              or: [
+                %{loc_swiss_coordinates_lv95_y: %{is_nil: true}},
+                %{loc_swiss_coordinates_lv95_x: %{is_nil: true}}
+              ]
+            },
+            %{
+              or: [
+                %{loc_swiss_coordinates_lv03_y: %{is_nil: true}},
+                %{loc_swiss_coordinates_lv03_x: %{is_nil: true}}
+              ]
+            }
+          ]
+        }
       ]
     }).filters
   end
@@ -152,27 +154,29 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   def checked_fast_track_query(fast_track_query, _layer) do
     AshPagify.merge_filters(%AshPagify{filters: fast_track_query}, %{
       or: [
-        encoded_record: %{loc_country: %{is_nil: false}},
-        and: [
-          %{
-            or: [
-              %{encoded_record: %{loc_decimal_latitude: %{is_nil: true}}},
-              %{encoded_record: %{loc_decimal_longitude: %{is_nil: true}}}
-            ]
-          },
-          %{
-            or: [
-              %{encoded_record: %{loc_swiss_coordinates_lv95_y: %{is_nil: true}}},
-              %{encoded_record: %{loc_swiss_coordinates_lv95_x: %{is_nil: true}}}
-            ]
-          },
-          %{
-            or: [
-              %{encoded_record: %{loc_swiss_coordinates_lv03_y: %{is_nil: true}}},
-              %{encoded_record: %{loc_swiss_coordinates_lv03_x: %{is_nil: true}}}
-            ]
-          }
-        ]
+        %{encoded_record: %{loc_country: %{is_nil: false}}},
+        %{
+          and: [
+            %{
+              or: [
+                %{encoded_record: %{loc_decimal_latitude: %{is_nil: true}}},
+                %{encoded_record: %{loc_decimal_longitude: %{is_nil: true}}}
+              ]
+            },
+            %{
+              or: [
+                %{encoded_record: %{loc_swiss_coordinates_lv95_y: %{is_nil: true}}},
+                %{encoded_record: %{loc_swiss_coordinates_lv95_x: %{is_nil: true}}}
+              ]
+            },
+            %{
+              or: [
+                %{encoded_record: %{loc_swiss_coordinates_lv03_y: %{is_nil: true}}},
+                %{encoded_record: %{loc_swiss_coordinates_lv03_x: %{is_nil: true}}}
+              ]
+            }
+          ]
+        }
       ]
     }).filters
   end

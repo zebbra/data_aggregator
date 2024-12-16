@@ -211,6 +211,88 @@ defmodule DataAggregator.PublicationTest do
       assert_lists_equal(expected, transformed_attributes)
     end
 
+    test "publish/1 succesful with publication rules", %{
+      publication: publication,
+      records: records
+    } do
+      update_record_fixtures!(Enum.at(records, 0), %{
+        tax_taxon_id: 4762,
+        loc_decimal_latitude: 48.27606815,
+        loc_decimal_longitude: 10.408043484
+      })
+
+      update_record_fixtures!(Enum.at(records, 1), %{
+        tax_taxon_id: 4762,
+        loc_country: "Switzerland",
+        loc_decimal_latitude: 49.27606815,
+        loc_decimal_longitude: 11.408043484
+      })
+
+      update_record_fixtures!(Enum.at(records, 3), %{
+        tax_taxon_id: 4762,
+        loc_country: "Switzerland",
+        loc_decimal_latitude: 47.27606815,
+        loc_decimal_longitude: 9.408043484
+      })
+
+      {:ok, publication} = Collection.publish(publication, tenant: publication.collection)
+
+      %{body: body} = Req.get!(publication.attachment.url)
+
+      # validating if the core file is correctly created
+      {core_file_name, core_file_content} =
+        Enum.find(body, fn {file_name, _content} -> file_name == ~c"core.csv" end)
+
+      assert core_file_name != nil
+      assert core_file_content != nil
+
+      assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(core_file_content)
+
+      assert_lists_equal(
+        data_frame.names,
+        DwcaFile.file_header_fields(:core),
+        fn a, b -> a == b end
+      )
+
+      assert DataFrame.n_rows(data_frame) == 5
+
+      rows = DataFrame.to_rows(data_frame)
+
+      transformed_attributes =
+        Enum.map(
+          rows,
+          &Map.take(&1, [
+            "decimalLongitude",
+            "decimalLatitude"
+          ])
+        )
+
+      expected = [
+        %{
+          "decimalLatitude" => 48.27606815,
+          "decimalLongitude" => 10.408043484
+        },
+        %{
+          "decimalLatitude" => 49.28,
+          "decimalLongitude" => 11.41
+        },
+        %{
+          "decimalLatitude" => 47.27606815,
+          "decimalLongitude" => 9.408043484
+        },
+        %{
+          "decimalLatitude" => 47.28,
+          "decimalLongitude" => 9.41
+        },
+        %{
+          "decimalLatitude" => nil,
+          "decimalLongitude" => nil
+        }
+      ]
+
+      assert_lists_equal(expected, transformed_attributes)
+    end
+
     @tag capture_log: true
     test "publish/1 fails at register collection", %{
       publication_1: publication_1
