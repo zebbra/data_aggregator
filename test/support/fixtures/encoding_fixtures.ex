@@ -119,8 +119,8 @@ defmodule DataAggregator.EncodingFixtures do
   @doc """
     Generate a correct record for swiss_species encoding
   """
-  def expect_correct_swiss_species_api_call do
-    expect(SwissSpecies, :get_by_usage_key, fn _key ->
+  def expect_correct_swiss_species_api_call(number \\ 1) do
+    expect(SwissSpecies, :get_by_usage_key, number, fn _key ->
       {:ok,
        %SwissSpecies{
          id: "spc_02vSBcLj4G1ReRVJNXDLVo",
@@ -137,8 +137,8 @@ defmodule DataAggregator.EncodingFixtures do
   @doc """
     Generate a failing api call for swiss_species encoding
   """
-  def expect_failing_swiss_species_api_call do
-    expect(SwissSpecies, :get_by_usage_key, fn _key ->
+  def expect_failing_swiss_species_api_call(number \\ 1) do
+    expect(SwissSpecies, :get_by_usage_key, number, fn _key ->
       Logger.warning("unknown error occured")
 
       {:error, %Ash.Error.Unknown{}}

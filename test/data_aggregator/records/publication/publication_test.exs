@@ -215,6 +215,8 @@ defmodule DataAggregator.PublicationTest do
       publication: publication,
       records: records
     } do
+      expect_correct_swiss_species_api_call(4)
+
       update_record_fixtures!(Enum.at(records, 0), %{
         tax_taxon_id: 4762,
         loc_decimal_latitude: 48.27606815,
