@@ -2,11 +2,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   @moduledoc """
   Utility functions for working with CSV files
   """
-  alias Ash.Error.Query.NotFound
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
-
-  require Logger
 
   @doc """
   gives you a map of all relevant header fields and the record values
@@ -63,48 +59,15 @@ defmodule DataAggregator.Misc.FlatFileUtils do
 
   def map_data_to_headers_list(record_data, header_fields, transformers) do
     Enum.map(header_fields, fn k ->
-      result =
-        if Map.has_key?(transformers, k) do
-          record_data
-          |> maybe_from_extra_data(k)
-          |> transformers[k].()
-        else
-          maybe_from_extra_data(record_data, k)
-        end
-
-      publication_rules(result, record_data, k)
+      if Map.has_key?(transformers, k) do
+        record_data
+        |> maybe_from_extra_data(k)
+        |> transformers[k].()
+      else
+        maybe_from_extra_data(record_data, k)
+      end
     end)
   end
-
-  defp publication_rules(nil, _record_data, _key), do: nil
-
-  defp publication_rules(data, %{tax_taxon_id: taxon_id, loc_country: "Switzerland"} = _record_data, key) do
-    if key in [
-         :loc_decimal_latitude,
-         :loc_decimal_longitude
-       ] do
-      case SwissSpecies.get_by_usage_key(taxon_id) do
-        {:ok, _result} ->
-          Logger.debug(
-            "This is a swissSpecies entry. lets use the publication rule to round the data to 2 decimal places"
-          )
-
-          # this is a swissSpecies entry. lets use the publication rule
-          Float.round(data, 2)
-
-        {:error, %NotFound{}} ->
-          data
-
-        {:error, error} ->
-          Logger.warning("SwissSpecies.get_by_usage_key failed: #{inspect(error)}")
-          data
-      end
-    else
-      data
-    end
-  end
-
-  defp publication_rules(data, _record_data, _key), do: data
 
   defp maybe_from_extra_data(record, field) do
     if Map.has_key?(record, field) do

@@ -3,11 +3,15 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   Behaviour for creating a Darwin Core Archive (DwCA) file.
   """
 
+  alias Ash.Error.Query.NotFound
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.DarwinCore.Schema.Category
   alias DataAggregator.DarwinCore.Schema.DwcAttribute
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records.Record
+  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
+
+  require Logger
 
   defstruct [:file_descriptor, :header_fields, :headers, :record_attributes, :file_type]
   @type t() :: %__MODULE__{}
@@ -19,13 +23,43 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   Writes the given records to a DwCA file on disk. Transforms the data according to the
   given header fields (from the meta) and transformers.
   """
-  @spec write_file!(Enumerable.t(), t()) :: any()
-  def write_file!(records, meta) do
+  @spec write_file!(Enumerable.t(), t(), any()) :: any()
+  def write_file!(records, meta, channel) do
     records
     |> Stream.map(&map_record(&1, meta.record_attributes))
+    |> Stream.map(&maybe_apply_publication_rules(&1, channel, meta.file_type))
     |> Stream.map(&FlatFileUtils.map_data_to_headers_list(&1, meta.header_fields, @transformers))
     |> FlatFileUtils.store_on_disk!(meta.file_descriptor)
   end
+
+  # Maybe apply publication rules (only to swissSpecies entries in switzerland, and on fast_track channel)
+  defp maybe_apply_publication_rules(%{loc_country: "Switzerland", tax_taxon_id: taxon_id} = data, :fast_track, :core)
+       when not is_nil(taxon_id) do
+    case SwissSpecies.get_by_usage_key(taxon_id) do
+      {:ok, _result} ->
+        Logger.debug("This is a swissSpecies entry. lets use the publication rule to round the data to 2 decimal places")
+
+        # this is a swissSpecies entry. lets use the publication rule
+        data
+        |> Map.put(:loc_decimal_latitude, round_coordinates(data.loc_decimal_latitude))
+        |> Map.put(:loc_decimal_longitude, round_coordinates(data.loc_decimal_longitude))
+
+      {:error, %NotFound{}} ->
+        data
+
+      {:error, error} ->
+        Logger.warning("SwissSpecies.get_by_usage_key failed: #{inspect(error)}")
+        data
+    end
+  end
+
+  defp maybe_apply_publication_rules(data, _channel, _file_type), do: data
+
+  defp round_coordinates(value) when is_float(value) do
+    Float.round(value, 2)
+  end
+
+  defp round_coordinates(value), do: value
 
   def write_headers(%__MODULE__{file_descriptor: file, headers: headers}) do
     FlatFileUtils.store_on_disk!([headers], file)

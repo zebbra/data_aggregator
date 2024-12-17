@@ -215,7 +215,7 @@ defmodule DataAggregator.PublicationTest do
       publication: publication,
       records: records
     } do
-      expect_correct_swiss_species_api_call(4)
+      expect_correct_swiss_species_api_call(2)
 
       update_record_fixtures!(Enum.at(records, 0), %{
         tax_taxon_id: 4762,
