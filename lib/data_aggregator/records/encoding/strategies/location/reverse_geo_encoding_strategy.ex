@@ -53,6 +53,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
       |> fetch_if_coords_available()
       |> add_swiss_coordinates(encoded_record)
       |> add_intl_coords(encoded_record)
+      |> round_coordinates()
       |> upcase_country_code()
       |> add_municipality_and_city()
       |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)
@@ -189,10 +190,10 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
           })
 
         update_params
-        |> Map.put("loc_swiss_coordinates_lv95_x", swiss_coords_lv95.e)
-        |> Map.put("loc_swiss_coordinates_lv95_y", swiss_coords_lv95.n)
-        |> Map.put("loc_swiss_coordinates_lv03_x", swiss_coord_lv03.e)
-        |> Map.put("loc_swiss_coordinates_lv03_y", swiss_coord_lv03.n)
+        |> maybe_put(encoded_record, "loc_swiss_coordinates_lv95_x", swiss_coords_lv95.e)
+        |> maybe_put(encoded_record, "loc_swiss_coordinates_lv95_y", swiss_coords_lv95.n)
+        |> maybe_put(encoded_record, "loc_swiss_coordinates_lv03_x", swiss_coord_lv03.e)
+        |> maybe_put(encoded_record, "loc_swiss_coordinates_lv03_y", swiss_coord_lv03.n)
 
       encoded_record.loc_swiss_coordinates_lv95_x != nil and
           encoded_record.loc_swiss_coordinates_lv95_y != nil ->
@@ -206,8 +207,8 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
         update_params
         |> Map.put("loc_swiss_coordinates_lv95_x", encoded_record.loc_swiss_coordinates_lv95_x)
         |> Map.put("loc_swiss_coordinates_lv95_y", encoded_record.loc_swiss_coordinates_lv95_y)
-        |> Map.put("loc_swiss_coordinates_lv03_x", swiss_coords_lv03.e)
-        |> Map.put("loc_swiss_coordinates_lv03_y", swiss_coords_lv03.n)
+        |> maybe_put(encoded_record, "loc_swiss_coordinates_lv03_x", swiss_coords_lv03.e)
+        |> maybe_put(encoded_record, "loc_swiss_coordinates_lv03_y", swiss_coords_lv03.n)
 
       encoded_record.loc_swiss_coordinates_lv03_x != nil and
           encoded_record.loc_swiss_coordinates_lv03_y != nil ->
@@ -221,11 +222,20 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
         update_params
         |> Map.put("loc_swiss_coordinates_lv03_x", encoded_record.loc_swiss_coordinates_lv03_x)
         |> Map.put("loc_swiss_coordinates_lv03_y", encoded_record.loc_swiss_coordinates_lv03_y)
-        |> Map.put("loc_swiss_coordinates_lv95_x", swiss_coords_lv95.e)
-        |> Map.put("loc_swiss_coordinates_lv95_y", swiss_coords_lv95.n)
+        |> maybe_put(encoded_record, "loc_swiss_coordinates_lv95_x", swiss_coords_lv95.e)
+        |> maybe_put(encoded_record, "loc_swiss_coordinates_lv95_y", swiss_coords_lv95.n)
 
       true ->
         update_params
+    end
+  end
+
+  @spec maybe_put(map(), EncodedRecord.t(), String.t(), any()) :: map()
+  defp maybe_put(update_params, encoded_record, key, value) do
+    if Map.get(encoded_record, String.to_atom(key)) == nil do
+      Map.put(update_params, key, value)
+    else
+      Map.put(update_params, key, Map.get(encoded_record, String.to_atom(key)))
     end
   end
 
@@ -258,6 +268,14 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
   @spec add_intl_coords(map(), EncodedRecord.t()) :: map()
   defp add_intl_coords(update_params, encoded_record) do
     cond do
+      encoded_record.loc_decimal_latitude != nil and
+          encoded_record.loc_decimal_longitude != nil ->
+        # intl coords already set
+        # we need to set the coordinates here, otherwise they will be overwritten with nil
+        update_params
+        |> Map.put("loc_decimal_longitude", encoded_record.loc_decimal_longitude)
+        |> Map.put("loc_decimal_latitude", encoded_record.loc_decimal_latitude)
+
       encoded_record.loc_swiss_coordinates_lv95_x != nil and
           encoded_record.loc_swiss_coordinates_lv95_y != nil ->
         intl_coords =
@@ -282,17 +300,23 @@ defmodule DataAggregator.Records.Encoding.Strategy.ReverseGeoEncodingStrategy do
         |> Map.put("loc_decimal_longitude", intl_coords.e)
         |> Map.put("loc_decimal_latitude", intl_coords.n)
 
-      encoded_record.loc_decimal_latitude != nil and
-          encoded_record.loc_decimal_longitude != nil ->
-        # we need to set the coordinates here, otherwise they will be overwritten with nil
-        update_params
-        |> Map.put("loc_decimal_longitude", encoded_record.loc_decimal_longitude)
-        |> Map.put("loc_decimal_latitude", encoded_record.loc_decimal_latitude)
-
       true ->
         update_params
     end
   end
+
+  defp round_coordinates(update_params) do
+    update_params
+    |> Map.update("loc_decimal_longitude", nil, &maybe_round(&1, 6))
+    |> Map.update("loc_decimal_latitude", nil, &maybe_round(&1, 6))
+    |> Map.update("loc_swiss_coordinates_lv95_x", nil, &maybe_round(&1, 1))
+    |> Map.update("loc_swiss_coordinates_lv95_y", nil, &maybe_round(&1, 1))
+    |> Map.update("loc_swiss_coordinates_lv03_x", nil, &maybe_round(&1, 1))
+    |> Map.update("loc_swiss_coordinates_lv03_y", nil, &maybe_round(&1, 1))
+  end
+
+  defp maybe_round(nil, _), do: nil
+  defp maybe_round(value, precision), do: Float.round(value, precision)
 
   @spec handle_error(String.t(), map()) :: :ok
   defp handle_error(encoded_record_id, error) do
