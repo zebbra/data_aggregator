@@ -181,6 +181,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     }).filters
   end
 
+  def publication_rules_query(fast_track_query) do
+    AshPagify.merge_filters(%AshPagify{filters: fast_track_query}, %{
+      and: [
+        %{encoded_record: %{swiss_species: %{center: %{is_nil: false}}}},
+        %{encoded_record: %{loc_country: %{eq: "Switzerland"}}}
+      ]
+    }).filters
+  end
+
   def count_from_query(query, collection) do
     Record
     |> AshPagify.query_for_filters_map(query)

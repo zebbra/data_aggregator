@@ -5,12 +5,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
 
   use DataAggregatorWeb, :live_component
 
+  import DataAggregator.Accounts.Helpers, only: [has_role?: 2]
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
 
   import DataAggregatorWeb.CollectionLive.Record.Helpers,
     only: [
       filter_map: 3,
       checked_fast_track_query: 2,
+      publication_rules_query: 1,
       count_from_query: 2
     ]
 
@@ -194,40 +196,21 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
           {~t"You are about to send"m}
           <span class="font-bold">
             {mgettext(
-              "%{count} records from the %{layer} layer",
-              count: format_number(@checked_fast_track_count),
-              layer: @layer
+              "%{count} records",
+              count: format_number(@checked_fast_track_count)
             )}
           </span>
-          {~t"to GBIF, making them publicly available. Make sure that the layer you are publishing corresponds to the filters you wish to use. Also, be aware that the records without a value for the"m}
+          {~t"to GBIF, making them publicly available. Ensure that the current selection of records corresponds to the records you would like to publish. Please note that records without a value for the"m}
           <span class="font-bold">{~t"kingdom "m}</span>
           {~t"attribute will not be published."m}
         </p>
-
-        <div :if={@total_count - @checked_fast_track_count > 0} class="flex">
-          <div class="mr-4 flex-shrink-0">
-            <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
-          </div>
-          <p class="text-sm">
-            {~t"There are"m}
-            <span class="text-sm font-bold">
-              {mgettext(
-                "%{count} records",
-                count: format_number(@total_count - @checked_fast_track_count)
-              )}
-            </span>
-            {~t"that will not be published, because they did not pass the fast track check, and might contain sensitive information."m}
-            {~t"Please run the encoding step, and run the publication on another layer than the 'import layer' to prevent this."m}
-          </p>
-        </div>
-
         <%= if @collection.gbif_dataset_key do %>
           <div class="flex">
             <div class="mr-4 flex-shrink-0">
               <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
             </div>
             <p class="text-sm">
-              {~t"This collection has already been published on"m}
+              {~t"Your records will be published into an existing dataset on"m}
               <.link
                 :if={@collection.gbif_dataset_key !== nil}
                 class="link link-primary link-hover"
@@ -237,7 +220,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
                 {~t"GBIF"}
                 <.icon name="hero-arrow-top-right-on-square" class="size-4" />
               </.link>
-              {~t". Publishing this collection will publish into the already used dataset."m}
             </p>
           </div>
         <% else %>
@@ -246,7 +228,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
               <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
             </div>
             <p class="text-sm">
-              {~t"This collection has not yet been published. Please choose whether to create a new dataset on GBIF (recommended) or publish your data into an existing dataset (exports)."m}
+              {~t"These records have not yet been published; therefore, a new dataset will be created on GBIF. If you wish to publish your records in an existing dataset on GBIF, please contact"m}
+              <.link href="mailto:contact@gbif.ch" class="text-primary">
+                {"contact@gbif.ch"}
+              </.link>
             </p>
           </div>
           <.fieldgroup class="space-y-3">
@@ -260,16 +245,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
               checked={@creation_option == "new"}
               value="new"
             />
-            <.field
-              type="radio"
-              name="creation_option"
-              id="creation_option_2"
-              label={~t"Use existing dataset"m}
-              description={~t"Your records will be published into an existing dataset on GBIF."m}
-              phx-change="non_form_data:change"
-              checked={@creation_option == "existing"}
-              value="existing"
-            />
+            <%= if has_role?(@current_user, "admin") do %>
+              <.field
+                type="radio"
+                name="creation_option"
+                id="creation_option_2"
+                label={~t"Use existing dataset"m}
+                description={~t"Your records will be published into an existing dataset on GBIF."m}
+                phx-change="non_form_data:change"
+                checked={@creation_option == "existing"}
+                value="existing"
+              />
+            <% end %>
             <%= if @creation_option == "existing" do %>
               <div class="pl-10">
                 <.custom_field
@@ -449,9 +436,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
           {~t"You are about to"m}
           <span class="font-bold">
             {cond do
-              @collection.gbif_dataset_key -> ~t"publish into the already used dataset"m
+              @collection.gbif_dataset_key -> ~t"publish into an already existing dataset"m
               @creation_option == "new" -> ~t"create a new dataset"m
-              @creation_option == "existing" -> ~t"use an existing dataset"m
+              @creation_option == "existing" -> ~t"publish into an already existing dataset"m
             end}
           </span>
           {~t"and send"m}
@@ -463,6 +450,37 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
           </span>
           {~t"to GBIF"m}
         </p>
+
+        <div :if={@total_count - @checked_fast_track_count > 0} class="flex">
+          <div class="mr-4 flex-shrink-0">
+            <.icon name="hero-x-circle-mini" class="size-6 text-error" />
+          </div>
+          <p class="text-sm">
+            {~t"There are"m}
+            <span class="text-sm font-bold">
+              {mgettext("%{possible_sensitive_count} out of %{total_count} records",
+                possible_sensitive_count: format_number(@total_count - @checked_fast_track_count),
+                total_count: format_number(@total_count)
+              )}
+            </span>
+            {~t"that may contain sensitive information and, therefore, will not be published. Run the encoding process to enhance your data."m}
+          </p>
+        </div>
+        <div :if={@publication_rules_count > 0} class="flex">
+          <div class="mr-4 flex-shrink-0">
+            <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
+          </div>
+          <p class="text-sm">
+            {~t"There are"m}
+            <span class="text-sm font-bold">
+              {mgettext("%{publication_rules_count} records",
+                publication_rules_count: format_number(@publication_rules_count)
+              )}
+            </span>
+            {~t"that hold sensitive information and where publication rules will be applied. These rules will obfuscate the exact location information."m}
+          </p>
+        </div>
+
         <.list dense>
           <:item title={~t"Dataset Title"m}>
             <%= if @creation_option == "new" do %>
@@ -546,7 +564,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
   defp footer(%{step: 1} = assigns) do
     ~H"""
     <button
-      disabled={dataset_validation_valid?(assigns) == false}
+      disabled={dataset_validation_valid?(assigns) == false or @checked_fast_track_count == 0}
       type="button"
       class="btn btn-primary"
       phx-click="publication:next"
@@ -626,9 +644,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
     checked_fast_track_query = checked_fast_track_query(fast_track_query, socket.assigns.layer)
     checked_fast_track_count = count_from_query(checked_fast_track_query, collection)
 
+    publication_rules_query = publication_rules_query(checked_fast_track_query)
+    publication_rules_count = count_from_query(publication_rules_query, collection)
+
     socket
     |> assign(:total_count, total_count)
     |> assign(:checked_fast_track_count, checked_fast_track_count)
+    |> assign(:publication_rules_count, publication_rules_count)
   end
 
   defp assign_grscicoll_data(socket) do
