@@ -230,7 +230,7 @@ defmodule DataAggregator.MixProject do
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:assertions, "~> 0.19", only: :test},
       {:git_ops, "~> 2.6.3", only: [:dev]},
-      {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
+      {:git_hooks, "~> 0.8.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
       {:mimic, "~> 1.8", only: :test},
       {:styler, "~> 1.0", only: [:dev, :test], runtime: false},

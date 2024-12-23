@@ -196,68 +196,6 @@ defmodule DataAggregator.Opencage.RestAPIStub do
      }}
   end
 
-  defp match_fetch(%{q: "46.946660986374766,7.456905642729698"}) do
-    {:ok,
-     %{
-       status: 200,
-       body: %{
-         "documentation" => "https://opencagedata.com/api",
-         "licenses" => [
-           %{
-             "name" => "see attribution guide",
-             "url" => "https://opencagedata.com/credits"
-           }
-         ],
-         "rate" => %{"limit" => 2500, "remaining" => 2459, "reset" => 1_721_692_800},
-         "results" => [
-           %{
-             "bounds" => %{
-               "northeast" => %{"lat" => 46.9467468, "lng" => 7.4570141},
-               "southwest" => %{"lat" => 46.9466468, "lng" => 7.4569141}
-             },
-             "components" => %{
-               "ISO_3166-1_alpha-2" => "CH",
-               "ISO_3166-1_alpha-3" => "CHE",
-               "ISO_3166-2" => ["CH-BE"],
-               "_category" => "building",
-               "_normalized_city" => "Bern",
-               "_type" => "building",
-               "city" => "Bern",
-               "city_district" => "Stadtteil I",
-               "continent" => "Europe",
-               "country" => "Switzerland",
-               "country_code" => "ch",
-               "county" => "Bern-Mittelland administrative district",
-               "local_administrative_area" => "Bern",
-               "office" => "stepping stone",
-               "postcode" => "3011",
-               "quarter" => "Matte",
-               "road" => "Wasserwerkgasse",
-               "state" => "Bern",
-               "state_code" => "BE",
-               "state_district" => "Bernese Mittelland administrative region"
-             },
-             "confidence" => 10,
-             "distance_from_q" => %{"meters" => 5},
-             "formatted" => "stepping stone, Wasserwerkgasse, 3011 Bern, Switzerland",
-             "geometry" => %{"lat" => 46.9466968, "lng" => 7.4569641}
-           }
-         ],
-         "status" => %{"code" => 200, "message" => "OK"},
-         "stay_informed" => %{
-           "blog" => "https://blog.opencagedata.com",
-           "mastodon" => "https://en.osm.town/@opencage"
-         },
-         "thanks" => "For using an OpenCage API",
-         "timestamp" => %{
-           "created_http" => "Mon, 22 Jul 2024 14:40:07 GMT",
-           "created_unix" => 1_721_659_207
-         },
-         "total_results" => 1
-       }
-     }}
-  end
-
   defp match_fetch(%{q: "46.086797,7.104789"}) do
     {:ok,
      %{
