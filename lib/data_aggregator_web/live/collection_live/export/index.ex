@@ -65,7 +65,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
         busy={@busy}
         busy_action={@busy_action}
       />
-      <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
+      <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/records"}
           label={~t"Records"m}
@@ -161,7 +161,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
         >
           <.section_heading
             text={~t"Export"m}
-            class="border-b border-black-white/10 px-6 sm:px-8 pb-6"
+            class="border-black-white/10 border-b px-6 pb-6 sm:px-8"
             align_items={if can_run?(@selected_export), do: "center", else: "baseline"}
             size="md"
           >
@@ -206,7 +206,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
                 <.progress
                   value={@selected_export.export_progress || 0}
                   max={1}
-                  class="w-full progress progress-primary"
+                  class="progress progress-primary w-full"
                 />
                 <div>
                   {format_number(@selected_export.exported_count)} / {format_number(

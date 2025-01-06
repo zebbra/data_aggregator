@@ -17,7 +17,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     <.link
       patch={@href}
       class={[
-        "lg:stat btn btn-outline lg:text-left lg:h-auto group animate-none",
+        "btn btn-outline group animate-none lg:stat lg:h-auto lg:text-left",
         @active && "btn-primary lg:border-primary",
         @active == false && "border-base-content/20 lg:border-base-content/20"
       ]}
@@ -186,7 +186,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       </p>
       <.link
         :if={@occurrence_id !== nil && @fast_track_status == :published}
-        class="link link-primary link-hover text-sm/6 flex max-w-4xl items-center gap-x-2 mt-1"
+        class="link link-primary link-hover text-sm/6 mt-1 flex max-w-4xl items-center gap-x-2"
         target="_blank"
         href={"#{gbif_base_url()}/occurrence/#{@occurrence_id}"}
       >

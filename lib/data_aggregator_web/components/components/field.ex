@@ -111,7 +111,7 @@ defmodule DataAggregatorWeb.Components.Field do
       <.errors
         errors={@errors}
         id={@id}
-        class={if(@description, do: "col-start-1 row-start-3", else: "col-start-1 row-start-2")}
+        class={if @description, do: "col-start-1 row-start-3", else: "col-start-1 row-start-2"}
       />
     </div>
     """
@@ -137,7 +137,7 @@ defmodule DataAggregatorWeb.Components.Field do
       <.errors
         errors={@errors}
         id={@id}
-        class={if(@description, do: "col-start-1 row-start-3", else: "col-start-1 row-start-2")}
+        class={if @description, do: "col-start-1 row-start-3", else: "col-start-1 row-start-2"}
       />
     </div>
     """
@@ -169,7 +169,7 @@ defmodule DataAggregatorWeb.Components.Field do
       <.errors
         errors={@errors}
         id={@id}
-        class={if(@description, do: "col-start-2 row-start-3", else: "col-start-2 row-start-2")}
+        class={if @description, do: "col-start-2 row-start-3", else: "col-start-2 row-start-2"}
       />
     </div>
     """
@@ -195,7 +195,7 @@ defmodule DataAggregatorWeb.Components.Field do
       <.errors
         errors={@errors}
         id={@id}
-        class={if(@description, do: "col-start-1 row-start-3", else: "col-start-1 row-start-2")}
+        class={if @description, do: "col-start-1 row-start-3", else: "col-start-1 row-start-2"}
       />
     </div>
     """
@@ -227,7 +227,7 @@ defmodule DataAggregatorWeb.Components.Field do
       <.errors
         errors={@errors}
         id={@id}
-        class={if(@description, do: "col-start-2 row-start-3", else: "col-start-2 row-start-2")}
+        class={if @description, do: "col-start-2 row-start-3", else: "col-start-2 row-start-2"}
       />
     </div>
     """
@@ -239,13 +239,13 @@ defmodule DataAggregatorWeb.Components.Field do
       <%= if @custom_label != [] do %>
         {render_slot(@custom_label)}
       <% else %>
-        <.label :if={@label} for={@id} label={@label} class="sm:pb-0 sm:block self-center" {@rest} />
+        <.label :if={@label} for={@id} label={@label} class="self-center sm:block sm:pb-0" {@rest} />
       <% end %>
       <.input {assigns} class="sm:col-span-2" />
       <.description
         :if={@description}
         description={@description}
-        class="sm:col-span-3 mt-3 sm:justify-self-end"
+        class="mt-3 sm:col-span-3 sm:justify-self-end"
       />
       <.errors
         errors={@errors}
@@ -263,13 +263,13 @@ defmodule DataAggregatorWeb.Components.Field do
       <%= if @custom_label != [] do %>
         {render_slot(@custom_label)}
       <% else %>
-        <.label :if={@label} for={@id} label={@label} class="sm:pb-0 sm:block self-center" {@rest} />
+        <.label :if={@label} for={@id} label={@label} class="self-center sm:block sm:pb-0" {@rest} />
       <% end %>
       <.input class="sm:col-span-2" {assigns} />
       <.description
         :if={@description}
         description={@description}
-        class="sm:col-span-3 mt-3 sm:justify-self-end"
+        class="mt-3 sm:col-span-3 sm:justify-self-end"
       />
       <.errors
         errors={@errors}

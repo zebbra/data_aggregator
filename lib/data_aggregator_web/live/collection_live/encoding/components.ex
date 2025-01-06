@@ -39,12 +39,7 @@ defmodule DataAggregatorWeb.CollectionLive.Encoding.Components do
 
     ~H"""
     <.badge
-      class={
-        class_names([
-          "before:text-xs",
-          @tooltip and "tooltip"
-        ])
-      }
+      class={class_names(["before:text-xs", @tooltip and "tooltip"])}
       color={state_color(@state)}
       data-tip={if @tooltip, do: state_badge_tooltip(@state, @reason, @small), else: nil}
     >

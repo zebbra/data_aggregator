@@ -286,7 +286,7 @@ defmodule DataAggregator.PublicationTest do
 
         records =
           query
-          |> Ash.stream!(page: false)
+          |> Ash.stream!()
           |> Stream.take(5)
           |> Enum.to_list()
 

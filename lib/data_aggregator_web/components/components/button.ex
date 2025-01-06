@@ -28,8 +28,8 @@ defmodule DataAggregatorWeb.Components.Button do
     <.link
       type="button"
       class={[
-        "link tooltip inline-flex link-hover btn btn-sm btn-circle btn-ghost",
-        @disabled && "pointer-events-none text-base-content/20"
+        "link tooltip link-hover btn btn-sm btn-circle btn-ghost inline-flex",
+        @disabled && "text-base-content/20 pointer-events-none"
       ]}
       {@rest}
     >
@@ -85,14 +85,7 @@ defmodule DataAggregatorWeb.Components.Button do
 
   def close_button(assigns) do
     ~H"""
-    <.dynamic_tag
-      tag_name={@as}
-      class={[
-        "absolute flex",
-        position_class(@position, @dense)
-      ]}
-      {@rest}
-    >
+    <.dynamic_tag tag_name={@as} class={["absolute flex", position_class(@position, @dense)]} {@rest}>
       <button
         class={["btn btn-sm btn-ghost", if(@squared, do: "btn-square", else: "btn-circle"), @class]}
         aria-label={~t"close"m}

@@ -165,7 +165,7 @@ config :swoosh, :api_client, false
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "3.4.13",
+  version: "3.4.17",
   data_aggregator: [
     args: ~w(
       --config=tailwind.config.js

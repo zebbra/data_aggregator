@@ -62,7 +62,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                 type="search"
                 field={@filter[:query]}
                 placeholder={~t"Search mapping"}
-                class="input input-bordered max-sm:text-base sm:inline-flex items-center rounded-full flex-row gap-2"
+                class="input input-bordered flex-row items-center gap-2 rounded-full max-sm:text-base sm:inline-flex"
               >
                 <:content :let={field}>
                   <.icon name="hero-magnifying-glass" class="size-5 text-base-content/50" />
@@ -126,7 +126,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                 ~t"Please map all required attributes to one of your columns before continueing."m
               }
             >
-              <.fieldgroup class="grid grid-cols-1 items-center gap-x-4 sm:grid-cols-3 gap-y-8">
+              <.fieldgroup class="grid grid-cols-1 items-center gap-x-4 gap-y-8 sm:grid-cols-3">
                 <.inputs_for :let={column_form} field={@form[:columns]} skip_hidden={true}>
                   <%= if mandatory?(column_form) do %>
                     <section id={Form.input_value(column_form, :mapped_to)} class="contents">
@@ -193,7 +193,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                 {col}
               </button>
 
-              <.fieldgroup class="grid grid-cols-1 items-center gap-x-4 sm:grid-cols-3 gap-y-8">
+              <.fieldgroup class="grid grid-cols-1 items-center gap-x-4 gap-y-8 sm:grid-cols-3">
                 <.inputs_for :let={column_form} field={@form[:columns]} skip_hidden={true}>
                   <%= if optional?(column_form) do %>
                     <section id={Form.input_value(column_form, :name)} class="contents">
@@ -222,7 +222,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                           <.label
                             for={Form.input_id(column_form, :mapped_to)}
                             label={field.label}
-                            class="label px-0 pt-0 sm:pb-0 sm:block self-center"
+                            class="label self-center px-0 pt-0 sm:block sm:pb-0"
                           />
 
                           <div class="inline-flex gap-x-3 sm:col-span-2">
@@ -243,7 +243,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                           <.errors
                             errors={field.errors}
                             id={field.id}
-                            class="sm:col-span-3 sm:justify-self-end mt-2 mr-11"
+                            class="mt-2 mr-11 sm:col-span-3 sm:justify-self-end"
                           />
                         </:content>
                       </.custom_field>
