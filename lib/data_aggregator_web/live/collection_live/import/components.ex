@@ -50,7 +50,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components do
 
   def import_state_badge_label(%{state: :import_queued} = assigns) do
     ~H"""
-    <.progress max={1} value={} class="progress-info opacity-75 w-16" />
+    <.progress max={1} value={} class="progress-info w-16 opacity-75" />
     """
   end
 

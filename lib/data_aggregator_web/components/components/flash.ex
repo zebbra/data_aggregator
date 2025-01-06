@@ -134,7 +134,7 @@ defmodule DataAggregatorWeb.Components.Flash do
             hidden
           >
             {~t"Attempting to reconnect"m}
-            <.icon name="hero-arrow-path" class="ml-1 size-3 animate-spin" />
+            <.icon name="hero-arrow-path" class="size-3 ml-1 animate-spin" />
           </.flash>
 
           <.flash
@@ -146,7 +146,7 @@ defmodule DataAggregatorWeb.Components.Flash do
             hidden
           >
             {~t"Hang in there while we get back on track"m}
-            <.icon name="hero-arrow-path" class="ml-1 size-3 animate-spin" />
+            <.icon name="hero-arrow-path" class="size-3 ml-1 animate-spin" />
           </.flash>
         </div>
       </div>

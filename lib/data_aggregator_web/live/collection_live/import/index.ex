@@ -69,7 +69,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         busy={@busy}
         busy_action={@busy_action}
       />
-      <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
+      <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/records"}
           label={~t"Records"m}
@@ -202,7 +202,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         >
           <.section_heading
             text={~t"Import"m}
-            class="border-b border-black-white/10 px-6 lg:px-8 pb-6"
+            class="border-black-white/10 border-b px-6 pb-6 lg:px-8"
             align_items={
               if @selected_import.state == :imported,
                 do: "baseline",
@@ -262,7 +262,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                 <.progress
                   value={@selected_import.validation_progress || 0}
                   max={1}
-                  class="w-full progress progress-primary"
+                  class="progress progress-primary w-full"
                 />
                 <div>
                   {format_number(@selected_import.rows_validated_count)} / {format_number(
@@ -284,7 +284,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                   <div class="inline-flex gap-1">
                     <.link
                       data-tip={~t"Preview error log"m}
-                      class="self-center tooltip rounded-full text-xs gap-x-1 font-medium bg-blue-100 px-1.5 pb-0.5 text-blue-500 opacity-75 hover:opacity-100"
+                      class="tooltip gap-x-1 self-center rounded-full bg-blue-100 px-1.5 pb-0.5 text-xs font-medium text-blue-500 opacity-75 hover:opacity-100"
                       phx-click="show:error_log_preview"
                       aria-label={~t"Open error log preview"m}
                     >
@@ -317,7 +317,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                 <.progress
                   value={@selected_import.import_progress || 0}
                   max={1}
-                  class="w-full progress progress-primary"
+                  class="progress progress-primary w-full"
                 />
                 <div>
                   {format_number(@selected_import.rows_imported_count)} / {format_number(
@@ -345,7 +345,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             <:caption>
               <.section_heading
                 text={~t"Mapping"m}
-                class="border-b border-black-white/10 px-6 pb-6 lg:px-8 text-left"
+                class="border-black-white/10 border-b px-6 pb-6 text-left lg:px-8"
                 align_items="center"
                 size="md"
               >

@@ -100,7 +100,7 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
 
   defp update_records_approval_started_at(query) do
     query
-    |> Ash.stream!(page: false)
+    |> Ash.stream!()
     |> Enum.each(&process_record(&1))
   end
 

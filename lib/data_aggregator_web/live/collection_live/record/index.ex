@@ -167,7 +167,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         meta={@meta.result}
       />
 
-      <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
+      <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
         <.secondary_navigation_item
           href={path_helper(@collection, @layer, @meta.result)}
           label={~t"Records"m}
@@ -562,7 +562,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             </div>
           </:additional_header_content>
 
-          <.secondary_navigation class="sticky border-t-0 top-0">
+          <.secondary_navigation class="sticky top-0 border-t-0">
             <.secondary_navigation_item
               label={~t"Data"m}
               on_click="record:set_tab"

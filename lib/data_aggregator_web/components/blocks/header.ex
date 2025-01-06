@@ -174,7 +174,7 @@ defmodule DataAggregatorWeb.Blocks.Header do
           :if={@title == []}
           tag_name={@as}
           class={[
-            "text-base-content max-sm:line-clamp-2 sm:truncate max-w-4xl text-inherit",
+            "text-base-content max-w-4xl text-inherit max-sm:line-clamp-2 sm:truncate",
             heading_title_size_class(@size)
           ]}
         >

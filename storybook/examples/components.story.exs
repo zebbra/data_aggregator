@@ -186,7 +186,7 @@ defmodule Storybook.Examples.Components do
             </:actions>
           </.simple_form>
         </.modal>
-        <.flash_group class="isolate psb-z-20" flash={@flash} />
+        <.flash_group class="psb-z-20 isolate" flash={@flash} />
       </:portal>
     </.page>
     """

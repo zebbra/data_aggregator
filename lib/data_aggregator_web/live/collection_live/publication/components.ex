@@ -44,7 +44,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
 
   def publication_state_badge_label(%{state: :queued} = assigns) do
     ~H"""
-    <.progress max={1} value={} class="progress-info opacity-75 w-16" />
+    <.progress max={1} value={} class="progress-info w-16 opacity-75" />
     """
   end
 

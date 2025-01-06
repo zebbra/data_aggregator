@@ -76,10 +76,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <.link
             :if={@show_import_button}
             patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
-            class={[
-              "btn btn-primary btn-sm",
-              (@busy || is_nil(@meta)) && "btn-disabled"
-            ]}
+            class={["btn btn-primary btn-sm", (@busy || is_nil(@meta)) && "btn-disabled"]}
           >
             <%= if importing?(@busy_action) do %>
               <.icon name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
@@ -91,10 +88,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <.link
             :if={@show_image_upload_button}
             patch={build_path(~p"/collections/#{@collection}/image_uploads/new", @meta)}
-            class={[
-              "btn btn-primary btn-sm",
-              (@busy || is_nil(@meta)) && "btn-disabled"
-            ]}
+            class={["btn btn-primary btn-sm", (@busy || is_nil(@meta)) && "btn-disabled"]}
           >
             <%= if mapping?(@busy_action) do %>
               <.icon name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
@@ -107,7 +101,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
       </:breadcrumbs>
       <:title>
         <.breadcrumbs
-          class="max-sm:hidden text-base-content font-bold text-3xl tracking-tight"
+          class="text-base-content text-3xl font-bold tracking-tight max-sm:hidden"
           items={[
             %{label: ~t"Collections"m, link: ~p"/collections"},
             %{label: "#{@collection.name} (#{@collection.code})", link: "#"}
@@ -150,10 +144,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         <.link
           :if={@show_import_button}
           patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
-          class={[
-            "btn btn-primary",
-            (@busy || is_nil(@meta)) && "btn-disabled"
-          ]}
+          class={["btn btn-primary", (@busy || is_nil(@meta)) && "btn-disabled"]}
         >
           <%= if importing?(@busy_action) do %>
             <.icon name="hero-cog-6-tooth-solid animate-spin" />
@@ -165,10 +156,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         <.link
           :if={@show_image_upload_button}
           patch={build_path(~p"/collections/#{@collection}/image_uploads/new", @meta)}
-          class={[
-            "btn btn-primary",
-            (@busy || is_nil(@meta)) && "btn-disabled"
-          ]}
+          class={["btn btn-primary", (@busy || is_nil(@meta)) && "btn-disabled"]}
         >
           <%= if mapping?(@busy_action) do %>
             <.icon name="hero-cog-6-tooth-solid animate-spin" />

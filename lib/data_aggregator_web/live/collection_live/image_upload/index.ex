@@ -70,7 +70,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
         busy={@busy}
         busy_action={@busy_action}
       />
-      <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
+      <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/records"}
           label={~t"Records"m}
@@ -169,7 +169,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
         >
           <.section_heading
             text={~t"Image Upload"m}
-            class="border-b border-black-white/10 px-6 lg:px-8 pb-6"
+            class="border-black-white/10 border-b px-6 pb-6 lg:px-8"
             size="md"
           >
             <:subtitle>
@@ -217,7 +217,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
             <:item title={~t"Logfile"}>
               <.link
                 data-tip="download log"
-                class="self-center tooltip rounded-full text-xs gap-x-1 font-medium bg-blue-100 px-1.5 pb-0.5 text-blue-500 opacity-75 hover:opacity-100"
+                class="tooltip gap-x-1 self-center rounded-full bg-blue-100 px-1.5 pb-0.5 text-xs font-medium text-blue-500 opacity-75 hover:opacity-100"
                 target="_blank"
                 href={
                   ~p"/collecitons/#{@collection}/image_uploads/log/#{@selected_image_upload}/download"

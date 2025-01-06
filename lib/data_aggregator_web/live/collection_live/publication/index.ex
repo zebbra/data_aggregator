@@ -67,7 +67,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
         busy={@busy}
         busy_action={@busy_action}
       />
-      <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
+      <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
         <.secondary_navigation_item
           href={~p"/collections/#{@collection}/records"}
           label={~t"Records"m}
@@ -174,7 +174,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
         >
           <.section_heading
             text={~t"Publication"m}
-            class="border-b border-black-white/10 px-6 sm:px-8 pb-6"
+            class="border-black-white/10 border-b px-6 pb-6 sm:px-8"
             align_items="center"
             size="md"
           >
@@ -225,7 +225,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
                 <.progress
                   value={@selected_publication.publication_progress || 0}
                   max={1}
-                  class="w-full progress progress-primary"
+                  class="progress progress-primary w-full"
                 />
                 <div>
                   {format_number(@selected_publication.published_count)} / {format_number(

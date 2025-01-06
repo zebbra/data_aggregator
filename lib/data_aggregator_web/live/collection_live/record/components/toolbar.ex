@@ -54,7 +54,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
                 field={@search[:query]}
                 disabled={is_nil(@meta)}
                 placeholder={~t"Search"}
-                class="input input-bordered join-item max-sm:text-base sm:inline-flex items-center flex-row gap-2"
+                class="input input-bordered join-item flex-row items-center gap-2 max-sm:text-base sm:inline-flex"
               >
                 <:content :let={field}>
                   <input
@@ -73,7 +73,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
                   />
                   <.icon
                     name="hero-cog-6-tooth animate-spin"
-                    class="size-5 text-base-content/50 hidden phx-change-loading:block phx-submit-loading:block"
+                    class="size-5 text-base-content/50 hidden phx-submit-loading:block phx-change-loading:block"
                   />
                   <.input {field} class="max-sm:w-0" inside />
                 </:content>

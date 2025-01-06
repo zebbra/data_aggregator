@@ -19,7 +19,7 @@ defmodule Storybook.Layouts.Secondary do
   def render(assigns) do
     ~H"""
     <.page current="home" open={@show}>
-      <.page_header class="px-6 lg:px-8 md:py-6">Dashboard</.page_header>
+      <.page_header class="px-6 md:py-6 lg:px-8">Dashboard</.page_header>
       <div class="px-6 lg:px-8">
         <button type="button" class="btn btn-primary" phx-click="toggle">
           Toggle secondary

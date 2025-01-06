@@ -10,7 +10,7 @@
         navigate={~p"/"}
         aria-current={if @current === "collections", do: "page", else: nil}
         aria-label="Collections"
-        class="avatar btn md:btn-circle btn-ghost max-md:justify-start w-full space-x-2"
+        class="avatar btn btn-ghost w-full space-x-2 max-md:justify-start md:btn-circle"
       >
         <div class="w-10 rounded-full">
           <img src="/images/logo.png" alt="Data Aggregator" />
@@ -27,7 +27,7 @@
         <.link
           navigate={~p"/collections"}
           class={[
-            "flex md:flex-col md:p-3 active:!bg-primary",
+            "flex active:!bg-primary md:flex-col md:p-3",
             @current == "collections" && "bg-primary text-primary-content hover:bg-primary"
           ]}
           aria-describedby="collections_tooltip"
@@ -50,7 +50,7 @@
           <.link
             navigate={~p"/administration"}
             class={[
-              "flex md:flex-col md:p-3 active:!bg-primary",
+              "flex active:!bg-primary md:flex-col md:p-3",
               @current == "administration" && "bg-primary text-primary-content hover:bg-primary"
             ]}
             aria-describedby="administration_tooltip"
