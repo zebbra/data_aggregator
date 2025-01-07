@@ -43,6 +43,7 @@ defmodule DataAggregator.Records do
     resource DataAggregator.Records.Import.Record
     resource DataAggregator.Records.ImageUpload
     resource DataAggregator.Records.Publication
+    resource DataAggregator.Records.Publication.PublishedRecord
     resource DataAggregator.Records.Record
     resource DataAggregator.Records.Record.Image
     resource DataAggregator.Records.Record.Version

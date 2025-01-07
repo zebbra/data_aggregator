@@ -27,14 +27,11 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackCheckerTest do
       not_published_record: not_published_record
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        assert {:ok, record} = Record.enqueue_fast_track_checker(not_published_record)
-
-        assert record.id == not_published_record.id
-        assert record.fast_track_status == :in_publication
+        assert :ok = Record.enqueue_fast_track_checker(not_published_record)
 
         assert_enqueued(
           worker: Scheduler.FastTrackPublicationVerifier,
-          args: %{id: record.id, collection_id: record.collection_id}
+          args: %{id: not_published_record.id, collection_id: not_published_record.collection_id}
         )
       end)
     end
@@ -43,14 +40,11 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackCheckerTest do
       published_record: published_record
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        {:ok, record} = Record.enqueue_fast_track_checker(published_record)
-
-        assert record.id == published_record.id
-        assert record.fast_track_status == :published
+        :ok = Record.enqueue_fast_track_checker(published_record)
 
         assert_enqueued(
           worker: Scheduler.FastTrackPublicationVerifier,
-          args: %{id: record.id, collection_id: record.collection_id}
+          args: %{id: published_record.id, collection_id: published_record.collection_id}
         )
       end)
     end

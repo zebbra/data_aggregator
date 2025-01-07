@@ -92,6 +92,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           label={~t"Image Upload"m}
           active
         />
+        <.secondary_navigation_item
+          href={~p"/collections/#{@collection}/published_records"}
+          label={~t"Published Records"m}
+        />
       </.secondary_navigation>
 
       <.table

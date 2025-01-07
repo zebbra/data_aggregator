@@ -26,14 +26,14 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   @spec write_file!(Enumerable.t(), t(), any()) :: any()
   def write_file!(records, meta, channel) do
     records
-    |> Stream.map(&map_record(&1, meta.record_attributes))
-    |> Stream.map(&maybe_apply_publication_rules(&1, channel, meta.file_type))
+    |> Stream.map(&map_record(&1, meta.record_attributes, channel))
+    |> Stream.map(&maybe_apply_publication_rules(&1, meta.file_type, channel))
     |> Stream.map(&FlatFileUtils.map_data_to_headers_list(&1, meta.header_fields, @transformers))
     |> FlatFileUtils.store_on_disk!(meta.file_descriptor)
   end
 
   # Maybe apply publication rules (only to swissSpecies entries in switzerland, and on fast_track channel)
-  defp maybe_apply_publication_rules(%{loc_country: "Switzerland", tax_taxon_id: taxon_id} = data, :fast_track, :core)
+  defp maybe_apply_publication_rules(%{loc_country: "Switzerland", tax_taxon_id: taxon_id} = data, :core, :fast_track)
        when not is_nil(taxon_id) do
     case SwissSpecies.get_by_usage_key(taxon_id) do
       {:ok, _result} ->
@@ -53,7 +53,7 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
     end
   end
 
-  defp maybe_apply_publication_rules(data, _channel, _file_type), do: data
+  defp maybe_apply_publication_rules(data, _file_type, _channel), do: data
 
   defp round_coordinates(value) when is_float(value) do
     Float.round(value, 2)
@@ -114,18 +114,15 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   end
 
   # gives you a map of all relevant record attributes and its values
-  @spec map_record(Record.t(), list()) :: map()
-  defp map_record(record, record_attributes) do
-    raw_layer = get_raw_layer(record, record_attributes)
+  @spec map_record(Record.t(), list(), any()) :: map()
+  defp map_record(record, record_attributes, :approval) do
+    # for approval we always take data from 'raw layer'
+    record |> Map.from_struct() |> Map.take(record_attributes)
+  end
 
-    encoded_layer = get_encoded_layer(record, record_attributes)
-
-    Map.merge(raw_layer, encoded_layer, fn _key, val1, val2 ->
-      case val2 do
-        nil -> val1
-        _ -> val2
-      end
-    end)
+  defp map_record(record, record_attributes, :fast_track) do
+    # for fast_track we already have the correct data (we copied it to published_records from the selected layer)
+    record |> Map.from_struct() |> Map.take(record_attributes)
   end
 
   # returns a tuple with the name and the dwc_attributes of a given category
@@ -175,19 +172,5 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   @spec record_attributes(atom()) :: list()
   def record_attributes(file_type) do
     Enum.map(file_mapping(file_type), fn {k, _v} -> k end)
-  end
-
-  defp get_raw_layer(record, record_attributes) do
-    record |> Map.from_struct() |> Map.take(record_attributes)
-  end
-
-  defp get_encoded_layer(record, record_attributes) do
-    case Map.get(record, :encoded_record) do
-      {%Ash.NotLoaded{}} ->
-        Map.new()
-
-      encoded_record ->
-        encoded_record |> Map.from_struct() |> Map.take(record_attributes)
-    end
   end
 end

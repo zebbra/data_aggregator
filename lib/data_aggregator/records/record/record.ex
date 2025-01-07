@@ -307,11 +307,10 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.EnqueueEncoder
     end
 
-    update :enqueue_fast_track_checker do
-      accept []
-      require_atomic? false
+    action :enqueue_fast_track_checker do
+      argument :published_record, :struct, allow_nil?: false
 
-      change Record.Changes.EnqueueFastTrackChecker
+      run Record.Actions.EnqueueFastTrackChecker
     end
 
     action :bulk_import, :map do
@@ -433,7 +432,7 @@ defmodule DataAggregator.Records.Record do
     define :update_fast_track_status, args: [:status]
     define :update_approval_status, args: [:status]
     define :check_if_fast_track_pubished
-    define :enqueue_fast_track_checker
+    define :enqueue_fast_track_checker, args: [:published_record]
     define :update_last_approval_started_at
     define :add_image, args: [:image]
   end
@@ -443,7 +442,7 @@ defmodule DataAggregator.Records.Record do
       authorize_if always()
     end
 
-    bypass action([:bulk_import, :import, :encode]) do
+    bypass action([:bulk_import, :import, :encode, :enqueue_fast_track_checker]) do
       authorize_if always()
     end
 
