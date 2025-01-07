@@ -60,7 +60,9 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   def map_data_to_headers_list(record_data, header_fields, transformers) do
     Enum.map(header_fields, fn k ->
       if Map.has_key?(transformers, k) do
-        record_data |> maybe_from_extra_data(k) |> transformers[k].()
+        record_data
+        |> maybe_from_extra_data(k)
+        |> transformers[k].()
       else
         maybe_from_extra_data(record_data, k)
       end

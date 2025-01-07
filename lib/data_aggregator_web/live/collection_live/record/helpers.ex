@@ -121,6 +121,82 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     end)
   end
 
+  def checked_fast_track_query(fast_track_query, "import" = _layer) do
+    AshPagify.merge_filters(%AshPagify{filters: fast_track_query}, %{
+      or: [
+        %{loc_country: %{is_nil: false}},
+        %{
+          and: [
+            %{
+              or: [
+                %{loc_decimal_latitude: %{is_nil: true}},
+                %{loc_decimal_longitude: %{is_nil: true}}
+              ]
+            },
+            %{
+              or: [
+                %{loc_swiss_coordinates_lv95_y: %{is_nil: true}},
+                %{loc_swiss_coordinates_lv95_x: %{is_nil: true}}
+              ]
+            },
+            %{
+              or: [
+                %{loc_swiss_coordinates_lv03_y: %{is_nil: true}},
+                %{loc_swiss_coordinates_lv03_x: %{is_nil: true}}
+              ]
+            }
+          ]
+        }
+      ]
+    }).filters
+  end
+
+  def checked_fast_track_query(fast_track_query, _layer) do
+    AshPagify.merge_filters(%AshPagify{filters: fast_track_query}, %{
+      or: [
+        %{encoded_record: %{loc_country: %{is_nil: false}}},
+        %{
+          and: [
+            %{
+              or: [
+                %{encoded_record: %{loc_decimal_latitude: %{is_nil: true}}},
+                %{encoded_record: %{loc_decimal_longitude: %{is_nil: true}}}
+              ]
+            },
+            %{
+              or: [
+                %{encoded_record: %{loc_swiss_coordinates_lv95_y: %{is_nil: true}}},
+                %{encoded_record: %{loc_swiss_coordinates_lv95_x: %{is_nil: true}}}
+              ]
+            },
+            %{
+              or: [
+                %{encoded_record: %{loc_swiss_coordinates_lv03_y: %{is_nil: true}}},
+                %{encoded_record: %{loc_swiss_coordinates_lv03_x: %{is_nil: true}}}
+              ]
+            }
+          ]
+        }
+      ]
+    }).filters
+  end
+
+  def publication_rules_query(fast_track_query) do
+    AshPagify.merge_filters(%AshPagify{filters: fast_track_query}, %{
+      and: [
+        %{encoded_record: %{swiss_species: %{center: %{is_nil: false}}}},
+        %{encoded_record: %{loc_country: %{eq: "Switzerland"}}}
+      ]
+    }).filters
+  end
+
+  def count_from_query(query, collection) do
+    Record
+    |> AshPagify.query_for_filters_map(query)
+    |> Ash.Query.set_tenant(collection)
+    |> Ash.count!()
+  end
+
   @spec encoded_attribute(Record.t(), atom(), String.t() | nil) :: any()
   def encoded_attribute(record, attribute, layer \\ nil)
   def encoded_attribute(record, attribute, "import"), do: Map.get(record, attribute)
