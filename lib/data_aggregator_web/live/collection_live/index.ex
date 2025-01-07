@@ -39,7 +39,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
   def render(assigns) do
     ~H"""
     <.page current="collections" current_user={@current_user}>
-      <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
+      <.page_header class="px-6 pt-1 pb-4 md:py-6 lg:px-8">
         {~t"Collections"m}
         <:actions>
           <%= if Collection.can_create?(@current_user) do %>
@@ -70,7 +70,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         <:col :let={{_id, collection}} field={:name} label={~t"Name"m}>
           <.link
             navigate={~p"/collections/#{collection}/records"}
-            class="link link-primary font-semibold link-hover"
+            class="link link-primary link-hover font-semibold"
           >
             {collection.name}
           </.link>

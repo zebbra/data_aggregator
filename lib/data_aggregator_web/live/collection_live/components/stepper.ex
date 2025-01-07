@@ -73,7 +73,7 @@ defmodule DataAggregatorWeb.CollectionLive.Collection.Components.Stepper do
     <li>
       <.link
         patch={@link}
-        class="size-2.5 bg-primary block rounded-full [@supports(color:color-mix(in_oklab,black,black))]:[@media(hover:hover)]:hover:bg-[color-mix(in_oklab,theme(colors.primary)_80%,black)]"
+        class="size-2.5 bg-primary block rounded-full hover:[@supports(color:color-mix(in_oklab,black,black))]:[@media(hover:hover)]:bg-[color-mix(in_oklab,theme(colors.primary)_80%,black)]"
       >
         <span class="sr-only">{"Step #{@step}"}</span>
       </.link>
@@ -124,7 +124,7 @@ defmodule DataAggregatorWeb.CollectionLive.Collection.Components.Stepper do
     <li>
       <.link
         patch={@link}
-        class="size-2.5 bg-neutral-content hover:bg-base-content/50 block rounded-full"
+        class="size-2.5 bg-neutral-content block rounded-full hover:bg-base-content/50"
       >
         <span class="sr-only">{"Step #{@step}"}</span>
       </.link>

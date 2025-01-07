@@ -75,7 +75,7 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
           :for={{label, value} <- options_for_group(@options, @as_atoms)}
           class="flex cursor-pointer justify-between gap-4 py-2 sm:flex-row-reverse sm:justify-end"
         >
-          <.label for={"#{@name}-#{value}"} label={label} class="cursor-pointer min-w-0 flex-1" />
+          <.label for={"#{@name}-#{value}"} label={label} class="min-w-0 flex-1 cursor-pointer" />
           <input
             type="checkbox"
             id={"#{@name}-#{value}"}
@@ -249,7 +249,7 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
               {@rest}
             />
           <% else %>
-            <.label for={"#{@name}-#{value}"} label={label} class="cursor-pointer min-w-0 flex-1" />
+            <.label for={"#{@name}-#{value}"} label={label} class="min-w-0 flex-1 cursor-pointer" />
             <input
               type="checkbox"
               id={"#{@name}-#{value}"}

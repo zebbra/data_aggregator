@@ -22,7 +22,7 @@ defmodule DataAggregatorWeb.Components.Attachment do
     <.link
       href={@attachment.url}
       class={[
-        "inline-flex items-center rounded-md bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 opacity-75 hover:opacity-100 gap-x-1",
+        "inline-flex items-center gap-x-1 rounded-md bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 opacity-75 hover:opacity-100",
         @class
       ]}
       tabindex="-1"

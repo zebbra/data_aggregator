@@ -25,7 +25,7 @@
     <div class="flex-0 gap-1 lg:gap-2">
       <.link
         href="/sign-out"
-        class="max-md:hidden btn btn-ghost inline-flex text-base-content/75 tooltip tooltip-bottom before:text-xs hover:text-base-content"
+        class="btn btn-ghost text-base-content/75 tooltip tooltip-bottom inline-flex max-md:hidden before:text-xs hover:text-base-content"
         data-tip={~t"Sign out"}
       >
         <div :if={@current_user.first_name} class="truncate max-lg:max-w-36">

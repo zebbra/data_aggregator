@@ -312,11 +312,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
                     placeholder={~t"Name of target dataset"m}
                     phx-change="non_form_data:change"
                     class={
-                      if @target_dataset_name == @dataset.result["title"] do
-                        "[&_span]:text-success"
-                      else
-                        "[&_span]:text-error"
-                      end
+                      if @target_dataset_name == @dataset.result["title"],
+                        do: "[&_span]:text-success",
+                        else: "[&_span]:text-error"
                     }
                     icon_end={
                       if @target_dataset_name == @dataset.result["title"] do

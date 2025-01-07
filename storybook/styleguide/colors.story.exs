@@ -122,7 +122,7 @@ defmodule Storybook.Styleguide.Colors do
       <div class="">
         <.heading title="Text" subtitle="without background" />
         <.preview>
-          <.color :for={text <- @text} text={text} class="border border-base-300" />
+          <.color :for={text <- @text} text={text} class="border-base-300 border" />
         </.preview>
       </div>
 

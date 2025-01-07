@@ -40,7 +40,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
   def render(assigns) do
     ~H"""
     <.page current="administration" current_user={@current_user} open={@selected_user != nil}>
-      <.page_header class="px-6 pb-4 pt-1 lg:px-8 md:py-6">
+      <.page_header class="px-6 pt-1 pb-4 md:py-6 lg:px-8">
         {~t"Administration"m}
         <:actions>
           <.link patch={~p"/administration/new"} class="btn btn-primary max-sm:btn-sm">

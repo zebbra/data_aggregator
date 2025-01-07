@@ -212,7 +212,7 @@ defmodule DataAggregator.MixProject do
       {:ash_uuid, "~> 1.1"},
       # Undo once bulk versions are released
       {:ash_paper_trail, git: "https://github.com/ash-project/ash_paper_trail"},
-      {:ash_pagify, "~> 1.2"},
+      {:ash_pagify, "~> 1.3"},
       {:ash_authentication, "~> 4.0"},
       {:ash_authentication_phoenix, "~> 2.0"},
 
@@ -232,7 +232,7 @@ defmodule DataAggregator.MixProject do
       {:git_ops, "~> 2.6.3", only: [:dev]},
       {:git_hooks, "~> 0.8.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
-      {:mimic, "~> 1.8", only: :test},
+      {:mimic, "~> 1.11", only: :test},
       {:styler, "~> 1.0", only: [:dev, :test], runtime: false},
       {:junit_formatter, "~> 3.3", only: :test},
       {:ex_machina, "~> 2.8.0", only: :test},
@@ -301,7 +301,7 @@ defmodule DataAggregator.MixProject do
       {:picosat_elixir, "~> 0.2"},
 
       # Documentation
-      {:ex_doc, "~> 0.34.1", runtime: false},
+      {:ex_doc, "~> 0.35", runtime: false},
 
       # Livebook Widgets
       {:kino, "~> 0.12", only: :dev},

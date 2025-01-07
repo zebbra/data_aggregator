@@ -83,7 +83,7 @@ defmodule DataAggregatorWeb.Filters.SimpleFilterForm do
           <button disabled={@filter_form.valid? == false} type="submit" class="btn btn-primary">
             <.icon
               name="hero-cog-6-tooth-solid animate-spin"
-              class="hidden opacity-0 phx-submit-loading:inline-flex phx-submit-loading:opacity-100 ease-linear duration-300"
+              class="hidden opacity-0 duration-300 ease-linear phx-submit-loading:inline-flex phx-submit-loading:opacity-100"
             /> {mgettext("Show %{count} %{label}", count: @count, label: @label)}
           </button>
           <button

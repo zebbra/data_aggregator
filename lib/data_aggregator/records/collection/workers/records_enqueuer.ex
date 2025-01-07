@@ -49,7 +49,7 @@ defmodule DataAggregator.Records.Collection.Workers.RecordsEnqueuer do
     Record
     |> AshPagify.query_for_filters_map(query)
     |> Ash.Query.set_tenant(collection)
-    |> Ash.stream!(page: false)
+    |> Ash.stream!()
     |> Enum.each(&Record.enqueue_encoder!(&1, actor: actor, authorize?: false))
   end
 end

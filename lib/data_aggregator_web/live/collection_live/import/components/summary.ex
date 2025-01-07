@@ -64,7 +64,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
           items={@import.mappings}
         >
           <:caption>
-            <.section_heading text={~t"Mapping"m} size="md" class="px-6 lg:px-8 text-left" />
+            <.section_heading text={~t"Mapping"m} size="md" class="px-6 text-left lg:px-8" />
           </:caption>
           <:col :let={column} label={~t"Column"m}>
             <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">

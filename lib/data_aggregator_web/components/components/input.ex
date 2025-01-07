@@ -323,10 +323,7 @@ defmodule DataAggregatorWeb.Components.Input do
         <.icon
           name={@icon_end}
           class={
-            class_names([
-              "size-5 text-base-content/50 sm:text-sm/6",
-              @errors != [] && "text-error"
-            ])
+            class_names(["size-5 text-base-content/50 sm:text-sm/6", @errors != [] && "text-error"])
           }
         />
       </div>
@@ -346,10 +343,7 @@ defmodule DataAggregatorWeb.Components.Input do
         <.icon
           name={@icon_end}
           class={
-            class_names([
-              "size-5 text-base-content/50 sm:text-sm/6",
-              @errors != [] && "text-error"
-            ])
+            class_names(["size-5 text-base-content/50 sm:text-sm/6", @errors != [] && "text-error"])
           }
         />
       </div>
