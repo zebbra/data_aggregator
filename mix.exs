@@ -201,7 +201,7 @@ defmodule DataAggregator.MixProject do
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:phoenix_live_view, "~> 1.0.0-rc.5", override: true},
-      {:phoenix_storybook, "~> 0.7.1"},
+      {:phoenix_storybook, "~> 0.8.0"},
 
       # Ash Framework
       {:ash, "~> 3.4", override: true},
