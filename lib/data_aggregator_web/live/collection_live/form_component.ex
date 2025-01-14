@@ -38,7 +38,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
       >
         <.fieldset
           legend={@title}
-          text={~t"Use this form to manage collections in your database."m}
+          text={~t"Use this form to manage datasets in your database."m}
           modal
         >
           <.fieldgroup modal>
@@ -86,8 +86,8 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
     """
   end
 
-  defp submit_label(:new), do: ~t"Create collection"m
-  defp submit_label(:edit), do: ~t"Update collection"m
+  defp submit_label(:new), do: ~t"Create dataset"m
+  defp submit_label(:edit), do: ~t"Update dataset"m
 
   defp assign_form(%{assigns: assigns} = socket) do
     assign(socket, :form, build_form(assigns))
@@ -118,8 +118,8 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         {:ok, collection} ->
           message =
             case socket.assigns.action do
-              :new -> ~t"Collection created successfully"m
-              :edit -> ~t"Collection updated successfully"m
+              :new -> ~t"Dataset created successfully"m
+              :edit -> ~t"Dataset updated successfully"m
             end
 
           socket =

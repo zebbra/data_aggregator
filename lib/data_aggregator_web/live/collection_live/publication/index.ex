@@ -299,7 +299,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
         {:noreply, put_flash(socket, :info, publication_success_message(publication))}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"A publication for this collection is already in process"m)}
+        {:noreply, put_flash(socket, :error, ~t"A publication for this dataset is already in process"m)}
     end
   end
 
@@ -342,7 +342,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, ~t"Collection Publications"m)
+    |> assign(:page_title, ~t"Dataset Publications"m)
     |> assign(:publication, nil)
   end
 

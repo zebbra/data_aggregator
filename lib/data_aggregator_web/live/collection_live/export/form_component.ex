@@ -44,7 +44,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
                   field={@form[:header_source]}
                   name="header_source"
                   id="header_source_1"
-                  label="Collection Mapping"
+                  label="Dataset Mapping"
                   description="The column headers will be based on the last file you uploaded"
                   type="radio"
                   required
@@ -73,7 +73,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
                   name="data_layer"
                   id="data_layer_1"
                   label="Raw"
-                  description="The exported data will be the same as the original collection data"
+                  description="The exported data will be the same as the original dataset data"
                   type="radio"
                   required
                   checked={true}
@@ -126,7 +126,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
         {
           :noreply,
           socket
-          |> put_flash(:error, ~t"An export for this collection is already in process"m)
+          |> put_flash(:error, ~t"An export for this dataset is already in process"m)
           |> push_navigate(to: ~p"/collections/#{collection_id}/exports")
         }
     end

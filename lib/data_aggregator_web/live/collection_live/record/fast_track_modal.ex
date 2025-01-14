@@ -144,7 +144,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
          |> Publication.create!(tenant: collection)
          |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor) do
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"A publication for this collection is already in process"m)}
+        {:noreply, put_flash(socket, :error, ~t"A publication for this dataset is already in process"m)}
 
       {:ok, _} ->
         socket

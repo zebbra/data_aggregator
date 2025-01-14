@@ -30,13 +30,13 @@
             "flex active:!bg-primary md:flex-col md:p-3",
             @current == "collections" && "bg-primary text-primary-content hover:bg-primary"
           ]}
-          aria-describedby="collections_tooltip"
+          aria-describedby="datasets_tooltip"
         >
           <.icon name="hero-squares-2x2" />
-          <span class="md:hidden lg:inline">{~t"Collections"m}</span>
+          <span class="md:hidden lg:inline">{~t"Datasets"m}</span>
           <.fui_tooltip
-            id="collections_tooltip"
-            content={~t"Collections"}
+            id="datasets_tooltip"
+            content={~t"Datasets"}
             visibility_class="hidden md:hidden lg:hidden"
             show_class="md:block"
             hide_class="md:hidden"

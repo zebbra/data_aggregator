@@ -59,7 +59,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         <.breadcrumbs
           class="text-sm"
           items={[
-            %{label: ~t"Collections"m, link: ~p"/collections"},
+            %{label: ~t"Datasets"m, link: ~p"/collections"},
             %{label: ~t"Current"m, link: "#"}
           ]}
         />
@@ -103,7 +103,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         <.breadcrumbs
           class="text-base-content text-3xl font-bold tracking-tight max-sm:hidden"
           items={[
-            %{label: ~t"Collections"m, link: ~p"/collections"},
+            %{label: ~t"Datasets"m, link: ~p"/collections"},
             %{label: "#{@collection.name} (#{@collection.code})", link: "#"}
           ]}
         />
@@ -151,7 +151,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <% else %>
             <.icon name="hero-arrow-up-tray" />
           <% end %>
-          {~t"Import dataset"m}
+          {~t"Import data"m}
         </.link>
         <.link
           :if={@show_image_upload_button}

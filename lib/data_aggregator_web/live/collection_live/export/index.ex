@@ -274,7 +274,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
         {:noreply, put_flash(socket, :info, ~t"Export started in background"m)}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"An export for this collection is already in process"m)}
+        {:noreply, put_flash(socket, :error, ~t"An export for this dataset is already in process"m)}
     end
   end
 
@@ -317,7 +317,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, ~t"Collection Exports"m)
+    |> assign(:page_title, ~t"Dataset Exports"m)
     |> assign(:export, nil)
   end
 

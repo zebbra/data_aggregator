@@ -505,7 +505,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         {:noreply, put_flash(socket, :info, ~t"Import started in background")}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"An import for this collection is already in process")}
+        {:noreply, put_flash(socket, :error, ~t"An import for this dataset is already in process")}
     end
   end
 
@@ -558,7 +558,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, ~t"Collection Imports"m)
+    |> assign(:page_title, ~t"Dataset Imports"m)
     |> assign(:import, nil)
   end
 

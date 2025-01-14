@@ -439,7 +439,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   defp collection_mapping_from_import(import) do
     case import.collection.import_mapping do
-      nil -> {:error, ~t"Collection mapping not found"m}
+      nil -> {:error, ~t"Dataset mapping not found"m}
       import_mapping -> {:ok, import_mapping}
     end
   end
@@ -451,7 +451,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       end)
 
     case length(mapped) do
-      0 -> {:error, ~t"Collection mapping is empty"m}
+      0 -> {:error, ~t"Dataset mapping is empty"m}
       _ -> {:ok, mapped}
     end
   end

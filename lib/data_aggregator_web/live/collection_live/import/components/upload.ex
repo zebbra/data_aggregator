@@ -42,7 +42,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Upload do
         <.stepper current={current_step(@action)} steps={3} />
         <.section_heading
           text={~t"Import records"m}
-          description={~t"Please provide your collection file holding your records."m}
+          description={~t"Please provide your dataset file holding your records."m}
           class="mt-4"
         />
       </.modal_header>

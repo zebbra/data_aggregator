@@ -43,9 +43,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
         <.stepper current={current_step(@action)} steps={3} />
         <.section_heading
           text={~t"Upload Images"}
-          description={
-            ~t"Please provide your zip file containing images to upload to this collection."m
-          }
+          description={~t"Please provide your zip file containing images to upload to this dataset."m}
           class="mt-4"
         />
       </.modal_header>

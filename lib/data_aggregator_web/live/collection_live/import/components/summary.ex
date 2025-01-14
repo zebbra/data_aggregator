@@ -132,7 +132,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
       {:error, _} ->
         {:noreply,
          socket
-         |> put_flash(:error, ~t"An import for this collection is already in process"m)
+         |> put_flash(:error, ~t"An import for this dataset is already in process"m)
          |> close_and_redirect()}
     end
   end

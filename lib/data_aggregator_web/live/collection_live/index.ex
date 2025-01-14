@@ -40,7 +40,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
     ~H"""
     <.page current="collections" current_user={@current_user}>
       <.page_header class="px-6 pt-1 pb-4 md:py-6 lg:px-8">
-        {~t"Collections"m}
+        {~t"Datasets"m}
         <:actions>
           <%= if Collection.can_create?(@current_user) do %>
             <.link
@@ -48,7 +48,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
               class="btn btn-primary max-sm:btn-sm"
             >
               <.icon name="hero-squares-2x2" class="max-sm:size-4" />
-              <span class="max-sm:hidden">{~t"New collection"m}</span>
+              <span class="max-sm:hidden">{~t"New dataset"m}</span>
               <span class="sm:hidden">{~t"Add"m}</span>
             </.link>
           <% end %>
@@ -184,7 +184,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           id="confirm_collection_alert"
           size="sm"
           title={~t"Are you sure?"m}
-          label={~t"Yes, delete collection"m}
+          label={~t"Yes, delete dataset"m}
         />
       </:portal>
     </.page>
@@ -193,19 +193,19 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, ~t"Collections"m)
+    |> assign(:page_title, ~t"Datasets"m)
     |> assign(:collection, nil)
   end
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, ~t"New Collection"m)
+    |> assign(:page_title, ~t"New Dataset"m)
     |> assign(:collection, %Collection{})
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
-    |> assign(:page_title, ~t"Edit Collection"m)
+    |> assign(:page_title, ~t"Edit Dataset"m)
     |> assign(
       :collection,
       Collection.get_by_id!(id, load: @load, actor: get_actor(socket))
@@ -224,7 +224,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
 
     {:noreply,
      socket
-     |> put_flash(:info, ~t"Collection deleted successfully"m)
+     |> put_flash(:info, ~t"Dataset deleted successfully"m)
      |> stream_delete(:results, collection)}
   end
 
@@ -237,16 +237,16 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
     ~H"""
     <%= if Collection.can_create?(@current_user) do %>
       <.empty_state
-        title={~t"No collections"m}
-        description={~t"Get started by adding a new collection."m}
-        label={~t"New collection"m}
+        title={~t"No datasets"m}
+        description={~t"Get started by adding a new Dataset."m}
+        label={~t"New datasets"m}
         icon="hero-squares-2x2"
         href={~p"/collections/new"}
       />
     <% else %>
       <.empty_state
-        title={~t"No collections"m}
-        description={~t"There are no collections yet for your institution"m}
+        title={~t"No datasets"m}
+        description={~t"There are no datasets yet for your institution"m}
         icon="hero-squares-2x2"
       />
     <% end %>

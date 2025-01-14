@@ -924,7 +924,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         {:noreply, put_flash(socket, :info, ~t"Encoding started in background"m)}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"An encoding for this collection is already in process"m)}
+        {:noreply, put_flash(socket, :error, ~t"An encoding for this dataset is already in process"m)}
     end
   end
 
@@ -966,7 +966,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
          |> put_flash(:info, ~t"Approval started in background"m)}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"An approval for this collection is already in process"m)}
+        {:noreply, put_flash(socket, :error, ~t"An approval for this dataset is already in process"m)}
     end
   end
 
@@ -1015,7 +1015,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   defp apply_action(socket, :index, _params) do
-    assign(socket, :page_title, ~t"Collection Records"m)
+    assign(socket, :page_title, ~t"Dataset Records"m)
   end
 
   defp list_records(params, actor, tenant, opts \\ []) do
