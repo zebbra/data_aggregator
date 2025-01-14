@@ -418,7 +418,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
       <.section_heading text={~t"Intellectual property rights"m} size="md" class="pt-4 pb-1" />
       <.radio_group
         field={@form[:license]}
-        options={[{"CC BY", :cc_by}, {"CC0", :cc0}, {"CC BY-NC", :cc_by_nc}]}
+        options={[{"CC0", :cc0}, {"CC BY", :cc_by}, {"CC BY-NC", :cc_by_nc}]}
         as_atoms
         description={~t"Please choose under what license this publication and dataset is covered."m}
       />
