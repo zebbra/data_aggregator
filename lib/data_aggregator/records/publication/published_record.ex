@@ -6,7 +6,7 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Records,
-    extensions: [AshUUID, AshJsonApi.Resource, DataAggregator.DarwinCore.Resource]
+    extensions: [AshUUID, DataAggregator.DarwinCore.Resource]
 
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
@@ -22,6 +22,7 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
 
   relationships do
     belongs_to :collection, Collection do
+      primary_key? true
       allow_nil? false
       public? true
     end
@@ -32,13 +33,14 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
     end
   end
 
+  identities do
+    identity :unique_record_id, [:record_id]
+    identity :by_collection, [:id, :collection_id]
+  end
+
   actions do
     default_accept :*
     defaults [:create, :read, :update, :destroy]
-  end
-
-  identities do
-    identity :unique_record_id, [:record_id]
   end
 
   code_interface do
@@ -53,21 +55,6 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
     references do
       reference :collection, on_delete: :delete, on_update: :update
       reference :publication, on_delete: :nothing, on_update: :update
-    end
-  end
-
-  json_api do
-    type "published_records"
-
-    primary_key do
-      keys [:id]
-    end
-
-    routes do
-      base "/published_records"
-
-      get :read
-      index :read
     end
   end
 

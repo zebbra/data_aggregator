@@ -26,6 +26,8 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   require Ash.Query
   require Logger
 
+  @record_attributes Enum.map(Schema.prefixed_attributes(), &Map.get(&1, :name))
+
   @impl true
   def run(input, _opts, %{tenant: tenant} = ctx) do
     publication = input.arguments.publication
@@ -39,10 +41,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     # first we need to copy the data of these records to published_records table if fast track
     maybe_append_published_records(publication, query)
 
-    # now we update the rows count with the number of records that will be published
-    published_records_count = Ash.count!(PublishedRecord, tenant: tenant)
-
-    publication = Publication.update!(publication, %{rows_count: published_records_count})
+    publication = maybe_update_count(publication, tenant)
 
     path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
     EmlFile.create(publication.collection, publication, path)
@@ -169,10 +168,18 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     |> Ash.bulk_create(PublishedRecord, :create,
       upsert?: true,
       upsert_identity: :unique_record_id,
-      upsert_fields: {:replace_all_except, [:inserted_at, :id, :record_id]},
+      upsert_fields: {:replace_all_except, [:inserted_at, :id, :record_id, :collection_id]},
       tenant: publication.collection,
       batch_size: 200
     )
+  end
+
+  defp maybe_update_count(%{channel: :approval} = publication, _tenant), do: publication
+
+  defp maybe_update_count(%{channel: :fast_track} = publication, tenant) do
+    # now we update the rows count with the number of records that will be published
+    published_records_count = Ash.count!(PublishedRecord, tenant: tenant)
+    Publication.update!(publication, %{rows_count: published_records_count})
   end
 
   defp stream_query_or_resource(_query, %{channel: :fast_track, collection: collection}),
@@ -182,13 +189,11 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     do: Ash.stream!(query, stream_with: :keyset, batch_size: 1000, load: :encoded_record)
 
   defp record_inputs(record, publication) do
-    attributes = Enum.map(Schema.prefixed_attributes(), &Map.get(&1, :name))
-
     layer = if publication.layer == "import", do: record, else: Map.get(record, :encoded_record)
 
     layer
     |> Map.from_struct()
-    |> Map.take(attributes)
+    |> Map.take(@record_attributes)
     |> Map.put(:record_id, record.id)
     |> Map.put(:extra_data, record.extra_data)
     |> Map.put(:publication_id, publication.id)

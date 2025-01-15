@@ -2864,7 +2864,7 @@
       "allow_nil?": false,
       "default": "nil",
       "generated?": false,
-      "primary_key?": false,
+      "primary_key?": true,
       "references": {
         "deferrable": false,
         "destination_attribute": "id",
@@ -2924,7 +2924,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "E3C9E9CB71F9A590F25124593AD0186FF5B5EEF798B187EF827CEC219693555D",
+  "hash": "C43DBAED797892D8BE2F0DE0B36E38C5C3542A403D1EBC8ED01A9C47BBDE9EC5",
   "identities": [
     {
       "all_tenants?": false,
@@ -2937,6 +2937,24 @@
         }
       ],
       "name": "unique_record_id",
+      "nils_distinct?": true,
+      "where": null
+    },
+    {
+      "all_tenants?": false,
+      "base_filter": null,
+      "index_name": "published_records_by_collection_index",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "id"
+        },
+        {
+          "type": "atom",
+          "value": "collection_id"
+        }
+      ],
+      "name": "by_collection",
       "nils_distinct?": true,
       "where": null
     }
