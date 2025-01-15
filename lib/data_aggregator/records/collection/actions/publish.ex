@@ -158,7 +158,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     stream
   end
 
-  defp maybe_append_published_records(%{channel: :approval} = _publication, _query), do: :ok
+  defp maybe_append_published_records(%{channel: :approval} = _publication, _query), do: nil
 
   defp maybe_append_published_records(%{channel: :fast_track} = publication, query) do
     query
