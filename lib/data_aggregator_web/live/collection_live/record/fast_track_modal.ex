@@ -135,7 +135,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
         channel: :fast_track,
         records_query: checked_fast_track_query,
         collection: collection,
-        rows_count: checked_fast_track_count
+        rows_count: checked_fast_track_count,
+        layer: socket.assigns.layer
       })
 
     socket = update(socket, :agreed, &(!&1))

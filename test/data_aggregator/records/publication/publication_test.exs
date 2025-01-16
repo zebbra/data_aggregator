@@ -13,6 +13,7 @@ defmodule DataAggregator.PublicationTest do
   alias DataAggregator.Gbif.RestAPIStub
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.Publication.PublishedRecord
   alias DataAggregator.Records.Publication.Workers.Publisher
   alias DataAggregator.Records.Record
   alias Explorer.DataFrame
@@ -24,6 +25,12 @@ defmodule DataAggregator.PublicationTest do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       collection = collection_fixture(%{name: "Collection NumberO!+ne"})
+
+      collection_append =
+        collection_fixture(%{
+          name: "Collection append test",
+          grscicoll_reference: RestAPIStub.other_grscicoll_reference()
+        })
 
       collection_register_collection_failing =
         collection_fixture(%{
@@ -86,22 +93,65 @@ defmodule DataAggregator.PublicationTest do
           tax_kingdom: "My Kingdom"
         })
 
+      record_append_1 =
+        record_fixture(%{
+          collection: collection_append,
+          mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
+          tax_kingdom: "Animalia"
+        })
+
+      record_append_2 =
+        record_fixture(%{
+          collection: collection_append,
+          mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
+          tax_kingdom: "My Kingdom"
+        })
+
+      record_append_3 =
+        record_fixture(%{
+          collection: collection_append,
+          mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
+          tax_kingdom: "My Kingdom"
+        })
+
       encoded_record_fixture(%{record: record1})
       encoded_record_fixture(%{record: record2})
       encoded_record_fixture(%{record: record3})
       encoded_record_fixture(%{record: record4})
       encoded_record_fixture(%{record: record5})
+      encoded_record_append_1 = encoded_record_fixture(%{record: record_append_1})
+      encoded_record_append_1 |> Ash.update!(%{tax_taxon_id: 4762}) |> Map.get(:tax_taxon_id)
+      encoded_record_fixture(%{record: record_append_2})
+      encoded_record_fixture(%{record: record_append_3})
 
       records = [
         Ash.load!(record1, [:encoded_record]),
         Ash.load!(record2, [:encoded_record]),
         Ash.load!(record3, [:encoded_record]),
         Ash.load!(record4, [:encoded_record]),
-        Ash.load!(record5, [:encoded_record])
+        Ash.load!(record5, [:encoded_record]),
+        Ash.load!(record_append_1, [:encoded_record]),
+        Ash.load!(record_append_2, [:encoded_record]),
+        Ash.load!(record_append_3, [:encoded_record])
       ]
 
       query = %{
         collection: %{id: %{eq: collection.id}},
+        encoded_record: %{tax_kingdom: %{is_nil: false}}
+      }
+
+      query_append_1 = %{
+        collection: %{id: %{eq: collection_append.id}},
+        encoded_record: %{tax_kingdom: %{eq: "Animalia"}}
+      }
+
+      query_append_2 = %{
+        collection: %{id: %{eq: collection_append.id}},
+        encoded_record: %{tax_kingdom: %{eq: "My Kingdom"}}
+      }
+
+      query_append_3 = %{
+        collection: %{id: %{eq: collection_append.id}},
         encoded_record: %{tax_kingdom: %{is_nil: false}}
       }
 
@@ -160,6 +210,40 @@ defmodule DataAggregator.PublicationTest do
           tenant: collection_delete_endpoint_failing
         )
 
+      publication_append_1 =
+        Publication.create!(
+          %{
+            name: "Publication Fast Track append test",
+            channel: :fast_track,
+            records_query: query_append_1,
+            collection: collection_append
+          },
+          tenant: collection_append
+        )
+
+      publication_append_2 =
+        Publication.create!(
+          %{
+            name: "Publication Fast Track append test",
+            channel: :fast_track,
+            records_query: query_append_2,
+            collection: collection_append
+          },
+          tenant: collection_append
+        )
+
+      publication_append_3 =
+        Publication.create!(
+          %{
+            name: "Publication Fast Track append test",
+            channel: :fast_track,
+            layer: "import",
+            records_query: query_append_3,
+            collection: collection_append
+          },
+          tenant: collection_append
+        )
+
       [
         collection: collection,
         records: records,
@@ -167,7 +251,10 @@ defmodule DataAggregator.PublicationTest do
         publication_1: publicatoin_1,
         publication_2: publication_2,
         publication_3: publication_3,
-        publication_4: publication_4
+        publication_4: publication_4,
+        publication_append_1: publication_append_1,
+        publication_append_2: publication_append_2,
+        publication_append_3: publication_append_3
       ]
     end
 
@@ -206,6 +293,127 @@ defmodule DataAggregator.PublicationTest do
         %{"decimalLatitude" => 47.27606815, "decimalLongitude" => 9.408043484},
         %{"decimalLatitude" => nil, "decimalLongitude" => nil},
         %{"decimalLatitude" => nil, "decimalLongitude" => nil}
+      ]
+
+      assert_lists_equal(expected, transformed_attributes)
+    end
+
+    test "publish/1 successful with correct appending of data", %{
+      publication_append_1: publication_1,
+      publication_append_2: publication_2,
+      publication_append_3: publication_3
+    } do
+      {:ok, publication_1} =
+        Collection.publish(publication_1, tenant: publication_1.collection)
+
+      %{body: body} = Req.get!(publication_1.attachment.url)
+
+      # validate core file from first publication
+      {_core_file_name, core_file_content} =
+        Enum.find(body, fn {file_name, _content} -> file_name == ~c"core.csv" end)
+
+      assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(core_file_content)
+
+      query_publication_1 =
+        Record
+        |> AshPagify.query_for_filters_map(publication_1.records_query)
+        |> Ash.Query.set_tenant(publication_1.collection)
+
+      # the query should return 1 record
+      assert query_publication_1 |> Ash.read!() |> length() == 1
+      # and the core file should have 1 row
+      assert DataFrame.n_rows(data_frame) == 1
+
+      published_records = Ash.read!(PublishedRecord, tenant: publication_1.collection)
+      assert length(published_records) == 1
+
+      # default publication is on layer 'approval' so the value saved in published_records are the encoded_record values
+      assert published_records |> List.first() |> Map.get(:tax_taxon_id) == 4762
+      rows = DataFrame.to_rows(data_frame)
+
+      transformed_attributes =
+        Enum.map(rows, &Map.take(&1, ["taxonID"]))
+
+      expected = [
+        %{"taxonID" => 4762}
+      ]
+
+      assert_lists_equal(expected, transformed_attributes)
+
+      {:ok, publication_2} =
+        Collection.publish(publication_2, tenant: publication_2.collection)
+
+      %{body: body} = Req.get!(publication_2.attachment.url)
+
+      # validate core file from second publication
+      {_core_file_name, core_file_content} =
+        Enum.find(body, fn {file_name, _content} -> file_name == ~c"core.csv" end)
+
+      assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(core_file_content)
+
+      query_publication_2 =
+        Record
+        |> AshPagify.query_for_filters_map(publication_2.records_query)
+        |> Ash.Query.set_tenant(publication_2.collection)
+
+      # the query should return 2 records
+      assert query_publication_2 |> Ash.read!() |> length() == 2
+      # but because we are appending the data, the core file should have 3 rows
+      assert DataFrame.n_rows(data_frame) == 3
+
+      published_records = Ash.read!(PublishedRecord, tenant: publication_2.collection)
+      assert length(published_records) == 3
+
+      # the record published first should still use the value from encoded record
+      assert published_records |> List.first() |> Map.get(:tax_taxon_id) == 4762
+      rows = DataFrame.to_rows(data_frame)
+
+      transformed_attributes =
+        Enum.map(rows, &Map.take(&1, ["taxonID"]))
+
+      expected = [
+        %{"taxonID" => 4762},
+        %{"taxonID" => nil},
+        %{"taxonID" => nil}
+      ]
+
+      assert_lists_equal(expected, transformed_attributes)
+
+      # now we publish a publication with all 3 records again, but on the 'import' layer
+      {:ok, publication_3} =
+        Collection.publish(publication_3, tenant: publication_3.collection)
+
+      %{body: body} = Req.get!(publication_3.attachment.url)
+
+      # validate core file from third publication
+      {_core_file_name, core_file_content} =
+        Enum.find(body, fn {file_name, _content} -> file_name == ~c"core.csv" end)
+
+      assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(core_file_content)
+
+      query_publication_3 =
+        Record
+        |> AshPagify.query_for_filters_map(publication_3.records_query)
+        |> Ash.Query.set_tenant(publication_3.collection)
+
+      # the query should return 3 records
+      assert query_publication_3 |> Ash.read!() |> length() == 3
+      # these records got upserted, but on the 'import' layer, so the core file should have 3 rows
+      assert DataFrame.n_rows(data_frame) == 3
+
+      published_records = Ash.read!(PublishedRecord, tenant: publication_3.collection)
+      assert length(published_records) == 3
+      # the tax_taxon_id is nil, because its on the import layer
+      assert published_records |> List.first() |> Map.get(:tax_taxon_id) == nil
+      rows = DataFrame.to_rows(data_frame)
+
+      transformed_attributes =
+        Enum.map(rows, &Map.take(&1, ["taxonID"]))
+
+      expected = [
+        %{"taxonID" => nil},
+        %{"taxonID" => nil},
+        %{"taxonID" => nil}
       ]
 
       assert_lists_equal(expected, transformed_attributes)
