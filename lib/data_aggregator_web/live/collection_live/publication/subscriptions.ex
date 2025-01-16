@@ -142,7 +142,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Subscriptions do
         {:noreply, socket}
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/publications")}
+        {:noreply, push_navigate(socket, to: ~p"/datasets/#{id}/publications")}
     end
   end
 

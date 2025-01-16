@@ -54,7 +54,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
         raise ~t"Something went wrong"m
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/image_uploads")}
+        {:noreply, push_navigate(socket, to: ~p"/datasets/#{id}/image_uploads")}
     end
   end
 
@@ -71,29 +71,20 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
         busy_action={@busy_action}
       />
       <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/records"} label={~t"Records"m} />
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/imports"} label={~t"Imports"m} />
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/exports"} label={~t"Exports"m} />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/records"}
-          label={~t"Records"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/imports"}
-          label={~t"Imports"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/exports"}
-          label={~t"Exports"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/publications"}
+          href={~p"/datasets/#{@collection}/publications"}
           label={~t"Publications and Approvals"m}
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/image_uploads"}
+          href={~p"/datasets/#{@collection}/image_uploads"}
           label={~t"Image Upload"m}
           active
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/published_records"}
+          href={~p"/datasets/#{@collection}/published_records"}
           label={~t"Published Records"m}
         />
       </.secondary_navigation>
@@ -103,7 +94,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           no_results_content:
             no_results_content(%{collection: @collection, current_user: @current_user})
         ]}
-        path={~p"/collections/#{@collection}/image_uploads"}
+        path={~p"/datasets/#{@collection}/image_uploads"}
         items={@streams.results}
         meta={@meta}
         row_click={
@@ -152,16 +143,14 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           label={~t"Actions"m}
         >
           <.table_action_button
-            patch={
-              build_path(~p"/collections/#{@collection}/image_uploads/#{image_upload}/edit", @meta)
-            }
+            patch={build_path(~p"/datasets/#{@collection}/image_uploads/#{image_upload}/edit", @meta)}
             disabled={@busy}
             data-tip={edit_data_tip(image_upload)}
             icon={edit_icon(image_upload)}
           />
         </:action>
       </.table>
-      <.pagination meta={@meta} path={~p"/collections/#{@collection}/image_uploads"} />
+      <.pagination meta={@meta} path={~p"/datasets/#{@collection}/image_uploads"} />
 
       <:secondary>
         <.slideover
@@ -244,7 +233,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           size="2xl"
           responsive
           backdrop={false}
-          on_cancel={JS.patch(build_path(~p"/collections/#{@collection}/image_uploads", @meta))}
+          on_cancel={JS.patch(build_path(~p"/datasets/#{@collection}/image_uploads", @meta))}
           overflow="manual"
         >
           <.live_component
@@ -354,7 +343,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
       description={~t"Get started by uploading a new zip file."m}
       label={~t"Upload Images"m}
       icon="hero-arrow-up-tray"
-      href={~p"/collections/#{@collection}/image_uploads/new"}
+      href={~p"/datasets/#{@collection}/image_uploads/new"}
     />
     """
   end

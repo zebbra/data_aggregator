@@ -60,7 +60,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
                 field={@form[:grscicoll_reference]}
                 label={~t"GrSciColl Collection"m}
                 options={@grscicoll_collections}
-                placeholder={~t"Filter Collections"m}
+                placeholder={~t"Filter Datasets"m}
                 prompt={~t"None"m}
                 required
                 data-portal="collection_modal"
@@ -128,7 +128,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
             |> put_flash(:info, message)
 
           if socket.assigns.action == :new do
-            push_navigate(socket, to: ~p"/collections/#{collection.id}/records")
+            push_navigate(socket, to: ~p"/datasets/#{collection.id}/records")
           else
             push_navigate(socket, to: socket.assigns.patch)
           end

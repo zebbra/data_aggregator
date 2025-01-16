@@ -373,7 +373,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       case AshPhoenix.Form.submit(form, params: params) do
         {:ok, import} ->
           push_patch(socket,
-            to: build_path(~p"/collections/#{collection}/imports/#{import}/summary", meta)
+            to: build_path(~p"/datasets/#{collection}/imports/#{import}/summary", meta)
           )
 
         {:error, form} ->
@@ -768,7 +768,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   defp valid_links(collection, import, meta) do
     summary =
       if Enum.empty?(import.missing_mappings),
-        do: build_path(~p"/collections/#{collection}/imports/#{import}/summary", meta)
+        do: build_path(~p"/datasets/#{collection}/imports/#{import}/summary", meta)
 
     [nil, nil, summary]
   end

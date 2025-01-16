@@ -150,7 +150,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
       {:ok, _} ->
         socket
         |> put_flash(:info, ~t"Publication started in background"m)
-        |> push_navigate(to: build_path(~p"/collections/#{socket.assigns.collection}/records", socket.assigns.meta))
+        |> push_navigate(to: build_path(~p"/datasets/#{socket.assigns.collection}/records", socket.assigns.meta))
         |> noreply()
     end
   end

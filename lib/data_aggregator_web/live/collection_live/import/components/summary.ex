@@ -25,7 +25,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
           current={current_step(@action)}
           links={[
             nil,
-            build_path(~p"/collections/#{@collection}/imports/#{@import}/edit", @meta),
+            build_path(~p"/datasets/#{@collection}/imports/#{@import}/edit", @meta),
             nil
           ]}
         />
@@ -107,7 +107,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
           {~t"Run import"m}
         </button>
         <.link
-          patch={build_path(~p"/collections/#{@collection}/imports/#{@import}/edit", @meta)}
+          patch={build_path(~p"/datasets/#{@collection}/imports/#{@import}/edit", @meta)}
           type="button"
           class="btn btn-ghost"
         >
@@ -143,7 +143,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
     |> push_navigate(
       to:
         build_path(
-          ~p"/collections/#{socket.assigns.collection}/imports",
+          ~p"/datasets/#{socket.assigns.collection}/imports",
           socket.assigns.meta
         )
     )

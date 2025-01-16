@@ -50,7 +50,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
         raise ~t"Something went wrong"m
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/exports")}
+        {:noreply, push_navigate(socket, to: ~p"/datasets/#{id}/exports")}
     end
   end
 
@@ -66,29 +66,23 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
         busy_action={@busy_action}
       />
       <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/records"} label={~t"Records"m} />
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/imports"} label={~t"Imports"m} />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/records"}
-          label={~t"Records"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/imports"}
-          label={~t"Imports"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/exports"}
+          href={~p"/datasets/#{@collection}/exports"}
           label={~t"Exports"m}
           active
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/publications"}
+          href={~p"/datasets/#{@collection}/publications"}
           label={~t"Publications and Approvals"m}
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/image_uploads"}
+          href={~p"/datasets/#{@collection}/image_uploads"}
           label={~t"Image Upload"m}
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/published_records"}
+          href={~p"/datasets/#{@collection}/published_records"}
           label={~t"Published Records"m}
         />
       </.secondary_navigation>
@@ -97,7 +91,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
         opts={[
           no_results_content: no_results_content(%{collection: @collection})
         ]}
-        path={~p"/collections/#{@collection}/exports"}
+        path={~p"/datasets/#{@collection}/exports"}
         items={@streams.results}
         meta={@meta}
         row_click={
@@ -153,7 +147,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           />
         </:action>
       </.table>
-      <.pagination meta={@meta} path={~p"/collections/#{@collection}/exports"} />
+      <.pagination meta={@meta} path={~p"/datasets/#{@collection}/exports"} />
 
       <:secondary>
         <.slideover

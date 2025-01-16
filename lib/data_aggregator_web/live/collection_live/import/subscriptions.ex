@@ -148,7 +148,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Subscriptions do
         {:noreply, socket}
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/imports")}
+        {:noreply, push_navigate(socket, to: ~p"/datasets/#{id}/imports")}
     end
   end
 

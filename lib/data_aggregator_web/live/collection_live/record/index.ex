@@ -150,7 +150,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         fail_async_keys(socket, ~t"Something went wrong"m)
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/collections/#{socket.assigns.collection.id}/records")}
+        {:noreply, push_navigate(socket, to: ~p"/datasets/#{socket.assigns.collection.id}/records")}
     end
   end
 
@@ -173,24 +173,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           label={~t"Records"m}
           active
         />
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/imports"} label={~t"Imports"m} />
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/exports"} label={~t"Exports"m} />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/imports"}
-          label={~t"Imports"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/exports"}
-          label={~t"Exports"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/publications"}
+          href={~p"/datasets/#{@collection}/publications"}
           label={~t"Publications and Approvals"m}
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/image_uploads"}
+          href={~p"/datasets/#{@collection}/image_uploads"}
           label={~t"Image Upload"m}
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/published_records"}
+          href={~p"/datasets/#{@collection}/published_records"}
           label={~t"Published Records"m}
         />
       </.secondary_navigation>
@@ -303,7 +297,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               meta: @meta.result
             })
         ]}
-        path={~p"/collections/#{@collection.id}/records?layer=#{@layer}"}
+        path={~p"/datasets/#{@collection.id}/records?layer=#{@layer}"}
         items={@streams.results}
         meta={@meta.result}
         row_click={
@@ -539,10 +533,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           />
         </:action>
       </.table>
-      <.pagination
-        meta={@meta.result}
-        path={~p"/collections/#{@collection.id}/records?layer=#{@layer}"}
-      />
+      <.pagination meta={@meta.result} path={~p"/datasets/#{@collection.id}/records?layer=#{@layer}"} />
 
       <:secondary>
         <.slideover
@@ -827,7 +818,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             label={~t"records"m}
             meta={@meta.result}
             collection={@collection}
-            path={~p"/collections/#{@collection}/records?layer=#{@layer}"}
+            path={~p"/datasets/#{@collection}/records?layer=#{@layer}"}
           />
         </.modal>
 
@@ -1149,7 +1140,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           description={~t"Get started by importing a new dataset"m}
           label={~t"Import"m}
           icon="hero-bug-ant"
-          href={~p"/collections/#{@collection.id}/imports/new"}
+          href={~p"/datasets/#{@collection.id}/imports/new"}
         />
       <% true -> %>
         <.empty_state

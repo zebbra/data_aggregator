@@ -31,7 +31,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         raise ~t"Something went wrong"m
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/collections")}
+        {:noreply, push_navigate(socket, to: ~p"/datasets")}
     end
   end
 
@@ -43,10 +43,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         {~t"Datasets"m}
         <:actions>
           <%= if Collection.can_create?(@current_user) do %>
-            <.link
-              patch={build_path(~p"/collections/new", @meta)}
-              class="btn btn-primary max-sm:btn-sm"
-            >
+            <.link patch={build_path(~p"/datasets/new", @meta)} class="btn btn-primary max-sm:btn-sm">
               <.icon name="hero-squares-2x2" class="max-sm:size-4" />
               <span class="max-sm:hidden">{~t"New dataset"m}</span>
               <span class="sm:hidden">{~t"Add"m}</span>
@@ -63,13 +60,13 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           no_results_content:
             no_results_content(%{collection: @collection, current_user: @current_user})
         ]}
-        path={~p"/collections"}
+        path={~p"/datasets"}
         items={@streams.results}
         meta={@meta}
       >
         <:col :let={{_id, collection}} field={:name} label={~t"Name"m}>
           <.link
-            navigate={~p"/collections/#{collection}/records"}
+            navigate={~p"/datasets/#{collection}/records"}
             class="link link-primary link-hover font-semibold"
           >
             {collection.name}
@@ -141,7 +138,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           />
           <div class="border-black-white/10 mr-4 inline-flex border-r pr-4">
             <.table_action_button
-              patch={build_path(~p"/collections/#{collection}/edit", @meta)}
+              patch={build_path(~p"/datasets/#{collection}/edit", @meta)}
               data-tip={~t"Edit"m}
               disabled={collection.busy}
               icon="hero-pencil-square-mini"
@@ -157,7 +154,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           />
         </:action>
       </.table>
-      <.pagination meta={@meta} path={~p"/collections"} />
+      <.pagination meta={@meta} path={~p"/datasets"} />
 
       <:portal>
         <.modal
@@ -165,7 +162,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           show={@live_action in [:new, :edit]}
           responsive
           backdrop={false}
-          on_cancel={JS.patch(build_path(~p"/collections", @meta))}
+          on_cancel={JS.patch(build_path(~p"/datasets", @meta))}
           overflow="manual"
         >
           <.live_component
@@ -175,7 +172,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
             title={@page_title}
             action={@live_action}
             collection={@collection}
-            patch={build_path(~p"/collections", @meta)}
+            patch={build_path(~p"/datasets", @meta)}
             current_user={@current_user}
           />
         </.modal>
@@ -241,7 +238,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
         description={~t"Get started by adding a new Dataset."m}
         label={~t"New datasets"m}
         icon="hero-squares-2x2"
-        href={~p"/collections/new"}
+        href={~p"/datasets/new"}
       />
     <% else %>
       <.empty_state

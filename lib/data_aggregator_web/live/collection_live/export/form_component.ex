@@ -120,14 +120,14 @@ defmodule DataAggregatorWeb.CollectionLive.Export.FormComponent do
         {:noreply,
          socket
          |> put_flash(:info, ~t"Export started in background"m)
-         |> push_navigate(to: ~p"/collections/#{collection_id}/exports")}
+         |> push_navigate(to: ~p"/datasets/#{collection_id}/exports")}
 
       {:error, _} ->
         {
           :noreply,
           socket
           |> put_flash(:error, ~t"An export for this dataset is already in process"m)
-          |> push_navigate(to: ~p"/collections/#{collection_id}/exports")
+          |> push_navigate(to: ~p"/datasets/#{collection_id}/exports")
         }
     end
   end

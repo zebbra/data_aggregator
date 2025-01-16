@@ -59,7 +59,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         <.breadcrumbs
           class="text-sm"
           items={[
-            %{label: ~t"Datasets"m, link: ~p"/collections"},
+            %{label: ~t"Datasets"m, link: ~p"/datasets"},
             %{label: ~t"Current"m, link: "#"}
           ]}
         />
@@ -75,7 +75,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           </.link>
           <.link
             :if={@show_import_button}
-            patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
+            patch={build_path(~p"/datasets/#{@collection}/imports/new", @meta)}
             class={["btn btn-primary btn-sm", (@busy || is_nil(@meta)) && "btn-disabled"]}
           >
             <%= if importing?(@busy_action) do %>
@@ -87,7 +87,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           </.link>
           <.link
             :if={@show_image_upload_button}
-            patch={build_path(~p"/collections/#{@collection}/image_uploads/new", @meta)}
+            patch={build_path(~p"/datasets/#{@collection}/image_uploads/new", @meta)}
             class={["btn btn-primary btn-sm", (@busy || is_nil(@meta)) && "btn-disabled"]}
           >
             <%= if mapping?(@busy_action) do %>
@@ -103,7 +103,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         <.breadcrumbs
           class="text-base-content text-3xl font-bold tracking-tight max-sm:hidden"
           items={[
-            %{label: ~t"Datasets"m, link: ~p"/collections"},
+            %{label: ~t"Datasets"m, link: ~p"/datasets"},
             %{label: "#{@collection.name} (#{@collection.code})", link: "#"}
           ]}
         />
@@ -143,7 +143,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         </.link>
         <.link
           :if={@show_import_button}
-          patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
+          patch={build_path(~p"/datasets/#{@collection}/imports/new", @meta)}
           class={["btn btn-primary", (@busy || is_nil(@meta)) && "btn-disabled"]}
         >
           <%= if importing?(@busy_action) do %>
@@ -155,7 +155,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         </.link>
         <.link
           :if={@show_image_upload_button}
-          patch={build_path(~p"/collections/#{@collection}/image_uploads/new", @meta)}
+          patch={build_path(~p"/datasets/#{@collection}/image_uploads/new", @meta)}
           class={["btn btn-primary", (@busy || is_nil(@meta)) && "btn-disabled"]}
         >
           <%= if mapping?(@busy_action) do %>

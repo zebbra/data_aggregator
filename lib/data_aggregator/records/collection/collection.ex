@@ -22,7 +22,7 @@ defmodule DataAggregator.Records.Collection do
   @type t :: %Collection{}
 
   attributes do
-    uuid_attribute :id, prefix: "col", public?: true
+    uuid_attribute :id, prefix: "set", public?: true
 
     attribute :items_to_digitize, :integer, allow_nil?: false, default: 0, public?: true
     attribute :owner, :string, allow_nil?: true, public?: true
@@ -397,7 +397,7 @@ defmodule DataAggregator.Records.Collection do
     type "collection"
 
     routes do
-      base "/collections"
+      base "/datasets"
 
       get :read
       index :read

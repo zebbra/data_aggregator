@@ -9,7 +9,7 @@
       <.link
         navigate={~p"/"}
         aria-current={if @current === "collections", do: "page", else: nil}
-        aria-label="Collections"
+        aria-label="Datasets"
         class="avatar btn btn-ghost w-full space-x-2 max-md:justify-start md:btn-circle"
       >
         <div class="w-10 rounded-full">
@@ -25,7 +25,7 @@
     >
       <li>
         <.link
-          navigate={~p"/collections"}
+          navigate={~p"/datasets"}
           class={[
             "flex active:!bg-primary md:flex-col md:p-3",
             @current == "collections" && "bg-primary text-primary-content hover:bg-primary"
