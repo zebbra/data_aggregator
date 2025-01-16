@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
   use Ash.Resource.Actions.Implementation
 
+  alias Ash.Error.Query.NotFound
   alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Counter
   alias DataAggregator.DarwinCore.Publication.CoreFile
@@ -22,6 +23,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   alias DataAggregator.Records.Publication.InfoSpecies
   alias DataAggregator.Records.Publication.PublishedRecord
   alias DataAggregator.Records.Record
+  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
   require Ash.Query
   require Logger
@@ -165,6 +167,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     |> Stream.map(fn record ->
       record_inputs(record, publication)
     end)
+    |> Stream.map(&maybe_apply_publication_rules/1)
     |> Ash.bulk_create(PublishedRecord, :create,
       upsert?: true,
       upsert_identity: :unique_record_id,
@@ -173,6 +176,34 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       batch_size: 200
     )
   end
+
+  defp maybe_apply_publication_rules(%{loc_country: "Switzerland", tax_taxon_id: taxon_id} = record)
+       when not is_nil(taxon_id) do
+    case SwissSpecies.get_by_usage_key(taxon_id) do
+      {:ok, _result} ->
+        Logger.debug("This is a swissSpecies entry. lets use the publication rule to round the data to 2 decimal places")
+
+        # this is a swissSpecies entry. lets use the publication rule
+        record
+        |> Map.put(:loc_decimal_latitude, round_coordinates(record.loc_decimal_latitude))
+        |> Map.put(:loc_decimal_longitude, round_coordinates(record.loc_decimal_longitude))
+
+      {:error, %NotFound{}} ->
+        record
+
+      {:error, error} ->
+        Logger.warning("SwissSpecies.get_by_usage_key failed: #{inspect(error)}")
+        record
+    end
+  end
+
+  defp maybe_apply_publication_rules(record), do: record
+
+  defp round_coordinates(value) when is_float(value) do
+    Float.round(value, 2)
+  end
+
+  defp round_coordinates(value), do: value
 
   defp maybe_update_count(%{channel: :approval} = publication, _tenant), do: publication
 
