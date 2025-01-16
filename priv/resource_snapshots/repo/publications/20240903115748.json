@@ -112,6 +112,16 @@
     },
     {
       "allow_nil?": false,
+      "default": "\"approval\"",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "layer",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
       "default": "\"cc0\"",
       "generated?": false,
       "primary_key?": false,
@@ -243,7 +253,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "45FA72769A369CDD4BEEBCF3F5EA4DBE74F408BFDA7BC2EC7022E9A12900BD2E",
+  "hash": "AB8FCD0BB11A7A79BD920F7BA1F103D31F6D4B62DD45157D3D709E00633C27F4",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",

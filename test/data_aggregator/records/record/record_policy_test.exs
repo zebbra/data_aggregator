@@ -243,6 +243,10 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       assert Record.can_bulk_import?(actor, import, %{})
     end
 
+    test "can enqueue fast track checker", %{actor: actor, record_same: record_same} do
+      assert Record.can_enqueue_fast_track_checker?(actor, record_same)
+    end
+
     test "cannot update record with same institution", %{
       actor: actor,
       record_same: record_same
@@ -278,7 +282,6 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       {:can_set_encoded?, "set_encoded"},
       {:can_set_encoding_failed?, "set_encoding_failed"},
       {:can_enqueue_encoder?, "enqueue_encoder"},
-      {:can_enqueue_fast_track_checker?, "enqueue_fast_track_checker"},
       {:can_update_last_approval_started_at?, "update_last_approval_started_at"}
     ]
 
@@ -383,6 +386,10 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       assert Record.can_bulk_import?(actor, import, %{})
     end
 
+    test "can enqueue fast track checker", %{actor: actor, record_same: record_same} do
+      assert Record.can_enqueue_fast_track_checker?(actor, record_same)
+    end
+
     test "can update record with same institution", %{
       actor: actor,
       record_same: record_same
@@ -418,7 +425,6 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       {:can_set_encoded?, "set_encoded"},
       {:can_set_encoding_failed?, "set_encoding_failed"},
       {:can_enqueue_encoder?, "enqueue_encoder"},
-      {:can_enqueue_fast_track_checker?, "enqueue_fast_track_checker"},
       {:can_update_last_approval_started_at?, "update_last_approval_started_at"}
     ]
 
@@ -523,6 +529,10 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       assert Record.can_bulk_import?(actor, import, %{})
     end
 
+    test "can enqueue fast track checker", %{actor: actor, record_same: record_same} do
+      assert Record.can_enqueue_fast_track_checker?(actor, record_same)
+    end
+
     test "can update record with same institution", %{
       actor: actor,
       record_same: record_same
@@ -558,7 +568,6 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       {:can_set_encoded?, "set_encoded"},
       {:can_set_encoding_failed?, "set_encoding_failed"},
       {:can_enqueue_encoder?, "enqueue_encoder"},
-      {:can_enqueue_fast_track_checker?, "enqueue_fast_track_checker"},
       {:can_update_last_approval_started_at?, "update_last_approval_started_at"}
     ]
 

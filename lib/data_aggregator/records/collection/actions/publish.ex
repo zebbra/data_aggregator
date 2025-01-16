@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
   use Ash.Resource.Actions.Implementation
 
+  alias Ash.Error.Query.NotFound
   alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Counter
   alias DataAggregator.DarwinCore.Publication.CoreFile
@@ -14,24 +15,35 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   alias DataAggregator.DarwinCore.Publication.MetaFile
   alias DataAggregator.DarwinCore.Publication.PreservationFile
   alias DataAggregator.DarwinCore.Publication.ReleveFile
+  alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Publication.InfoSpecies
+  alias DataAggregator.Records.Publication.PublishedRecord
   alias DataAggregator.Records.Record
+  alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
 
   require Ash.Query
   require Logger
+
+  @record_attributes Enum.map(Schema.prefixed_attributes(), &Map.get(&1, :name))
 
   @impl true
   def run(input, _opts, %{tenant: tenant} = ctx) do
     publication = input.arguments.publication
 
+    # these are the new records that will be published
     query =
       Record
       |> AshPagify.query_for_filters_map(publication.records_query)
       |> Ash.Query.set_tenant(tenant)
+
+    # first we need to copy the data of these records to published_records table if fast track
+    maybe_append_published_records(publication, query)
+
+    publication = maybe_update_count(publication, tenant)
 
     path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
     EmlFile.create(publication.collection, publication, path)
@@ -49,7 +61,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     Enum.each(file_metas, &DwcaFile.write_headers(&1))
 
     query
-    |> Ash.stream!(stream_with: :keyset, batch_size: 1000, load: :encoded_record)
+    |> stream_query_or_resource(publication)
     |> set_publication_status(:publishing, publication, ctx)
     |> Stream.chunk_every(1000)
     |> Stream.flat_map(fn records ->
@@ -127,7 +139,14 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     max_concurrency = Records.import_max_concurrency()
     batch_size = ceil(Records.import_batch_size() / max_concurrency)
 
-    Ash.bulk_update(stream, action, %{status: status},
+    stream_params =
+      if publication.channel == :fast_track do
+        Enum.map(stream, &%{id: &1.record_id})
+      else
+        stream
+      end
+
+    Ash.bulk_update(stream_params, action, %{status: status},
       actor: actor,
       authorize?: false,
       domain: Records,
@@ -138,6 +157,78 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     )
 
     stream
+  end
+
+  defp maybe_append_published_records(%{channel: :approval} = _publication, _query), do: nil
+
+  defp maybe_append_published_records(%{channel: :fast_track} = publication, query) do
+    query
+    |> Ash.stream!(stream_with: :keyset, batch_size: 1000, load: :encoded_record)
+    |> Stream.map(fn record ->
+      record_inputs(record, publication)
+    end)
+    |> Stream.map(&maybe_apply_publication_rules/1)
+    |> Ash.bulk_create(PublishedRecord, :create,
+      upsert?: true,
+      upsert_identity: :unique_record_id,
+      upsert_fields: {:replace_all_except, [:inserted_at, :id, :record_id, :collection_id]},
+      tenant: publication.collection,
+      batch_size: 200
+    )
+  end
+
+  defp maybe_apply_publication_rules(%{loc_country: "Switzerland", tax_taxon_id: taxon_id} = record)
+       when not is_nil(taxon_id) do
+    case SwissSpecies.get_by_usage_key(taxon_id) do
+      {:ok, _result} ->
+        Logger.debug("This is a swissSpecies entry. lets use the publication rule to round the data to 2 decimal places")
+
+        # this is a swissSpecies entry. lets use the publication rule
+        record
+        |> Map.put(:loc_decimal_latitude, round_coordinates(record.loc_decimal_latitude))
+        |> Map.put(:loc_decimal_longitude, round_coordinates(record.loc_decimal_longitude))
+
+      {:error, %NotFound{}} ->
+        record
+
+      {:error, error} ->
+        Logger.warning("SwissSpecies.get_by_usage_key failed: #{inspect(error)}")
+        record
+    end
+  end
+
+  defp maybe_apply_publication_rules(record), do: record
+
+  defp round_coordinates(value) when is_float(value) do
+    Float.round(value, 2)
+  end
+
+  defp round_coordinates(value), do: value
+
+  defp maybe_update_count(%{channel: :approval} = publication, _tenant), do: publication
+
+  defp maybe_update_count(%{channel: :fast_track} = publication, tenant) do
+    # now we update the rows count with the number of records that will be published
+    published_records_count = Ash.count!(PublishedRecord, tenant: tenant)
+    Publication.update!(publication, %{rows_count: published_records_count})
+  end
+
+  defp stream_query_or_resource(_query, %{channel: :fast_track, collection: collection}),
+    do: Ash.stream!(PublishedRecord, stream_with: :keyset, batch_size: 1000, tenant: collection)
+
+  defp stream_query_or_resource(query, %{channel: :approval}),
+    do: Ash.stream!(query, stream_with: :keyset, batch_size: 1000, load: :encoded_record)
+
+  defp record_inputs(record, publication) do
+    layer = if publication.layer == "import", do: record, else: Map.get(record, :encoded_record)
+
+    layer
+    |> Map.from_struct()
+    |> Map.take(@record_attributes)
+    |> Map.put(:record_id, record.id)
+    |> Map.put(:extra_data, record.extra_data)
+    |> Map.put(:publication_id, publication.id)
+    |> Map.put(:collection_id, publication.collection.id)
   end
 
   defp translate_status(:publishing), do: :approving
@@ -156,22 +247,22 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     end
   end
 
-  defp register(%Publication{channel: :fast_track} = publication, query) do
+  defp register(%Publication{channel: :fast_track} = publication, _query) do
     with {:ok, _collection} <-
            Collection.register_at_gbif(
              publication.collection,
              publication.attachment.url,
              publication.existing_dataset_key
            ),
-         :ok <- queue_records_for_verification(query) do
+         :ok <- queue_records_for_verification(publication.collection) do
       {:ok, publication}
     end
   end
 
   @spec queue_records_for_verification(Ash.Query.t()) :: :ok
-  defp queue_records_for_verification(query) do
-    query
-    |> Ash.stream!(stream_with: :keyset, batch_size: 1000)
+  defp queue_records_for_verification(collection) do
+    PublishedRecord
+    |> Ash.stream!(stream_with: :keyset, batch_size: 1000, tenant: collection)
     |> Enum.each(&Record.enqueue_fast_track_checker/1)
   end
 end
