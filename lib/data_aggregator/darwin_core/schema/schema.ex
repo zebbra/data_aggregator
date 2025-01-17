@@ -1,4 +1,4 @@
-import DataAggregatorWeb.Helpers, only: [format_coordinate: 1, format_map: 1]
+import DataAggregatorWeb.Helpers, only: [format_coordinate: 1, format_map: 1, format_float: 1]
 
 alias Ash.Resource.Attribute
 alias DataAggregator.DarwinCore.Schema.Category
@@ -2410,6 +2410,16 @@ defmodule DataAggregator.DarwinCore.Schema do
     %{
       loc_decimal_latitude: &format_coordinate/1,
       loc_decimal_longitude: &format_coordinate/1,
+      loc_coordinate_uncertainty_in_meters: &format_float/1,
+      loc_minimum_elevation_in_meters: &format_float/1,
+      loc_minimum_depth_in_meters: &format_float/1,
+      loc_maximum_depth_in_meters: &format_float/1,
+      loc_minimum_distance_above_surface_in_meters: &format_float/1,
+      loc_maximum_elevation_in_meters: &format_float/1,
+      loc_footprint_spatial_fit: &format_float/1,
+      loc_point_radius_spatial_fit: &format_float/1,
+      loc_coordinate_precision: &format_float/1,
+      loc_maximum_distance_above_surface_in_meters: &format_float/1,
       ext_vernacular_names: &format_map/1,
       ext_species_profile: &format_map/1,
       ext_species_distribution: &format_map/1,
@@ -2418,7 +2428,22 @@ defmodule DataAggregator.DarwinCore.Schema do
       ext_permit: &format_map/1,
       ext_chronometric: &format_map/1,
       ext_assertions: &format_map/1,
-      ext_amplification: &format_map/1
+      ext_amplification: &format_map/1,
+      eve_cover_water_in_percentage: &format_float/1,
+      eve_cover_shrubs_in_percentage: &format_float/1,
+      eve_cover_algae_in_percentage: &format_float/1,
+      eve_cover_litter_in_percentage: &format_float/1,
+      eve_cover_trees_in_percentage: &format_float/1,
+      eve_cover_lychens_in_percentage: &format_float/1,
+      eve_inclination_in_degrees: &format_float/1,
+      eve_cover_cryptogams_in_percentage: &format_float/1,
+      eve_cover_mosses_in_percentage: &format_float/1,
+      eve_herb_layer_height_in_centimeters: &format_float/1,
+      eve_shrub_layer_height_in_meters: &format_float/1,
+      eve_cover_herbs_in_percentage: &format_float/1,
+      eve_cover_rock_in_percentage: &format_float/1,
+      eve_cover_total_in_percentage: &format_float/1,
+      eve_tree_layer_height_in_meters: &format_float/1
     }
   end
 
