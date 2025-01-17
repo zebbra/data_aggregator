@@ -70,14 +70,19 @@ defmodule DataAggregator.Records.Import do
   end
 
   calculations do
-    calculate :import_progress, :float, expr(rows_imported_count / rows_count)
+    calculate :import_progress,
+              :float,
+              expr(if rows_count > 0, do: rows_imported_count / rows_count, else: 1.0)
+
     calculate :rows_validated_count, :integer, expr(rows_valid_count + rows_invalid_count)
 
     calculate :rows_valid_ratio,
               :float,
               expr(if rows_validated_count > 0, do: rows_valid_count / rows_validated_count)
 
-    calculate :validation_progress, :float, expr(rows_validated_count / rows_count)
+    calculate :validation_progress,
+              :float,
+              expr(if rows_count > 0, do: rows_validated_count / rows_count, else: 1.0)
 
     calculate :duration, :time, expr((finished_at || now()) - started_at)
 

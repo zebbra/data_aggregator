@@ -583,7 +583,10 @@ defmodule DataAggregator.PublicationTest do
       Oban.Testing.with_testing_mode(:manual, fn ->
         assert {:ok, publication} = Publication.run(publication)
 
+        publication = Ash.load!(publication, [:publication_progress])
+
         assert publication.state == :done
+        assert publication.publication_progress == 1.0
       end)
     end
 
