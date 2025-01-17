@@ -577,7 +577,6 @@ defmodule DataAggregator.PublicationTest do
              end)
     end
 
-    @tag run: true
     test "run/1", %{
       publication: publication
     } do
