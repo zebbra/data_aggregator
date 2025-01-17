@@ -43,10 +43,11 @@ defmodule DataAggregator.Records.Export.Workers.ExportTest do
     test "export success", %{export: export} do
       perform_job(Export.Workers.Exporter, %{id: export.id, collection_id: export.collection.id})
 
-      export = Export.get_by_id!(export.id, tenant: export.collection)
+      export = Export.get_by_id!(export.id, tenant: export.collection, load: [:export_progress])
 
       assert export.state == :exported
       assert export.exported_count == 2
+      assert export.export_progress == 1.0
     end
   end
 end
