@@ -10,7 +10,9 @@ defmodule DataAggregatorWeb.ImageUploadController do
         put_status(conn, :not_found)
 
       {:ok, image} ->
-        redirect(conn, external: image.attachment.url)
+        conn
+        |> put_resp_content_type("content-type", "image/jpeg")
+        |> redirect(external: image.attachment.url)
     end
   end
 
