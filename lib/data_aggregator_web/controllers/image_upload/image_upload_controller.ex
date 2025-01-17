@@ -11,7 +11,7 @@ defmodule DataAggregatorWeb.ImageUploadController do
 
       {:ok, image} ->
         conn
-        |> put_resp_content_type("content-type", "image/jpeg")
+        |> put_resp_content_type("image/jpeg")
         |> redirect(external: image.attachment.url)
     end
   end
