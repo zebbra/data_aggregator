@@ -57,13 +57,9 @@ defmodule DataAggregatorWeb.ImageUploadController do
     end
   end
 
-  defp serve_file(url, conn, fallback_content_type \\ "image/jpeg") do
+  defp serve_file(url, conn, content_type \\ "image/jpeg") do
     case Req.get(url: url) do
-      {:ok, %Req.Response{status: 200, body: body, headers: headers}} ->
-        # Extract the Content-Type header from the remote server response
-        content_type =
-          headers |> Map.get("content-type", fallback_content_type) |> hd()
-
+      {:ok, %Req.Response{status: 200, body: body}} ->
         conn
         |> put_resp_content_type(content_type)
         |> put_resp_header("content-disposition", "inline")
