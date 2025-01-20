@@ -66,6 +66,7 @@ defmodule DataAggregatorWeb.ImageUploadController do
 
         conn
         |> put_resp_content_type(content_type)
+        |> put_resp_header("content-disposition", "inline")
         |> send_resp(200, body)
 
       {:ok, %Req.Response{status: status}} ->
