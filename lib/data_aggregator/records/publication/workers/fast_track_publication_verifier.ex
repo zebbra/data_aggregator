@@ -13,6 +13,7 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
   use Oban.Worker, queue: :publication_verifications, max_attempts: 10
 
   alias __MODULE__
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Record
 
   require Logger
@@ -26,12 +27,20 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
   @day 24 * @hour
 
   @impl true
-  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id}}) do
+  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id, "user_id" => user_id}}) do
+    actor =
+      case User.get_by_id(user_id) do
+        {:ok, user} -> user
+        {:error, _} -> nil
+      end
+
     record =
-      id |> Record.get_by_id!(tenant: collection_id) |> Record.check_if_fast_track_pubished!()
+      id
+      |> Record.get_by_id!(tenant: collection_id)
+      |> Record.check_if_fast_track_pubished!(actor: actor, authorize?: false)
 
     if scheduler_active?() && record.fast_track_status != :published do
-      %{id: id, collection_id: collection_id}
+      %{id: id, collection_id: collection_id, user_id: user_id}
       |> FastTrackPublicationVerifier.new(schedule_in: publication_interval_minutes())
       |> Oban.insert!()
 
