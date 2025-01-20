@@ -1,5 +1,5 @@
 import type { LiveSocket } from "phoenix_live_view";
-import { ViewHook } from "phoenix_live_view";
+import { Hook as ViewHook } from "phoenix_live_view/hooks";
 
 export abstract class Hook implements ViewHook {
   /**

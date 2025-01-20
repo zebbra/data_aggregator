@@ -299,6 +299,7 @@ defmodule DataAggregator.MixProject do
       # Utilities and Helpers
       {:envy, "~> 1.1.1"},
       {:picosat_elixir, "~> 0.2"},
+      {:sourceror, "~> 1.7", only: [:dev, :test]},
 
       # Documentation
       {:ex_doc, "~> 0.35", runtime: false},
