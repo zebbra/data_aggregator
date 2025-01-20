@@ -69,7 +69,6 @@ jobs:
             ${{ runner.os }}-mix-${{ hashFiles('.tool-versions') }}-
             ${{ runner.os }}-mix-
 
-      - run: mix deps.clean --all
       - run: mix deps.get
       - run: mix compile
       - run: mix dialyzer --plt
