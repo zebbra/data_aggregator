@@ -58,7 +58,8 @@ defmodule DataAggregator.PublicationTest do
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
           loc_decimal_latitude: 10.0,
-          loc_decimal_longitude: 10.0
+          loc_decimal_longitude: 10.0,
+          loc_coordinate_uncertainty_in_meters: 5000.0
         })
 
       record2 =
@@ -67,7 +68,8 @@ defmodule DataAggregator.PublicationTest do
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
           loc_decimal_latitude: 166.4713889,
-          loc_decimal_longitude: 640_000.0
+          loc_decimal_longitude: 640_000.0,
+          loc_coordinate_uncertainty_in_meters: 400.004
         })
 
       record3 =
@@ -76,7 +78,8 @@ defmodule DataAggregator.PublicationTest do
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
           loc_decimal_latitude: 47.27606815,
-          loc_decimal_longitude: 9.408043484
+          loc_decimal_longitude: 9.408043484,
+          loc_coordinate_uncertainty_in_meters: 3.03
         })
 
       record4 =
@@ -285,14 +288,37 @@ defmodule DataAggregator.PublicationTest do
       rows = DataFrame.to_rows(data_frame)
 
       transformed_attributes =
-        Enum.map(rows, &Map.take(&1, ["decimalLongitude", "decimalLatitude"]))
+        Enum.map(
+          rows,
+          &Map.take(&1, ["decimalLongitude", "decimalLatitude", "coordinateUncertaintyInMeters"])
+        )
 
       expected = [
-        %{"decimalLatitude" => 10.0, "decimalLongitude" => 10.0},
-        %{"decimalLatitude" => 166.4713889, "decimalLongitude" => 640_000.0},
-        %{"decimalLatitude" => 47.27606815, "decimalLongitude" => 9.408043484},
-        %{"decimalLatitude" => nil, "decimalLongitude" => nil},
-        %{"decimalLatitude" => nil, "decimalLongitude" => nil}
+        %{
+          "decimalLatitude" => 10.0,
+          "decimalLongitude" => 10.0,
+          "coordinateUncertaintyInMeters" => 5000.0
+        },
+        %{
+          "decimalLatitude" => 166.4713889,
+          "decimalLongitude" => 640_000.0,
+          "coordinateUncertaintyInMeters" => 400.004
+        },
+        %{
+          "decimalLatitude" => 47.27606815,
+          "decimalLongitude" => 9.408043484,
+          "coordinateUncertaintyInMeters" => 3.03
+        },
+        %{
+          "decimalLatitude" => nil,
+          "decimalLongitude" => nil,
+          "coordinateUncertaintyInMeters" => nil
+        },
+        %{
+          "decimalLatitude" => nil,
+          "decimalLongitude" => nil,
+          "coordinateUncertaintyInMeters" => nil
+        }
       ]
 
       assert_lists_equal(expected, transformed_attributes)
@@ -557,7 +583,10 @@ defmodule DataAggregator.PublicationTest do
       Oban.Testing.with_testing_mode(:manual, fn ->
         assert {:ok, publication} = Publication.run(publication)
 
+        publication = Ash.load!(publication, [:publication_progress])
+
         assert publication.state == :done
+        assert publication.publication_progress == 1.0
       end)
     end
 

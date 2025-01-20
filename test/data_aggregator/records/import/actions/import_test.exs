@@ -45,7 +45,10 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
     test "succeeds with a valid file", %{import: import, collection: collection} do
       assert import.rows_count == 18
 
-      import = Import.import!(import, tenant: collection)
+      import =
+        import
+        |> Import.import!(tenant: collection)
+        |> Ash.load!([:validation_progress, :import_progress])
 
       assert import.state == :imported
       assert import.records_count == 18
@@ -54,6 +57,8 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert import.rows_valid_count == 18
       assert import.rows_invalid_count == 0
       assert import.rows_imported_count == 18
+      assert import.validation_progress == 1.0
+      assert import.import_progress == 1.0
 
       assert record = Record |> Ash.Query.set_tenant(collection) |> Ash.read!() |> hd()
       assert record.eve_event_date != nil
@@ -77,6 +82,8 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       {result, _logs} = with_log(fn -> Import.import(import, tenant: import.collection) end)
       assert {:ok, import} = result
 
+      import = Ash.load!(import, [:validation_progress, :import_progress])
+
       assert import.state == :failed
       assert import.records_count == 0
       assert import.started_at != nil
@@ -84,6 +91,8 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert import.rows_valid_count == 0
       assert import.rows_invalid_count == 0
       assert import.rows_imported_count == 0
+      assert import.validation_progress == 0
+      assert import.import_progress == 0
     end
 
     @tag path: "test/support/fixtures/files/invalid-records-huge.csv"
@@ -101,6 +110,8 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       assert {:ok, import} = result
 
+      import = Ash.load!(import, [:validation_progress, :import_progress])
+
       assert logs =~ "Found 1161/1161 invalid rows. Adding error to changeset"
 
       assert logs =~
@@ -113,6 +124,8 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       assert import.rows_valid_count == 0
       assert import.rows_invalid_count == 0
       assert import.rows_imported_count == 0
+      assert import.validation_progress == 0
+      assert import.import_progress == 0
     end
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example-xs.csv"

@@ -53,7 +53,10 @@ defmodule DataAggregator.Records.Export do
   end
 
   calculations do
-    calculate :export_progress, :float, expr(exported_count / rows_count)
+    calculate :export_progress,
+              :float,
+              expr(if rows_count > 0, do: exported_count / rows_count, else: 1.0)
+
     calculate :duration, :time, expr((finished_at || now()) - started_at)
 
     calculate :collection_name, :string, expr(collection.name)

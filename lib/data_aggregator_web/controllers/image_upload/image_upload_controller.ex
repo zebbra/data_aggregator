@@ -1,19 +1,37 @@
 defmodule DataAggregatorWeb.ImageUploadController do
+  @moduledoc """
+  Controller for handling image uploads and retrievals
+  """
+
   use DataAggregatorWeb, :controller
 
   alias DataAggregator.Records.ImageUpload
   alias DataAggregator.Records.Record.Image
 
+  require Logger
+
+  @doc """
+  Serves an image hosted on our static asset storage server over http
+  """
+  @spec show_image(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show_image(conn, %{"collection_id" => collection_id, "image_id" => image_id}) do
     case Image.get_by_id(image_id, load: [attachment: :url], tenant: collection_id) do
-      {:error, _error} ->
-        put_status(conn, :not_found)
+      {:error, error} ->
+        Logger.debug("Error while retrieving image: #{inspect(error)}")
+
+        conn
+        |> put_status(:not_found)
+        |> text(~c"Unable to find the requested image")
 
       {:ok, image} ->
-        redirect(conn, external: image.attachment.url)
+        serve_file(image.attachment.url, conn)
     end
   end
 
+  @doc """
+  Downloads the log file for an image upload
+  """
+  @spec download_log(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def download_log(conn, %{"image_upload_id" => id, "id" => collection_id}) do
     case ImageUpload.get_by_id(id,
            load: [
@@ -22,8 +40,12 @@ defmodule DataAggregatorWeb.ImageUploadController do
            ],
            tenant: collection_id
          ) do
-      {:error, _error} ->
-        put_status(conn, :not_found)
+      {:error, error} ->
+        Logger.debug("Error while retrieving image: #{inspect(error)}")
+
+        conn
+        |> put_status(:not_found)
+        |> text(~c"Unable to find the requested image")
 
       {:ok, image_upload} ->
         log_content = generate_log_content(image_upload)
@@ -32,6 +54,33 @@ defmodule DataAggregatorWeb.ImageUploadController do
         |> put_resp_content_type("text/csv")
         |> put_resp_header("content-disposition", "attachment; filename=\"image_upload_log.csv\"")
         |> send_resp(200, log_content)
+    end
+  end
+
+  defp serve_file(url, conn) do
+    case Req.get(url: url) do
+      {:ok, %Req.Response{status: 200, body: body, headers: headers}} ->
+        # Extract the Content-Type header from the remote server response
+        content_type =
+          headers |> Map.get("content-type", "application/octet-stream") |> hd()
+
+        conn
+        |> put_resp_content_type(content_type)
+        |> send_resp(200, body)
+
+      {:ok, %Req.Response{status: status}} ->
+        Logger.debug("Non http 200 status while requesting file from static asset storage: #{status}")
+
+        conn
+        |> put_status(status)
+        |> text("Could not find the requested file")
+
+      {:error, reason} ->
+        Logger.debug("Error while retrieving file from static asset storage: #{inspect(reason)}")
+
+        conn
+        |> put_status(:bad_gateway)
+        |> text("Could not find the requested file")
     end
   end
 

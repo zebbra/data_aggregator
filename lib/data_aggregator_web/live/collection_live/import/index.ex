@@ -258,7 +258,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             <:item title={~t"Validation"m}>
               <div class="flex flex-col">
                 <.progress
-                  value={@selected_import.validation_progress || 0}
+                  value={@selected_import.validation_progress}
                   max={1}
                   class="progress progress-primary w-full"
                 />
@@ -313,7 +313,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             <:item title={~t"Imported"m}>
               <div class="flex flex-col">
                 <.progress
-                  value={@selected_import.import_progress || 0}
+                  value={@selected_import.import_progress}
                   max={1}
                   class="progress progress-primary w-full"
                 />
