@@ -1305,12 +1305,6 @@ mte_attributes = [
     attribute: %Attribute{name: :form, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: "gbifDOI",
-    dwc_link: nil,
-    dwca_file: :core,
-    attribute: %Attribute{name: :gbif_doi, type: :string, allow_nil?: true}
-  },
-  %{
     dwc_field: "matrix",
     dwc_link: nil,
     dwca_file: :core,
@@ -1747,6 +1741,26 @@ oth_attributes = [
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :date_available, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "gbifDOI",
+    dwc_link: nil,
+    dwca_file: :core,
+    available_for_import_mapping: false,
+    attribute: %Attribute{name: :gbif_doi, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "gbifID",
+    dwc_link: nil,
+    dwca_file: :core,
+    available_for_import_mapping: false,
+    attribute: %Attribute{name: :gbif_id, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "gbifCHID",
+    dwc_link: nil,
+    dwca_file: :core,
+    attribute: %Attribute{name: :gbif_ch_id, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "informationWithheld",
@@ -2333,8 +2347,13 @@ defmodule DataAggregator.DarwinCore.Schema do
     {required, _opts} = Keyword.pop(opts, :required?, true)
 
     for category <- @categories do
+      filtered_attributes =
+        Enum.filter(category.dwc_attributes, fn dwc_attribute ->
+          Map.get(dwc_attribute, :available_for_import_mapping, true)
+        end)
+
       options =
-        for dwc_attribute <- category.dwc_attributes do
+        for dwc_attribute <- filtered_attributes do
           attribute = dwc_attribute.attribute
 
           name =

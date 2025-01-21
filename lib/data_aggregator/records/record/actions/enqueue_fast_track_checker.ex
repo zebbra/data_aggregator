@@ -30,13 +30,29 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackChecker do
 
   defp insert_job(%Record{id: id, collection_id: collection_id}, user) do
     %{id: id, collection_id: collection_id, user_id: maybe_get_id(user)}
-    |> Scheduler.FastTrackPublicationVerifier.new()
+    |> Scheduler.FastTrackPublicationVerifier.new(
+      unique: [
+        period: :infinity,
+        fields: [:args, :worker],
+        keys: [:id, :collection_id]
+      ],
+      replace: [scheduled: [:scheduled_at]],
+      schedule_in: {2, :hours}
+    )
     |> Oban.insert()
   end
 
   defp insert_job(%PublishedRecord{record_id: id, collection_id: collection_id}, user) do
     %{id: id, collection_id: collection_id, user_id: maybe_get_id(user)}
-    |> Scheduler.FastTrackPublicationVerifier.new()
+    |> Scheduler.FastTrackPublicationVerifier.new(
+      unique: [
+        period: :infinity,
+        fields: [:args, :worker],
+        keys: [:id, :collection_id]
+      ],
+      replace: [scheduled: [:scheduled_at]],
+      schedule_in: {2, :hours}
+    )
     |> Oban.insert()
   end
 

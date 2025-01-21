@@ -10,7 +10,7 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
   * `collection_id` - the ID of the collection the record belongs to
 
   """
-  use Oban.Worker, queue: :publication_verifications, max_attempts: 10
+  use Oban.Worker, queue: :publication_verifications, max_attempts: 3
 
   alias __MODULE__
   alias DataAggregator.Accounts.User
