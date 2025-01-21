@@ -86,6 +86,8 @@ defmodule DataAggregatorWeb.ImageUploadController do
 
   defp guess_image_content_type(url) do
     url
+    |> URI.parse()
+    |> Map.get(:path)
     |> Path.extname()
     |> Helpers.accepted_image_content_type()
   end
