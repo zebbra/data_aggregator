@@ -18,6 +18,8 @@ defmodule DataAggregator.HelpersTest do
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
 
+  doctest DataAggregator.Records.ImageUpload.Helpers, import: true
+
   setup do
     stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
     stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
