@@ -2,6 +2,7 @@ defmodule DataAggregator.Records.Collection.Actions.CreateEndpoint do
   @moduledoc """
   Custom action to create an endpoint on gbif in the publication process.
   This will create an endpoint on the dataset defined on the collection, with the dwca file url.
+  And then delete all other endpoints for the dataset, so the correct one gets crawled on gbif
   """
 
   use Ash.Resource.Actions.Implementation

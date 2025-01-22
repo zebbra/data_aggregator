@@ -95,9 +95,6 @@ defmodule DataAggregator.RegisterAtGbifTest do
           tenant: collection
         )
 
-      {:ok, publication} = Collection.publish(publication, tenant: collection)
-      publication = Ash.load!(publication, [:attachment], tenant: collection)
-
       [
         collection: collection,
         records: records,
@@ -112,6 +109,15 @@ defmodule DataAggregator.RegisterAtGbifTest do
         Collection.register_at_gbif(collection, nil)
 
       assert collection.gbif_dataset_key === "1234-1234-1234-1234"
+    end
+
+    test "register_at_gbif/2 success using existing dataset key", %{
+      collection: collection
+    } do
+      {:ok, collection} =
+        Collection.register_at_gbif(collection, "1111-1111-1111-1111")
+
+      assert collection.gbif_dataset_key === "1111-1111-1111-1111"
     end
 
     test "register_at_gbif/2 registration failed", %{
