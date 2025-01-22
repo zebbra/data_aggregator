@@ -121,7 +121,8 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   end
 
   @doc """
-  Stores the given data in a CSV file on the local disk
+  Stores the given data in a CSV file on the local disk. Use store_on_disk/3 to
+  have file open and close correctly handled.
   """
   @spec store_local_file(
           any(),
