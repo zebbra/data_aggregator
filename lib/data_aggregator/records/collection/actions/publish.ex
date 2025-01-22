@@ -42,8 +42,16 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
     # first we need to copy the data of these records to published_records table if fast track
     maybe_append_published_records(publication, query)
-
     publication = maybe_update_count(publication, tenant)
+
+    # we need to register now, so we can use the data in the dwc file creation process
+    case register(publication) do
+      {:ok, collection} ->
+        collection
+
+      {:error, error} ->
+        raise("Error registering dataset at GBIF: #{inspect(error)}")
+    end
 
     path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
     EmlFile.create(publication.collection, publication, path)
@@ -89,7 +97,8 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       |> Publication.update_attachment(attachment)
       |> Ash.load!([:collection, :attachment])
 
-    case register(publication, query, ctx) do
+    # fast_track: create endpoint with attachment, approval: notify infospecies
+    case publish(publication, query, ctx) do
       {:ok, publication} ->
         {:ok, publication}
 
@@ -237,7 +246,14 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   defp translate_status(:in_publication), do: :in_approval
   defp translate_status(:publication_failed), do: :approval_failed
 
-  defp register(%Publication{channel: :approval} = publication, query, _ctx) do
+  defp register(%Publication{channel: :approval} = _publication), do: {:ok, nil}
+
+  defp register(%Publication{channel: :fast_track} = publication) do
+    Logger.debug("Registering collection: #{publication.collection.id} at GBIF for publishing")
+    Collection.register_at_gbif(publication.collection, publication.existing_dataset_key)
+  end
+
+  defp publish(%Publication{channel: :approval} = publication, query, _ctx) do
     case InfoSpecies.notify(publication, query) do
       {:ok, publication} ->
         {:ok, publication}
@@ -249,13 +265,9 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     end
   end
 
-  defp register(%Publication{channel: :fast_track} = publication, _query, ctx) do
-    with {:ok, _collection} <-
-           Collection.register_at_gbif(
-             publication.collection,
-             publication.attachment.url,
-             publication.existing_dataset_key
-           ),
+  defp publish(%Publication{channel: :fast_track} = publication, _query, ctx) do
+    with {:ok, _dataset_key} <-
+           Collection.create_endpoint(publication.collection, publication.attachment.url),
          :ok <- queue_records_for_verification(publication.collection, ctx) do
       {:ok, publication}
     end

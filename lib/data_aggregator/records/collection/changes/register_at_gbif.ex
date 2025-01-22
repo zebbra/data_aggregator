@@ -16,7 +16,6 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
 
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    dwca_file_url = Changeset.get_argument(changeset, :dwca_file_url)
     existing_dataset_key = Changeset.get_argument(changeset, :existing_dataset_key)
     gbif_dataset_key = Changeset.get_attribute(changeset, :gbif_dataset_key)
 
@@ -27,8 +26,9 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
         Changeset.get_attribute(changeset, :grscicoll_institution_name)
       )
 
-    case register_at_gbif(gbif_dataset_key, dataset_name, dwca_file_url, existing_dataset_key) do
+    case register_at_gbif(gbif_dataset_key, dataset_name, existing_dataset_key) do
       {:ok, dataset_key} ->
+        Logger.debug("Dataset registered with key: #{dataset_key}")
         Changeset.change_attribute(changeset, :gbif_dataset_key, to_string(dataset_key))
 
       {:error, error} ->
@@ -55,19 +55,16 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
     "#{collection_name} (#{collection_code}) of #{institution_name}"
   end
 
-  @spec register_at_gbif(String.t() | nil, String.t(), String.t(), String.t() | nil) ::
+  @spec register_at_gbif(String.t() | nil, String.t(), String.t() | nil) ::
           registered_collection()
-  defp register_at_gbif(_gbif_dataset_key, nil, _dwca_file_url, _existing_dataset_key),
-    do: {:error, "Dataset name is missing"}
+  defp register_at_gbif(_gbif_dataset_key, nil, _existing_dataset_key), do: {:error, "Dataset name is missing"}
 
-  defp register_at_gbif(gbif_dataset_key, dataset_name, dwca_file_url, existing_dataset_key) do
+  defp register_at_gbif(gbif_dataset_key, dataset_name, existing_dataset_key) do
     cond do
       gbif_dataset_key ->
-        Logger.debug("This collection already has a dataset key: #{gbif_dataset_key}, we can directly create an endpoint")
+        Logger.debug("This collection is already registered with dataset key: #{gbif_dataset_key}, do nothing")
 
         {:ok, gbif_dataset_key}
-        |> create_endpoint(dwca_file_url)
-        |> delete_old_endpoints()
 
       existing_dataset_key ->
         Logger.debug(
@@ -75,16 +72,11 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
         )
 
         {:ok, existing_dataset_key}
-        |> create_endpoint(dwca_file_url)
-        |> delete_old_endpoints()
 
       true ->
         Logger.debug("This collection does not have a dataset key. We need to register it first")
 
-        dataset_name
-        |> register_collection()
-        |> create_endpoint(dwca_file_url)
-        |> delete_old_endpoints()
+        register_collection(dataset_name)
     end
   end
 
@@ -116,81 +108,5 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
     Logger.error(msg)
 
     {:error, msg}
-  end
-
-  defp create_endpoint({:ok, registration}, file_url) do
-    case Gbif.RestAPI.create_endpoint(file_url, registration) do
-      {:ok, response} ->
-        if response.status == 201 do
-          endpoint_key = response.body
-          {:ok, registration, endpoint_key}
-        else
-          msg =
-            "No valid response (status #{response.status}) from Gibif api while creating endpoint with response: #{inspect(response.body)}"
-
-          Logger.error(msg)
-          {:error, msg}
-        end
-
-      {:error, error} ->
-        {:error, "Error during endpoint creation with: #{inspect([file_url, registration])}, #{inspect(error)}"}
-    end
-  end
-
-  defp create_endpoint({:error, error}, _), do: {:error, error}
-
-  defp delete_old_endpoints({:ok, registration, new_endpoint_key}) do
-    # get endpoints
-    with {:ok, endpoints} <- get_endpoints(registration),
-         {:reject_endpoints, old_endpoints} <-
-           {:reject_endpoints, Enum.reject(endpoints, &(&1["key"] == new_endpoint_key))},
-         {:ok, _} <- delete_endpoints(registration, old_endpoints) do
-      {:ok, registration}
-    end
-  end
-
-  defp delete_old_endpoints({:error, error}), do: {:error, error}
-
-  defp get_endpoints(registration) do
-    with {:ok, resp} <- Gbif.RestAPI.get_endpoints(registration),
-         {:status_is_200, 200} <- {:status_is_200, resp.status},
-         {:endpoints_is_list, endpoints} when is_list(endpoints) <-
-           {:endpoints_is_list, resp.body} do
-      {:ok, endpoints}
-    else
-      {:error, error} ->
-        msg = "Error fetching existing endpoints for dataset #{registration}: #{inspect(error)}"
-        Logger.error(msg)
-        {:error, msg}
-
-      {:status_is_200, status} ->
-        msg = "Error fetching existing endpoints for dataset #{registration}: status #{status}"
-        Logger.error(msg)
-        {:error, msg}
-
-      {:endpoints_is_list, _} ->
-        msg =
-          "Error fetching existing endpoints for dataset #{registration}: Body is not a list of endpoints"
-
-        Logger.error(msg)
-        {:error, msg}
-    end
-  end
-
-  def delete_endpoints(registration, endpoints) do
-    Enum.reduce(endpoints, {:ok, ""}, fn endpoint, {status, errors} = _acc ->
-      case Gbif.RestAPI.delete_endpoint(registration, endpoint["key"]) do
-        {:ok, _} ->
-          Logger.info("Deleted endpoint #{endpoint["key"]} for dataset #{registration}")
-          {status, errors}
-
-        {:error, error} ->
-          msg =
-            "Error deleting endpoint #{endpoint["key"]} for dataset #{registration}: #{inspect(error)}"
-
-          Logger.error(msg)
-          {:error, errors <> msg}
-      end
-    end)
   end
 end
