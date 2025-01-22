@@ -6,6 +6,7 @@ defmodule DataAggregatorWeb.ImageUploadController do
   use DataAggregatorWeb, :controller
 
   alias DataAggregator.Records.ImageUpload
+  alias DataAggregator.Records.ImageUpload.Helpers
   alias DataAggregator.Records.Record.Image
 
   require Logger
@@ -24,7 +25,7 @@ defmodule DataAggregatorWeb.ImageUploadController do
         |> text(~c"Unable to find the requested image")
 
       {:ok, image} ->
-        serve_file(image.attachment.url, conn)
+        serve_image(image.attachment.url, conn)
     end
   end
 
@@ -57,15 +58,14 @@ defmodule DataAggregatorWeb.ImageUploadController do
     end
   end
 
-  defp serve_file(url, conn) do
+  defp serve_image(url, conn) do
     case Req.get(url: url) do
-      {:ok, %Req.Response{status: 200, body: body, headers: headers}} ->
-        # Extract the Content-Type header from the remote server response
-        content_type =
-          headers |> Map.get("content-type", "application/octet-stream") |> hd()
+      {:ok, %Req.Response{status: 200, body: body}} ->
+        content_type = guess_image_content_type(url)
 
         conn
         |> put_resp_content_type(content_type)
+        |> put_resp_header("content-disposition", "inline")
         |> send_resp(200, body)
 
       {:ok, %Req.Response{status: status}} ->
@@ -82,6 +82,14 @@ defmodule DataAggregatorWeb.ImageUploadController do
         |> put_status(:bad_gateway)
         |> text("Could not find the requested file")
     end
+  end
+
+  defp guess_image_content_type(url) do
+    url
+    |> URI.parse()
+    |> Map.get(:path)
+    |> Path.extname()
+    |> Helpers.accepted_image_content_type()
   end
 
   defp generate_log_content(image_upload) do
