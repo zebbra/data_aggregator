@@ -34,19 +34,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   def path_helper(collection, layer, meta, scope \\ nil)
 
   def path_helper(collection, "approval", meta, nil) do
-    build_path(~p"/collections/#{collection}/records", meta)
+    build_path(~p"/datasets/#{collection}/records", meta)
   end
 
   def path_helper(collection, layer, meta, nil) do
-    build_path(~p"/collections/#{collection}/records?layer=#{layer}", meta)
+    build_path(~p"/datasets/#{collection}/records?layer=#{layer}", meta)
   end
 
   def path_helper(collection, "approval", meta, scope) do
-    build_scope_path(~p"/collections/#{collection}/records", meta, scope)
+    build_scope_path(~p"/datasets/#{collection}/records", meta, scope)
   end
 
   def path_helper(collection, layer, meta, scope) do
-    build_scope_path(~p"/collections/#{collection}/records?layer=#{layer}", meta, scope)
+    build_scope_path(~p"/datasets/#{collection}/records?layer=#{layer}", meta, scope)
   end
 
   def attrs_by_category(record) do

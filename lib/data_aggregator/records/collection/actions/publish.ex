@@ -89,15 +89,16 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       |> Publication.update_attachment(attachment)
       |> Ash.load!([:collection, :attachment])
 
-    case register(publication, query) do
+    case register(publication, query, ctx) do
       {:ok, publication} ->
         {:ok, publication}
 
       {:error, error} ->
         Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(error)}")
 
-        set_publication_status(
-          Ash.stream!(query, stream_with: :keyset, batch_size: 1000),
+        query
+        |> stream_query_or_resource(publication)
+        |> set_publication_status(
           :publication_failed,
           publication,
           ctx
@@ -116,8 +117,9 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
       Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(e)}")
 
-      set_publication_status(
-        Ash.stream!(query, stream_with: :keyset, batch_size: 1000),
+      query
+      |> stream_query_or_resource(publication)
+      |> set_publication_status(
         :publication_failed,
         publication,
         ctx
@@ -235,7 +237,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   defp translate_status(:in_publication), do: :in_approval
   defp translate_status(:publication_failed), do: :approval_failed
 
-  defp register(%Publication{channel: :approval} = publication, query) do
+  defp register(%Publication{channel: :approval} = publication, query, _ctx) do
     case InfoSpecies.notify(publication, query) do
       {:ok, publication} ->
         {:ok, publication}
@@ -247,22 +249,22 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     end
   end
 
-  defp register(%Publication{channel: :fast_track} = publication, _query) do
+  defp register(%Publication{channel: :fast_track} = publication, _query, ctx) do
     with {:ok, _collection} <-
            Collection.register_at_gbif(
              publication.collection,
              publication.attachment.url,
              publication.existing_dataset_key
            ),
-         :ok <- queue_records_for_verification(publication.collection) do
+         :ok <- queue_records_for_verification(publication.collection, ctx) do
       {:ok, publication}
     end
   end
 
-  @spec queue_records_for_verification(Ash.Query.t()) :: :ok
-  defp queue_records_for_verification(collection) do
+  @spec queue_records_for_verification(Ash.Query.t(), any()) :: :ok
+  defp queue_records_for_verification(collection, %{actor: actor}) do
     PublishedRecord
     |> Ash.stream!(stream_with: :keyset, batch_size: 1000, tenant: collection)
-    |> Enum.each(&Record.enqueue_fast_track_checker/1)
+    |> Enum.each(&Record.enqueue_fast_track_checker(&1, nil, actor: actor))
   end
 end

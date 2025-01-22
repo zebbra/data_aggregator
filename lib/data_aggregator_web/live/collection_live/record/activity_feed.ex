@@ -342,7 +342,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   def icon_tooltip(:update_fast_track_status, content) do
     case content["fast_track_status"] do
       "not_published" ->
-        ~t"No publication information available. Publish the collection to see the status"m
+        ~t"No publication information available. Publish the dataset to see the status"m
 
       "publishing" ->
         ~t"Publication in progress"m
@@ -367,7 +367,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   def icon_tooltip(:update_approval_status, content) do
     case content["approval_status"] do
       "not_approved" ->
-        ~t"No approval information available. Approve the collection to see the status"m
+        ~t"No approval information available. Approve the dataset to see the status"m
 
       "approving" ->
         ~t"Approval in progress"m

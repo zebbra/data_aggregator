@@ -12,6 +12,6 @@ defmodule DataAggregator.Records.Record.Calculations.ImageUrl do
 
   defp construct_image_url(%{collection_id: collection_id, id: id}) do
     System.get_env("BASE_URL") <>
-      "/collections/" <> collection_id <> "/image_uploads/images/" <> id
+      "/datasets/" <> collection_id <> "/image_uploads/images/" <> id
   end
 end

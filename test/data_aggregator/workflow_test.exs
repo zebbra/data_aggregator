@@ -380,8 +380,8 @@ defmodule DataAggregator.WorkflowTest do
           ])
         )
 
-      # import, fast_track_updated (2x -> publishing, and in_publication)
-      expected_length = 6 * 3
+      # import, fast_track_updated (3x -> publishing, in_publication, published)
+      expected_length = 6 * 4
       assert length(versions) == expected_length
 
       # Ensure all strategies set the user_id correctly

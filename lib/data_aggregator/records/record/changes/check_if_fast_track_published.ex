@@ -8,11 +8,12 @@ defmodule DataAggregator.Records.Record.Changes.CheckIfFastTrackPublished do
   alias Ash.Changeset
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Record
 
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
+  def change(%Changeset{} = changeset, _opts, %{actor: actor}) do
     catalog_number = Changeset.get_attribute(changeset, :mte_catalog_number)
     collection_id = Changeset.get_attribute(changeset, :collection_id)
 
@@ -25,8 +26,15 @@ defmodule DataAggregator.Records.Record.Changes.CheckIfFastTrackPublished do
         changeset
 
       {:ok, gbif_id} ->
+        {:ok, updated_record} =
+          Record.update_fast_track_status(changeset.data.id, :published,
+            tenant: collection_id,
+            actor: actor,
+            authorize?: false
+          )
+
         changeset
-        |> Changeset.change_attribute(:fast_track_status, :published)
+        |> Changeset.change_attribute(:fast_track_status, updated_record.fast_track_status)
         |> Changeset.change_attribute(:occ_occurrence_id, gbif_id)
 
       {:error, error} ->

@@ -139,7 +139,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
         {:noreply, socket}
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/image_uploads")}
+        {:noreply, push_navigate(socket, to: ~p"/datasets/#{id}/image_uploads")}
     end
   end
 
