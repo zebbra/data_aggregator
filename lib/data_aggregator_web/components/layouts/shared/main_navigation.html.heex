@@ -9,7 +9,7 @@
       <.link
         navigate={~p"/"}
         aria-current={if @current === "collections", do: "page", else: nil}
-        aria-label="Collections"
+        aria-label="Datasets"
         class="avatar btn btn-ghost w-full space-x-2 max-md:justify-start md:btn-circle"
       >
         <div class="w-10 rounded-full">
@@ -25,18 +25,18 @@
     >
       <li>
         <.link
-          navigate={~p"/collections"}
+          navigate={~p"/datasets"}
           class={[
             "flex active:!bg-primary md:flex-col md:p-3",
             @current == "collections" && "bg-primary text-primary-content hover:bg-primary"
           ]}
-          aria-describedby="collections_tooltip"
+          aria-describedby="datasets_tooltip"
         >
           <.icon name="hero-squares-2x2" />
-          <span class="md:hidden lg:inline">{~t"Collections"m}</span>
+          <span class="md:hidden lg:inline">{~t"Datasets"m}</span>
           <.fui_tooltip
-            id="collections_tooltip"
-            content={~t"Collections"}
+            id="datasets_tooltip"
+            content={~t"Datasets"}
             visibility_class="hidden md:hidden lg:hidden"
             show_class="md:block"
             hide_class="md:hidden"

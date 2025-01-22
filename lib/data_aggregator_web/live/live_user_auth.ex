@@ -26,7 +26,7 @@ defmodule DataAggregatorWeb.LiveUserAuth do
 
   def on_mount(:live_no_user, _params, _session, socket) do
     if socket.assigns[:current_user] do
-      {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/collections")}
+      {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/datasets")}
     else
       {:cont, assign(socket, :current_user, nil)}
     end
@@ -36,7 +36,7 @@ defmodule DataAggregatorWeb.LiveUserAuth do
     if has_role?(socket.assigns[:current_user], ["collection_digitizer", "admin"]) do
       {:cont, socket}
     else
-      {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/collections")}
+      {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/datasets")}
     end
   end
 
@@ -44,7 +44,7 @@ defmodule DataAggregatorWeb.LiveUserAuth do
     if has_role?(socket.assigns[:current_user], ["data_administrator", "admin"]) do
       {:cont, socket}
     else
-      {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/collections")}
+      {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/datasets")}
     end
   end
 

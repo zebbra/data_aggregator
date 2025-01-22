@@ -36,7 +36,7 @@ defmodule DataAggregator.Records.Publication do
 
     attribute :license, PublicationLicenseType,
       allow_nil?: false,
-      default: :cc0,
+      default: :cc_by,
       public?: true
 
     timestamps public?: true, writable?: false

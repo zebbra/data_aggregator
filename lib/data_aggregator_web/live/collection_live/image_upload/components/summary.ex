@@ -26,7 +26,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
           current={current_step(@action)}
           links={[
             nil,
-            build_path(~p"/collections/#{@collection}/image_uploads/#{@image_upload}/edit", @meta),
+            build_path(~p"/datasets/#{@collection}/image_uploads/#{@image_upload}/edit", @meta),
             nil
           ]}
         />
@@ -78,9 +78,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
           {run_mapping_text(@image_upload)}
         </button>
         <.link
-          patch={
-            build_path(~p"/collections/#{@collection}/image_uploads/#{@image_upload}/edit", @meta)
-          }
+          patch={build_path(~p"/datasets/#{@collection}/image_uploads/#{@image_upload}/edit", @meta)}
           type="button"
           class="btn btn-ghost"
         >
@@ -116,7 +114,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Summary do
     |> push_navigate(
       to:
         build_path(
-          ~p"/collections/#{socket.assigns.collection}/image_uploads",
+          ~p"/datasets/#{socket.assigns.collection}/image_uploads",
           socket.assigns.meta
         )
     )

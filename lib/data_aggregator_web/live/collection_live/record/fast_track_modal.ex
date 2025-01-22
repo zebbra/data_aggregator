@@ -145,12 +145,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
          |> Publication.create!(tenant: collection)
          |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor) do
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"A publication for this collection is already in process"m)}
+        {:noreply, put_flash(socket, :error, ~t"A publication for this dataset is already in process"m)}
 
       {:ok, _} ->
         socket
         |> put_flash(:info, ~t"Publication started in background"m)
-        |> push_navigate(to: build_path(~p"/collections/#{socket.assigns.collection}/records", socket.assigns.meta))
+        |> push_navigate(to: build_path(~p"/datasets/#{socket.assigns.collection}/records", socket.assigns.meta))
         |> noreply()
     end
   end
@@ -419,7 +419,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
       <.section_heading text={~t"Intellectual property rights"m} size="md" class="pt-4 pb-1" />
       <.radio_group
         field={@form[:license]}
-        options={[{"CC BY", :cc_by}, {"CC0", :cc0}, {"CC BY-NC", :cc_by_nc}]}
+        options={[{"CC0", :cc0}, {"CC BY", :cc_by}, {"CC BY-NC", :cc_by_nc}]}
         as_atoms
         description={~t"Please choose under what license this publication and dataset is covered."m}
       />
