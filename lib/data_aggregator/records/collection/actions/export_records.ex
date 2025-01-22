@@ -49,7 +49,11 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
         fn record ->
           record
           |> map_record(mapping, data_layer)
-          |> FlatFileUtils.map_data_to_headers(header_labels, Schema.dwc_transformers())
+          |> FlatFileUtils.map_data_to_headers(
+            header_labels,
+            export.collection,
+            Schema.dwc_transformers()
+          )
         end,
         timeout: :timer.seconds(30)
       )

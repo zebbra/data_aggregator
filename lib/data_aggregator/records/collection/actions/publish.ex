@@ -74,7 +74,8 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     |> Stream.chunk_every(1000)
     |> Stream.flat_map(fn records ->
       file_metas
-      |> Task.async_stream(&DwcaFile.write_file!(records, &1, publication.channel),
+      |> Task.async_stream(
+        &DwcaFile.write_file!(records, &1, publication.channel, publication.collection),
         timeout: :timer.seconds(30)
       )
       |> Stream.run()

@@ -3,6 +3,17 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   Utility functions for working with CSV files
   """
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Records.Collection
+
+  # map of fields that are not in the record data but in the collection
+  # with translation to colleciton attribute names
+  @data_from_collection %{
+    oth_gbif_doi: :gbif_doi,
+    oth_dataset_id: :gbif_dataset_key,
+    oth_institution_id: :grscicoll_institution_key,
+    oth_institution_code: :grscicoll_institution_code,
+    oth_collection_id: :grscicoll_reference
+  }
 
   @doc """
   gives you a map of all relevant header fields and the record values
@@ -30,19 +41,25 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   map_data_to_headers(record_data, header_fields, transformers)
   ```
   """
-  @spec map_data_to_headers(map(), list(), map() | nil) :: map()
-  def map_data_to_headers(record_data, header_fields, transformers \\ nil)
+  @spec map_data_to_headers(map(), list(), Collection.t(), map() | nil) :: map()
+  def map_data_to_headers(record_data, header_fields, collection, transformers \\ nil)
 
-  def map_data_to_headers(record_data, header_fields, nil) do
-    Map.new(header_fields, fn {k, v} -> {v, maybe_from_extra_data(record_data, k)} end)
+  def map_data_to_headers(record_data, header_fields, collection, nil) do
+    Map.new(header_fields, fn {k, v} ->
+      {v, record_data |> maybe_from_extra_data(k) |> maybe_from_collection(k, collection)}
+    end)
   end
 
-  def map_data_to_headers(record_data, header_fields, transformers) do
+  def map_data_to_headers(record_data, header_fields, collection, transformers) do
     Map.new(header_fields, fn {k, v} ->
       if Map.has_key?(transformers, k) do
-        {v, transformers[k].(maybe_from_extra_data(record_data, k))}
+        {v,
+         record_data
+         |> maybe_from_extra_data(k)
+         |> maybe_from_collection(k, collection)
+         |> transformers[k].()}
       else
-        {v, maybe_from_extra_data(record_data, k)}
+        {v, record_data |> maybe_from_extra_data(k) |> maybe_from_collection(k, collection)}
       end
     end)
   end
@@ -50,23 +67,36 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   @doc """
   Same as `map_data_to_headers/3`, but returns a list of values instead of a map
   """
-  @spec map_data_to_headers_list(map(), list(), map() | nil) :: list()
-  def map_data_to_headers_list(record_data, header_fields, transformers \\ nil)
+  @spec map_data_to_headers_list(map(), list(), Collection.t(), map() | nil) :: list()
+  def map_data_to_headers_list(record_data, header_fields, collection, transformers \\ nil)
 
-  def map_data_to_headers_list(record_data, header_fields, nil) do
-    Enum.map(header_fields, fn k -> maybe_from_extra_data(record_data, k) end)
+  def map_data_to_headers_list(record_data, header_fields, collection, nil) do
+    Enum.map(header_fields, fn k ->
+      record_data |> maybe_from_extra_data(k) |> maybe_from_collection(k, collection)
+    end)
   end
 
-  def map_data_to_headers_list(record_data, header_fields, transformers) do
+  def map_data_to_headers_list(record_data, header_fields, collection, transformers) do
     Enum.map(header_fields, fn k ->
       if Map.has_key?(transformers, k) do
         record_data
         |> maybe_from_extra_data(k)
+        |> maybe_from_collection(k, collection)
         |> transformers[k].()
       else
-        maybe_from_extra_data(record_data, k)
+        record_data
+        |> maybe_from_extra_data(k)
+        |> maybe_from_collection(k, collection)
       end
     end)
+  end
+
+  defp maybe_from_collection(record, k, collection) do
+    if Map.has_key?(@data_from_collection, k) do
+      Map.get(collection, @data_from_collection[k])
+    else
+      record
+    end
   end
 
   defp maybe_from_extra_data(record, field) do

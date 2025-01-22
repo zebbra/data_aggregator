@@ -7,6 +7,7 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   alias DataAggregator.DarwinCore.Schema.Category
   alias DataAggregator.DarwinCore.Schema.DwcAttribute
   alias DataAggregator.Misc.FlatFileUtils
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
 
   require Logger
@@ -21,11 +22,11 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   Writes the given records to a DwCA file on disk. Transforms the data according to the
   given header fields (from the meta) and transformers.
   """
-  @spec write_file!(Enumerable.t(), t(), any()) :: any()
-  def write_file!(records, meta, channel) do
+  @spec write_file!(Enumerable.t(), t(), any(), Collection.t()) :: any()
+  def write_file!(records, meta, channel, collection) do
     records
     |> Stream.map(&map_record(&1, meta.record_attributes, channel))
-    |> Stream.map(&FlatFileUtils.map_data_to_headers_list(&1, meta.header_fields, @transformers))
+    |> Stream.map(&FlatFileUtils.map_data_to_headers_list(&1, meta.header_fields, collection, @transformers))
     |> FlatFileUtils.store_on_disk!(meta.file_descriptor)
   end
 
