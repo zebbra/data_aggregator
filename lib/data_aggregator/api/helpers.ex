@@ -30,6 +30,11 @@ defmodule DataAggregator.Api.Helpers do
     gbif_api_base_url() <> "/dataset"
   end
 
+  @spec get_dataset_url(String.t()) :: String.t()
+  def get_dataset_url(dataset_key) do
+    gbif_api_base_url() <> "/dataset/#{dataset_key}"
+  end
+
   @spec search_occurrence_url() :: String.t()
   def search_occurrence_url do
     gbif_api_base_url() <> "/occurrence/search"

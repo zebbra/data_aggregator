@@ -69,6 +69,12 @@ defmodule DataAggregator.Records.Collection do
       public? true
     end
 
+    attribute :gbif_doi, :string do
+      description "the DOI of the dataset in the GBIF database"
+      allow_nil? true
+      public? true
+    end
+
     attribute :import_mapping, {:array, :map}, public?: true
 
     attribute :records_count, :integer, allow_nil?: false, default: 0, public?: true
@@ -158,7 +164,6 @@ defmodule DataAggregator.Records.Collection do
     end
 
     update :register_at_gbif do
-      argument :dwca_file_url, :string, allow_nil?: false
       argument :existing_dataset_key, :string, allow_nil?: true
       require_atomic? false
 
@@ -260,6 +265,13 @@ defmodule DataAggregator.Records.Collection do
       change Changes.SetDeletingBeforeTransaction
     end
 
+    action :create_endpoint, :map do
+      argument :collection, :struct, allow_nil?: false
+      argument :dwca_file_url, :string, allow_nil?: false
+
+      run Actions.CreateEndpoint
+    end
+
     action :export, :map do
       argument :export, :struct, allow_nil?: false
 
@@ -314,10 +326,11 @@ defmodule DataAggregator.Records.Collection do
     define :get_by_grscicoll_reference, action: :read, get_by: [:grscicoll_reference]
     define :touch
     define :enqueue_encoding, args: [:query]
+    define :create_endpoint, args: [:collection, :dwca_file_url]
     define :export, action: :export, args: [:export]
     define :publish, args: [:publication]
     define :approve, args: [:collection, :query]
-    define :register_at_gbif, args: [:dwca_file_url, :existing_dataset_key]
+    define :register_at_gbif, args: [:existing_dataset_key]
 
     define :set_mapping
     define :set_importing

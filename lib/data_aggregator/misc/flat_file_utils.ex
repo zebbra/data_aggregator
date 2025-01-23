@@ -34,13 +34,18 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   def map_data_to_headers(record_data, header_fields, transformers \\ nil)
 
   def map_data_to_headers(record_data, header_fields, nil) do
-    Map.new(header_fields, fn {k, v} -> {v, maybe_from_extra_data(record_data, k)} end)
+    Map.new(header_fields, fn {k, v} ->
+      {v, maybe_from_extra_data(record_data, k)}
+    end)
   end
 
   def map_data_to_headers(record_data, header_fields, transformers) do
     Map.new(header_fields, fn {k, v} ->
       if Map.has_key?(transformers, k) do
-        {v, transformers[k].(maybe_from_extra_data(record_data, k))}
+        {v,
+         record_data
+         |> maybe_from_extra_data(k)
+         |> transformers[k].()}
       else
         {v, maybe_from_extra_data(record_data, k)}
       end
@@ -54,7 +59,9 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   def map_data_to_headers_list(record_data, header_fields, transformers \\ nil)
 
   def map_data_to_headers_list(record_data, header_fields, nil) do
-    Enum.map(header_fields, fn k -> maybe_from_extra_data(record_data, k) end)
+    Enum.map(header_fields, fn k ->
+      maybe_from_extra_data(record_data, k)
+    end)
   end
 
   def map_data_to_headers_list(record_data, header_fields, transformers) do

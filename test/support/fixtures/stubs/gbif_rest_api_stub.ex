@@ -27,21 +27,6 @@ defmodule DataAggregator.Gbif.RestAPIStub do
   @other_grscicoll_reference "322ce107-3156-4420-8a2b-7f17efeaa473"
   def other_grscicoll_reference, do: @other_grscicoll_reference
 
-  @missing_institution_data_grscicoll_reference "6267ef74-8393-4d57-a9f8-2b36831f5042"
-  def missing_institution_data_grscicoll_reference, do: @missing_institution_data_grscicoll_reference
-
-  @register_collection_fail_grscicoll_reference "eea611de-57bb-4992-a9e7-a32fb17f0c76"
-  def register_collection_fail_grscicoll_reference, do: @register_collection_fail_grscicoll_reference
-
-  @create_endpoint_fail_grscicoll_reference "e808c4a3-9838-4343-a0d8-86e875d5771d"
-  def create_endpoint_fail_grscicoll_reference, do: @create_endpoint_fail_grscicoll_reference
-
-  @get_endpoints_fail_grscicoll_reference "dcf1d465-2aaf-4b59-9546-b1516fbdb2a9"
-  def get_endpoints_fail_grscicoll_reference, do: @get_endpoints_fail_grscicoll_reference
-
-  @delete_endpoint_fail_grscicoll_reference "56ac3b30-4b52-48a1-aed9-4442426fc24d"
-  def delete_endpoint_fail_grscicoll_reference, do: @delete_endpoint_fail_grscicoll_reference
-
   @no_contact_grscicoll_reference "e808c4a3-9838-4343-a0d8-86e875d5771e"
   def no_contact_grscicoll_reference, do: @no_contact_grscicoll_reference
 
@@ -72,6 +57,20 @@ defmodule DataAggregator.Gbif.RestAPIStub do
 
   def register_dataset(_collection_name) do
     {:ok, %{status: 201, body: "1234-1234-1234-1234"}}
+  end
+
+  def get_dataset(dataset_key) do
+    {:ok,
+     %{
+       status: 200,
+       body: %{
+         "key" => dataset_key,
+         "doi" => "10.21373/dmvukj",
+         "publishingOrganizationKey" => "d80fedd1-940b-4669-871d-b9c990cf650e",
+         "createdBy" => "gbifch",
+         "language" => "eng"
+       }
+     }}
   end
 
   def create_endpoint(_file_url, "1234-1234-1234-0001") do
@@ -1145,61 +1144,6 @@ defmodule DataAggregator.Gbif.RestAPIStub do
        "code" => "Z",
        "name" => "Herbarium - Universität Zürich",
        "institutionKey" => @other_institution_key,
-       "institutionName" => "Universität Zürich",
-       "institutionCode" => "Z"
-     }}
-  end
-
-  def get_grscicoll_collection_attributes(@missing_institution_data_grscicoll_reference, _attributes) do
-    {:ok,
-     %{
-       "code" => "Z",
-       "name" => "Herbarium - Universität Zürich",
-       "institutionKey" => nil,
-       "institutionName" => nil,
-       "institutionCode" => nil
-     }}
-  end
-
-  def get_grscicoll_collection_attributes(@register_collection_fail_grscicoll_reference, _attributes) do
-    {:ok,
-     %{
-       "code" => "Z",
-       "name" => "register collection failing",
-       "institutionKey" => @register_collection_fail_grscicoll_reference,
-       "institutionName" => "Universität Zürich",
-       "institutionCode" => "Z"
-     }}
-  end
-
-  def get_grscicoll_collection_attributes(@create_endpoint_fail_grscicoll_reference, _attributes) do
-    {:ok,
-     %{
-       "code" => "Z",
-       "name" => "create endpoint failing",
-       "institutionKey" => @create_endpoint_fail_grscicoll_reference,
-       "institutionName" => "Universität Zürich",
-       "institutionCode" => "Z"
-     }}
-  end
-
-  def get_grscicoll_collection_attributes(@get_endpoints_fail_grscicoll_reference, _attributes) do
-    {:ok,
-     %{
-       "code" => "Z",
-       "name" => "get endpoints failing, delete endpoint failing",
-       "institutionKey" => @get_endpoints_fail_grscicoll_reference,
-       "institutionName" => "Universität Zürich",
-       "institutionCode" => "Z"
-     }}
-  end
-
-  def get_grscicoll_collection_attributes(@delete_endpoint_fail_grscicoll_reference, _attributes) do
-    {:ok,
-     %{
-       "code" => "Z",
-       "name" => "get endpoints success, delete endpoint failing",
-       "institutionKey" => @delete_endpoint_fail_grscicoll_reference,
        "institutionName" => "Universität Zürich",
        "institutionCode" => "Z"
      }}

@@ -247,6 +247,36 @@
       "primary_key?": false,
       "references": null,
       "size": null,
+      "source": "oth_gbif_ch_id",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "oth_gbif_id",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "oth_gbif_doi",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
       "source": "oth_date_available",
       "type": "text"
     },
@@ -878,16 +908,6 @@
       "references": null,
       "size": null,
       "source": "mte_matrix",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "mte_gbif_doi",
       "type": "text"
     },
     {
@@ -2924,22 +2944,8 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "C43DBAED797892D8BE2F0DE0B36E38C5C3542A403D1EBC8ED01A9C47BBDE9EC5",
+  "hash": "C0DEC4BD586200F21E22AF712BF3C408CE70934A9234ED1C9B2D4A3CCD787319",
   "identities": [
-    {
-      "all_tenants?": false,
-      "base_filter": null,
-      "index_name": "published_records_unique_record_id_index",
-      "keys": [
-        {
-          "type": "atom",
-          "value": "record_id"
-        }
-      ],
-      "name": "unique_record_id",
-      "nils_distinct?": true,
-      "where": null
-    },
     {
       "all_tenants?": false,
       "base_filter": null,
@@ -2955,6 +2961,20 @@
         }
       ],
       "name": "by_collection",
+      "nils_distinct?": true,
+      "where": null
+    },
+    {
+      "all_tenants?": false,
+      "base_filter": null,
+      "index_name": "published_records_unique_record_id_index",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "record_id"
+        }
+      ],
+      "name": "unique_record_id",
       "nils_distinct?": true,
       "where": null
     }

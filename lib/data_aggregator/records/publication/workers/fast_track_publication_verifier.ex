@@ -10,9 +10,8 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
   * `collection_id` - the ID of the collection the record belongs to
 
   """
-  use Oban.Worker, queue: :publication_verifications, max_attempts: 10
+  use Oban.Worker, queue: :publication_verifications, max_attempts: 3
 
-  alias __MODULE__
   alias DataAggregator.Accounts.User
   alias DataAggregator.Records.Record
 
@@ -27,7 +26,11 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
   @day 24 * @hour
 
   @impl true
-  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id, "user_id" => user_id}}) do
+  def perform(%Oban.Job{
+        max_attempts: max_attempts,
+        attempt: attempt,
+        args: %{"id" => id, "collection_id" => collection_id, "user_id" => user_id}
+      }) do
     actor =
       case User.get_by_id(user_id) do
         {:ok, user} -> user
@@ -39,21 +42,40 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
       |> Record.get_by_id!(tenant: collection_id)
       |> Record.check_if_fast_track_pubished!(actor: actor, authorize?: false)
 
-    if scheduler_active?() && record.fast_track_status != :published do
-      %{id: id, collection_id: collection_id, user_id: user_id}
-      |> FastTrackPublicationVerifier.new(schedule_in: publication_interval_minutes())
-      |> Oban.insert!()
-
-      Logger.debug("Record #{record.id} has not been published to GBIF. We queue it to check again.")
+    if record.fast_track_status == :published do
+      {:ok, record}
     else
-      Logger.debug("Record #{record.id} has been published on GBIF already. We don't queue it again.")
+      maybe_queue_again(attempt, max_attempts, record)
     end
+  rescue
+    e ->
+      record = Record.get_by_id!(id, tenant: collection_id)
 
-    {:ok, record}
+      Logger.error(
+        "Error while checking if record is published: #{inspect(e)}. Params were: id: #{id}, collection_id: #{collection_id}"
+      )
+
+      maybe_queue_again(attempt, max_attempts, record)
   end
 
   @impl Oban.Worker
+  def backoff(_), do: publication_interval_minutes()
+
+  @impl Oban.Worker
   def timeout(_job), do: :timer.hours(1)
+
+  defp maybe_queue_again(attempt, max_attempts, record) do
+    if attempt < max_attempts && scheduler_active?() do
+      Logger.debug("Record #{record.id} has not been published to GBIF. We queue it to check again.")
+
+      {:error, nil}
+    else
+      Logger.debug("#{record.id} still not published on GBIF on the last attempt. set publicaiton status to failed.")
+
+      Record.update_fast_track_status(record, :publication_failed)
+      :ok
+    end
+  end
 
   # gives us the interval for the next job to be executed, in seconds
   defp publication_interval_minutes do

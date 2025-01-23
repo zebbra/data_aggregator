@@ -35,7 +35,7 @@ defmodule DataAggregator.Records.Record.Changes.CheckIfFastTrackPublished do
 
         changeset
         |> Changeset.change_attribute(:fast_track_status, updated_record.fast_track_status)
-        |> Changeset.change_attribute(:occ_occurrence_id, gbif_id)
+        |> Changeset.change_attribute(:oth_gbif_id, gbif_id)
 
       {:error, error} ->
         msg =

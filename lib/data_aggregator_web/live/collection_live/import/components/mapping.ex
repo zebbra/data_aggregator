@@ -16,6 +16,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
 
   alias DataAggregator.DarwinCore
+  alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.Import
   alias Phoenix.HTML.Form
   alias Phoenix.LiveView.Socket
@@ -479,7 +480,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   defp auto_mapping_matched(import) do
     prefixed_attribute_to_dwc_field_mapping =
-      DarwinCore.Schema.prefixed_attribute_names_and_dwc_fields()
+      Enum.reject(DarwinCore.Schema.prefixed_attribute_names_and_dwc_fields(), fn {key, _} ->
+        key in Map.keys(Schema.data_from_collection())
+      end)
 
     dwc_field_names =
       Enum.map(prefixed_attribute_to_dwc_field_mapping, fn {_, dwc_field} -> dwc_field end)
