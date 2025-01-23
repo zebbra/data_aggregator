@@ -45,17 +45,18 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     publication = maybe_update_count(publication, tenant)
 
     # we need to register now, so we can use the data in the dwc file creation process
-    case register(publication) do
-      {:ok, collection} ->
-        collection
+    collection =
+      case register(publication) do
+        {:ok, collection} ->
+          collection
 
-      {:error, error} ->
-        raise("Error registering dataset at GBIF: #{inspect(error)}")
-    end
+        {:error, error} ->
+          raise("Error registering dataset at GBIF: #{inspect(error)}")
+      end
 
     path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
-    EmlFile.create(publication.collection, publication, path)
-    MetaFile.create(publication.collection, path)
+    EmlFile.create(collection, publication, path)
+    MetaFile.create(collection, path)
 
     {:ok, counter} = Counter.start(&Publication.add_publication_progress(publication, &1))
 
@@ -75,7 +76,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     |> Stream.flat_map(fn records ->
       file_metas
       |> Task.async_stream(
-        &DwcaFile.write_file!(records, &1, publication.channel, publication.collection),
+        &DwcaFile.write_file!(records, &1, publication.channel, collection),
         timeout: :timer.seconds(30)
       )
       |> Stream.run()
@@ -247,7 +248,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   defp translate_status(:in_publication), do: :in_approval
   defp translate_status(:publication_failed), do: :approval_failed
 
-  defp register(%Publication{channel: :approval} = _publication), do: {:ok, nil}
+  defp register(%Publication{channel: :approval} = publication), do: {:ok, publication.collection}
 
   defp register(%Publication{channel: :fast_track} = publication) do
     Logger.debug("Registering collection: #{publication.collection.id} at GBIF for publishing")

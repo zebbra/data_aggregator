@@ -8,7 +8,6 @@ defmodule DataAggregator.EncodingFixtures do
 
   import DataAggregator.RecordsFixtures
 
-  alias DataAggregator.Gbif.RestAPIStub
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies

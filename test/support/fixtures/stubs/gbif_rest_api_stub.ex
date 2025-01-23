@@ -59,6 +59,20 @@ defmodule DataAggregator.Gbif.RestAPIStub do
     {:ok, %{status: 201, body: "1234-1234-1234-1234"}}
   end
 
+  def get_dataset(dataset_key) do
+    {:ok,
+     %{
+       status: 200,
+       body: %{
+         "key" => dataset_key,
+         "doi" => "10.21373/dmvukj",
+         "publishingOrganizationKey" => "d80fedd1-940b-4669-871d-b9c990cf650e",
+         "createdBy" => "gbifch",
+         "language" => "eng"
+       }
+     }}
+  end
+
   def create_endpoint(_file_url, "1234-1234-1234-0001") do
     {:error, %{status: 400, body: "could not create endpoint"}}
   end

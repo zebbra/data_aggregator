@@ -346,6 +346,90 @@ defmodule DataAggregator.ExportTest do
     end
 
     @tag mapping: nil
+    @tag data_layer: :raw
+    @tag header_source: :dwc_attributes
+    test "gets values from collection", %{export: export, data_frame: data_frame} do
+      rows = Explorer.DataFrame.to_rows(data_frame)
+
+      collection_attributes =
+        Enum.map(
+          rows,
+          &Map.take(&1, [
+            "collectionID",
+            "institutionCode",
+            "institutionID",
+            "datasetID",
+            "gbifDOI"
+          ])
+        )
+
+      expected = [
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "datasetID" => nil,
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+          "gbifDOI" => nil
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "datasetID" => nil,
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+          "gbifDOI" => nil
+        }
+      ]
+
+      assert expected == collection_attributes
+
+      Ash.update(export.collection, %{
+        gbif_doi: "10.21373/dmvukj",
+        gbif_dataset_key: "1234-1234-1234-1234"
+      })
+
+      export = Ash.load!(export, [:collection])
+      {:ok, export} = Collection.export(export, tenant: export.collection)
+
+      %{body: body} = Req.get!(export.attachment.url)
+
+      {_, file_content} = Enum.at(body, 0)
+
+      assert {:ok, %DataFrame{} = new_data_frame} = DataFrame.load_csv(file_content)
+      new_rows = Explorer.DataFrame.to_rows(new_data_frame)
+
+      collection_attributes =
+        Enum.map(
+          new_rows,
+          &Map.take(&1, [
+            "collectionID",
+            "institutionCode",
+            "institutionID",
+            "datasetID",
+            "gbifDOI"
+          ])
+        )
+
+      expected = [
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+          "gbifDOI" => "10.21373/dmvukj"
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+          "gbifDOI" => "10.21373/dmvukj"
+        }
+      ]
+
+      assert expected == collection_attributes
+    end
+
+    @tag mapping: nil
     @tag data_layer: :encoded
     @tag header_source: :collection_mapping
     test "export records with datalayer :encoded, header_source :collection_mapping", %{

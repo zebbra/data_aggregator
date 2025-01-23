@@ -222,10 +222,14 @@ defmodule DataAggregator.PublicationTest do
       transformed_attributes =
         Enum.map(
           rows,
-          &Map.take(&1, ["decimalLongitude", "decimalLatitude", "coordinateUncertaintyInMeters"])
+          &Map.take(&1, [
+            "decimalLongitude",
+            "decimalLatitude",
+            "coordinateUncertaintyInMeters"
+          ])
         )
 
-      expected = [
+      transformed_expected = [
         %{
           "decimalLatitude" => 10.0,
           "decimalLongitude" => 10.0,
@@ -253,7 +257,53 @@ defmodule DataAggregator.PublicationTest do
         }
       ]
 
-      assert_lists_equal(expected, transformed_attributes)
+      assert_lists_equal(transformed_expected, transformed_attributes)
+
+      collection_attributes =
+        Enum.map(
+          rows,
+          &Map.take(&1, [
+            "collectionID",
+            "institutionCode",
+            "institutionID",
+            "datasetID"
+          ])
+        )
+
+      collection_expected = [
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+        }
+      ]
+
+      assert_lists_equal(collection_expected, collection_attributes)
     end
 
     test "publish/1 successful with correct appending of data", %{
@@ -459,6 +509,24 @@ defmodule DataAggregator.PublicationTest do
       ]
 
       assert_lists_equal(expected, transformed_attributes)
+    end
+
+    @tag capture_log: true
+    test "publish/1 fails at get dataset", %{
+      publication: publication
+    } do
+      stub(Gbif.RestAPI, :get_dataset, fn _collection_name ->
+        {:error, %{status: 400, body: "error getting dataset"}}
+      end)
+
+      {{:error, _error}, logs} =
+        with_log(fn ->
+          Collection.publish(publication, tenant: publication.collection)
+        end)
+
+      assert logs =~ "Error publishing records on the fast_track channel:"
+      assert logs =~ "Error registering dataset at GBIF"
+      assert logs =~ "error getting dataset"
     end
 
     @tag capture_log: true

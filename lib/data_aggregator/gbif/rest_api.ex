@@ -32,6 +32,14 @@ defmodule DataAggregator.Gbif.RestAPI do
   end
 
   @doc """
+  Get details of a single dataset
+  """
+  @spec get_dataset(String.t()) :: Api.response()
+  def get_dataset(dataset_key) do
+    Req.get(url: get_dataset_url(dataset_key), auth: gbif_auth())
+  end
+
+  @doc """
   Create an endpoint for a dataset with the GBIF API and returns the endpoint key
   """
   @spec create_endpoint(String.t(), String.t()) :: Api.response()

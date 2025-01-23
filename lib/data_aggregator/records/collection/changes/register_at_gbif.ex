@@ -1,6 +1,7 @@
 defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
   @moduledoc """
   Registers a Collection via the gbif Rest API to make it available for publishing.
+  Updates the collection with the gbif dataset key and DOI.
 
   according to the example provided by gbif https://github.com/gbif/registry/blob/master/registry-examples/src/test/scripts/register.sh
   """
@@ -26,11 +27,15 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
         Changeset.get_attribute(changeset, :grscicoll_institution_name)
       )
 
-    case register_at_gbif(gbif_dataset_key, dataset_name, existing_dataset_key) do
-      {:ok, dataset_key} ->
-        Logger.debug("Dataset registered with key: #{dataset_key}")
-        Changeset.change_attribute(changeset, :gbif_dataset_key, to_string(dataset_key))
+    with {:ok, dataset_key} <-
+           register_at_gbif(gbif_dataset_key, dataset_name, existing_dataset_key),
+         {:ok, gbif_doi} <- get_gbif_doi(dataset_key) do
+      Logger.debug("Dataset registered with key: #{dataset_key}")
 
+      changeset
+      |> Changeset.change_attribute(:gbif_dataset_key, to_string(dataset_key))
+      |> Changeset.change_attribute(:gbif_doi, to_string(gbif_doi))
+    else
       {:error, error} ->
         Changeset.add_error(changeset, message: error)
     end
@@ -80,6 +85,13 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
     end
   end
 
+  defp get_gbif_doi(dataset_key) do
+    with {:ok, response} <- Gbif.RestAPI.get_dataset(dataset_key),
+         :ok <- ensure_status(response) do
+      {:ok, response.body["doi"]}
+    end
+  end
+
   @spec register_collection(String.t()) :: registered_collection()
   defp register_collection(dataset_name) do
     with {:ok, response} <-
@@ -100,6 +112,7 @@ defmodule DataAggregator.Records.Collection.Changes.RegisterAtGbif do
   end
 
   defp ensure_status(response) when response.status == 201, do: :ok
+  defp ensure_status(response) when response.status == 200, do: :ok
 
   defp ensure_status(response) do
     msg =
