@@ -73,7 +73,7 @@ defmodule DataAggregator.Utils.ImageUploadLogUtils do
   end
 
   defp open_log_file(image_upload) do
-    directory_path = FlatFileUtils.create_directory!("image_upload_logs_#{image_upload.id}")
+    directory_path = FlatFileUtils.create_directory!("image_upload_logs")
 
     path = directory_path <> "/image_upload_log-#{image_upload.id}-#{Uniq.UUID.uuid7(:slug)}.csv"
 

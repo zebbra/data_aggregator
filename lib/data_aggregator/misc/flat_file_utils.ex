@@ -178,4 +178,8 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   def close_file(file) do
     File.close(file)
   end
+
+  def delete_file!(file_or_path) do
+    File.rm!(file_or_path)
+  end
 end

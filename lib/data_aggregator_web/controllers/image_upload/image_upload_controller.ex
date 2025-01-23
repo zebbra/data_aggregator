@@ -5,6 +5,7 @@ defmodule DataAggregatorWeb.ImageUploadController do
 
   use DataAggregatorWeb, :controller
 
+  alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records.ImageUpload
   alias DataAggregator.Records.ImageUpload.Helpers
   alias DataAggregator.Records.Record.Image
@@ -52,10 +53,18 @@ defmodule DataAggregatorWeb.ImageUploadController do
       {:ok, image_upload} ->
         path_to_file = ImageUploadLogUtils.generate_log_content(image_upload)
 
+        conn =
+          conn
+          |> put_resp_content_type("text/csv")
+          |> put_resp_header(
+            "content-disposition",
+            "attachment; filename=\"image_upload_log.csv\""
+          )
+          |> send_file(200, path_to_file)
+
+        FlatFileUtils.delete_file!(path_to_file)
+
         conn
-        |> put_resp_content_type("text/csv")
-        |> put_resp_header("content-disposition", "attachment; filename=\"image_upload_log.csv\"")
-        |> send_file(200, path_to_file)
     end
   end
 
