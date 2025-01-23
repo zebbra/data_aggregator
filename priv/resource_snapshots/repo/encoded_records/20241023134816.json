@@ -247,6 +247,36 @@
       "primary_key?": false,
       "references": null,
       "size": null,
+      "source": "oth_gbif_ch_id",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "oth_gbif_id",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "oth_gbif_doi",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
       "source": "oth_date_available",
       "type": "text"
     },
@@ -878,16 +908,6 @@
       "references": null,
       "size": null,
       "source": "mte_matrix",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "mte_gbif_doi",
       "type": "text"
     },
     {
@@ -3019,7 +3039,7 @@
   ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "DA028EE3BFD9139720762059B4E4BFA0F1D851667DB76642237E599F22F876B5",
+  "hash": "9BAAEE4700CD0A10D385D71D567ECCC5E3969DFF0C4F03FE1C7B2A29FE6A49A2",
   "identities": [
     {
       "all_tenants?": false,

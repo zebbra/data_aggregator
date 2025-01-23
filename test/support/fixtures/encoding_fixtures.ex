@@ -178,31 +178,4 @@ defmodule DataAggregator.EncodingFixtures do
 
     Record.create!(params, tenant: params.collection)
   end
-
-  @doc """
-    Generate a correct record for grscicoll institution encoding
-  """
-  def record_fixture_for_add_institution_code_encoding_correct(attrs \\ %{}) do
-    params =
-      @encoded_record_defaults
-      |> Map.merge(attrs)
-      |> Map.put_new_lazy(:collection, fn ->
-        collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
-      end)
-
-    Record.create!(params, tenant: params.collection)
-  end
-
-  def record_fixture_for_add_institution_code_encoding_failing(attrs \\ %{}) do
-    params =
-      @encoded_record_defaults
-      |> Map.merge(attrs)
-      |> Map.put_new_lazy(:collection, fn ->
-        collection_fixture(%{
-          grscicoll_reference: RestAPIStub.missing_institution_data_grscicoll_reference()
-        })
-      end)
-
-    Record.create!(params, tenant: params.collection)
-  end
 end
