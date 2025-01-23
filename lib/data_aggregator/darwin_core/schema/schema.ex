@@ -1710,12 +1710,14 @@ oth_attributes = [
     dwc_field: "collectionCode",
     dwc_link: "http://rs.tdwg.org/dwc/terms/collectionCode",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :collection_code, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "collectionID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/collectionID",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :collection_id, type: :string, allow_nil?: true}
   },
   %{
@@ -1728,6 +1730,7 @@ oth_attributes = [
     dwc_field: "datasetID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/datasetID",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :dataset_id, type: :string, allow_nil?: true}
   },
   %{
@@ -1772,12 +1775,14 @@ oth_attributes = [
     dwc_field: "institutionCode",
     dwc_link: "http://rs.tdwg.org/dwc/terms/institutionCode",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :institution_code, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "institutionID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/institutionID",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :institution_id, type: :string, allow_nil?: true}
   },
   %{
@@ -2250,6 +2255,21 @@ defmodule DataAggregator.DarwinCore.Schema do
   alias DataAggregator.DarwinCore.Schema.DwcAttribute
 
   @categories categories
+
+  @data_from_collection %{
+    oth_gbif_doi: :gbif_doi,
+    oth_dataset_id: :gbif_dataset_key,
+    oth_institution_id: :grscicoll_institution_key,
+    oth_institution_code: :grscicoll_institution_code,
+    oth_collection_id: :grscicoll_reference,
+    oth_collection_code: :code
+  }
+
+  @doc """
+  Returns a map to define which fields are not to be taken from the record, but collection
+  The key corresponds to the field in the record, the value to the field in the collection
+  """
+  def data_from_collection, do: @data_from_collection
 
   @doc """
   Returns a map attributes grouped by category.

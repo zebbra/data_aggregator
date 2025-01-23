@@ -264,6 +264,8 @@ defmodule DataAggregator.PublicationTest do
           rows,
           &Map.take(&1, [
             "collectionID",
+            "collectionCode",
+            "collectionCode",
             "institutionCode",
             "institutionID",
             "datasetID"
@@ -273,30 +275,35 @@ defmodule DataAggregator.PublicationTest do
       collection_expected = [
         %{
           "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
           "datasetID" => "1234-1234-1234-1234",
           "institutionCode" => "Z",
           "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"
         },
         %{
           "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
           "datasetID" => "1234-1234-1234-1234",
           "institutionCode" => "Z",
           "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"
         },
         %{
           "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
           "datasetID" => "1234-1234-1234-1234",
           "institutionCode" => "Z",
           "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"
         },
         %{
           "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
           "datasetID" => "1234-1234-1234-1234",
           "institutionCode" => "Z",
           "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"
         },
         %{
           "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
           "datasetID" => "1234-1234-1234-1234",
           "institutionCode" => "Z",
           "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"

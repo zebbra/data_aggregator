@@ -356,6 +356,7 @@ defmodule DataAggregator.ExportTest do
           rows,
           &Map.take(&1, [
             "collectionID",
+            "collectionCode",
             "institutionCode",
             "institutionID",
             "datasetID",
@@ -366,6 +367,7 @@ defmodule DataAggregator.ExportTest do
       expected = [
         %{
           "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
           "datasetID" => nil,
           "institutionCode" => "Z",
           "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
@@ -373,6 +375,7 @@ defmodule DataAggregator.ExportTest do
         },
         %{
           "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
           "datasetID" => nil,
           "institutionCode" => "Z",
           "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
@@ -402,6 +405,7 @@ defmodule DataAggregator.ExportTest do
           new_rows,
           &Map.take(&1, [
             "collectionID",
+            "collectionCode",
             "institutionCode",
             "institutionID",
             "datasetID",
@@ -412,6 +416,7 @@ defmodule DataAggregator.ExportTest do
       expected = [
         %{
           "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
           "datasetID" => "1234-1234-1234-1234",
           "institutionCode" => "Z",
           "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
@@ -419,6 +424,7 @@ defmodule DataAggregator.ExportTest do
         },
         %{
           "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
           "datasetID" => "1234-1234-1234-1234",
           "institutionCode" => "Z",
           "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",

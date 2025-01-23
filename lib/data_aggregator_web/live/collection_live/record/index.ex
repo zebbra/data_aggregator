@@ -873,7 +873,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         :record_encoding_results,
         RecordEncodingResult.filter_by_record!(id, tenant: tenant)
       )
-      |> assign(:attrs_in_categories, attrs_by_category(record))
+      |> assign(:attrs_in_categories, attrs_by_category(record, tenant))
 
     {:noreply, socket}
   end
