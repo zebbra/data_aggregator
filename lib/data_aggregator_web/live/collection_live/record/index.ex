@@ -547,7 +547,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           <:additional_header_content>
             <.slideover_subtitle
               text={@selected_record.mte_catalog_number}
-              occurrence_id={@selected_record.occ_occurrence_id}
+              gbif_id={@selected_record.oth_gbif_id}
               fast_track_status={@selected_record.fast_track_status}
             />
             <div class="mt-4 flex space-x-2 max-sm:hidden">
