@@ -117,6 +117,16 @@
       "primary_key?": false,
       "references": null,
       "size": null,
+      "source": "gbif_doi",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
       "source": "import_mapping",
       "type": [
         "array",
@@ -179,7 +189,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "D862A133CFBBE617FF740A42713EDB9BEDB1602A3576A53345380030D55DA7D3",
+  "hash": "43C8D37BEF353E1CC4346088065AB6D0D026518C42EC1B7E4DAA396F37E182D1",
   "identities": [],
   "multitenancy": {
     "attribute": null,

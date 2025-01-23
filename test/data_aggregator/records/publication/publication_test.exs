@@ -32,26 +32,6 @@ defmodule DataAggregator.PublicationTest do
           grscicoll_reference: RestAPIStub.other_grscicoll_reference()
         })
 
-      collection_register_collection_failing =
-        collection_fixture(%{
-          grscicoll_reference: RestAPIStub.register_collection_fail_grscicoll_reference()
-        })
-
-      collection_create_endpoint_failing =
-        collection_fixture(%{
-          grscicoll_reference: RestAPIStub.create_endpoint_fail_grscicoll_reference()
-        })
-
-      collection_get_endpoints_failing =
-        collection_fixture(%{
-          grscicoll_reference: RestAPIStub.get_endpoints_fail_grscicoll_reference()
-        })
-
-      collection_delete_endpoint_failing =
-        collection_fixture(%{
-          grscicoll_reference: RestAPIStub.delete_endpoint_fail_grscicoll_reference()
-        })
-
       record1 =
         record_fixture(%{
           collection: collection,
@@ -169,50 +149,6 @@ defmodule DataAggregator.PublicationTest do
           tenant: collection
         )
 
-      publicatoin_1 =
-        Publication.create!(
-          %{
-            name: "Publication register collection failing",
-            channel: :fast_track,
-            records_query: query,
-            collection: collection_register_collection_failing
-          },
-          tenant: collection_register_collection_failing
-        )
-
-      publication_2 =
-        Publication.create!(
-          %{
-            name: "Publication create endpoint failing",
-            channel: :fast_track,
-            records_query: query,
-            collection: collection_create_endpoint_failing
-          },
-          tenant: collection_create_endpoint_failing
-        )
-
-      publication_3 =
-        Publication.create!(
-          %{
-            name: "Publication get endpoints failing, delete endpoint failing",
-            channel: :fast_track,
-            records_query: query,
-            collection: collection_get_endpoints_failing
-          },
-          tenant: collection_get_endpoints_failing
-        )
-
-      publication_4 =
-        Publication.create!(
-          %{
-            name: "Publication get endpoints success, delete endpoint failing",
-            channel: :fast_track,
-            records_query: query,
-            collection: collection_delete_endpoint_failing
-          },
-          tenant: collection_delete_endpoint_failing
-        )
-
       publication_append_1 =
         Publication.create!(
           %{
@@ -251,10 +187,6 @@ defmodule DataAggregator.PublicationTest do
         collection: collection,
         records: records,
         publication: publication,
-        publication_1: publicatoin_1,
-        publication_2: publication_2,
-        publication_3: publication_3,
-        publication_4: publication_4,
         publication_append_1: publication_append_1,
         publication_append_2: publication_append_2,
         publication_append_3: publication_append_3
@@ -290,10 +222,14 @@ defmodule DataAggregator.PublicationTest do
       transformed_attributes =
         Enum.map(
           rows,
-          &Map.take(&1, ["decimalLongitude", "decimalLatitude", "coordinateUncertaintyInMeters"])
+          &Map.take(&1, [
+            "decimalLongitude",
+            "decimalLatitude",
+            "coordinateUncertaintyInMeters"
+          ])
         )
 
-      expected = [
+      transformed_expected = [
         %{
           "decimalLatitude" => 10.0,
           "decimalLongitude" => 10.0,
@@ -321,7 +257,60 @@ defmodule DataAggregator.PublicationTest do
         }
       ]
 
-      assert_lists_equal(expected, transformed_attributes)
+      assert_lists_equal(transformed_expected, transformed_attributes)
+
+      collection_attributes =
+        Enum.map(
+          rows,
+          &Map.take(&1, [
+            "collectionID",
+            "collectionCode",
+            "collectionCode",
+            "institutionCode",
+            "institutionID",
+            "datasetID"
+          ])
+        )
+
+      collection_expected = [
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+        },
+        %{
+          "collectionID" => "322ce107-3156-4420-8a2b-7f17efeaa472",
+          "collectionCode" => "Z",
+          "datasetID" => "1234-1234-1234-1234",
+          "institutionCode" => "Z",
+          "institutionID" => "5b487a79-76ef-4615-93d9-f4ea25a40c33"
+        }
+      ]
+
+      assert_lists_equal(collection_expected, collection_attributes)
     end
 
     test "publish/1 successful with correct appending of data", %{
@@ -530,51 +519,93 @@ defmodule DataAggregator.PublicationTest do
     end
 
     @tag capture_log: true
-    test "publish/1 fails at register collection", %{
-      publication_1: publication_1
+    test "publish/1 fails at get dataset", %{
+      publication: publication
     } do
-      {:error, %Invalid{errors: errors}} =
-        Collection.publish(publication_1, tenant: publication_1.collection)
+      stub(Gbif.RestAPI, :get_dataset, fn _collection_name ->
+        {:error, %{status: 400, body: "error getting dataset"}}
+      end)
 
-      assert Enum.any?(errors, fn error ->
-               String.contains?(error.message, "Error during collection registering")
-             end)
+      {{:error, _error}, logs} =
+        with_log(fn ->
+          Collection.publish(publication, tenant: publication.collection)
+        end)
+
+      assert logs =~ "Error publishing records on the fast_track channel:"
+      assert logs =~ "Error registering dataset at GBIF"
+      assert logs =~ "error getting dataset"
+    end
+
+    @tag capture_log: true
+    test "publish/1 fails at register collection", %{
+      publication: publication
+    } do
+      stub(Gbif.RestAPI, :register_dataset, fn _collection_name ->
+        {:error, %{status: 400, body: "error registering collection"}}
+      end)
+
+      {{:error, _error}, logs} =
+        with_log(fn ->
+          Collection.publish(publication, tenant: publication.collection)
+        end)
+
+      assert logs =~ "Error publishing records on the fast_track channel:"
+      assert logs =~ "Error during collection registering"
+      assert logs =~ "error registering collection"
     end
 
     @tag capture_log: true
     test "publish/1 fails at create endpoint", %{
-      publication_2: publication_2
+      publication: publication
     } do
-      {:error, %Invalid{errors: errors}} =
-        Collection.publish(publication_2, tenant: publication_2.collection)
+      stub(Gbif.RestAPI, :create_endpoint, fn _file_url, _registration ->
+        {:error, %{status: 400, body: "could not create endpoint"}}
+      end)
 
-      assert Enum.any?(errors, fn error ->
-               String.contains?(error.message, "Error during endpoint creation")
-             end)
+      {{:error, _error}, logs} =
+        with_log(fn ->
+          Collection.publish(publication, tenant: publication.collection)
+        end)
+
+      assert logs =~ "Error publishing records on the fast_track channel:"
+      assert logs =~ "Error during endpoint creation"
+      assert logs =~ "could not create endpoint"
     end
 
     @tag capture_log: true
     test "publish/1 fails at get endpoints", %{
-      publication_3: publication_3
+      publication: publication
     } do
-      {:error, %Invalid{errors: errors}} =
-        Collection.publish(publication_3, tenant: publication_3.collection)
+      stub(Gbif.RestAPI, :get_endpoints, fn _dataset_key ->
+        {:error, %{status: 400, body: "error getting endpoints"}}
+      end)
 
-      assert Enum.any?(errors, fn error ->
-               String.contains?(error.message, "Error fetching existing endpoints")
-             end)
+      {{:error, _error}, logs} =
+        with_log(fn ->
+          Collection.publish(publication, tenant: publication.collection)
+        end)
+
+      assert logs =~ "Error publishing records on the fast_track channel:"
+      assert logs =~ "Error fetching existing endpoints for dataset"
+      assert logs =~ "error getting endpoints"
     end
 
     @tag capture_log: true
     test "publish/1 fails at delete endpoint", %{
-      publication_4: publication_4
+      publication: publication
     } do
-      {:error, %Invalid{errors: errors}} =
-        Collection.publish(publication_4, tenant: publication_4.collection)
+      stub(Gbif.RestAPI, :delete_endpoint, fn _dataset_key, _endpoint_key ->
+        {:error, %{status: 400, body: "error response deleting endpoint"}}
+      end)
 
-      assert Enum.any?(errors, fn error ->
-               String.contains?(error.message, "Error deleting endpoint")
-             end)
+      {{:error, _error}, logs} =
+        with_log(fn ->
+          Collection.publish(publication, tenant: publication.collection)
+        end)
+
+      assert logs =~ "Error publishing records on the fast_track channel:"
+      assert logs =~ "Error deleting endpoint"
+      assert logs =~ "error response deleting endpoint"
     end
 
     test "run/1", %{
@@ -592,10 +623,14 @@ defmodule DataAggregator.PublicationTest do
 
     @tag capture_log: true
     test "run/1 correctly sets states when failing at publish/register_at_gbif step", %{
-      publication_1: publication
+      publication: publication
     } do
+      stub(Gbif.RestAPI, :register_dataset, fn _collection_name ->
+        {:error, %{status: 400, body: "error registering collection"}}
+      end)
+
       Oban.Testing.with_testing_mode(:manual, fn ->
-        assert {:error, %Invalid{}} = Publication.run(publication)
+        assert {:error, _error} = Publication.run(publication)
 
         collection = Collection.get_by_id!(publication.collection_id)
         publication = Publication.get_by_id!(publication.id, tenant: collection)

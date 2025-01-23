@@ -7,6 +7,7 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   alias DataAggregator.DarwinCore.Schema.Category
   alias DataAggregator.DarwinCore.Schema.DwcAttribute
   alias DataAggregator.Misc.FlatFileUtils
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
 
   require Logger
@@ -21,10 +22,11 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   Writes the given records to a DwCA file on disk. Transforms the data according to the
   given header fields (from the meta) and transformers.
   """
-  @spec write_file!(Enumerable.t(), t(), any()) :: any()
-  def write_file!(records, meta, channel) do
+  @spec write_file!(Enumerable.t(), t(), any(), Collection.t()) :: any()
+  def write_file!(records, meta, channel, collection) do
     records
     |> Stream.map(&map_record(&1, meta.record_attributes, channel))
+    |> Stream.map(&use_data_from_collection(&1, collection))
     |> Stream.map(&FlatFileUtils.map_data_to_headers_list(&1, meta.header_fields, @transformers))
     |> FlatFileUtils.store_on_disk!(meta.file_descriptor)
   end
@@ -91,6 +93,16 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   defp map_record(record, record_attributes, :fast_track) do
     # for fast_track we already have the correct data (we copied it to published_records from the selected layer)
     record |> Map.from_struct() |> Map.take(record_attributes)
+  end
+
+  @doc """
+  Replaces the values of the given record with the values from the collection
+  What values to be replaced is defined in @data_from_collection map.
+  """
+  def use_data_from_collection(record, collection) do
+    Enum.reduce(Schema.data_from_collection(), record, fn {k, v}, acc ->
+      Map.replace(acc, k, Map.get(collection, v))
+    end)
   end
 
   # returns a tuple with the name and the dwc_attributes of a given category

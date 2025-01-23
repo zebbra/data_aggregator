@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
   use Ash.Resource.Actions.Implementation
 
   alias DataAggregator.Counter
+  alias DataAggregator.DarwinCore.Publication.DwcaFile
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records.Export
@@ -49,7 +50,11 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
         fn record ->
           record
           |> map_record(mapping, data_layer)
-          |> FlatFileUtils.map_data_to_headers(header_labels, Schema.dwc_transformers())
+          |> DwcaFile.use_data_from_collection(export.collection)
+          |> FlatFileUtils.map_data_to_headers(
+            header_labels,
+            Schema.dwc_transformers()
+          )
         end,
         timeout: :timer.seconds(30)
       )

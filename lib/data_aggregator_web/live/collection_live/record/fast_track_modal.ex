@@ -385,7 +385,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
           {@grscicoll_data["institutionName"]}
         </:item>
         <:item title={~t"Institution Code"}>
-          {@grscicoll_data["code"]}
+          {@grscicoll_data["institutionCode"]}
         </:item>
         <:item title={~t"Address"}>
           <div>
