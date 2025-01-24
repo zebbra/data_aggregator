@@ -21,18 +21,29 @@ defmodule DataAggregator.Utils.ImageUploadLogUtils do
   ## Returns
   - The path to the generated log file.
   """
-  @spec generate_log_content(ImageUpload.t()) :: String.t()
+  @spec generate_log_content(ImageUpload.t()) :: {:ok, ImageUpload.t(), String.t()}
   def generate_log_content(image_upload) do
     {path, log_file} = open_log_file(image_upload)
 
     image_upload
+    |> Ash.load!([:mapped_images, :unmapped_images], lazy?: true)
     |> prepare_log_entries()
     |> write_log_entries_to_file(log_file)
     |> Stream.run()
 
     FlatFileUtils.close_file(log_file)
 
-    path
+    image_upload = save_log_to_image_upload!(image_upload, path)
+
+    {:ok, image_upload, path}
+  end
+
+  @doc """
+  Cleans up the temporary files created during the log generation process.
+  """
+  @spec clean_up_temp_files!(String.t() | any()) :: :ok
+  def clean_up_temp_files!(file_or_path) do
+    FlatFileUtils.delete_file!(file_or_path)
   end
 
   defp write_log_entries_to_file(log_entries, log_file) do
@@ -56,7 +67,7 @@ defmodule DataAggregator.Utils.ImageUploadLogUtils do
           filename: image.attachment.filename,
           status: "mapped",
           message: "",
-          matched_attribute: Map.get(image.record, image.mapping_identifier, "")
+          matched_attribute: Map.get(image.record, image_upload.mapping_identifier, "")
         }
       end),
       Stream.map(image_upload.unmapped_images, fn image ->
@@ -73,14 +84,22 @@ defmodule DataAggregator.Utils.ImageUploadLogUtils do
   end
 
   defp open_log_file(image_upload) do
-    directory_path = FlatFileUtils.create_directory!("image_upload_logs")
+    dir_path = Path.join([System.tmp_dir!(), "image_upload_logs"])
 
-    path = directory_path <> "/image_upload_log-#{image_upload.id}-#{Uniq.UUID.uuid7(:slug)}.csv"
+    File.mkdir_p!(dir_path)
+
+    path = dir_path <> "/image_upload_log-#{image_upload.id}-#{Uniq.UUID.uuid7(:slug)}.csv"
 
     {path,
      File.open!(path, [
        :write,
        :utf8
      ])}
+  end
+
+  defp save_log_to_image_upload!(image_upload, path) do
+    upload_log_attachment = FlatFileUtils.store_on_s3!(path)
+
+    ImageUpload.update_upload_log!(image_upload, upload_log_attachment)
   end
 end

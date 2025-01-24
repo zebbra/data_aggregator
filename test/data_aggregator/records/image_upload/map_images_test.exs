@@ -7,6 +7,7 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
   import DataAggregator.ImageUploadFixtures
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.ImageUpload
 
   setup do
@@ -147,5 +148,28 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
 
   defp images_to_assert(images) do
     Enum.map(images, fn image -> image.attachment.filename end)
+  end
+
+  test "map/1 check if log is present after mapping", %{
+    image_upload_complete: image_upload,
+    collection: collection
+  } do
+    assert {:ok, image_upload} = ImageUpload.map(image_upload, tenant: collection)
+
+    assert image_upload.state == :mapped
+
+    image_upload =
+      Ash.load!(
+        image_upload,
+        [:upload_log]
+      )
+
+    assert %Attachment{} = image_upload.upload_log
+    assert image_upload.upload_log.url != nil
+
+    df = Explorer.DataFrame.from_csv!(image_upload.upload_log.url)
+
+    assert Explorer.DataFrame.n_columns(df) == 4
+    assert Explorer.DataFrame.n_rows(df) == 4
   end
 end

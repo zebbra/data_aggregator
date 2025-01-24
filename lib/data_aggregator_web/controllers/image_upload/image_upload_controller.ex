@@ -5,7 +5,6 @@ defmodule DataAggregatorWeb.ImageUploadController do
 
   use DataAggregatorWeb, :controller
 
-  alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records.ImageUpload
   alias DataAggregator.Records.ImageUpload.Helpers
   alias DataAggregator.Records.Record.Image
@@ -34,6 +33,7 @@ defmodule DataAggregatorWeb.ImageUploadController do
   @doc """
   Downloads the log file for an image upload
   """
+  @deprecated "is now generated in `DataAggregator.Records.ImageUpload.Changes.CreateUploadLogAfterAction` while mapping images `DataAggregator.Records.ImageUpload.Changes.MapImages`"
   @spec download_log(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def download_log(conn, %{"image_upload_id" => id, "id" => collection_id}) do
     case ImageUpload.get_by_id(id,
@@ -51,7 +51,8 @@ defmodule DataAggregatorWeb.ImageUploadController do
         |> text(~c"Unable to find the requested image")
 
       {:ok, image_upload} ->
-        path_to_file = ImageUploadLogUtils.generate_log_content(image_upload)
+        {:ok, _image_upload, path_to_file} =
+          ImageUploadLogUtils.generate_log_content(image_upload)
 
         conn =
           conn
@@ -62,7 +63,7 @@ defmodule DataAggregatorWeb.ImageUploadController do
           )
           |> send_file(200, path_to_file)
 
-        FlatFileUtils.delete_file!(path_to_file)
+        ImageUploadLogUtils.clean_up_temp_files!(path_to_file)
 
         conn
     end

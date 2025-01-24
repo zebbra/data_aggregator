@@ -70,6 +70,7 @@ defmodule DataAggregatorWeb.Router do
       live "/datasets/:id/image_uploads", CollectionLive.ImageUpload.Index, :index
       live "/datasets/:id/published_records", CollectionLive.PublishedRecords.Index, :index
 
+      @deprecated "is now generated in `DataAggregator.Records.ImageUpload.Changes.CreateUploadLogAfterAction` while mapping images `DataAggregator.Records.ImageUpload.Changes.MapImages`"
       get "/collecitons/:id/image_uploads/log/:image_upload_id/download",
           ImageUploadController,
           :download_log

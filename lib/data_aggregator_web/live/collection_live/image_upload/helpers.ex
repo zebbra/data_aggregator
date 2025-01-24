@@ -12,6 +12,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Helpers do
       :invalid_files_count,
       :created_by,
       :started_by,
+      upload_log: [:filename, :url, :byte_size],
       attachment: [:filename, :url, :byte_size]
     ]
   end
