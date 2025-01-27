@@ -18,6 +18,6 @@ defmodule DataAggregator.Records.ImageUpload.Calculations.MappedImages do
   end
 
   defp mapped_images(%ImageUpload{images: images}) do
-    Enum.filter(images, &(&1.record_id != nil))
+    Enum.reject(images, &is_nil(&1.record_id))
   end
 end
