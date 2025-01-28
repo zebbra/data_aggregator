@@ -21,14 +21,14 @@ defmodule DataAggregator.Accounts.UserPolicyTest do
       same = %User{
         id: "user_2",
         email: "same@email.com",
-        roles: ["data_administrator"],
+        roles: ["data_digitizer"],
         institution_id: @inst_1
       }
 
       other = %User{
         id: "user_3",
         email: "other@email.com",
-        roles: ["data_administrator"],
+        roles: ["data_digitizer"],
         institution_id: @inst_2
       }
 
@@ -74,26 +74,26 @@ defmodule DataAggregator.Accounts.UserPolicyTest do
     end
   end
 
-  describe "as collection_digitizer" do
+  describe "as collection_administrator" do
     setup do
       actor = %User{
         id: "user_1",
-        email: "collection_digitizer@email.com",
-        roles: ["collection_digitizer"],
+        email: "collection_administrator@email.com",
+        roles: ["collection_administrator"],
         institution_id: @inst_1
       }
 
       same = %User{
         id: "user_2",
         email: "same@email.com",
-        roles: ["data_administrator"],
+        roles: ["data_digitizer"],
         institution_id: @inst_1
       }
 
       other = %User{
         id: "user_3",
-        email: "data_administrator@email.com",
-        roles: ["data_administrator"],
+        email: "data_digitizer@email.com",
+        roles: ["data_digitizer"],
         institution_id: @inst_2
       }
 
@@ -139,26 +139,26 @@ defmodule DataAggregator.Accounts.UserPolicyTest do
     end
   end
 
-  describe "as data_administrator" do
+  describe "as data_digitizer" do
     setup do
       actor = %User{
         id: "user_1",
-        email: "data_administrator@email.com",
-        roles: ["data_administrator"],
+        email: "data_digitizer@email.com",
+        roles: ["data_digitizer"],
         institution_id: @inst_1
       }
 
       same = %User{
         id: "user_2",
         email: "same@email.com",
-        roles: ["data_administrator"],
+        roles: ["data_digitizer"],
         institution_id: @inst_1
       }
 
       other = %User{
         id: "user_3",
-        email: "data_administrator@email.com",
-        roles: ["data_administrator"],
+        email: "data_digitizer@email.com",
+        roles: ["data_digitizer"],
         institution_id: @inst_2
       }
 
@@ -204,26 +204,26 @@ defmodule DataAggregator.Accounts.UserPolicyTest do
     end
   end
 
-  describe "as admin and collection_digitizier and data_administrator" do
+  describe "as admin and collection_digitizier and data_digitizer" do
     setup do
       actor = %User{
         id: "user_1",
         email: "admin@email.com",
-        roles: ["admin", "collection_digitizer", "data_administrator"],
+        roles: ["admin", "collection_administrator", "data_digitizer"],
         institution_id: @inst_1
       }
 
       same = %User{
         id: "user_2",
         email: "same@email.com",
-        roles: ["data_administrator"],
+        roles: ["data_digitizer"],
         institution_id: @inst_1
       }
 
       other = %User{
         id: "user_3",
         email: "other@email.com",
-        roles: ["data_administrator"],
+        roles: ["data_digitizer"],
         institution_id: @inst_2
       }
 

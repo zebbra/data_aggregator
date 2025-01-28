@@ -162,14 +162,14 @@ defmodule DataAggregator.Records.RecordPolicyTest do
     end
   end
 
-  describe "as collection_digitizer" do
+  describe "as collection_administrator" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       actor = %User{
         id: "user_1",
-        email: "collection_digitizer@email.com",
-        roles: ["collection_digitizer"],
+        email: "collection_administrator@email.com",
+        roles: ["collection_administrator"],
         institution_id: @inst_1
       }
 
@@ -302,14 +302,14 @@ defmodule DataAggregator.Records.RecordPolicyTest do
     end
   end
 
-  describe "as data_administrator" do
+  describe "as data_digitizer" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       actor = %User{
         id: "user_1",
-        email: "data_administrator@email.com",
-        roles: ["data_administrator"],
+        email: "data_digitizer@email.com",
+        roles: ["data_digitizer"],
         institution_id: @inst_1
       }
 
@@ -445,14 +445,14 @@ defmodule DataAggregator.Records.RecordPolicyTest do
     end
   end
 
-  describe "as collection_digitizer and data_administrator" do
+  describe "as collection_administrator and data_digitizer" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       actor = %User{
         id: "user_1",
-        email: "data_administrator@email.com",
-        roles: ["collection_digitizer", "data_administrator"],
+        email: "data_digitizer@email.com",
+        roles: ["collection_administrator", "data_digitizer"],
         institution_id: @inst_1
       }
 

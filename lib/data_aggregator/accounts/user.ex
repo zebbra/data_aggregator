@@ -149,7 +149,7 @@ defmodule DataAggregator.Accounts.User do
       authorize_if always()
     end
 
-    policy_group with_role("collection_digitizer") do
+    policy_group with_role("collection_administrator") do
       policy action_type(:destroy) do
         forbid_if always()
       end

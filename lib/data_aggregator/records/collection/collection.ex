@@ -355,7 +355,7 @@ defmodule DataAggregator.Records.Collection do
       forbid_unless with_role("admin")
     end
 
-    policy_group with_role("collection_digitizer") do
+    policy_group with_role("collection_administrator") do
       policy action_type(:read) do
         authorize_if relates_to_institution_filter(:grscicoll_institution_key)
       end
@@ -372,7 +372,7 @@ defmodule DataAggregator.Records.Collection do
                :set_idle_encoding,
                :enqueue_encoding
              ]) do
-        authorize_if with_role(["admin", "data_administrator"])
+        authorize_if with_role(["admin", "data_digitizer"])
       end
 
       policy action_type([:create, :update, :destroy]) do
@@ -380,7 +380,7 @@ defmodule DataAggregator.Records.Collection do
       end
     end
 
-    policy_group with_role("data_administrator") do
+    policy_group with_role("data_digitizer") do
       policy action_type(:read) do
         authorize_if relates_to_institution_filter(:grscicoll_institution_key)
       end
@@ -390,7 +390,7 @@ defmodule DataAggregator.Records.Collection do
       end
 
       policy action(:update) do
-        authorize_if with_role("collection_digitizer")
+        authorize_if with_role("collection_administrator")
       end
     end
   end

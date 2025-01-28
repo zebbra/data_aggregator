@@ -13,15 +13,15 @@ defmodule DataAggregatorWeb.AdministrationLiveTest do
       assert path == ~p"/datasets"
     end
 
-    @tag authenticated: "data_administrator"
-    test "redirects to / for role data_administrator", %{conn: conn} do
+    @tag authenticated: "data_digitizer"
+    test "redirects to / for role data_digitizer", %{conn: conn} do
       {:error, {:redirect, %{to: path, flash: %{}}}} = live(conn, ~p"/administration")
 
       assert path == ~p"/datasets"
     end
 
-    @tag authenticated: "collection_digitizer"
-    test "renders /administration for role collection_digitizer", %{conn: conn} do
+    @tag authenticated: "collection_administrator"
+    test "renders /administration for role collection_administrator", %{conn: conn} do
       {:ok, _index_live, html} = live(conn, ~p"/administration")
 
       assert html =~ "Administration"
