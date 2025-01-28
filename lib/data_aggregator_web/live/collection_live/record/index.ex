@@ -27,7 +27,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @load [:encoded_record, :mids_level, :iucn_redlist]
   @async_keys [:meta, :results]
-  @coordinate_attribute_names ~w(swissCoordinatesLv03_x swissCoordinatesLv03_y swissCoordinatesLv95_x swissCoordinatesLv95_y)
+  @coordinate_attribute_names ~w(swissCoordinatesLv03_x swissCoordinatesLv03_y swissCoordinatesLv95_E swissCoordinatesLv95_N)
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
@@ -1137,7 +1137,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       <% Collection.can_set_importing?(@current_user, @collection) -> %>
         <.empty_state
           title={~t"No records"m}
-          description={~t"Get started by importing a new dataset"m}
+          description={~t"Get started by importing new data"m}
           label={~t"Import"m}
           icon="hero-bug-ant"
           href={~p"/datasets/#{@collection.id}/imports/new"}

@@ -606,7 +606,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     <%= if Collection.can_set_importing?(@current_user, @collection) do %>
       <.empty_state
         title={~t"No imports"m}
-        description={~t"Get started by importing a new dataset."m}
+        description={~t"Get started by importing new data."m}
         label={~t"Import"m}
         icon="hero-arrow-up-tray"
         href={~p"/datasets/#{@collection}/imports/new"}

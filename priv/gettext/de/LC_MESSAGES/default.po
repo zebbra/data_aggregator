@@ -362,12 +362,6 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "New Import"
 msgstr "Neuer Import"
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1140
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
-msgid "Get started by importing a new dataset"
-msgstr "Beginne, indem Du einen neuen Datensatz importierst"
-
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:1141
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
@@ -419,7 +413,7 @@ msgstr "Zusammenfassung"
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:609
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
-msgid "Get started by importing a new dataset."
+msgid "Get started by importing new data."
 msgstr "Beginne, indem Du einen neuen Datensatz importierst"
 
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:202
@@ -4397,3 +4391,9 @@ msgstr "Daten"
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Filter Datasets"
 msgstr "Filter"
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1140
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Get started by importing new data"
+msgstr "Beginne, indem Du einen neuen Datensatz importierst"
