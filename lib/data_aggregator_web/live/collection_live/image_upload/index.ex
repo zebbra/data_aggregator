@@ -208,7 +208,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
               {@selected_image_upload.invalid_files_count || 0}
             </:item>
             <:item title={~t"Logfile"}>
-              <.attachment_download_badge attachment={@selected_image_upload.upload_log} />
+              <.attachment_download_badge
+                :if={@selected_image_upload.upload_log != nil}
+                attachment={@selected_image_upload.upload_log}
+              />
             </:item>
           </.list>
           <:footer></:footer>
