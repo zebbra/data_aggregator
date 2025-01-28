@@ -128,7 +128,8 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   end
 
   @doc """
-  Stores the given data in a CSV file on the local disk
+  Stores the given data in a CSV file on the local disk. Use store_on_disk/3 to
+  have file open and close correctly handled.
   """
   @spec store_local_file(
           any(),
@@ -183,5 +184,9 @@ defmodule DataAggregator.Misc.FlatFileUtils do
 
   def close_file(file) do
     File.close(file)
+  end
+
+  def delete_file!(file_or_path) do
+    File.rm!(file_or_path)
   end
 end

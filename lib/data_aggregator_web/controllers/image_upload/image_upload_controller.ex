@@ -8,6 +8,7 @@ defmodule DataAggregatorWeb.ImageUploadController do
   alias DataAggregator.Records.ImageUpload
   alias DataAggregator.Records.ImageUpload.Helpers
   alias DataAggregator.Records.Record.Image
+  alias DataAggregator.Utils.ImageUploadLogUtils
 
   require Logger
 
@@ -32,6 +33,7 @@ defmodule DataAggregatorWeb.ImageUploadController do
   @doc """
   Downloads the log file for an image upload
   """
+  @deprecated "is now generated in `DataAggregator.Records.ImageUpload.Changes.CreateUploadLogAfterAction` while mapping images `DataAggregator.Records.ImageUpload.Changes.MapImages`"
   @spec download_log(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def download_log(conn, %{"image_upload_id" => id, "id" => collection_id}) do
     case ImageUpload.get_by_id(id,
@@ -49,12 +51,21 @@ defmodule DataAggregatorWeb.ImageUploadController do
         |> text(~c"Unable to find the requested image")
 
       {:ok, image_upload} ->
-        log_content = generate_log_content(image_upload)
+        {:ok, _image_upload, path_to_file} =
+          ImageUploadLogUtils.generate_log_content(image_upload)
+
+        conn =
+          conn
+          |> put_resp_content_type("text/csv")
+          |> put_resp_header(
+            "content-disposition",
+            "attachment; filename=\"image_upload_log.csv\""
+          )
+          |> send_file(200, path_to_file)
+
+        ImageUploadLogUtils.clean_up_temp_files!(path_to_file)
 
         conn
-        |> put_resp_content_type("text/csv")
-        |> put_resp_header("content-disposition", "attachment; filename=\"image_upload_log.csv\"")
-        |> send_resp(200, log_content)
     end
   end
 
@@ -90,28 +101,5 @@ defmodule DataAggregatorWeb.ImageUploadController do
     |> Map.get(:path)
     |> Path.extname()
     |> Helpers.accepted_image_content_type()
-  end
-
-  defp generate_log_content(image_upload) do
-    # CSV Header
-    log = "Filename,Status,Message,Matched Attribute\n"
-
-    log =
-      Enum.reduce(image_upload.invalid_file_infos || [], log, fn %{
-                                                                   "filename" => filename,
-                                                                   "reason" => reason
-                                                                 },
-                                                                 acc ->
-        "#{acc}#{filename},not uploaded,#{reason},\n"
-      end)
-
-    log =
-      Enum.reduce(image_upload.mapped_images, log, fn {filename, matched_attribute}, acc ->
-        "#{acc}#{filename},mapped,,#{matched_attribute}\n"
-      end)
-
-    Enum.reduce(image_upload.unmapped_images, log, fn filename, acc ->
-      "#{acc}#{filename},unmapped,\n"
-    end)
   end
 end
