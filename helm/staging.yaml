@@ -34,3 +34,10 @@ ingress:
     - secretName: staging-aggregator-tls
       hosts:
         - staging.aggregator.scnat.zebbra.ch
+
+postgres:
+  backup:
+    enabled: true
+    schedule: "0 0 0 * * *"
+    destinationPath: "s3://data-aggregator-stag/postgres"
+    endpointURL: "http://minio.minio.svc.cluster.local:9000"
