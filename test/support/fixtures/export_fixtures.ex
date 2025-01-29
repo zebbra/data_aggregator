@@ -65,7 +65,8 @@ defmodule DataAggregator.ExportFixtures do
       tax_kingdom: "Animalia",
       tax_taxon_id: 2_435_194,
       loc_decimal_latitude: 46.8182,
-      loc_decimal_longitude: 640_000.0
+      loc_decimal_longitude: 640_000.0,
+      ext_assertions: %{"1": 1}
     }
   end
 
@@ -221,6 +222,8 @@ defmodule DataAggregator.ExportFixtures do
       "samplingProtocol",
       "organismQuantityType",
       "gbifDOI",
+      "gbifID",
+      "gbifCHID",
       "license",
       "footprintWKT",
       "county",
@@ -550,7 +553,6 @@ defmodule DataAggregator.ExportFixtures do
       "mte_extraction_temporary_id" => "extractionTemporaryID",
       "mte_feeding_predation_traces" => "feedingPredationTraces",
       "mte_form" => "form",
-      "mte_gbif_doi" => "gbifDOI",
       "mte_life_stage" => "lifeStage",
       "mte_material_entity_id" => "materialEntityID",
       "mte_material_entity_remarks" => "materialEntityRemarks",
@@ -591,6 +593,9 @@ defmodule DataAggregator.ExportFixtures do
       "oth_dataset_id" => "datasetID",
       "oth_dataset_name" => "datasetName",
       "oth_date_available" => "dateAvailable",
+      "oth_gbif_ch_id" => "gbifCHID",
+      "oth_gbif_doi" => "gbifDOI",
+      "oth_gbif_id" => "gbifID",
       "oth_information_withheld" => "informationWithheld",
       "oth_institution_id" => "institutionID",
       "oth_language" => "language",

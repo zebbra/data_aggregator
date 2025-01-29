@@ -14,7 +14,7 @@ defmodule DataAggregatorWeb.Components.Tab do
   def tabs(assigns) do
     ~H"""
     <div role="tablist" class={["tabs tabs-lifted", @class]}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -45,7 +45,7 @@ defmodule DataAggregatorWeb.Components.Tab do
       name={@name}
       role="tab"
       class={[
-        "tab !border-b-transparent -mx-px [--tab-border-color:var(--fallback-b3,oklch(var(--black-white)/0.1))]",
+        "tab !border-b-transparent [--tab-border-color:var(--fallback-b3,oklch(var(--black-white)/0.1))] -mx-px",
         @disabled && "!cursor-default",
         @input_class
       ]}
@@ -60,7 +60,7 @@ defmodule DataAggregatorWeb.Components.Tab do
         @class
       ]}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end

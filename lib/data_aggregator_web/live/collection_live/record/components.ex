@@ -17,7 +17,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     <.link
       patch={@href}
       class={[
-        "lg:stat btn btn-outline lg:text-left lg:h-auto group animate-none",
+        "btn btn-outline group animate-none lg:stat lg:h-auto lg:text-left",
         @active && "btn-primary lg:border-primary",
         @active == false && "border-base-content/20 lg:border-base-content/20"
       ]}
@@ -27,15 +27,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         @active && "lg:text-primary/75 lg:group-hover:text-primary-content",
         @active == false && "lg:group-hover:text-base-100/80"
       ]}>
-        <%= @title %>
+        {@title}
       </div>
-      <div class={["stat-value max-lg:hidden"]}><%= format_percent(@value) %></div>
+      <div class={["stat-value max-lg:hidden"]}>{format_percent(@value)}</div>
       <div class={[
         "stat-desc max-lg:hidden",
         @active && "lg:text-primary/75 lg:group-hover:text-primary-content",
         @active == false && "lg:group-hover:text-base-100/80"
       ]}>
-        <%= @desc %>
+        {@desc}
       </div>
     </.link>
     """
@@ -47,7 +47,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     ~H"""
     <div class="btn btn-outline group border-base-content/20 animate-none lg:stat lg:border-base-content/20 lg:h-auto lg:text-left">
       <div class="truncate leading-4 lg:stat-title lg:group-hover:text-base-100/80">
-        <%= @title %>
+        {@title}
       </div>
       <div class={["stat-value max-lg:hidden"]}>
         <div class="skeleton my-2 h-6 w-24"></div>
@@ -86,7 +86,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     >
       <.icon name={ActivityFeed.icon_lookup(@name, @content)} class="size-5 shrink-0" />
       <span class="text-nowrap pr-1.5">
-        <%= ActivityFeed.badge_text(@name, @content) %>
+        {ActivityFeed.badge_text(@name, @content)}
       </span>
     </.badge>
     """
@@ -119,7 +119,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     >
       <.icon name={ActivityFeed.icon_lookup(@name, @content)} class="size-5 shrink-0" />
       <span class="text-nowrap pr-1.5">
-        <%= ActivityFeed.badge_text(@name, @content) %>
+        {ActivityFeed.badge_text(@name, @content)}
       </span>
     </.badge>
     """
@@ -175,23 +175,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   end
 
   attr :text, :string, required: true
-  attr :occurrence_id, :string, default: nil
+  attr :gbif_id, :string, default: nil
   attr :fast_track_status, :atom, default: nil
 
   def slideover_subtitle(assigns) do
     ~H"""
     <div class="my-auto flex space-x-3">
       <p class="text-base-content/60 text-sm/6 line-clamp-2 mt-1 max-w-4xl">
-        <%= @text %>
+        {@text}
       </p>
       <.link
-        :if={@occurrence_id !== nil && @fast_track_status == :published}
-        class="link link-primary link-hover text-sm/6 flex max-w-4xl items-center gap-x-2 mt-1"
+        :if={@gbif_id !== nil && @fast_track_status == :published}
+        class="link link-primary link-hover text-sm/6 mt-1 flex max-w-4xl items-center gap-x-2"
         target="_blank"
-        href={"#{gbif_base_url()}/occurrence/#{@occurrence_id}"}
+        href={"#{gbif_base_url()}/occurrence/#{@gbif_id}"}
       >
-        <%= ~t"Show on GBIF" %>
-        <.icon name="hero-arrow-top-right-on-square" class="size-4" />
+        {~t"Show on GBIF"} <.icon name="hero-arrow-top-right-on-square" class="size-4" />
       </.link>
     </div>
     """
@@ -229,7 +228,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         ~t"Add one of the follwing fields to reach level four: verbatim_event_date, identified_by, identification_qualifier, identification_verification_status, last_verified_by, verbatim_identification, georeferenced_by, georeference_verification_status, verbatim_coordinates, verbatim_latitude, verbatim_longitude, verbatim_locality, associated_media, completeness, other_catalog_numbers, verbatim_label"m
 
       4 ->
-        ~t"Record has a top quality. Add more data fields to improve your collections relevance"m
+        ~t"Record has a top quality. Add more data fields to improve your datasets relevance"m
     end
   end
 end

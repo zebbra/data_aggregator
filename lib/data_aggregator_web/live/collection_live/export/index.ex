@@ -50,7 +50,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
         raise ~t"Something went wrong"m
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/exports")}
+        {:noreply, push_navigate(socket, to: ~p"/datasets/#{id}/exports")}
     end
   end
 
@@ -65,27 +65,25 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
         busy={@busy}
         busy_action={@busy_action}
       />
-      <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
+      <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/records"} label={~t"Records"m} />
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/imports"} label={~t"Imports"m} />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/records"}
-          label={~t"Records"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/imports"}
-          label={~t"Imports"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/exports"}
+          href={~p"/datasets/#{@collection}/exports"}
           label={~t"Exports"m}
           active
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/publications"}
+          href={~p"/datasets/#{@collection}/publications"}
           label={~t"Publications and Approvals"m}
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/image_uploads"}
+          href={~p"/datasets/#{@collection}/image_uploads"}
           label={~t"Image Upload"m}
+        />
+        <.secondary_navigation_item
+          href={~p"/datasets/#{@collection}/published_records"}
+          label={~t"Published Records"m}
         />
       </.secondary_navigation>
 
@@ -93,7 +91,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
         opts={[
           no_results_content: no_results_content(%{collection: @collection})
         ]}
-        path={~p"/collections/#{@collection}/exports"}
+        path={~p"/datasets/#{@collection}/exports"}
         items={@streams.results}
         meta={@meta}
         row_click={
@@ -112,16 +110,16 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           <.attachment_download_badge :if={export.attachment != nil} attachment={export.attachment} />
         </:col>
         <:col :let={{_id, export}} field={:started_at} label={~t"Started at"m}>
-          <%= format_datetime(export.started_at, format: :short) %>
+          {format_datetime(export.started_at, format: :short)}
           <div :if={export.duration} class="text-base-content/60 text-xs">
-            <%= export.duration %>
+            {export.duration}
           </div>
         </:col>
         <:col :let={{_id, export}} field={:started_by} label={~t"Started by"m}>
-          <%= maybe_set_user(export.started_by) %>
+          {maybe_set_user(export.started_by)}
         </:col>
         <:col :let={{_id, export}} field={:rows_count} label={~t"Records"m} class="text-right">
-          <%= format_number(export.rows_count, format: :short) %>
+          {format_number(export.rows_count, format: :short)}
         </:col>
 
         <:action
@@ -149,7 +147,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           />
         </:action>
       </.table>
-      <.pagination meta={@meta} path={~p"/collections/#{@collection}/exports"} />
+      <.pagination meta={@meta} path={~p"/datasets/#{@collection}/exports"} />
 
       <:secondary>
         <.slideover
@@ -161,13 +159,13 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
         >
           <.section_heading
             text={~t"Export"m}
-            class="border-b border-black-white/10 px-6 sm:px-8 pb-6"
+            class="border-black-white/10 border-b px-6 pb-6 sm:px-8"
             align_items={if can_run?(@selected_export), do: "center", else: "baseline"}
             size="md"
           >
             <:subtitle>
               <div :if={@selected_export.state == :pending} class="mt-1 flex items-center gap-x-2">
-                <span class="text-sm"><%= ~t"State:"m %></span>
+                <span class="text-sm">{~t"State:"m}</span>
                 <.export_state_badge export={@selected_export} />
               </div>
             </:subtitle>
@@ -179,11 +177,10 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
                 phx-click="export:run"
                 class="btn btn-primary max-sm:btn-sm"
               >
-                <.icon name="hero-play-circle-mini" class="size-6" />
-                <%= ~t"Run"m %>
+                <.icon name="hero-play-circle-mini" class="size-6" /> {~t"Run"m}
               </button>
               <div :if={can_run?(@selected_export) == false} class="flex items-center gap-x-2">
-                <span class="text-sm"><%= ~t"State:"m %></span>
+                <span class="text-sm">{~t"State:"m}</span>
                 <.export_state_badge export={@selected_export} />
               </div>
             </:actions>
@@ -198,36 +195,36 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
               />
             </:item>
             <:item title={~t"Created at"m}>
-              <%= format_datetime(@selected_export.inserted_at) %>
+              {format_datetime(@selected_export.inserted_at)}
             </:item>
-            <:item title={~t"Rows"m}><%= format_number(@selected_export.rows_count) %></:item>
+            <:item title={~t"Rows"m}>{format_number(@selected_export.rows_count)}</:item>
 
             <:item title={~t"Exported"m}>
               <div class="flex flex-col">
                 <.progress
                   value={@selected_export.export_progress || 0}
                   max={1}
-                  class="w-full progress progress-primary"
+                  class="progress progress-primary w-full"
                 />
                 <div>
-                  <%= format_number(@selected_export.exported_count) %> / <%= format_number(
+                  {format_number(@selected_export.exported_count)} / {format_number(
                     @selected_export.rows_count
-                  ) %> <%= ~t"rows"m %>
+                  )} {~t"rows"m}
                 </div>
               </div>
             </:item>
 
             <:item title={~t"Started by"m}>
-              <%= maybe_set_user(@selected_export.started_by) %>
+              {maybe_set_user(@selected_export.started_by)}
             </:item>
             <:item title={~t"Started at"m}>
               <div :if={@selected_export.finished_at == nil}>
-                <%= format_datetime(@selected_export.started_at) %>
+                {format_datetime(@selected_export.started_at)}
               </div>
               <div :if={@selected_export.finished_at != nil}>
-                <%= format_date_interval(@selected_export.started_at, @selected_export.finished_at) %>
+                {format_date_interval(@selected_export.started_at, @selected_export.finished_at)}
               </div>
-              <%= @selected_export.duration %>
+              {@selected_export.duration}
             </:item>
           </.list>
 
@@ -240,8 +237,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
               data-confirm_id="confirm_export_alert"
               disabled={can_delete?(@selected_export) == false}
             >
-              <.icon name="hero-x-circle-mini" class="size-6" />
-              <%= ~t"Delete"m %>
+              <.icon name="hero-x-circle-mini" class="size-6" /> {~t"Delete"m}
             </button>
           </:footer>
         </.slideover>
@@ -276,7 +272,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
         {:noreply, put_flash(socket, :info, ~t"Export started in background"m)}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"An export for this collection is already in process"m)}
+        {:noreply, put_flash(socket, :error, ~t"An export for this dataset is already in process"m)}
     end
   end
 
@@ -319,7 +315,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, ~t"Collection Exports"m)
+    |> assign(:page_title, ~t"Dataset Exports"m)
     |> assign(:export, nil)
   end
 

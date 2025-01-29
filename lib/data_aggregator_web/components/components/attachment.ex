@@ -22,14 +22,14 @@ defmodule DataAggregatorWeb.Components.Attachment do
     <.link
       href={@attachment.url}
       class={[
-        "inline-flex items-center rounded-md bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 opacity-75 hover:opacity-100 gap-x-1",
+        "inline-flex items-center gap-x-1 rounded-md bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 opacity-75 hover:opacity-100",
         @class
       ]}
       tabindex="-1"
       phx-click=""
     >
       <.icon name="hero-arrow-down-tray-mini" class="size-3 shrink-0" />
-      <span class="whitespace-nowrap"><%= format_bytes(@attachment.byte_size) %></span>
+      <span class="whitespace-nowrap">{format_bytes(@attachment.byte_size)}</span>
     </.link>
     """
   end
@@ -46,7 +46,7 @@ defmodule DataAggregatorWeb.Components.Attachment do
   def file_info(%{show_file_name: true} = assigns) do
     ~H"""
     <div class="font-mono break-words">
-      <%= if is_nil(@attachment), do: "-", else: @attachment.filename %>
+      {if is_nil(@attachment), do: "-", else: @attachment.filename}
     </div>
     <.maybe_badge_with_rows
       attachment={@attachment}
@@ -71,8 +71,7 @@ defmodule DataAggregatorWeb.Components.Attachment do
   defp maybe_badge_with_rows(%{badge: true, attachment: attachment} = assigns) when attachment != nil do
     ~H"""
     <div class="text-base-content/60 flex items-center gap-x-2 text-xs">
-      <.attachment_download_badge attachment={@attachment} />
-      <%= format_number(@rows) %> <%= ~t"rows"m %>
+      <.attachment_download_badge attachment={@attachment} /> {format_number(@rows)} {~t"rows"m}
     </div>
     """
   end
@@ -80,7 +79,7 @@ defmodule DataAggregatorWeb.Components.Attachment do
   defp maybe_badge_with_rows(%{show_rows: true} = assigns) do
     ~H"""
     <div class="text-base-content/60 text-xs">
-      <%= format_number(@rows) %> <%= ~t"rows"m %>
+      {format_number(@rows)} {~t"rows"m}
     </div>
     """
   end

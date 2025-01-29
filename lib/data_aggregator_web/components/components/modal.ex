@@ -195,7 +195,7 @@ defmodule DataAggregatorWeb.Components.Modal do
               close_button_position={@close_button_position}
               gradient={@gradient}
             >
-              <%= render_slot(header) %>
+              {render_slot(header)}
             </.modal_header>
 
             <.modal_header
@@ -214,7 +214,7 @@ defmodule DataAggregatorWeb.Components.Modal do
               id={"#{@id}_body"}
               class={[modal_body_class(@header, @footer, @title, @overflow), @modal_body_class]}
             >
-              <%= render_slot(@inner_block) %>
+              {render_slot(@inner_block)}
             </div>
 
             <.modal_footer
@@ -224,7 +224,7 @@ defmodule DataAggregatorWeb.Components.Modal do
               reverse={if is_nil(footer[:reverse]), do: true, else: footer[:reverse]}
               gradient={@gradient}
             >
-              <%= render_slot(@footer) %>
+              {render_slot(@footer)}
             </.modal_footer>
           </div>
           <.close_button as="form" method="dialog" position={@close_button_position} />
@@ -235,7 +235,7 @@ defmodule DataAggregatorWeb.Components.Modal do
         method="dialog"
         class={["modal-backdrop", backdrop_class(@header, @footer, @title, @overflow)]}
       >
-        <button><%= ~t"close"m %></button>
+        <button>{~t"close"m}</button>
       </form>
     </dialog>
     """
@@ -295,7 +295,7 @@ defmodule DataAggregatorWeb.Components.Modal do
           <%= if @title do %>
             <.section_heading text={@title} description={@description} size="md" />
           <% else %>
-            <%= render_slot(@inner_block) %>
+            {render_slot(@inner_block)}
           <% end %>
         </div>
         <div class="shrink-0 grow-0 basis-4 text-right" />
@@ -361,7 +361,7 @@ defmodule DataAggregatorWeb.Components.Modal do
         @reverse && "flex-row-reverse justify-start",
         @footer_class
       ]}>
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </div>
     </footer>
     """

@@ -7,14 +7,22 @@ defmodule DataAggregator.DarwinCore.Publication.ReleveFile do
   @behaviour DataAggregator.DarwinCore.Publication.DwcaFile
 
   alias DataAggregator.DarwinCore.Publication.DwcaFile
-  alias DataAggregator.Records.Collection
+  alias DataAggregator.Misc.FlatFileUtils
 
-  @spec create(Ash.Query.t(), String.t(), Collection.t()) :: {:ok, any()} | {:error, any()}
-  def create(query, path, tenant) do
-    path = path <> "/releve.csv"
+  def open_file!(path) do
+    path = "#{path}/releve.csv"
+    header_fields = DwcaFile.file_mapping(:releve)
+    headers = DwcaFile.get_only_column_headers(header_fields)
+    record_attributes = DwcaFile.record_attributes(:releve)
 
-    file = DwcaFile.create_file!(:releve, query, path, tenant)
+    file = FlatFileUtils.open_file!(path)
 
-    {:ok, file}
+    %DwcaFile{
+      file_descriptor: file,
+      header_fields: DwcaFile.reverse_header_fields(headers, header_fields),
+      headers: headers,
+      record_attributes: record_attributes,
+      file_type: :releve
+    }
   end
 end

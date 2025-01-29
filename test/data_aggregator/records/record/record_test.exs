@@ -95,7 +95,7 @@ defmodule DataAggregator.Records.RecordTest do
 
       record = Ash.load!(record, [:paper_trail_versions], tenant: record.collection)
 
-      assert length(record.paper_trail_versions) == 2
+      assert length(record.paper_trail_versions) == 1
     end
 
     test "update/2 with invalid data returns error changeset" do

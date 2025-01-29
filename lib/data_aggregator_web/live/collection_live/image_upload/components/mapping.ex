@@ -54,10 +54,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
                 </div>
                 <div>
                   <p class="text-sm">
-                    <%= ~t"The mapping identifier links image filenames to records by matching the part before an underscore (or the file extension if no underscore exists) with a chosen attribute, like catalogName." %>
+                    {~t"The mapping identifier links image filenames to records by matching the part before an underscore (or the file extension if no underscore exists) with a chosen attribute, like catalogNumber, materialEntitiyId or occurenceId."}
                     <br />
                     <br />
-                    <%= ~t"For example: 'catalogName001_01.jpg' maps to a record where its catalogName is 'catalogName001'." %>
+                    {~t"For example: 'catalogNumber001_01.jpg' maps to a record where its catalogNumber is 'catalogNumber001'."}
                   </p>
                 </div>
               </div>
@@ -68,6 +68,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
                 label={~t"Mapping Identifier"m}
                 options={@mapping_identifier_options}
                 placeholder={~t"Select mapping identifier"m}
+                data-portal="image_upload_modal"
               />
             </.fieldgroup>
           </.fieldset>
@@ -75,10 +76,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
 
         <:actions modal>
           <button type="submit" class="btn btn-primary">
-            <%= ~t"Update mapping"m %>
+            {~t"Update mapping"m}
           </button>
           <button type="button" class="btn btn-ghost" onclick="image_upload_modal.close()">
-            <%= ~t"Cancel"m %>
+            {~t"Cancel"m}
           </button>
         </:actions>
       </.simple_form>
@@ -105,7 +106,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
           push_patch(socket,
             to:
               build_path(
-                ~p"/collections/#{collection}/image_uploads/#{image_upload}/summary",
+                ~p"/datasets/#{collection}/image_uploads/#{image_upload}/summary",
                 meta
               )
           )
@@ -141,7 +142,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
 
   defp valid_links(collection, image_upload, meta) do
     summary =
-      build_path(~p"/collections/#{collection}/image_uploads/#{image_upload}/summary", meta)
+      build_path(~p"/datasets/#{collection}/image_uploads/#{image_upload}/summary", meta)
 
     [nil, nil, summary]
   end

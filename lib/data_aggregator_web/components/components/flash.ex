@@ -79,10 +79,10 @@ defmodule DataAggregatorWeb.Components.Flash do
 
         <div>
           <h3 :if={@title} class="font-medium">
-            <%= @title %>
+            {@title}
           </h3>
           <div class="text-sm">
-            <%= msg %>
+            {msg}
           </div>
         </div>
 
@@ -133,8 +133,8 @@ defmodule DataAggregatorWeb.Components.Flash do
             phx-connected={hide("#client-error")}
             hidden
           >
-            <%= ~t"Attempting to reconnect"m %>
-            <.icon name="hero-arrow-path" class="ml-1 size-3 animate-spin" />
+            {~t"Attempting to reconnect"m}
+            <.icon name="hero-arrow-path" class="size-3 ml-1 animate-spin" />
           </.flash>
 
           <.flash
@@ -145,8 +145,8 @@ defmodule DataAggregatorWeb.Components.Flash do
             phx-connected={hide("#server-error")}
             hidden
           >
-            <%= ~t"Hang in there while we get back on track"m %>
-            <.icon name="hero-arrow-path" class="ml-1 size-3 animate-spin" />
+            {~t"Hang in there while we get back on track"m}
+            <.icon name="hero-arrow-path" class="size-3 ml-1 animate-spin" />
           </.flash>
         </div>
       </div>

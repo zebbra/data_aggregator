@@ -153,8 +153,8 @@ defmodule DataAggregatorWeb.Components.Input do
       aria-describedby={@errors != [] && "#{@id}_error"}
       {@rest}
     >
-      <option :if={@prompt} value=""><%= @prompt %></option>
-      <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+      <option :if={@prompt} value="">{@prompt}</option>
+      {Phoenix.HTML.Form.options_for_select(@options, @value)}
     </select>
     """
   end
@@ -306,11 +306,11 @@ defmodule DataAggregatorWeb.Components.Input do
           class={class_names(["size-5 text-base-content/50", @errors != [] && "text-error"])}
         />
       </div>
-      <%= input(%{
+      {input(%{
         assigns
         | icon_start: nil,
           class: class_names(["w-full pl-10 sm:text-sm/6", @class])
-      }) %>
+      })}
     </div>
     """
   end
@@ -318,15 +318,12 @@ defmodule DataAggregatorWeb.Components.Input do
   def input(%{icon_start: nil, icon_end: _, icon_event: nil} = assigns) do
     ~H"""
     <div class={["relative w-full", @inline && @class]}>
-      <%= input(%{assigns | icon_end: nil, class: class_names(["w-full pr-10", @class])}) %>
+      {input(%{assigns | icon_end: nil, class: class_names(["w-full pr-10", @class])})}
       <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
         <.icon
           name={@icon_end}
           class={
-            class_names([
-              "size-5 text-base-content/50 sm:text-sm/6",
-              @errors != [] && "text-error"
-            ])
+            class_names(["size-5 text-base-content/50 sm:text-sm/6", @errors != [] && "text-error"])
           }
         />
       </div>
@@ -337,7 +334,7 @@ defmodule DataAggregatorWeb.Components.Input do
   def input(%{icon_start: nil, icon_end: _, icon_event: _} = assigns) do
     ~H"""
     <div class={["relative w-full", @inline && @class]}>
-      <%= input(%{assigns | icon_end: nil, class: class_names(["w-full pr-10", @class])}) %>
+      {input(%{assigns | icon_end: nil, class: class_names(["w-full pr-10", @class])})}
       <div
         phx-click={@icon_event}
         phx-target={@icon_event_target}
@@ -346,10 +343,7 @@ defmodule DataAggregatorWeb.Components.Input do
         <.icon
           name={@icon_end}
           class={
-            class_names([
-              "size-5 text-base-content/50 sm:text-sm/6",
-              @errors != [] && "text-error"
-            ])
+            class_names(["size-5 text-base-content/50 sm:text-sm/6", @errors != [] && "text-error"])
           }
         />
       </div>
@@ -366,12 +360,12 @@ defmodule DataAggregatorWeb.Components.Input do
           class={class_names(["size-5 text-base-content/50", @errors != [] && "text-error"])}
         />
       </div>
-      <%= input(%{
+      {input(%{
         assigns
         | icon_start: nil,
           icon_end: nil,
           class: class_names(["w-full pl-10 pr-10 sm:text-sm/6", @class])
-      }) %>
+      })}
       <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
         <.icon
           name={@icon_end}
@@ -391,12 +385,12 @@ defmodule DataAggregatorWeb.Components.Input do
           class={class_names(["size-5 text-base-content/50", @errors != [] && "text-error"])}
         />
       </div>
-      <%= input(%{
+      {input(%{
         assigns
         | icon_start: nil,
           icon_end: nil,
           class: class_names(["w-full pl-10 pr-10 sm:text-sm/6", @class])
-      }) %>
+      })}
       <div
         class="absolute inset-y-0 right-0 flex items-center pr-3"
         phx-click={@icon_event}

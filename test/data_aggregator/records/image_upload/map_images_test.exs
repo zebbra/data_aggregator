@@ -7,6 +7,7 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
   import DataAggregator.ImageUploadFixtures
   import DataAggregator.RecordsFixtures
 
+  alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.ImageUpload
 
   setup do
@@ -35,30 +36,61 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
     image_upload =
       image_upload_fixture_extracted(collection)
 
+    image_upload_complete =
+      image_upload_fixture_extracted_complete(collection)
+
     [
       image_upload: image_upload,
+      image_upload_complete: image_upload_complete,
       collection: collection
     ]
   end
 
+  test "map/1 successful with complete mapping", %{
+    image_upload_complete: image_upload,
+    collection: collection
+  } do
+    assert {:ok, image_upload} = ImageUpload.map(image_upload, tenant: collection)
+
+    assert image_upload.state == :mapped
+
+    image_upload =
+      Ash.load!(
+        image_upload,
+        [:mapped_images, images: [attachment: :filename]]
+      )
+
+    assert "catalogNumber1_1.jpg" in images_to_assert(image_upload.mapped_images)
+    assert "catalogNumber1_2.jpg" in images_to_assert(image_upload.mapped_images)
+    assert "catalogNumber2.jpg" in images_to_assert(image_upload.mapped_images)
+    assert "catalogNumber4.jpeg" in images_to_assert(image_upload.mapped_images)
+  end
+
   @tag timeout: :infinity
-  test "map/1 successful", %{
+  test "map/1 successful with incomplete mapping", %{
     image_upload: image_upload,
     collection: collection
   } do
     assert {:ok, image_upload} = ImageUpload.map(image_upload, tenant: collection)
 
-    image_upload = Ash.load!(image_upload, [:images, :mapped_images, :unmapped_images])
+    assert image_upload.state == :mapping_incomplete
+
+    image_upload =
+      Ash.load!(image_upload, [:mapped_images, :unmapped_images, images: [attachment: :filename]])
 
     collection =
-      Ash.load!(collection, [records: [:images, :image_attachments, :encoded_record]], tenant: collection)
+      Ash.load!(
+        collection,
+        [records: [:image_attachments, :encoded_record, images: :image_url]],
+        tenant: collection
+      )
 
-    assert {"catalogNumber1_1.jpg", "catalogNumber1"} in image_upload.mapped_images
-    assert {"catalogNumber1_2.jpg", "catalogNumber1"} in image_upload.mapped_images
-    assert {"catalogNumber2.jpg", "catalogNumber2"} in image_upload.mapped_images
-    assert {"catalogNumber4.jpeg", "catalogNumber4"} in image_upload.mapped_images
+    assert "catalogNumber1_1.jpg" in images_to_assert(image_upload.mapped_images)
+    assert "catalogNumber1_2.jpg" in images_to_assert(image_upload.mapped_images)
+    assert "catalogNumber2.jpg" in images_to_assert(image_upload.mapped_images)
+    assert "catalogNumber4.jpeg" in images_to_assert(image_upload.mapped_images)
 
-    assert "catalogNumber1337_noMatch.jpg" in image_upload.unmapped_images
+    assert "catalogNumber1337_noMatch.jpg" in images_to_assert(image_upload.unmapped_images)
 
     Enum.each(collection.records, fn record ->
       case record.mte_catalog_number do
@@ -66,14 +98,12 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
           assert length(record.images) == 2
           assert length(record.image_attachments) == 2
 
-          regex1 =
-            ~r/^[^|]*catalogNumber1_1\.jpg\s*\|\s*[^|]*catalogNumber1_2\.jpg$/
-
-          regex2 =
-            ~r/^[^|]*catalogNumber1_2\.jpg\s*\|\s*[^|]*catalogNumber1_1\.jpg$/
-
-          assert Regex.match?(regex1, record.encoded_record.mte_associated_media) or
-                   Regex.match?(regex2, record.encoded_record.mte_associated_media)
+          Enum.each(record.images, fn image ->
+            assert String.contains?(
+                     record.encoded_record.mte_associated_media,
+                     image.image_url
+                   )
+          end)
 
           Enum.each(record.image_attachments, fn image_attachment ->
             assert image_attachment.filename in ["catalogNumber1_1.jpg", "catalogNumber1_2.jpg"]
@@ -83,8 +113,12 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
           assert length(record.images) == 1
           assert length(record.image_attachments) == 1
 
-          regex = ~r/^[^|]*catalogNumber2\.jpg$/
-          assert Regex.match?(regex, record.encoded_record.mte_associated_media)
+          Enum.each(record.images, fn image ->
+            assert String.contains?(
+                     record.encoded_record.mte_associated_media,
+                     image.image_url
+                   )
+          end)
 
           assert record.image_attachments |> List.first() |> Map.get(:filename) ==
                    "catalogNumber2.jpg"
@@ -99,12 +133,43 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
           assert length(record.images) == 1
           assert length(record.image_attachments) == 1
 
-          regex = ~r/^[^|]*catalogNumber4\.jpeg$/
-          assert Regex.match?(regex, record.encoded_record.mte_associated_media)
+          Enum.each(record.images, fn image ->
+            assert String.contains?(
+                     record.encoded_record.mte_associated_media,
+                     image.image_url
+                   )
+          end)
 
           assert record.image_attachments |> List.first() |> Map.get(:filename) ==
                    "catalogNumber4.jpeg"
       end
     end)
+  end
+
+  defp images_to_assert(images) do
+    Enum.map(images, fn image -> image.attachment.filename end)
+  end
+
+  test "map/1 check if log is present after mapping", %{
+    image_upload_complete: image_upload,
+    collection: collection
+  } do
+    assert {:ok, image_upload} = ImageUpload.map(image_upload, tenant: collection)
+
+    assert image_upload.state == :mapped
+
+    image_upload =
+      Ash.load!(
+        image_upload,
+        [:upload_log]
+      )
+
+    assert %Attachment{} = image_upload.upload_log
+    assert image_upload.upload_log.url != nil
+
+    df = Explorer.DataFrame.from_csv!(image_upload.upload_log.url)
+
+    assert Explorer.DataFrame.n_columns(df) == 4
+    assert Explorer.DataFrame.n_rows(df) == 4
   end
 end

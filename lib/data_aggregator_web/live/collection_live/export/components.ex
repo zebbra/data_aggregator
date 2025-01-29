@@ -44,13 +44,13 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Components do
 
   def export_state_badge_label(%{state: :queued} = assigns) do
     ~H"""
-    <.progress max={1} value={} class="progress-info opacity-75 w-16" />
+    <.progress max={1} value={} class="progress-info w-16 opacity-75" />
     """
   end
 
   def export_state_badge_label(assigns) do
     ~H"""
-    <span><%= state_translation(@state) %></span>
+    <span>{state_translation(@state)}</span>
     """
   end
 

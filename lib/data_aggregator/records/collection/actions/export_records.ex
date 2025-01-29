@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
   use Ash.Resource.Actions.Implementation
 
   alias DataAggregator.Counter
+  alias DataAggregator.DarwinCore.Publication.DwcaFile
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records.Export
@@ -45,11 +46,18 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
     attachment =
       query
       |> Ash.stream!(stream_with: :keyset, batch_size: 1000, load: load)
-      |> Task.async_stream(fn record ->
-        record
-        |> map_record(mapping, data_layer)
-        |> FlatFileUtils.map_data_to_headers(header_labels, Schema.dwc_transformers())
-      end)
+      |> Task.async_stream(
+        fn record ->
+          record
+          |> map_record(mapping, data_layer)
+          |> DwcaFile.use_data_from_collection(export.collection)
+          |> FlatFileUtils.map_data_to_headers(
+            header_labels,
+            Schema.dwc_transformers()
+          )
+        end,
+        timeout: :timer.seconds(30)
+      )
       |> Stream.map(fn {:ok, record} -> record end)
       |> Counter.count_each(counter)
       |> create_file!(headers)

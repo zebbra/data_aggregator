@@ -74,10 +74,10 @@ defmodule DataAggregatorWeb.Filters.DateRange do
     ~H"""
     <.fieldset class={@top_level && "border-black-white/10 border-b py-8"}>
       <.section_heading as="legend" size={@legend_size}>
-        <%= @title %>
+        {@title}
         <.clear_link :if={present?(@component.source)} component={@component} target={@target} />
         <:subtitle :if={@description}>
-          <%= @description %>
+          {@description}
         </:subtitle>
       </.section_heading>
       <.fieldgroup class="flex flex-col gap-4">
@@ -93,7 +93,7 @@ defmodule DataAggregatorWeb.Filters.DateRange do
             phx-target={@target}
             class="bg-base-200 mr-2.5 inline-block cursor-pointer whitespace-nowrap rounded px-2 py-1 text-sm hover:bg-base-300"
           >
-            <%= label %>
+            {label}
           </span>
         </div>
         <div class="flex flex-col gap-4 sm:flex-row">

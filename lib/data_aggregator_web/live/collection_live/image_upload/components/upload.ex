@@ -5,6 +5,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
 
   use DataAggregatorWeb, :live_component
 
+  import DataAggregator.Records.ImageUpload.Helpers
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
 
@@ -42,9 +43,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
         <.stepper current={current_step(@action)} steps={3} />
         <.section_heading
           text={~t"Upload Images"}
-          description={
-            ~t"Please provide your zip file containing images to upload to this collection."m
-          }
+          description={~t"Please provide your zip file containing images to upload to this dataset."m}
           class="mt-4"
         />
       </.modal_header>
@@ -65,9 +64,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
                 color="red"
               >
                 <:action>
-                  <%= ~t"Show more"m %>
+                  {~t"Show more"m}
                 </:action>
-                <%= @error_message %>
+                {@error_message}
               </.collapsible_notification>
               <section
                 phx-drop-target={@uploads.file.ref}
@@ -81,23 +80,33 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
                         for={@uploads.file.ref}
                         class="link link-primary link-hover rounded-md px-1 font-semibold focus-within:ring-primary focus-within:ring-2"
                       >
-                        <span><%= ~t"Choose a file"m %></span>
+                        <span>{~t"Choose a file"m}</span>
                         <.live_file_input upload={@uploads.file} class="sr-only" />
                       </label>
-                      <p class="pl-1"><%= ~t"or drag and drop"m %></p>
+                      <p class="pl-1">{~t"or drag and drop"m}</p>
                     </div>
                     <p class="text-xs/5 text-base-content/60">
-                      <%= pretty_accept_list(@uploads.file.accept) %>
+                      {pretty_accept_list(@uploads.file.accept)}
                     </p>
                     <p class="text-xs/5 text-base-content/60">
-                      <%= pretty_max_file_size(@uploads.file.max_file_size) %>
+                      {pretty_max_file_size(@uploads.file.max_file_size)}
+                    </p>
+                    <br />
+                    <p class="text-xs/5 text-base-content/60">
+                      {~t"With images of type"m}
+                    </p>
+                    <p class="text-xs/5 text-base-content/60">
+                      {pretty_accept_list(accepted_image_extensions())}
+                    </p>
+                    <p class="text-xs/5 text-base-content/60">
+                      {pretty_max_file_size(max_image_size())}
                     </p>
                   </div>
                 </div>
 
                 <div class="text-base-content mt-4 space-y-2">
                   <article :for={entry <- @uploads.file.entries}>
-                    <span class="text-sm"><%= entry.client_name %></span>
+                    <span class="text-sm">{entry.client_name}</span>
 
                     <div class="flex items-center space-x-4">
                       <.progress value={entry.progress} class="progress-primary" />
@@ -115,7 +124,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
 
                     <div>
                       <%= for err <- upload_errors(@uploads.file, entry) do %>
-                        <p class="text-sm text-red-500"><%= error_to_string(err) %></p>
+                        <p class="text-sm text-red-500">{error_to_string(err)}</p>
                       <% end %>
                     </div>
                   </article>
@@ -133,10 +142,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
             }
             phx-disable-with={~t"Save..."m}
           >
-            <%= if @uploading, do: ~t"Uploading..."m, else: ~t"Next"m %>
+            {if @uploading, do: ~t"Uploading..."m, else: ~t"Next"m}
           </button>
-          <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
-            <%= ~t"Cancel"m %>
+          <button type="button" class="btn btn-ghost" onclick="image_upload_modal.close()">
+            {~t"Cancel"m}
           </button>
         </:actions>
       </.simple_form>
@@ -177,7 +186,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
           |> push_patch(
             to:
               build_path(
-                ~p"/collections/#{collection}/image_uploads/#{image_upload}/edit",
+                ~p"/datasets/#{collection}/image_uploads/#{image_upload}/edit",
                 socket.assigns.meta
               )
           )
@@ -190,7 +199,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
             :noreply,
             socket
             |> assign(error_message: error_message)
-            |> push_patch(to: ~p"/collections/#{collection}/image_uploads/new")
+            |> push_patch(to: ~p"/datasets/#{collection}/image_uploads/new")
           }
 
         _ ->
@@ -200,7 +209,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
             |> handle_flash(nil)
             |> push_patch(
               to:
-                build_path(~p"/collections/#{collection}/image_uploads",
+                build_path(~p"/datasets/#{collection}/image_uploads",
                   meta: socket.assigns.meta
                 )
             )
@@ -274,6 +283,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
     term
     |> String.split(",")
     |> Enum.map_join(", ", &(&1 |> String.replace(~r/^\./, "") |> String.upcase()))
+  end
+
+  defp pretty_accept_list(term) when is_list(term) do
+    Enum.map_join(term, ", ", &(&1 |> String.replace(~r/^\./, "") |> String.upcase()))
   end
 
   defp pretty_accept_list(_), do: nil

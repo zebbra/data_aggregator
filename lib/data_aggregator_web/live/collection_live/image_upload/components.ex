@@ -28,7 +28,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components do
 
   def image_upload_state_badge_label(assigns) do
     ~H"""
-    <span><%= state_translation(@state) %></span>
+    <span>{state_translation(@state)}</span>
     """
   end
 
@@ -38,6 +38,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components do
       state in [:extraction_queued, :extracting, :mapping_queued, :mapping, :extracted] -> "blue"
       state in [:mapped] -> "green"
       state in [:extraction_failed, :mapping_failed] -> "red"
+      state in [:mapping_incomplete] -> "orange"
     end
   end
 
@@ -66,6 +67,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components do
       state in [:mapped] ->
         {"hero-check-circle-solid", "text-success"}
 
+      state in [:mapping_incomplete] ->
+        {"hero-information-circle-solid", "text-warning"}
+
       state in [:extraction_failed, :mapping_failed] ->
         {"hero-x-circle-solid", "text-error"}
     end
@@ -83,6 +87,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components do
       state in [:mapped] -> ~t"Finished"m
       state in [:extraction_failed] -> ~t"Extraction failed"m
       state in [:mapping_failed] -> ~t"Mapping failed"m
+      state in [:mapping_incomplete] -> ~t"Incomplete"m
     end
   end
 end

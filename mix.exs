@@ -1,7 +1,7 @@
 defmodule DataAggregator.MixProject do
   use Mix.Project
 
-  @version "0.9.4"
+  @version "0.10.11"
 
   def project do
     [
@@ -195,13 +195,13 @@ defmodule DataAggregator.MixProject do
   defp deps do
     [
       # Phoenix Framework
-      {:bandit, "~> 1.5.5"},
+      {:bandit, "~> 1.6.0"},
       {:phoenix, "~> 1.7.14"},
       {:phoenix_ecto, "~> 4.6"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:phoenix_live_view, "~> 1.0.0-rc.5", override: true},
-      {:phoenix_storybook, "~> 0.6.3"},
+      {:phoenix_storybook, "~> 0.8.0"},
 
       # Ash Framework
       {:ash, "~> 3.4", override: true},
@@ -210,8 +210,8 @@ defmodule DataAggregator.MixProject do
       {:ash_postgres, "~> 2.4", override: true},
       {:ash_state_machine, "~> 0.2"},
       {:ash_uuid, "~> 1.1"},
-      {:ash_paper_trail, "~> 0.2"},
-      {:ash_pagify, "~> 1.2"},
+      {:ash_paper_trail, "~> 0.4"},
+      {:ash_pagify, "~> 1.3"},
       {:ash_authentication, "~> 4.0"},
       {:ash_authentication_phoenix, "~> 2.0"},
 
@@ -229,9 +229,9 @@ defmodule DataAggregator.MixProject do
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:assertions, "~> 0.19", only: :test},
       {:git_ops, "~> 2.6.3", only: [:dev]},
-      {:git_hooks, "~> 0.7.0", only: [:dev], runtime: false},
+      {:git_hooks, "~> 0.8.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
-      {:mimic, "~> 1.8", only: :test},
+      {:mimic, "~> 1.11", only: :test},
       {:styler, "~> 1.0", only: [:dev, :test], runtime: false},
       {:junit_formatter, "~> 3.3", only: :test},
       {:ex_machina, "~> 2.8.0", only: :test},
@@ -241,7 +241,7 @@ defmodule DataAggregator.MixProject do
       {:tailwind, "~> 0.2.3", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
-       tag: "v2.1.5",
+       tag: "v2.2.0",
        sparse: "optimized",
        app: false,
        compile: false,
@@ -280,7 +280,7 @@ defmodule DataAggregator.MixProject do
 
       # Background Jobs
       {:oban, "~> 2.17"},
-      {:oban_live_dashboard, "~> 0.1.0"},
+      {:oban_live_dashboard, "~> 0.2.0"},
 
       # Monitoring and Tracing
       {:appsignal, "~> 2.8"},
@@ -298,9 +298,10 @@ defmodule DataAggregator.MixProject do
       # Utilities and Helpers
       {:envy, "~> 1.1.1"},
       {:picosat_elixir, "~> 0.2"},
+      {:sourceror, "~> 1.7", only: [:dev, :test]},
 
       # Documentation
-      {:ex_doc, "~> 0.34.1", runtime: false},
+      {:ex_doc, "~> 0.35", runtime: false},
 
       # Livebook Widgets
       {:kino, "~> 0.12", only: :dev},

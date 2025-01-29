@@ -16,6 +16,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
 
   alias DataAggregator.DarwinCore
+  alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.Import
   alias Phoenix.HTML.Form
   alias Phoenix.LiveView.Socket
@@ -62,7 +63,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                 type="search"
                 field={@filter[:query]}
                 placeholder={~t"Search mapping"}
-                class="input input-bordered max-sm:text-base sm:inline-flex items-center rounded-full flex-row gap-2"
+                class="input input-bordered flex-row items-center gap-2 rounded-full max-sm:text-base sm:inline-flex"
               >
                 <:content :let={field}>
                   <.icon name="hero-magnifying-glass" class="size-5 text-base-content/50" />
@@ -103,8 +104,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                 phx-target={@myself}
                 class="btn btn-outline border-base-content/20"
               >
-                <.icon name="hero-sparkles-mini" />
-                <%= ~t"Try auto-mapping"m %>
+                <.icon name="hero-sparkles-mini" /> {~t"Try auto-mapping"m}
               </button>
               <button
                 type="button"
@@ -112,11 +112,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                 phx-target={@myself}
                 class="btn btn-outline border-base-content/20"
               >
-                <.icon name="hero-arrow-path-solid" />
-                <%= ~t"Load existing mapping"m %>
+                <.icon name="hero-arrow-path-solid" /> {~t"Load existing mapping"m}
               </button>
               <p :if={@quick_start_error} class="text-error -mb-6 text-sm italic sm:col-span-2">
-                <%= @quick_start_error %>
+                {@quick_start_error}
               </p>
             </div>
           </section>
@@ -128,7 +127,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                 ~t"Please map all required attributes to one of your columns before continueing."m
               }
             >
-              <.fieldgroup class="grid grid-cols-1 items-center gap-x-4 sm:grid-cols-3 gap-y-8">
+              <.fieldgroup class="grid grid-cols-1 items-center gap-x-4 gap-y-8 sm:grid-cols-3">
                 <.inputs_for :let={column_form} field={@form[:columns]} skip_hidden={true}>
                   <%= if mandatory?(column_form) do %>
                     <section id={Form.input_value(column_form, :mapped_to)} class="contents">
@@ -153,6 +152,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                         hidden={column_form_visible?(column_form, @filter) == false}
                         inline
                         required
+                        data-portal="import_modal"
                       />
                     </section>
                   <% end %>
@@ -176,8 +176,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                   disabled={@invalid?}
                   class="btn btn-outline border-base-content/20"
                 >
-                  <.icon name="hero-plus-circle-mini" class="size-6" />
-                  <%= ~t"Add all"m %>
+                  <.icon name="hero-plus-circle-mini" class="size-6" /> {~t"Add all"m}
                 </button>
               </:legend_actions>
 
@@ -192,10 +191,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                 disabled={@invalid?}
                 class="bg-base-200 mr-2.5 mb-2 inline-flex cursor-pointer rounded px-2 py-1 text-sm first-of-type:mt-6 enabled:hover:bg-base-300 disabled:text-base-content/50"
               >
-                <%= col %>
+                {col}
               </button>
 
-              <.fieldgroup class="grid grid-cols-1 items-center gap-x-4 sm:grid-cols-3 gap-y-8">
+              <.fieldgroup class="grid grid-cols-1 items-center gap-x-4 gap-y-8 sm:grid-cols-3">
                 <.inputs_for :let={column_form} field={@form[:columns]} skip_hidden={true}>
                   <%= if optional?(column_form) do %>
                     <section id={Form.input_value(column_form, :name)} class="contents">
@@ -211,7 +210,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                       <.custom_field
                         type="combobox"
                         max_options={1000}
-                        dropup={true}
+                        dropup
                         label={Form.input_value(column_form, :name)}
                         field={column_form[:mapped_to]}
                         options={maybe_add_selected_attribute(column_form, @available_attributes)}
@@ -224,7 +223,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                           <.label
                             for={Form.input_id(column_form, :mapped_to)}
                             label={field.label}
-                            class="label px-0 pt-0 sm:pb-0 sm:block self-center"
+                            class="label self-center px-0 pt-0 sm:block sm:pb-0"
                           />
 
                           <div class="inline-flex gap-x-3 sm:col-span-2">
@@ -245,7 +244,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                           <.errors
                             errors={field.errors}
                             id={field.id}
-                            class="sm:col-span-3 sm:justify-self-end mt-2 mr-11"
+                            class="mt-2 mr-11 sm:col-span-3 sm:justify-self-end"
                           />
                         </:content>
                       </.custom_field>
@@ -259,10 +258,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
         <:actions modal>
           <button type="submit" class="btn btn-primary">
-            <%= ~t"Update mapping"m %>
+            {~t"Update mapping"m}
           </button>
           <button type="button" class="btn btn-ghost" onclick="import_modal.close()">
-            <%= ~t"Cancel"m %>
+            {~t"Cancel"m}
           </button>
           <div class="grow">
             <button
@@ -271,7 +270,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
               phx-target={@myself}
               class="btn btn-ghost !-mx-4"
             >
-              <%= ~t"Reset mapping"m %>
+              {~t"Reset mapping"m}
             </button>
           </div>
         </:actions>
@@ -375,7 +374,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       case AshPhoenix.Form.submit(form, params: params) do
         {:ok, import} ->
           push_patch(socket,
-            to: build_path(~p"/collections/#{collection}/imports/#{import}/summary", meta)
+            to: build_path(~p"/datasets/#{collection}/imports/#{import}/summary", meta)
           )
 
         {:error, form} ->
@@ -441,7 +440,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   defp collection_mapping_from_import(import) do
     case import.collection.import_mapping do
-      nil -> {:error, ~t"Collection mapping not found"m}
+      nil -> {:error, ~t"Dataset mapping not found"m}
       import_mapping -> {:ok, import_mapping}
     end
   end
@@ -453,7 +452,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       end)
 
     case length(mapped) do
-      0 -> {:error, ~t"Collection mapping is empty"m}
+      0 -> {:error, ~t"Dataset mapping is empty"m}
       _ -> {:ok, mapped}
     end
   end
@@ -481,7 +480,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   defp auto_mapping_matched(import) do
     prefixed_attribute_to_dwc_field_mapping =
-      DarwinCore.Schema.prefixed_attribute_names_and_dwc_fields()
+      Enum.reject(DarwinCore.Schema.prefixed_attribute_names_and_dwc_fields(), fn {key, _} ->
+        key in Map.keys(Schema.data_from_collection())
+      end)
 
     dwc_field_names =
       Enum.map(prefixed_attribute_to_dwc_field_mapping, fn {_, dwc_field} -> dwc_field end)
@@ -761,9 +762,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     end)
   end
 
-  defp blank?(val) when val in [nil, "", []], do: true
-  defp blank?(_), do: false
-
   defp mapping_valid?(%Import{mappings: mappings}) do
     Enum.all?(@mandatory_attributes, fn attribute ->
       Enum.any?(mappings, &(&1.mapped_to == attribute))
@@ -773,7 +771,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   defp valid_links(collection, import, meta) do
     summary =
       if Enum.empty?(import.missing_mappings),
-        do: build_path(~p"/collections/#{collection}/imports/#{import}/summary", meta)
+        do: build_path(~p"/datasets/#{collection}/imports/#{import}/summary", meta)
 
     [nil, nil, summary]
   end

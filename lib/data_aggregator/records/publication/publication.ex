@@ -15,6 +15,7 @@ defmodule DataAggregator.Records.Publication do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
   alias DataAggregator.Records.Publication.Changes
+  alias DataAggregator.Records.PublicationLicenseType
 
   @type t :: %Publication{}
 
@@ -30,6 +31,13 @@ defmodule DataAggregator.Records.Publication do
     attribute :published_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :rows_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :center, :atom, allow_nil?: true, public?: true
+    attribute :existing_dataset_key, :string, allow_nil?: true, public?: true
+    attribute :layer, :string, allow_nil?: false, default: "approval", public?: true
+
+    attribute :license, PublicationLicenseType,
+      allow_nil?: false,
+      default: :cc_by,
+      public?: true
 
     timestamps public?: true, writable?: false
   end
@@ -180,6 +188,7 @@ defmodule DataAggregator.Records.Publication do
 
     publish_all :create, [[:collection_id, nil], "created"]
     publish_all :destroy, [[:collection_id, nil], "destroyed", [:id, nil]]
+    publish :add_publication_progress, [[:collection_id, nil], "updated", [:id, nil]]
     publish :set_running, [[:collection_id, nil], "updated", [:id, nil]]
     publish :set_done, [[:collection_id, nil], "updated", [:id, nil]]
     publish :set_failed, [[:collection_id, nil], "updated", [:id, nil]]

@@ -56,20 +56,20 @@ defmodule DataAggregatorWeb.Components.Pagination do
     >
       <div class="flex items-baseline justify-between">
         <span class="text-base-content mr-3 text-sm font-semibold sm:hidden">
-          <%= mgettext(
+          {mgettext(
             "%{pagination_from} - %{pagination_to} of %{pagination_total}",
             pagination_from: @meta.current_offset + 1,
             pagination_to: showing_to(@meta),
             pagination_total: @meta.total_count
-          ) %>
+          )}
         </span>
         <span class="text-base-content mr-3 text-sm font-semibold max-sm:hidden">
-          <%= mgettext(
+          {mgettext(
             "Showing %{pagination_from} to %{pagination_to} of %{pagination_total} entries",
             pagination_from: @meta.current_offset + 1,
             pagination_to: showing_to(@meta),
             pagination_total: @meta.total_count
-          ) %>
+          )}
         </span>
       </div>
 
@@ -86,7 +86,7 @@ defmodule DataAggregatorWeb.Components.Pagination do
         >
           <:summary>
             <summary class="btn btn-sm">
-              <span><%= @meta.current_limit %></span>
+              <span>{@meta.current_limit}</span>
               <DataAggregatorWeb.Components.Icon.icon name="hero-chevron-down-micro" />
             </summary>
           </:summary>
@@ -108,7 +108,7 @@ defmodule DataAggregatorWeb.Components.Pagination do
                 }
                 class={link_class(limit, @meta.current_limit)}
               >
-                <%= limit %>
+                {limit}
               </.link>
             </li>
           </ul>

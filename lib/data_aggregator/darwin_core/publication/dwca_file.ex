@@ -8,28 +8,31 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   alias DataAggregator.DarwinCore.Schema.DwcAttribute
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records.Collection
-  alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
 
-  @callback create(query :: Ash.Query.t(), path :: String.t(), tenant :: Collection.t()) ::
-              {:ok, file :: any()} | {:error, reason :: any}
+  require Logger
+
+  defstruct [:file_descriptor, :header_fields, :headers, :record_attributes, :file_type]
+  @type t() :: %__MODULE__{}
+
+  @callback open_file!(String.t()) :: t()
+  @transformers Schema.dwc_transformers()
 
   @doc """
-  Creates a file with the given extension file type (e.g. :core) and the data from the query at the given path
+  Writes the given records to a DwCA file on disk. Transforms the data according to the
+  given header fields (from the meta) and transformers.
   """
-  @spec create_file!(atom(), Ash.Query.t(), String.t(), Collection.t()) :: any()
-  def create_file!(extension_type, query, path, tenant) do
-    header_fields = file_mapping(extension_type)
+  @spec write_file!(Enumerable.t(), t(), any(), Collection.t()) :: any()
+  def write_file!(records, meta, channel, collection) do
+    records
+    |> Stream.map(&map_record(&1, meta.record_attributes, channel))
+    |> Stream.map(&use_data_from_collection(&1, collection))
+    |> Stream.map(&FlatFileUtils.map_data_to_headers_list(&1, meta.header_fields, @transformers))
+    |> FlatFileUtils.store_on_disk!(meta.file_descriptor)
+  end
 
-    headers = get_only_column_headers(header_fields)
-
-    record_attributes = record_attributes(extension_type)
-
-    query
-    |> Ash.stream!(page: false)
-    |> Stream.map(&map_record(&1, record_attributes, tenant))
-    |> Stream.map(&FlatFileUtils.map_data_to_headers(&1, header_fields, Schema.dwc_transformers()))
-    |> FlatFileUtils.store_on_disk!(path, headers)
+  def write_headers(%__MODULE__{file_descriptor: file, headers: headers}) do
+    FlatFileUtils.store_on_disk!([headers], file)
   end
 
   @spec get_only_column_headers(list()) :: keyword()
@@ -37,6 +40,23 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
     header_fields
     |> set_id_as_first_column_header({:occ_occurrence_id, "occurrenceID"})
     |> Enum.map(fn {_k, v} -> v end)
+  end
+
+  # returns the headers mapped in order to the header_fields keys
+  # prepends the :occ_occurrence_id as the first column header
+  def reverse_header_fields(headers, header_fields) do
+    Enum.map(headers, fn header ->
+      if header == "occurrenceID" do
+        :occ_occurrence_id
+      else
+        header_key(header_fields, header)
+      end
+    end)
+  end
+
+  defp header_key(header_fields, header) do
+    {k, _v} = Enum.find(header_fields, fn {_k, v} -> v == header end)
+    k
   end
 
   @doc """
@@ -64,17 +84,24 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   end
 
   # gives you a map of all relevant record attributes and its values
-  @spec map_record(Record.t(), list(), Collection.t()) :: map()
-  defp map_record(record, record_attributes, tenant) do
-    raw_layer = get_raw_layer(record, record_attributes)
+  @spec map_record(Record.t(), list(), any()) :: map()
+  defp map_record(record, record_attributes, :approval) do
+    # for approval we always take data from 'raw layer'
+    record |> Map.from_struct() |> Map.take(record_attributes)
+  end
 
-    encoded_layer = get_encoded_layer(record, record_attributes, tenant)
+  defp map_record(record, record_attributes, :fast_track) do
+    # for fast_track we already have the correct data (we copied it to published_records from the selected layer)
+    record |> Map.from_struct() |> Map.take(record_attributes)
+  end
 
-    Map.merge(raw_layer, encoded_layer, fn _key, val1, val2 ->
-      case val2 do
-        nil -> val1
-        _ -> val2
-      end
+  @doc """
+  Replaces the values of the given record with the values from the collection
+  What values to be replaced is defined in @data_from_collection map.
+  """
+  def use_data_from_collection(record, collection) do
+    Enum.reduce(Schema.data_from_collection(), record, fn {k, v}, acc ->
+      Map.replace(acc, k, Map.get(collection, v))
     end)
   end
 
@@ -123,21 +150,7 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
 
   # returns a list of all record attributes which are relevant for the given file type
   @spec record_attributes(atom()) :: list()
-  defp record_attributes(file_type) do
+  def record_attributes(file_type) do
     Enum.map(file_mapping(file_type), fn {k, _v} -> k end)
-  end
-
-  defp get_raw_layer(record, record_attributes) do
-    record |> Map.from_struct() |> Map.take(record_attributes)
-  end
-
-  defp get_encoded_layer(record, record_attributes, tenant) do
-    case EncodedRecord.get_by_record(record.id, tenant: tenant) do
-      {:ok, encoded_record} ->
-        encoded_record |> Map.from_struct() |> Map.take(record_attributes)
-
-      {:error, _} ->
-        Map.new()
-    end
   end
 end

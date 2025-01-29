@@ -78,6 +78,20 @@ defmodule DataAggregatorWeb.Components.Combobox do
     {:reply, %{results: results}, socket}
   end
   ```
+
+  ## Portal to with floating-ui
+
+  In some cases the listbox of a combobox within a dialog might be cut off. To fix this, you can use the `data-portal` option to move the
+  listbox to the root of the dialog (or the body for other cases). This will ensure that the listbox is not cut off by the dialog borders.
+  We use the `floating-ui` library together with a custom portal implementation to achieve this.
+
+  ```heex
+  <.combobox
+    id="widget_category_names"
+    options={@widget_category_options}
+    data-portal="id-of-your-dialog"
+  />
+  ```
   """
 
   attr :class, :string, default: nil, doc: "the class to add to the input"
@@ -181,12 +195,13 @@ defmodule DataAggregatorWeb.Components.Combobox do
       data-plugins={@tom_select_plugins_json}
       data-global-options={@tom_select_options_global_variable}
       data-remote-options-event-name={@remote_options_event_name}
+      data-ts_dropup={to_string(@dropup)}
       class={["relative", @class]}
       {@rest}
     >
       <select class="combobox-latest hidden" multiple={@multiple}>
-        <option :if={@prompt} value=""><%= @prompt %></option>
-        <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+        <option :if={@prompt} value="">{@prompt}</option>
+        {Phoenix.HTML.Form.options_for_select(@options, @value)}
       </select>
 
       <input
@@ -198,7 +213,7 @@ defmodule DataAggregatorWeb.Components.Combobox do
         style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
       />
 
-      <div phx-update="ignore" id={"#{@id}_wrapper"} data-ts_dropup={to_string(@dropup)}>
+      <div phx-update="ignore" id={"#{@id}_wrapper"}>
         <div class="combobox-wrapper opacity-0">
           <select
             id={"#{@id}_select"}
@@ -208,8 +223,8 @@ defmodule DataAggregatorWeb.Components.Combobox do
             {@rest}
             placeholder={@placeholder}
           >
-            <option :if={@prompt} value=""><%= @prompt %></option>
-            <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+            <option :if={@prompt} value="">{@prompt}</option>
+            {Phoenix.HTML.Form.options_for_select(@options, @value)}
           </select>
         </div>
       </div>

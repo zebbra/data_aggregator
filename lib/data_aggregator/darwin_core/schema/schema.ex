@@ -1,4 +1,4 @@
-import DataAggregatorWeb.Helpers, only: [format_coordinate: 1]
+import DataAggregatorWeb.Helpers, only: [format_coordinate: 1, format_map: 1, format_float: 1]
 
 alias Ash.Resource.Attribute
 alias DataAggregator.DarwinCore.Schema.Category
@@ -1305,12 +1305,6 @@ mte_attributes = [
     attribute: %Attribute{name: :form, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: "gbifDOI",
-    dwc_link: nil,
-    dwca_file: :core,
-    attribute: %Attribute{name: :gbif_doi, type: :string, allow_nil?: true}
-  },
-  %{
     dwc_field: "matrix",
     dwc_link: nil,
     dwca_file: :core,
@@ -1665,7 +1659,7 @@ pvn_attributes = [
     dwc_field: "preservationTemperature",
     dwc_link: nil,
     dwca_file: :preservation,
-    attribute: %Attribute{name: :preservation_temperature, type: :float, allow_nil?: true}
+    attribute: %Attribute{name: :preservation_temperature, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "sequence",
@@ -1716,12 +1710,14 @@ oth_attributes = [
     dwc_field: "collectionCode",
     dwc_link: "http://rs.tdwg.org/dwc/terms/collectionCode",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :collection_code, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "collectionID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/collectionID",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :collection_id, type: :string, allow_nil?: true}
   },
   %{
@@ -1734,6 +1730,7 @@ oth_attributes = [
     dwc_field: "datasetID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/datasetID",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :dataset_id, type: :string, allow_nil?: true}
   },
   %{
@@ -1749,6 +1746,26 @@ oth_attributes = [
     attribute: %Attribute{name: :date_available, type: :string, allow_nil?: true}
   },
   %{
+    dwc_field: "gbifDOI",
+    dwc_link: nil,
+    dwca_file: :core,
+    available_for_import_mapping: false,
+    attribute: %Attribute{name: :gbif_doi, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "gbifID",
+    dwc_link: nil,
+    dwca_file: :core,
+    available_for_import_mapping: false,
+    attribute: %Attribute{name: :gbif_id, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "gbifCHID",
+    dwc_link: nil,
+    dwca_file: :core,
+    attribute: %Attribute{name: :gbif_ch_id, type: :string, allow_nil?: true}
+  },
+  %{
     dwc_field: "informationWithheld",
     dwc_link: "http://rs.tdwg.org/dwc/terms/informationWithheld",
     dwca_file: :core,
@@ -1758,12 +1775,14 @@ oth_attributes = [
     dwc_field: "institutionCode",
     dwc_link: "http://rs.tdwg.org/dwc/terms/institutionCode",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :institution_code, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "institutionID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/institutionID",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :institution_id, type: :string, allow_nil?: true}
   },
   %{
@@ -2237,6 +2256,21 @@ defmodule DataAggregator.DarwinCore.Schema do
 
   @categories categories
 
+  @data_from_collection %{
+    oth_gbif_doi: :gbif_doi,
+    oth_dataset_id: :gbif_dataset_key,
+    oth_institution_id: :grscicoll_institution_key,
+    oth_institution_code: :grscicoll_institution_code,
+    oth_collection_id: :grscicoll_reference,
+    oth_collection_code: :code
+  }
+
+  @doc """
+  Returns a map to define which fields are not to be taken from the record, but collection
+  The key corresponds to the field in the record, the value to the field in the collection
+  """
+  def data_from_collection, do: @data_from_collection
+
   @doc """
   Returns a map attributes grouped by category.
   """
@@ -2333,8 +2367,13 @@ defmodule DataAggregator.DarwinCore.Schema do
     {required, _opts} = Keyword.pop(opts, :required?, true)
 
     for category <- @categories do
+      filtered_attributes =
+        Enum.filter(category.dwc_attributes, fn dwc_attribute ->
+          Map.get(dwc_attribute, :available_for_import_mapping, true)
+        end)
+
       options =
-        for dwc_attribute <- category.dwc_attributes do
+        for dwc_attribute <- filtered_attributes do
           attribute = dwc_attribute.attribute
 
           name =
@@ -2409,7 +2448,41 @@ defmodule DataAggregator.DarwinCore.Schema do
   def dwc_transformers do
     %{
       loc_decimal_latitude: &format_coordinate/1,
-      loc_decimal_longitude: &format_coordinate/1
+      loc_decimal_longitude: &format_coordinate/1,
+      loc_coordinate_uncertainty_in_meters: &format_float/1,
+      loc_minimum_elevation_in_meters: &format_float/1,
+      loc_minimum_depth_in_meters: &format_float/1,
+      loc_maximum_depth_in_meters: &format_float/1,
+      loc_minimum_distance_above_surface_in_meters: &format_float/1,
+      loc_maximum_elevation_in_meters: &format_float/1,
+      loc_footprint_spatial_fit: &format_float/1,
+      loc_point_radius_spatial_fit: &format_float/1,
+      loc_coordinate_precision: &format_float/1,
+      loc_maximum_distance_above_surface_in_meters: &format_float/1,
+      ext_vernacular_names: &format_map/1,
+      ext_species_profile: &format_map/1,
+      ext_species_distribution: &format_map/1,
+      ext_references: &format_map/1,
+      ext_resource_relationship: &format_map/1,
+      ext_permit: &format_map/1,
+      ext_chronometric: &format_map/1,
+      ext_assertions: &format_map/1,
+      ext_amplification: &format_map/1,
+      eve_cover_water_in_percentage: &format_float/1,
+      eve_cover_shrubs_in_percentage: &format_float/1,
+      eve_cover_algae_in_percentage: &format_float/1,
+      eve_cover_litter_in_percentage: &format_float/1,
+      eve_cover_trees_in_percentage: &format_float/1,
+      eve_cover_lychens_in_percentage: &format_float/1,
+      eve_inclination_in_degrees: &format_float/1,
+      eve_cover_cryptogams_in_percentage: &format_float/1,
+      eve_cover_mosses_in_percentage: &format_float/1,
+      eve_herb_layer_height_in_centimeters: &format_float/1,
+      eve_shrub_layer_height_in_meters: &format_float/1,
+      eve_cover_herbs_in_percentage: &format_float/1,
+      eve_cover_rock_in_percentage: &format_float/1,
+      eve_cover_total_in_percentage: &format_float/1,
+      eve_tree_layer_height_in_meters: &format_float/1
     }
   end
 

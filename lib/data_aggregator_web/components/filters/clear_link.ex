@@ -26,7 +26,7 @@ defmodule DataAggregatorWeb.Filters.ClearLink do
       phx-value-predicate-id={@component.source.id}
       phx-target={@target}
     >
-      <%= ~t"Clear"m %>
+      {~t"Clear"m}
     </span>
     """
   end
@@ -39,7 +39,7 @@ defmodule DataAggregatorWeb.Filters.ClearLink do
       phx-value-key={@component.source.key}
       phx-target={@target}
     >
-      <%= ~t"Clear"m %>
+      {~t"Clear"m}
     </span>
     """
   end

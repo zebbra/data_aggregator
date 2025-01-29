@@ -247,6 +247,36 @@
       "primary_key?": false,
       "references": null,
       "size": null,
+      "source": "oth_gbif_ch_id",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "oth_gbif_id",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "oth_gbif_doi",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
       "source": "oth_date_available",
       "type": "text"
     },
@@ -378,7 +408,7 @@
       "references": null,
       "size": null,
       "source": "pvn_preservation_temperature",
-      "type": "float"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -878,16 +908,6 @@
       "references": null,
       "size": null,
       "source": "mte_matrix",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "mte_gbif_doi",
       "type": "text"
     },
     {
@@ -3019,7 +3039,7 @@
   ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "7E335275A10160B4E9892967A8CEC27F11BFB66F18F4DA202AE1986F8D7E23D3",
+  "hash": "9BAAEE4700CD0A10D385D71D567ECCC5E3969DFF0C4F03FE1C7B2A29FE6A49A2",
   "identities": [
     {
       "all_tenants?": false,

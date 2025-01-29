@@ -32,9 +32,9 @@ defmodule DataAggregatorWeb.Components.List do
         :for={item <- @item}
         class={["py-5 sm:grid sm:grid-cols-3 sm:gap-4", @dense == false && "px-6 lg:px-8"]}
       >
-        <dt class="text-base-content/90 text-sm/6 font-medium"><%= item.title %></dt>
+        <dt class="text-base-content/90 text-sm/6 font-medium">{item.title}</dt>
         <dd class="text-base-content/60 text-sm/6 mt-1 sm:col-span-2 sm:mt-0">
-          <%= render_slot(item) %>
+          {render_slot(item)}
         </dd>
       </div>
     </dl>

@@ -53,7 +53,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         raise ~t"Something went wrong"m
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/imports")}
+        {:noreply, push_navigate(socket, to: ~p"/datasets/#{id}/imports")}
     end
   end
 
@@ -69,27 +69,25 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         busy={@busy}
         busy_action={@busy_action}
       />
-      <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
+      <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/records"} label={~t"Records"m} />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/records"}
-          label={~t"Records"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/imports"}
+          href={~p"/datasets/#{@collection}/imports"}
           label={~t"Imports"m}
           active
         />
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/exports"} label={~t"Exports"m} />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/exports"}
-          label={~t"Exports"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/publications"}
+          href={~p"/datasets/#{@collection}/publications"}
           label={~t"Publications and Approvals"m}
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/image_uploads"}
+          href={~p"/datasets/#{@collection}/image_uploads"}
           label={~t"Image Upload"m}
+        />
+        <.secondary_navigation_item
+          href={~p"/datasets/#{@collection}/published_records"}
+          label={~t"Published Records"m}
         />
       </.secondary_navigation>
 
@@ -98,7 +96,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           no_results_content:
             no_results_content(%{collection: @collection, current_user: @current_user})
         ]}
-        path={~p"/collections/#{@collection}/imports"}
+        path={~p"/datasets/#{@collection}/imports"}
         items={@streams.results}
         meta={@meta}
         row_click={
@@ -117,19 +115,19 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           <.attachment_download_badge attachment={import.attachment} />
         </:col>
         <:col :let={{_id, import}} field={:inserted_at} label={~t"Created at"m}>
-          <%= format_datetime(import.inserted_at, format: :short) %>
+          {format_datetime(import.inserted_at, format: :short)}
         </:col>
         <:col :let={{_id, import}} field={:created_by} label={~t"Created by"m}>
-          <%= maybe_set_user(import.created_by) %>
+          {maybe_set_user(import.created_by)}
         </:col>
         <:col :let={{_id, import}} field={:started_at} label={~t"Started at"m}>
-          <%= format_datetime(import.started_at, format: :short) %>
+          {format_datetime(import.started_at, format: :short)}
           <div :if={import.duration} class="text-base-content/60 text-xs">
-            <%= import.duration %>
+            {import.duration}
           </div>
         </:col>
         <:col :let={{_id, import}} field={:started_by} label={~t"Started by"m}>
-          <%= maybe_set_user(import.started_by) %>
+          {maybe_set_user(import.started_by)}
         </:col>
         <:col
           :let={{_id, import}}
@@ -139,7 +137,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           directions={{:asc_nils_first, :desc_nils_last}}
         >
           <%= if import.rows_imported_count do %>
-            <%= format_number(import.rows_imported_count, format: :short) %>
+            {format_number(import.rows_imported_count, format: :short)}
           <% else %>
             0
           <% end %>
@@ -172,7 +170,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           <div class="border-black-white/10 mr-4 inline-flex border-r pr-4">
             <.table_action_button
               :if={can_edit?(import)}
-              patch={build_path(~p"/collections/#{@collection}/imports/#{import}/edit", @meta)}
+              patch={build_path(~p"/datasets/#{@collection}/imports/#{import}/edit", @meta)}
               data-tip={~t"Edit"m}
               disabled={@busy}
               icon="hero-pencil-square-mini"
@@ -190,7 +188,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           />
         </:action>
       </.table>
-      <.pagination meta={@meta} path={~p"/collections/#{@collection}/imports"} />
+      <.pagination meta={@meta} path={~p"/datasets/#{@collection}/imports"} />
 
       <:secondary>
         <.slideover
@@ -202,7 +200,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         >
           <.section_heading
             text={~t"Import"m}
-            class="border-b border-black-white/10 px-6 lg:px-8 pb-6"
+            class="border-black-white/10 border-b px-6 pb-6 lg:px-8"
             align_items={
               if @selected_import.state == :imported,
                 do: "baseline",
@@ -212,7 +210,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           >
             <:subtitle>
               <div :if={can_run?(@selected_import)} class="mt-1 flex items-center gap-x-2">
-                <span class="text-sm"><%= ~t"State:"m %></span>
+                <span class="text-sm">{~t"State:"m}</span>
                 <.import_state_badge import={@selected_import} />
               </div>
             </:subtitle>
@@ -225,18 +223,17 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                 disabled={@busy}
                 class="btn btn-primary max-sm:btn-sm"
               >
-                <.icon name="hero-play-circle-mini" class="size-6" />
-                <%= ~t"Run"m %>
+                <.icon name="hero-play-circle-mini" class="size-6" /> {~t"Run"m}
               </button>
               <div :if={invalid?(@selected_import)} class="text-error flex h-8 items-center gap-x-2">
                 <.icon name="hero-exclamation-triangle-mini" class="size-6 mt-0.5" />
-                <span class="text-sm"><%= ~t"Mapping is invalid"m %></span>
+                <span class="text-sm">{~t"Mapping is invalid"m}</span>
               </div>
               <div
                 :if={can_run?(@selected_import) == false && invalid?(@selected_import) == false}
                 class="flex items-center gap-x-2"
               >
-                <span class="text-sm"><%= ~t"State:"m %></span>
+                <span class="text-sm">{~t"State:"m}</span>
                 <.import_state_badge import={@selected_import} />
               </div>
             </:actions>
@@ -251,27 +248,27 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               />
             </:item>
             <:item title={~t"Created by"m}>
-              <%= maybe_set_user(@selected_import.created_by) %>
+              {maybe_set_user(@selected_import.created_by)}
             </:item>
             <:item title={~t"Created at"m}>
-              <%= format_datetime(@selected_import.inserted_at) %>
+              {format_datetime(@selected_import.inserted_at)}
             </:item>
-            <:item title={~t"Rows"m}><%= format_number(@selected_import.rows_count) %></:item>
+            <:item title={~t"Rows"m}>{format_number(@selected_import.rows_count)}</:item>
 
             <:item title={~t"Validation"m}>
               <div class="flex flex-col">
                 <.progress
-                  value={@selected_import.validation_progress || 0}
+                  value={@selected_import.validation_progress}
                   max={1}
-                  class="w-full progress progress-primary"
+                  class="progress progress-primary w-full"
                 />
                 <div>
-                  <%= format_number(@selected_import.rows_validated_count) %> / <%= format_number(
+                  {format_number(@selected_import.rows_validated_count)} / {format_number(
                     @selected_import.rows_count
-                  ) %> <%= ~t"rows"m %>
+                  )} {~t"rows"m}
                 </div>
                 <div :if={@selected_import.rows_invalid_count not in [0, nil]} class="text-error">
-                  <%= ~t"invalid rows:"m %> <%= format_number(@selected_import.rows_invalid_count) %>
+                  {~t"invalid rows:"m} {format_number(@selected_import.rows_invalid_count)}
                 </div>
               </div>
             </:item>
@@ -280,12 +277,12 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               <div class="flex flex-col">
                 <div :if={@selected_import.rows_invalid_count not in [0, nil]}>
                   <div class="text-error">
-                    <%= ~t"detected errors:"m %> <%= format_number(@selected_import.rows_error_count) %>
+                    {~t"detected errors:"m} {format_number(@selected_import.rows_error_count)}
                   </div>
                   <div class="inline-flex gap-1">
                     <.link
                       data-tip={~t"Preview error log"m}
-                      class="self-center tooltip rounded-full text-xs gap-x-1 font-medium bg-blue-100 px-1.5 pb-0.5 text-blue-500 opacity-75 hover:opacity-100"
+                      class="tooltip gap-x-1 self-center rounded-full bg-blue-100 px-1.5 pb-0.5 text-xs font-medium text-blue-500 opacity-75 hover:opacity-100"
                       phx-click="show:error_log_preview"
                       aria-label={~t"Open error log preview"m}
                     >
@@ -304,10 +301,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                 <div :if={@selected_import.rows_invalid_count in [0, nil]} class="text-italic">
                   <%= if @selected_import.state == :failed do %>
                     <div class="text-error">
-                      <%= ~t"An unknown error occurred"m %>
+                      {~t"An unknown error occurred"m}
                     </div>
                   <% else %>
-                    <%= ~t"No errors found"m %>
+                    {~t"No errors found"m}
                   <% end %>
                 </div>
               </div>
@@ -316,29 +313,29 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             <:item title={~t"Imported"m}>
               <div class="flex flex-col">
                 <.progress
-                  value={@selected_import.import_progress || 0}
+                  value={@selected_import.import_progress}
                   max={1}
-                  class="w-full progress progress-primary"
+                  class="progress progress-primary w-full"
                 />
                 <div>
-                  <%= format_number(@selected_import.rows_imported_count) %> / <%= format_number(
+                  {format_number(@selected_import.rows_imported_count)} / {format_number(
                     @selected_import.rows_count
-                  ) %> <%= ~t"rows"m %>
+                  )} {~t"rows"m}
                 </div>
               </div>
             </:item>
 
             <:item title={~t"Started by"m}>
-              <%= maybe_set_user(@selected_import.started_by) %>
+              {maybe_set_user(@selected_import.started_by)}
             </:item>
             <:item title={~t"Started at"m}>
               <div :if={@selected_import.finished_at == nil}>
-                <%= format_datetime(@selected_import.started_at) %>
+                {format_datetime(@selected_import.started_at)}
               </div>
               <div :if={@selected_import.finished_at != nil}>
-                <%= format_date_interval(@selected_import.started_at, @selected_import.finished_at) %>
+                {format_date_interval(@selected_import.started_at, @selected_import.finished_at)}
               </div>
-              <%= @selected_import.duration %>
+              {@selected_import.duration}
             </:item>
           </.list>
 
@@ -346,7 +343,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             <:caption>
               <.section_heading
                 text={~t"Mapping"m}
-                class="border-b border-black-white/10 px-6 pb-6 lg:px-8 text-left"
+                class="border-black-white/10 border-b px-6 pb-6 text-left lg:px-8"
                 align_items="center"
                 size="md"
               >
@@ -355,24 +352,23 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                     type="button"
                     patch={
                       build_path(
-                        ~p"/collections/#{@collection}/imports/#{@selected_import}/edit",
+                        ~p"/datasets/#{@collection}/imports/#{@selected_import}/edit",
                         @meta
                       )
                     }
                     class="btn btn-primary max-sm:btn-sm"
                   >
-                    <.icon name="hero-pencil-square-mini" class="size-6" />
-                    <%= ~t"Edit"m %>
+                    <.icon name="hero-pencil-square-mini" class="size-6" /> {~t"Edit"m}
                   </.link>
                 </:actions>
               </.section_heading>
             </:caption>
             <:col :let={column} label={~t"Column"m}>
               <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
-                <%= column.name %>
+                {column.name}
               </span>
               <span :if={column.name == nil} class="text-error">
-                <%= ~t"Mapping is invalid"m %>
+                {~t"Mapping is invalid"m}
               </span>
             </:col>
             <:col :let={column} label={~t"Mapped to"m} class="py-5">
@@ -391,7 +387,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               }
               class="bg-base-200 mr-2.5 mb-2 inline-flex rounded px-2 py-1 text-sm"
             >
-              <%= col %>
+              {col}
             </span>
           </div>
 
@@ -404,8 +400,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               data-confirm_id="confirm_import_alert"
               disabled={can_delete?(@selected_import) == false}
             >
-              <.icon name="hero-x-circle-mini" class="size-6" />
-              <%= ~t"Delete"m %>
+              <.icon name="hero-x-circle-mini" class="size-6" /> {~t"Delete"m}
             </button>
           </:footer>
         </.slideover>
@@ -430,19 +425,19 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             items={error_log_preview_data(@selected_import.error_log)}
           >
             <:col :let={error} label={~t"Catalog Number"m}>
-              <%= error[:catalogNumber] %>
+              {error[:catalogNumber]}
             </:col>
             <:col :let={error} label={~t"Scientific Name"m}>
-              <%= error[:scientificName] %>
+              {error[:scientificName]}
             </:col>
             <:col :let={error} label={~t"Field"}>
-              <%= error[:field] %>
+              {error[:field]}
             </:col>
             <:col :let={error} label={~t"Value"}>
-              <%= error[:value] %>
+              {error[:value]}
             </:col>
             <:col :let={error} label={~t"Error message"} class="text-right">
-              <%= error[:message] %>
+              {error[:message]}
             </:col>
           </.table>
 
@@ -450,7 +445,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
             <div class="inline-flex gap-2 py-2">
               <.attachment_download_badge attachment={@selected_import.error_log} />
               <span class="text-base/6 self-center text-xs italic">
-                <%= ~t"Only the first 100 rows will be shown. Download the file to have the complete log" %>
+                {~t"Only the first 100 rows will be shown. Download the file to have the complete log"}
               </span>
             </div>
           </:footer>
@@ -463,7 +458,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           size="3xl"
           responsive
           backdrop={false}
-          on_cancel={JS.patch(build_path(~p"/collections/#{@collection}/imports", @meta))}
+          on_cancel={JS.patch(build_path(~p"/datasets/#{@collection}/imports", @meta))}
           overflow="manual"
         >
           <.live_component
@@ -508,7 +503,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         {:noreply, put_flash(socket, :info, ~t"Import started in background")}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"An import for this collection is already in process")}
+        {:noreply, put_flash(socket, :error, ~t"An import for this dataset is already in process")}
     end
   end
 
@@ -561,7 +556,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, ~t"Collection Imports"m)
+    |> assign(:page_title, ~t"Dataset Imports"m)
     |> assign(:import, nil)
   end
 
@@ -594,7 +589,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     else
       socket
       |> put_flash(:mapping_error, true)
-      |> push_navigate(to: ~p"/collections/#{collection_id}/imports/#{import}/edit")
+      |> push_navigate(to: ~p"/datasets/#{collection_id}/imports/#{import}/edit")
     end
   end
 
@@ -614,7 +609,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         description={~t"Get started by importing a new dataset."m}
         label={~t"Import"m}
         icon="hero-arrow-up-tray"
-        href={~p"/collections/#{@collection}/imports/new"}
+        href={~p"/datasets/#{@collection}/imports/new"}
       />
     <% else %>
       <.empty_state

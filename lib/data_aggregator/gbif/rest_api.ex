@@ -32,6 +32,14 @@ defmodule DataAggregator.Gbif.RestAPI do
   end
 
   @doc """
+  Get details of a single dataset
+  """
+  @spec get_dataset(String.t()) :: Api.response()
+  def get_dataset(dataset_key) do
+    Req.get(url: get_dataset_url(dataset_key), auth: gbif_auth())
+  end
+
+  @doc """
   Create an endpoint for a dataset with the GBIF API and returns the endpoint key
   """
   @spec create_endpoint(String.t(), String.t()) :: Api.response()
@@ -82,7 +90,8 @@ defmodule DataAggregator.Gbif.RestAPI do
   @doc """
   Get a single entity (collection or institution) from the GrSciColl API, according to its key
   """
-  @spec get_grscicoll_entity(String.t(), :collection | :institution) :: Api.response_body()
+  @spec get_grscicoll_entity(String.t(), :collection | :institution | :dataset) ::
+          Api.response_body()
   def get_grscicoll_entity(key, kind) do
     req = HttpDiskCache.attach(Req.new())
 

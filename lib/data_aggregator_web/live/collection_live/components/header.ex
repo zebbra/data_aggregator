@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   attr :current, :atom,
     default: :records,
-    values: ~w(records imports encodings exports publications image_upload)a
+    values: ~w(records imports encodings exports publications image_upload published_records)a
 
   attr :current_user, User, required: true
 
@@ -59,7 +59,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         <.breadcrumbs
           class="text-sm"
           items={[
-            %{label: ~t"Collections"m, link: ~p"/collections"},
+            %{label: ~t"Datasets"m, link: ~p"/datasets"},
             %{label: ~t"Current"m, link: "#"}
           ]}
         />
@@ -71,51 +71,44 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             type="button"
             class="btn btn-error btn-sm"
           >
-            <.icon name="hero-stop-solid" class="size-4" />
-            <%= ~t"Cancel"m %>
+            <.icon name="hero-stop-solid" class="size-4" /> {~t"Cancel"m}
           </.link>
           <.link
             :if={@show_import_button}
-            patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
-            class={[
-              "btn btn-primary btn-sm",
-              (@busy || is_nil(@meta)) && "btn-disabled"
-            ]}
+            patch={build_path(~p"/datasets/#{@collection}/imports/new", @meta)}
+            class={["btn btn-primary btn-sm", (@busy || is_nil(@meta)) && "btn-disabled"]}
           >
             <%= if importing?(@busy_action) do %>
               <.icon name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
             <% else %>
               <.icon name="hero-arrow-up-tray" class="size-4" />
             <% end %>
-            <%= ~t"Add"m %>
+            {~t"Add"m}
           </.link>
           <.link
             :if={@show_image_upload_button}
-            patch={build_path(~p"/collections/#{@collection}/image_uploads/new", @meta)}
-            class={[
-              "btn btn-primary btn-sm",
-              (@busy || is_nil(@meta)) && "btn-disabled"
-            ]}
+            patch={build_path(~p"/datasets/#{@collection}/image_uploads/new", @meta)}
+            class={["btn btn-primary btn-sm", (@busy || is_nil(@meta)) && "btn-disabled"]}
           >
             <%= if mapping?(@busy_action) do %>
               <.icon name="hero-cog-6-tooth-solid animate-spin" class="size-4" />
             <% else %>
               <.icon name="hero-arrow-up-tray" class="size-4" />
             <% end %>
-            <%= ~t"Add"m %>
+            {~t"Add"m}
           </.link>
         </div>
       </:breadcrumbs>
       <:title>
         <.breadcrumbs
-          class="max-sm:hidden text-base-content font-bold text-3xl tracking-tight"
+          class="text-base-content text-3xl font-bold tracking-tight max-sm:hidden"
           items={[
-            %{label: ~t"Collections"m, link: ~p"/collections"},
+            %{label: ~t"Datasets"m, link: ~p"/datasets"},
             %{label: "#{@collection.name} (#{@collection.code})", link: "#"}
           ]}
         />
         <h2 class="text-base-content text-2xl font-bold tracking-tight max-sm:line-clamp-2 sm:hidden sm:truncate sm:text-3xl">
-          <%= "#{@collection.name} (#{@collection.code})" %>
+          {"#{@collection.name} (#{@collection.code})"}
         </h2>
       </:title>
       <:subtitle>
@@ -125,15 +118,14 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           target="_blank"
           href={"#{@gbif_dataset_base_url}/#{@collection.gbif_dataset_key}"}
         >
-          <%= ~t"Show on GBIF" %>
-          <.icon name="hero-arrow-top-right-on-square" class="size-4" />
+          {~t"Show on GBIF"} <.icon name="hero-arrow-top-right-on-square" class="size-4" />
         </.link>
 
         <div
           :if={@collection.gbif_dataset_key === nil}
           class="text-base-content/60 text-sm/6 flex max-w-4xl items-center gap-x-2 sm:mt-2"
         >
-          <%= @collection.code %>
+          {@collection.code}
         </div>
       </:subtitle>
       <:actions
@@ -147,38 +139,31 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           type="button"
           class="btn btn-error"
         >
-          <.icon name="hero-stop-solid" />
-          <%= busy_action_translation(@busy_action) %>
+          <.icon name="hero-stop-solid" /> {busy_action_translation(@busy_action)}
         </.link>
         <.link
           :if={@show_import_button}
-          patch={build_path(~p"/collections/#{@collection}/imports/new", @meta)}
-          class={[
-            "btn btn-primary",
-            (@busy || is_nil(@meta)) && "btn-disabled"
-          ]}
+          patch={build_path(~p"/datasets/#{@collection}/imports/new", @meta)}
+          class={["btn btn-primary", (@busy || is_nil(@meta)) && "btn-disabled"]}
         >
           <%= if importing?(@busy_action) do %>
             <.icon name="hero-cog-6-tooth-solid animate-spin" />
           <% else %>
             <.icon name="hero-arrow-up-tray" />
           <% end %>
-          <%= ~t"Import dataset"m %>
+          {~t"Import data"m}
         </.link>
         <.link
           :if={@show_image_upload_button}
-          patch={build_path(~p"/collections/#{@collection}/image_uploads/new", @meta)}
-          class={[
-            "btn btn-primary",
-            (@busy || is_nil(@meta)) && "btn-disabled"
-          ]}
+          patch={build_path(~p"/datasets/#{@collection}/image_uploads/new", @meta)}
+          class={["btn btn-primary", (@busy || is_nil(@meta)) && "btn-disabled"]}
         >
           <%= if mapping?(@busy_action) do %>
             <.icon name="hero-cog-6-tooth-solid animate-spin" />
           <% else %>
             <.icon name="hero-arrow-up-tray" />
           <% end %>
-          <%= ~t"Upload Images"m %>
+          {~t"Upload Images"m}
         </.link>
       </:actions>
     </.page_header>

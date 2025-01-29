@@ -7,16 +7,17 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
 
   alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Publication
 
-  @spec create(Collection.t(), String.t(), Collection.t()) :: {:ok, String.t()} | {:error, any()}
-  def create(collection, path, _tenant) do
+  @spec create(Collection.t(), Publication.t(), String.t()) :: {:ok, String.t()} | {:error, any()}
+  def create(collection, publication, path) do
     with false <- collection.grscicoll_reference == nil,
          false <- collection.grscicoll_reference == "",
          {:ok, grscicoll_data} <-
            RestAPI.get_one_collection(collection.grscicoll_reference) do
       path = path <> "/eml.xml"
 
-      xml_data = build(grscicoll_data)
+      xml_data = build(grscicoll_data, publication.license)
 
       create_eml_file(xml_data, path)
 
@@ -36,7 +37,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
     file
   end
 
-  defp build(meta_data) do
+  defp build(meta_data, license) do
     {:"eml:eml",
      [
        "xmlns:eml": "eml://ecoinformatics.org/eml-2.1.1",
@@ -47,19 +48,20 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
        scope: "system"
      ],
      [
-       dataset(meta_data)
+       dataset(meta_data, license)
      ]}
     |> document()
     |> generate(format: :none)
   end
 
-  defp dataset(meta_data) do
+  defp dataset(meta_data, license) do
     element(
       :dataset,
       [
-        title: meta_data["institutionCode"] <> " - " <> meta_data["name"] <> " - " <> meta_data["code"]
+        title: "#{meta_data["name"]} (#{meta_data["code"]}) of #{meta_data["institutionName"]}"
       ] ++
         creators(meta_data) ++
+        metadata_providers(meta_data) ++
         [
           pubDate: pub_date(),
           language: "ENGLISH",
@@ -67,26 +69,55 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
             para: meta_data["notes"]
           ],
           intellectualRights: [
-            element(
-              para:
-                {:safe,
-                 "This work is licensed under a <ulink url=\"http://creativecommons.org/licenses/by/4.0/legalcode\"><citetitle>Creative Commons Attribution (CC-BY) 4.0 License</citetitle></ulink>. "}
-            )
+            element(para: {:safe, intellectual_rights(license)})
           ],
           distribution: [
             online: [element(:url, %{function: "information"}, "http://www.infoflora.ch")]
           ],
           maintenance: [description: [para: "n/a"], maintenanceUpdateFrequency: "unkown"]
         ] ++
-        contacts(meta_data)
+        contacts(meta_data) ++
+        additional_metadata(meta_data)
     )
   end
 
+  defp additional_metadata(meta_data) do
+    [
+      element(:additionalMetadata, [
+        element(:metadata, [
+          element(:gbif, [
+            element(:dateStamp, DateTime.to_iso8601(DateTime.utc_now())),
+            element(:metadataLanguage, "English"),
+            element(:hierarchyLevel, "dataset"),
+            element(:parentCollectionIdentifier, meta_data["key"]),
+            element(:collectionName, meta_data["name"]),
+            element(
+              :collectionIdentifier,
+              "https://scientific-collections.gbif.org/collection/#{meta_data["key"]}"
+            )
+          ])
+        ])
+      ])
+    ]
+  end
+
+  defp intellectual_rights(:cc0),
+    do:
+      "This work is licensed under a <ulink url=\"https://creativecommons.org/publicdomain/zero/1.0/legalcode\"><citetitle>Creative Commons Attribution (CC0) 1.0 License</citetitle></ulink>. "
+
+  defp intellectual_rights(:cc_by),
+    do:
+      "This work is licensed under a <ulink url=\"http://creativecommons.org/licenses/by/4.0/legalcode\"><citetitle>Creative Commons Attribution (CC-BY) 4.0 License</citetitle></ulink>. "
+
+  defp intellectual_rights(:cc_by_nc),
+    do:
+      "This work is licensed under a <ulink url=\"https://creativecommons.org/licenses/by-nc/4.0/legalcode\"><citetitle>Creative Commons Attribution (CC-BY-NC) 4.0 License</citetitle></ulink>. "
+
   defp contacts(meta_data) do
-    case persons(meta_data, :contact) do
+    case persons(meta_data, "contact") do
       [] ->
         [
-          empty_person_element(:contact)
+          empty_person_element("contact", meta_data)
         ]
 
       creators ->
@@ -95,31 +126,45 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
   end
 
   defp creators(meta_data) do
-    case persons(meta_data, :creator) do
+    case persons(meta_data, "creator") do
       [] ->
-        [
-          empty_person_element(:creator)
-        ]
+        []
 
       creators ->
         creators
     end
   end
 
-  @spec persons(map(), atom()) :: [map()]
-  defp persons(meta_data, type) do
-    persons = meta_data["contactPersons"]
+  defp metadata_providers(meta_data) do
+    case persons(meta_data, "metadataprovider") do
+      [] ->
+        []
 
-    if persons == nil do
+      metadata_providers ->
+        metadata_providers
+    end
+  end
+
+  defp persons(meta_data, type) do
+    persons =
+      Enum.filter(meta_data["contactPersons"], fn person ->
+        person["position"]
+        |> Enum.map(&String.downcase/1)
+        |> Enum.member?(type)
+      end)
+
+    if persons == [] do
       []
     else
-      Enum.map(meta_data["contactPersons"], fn person ->
+      Enum.map(persons, fn person ->
         element(
           type,
           [
             element(:individualName, givenName: person["firstName"], surName: person["lastName"]),
             element(:organizationName, meta_data["institutionName"]),
+            position(person),
             address(person),
+            roles(person),
             phone(person),
             email(person)
           ]
@@ -135,6 +180,30 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
       postal_code(person),
       element(:country, person["country"])
     ])
+  end
+
+  defp position(person) do
+    case length(person["position"]) do
+      0 -> nil
+      _ -> element(:positionName, List.first(person["position"]))
+    end
+  end
+
+  defp roles(person) do
+    case length(person["position"]) do
+      0 ->
+        nil
+
+      1 ->
+        nil
+
+      n ->
+        person["position"]
+        |> Enum.slice(1, n)
+        |> Enum.map(fn role ->
+          element(:role, role)
+        end)
+    end
   end
 
   defp delivery_point(person), do: concat_strings(person["address"], :deliveryPoint)
@@ -163,19 +232,19 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
     to_string(Date.utc_today())
   end
 
-  defp empty_person_element(type) do
+  defp empty_person_element(type, meta_data) do
     element(
       type,
       [
         element(:individualName, givenName: "n/a", surName: "n/a"),
-        element(:organizationName, "n/a"),
+        element(:organizationName, meta_data["institutionName"]),
         element(:address, [
-          element(:deliveryPoint, "n/a"),
-          element(:city, "n/a"),
-          element(:postalCode, "n/a"),
-          element(:country, "n/a")
+          element(:deliveryPoint, meta_data["address"]["deliveryPoint"]),
+          element(:city, meta_data["address"]["city"]),
+          element(:postalCode, meta_data["address"]["postalCode"]),
+          element(:country, meta_data["address"]["country"])
         ]),
-        element(:phone, "n/a"),
+        element(:phone, meta_data["phone"]),
         element(:electronicMailAddress, "n/a")
       ]
     )

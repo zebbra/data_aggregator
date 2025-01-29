@@ -28,7 +28,8 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
       {:ok, record} =
         perform_job(FastTrackPublicationVerifier, %{
           id: not_published_record.id,
-          collection_id: not_published_record.collection_id
+          collection_id: not_published_record.collection_id,
+          user_id: nil
         })
 
       assert record.fast_track_status == :published
@@ -41,7 +42,8 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
         with_log(fn ->
           perform_job(FastTrackPublicationVerifier, %{
             id: published_record.id,
-            collection_id: published_record.collection_id
+            collection_id: published_record.collection_id,
+            user_id: nil
           })
         end)
 

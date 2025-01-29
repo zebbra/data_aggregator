@@ -46,15 +46,15 @@ defmodule DataAggregatorWeb.Components.Notification do
       ]}>
         <div class="flex min-w-0 flex-1 items-center gap-x-2">
           <.icon name={notification_icon(@color)} />
-          <span><%= @title %></span>
+          <span>{@title}</span>
         </div>
         <div :for={action <- @action} class={action[:class]}>
-          <%= render_slot(action) %>
+          {render_slot(action)}
         </div>
       </div>
       <div class="collapse-content">
         <div class={["text-sm/6", notification_text_color(@color)]}>
-          <%= render_slot(@inner_block) %>
+          {render_slot(@inner_block)}
         </div>
       </div>
     </div>

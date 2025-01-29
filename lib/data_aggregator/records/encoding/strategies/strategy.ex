@@ -20,7 +20,6 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.RecordEncodingResult
-  alias DataAggregator.Records.Encoding.Strategy.AddInstitutionCodeStrategy
   alias DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy
   alias DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy
   alias DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy
@@ -48,13 +47,11 @@ defmodule DataAggregator.Records.Encoding.Strategy do
       ] ++ DataAggregator.DarwinCore.Schema.prefixed_attribute_names()
 
     encoded_record =
-      EncodedRecord.create!(
-        record
-        |> Map.from_struct()
-        |> Map.take(attributes)
-        |> Map.put(:record, record),
-        tenant: tenant
-      )
+      record
+      |> Map.from_struct()
+      |> Map.take(attributes)
+      |> Map.put(:record, record)
+      |> EncodedRecord.create!(tenant: tenant)
 
     encode(encoded_record, catalog, ctx)
   end
@@ -95,13 +92,6 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :gbif_iucn_redlist do
     encoded_record
     |> IUCNRedlistStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog, ctx)
-  end
-
-  def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :add_institution_code do
-    encoded_record
-    |> AddInstitutionCodeStrategy.apply_strategy(ctx)
     |> check_for_changes(encoded_record, catalog)
     |> handle_encoding_result(encoded_record, catalog, ctx)
   end

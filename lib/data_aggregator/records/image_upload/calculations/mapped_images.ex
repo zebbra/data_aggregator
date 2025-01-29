@@ -9,7 +9,7 @@ defmodule DataAggregator.Records.ImageUpload.Calculations.MappedImages do
 
   @impl true
   def load(_query, _opts, _context) do
-    [images: [:record_id, :record, attachment: :filename]]
+    [images: [:record_id]]
   end
 
   @impl Ash.Resource.Calculation
@@ -17,12 +17,7 @@ defmodule DataAggregator.Records.ImageUpload.Calculations.MappedImages do
     Enum.map(image_uploads, &mapped_images(&1))
   end
 
-  defp mapped_images(%ImageUpload{images: images, mapping_identifier: mapping_identifier}) do
-    images
-    |> Enum.filter(&(&1.record_id != nil))
-    |> Enum.map(fn image ->
-      record = Ash.load!(image.record, mapping_identifier)
-      {image.attachment.filename, Map.get(record, mapping_identifier)}
-    end)
+  defp mapped_images(%ImageUpload{images: images}) do
+    Enum.reject(images, &is_nil(&1.record_id))
   end
 end

@@ -91,6 +91,10 @@ defmodule Storybook.Examples.Combobox do
           <.combobox id="single" options={@options} />
         </div>
         <div>
+          <.section_heading text="Single select with portal" size="md" class="mb-2" />
+          <.combobox id="single-portal" options={@options} data-portal="portal-root" />
+        </div>
+        <div>
           <.section_heading text="Multiple select" size="md" class="mb-2" />
           <.combobox
             id="multiple"
@@ -104,6 +108,23 @@ defmodule Storybook.Examples.Combobox do
               "Clark Kent 17",
               "ck17"
             ]}
+          />
+        </div>
+        <div>
+          <.section_heading text="Multiple select with portal" size="md" class="mb-2" />
+          <.combobox
+            id="multiple-portal"
+            options={@options}
+            multiple
+            value={[
+              "Clark Kent 15",
+              "ck15",
+              "Clark Kent 16",
+              "ck16",
+              "Clark Kent 17",
+              "ck17"
+            ]}
+            data-portal="portal-root"
           />
         </div>
         <div>
@@ -123,6 +144,10 @@ defmodule Storybook.Examples.Combobox do
         <div>
           <.section_heading text="Single select dropup" size="md" class="mb-2" />
           <.combobox id="single_dropup" options={@options} dropup />
+        </div>
+        <div>
+          <.section_heading text="Single select dropup with portal" size="md" class="mb-2" />
+          <.combobox id="single_dropup_portal" options={@options} dropup data-portal="portal-root" />
         </div>
         <div>
           <.section_heading text="Single select with counter badge" size="md" class="mb-2" />
@@ -152,7 +177,7 @@ defmodule Storybook.Examples.Combobox do
         <div>
           <.section_heading text="Single select event based" size="md" class="mb-2" />
           <.combobox id="single_event" options={@options} value={@selected} on-change />
-          <div class="text-base-content/60 mt-1">Selected: <%= @selected %></div>
+          <div class="text-base-content/60 mt-1">Selected: {@selected}</div>
         </div>
         <div>
           <.section_heading text="Multiple select event based" size="md" class="mb-2" />
@@ -163,7 +188,7 @@ defmodule Storybook.Examples.Combobox do
             on-change="select:users"
             multiple
           />
-          <div class="text-base-content/60 mt-1">Selected: <%= inspect(@users) %></div>
+          <div class="text-base-content/60 mt-1">Selected: {inspect(@users)}</div>
         </div>
         <div>
           <.section_heading text="Remote option search single" size="md" class="mb-2" />
@@ -283,6 +308,7 @@ defmodule Storybook.Examples.Combobox do
       </div>
 
       <.flash_group flash={@flash} />
+      <div id="portal-root" />
     </div>
     """
   end

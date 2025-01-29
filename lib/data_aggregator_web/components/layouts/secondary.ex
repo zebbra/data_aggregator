@@ -77,7 +77,7 @@ defmodule DataAggregatorWeb.Layouts.Secondary do
       >
         <.main {assigns} />
         <:side>
-          <%= render_slot(@secondary) %>
+          {render_slot(@secondary)}
         </:side>
       </.drawer>
 
@@ -90,9 +90,12 @@ defmodule DataAggregatorWeb.Layouts.Secondary do
     <div id="portal_root" class="isolate">
       <.alert id="confirm_alert" size="xs" />
       <%= for portal <- @portal do %>
-        <%= render_slot(portal) %>
+        {render_slot(portal)}
       <% end %>
     </div>
+
+    <%!-- Same as portal_root but meant to be use for components with phx-update="ignore" --%>
+    <div id="portal_root_static" phx-update="ignore" class="isolate" />
     """
   end
 

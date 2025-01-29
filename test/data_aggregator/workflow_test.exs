@@ -380,8 +380,8 @@ defmodule DataAggregator.WorkflowTest do
           ])
         )
 
-      # import, fast_track_updated (2x -> publishing, and in_publication)
-      expected_length = 6 * 3
+      # import, fast_track_updated (3x -> publishing, in_publication, published)
+      expected_length = 6 * 4
       assert length(versions) == expected_length
 
       # Ensure all strategies set the user_id correctly
@@ -714,18 +714,6 @@ defmodule DataAggregator.WorkflowTest do
         imported: "-",
         encoded: "Europe",
         category_name: "loc"
-      },
-      oth_institution_code: %{
-        name: "institutionCode",
-        imported: "NATUREUM:DZ",
-        encoded: "Z",
-        category_name: "oth"
-      },
-      oth_institution_id: %{
-        name: "institutionID",
-        imported: "-",
-        encoded: "5b487a79-76ef-4615-93d9-f4ea25a40c33",
-        category_name: "oth"
       },
       tax_accepted_name_usage: %{
         name: "acceptedNameUsage",

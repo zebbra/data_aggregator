@@ -62,13 +62,15 @@ defmodule DataAggregatorWeb.Router do
     ash_authentication_live_session :default, on_mount: default_hooks do
       live "/", DashboardLive.Index, :index
 
-      live "/collections", CollectionLive.Index, :index
-      live "/collections/:id/records", CollectionLive.Record.Index, :index
-      live "/collections/:id/imports", CollectionLive.Import.Index, :index
-      live "/collections/:id/exports", CollectionLive.Export.Index, :index
-      live "/collections/:id/publications", CollectionLive.Publication.Index, :index
-      live "/collections/:id/image_uploads", CollectionLive.ImageUpload.Index, :index
+      live "/datasets", CollectionLive.Index, :index
+      live "/datasets/:id/records", CollectionLive.Record.Index, :index
+      live "/datasets/:id/imports", CollectionLive.Import.Index, :index
+      live "/datasets/:id/exports", CollectionLive.Export.Index, :index
+      live "/datasets/:id/publications", CollectionLive.Publication.Index, :index
+      live "/datasets/:id/image_uploads", CollectionLive.ImageUpload.Index, :index
+      live "/datasets/:id/published_records", CollectionLive.PublishedRecords.Index, :index
 
+      @deprecated "is now generated in `DataAggregator.Records.ImageUpload.Changes.CreateUploadLogAfterAction` while mapping images `DataAggregator.Records.ImageUpload.Changes.MapImages`"
       get "/collecitons/:id/image_uploads/log/:image_upload_id/download",
           ImageUploadController,
           :download_log
@@ -80,25 +82,29 @@ defmodule DataAggregatorWeb.Router do
       live "/administration/new", AdministrationLive.Index, :new
       live "/administration/:user_id/edit", AdministrationLive.Index, :edit
 
-      live "/collections/new", CollectionLive.Index, :new
-      live "/collections/:id/edit", CollectionLive.Index, :edit
+      live "/datasets/new", CollectionLive.Index, :new
+      live "/datasets/:id/edit", CollectionLive.Index, :edit
     end
 
     ash_authentication_live_session :data_administrator_required,
       on_mount: default_hooks ++ [{DataAggregatorWeb.LiveUserAuth, :live_data_administrator_required}] do
-      live "/collections/:id/imports/new", CollectionLive.Import.Index, :new
-      live "/collections/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit
-      live "/collections/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary
-      live "/collections/:id/image_uploads/new", CollectionLive.ImageUpload.Index, :new
+      live "/datasets/:id/imports/new", CollectionLive.Import.Index, :new
+      live "/datasets/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit
+      live "/datasets/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary
+      live "/datasets/:id/image_uploads/new", CollectionLive.ImageUpload.Index, :new
 
-      live "/collections/:id/image_uploads/:image_upload_id/edit",
+      live "/datasets/:id/image_uploads/:image_upload_id/edit",
            CollectionLive.ImageUpload.Index,
            :edit
 
-      live "/collections/:id/image_uploads/:image_upload_id/summary",
+      live "/datasets/:id/image_uploads/:image_upload_id/summary",
            CollectionLive.ImageUpload.Index,
            :summary
     end
+
+    get "/datasets/:collection_id/image_uploads/images/:image_id",
+        ImageUploadController,
+        :show_image
 
     auth_routes(AuthController, User, path: "/auth")
     sign_out_route AuthController

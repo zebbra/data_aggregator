@@ -8,7 +8,6 @@ defmodule DataAggregator.EncodingFixtures do
 
   import DataAggregator.RecordsFixtures
 
-  alias DataAggregator.Gbif.RestAPIStub
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
@@ -119,8 +118,8 @@ defmodule DataAggregator.EncodingFixtures do
   @doc """
     Generate a correct record for swiss_species encoding
   """
-  def expect_correct_swiss_species_api_call do
-    expect(SwissSpecies, :get_by_usage_key, fn _key ->
+  def expect_correct_swiss_species_api_call(number \\ 1) do
+    expect(SwissSpecies, :get_by_usage_key, number, fn _key ->
       {:ok,
        %SwissSpecies{
          id: "spc_02vSBcLj4G1ReRVJNXDLVo",
@@ -137,8 +136,8 @@ defmodule DataAggregator.EncodingFixtures do
   @doc """
     Generate a failing api call for swiss_species encoding
   """
-  def expect_failing_swiss_species_api_call do
-    expect(SwissSpecies, :get_by_usage_key, fn _key ->
+  def expect_failing_swiss_species_api_call(number \\ 1) do
+    expect(SwissSpecies, :get_by_usage_key, number, fn _key ->
       Logger.warning("unknown error occured")
 
       {:error, %Ash.Error.Unknown{}}
@@ -170,53 +169,10 @@ defmodule DataAggregator.EncodingFixtures do
     params =
       @encoded_record_defaults
       |> Map.merge(attrs)
-      |> Map.put(:loc_decimal_longitude, 7.456905642729698)
-      |> Map.put(:loc_decimal_latitude, 46.946660986374766)
-      |> Map.put_new_lazy(:collection, fn ->
-        collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
-      end)
-
-    Record.create!(params, tenant: params.collection)
-  end
-
-  @doc """
-    Generate a correct record for reverse geo encoding (coords to location)
-  """
-  def record_fixture_for_reverse_geo_encoding_correct2(attrs \\ %{}) do
-    params =
-      @encoded_record_defaults
-      |> Map.merge(attrs)
       |> Map.put(:loc_decimal_longitude, 7.104789)
       |> Map.put(:loc_decimal_latitude, 46.086797)
       |> Map.put_new_lazy(:collection, fn ->
         collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
-      end)
-
-    Record.create!(params, tenant: params.collection)
-  end
-
-  @doc """
-    Generate a correct record for grscicoll institution encoding
-  """
-  def record_fixture_for_add_institution_code_encoding_correct(attrs \\ %{}) do
-    params =
-      @encoded_record_defaults
-      |> Map.merge(attrs)
-      |> Map.put_new_lazy(:collection, fn ->
-        collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
-      end)
-
-    Record.create!(params, tenant: params.collection)
-  end
-
-  def record_fixture_for_add_institution_code_encoding_failing(attrs \\ %{}) do
-    params =
-      @encoded_record_defaults
-      |> Map.merge(attrs)
-      |> Map.put_new_lazy(:collection, fn ->
-        collection_fixture(%{
-          grscicoll_reference: RestAPIStub.missing_institution_data_grscicoll_reference()
-        })
       end)
 
     Record.create!(params, tenant: params.collection)

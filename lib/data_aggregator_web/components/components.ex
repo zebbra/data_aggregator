@@ -97,6 +97,7 @@ defmodule DataAggregatorWeb.Components do
       import DataAggregatorWeb.Components.FieldGroup
       import DataAggregatorWeb.Components.Flash
       import DataAggregatorWeb.Components.Form
+      import DataAggregatorWeb.Components.FuiTooltip
       import DataAggregatorWeb.Components.Icon
       import DataAggregatorWeb.Components.Input
       import DataAggregatorWeb.Components.List

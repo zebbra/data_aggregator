@@ -5,6 +5,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.RelateImagesStrategy do
 
   import DataAggregator.Helpers, only: [maybe_performant_load_record: 3]
 
+  import DataAggregator.Records.ImageUpload.Helpers,
+    only: [construct_associated_media: 2]
+
   alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
@@ -28,26 +31,17 @@ defmodule DataAggregator.Records.Encoding.Strategy.RelateImagesStrategy do
 
   @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
   defp process_encoded_record(encoded_record, ctx) do
-    concatenated_images =
-      Enum.map_join(encoded_record.record.images, " | ", & &1.attachment.url)
-
-    concatenated_images =
-      maybe_concatenate(encoded_record.mte_associated_media, concatenated_images)
+    new_associated_media =
+      Enum.reduce(encoded_record.record.images, encoded_record.mte_associated_media, fn image, acc ->
+        construct_associated_media(acc, image)
+      end)
 
     {:ok,
      Strategy.update_encoded_record(
-       %{mte_associated_media: concatenated_images},
+       %{mte_associated_media: new_associated_media},
        encoded_record,
        @output_attributes,
        ctx
      )}
-  end
-
-  defp maybe_concatenate(associated_media, new_url) do
-    case associated_media do
-      "" -> new_url
-      nil -> new_url
-      _ -> "#{associated_media} | #{new_url}"
-    end
   end
 end

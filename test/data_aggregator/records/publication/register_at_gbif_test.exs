@@ -15,7 +15,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
 
   require Ash.Query
 
-  describe "Publish to Gbif (fast_track) tests" do
+  describe "Registering Collection at GBIF tests" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
@@ -95,9 +95,6 @@ defmodule DataAggregator.RegisterAtGbifTest do
           tenant: collection
         )
 
-      {:ok, publication} = Collection.publish(publication, tenant: collection)
-      publication = Ash.load!(publication, [:attachment], tenant: collection)
-
       [
         collection: collection,
         records: records,
@@ -106,47 +103,39 @@ defmodule DataAggregator.RegisterAtGbifTest do
     end
 
     test "register_at_gbif/2 success", %{
-      collection: collection,
-      publication: publication
+      collection: collection
     } do
       {:ok, collection} =
-        Collection.register_at_gbif(collection, publication.attachment.url)
+        Collection.register_at_gbif(collection, nil)
 
       assert collection.gbif_dataset_key === "1234-1234-1234-1234"
     end
 
+    test "register_at_gbif/2 success using existing dataset key", %{
+      collection: collection
+    } do
+      {:ok, collection} =
+        Collection.register_at_gbif(collection, "1111-1111-1111-1111")
+
+      assert collection.gbif_dataset_key === "1111-1111-1111-1111"
+    end
+
     test "register_at_gbif/2 registration failed", %{
-      collection: collection,
-      publication: publication
+      collection: collection
     } do
       stub(Gbif.RestAPI, :register_dataset, fn _collection_name ->
         {:ok, %{status: 400, body: "Failed due to bla"}}
       end)
 
       {{:error, error}, logs} =
-        with_log(fn -> Collection.register_at_gbif(collection, publication.attachment.url) end)
+        with_log(fn ->
+          Collection.register_at_gbif(collection, nil)
+        end)
 
       assert collection.gbif_dataset_key === nil
       assert %Invalid{} = error
 
       assert logs =~ "Failed due to bla"
-    end
-
-    test "register_at_gbif/2 endpoint creation failed", %{
-      collection: collection,
-      publication: publication
-    } do
-      stub(Gbif.RestAPI, :create_endpoint, fn _file_url, _registration ->
-        {:ok, %{status: 418, body: "I'm a teapot"}}
-      end)
-
-      {{:error, error}, logs} =
-        with_log(fn -> Collection.register_at_gbif(collection, publication.attachment.url) end)
-
-      assert collection.gbif_dataset_key === nil
-      assert %Invalid{} = error
-
-      assert logs =~ "I'm a teapot"
     end
 
     test "check_if_fast_track_published/2 success", %{collection: collection} do

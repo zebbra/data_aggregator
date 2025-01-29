@@ -83,14 +83,14 @@ defmodule DataAggregatorWeb.Components.Alert do
       <div class={["modal-box max-h-[calc(100dvh-5em)]", size(@size)]}>
         <.focus_wrap id={"#{@id}_content"}>
           <h2 class="label-text text-base/6 font-semibold sm:text-sm/6">
-            <%= @title || ~t"Are you sure?"m %>
+            {@title || ~t"Are you sure?"m}
           </h2>
-          <p :if={@text} class="text-base/6 sm:text-sm/6"><%= @text %></p>
-          <%= render_slot(@inner_block) %>
+          <p :if={@text} class="text-base/6 sm:text-sm/6">{@text}</p>
+          {render_slot(@inner_block)}
           <form :if={@form == false} method="dialog">
             <div class="modal-action">
               <button class="btn btn-ghost" value="cancel">
-                <%= ~t"Cancel"m %>
+                {~t"Cancel"m}
               </button>
               <button
                 type="submit"
@@ -98,14 +98,14 @@ defmodule DataAggregatorWeb.Components.Alert do
                 class={["btn", button_color(@color)]}
                 disabled={@disabled}
               >
-                <%= @label || ~t"OK"m %>
+                {@label || ~t"OK"m}
               </button>
             </div>
           </form>
         </.focus_wrap>
       </div>
       <form method="dialog" class="modal-backdrop">
-        <button><%= ~t"close"m %></button>
+        <button>{~t"close"m}</button>
       </form>
     </dialog>
     """

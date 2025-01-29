@@ -54,7 +54,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
         raise ~t"Something went wrong"m
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/image_uploads")}
+        {:noreply, push_navigate(socket, to: ~p"/datasets/#{id}/image_uploads")}
     end
   end
 
@@ -70,27 +70,22 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
         busy={@busy}
         busy_action={@busy_action}
       />
-      <.secondary_navigation class="sticky top-[calc(4rem-1px)]">
+      <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/records"} label={~t"Records"m} />
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/imports"} label={~t"Imports"m} />
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/exports"} label={~t"Exports"m} />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/records"}
-          label={~t"Records"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/imports"}
-          label={~t"Imports"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/exports"}
-          label={~t"Exports"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/publications"}
+          href={~p"/datasets/#{@collection}/publications"}
           label={~t"Publications and Approvals"m}
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/image_uploads"}
+          href={~p"/datasets/#{@collection}/image_uploads"}
           label={~t"Image Upload"m}
           active
+        />
+        <.secondary_navigation_item
+          href={~p"/datasets/#{@collection}/published_records"}
+          label={~t"Published Records"m}
         />
       </.secondary_navigation>
 
@@ -99,7 +94,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           no_results_content:
             no_results_content(%{collection: @collection, current_user: @current_user})
         ]}
-        path={~p"/collections/#{@collection}/image_uploads"}
+        path={~p"/datasets/#{@collection}/image_uploads"}
         items={@streams.results}
         meta={@meta}
         row_click={
@@ -116,28 +111,28 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           <.attachment_download_badge attachment={image_upload.attachment} />
         </:col>
         <:col :let={{_id, image_upload}} field={:mapped_images_count} label={~t"Mapped"m}>
-          <%= image_upload.mapped_images_count %>
+          {image_upload.mapped_images_count}
         </:col>
         <:col :let={{_id, image_upload}} field={:unmapped_images_count} label={~t"Unmapped"m}>
-          <%= image_upload.unmapped_images_count %>
+          {image_upload.unmapped_images_count}
         </:col>
         <:col :let={{_id, image_upload}} field={:invalid_files_count} label={~t"Invalid"m}>
-          <%= image_upload.invalid_files_count || 0 %>
+          {image_upload.invalid_files_count || 0}
         </:col>
         <:col :let={{_id, image_upload}} field={:mapping_identifier} label={~t"Mapping identifier"m}>
-          <%= Schema.dwc_field_from_prefixed_attribute_name(image_upload.mapping_identifier) %>
+          {Schema.dwc_field_from_prefixed_attribute_name(image_upload.mapping_identifier)}
         </:col>
         <:col :let={{_id, image_upload}} field={:inserted_at} label={~t"Created at"m}>
-          <%= format_datetime(image_upload.inserted_at, format: :short) %>
+          {format_datetime(image_upload.inserted_at, format: :short)}
         </:col>
         <:col :let={{_id, image_upload}} field={:created_by} label={~t"Created by"m}>
-          <%= maybe_set_user(image_upload.created_by) %>
+          {maybe_set_user(image_upload.created_by)}
         </:col>
         <:col :let={{_id, image_upload}} field={:started_at} label={~t"Started at"m}>
-          <%= format_datetime(image_upload.started_at, format: :short) %>
+          {format_datetime(image_upload.started_at, format: :short)}
         </:col>
         <:col :let={{_id, image_upload}} field={:started_by} label={~t"Started by"m}>
-          <%= maybe_set_user(image_upload.started_by) %>
+          {maybe_set_user(image_upload.started_by)}
         </:col>
 
         <:action
@@ -148,16 +143,14 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           label={~t"Actions"m}
         >
           <.table_action_button
-            patch={
-              build_path(~p"/collections/#{@collection}/image_uploads/#{image_upload}/edit", @meta)
-            }
+            patch={build_path(~p"/datasets/#{@collection}/image_uploads/#{image_upload}/edit", @meta)}
             disabled={@busy}
             data-tip={edit_data_tip(image_upload)}
             icon={edit_icon(image_upload)}
           />
         </:action>
       </.table>
-      <.pagination meta={@meta} path={~p"/collections/#{@collection}/image_uploads"} />
+      <.pagination meta={@meta} path={~p"/datasets/#{@collection}/image_uploads"} />
 
       <:secondary>
         <.slideover
@@ -169,12 +162,12 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
         >
           <.section_heading
             text={~t"Image Upload"m}
-            class="border-b border-black-white/10 px-6 lg:px-8 pb-6"
+            class="border-black-white/10 border-b px-6 pb-6 lg:px-8"
             size="md"
           >
             <:subtitle>
               <div class="mt-1 flex items-center gap-x-2">
-                <span class="text-sm"><%= ~t"State:"m %></span>
+                <span class="text-sm">{~t"State:"m}</span>
                 <.image_upload_state_badge image_upload={@selected_image_upload} />
               </div>
             </:subtitle>
@@ -186,46 +179,39 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
               <.attachment_download_badge attachment={@selected_image_upload.attachment} />
             </:item>
             <:item title={~t"Mapping identifier"m}>
-              <%= Schema.dwc_field_from_prefixed_attribute_name(
+              {Schema.dwc_field_from_prefixed_attribute_name(
                 @selected_image_upload.mapping_identifier
-              ) %>
+              )}
             </:item>
             <:item title={~t"Created by"m}>
-              <%= maybe_set_user(@selected_image_upload.created_by) %>
+              {maybe_set_user(@selected_image_upload.created_by)}
             </:item>
             <:item title={~t"Created at"m}>
-              <%= format_datetime(@selected_image_upload.inserted_at) %>
+              {format_datetime(@selected_image_upload.inserted_at)}
             </:item>
             <:item title={~t"Started by"m}>
-              <%= maybe_set_user(@selected_image_upload.started_by) %>
+              {maybe_set_user(@selected_image_upload.started_by)}
             </:item>
             <:item title={~t"Started at"m}>
-              <%= format_datetime(@selected_image_upload.started_at) %>
+              {format_datetime(@selected_image_upload.started_at)}
             </:item>
             <:item title={~t"Finished at"m}>
-              <%= format_datetime(@selected_image_upload.finished_at) %>
+              {format_datetime(@selected_image_upload.finished_at)}
             </:item>
             <:item title={~t"Mapped"m}>
-              <%= @selected_image_upload.mapped_images_count %>
+              {@selected_image_upload.mapped_images_count}
             </:item>
             <:item title={~t"Unmapped"m}>
-              <%= @selected_image_upload.unmapped_images_count %>
+              {@selected_image_upload.unmapped_images_count}
             </:item>
             <:item title={~t"Inavlid"m}>
-              <%= @selected_image_upload.invalid_files_count || 0 %>
+              {@selected_image_upload.invalid_files_count || 0}
             </:item>
             <:item title={~t"Logfile"}>
-              <.link
-                data-tip="download log"
-                class="self-center tooltip rounded-full text-xs gap-x-1 font-medium bg-blue-100 px-1.5 pb-0.5 text-blue-500 opacity-75 hover:opacity-100"
-                target="_blank"
-                href={
-                  ~p"/collecitons/#{@collection}/image_uploads/log/#{@selected_image_upload}/download"
-                }
-                aria-label="download log"
-              >
-                <.icon name="hero-arrow-down-tray" class="size-5" />
-              </.link>
+              <.attachment_download_badge
+                :if={@selected_image_upload.upload_log != nil}
+                attachment={@selected_image_upload.upload_log}
+              />
             </:item>
           </.list>
           <:footer></:footer>
@@ -240,7 +226,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           size="2xl"
           responsive
           backdrop={false}
-          on_cancel={JS.patch(build_path(~p"/collections/#{@collection}/image_uploads", @meta))}
+          on_cancel={JS.patch(build_path(~p"/datasets/#{@collection}/image_uploads", @meta))}
           overflow="manual"
         >
           <.live_component
@@ -350,7 +336,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
       description={~t"Get started by uploading a new zip file."m}
       label={~t"Upload Images"m}
       icon="hero-arrow-up-tray"
-      href={~p"/collections/#{@collection}/image_uploads/new"}
+      href={~p"/datasets/#{@collection}/image_uploads/new"}
     />
     """
   end

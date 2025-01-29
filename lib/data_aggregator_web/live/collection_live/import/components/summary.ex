@@ -25,7 +25,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
           current={current_step(@action)}
           links={[
             nil,
-            build_path(~p"/collections/#{@collection}/imports/#{@import}/edit", @meta),
+            build_path(~p"/datasets/#{@collection}/imports/#{@import}/edit", @meta),
             nil
           ]}
         />
@@ -36,7 +36,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
         >
           <:actions>
             <div class="flex items-center gap-x-2">
-              <span class="text-sm max-sm:hidden"><%= ~t"State:"m %></span>
+              <span class="text-sm max-sm:hidden">{~t"State:"m}</span>
               <.import_state_badge import={@import} />
             </div>
           </:actions>
@@ -49,9 +49,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
             <.file_info attachment={@import.attachment} rows={@import.rows_count} badge />
           </:item>
           <:item title={~t"Created at"m}>
-            <%= format_datetime(@import.inserted_at) %>
+            {format_datetime(@import.inserted_at)}
           </:item>
-          <:item title={~t"Rows"m}><%= format_number(@import.rows_count) %></:item>
+          <:item title={~t"Rows"m}>{format_number(@import.rows_count)}</:item>
         </.list>
 
         <.table
@@ -64,14 +64,14 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
           items={@import.mappings}
         >
           <:caption>
-            <.section_heading text={~t"Mapping"m} size="md" class="px-6 lg:px-8 text-left" />
+            <.section_heading text={~t"Mapping"m} size="md" class="px-6 text-left lg:px-8" />
           </:caption>
           <:col :let={column} label={~t"Column"m}>
             <span :if={column.name} class="bg-base-200 inline-flex rounded px-2 py-1 text-xs">
-              <%= column.name %>
+              {column.name}
             </span>
             <span :if={column.name == nil} class="text-error">
-              <%= ~t"Mapping is invalid"m %>
+              {~t"Mapping is invalid"m}
             </span>
           </:col>
           <:col :let={column} label={~t"Mapped to"m}>
@@ -90,7 +90,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
             }
             class="bg-base-200 mr-2.5 mb-2 inline-flex rounded px-2 py-1 text-sm"
           >
-            <%= col %>
+            {col}
           </span>
         </div>
       </div>
@@ -104,14 +104,14 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
           phx-value-id={@import.id}
           phx-target={@myself}
         >
-          <%= ~t"Run import"m %>
+          {~t"Run import"m}
         </button>
         <.link
-          patch={build_path(~p"/collections/#{@collection}/imports/#{@import}/edit", @meta)}
+          patch={build_path(~p"/datasets/#{@collection}/imports/#{@import}/edit", @meta)}
           type="button"
           class="btn btn-ghost"
         >
-          <%= ~t"Back"m %>
+          {~t"Back"m}
         </.link>
       </.modal_footer>
     </div>
@@ -132,7 +132,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
       {:error, _} ->
         {:noreply,
          socket
-         |> put_flash(:error, ~t"An import for this collection is already in process"m)
+         |> put_flash(:error, ~t"An import for this dataset is already in process"m)
          |> close_and_redirect()}
     end
   end
@@ -140,10 +140,10 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Summary do
   defp close_and_redirect(socket) do
     socket
     |> push_event("submit:close", %{})
-    |> push_patch(
+    |> push_navigate(
       to:
         build_path(
-          ~p"/collections/#{socket.assigns.collection}/imports",
+          ~p"/datasets/#{socket.assigns.collection}/imports",
           socket.assigns.meta
         )
     )

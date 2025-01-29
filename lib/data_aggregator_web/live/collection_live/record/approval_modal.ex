@@ -30,19 +30,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
       <.modal_header id={@id} title={~t"Approval summary"} />
       <div id={"#{@id}_inner_body"} class="h-full space-y-4 overflow-y-auto p-6">
         <p class="mb-4 text-sm">
-          <%= mgettext(
+          {mgettext(
             "You are about to send %{count} records for approval by InfoSpecies. These records will be reviewed, validated and then eventually published to GBIForg.",
             count: format_number(@count)
-          ) %>
+          )}
         </p>
         <div class="flex">
           <div class="mr-4 flex-shrink-0">
             <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
           </div>
           <p class="text-sm">
-            <%= ~t"In addition to the filters provided, we also add the restriction for all records that the"m %>
-            <span class="font-bold"><%= ~t"kingdom  "m %></span>
-            <%= ~t"attribute must be set."m %>
+            {~t"In addition to the filters provided, we also add the restriction for all records that the"m}
+            <span class="font-bold">{~t"kingdom  "m}</span>
+            {~t"attribute must be set."m}
           </p>
         </div>
         <div class="flex">
@@ -50,7 +50,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
             <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
           </div>
           <p class="text-sm">
-            <%= ~t"Please note that only Swiss specimen will be reviewed. All other specimen will be ignored during the approval process."m %>
+            {~t"Please note that only Swiss specimen will be reviewed. All other specimen will be ignored during the approval process."m}
           </p>
         </div>
         <div class="flex">
@@ -58,11 +58,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
             <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
           </div>
           <p class="text-sm">
-            <%= ~t"Please note that the approval process will involve manual work by InfoSpecies, which will review and validate each record for accuracy before publication to GBIF."m %>
+            {~t"Please note that the approval process will involve manual work by InfoSpecies, which will review and validate each record for accuracy before publication to GBIF."m}
           </p>
         </div>
         <p class="text-sm">
-          <%= ~t"Based on the information provided, we will create exports towards the following centers:"m %>
+          {~t"Based on the information provided, we will create exports towards the following centers:"m}
         </p>
         <.table
           opts={[container_attrs: [class: "pb-4"]]}
@@ -70,10 +70,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
           items={@center_and_record_counts}
         >
           <:col :let={center} label={~t"Center"}>
-            <%= center[:name] %>
+            {center[:name]}
           </:col>
           <:col :let={center} label={~t"Count"} class="text-right">
-            <%= format_number(center[:count]) %>
+            {format_number(center[:count])}
           </:col>
         </.table>
         <div :if={@centered_count == 0} class="flex">
@@ -81,13 +81,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
             <.icon name="hero-x-circle-mini" class="size-6 text-error" />
           </div>
           <p class="text-sm">
-            <%= ~t"There are no Swiss specimen availabe. Either your specimen are outside of Switzerland or you have applied a too restrictive filter."m %>
+            {~t"There are no Swiss specimen availabe. Either your specimen are outside of Switzerland or you have applied a too restrictive filter."m}
           </p>
         </div>
         <p class="text-base-content/60 mt-4 text-sm">
-          <%= ~t"By clicking"m %>
-          <span class="text-base-content italic"><%= ~t"Approve"m %></span>
-          <%= ~t"an export will be created and automatically sent to InfoSpecies. No further action is required. Please note that this process may take some time."m %>
+          {~t"By clicking"m} <span class="text-base-content italic">{~t"Approve"m}</span>
+          {~t"an export will be created and automatically sent to InfoSpecies. No further action is required. Please note that this process may take some time."m}
         </p>
       </div>
       <.modal_footer id={@id}>
@@ -98,10 +97,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
             class="btn btn-primary"
             disabled={@busy or @centered_count == 0}
           >
-            <%= ~t"Approve"m %>
+            {~t"Approve"m}
           </button>
           <button class="btn btn-ghost">
-            <%= ~t"Cancel"m %>
+            {~t"Cancel"m}
           </button>
         </form>
       </.modal_footer>

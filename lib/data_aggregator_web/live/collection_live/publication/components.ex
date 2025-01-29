@@ -44,13 +44,13 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
 
   def publication_state_badge_label(%{state: :queued} = assigns) do
     ~H"""
-    <.progress max={1} value={} class="progress-info opacity-75 w-16" />
+    <.progress max={1} value={} class="progress-info w-16 opacity-75" />
     """
   end
 
   def publication_state_badge_label(assigns) do
     ~H"""
-    <span><%= state_translation(@state) %></span>
+    <span>{state_translation(@state)}</span>
     """
   end
 
@@ -111,7 +111,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
     ~H"""
     <.badge class="tooltip" color="gray" data-tip={~t"Publication to the Gbif Switzerland Portal"m}>
       <.icon name="hero-globe-alt" class="size-4 shrink-0" />
-      <span class="text-nowrap pr-1.5"><%= ~t"Publication"m %></span>
+      <span class="text-nowrap pr-1.5">{~t"Publication"m}</span>
     </.badge>
     """
   end
@@ -124,7 +124,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
       data-tip={~t"Approval from Infospecies to publish on Gbif.org"m}
     >
       <.icon name="hero-check-badge" class="size-4 shrink-0" />
-      <span class="text-nowrap pr-1.5"><%= ~t"Approval"m %></span>
+      <span class="text-nowrap pr-1.5">{~t"Approval"m}</span>
     </.badge>
     """
   end

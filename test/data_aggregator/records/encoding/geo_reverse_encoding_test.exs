@@ -16,7 +16,7 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
       stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
 
-      record_fixture = record_fixture_for_reverse_geo_encoding_correct2()
+      record_fixture = record_fixture_for_reverse_geo_encoding_correct()
 
       [
         record_fixture: record_fixture
@@ -38,15 +38,116 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
       assert_map_includes(encoded_record, %{
         loc_decimal_latitude: 46.086797,
         loc_decimal_longitude: 7.104789,
-        loc_swiss_coordinates_lv95_x: 2_574_175.6926105623,
-        loc_swiss_coordinates_lv95_y: 1_103_975.723241923,
-        loc_swiss_coordinates_lv03_x: 574_175.6926105623,
-        loc_swiss_coordinates_lv03_y: 103_975.72324192291,
+        loc_swiss_coordinates_lv95_x: 2_574_175.7,
+        loc_swiss_coordinates_lv95_y: 1_103_975.7,
+        loc_swiss_coordinates_lv03_x: 574_175.7,
+        loc_swiss_coordinates_lv03_y: 103_975.7,
         loc_continent: "Europe",
         loc_country: "Switzerland",
         loc_country_code: "CH",
         loc_state_province: "Wallis",
         loc_municipality: "Val de Bagnes"
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with intl coordinates within switzerland, don't overwrite intl coords if we have swiss coords - successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_decimal_latitude: 46.086797,
+          loc_decimal_longitude: 7.104789,
+          loc_swiss_coordinates_lv95_x: 2_574_175.7,
+          loc_swiss_coordinates_lv95_y: 1_103_975.7,
+          loc_swiss_coordinates_lv03_x: nil,
+          loc_swiss_coordinates_lv03_y: nil
+        })
+
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: 46.086797,
+        loc_decimal_longitude: 7.104789
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with intl coordinates within switzerland, don't overwrite swiss coordinates lv95 - successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_decimal_latitude: 46.086797,
+          loc_decimal_longitude: 7.104789,
+          loc_swiss_coordinates_lv95_x: 2_574_175.1,
+          loc_swiss_coordinates_lv95_y: 1_103_975.1,
+          loc_swiss_coordinates_lv03_x: nil,
+          loc_swiss_coordinates_lv03_y: nil
+        })
+
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: 46.086797,
+        loc_decimal_longitude: 7.104789,
+        loc_swiss_coordinates_lv95_x: 2_574_175.1,
+        loc_swiss_coordinates_lv95_y: 1_103_975.1,
+        loc_swiss_coordinates_lv03_x: 574_175.7,
+        loc_swiss_coordinates_lv03_y: 103_975.7
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with intl coordinates within switzerland, don't overwrite swiss coordinates lv03 - successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_decimal_latitude: 46.086797,
+          loc_decimal_longitude: 7.104789,
+          loc_swiss_coordinates_lv95_x: nil,
+          loc_swiss_coordinates_lv95_y: nil,
+          loc_swiss_coordinates_lv03_x: 574_175.1,
+          loc_swiss_coordinates_lv03_y: 103_975.1
+        })
+
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: 46.086797,
+        loc_decimal_longitude: 7.104789,
+        loc_swiss_coordinates_lv95_x: 2_574_175.7,
+        loc_swiss_coordinates_lv95_y: 1_103_975.7,
+        loc_swiss_coordinates_lv03_x: 574_175.1,
+        loc_swiss_coordinates_lv03_y: 103_975.1
       })
 
       assert encoded_record !== nil
@@ -116,12 +217,12 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
         EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
 
       assert_map_includes(encoded_record, %{
-        loc_decimal_latitude: 46.946659297095934,
-        loc_decimal_longitude: 7.456910040693462,
-        loc_swiss_coordinates_lv95_x: 2_601_391.156872048,
-        loc_swiss_coordinates_lv95_y: 1_199_508.5872802814,
-        loc_swiss_coordinates_lv03_x: 601_391.156872048,
-        loc_swiss_coordinates_lv03_y: 199_508.5872802814,
+        loc_decimal_latitude: 46.946659,
+        loc_decimal_longitude: 7.456910,
+        loc_swiss_coordinates_lv95_x: 2_601_391.2,
+        loc_swiss_coordinates_lv95_y: 1_199_508.6,
+        loc_swiss_coordinates_lv03_x: 601_391.2,
+        loc_swiss_coordinates_lv03_y: 199_508.6,
         loc_continent: "Europe",
         loc_country: "Switzerland",
         loc_country_code: "CH",
@@ -156,12 +257,12 @@ defmodule DataAggregator.ReverseGeoEncodingTest do
         EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
 
       assert_map_includes(encoded_record, %{
-        loc_decimal_latitude: 46.946659297095934,
-        loc_decimal_longitude: 7.456910040693462,
-        loc_swiss_coordinates_lv95_x: 2_601_391.156872048,
-        loc_swiss_coordinates_lv95_y: 1_199_508.5872802814,
-        loc_swiss_coordinates_lv03_x: 601_391.156872048,
-        loc_swiss_coordinates_lv03_y: 199_508.58728028135,
+        loc_decimal_latitude: 46.946659,
+        loc_decimal_longitude: 7.456910,
+        loc_swiss_coordinates_lv95_x: 2_601_391.2,
+        loc_swiss_coordinates_lv95_y: 1_199_508.6,
+        loc_swiss_coordinates_lv03_x: 601_391.2,
+        loc_swiss_coordinates_lv03_y: 199_508.6,
         loc_continent: "Europe",
         loc_country: "Switzerland",
         loc_country_code: "CH",

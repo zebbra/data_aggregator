@@ -38,7 +38,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
       >
         <.fieldset
           legend={@title}
-          text={~t"Use this form to manage collections in your database."m}
+          text={~t"Use this form to manage datasets in your database."m}
           modal
         >
           <.fieldgroup modal>
@@ -51,6 +51,7 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
                 placeholder={~t"Filter types"m}
                 prompt={~t"None"m}
                 required
+                data-portal="collection_modal"
               />
             </div>
             <div :if={@action == :new} class="grid grid-cols-1 gap-8 sm:grid-cols-1 sm:gap-4">
@@ -59,9 +60,10 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
                 field={@form[:grscicoll_reference]}
                 label={~t"GrSciColl Collection"m}
                 options={@grscicoll_collections}
-                placeholder={~t"Filter Collections"m}
+                placeholder={~t"Filter Datasets"m}
                 prompt={~t"None"m}
                 required
+                data-portal="collection_modal"
               />
             </div>
             <.field
@@ -73,9 +75,9 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
             />
           </.fieldgroup>
           <:actions modal>
-            <button type="submit" class="btn btn-primary"><%= submit_label(@action) %></button>
+            <button type="submit" class="btn btn-primary">{submit_label(@action)}</button>
             <button type="button" class="btn btn-ghost" onclick="collection_modal.close()">
-              <%= ~t"Cancel"m %>
+              {~t"Cancel"m}
             </button>
           </:actions>
         </.fieldset>
@@ -84,8 +86,8 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
     """
   end
 
-  defp submit_label(:new), do: ~t"Create collection"m
-  defp submit_label(:edit), do: ~t"Update collection"m
+  defp submit_label(:new), do: ~t"Create dataset"m
+  defp submit_label(:edit), do: ~t"Update dataset"m
 
   defp assign_form(%{assigns: assigns} = socket) do
     assign(socket, :form, build_form(assigns))
@@ -116,8 +118,8 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
         {:ok, collection} ->
           message =
             case socket.assigns.action do
-              :new -> ~t"Collection created successfully"m
-              :edit -> ~t"Collection updated successfully"m
+              :new -> ~t"Dataset created successfully"m
+              :edit -> ~t"Dataset updated successfully"m
             end
 
           socket =
@@ -126,9 +128,9 @@ defmodule DataAggregatorWeb.CollectionLive.FormComponent do
             |> put_flash(:info, message)
 
           if socket.assigns.action == :new do
-            push_navigate(socket, to: ~p"/collections/#{collection.id}/records")
+            push_navigate(socket, to: ~p"/datasets/#{collection.id}/records")
           else
-            push_patch(socket, to: socket.assigns.patch)
+            push_navigate(socket, to: socket.assigns.patch)
           end
 
         {:error, form} ->

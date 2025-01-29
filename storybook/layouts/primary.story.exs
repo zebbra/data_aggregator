@@ -11,7 +11,7 @@ defmodule Storybook.Layouts.Primary do
   def render(assigns) do
     ~H"""
     <.page current="records">
-      <.page_header class="px-6 lg:px-8 md:py-6">Records</.page_header>
+      <.page_header class="px-6 md:py-6 lg:px-8">Records</.page_header>
     </.page>
     """
   end

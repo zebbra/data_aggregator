@@ -48,13 +48,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.FormComponent do
         <.section_heading
           text={~t"Import was already processed"m}
           description={
-            ~t"You are not allowed to process an import twice. Please start again by uploading a new import dataset."m
+            ~t"You are not allowed to process an import twice. Please start again by uploading new import data."m
           }
           size="md"
         />
         <div class="modal-action">
           <button type="button" class="btn btn-primary" onclick="import_modal.close()">
-            <%= ~t"Back to imports"m %>
+            {~t"Back to imports"m}
           </button>
         </div>
       </div>

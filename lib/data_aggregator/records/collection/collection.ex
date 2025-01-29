@@ -22,7 +22,7 @@ defmodule DataAggregator.Records.Collection do
   @type t :: %Collection{}
 
   attributes do
-    uuid_attribute :id, prefix: "col", public?: true
+    uuid_attribute :id, prefix: "set", public?: true
 
     attribute :items_to_digitize, :integer, allow_nil?: false, default: 0, public?: true
     attribute :owner, :string, allow_nil?: true, public?: true
@@ -65,6 +65,12 @@ defmodule DataAggregator.Records.Collection do
 
     attribute :gbif_dataset_key, :string do
       description "the key of the dataset (to publish) in the GBIF database"
+      allow_nil? true
+      public? true
+    end
+
+    attribute :gbif_doi, :string do
+      description "the DOI of the dataset in the GBIF database"
       allow_nil? true
       public? true
     end
@@ -158,7 +164,7 @@ defmodule DataAggregator.Records.Collection do
     end
 
     update :register_at_gbif do
-      argument :dwca_file_url, :string, allow_nil?: false
+      argument :existing_dataset_key, :string, allow_nil?: true
       require_atomic? false
 
       change Changes.RegisterAtGbif
@@ -259,6 +265,13 @@ defmodule DataAggregator.Records.Collection do
       change Changes.SetDeletingBeforeTransaction
     end
 
+    action :create_endpoint, :map do
+      argument :collection, :struct, allow_nil?: false
+      argument :dwca_file_url, :string, allow_nil?: false
+
+      run Actions.CreateEndpoint
+    end
+
     action :export, :map do
       argument :export, :struct, allow_nil?: false
 
@@ -313,10 +326,11 @@ defmodule DataAggregator.Records.Collection do
     define :get_by_grscicoll_reference, action: :read, get_by: [:grscicoll_reference]
     define :touch
     define :enqueue_encoding, args: [:query]
+    define :create_endpoint, args: [:collection, :dwca_file_url]
     define :export, action: :export, args: [:export]
     define :publish, args: [:publication]
     define :approve, args: [:collection, :query]
-    define :register_at_gbif, args: [:dwca_file_url]
+    define :register_at_gbif, args: [:existing_dataset_key]
 
     define :set_mapping
     define :set_importing
@@ -396,7 +410,7 @@ defmodule DataAggregator.Records.Collection do
     type "collection"
 
     routes do
-      base "/collections"
+      base "/datasets"
 
       get :read
       index :read

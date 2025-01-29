@@ -34,7 +34,7 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
           role="list"
           class="text-sm/6 text-base-content/75 no-scrollbar flex w-full snap-x scroll-pl-6 items-center gap-x-6 overflow-x-auto font-semibold lg:scroll-pl-8"
         >
-          <%= render_slot(@inner_block) %>
+          {render_slot(@inner_block)}
         </ul>
       </nav>
       <div
@@ -93,7 +93,7 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
         ]}
         {@rest}
       >
-        <%= @label %>
+        {@label}
       </.link>
     </li>
     """
@@ -112,7 +112,7 @@ defmodule DataAggregatorWeb.Blocks.SecondaryNavigation do
         phx-click={@on_click}
         {@rest}
       >
-        <%= @label %>
+        {@label}
       </button>
     </li>
     """

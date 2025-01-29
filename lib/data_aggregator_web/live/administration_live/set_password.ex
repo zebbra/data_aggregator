@@ -41,7 +41,7 @@ defmodule DataAggregatorWeb.AdministrationLive.SetPassword do
             />
             <div>
               <button type="submit" class="btn btn-primary btn-block">
-                <%= ~t"Set Password"m %>
+                {~t"Set Password"m}
               </button>
             </div>
           </.fieldgroup>

@@ -1,6 +1,6 @@
 defmodule DataAggregatorWeb.Helpers do
   @moduledoc """
-  Formatting helpers for date, datetime, etc.
+  Formatting helpers for date, datetime, numbers etc.
   """
 
   alias DataAggregator.Accounts.User
@@ -14,6 +14,46 @@ defmodule DataAggregatorWeb.Helpers do
   def format_number(%Ash.NotLoaded{}, _opts), do: @placeholder
   def format_number(nil, _opts), do: @placeholder
   def format_number(number, opts), do: Cldr.Number.to_string!(number, opts)
+
+  @doc ~S"""
+    parses a given float number to a string representation with the given amount of decimals or 6 if omitted
+
+    ## Examples
+
+    iex> format_float(3000.0)
+    "3000.0"
+
+    iex> format_float(3000.00001)
+    "3000.00001"
+
+    iex> format_float(3000.1234)
+    "3000.1234"
+
+    iex> format_float(nil)
+    nil
+
+    iex> format_float(3000.000010, decimals: 5)
+    "3000.00001"
+
+    iex> format_float(3000.0001, decimals: 5)
+    "3000.0001"
+
+    iex> format_float(3000.56, nil)
+    "3000.56"
+
+    iex> format_float(nil, nil)
+    nil
+  """
+
+  def format_float(float, opts \\ [])
+  def format_float(nil, _opts), do: nil
+  def format_float(float, nil), do: format_float(float)
+
+  def format_float(float, opts) do
+    {decimals, _opts} = Keyword.pop(opts, :decimals, 10)
+
+    :erlang.float_to_binary(float, [:compact, decimals: decimals])
+  end
 
   def format_percent(number, opts \\ [])
   def format_percent(nil, _opts), do: @placeholder
@@ -86,6 +126,10 @@ defmodule DataAggregatorWeb.Helpers do
 
   def format_coordinate(val), do: val
 
+  def format_map(val)
+  def format_map(%{} = val), do: inspect(val)
+  def format_map(val), do: val
+
   @doc ~S"""
   Returns a string of class names from a list of class names.
 
@@ -136,4 +180,7 @@ defmodule DataAggregatorWeb.Helpers do
 
   def maybe_set_user(%User{email: email}) when email != nil, do: email
   def maybe_set_user(_), do: Phoenix.HTML.raw("&mdash;")
+
+  def blank?(val) when val in [nil, "", []], do: true
+  def blank?(_), do: false
 end
