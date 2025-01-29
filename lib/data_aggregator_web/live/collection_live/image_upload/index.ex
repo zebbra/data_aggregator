@@ -337,6 +337,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
       label={~t"Upload Images"m}
       icon="hero-arrow-up-tray"
       href={~p"/datasets/#{@collection}/image_uploads/new"}
+      action_allowed={Collection.can_set_mapping?(@current_user, @collection)}
+      action_icon="hero-arrow-up-tray"
     />
     """
   end

@@ -7,7 +7,10 @@ defmodule DataAggregator.Records.Publication do
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Records,
     extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine],
-    notifiers: [Ash.Notifier.PubSub]
+    notifiers: [Ash.Notifier.PubSub],
+    authorizers: [Ash.Policy.Authorizer]
+
+  import DataAggregator.Checks.Custom
 
   alias __MODULE__
   alias DataAggregator.Accounts.User
@@ -209,6 +212,20 @@ defmodule DataAggregator.Records.Publication do
     define :update_attachment, action: :update_attachment, args: [:attachment]
     define :add_publication_progress, args: [:published]
     define :cancel_publication
+  end
+
+  policies do
+    bypass with_role("admin") do
+      authorize_if always()
+    end
+
+    policy action_type([:read, :update]) do
+      authorize_if always()
+    end
+
+    policy action_type(:destroy) do
+      authorize_if with_role("collection_administrator")
+    end
   end
 
   postgres do

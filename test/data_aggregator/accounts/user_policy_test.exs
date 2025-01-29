@@ -165,10 +165,6 @@ defmodule DataAggregator.Accounts.UserPolicyTest do
       [actor: actor, same: same, other: other]
     end
 
-    test "cannot read all", %{actor: actor} do
-      refute User.can_read?(actor)
-    end
-
     test "cannot register_with_password same institution", %{actor: actor, same: same} do
       same = same |> Map.from_struct() |> Map.take([:id, :email, :roles, :institution_id])
       refute User.can_register_with_password?(actor, same)

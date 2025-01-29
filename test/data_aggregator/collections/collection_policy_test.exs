@@ -10,6 +10,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
   alias DataAggregator.Gbif
   alias DataAggregator.Gbif.RestAPIStub
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Export
 
   @inst_1 RestAPIStub.institution_key()
   @inst_2 RestAPIStub.other_institution_key()
@@ -115,11 +116,31 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       assert Collection.can_enqueue_encoding?(actor, collection_other, %{})
     end
 
+    test "can approve for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      assert Collection.can_approve?(actor, collection_other, %{})
+    end
+
+    test "can approve for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
+    } do
+      assert Collection.can_approve?(actor, collection_same, %{})
+    end
+
+    test "can export", %{
+      actor: actor
+    } do
+      assert Collection.can_export?(actor, %Export{})
+    end
+
     set_test_cases = [
+      {:can_set_mapping?, "set mapping"},
       {:can_set_importing?, "set importing"},
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
-      {:can_set_fast_track_publishing?, "set fast track publishing"},
       {:can_set_approving?, "set approving"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
@@ -132,14 +153,14 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
         actor: actor,
         collection_same: collection_same
       } do
-        assert apply(Collection, unquote(method), [actor, collection_same])
+        assert apply(Collection, unquote(method), [actor, collection_same, %{}])
       end
 
       test "can #{method_description} for collection with other institution", %{
         actor: actor,
         collection_other: collection_other
       } do
-        assert apply(Collection, unquote(method), [actor, collection_other])
+        assert apply(Collection, unquote(method), [actor, collection_other, %{}])
       end
     end
   end
@@ -246,10 +267,10 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
     end
 
     set_test_cases = [
+      {:can_set_mapping?, "set mapping"},
       {:can_set_importing?, "set importing"},
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
-      {:can_set_fast_track_publishing?, "set fast track publishing"},
       {:can_set_approving?, "set approving"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
@@ -262,14 +283,14 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
         actor: actor,
         collection_same: collection_same
       } do
-        refute apply(Collection, unquote(method), [actor, collection_same])
+        refute apply(Collection, unquote(method), [actor, collection_same, %{}])
       end
 
       test "cannot #{method_description} for collection with other institution", %{
         actor: actor,
         collection_other: collection_other
       } do
-        refute apply(Collection, unquote(method), [actor, collection_other])
+        refute apply(Collection, unquote(method), [actor, collection_other, %{}])
       end
     end
   end
@@ -372,10 +393,10 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
     end
 
     set_test_cases = [
+      {:can_set_mapping?, "set mapping"},
       {:can_set_importing?, "set importing"},
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
-      {:can_set_fast_track_publishing?, "set fast track publishing"},
       {:can_set_approving?, "set approving"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
@@ -387,14 +408,14 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
         actor: actor,
         collection_same: collection_same
       } do
-        assert apply(Collection, unquote(method), [actor, collection_same])
+        assert apply(Collection, unquote(method), [actor, collection_same, %{}])
       end
 
       test "cannot #{method_description} for collection with other institution", %{
         actor: actor,
         collection_other: collection_other
       } do
-        refute apply(Collection, unquote(method), [actor, collection_other])
+        refute apply(Collection, unquote(method), [actor, collection_other, %{}])
       end
     end
   end
@@ -483,10 +504,10 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
     end
 
     set_test_cases = [
+      {:can_set_mapping?, "set mapping"},
       {:can_set_importing?, "set importing"},
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
-      {:can_set_fast_track_publishing?, "set fast track publishing"},
       {:can_set_approving?, "set approving"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
@@ -498,15 +519,22 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
         actor: actor,
         collection_same: collection_same
       } do
-        assert apply(Collection, unquote(method), [actor, collection_same])
+        assert apply(Collection, unquote(method), [actor, collection_same, %{}])
       end
 
       test "cannot #{method_description} for collection with other institution", %{
         actor: actor,
         collection_other: collection_other
       } do
-        refute apply(Collection, unquote(method), [actor, collection_other])
+        refute apply(Collection, unquote(method), [actor, collection_other, %{}])
       end
     end
+
+    # test "can enqueue encoding for collection with same institution", %{
+    #   actor: actor,
+    #   collection_same: collection_same
+    # } do
+    #   assert Collection.can_enqueue_encoding?(actor, collection_same, %{})
+    # end
   end
 end

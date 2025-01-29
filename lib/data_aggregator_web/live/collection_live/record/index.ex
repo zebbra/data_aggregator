@@ -276,7 +276,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       <.toolbar
         search={@search}
         meta={@meta.result}
-        collection_id={@collection.id}
+        collection={@collection}
         records_count={@collection.records_count}
         filters_count={@filters_count}
         busy={@busy}
@@ -1138,9 +1138,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <.empty_state
           title={~t"No records"m}
           description={~t"Get started by importing new data"m}
-          label={~t"Import"m}
+          label={~t"Import data"m}
           icon="hero-bug-ant"
           href={~p"/datasets/#{@collection.id}/imports/new"}
+          action_icon="hero-arrow-up-tray"
         />
       <% true -> %>
         <.empty_state
