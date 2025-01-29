@@ -208,17 +208,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
               {@selected_image_upload.invalid_files_count || 0}
             </:item>
             <:item title={~t"Logfile"}>
-              <.link
-                data-tip="download log"
-                class="tooltip gap-x-1 self-center rounded-full bg-blue-100 px-1.5 pb-0.5 text-xs font-medium text-blue-500 opacity-75 hover:opacity-100"
-                target="_blank"
-                href={
-                  ~p"/collecitons/#{@collection}/image_uploads/log/#{@selected_image_upload}/download"
-                }
-                aria-label="download log"
-              >
-                <.icon name="hero-arrow-down-tray" class="size-5" />
-              </.link>
+              <.attachment_download_badge
+                :if={@selected_image_upload.upload_log != nil}
+                attachment={@selected_image_upload.upload_log}
+              />
             </:item>
           </.list>
           <:footer></:footer>
