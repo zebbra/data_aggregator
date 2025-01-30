@@ -385,7 +385,7 @@ defmodule DataAggregator.Records.Collection do
         authorize_if relates_to_institution_check(:grscicoll_institution_key)
       end
 
-      policy action(:publish) do
+      policy action([:publish, :set_fast_track_publishing]) do
         authorize_if always()
       end
     end

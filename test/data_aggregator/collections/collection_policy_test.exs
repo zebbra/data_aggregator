@@ -130,10 +130,18 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       assert Collection.can_approve?(actor, collection_same, %{})
     end
 
-    test "can set_publishing", %{
-      actor: actor
+    test "can set_fast_track_publishing for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
     } do
-      assert Collection.can_publish?(actor, %Publication{})
+      assert Collection.can_set_fast_track_publishing?(actor, collection_same)
+    end
+
+    test "can set_fast_track_publishing for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      assert Collection.can_set_fast_track_publishing?(actor, collection_other)
     end
 
     test "can publish", %{
@@ -272,10 +280,18 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       refute Collection.can_enqueue_encoding?(actor, collection_other, %{})
     end
 
-    test "can set_publishing", %{
-      actor: actor
+    test "can set_fast_track_publishing for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
     } do
-      assert Collection.can_publish?(actor, %Publication{})
+      assert Collection.can_set_fast_track_publishing?(actor, collection_same)
+    end
+
+    test "cannot set_fast_track_publishing for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      refute Collection.can_set_fast_track_publishing?(actor, collection_other)
     end
 
     test "can publish", %{
@@ -410,10 +426,18 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       refute Collection.can_enqueue_encoding?(actor, collection_other, %{})
     end
 
-    test "cannot set_publishing", %{
-      actor: actor
+    test "cannot set_fast_track_publishing for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
     } do
-      refute Collection.can_publish?(actor, %Publication{})
+      refute Collection.can_set_fast_track_publishing?(actor, collection_same)
+    end
+
+    test "cannot set_fast_track_publishing for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      refute Collection.can_set_fast_track_publishing?(actor, collection_other)
     end
 
     test "cannot publish", %{
@@ -533,10 +557,18 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       refute Collection.can_enqueue_encoding?(actor, collection_other, %{})
     end
 
-    test "can set_publishing", %{
-      actor: actor
+    test "can set_fast_track_publishing for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
     } do
-      assert Collection.can_publish?(actor, %Publication{})
+      assert Collection.can_set_fast_track_publishing?(actor, collection_same)
+    end
+
+    test "cannot set_fast_track_publishing for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      refute Collection.can_set_fast_track_publishing?(actor, collection_other)
     end
 
     test "can publish", %{
