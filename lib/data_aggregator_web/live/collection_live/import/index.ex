@@ -596,6 +596,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   defp list_imports(params, actor, tenant, opts \\ [load: @load]) do
     opts = Keyword.put_new(opts, :actor, actor)
     opts = Keyword.put_new(opts, :tenant, tenant)
+
     AshPagify.validate_and_run(Import, params, opts)
   end
 
@@ -606,10 +607,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     <%= if Collection.can_set_importing?(@current_user, @collection) do %>
       <.empty_state
         title={~t"No imports"m}
-        description={~t"Get started by importing a new dataset."m}
-        label={~t"Import"m}
+        description={~t"Get started by importing new data."m}
+        label={~t"Import data"m}
         icon="hero-arrow-up-tray"
         href={~p"/datasets/#{@collection}/imports/new"}
+        action_icon="hero-arrow-up-tray"
       />
     <% else %>
       <.empty_state

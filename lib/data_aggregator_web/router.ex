@@ -90,8 +90,10 @@ defmodule DataAggregatorWeb.Router do
           :download_log
     end
 
-    ash_authentication_live_session :collection_digitizer_required,
-      on_mount: default_hooks ++ [{DataAggregatorWeb.LiveUserAuth, :live_collection_digitizer_required}] do
+    ash_authentication_live_session :collection_administrator_required,
+      on_mount:
+        default_hooks ++
+          [{DataAggregatorWeb.LiveUserAuth, :live_collection_administrator_required}] do
       live "/administration", AdministrationLive.Index, :index
       live "/administration/new", AdministrationLive.Index, :new
       live "/administration/:user_id/edit", AdministrationLive.Index, :edit
@@ -100,8 +102,8 @@ defmodule DataAggregatorWeb.Router do
       live "/datasets/:id/edit", CollectionLive.Index, :edit
     end
 
-    ash_authentication_live_session :data_administrator_required,
-      on_mount: default_hooks ++ [{DataAggregatorWeb.LiveUserAuth, :live_data_administrator_required}] do
+    ash_authentication_live_session :data_digitizer_required,
+      on_mount: default_hooks ++ [{DataAggregatorWeb.LiveUserAuth, :live_data_digitizer_required}] do
       live "/datasets/:id/imports/new", CollectionLive.Import.Index, :new
       live "/datasets/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit
       live "/datasets/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary

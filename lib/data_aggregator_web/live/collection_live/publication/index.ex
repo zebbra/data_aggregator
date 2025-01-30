@@ -250,7 +250,10 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
             </:item>
           </.list>
 
-          <:footer :if={Collection.can_set_fast_track_publishing?(@current_user, @collection)}>
+          <:footer :if={
+            not is_nil(@selected_publication) &&
+              Publication.can_destroy?(@current_user, @selected_publication)
+          }>
             <button
               type="button"
               phx-click={JS.push("publication:delete", value: %{id: @selected_publication.id})}

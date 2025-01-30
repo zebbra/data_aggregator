@@ -46,6 +46,16 @@ defmodule DataAggregatorWeb.Blocks.EmptyState do
     If left empty, the button will not be displayed.
     """
 
+  attr :action_allowed, :boolean,
+    default: true,
+    doc: """
+    Whether the empty state action is allowed.
+    """
+
+  attr :action_icon, :string,
+    default: "hero-plus-mini",
+    doc: "The icon to display in the empty state button."
+
   def empty_state(assigns) do
     ~H"""
     <div class="flex h-64 items-center justify-center">
@@ -53,9 +63,9 @@ defmodule DataAggregatorWeb.Blocks.EmptyState do
         <.icon name={@icon} class="text-base-content/50" />
         <h3 class="text-base-content mt-2 text-sm font-semibold">{@title}</h3>
         <p class="text-base-content/60 mt-1 text-sm">{@description}</p>
-        <div :if={@href} class="mt-6">
+        <div :if={not is_nil(@href) and @action_allowed} class="mt-6">
           <.link navigate={@href} type="button" class="btn btn-primary max-sm:btn-sm">
-            <.icon name="hero-plus-mini" /> {@label}
+            <.icon name={@action_icon} /> {@label}
           </.link>
         </div>
       </div>

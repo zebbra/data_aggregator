@@ -45,7 +45,7 @@
           />
         </.link>
       </li>
-      <%= if DataAggregator.Accounts.User.can_read?(@current_user) do %>
+      <%= if DataAggregator.Accounts.User.can_update?(@current_user, %DataAggregator.Accounts.User{}) do %>
         <li>
           <.link
             navigate={~p"/administration"}
