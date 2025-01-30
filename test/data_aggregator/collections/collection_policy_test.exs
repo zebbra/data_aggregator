@@ -142,6 +142,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
       {:can_set_approving?, "set approving"},
+      {:can_set_fast_track_publishing?, "set fast track publishing"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
       {:can_set_idle_encoding?, "set idle encoding"},
@@ -272,6 +273,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
       {:can_set_approving?, "set approving"},
+      {:can_set_fast_track_publishing?, "set fast track publishing"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
       {:can_set_idle_encoding?, "set idle encoding"},
@@ -398,6 +400,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
       {:can_set_approving?, "set approving"},
+      {:can_set_fast_track_publishing?, "set fast track publishing"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
       {:can_set_idle_encoding?, "set idle encoding"}
@@ -509,6 +512,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
       {:can_set_approving?, "set approving"},
+      {:can_set_fast_track_publishing?, "set fast track publishing"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
       {:can_set_idle_encoding?, "set idle encoding"}
@@ -529,12 +533,5 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
         refute apply(Collection, unquote(method), [actor, collection_other, %{}])
       end
     end
-
-    # test "can enqueue encoding for collection with same institution", %{
-    #   actor: actor,
-    #   collection_same: collection_same
-    # } do
-    #   assert Collection.can_enqueue_encoding?(actor, collection_same, %{})
-    # end
   end
 end
