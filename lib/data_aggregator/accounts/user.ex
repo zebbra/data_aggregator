@@ -16,6 +16,8 @@ defmodule DataAggregator.Accounts.User do
 
   alias __MODULE__
   alias AshAuthentication.Strategy.Password.HashPasswordChange
+  alias DataAggregator.Accounts.Calculations.TermsAccepted
+  alias DataAggregator.Accounts.Changes.AcceptTermsChange
 
   @type t :: %User{}
 
@@ -53,10 +55,14 @@ defmodule DataAggregator.Accounts.User do
     attribute :roles, {:array, :string}, default: []
 
     attribute :institution_id, :uuid, allow_nil?: true
+
+    attribute :terms_accepted_at, :utc_datetime, allow_nil?: true, public?: true
   end
 
   calculations do
     calculate :password_set?, :boolean, expr(not is_nil(hashed_password))
+
+    calculate :terms_accepted?, :boolean, TermsAccepted
   end
 
   actions do
@@ -77,6 +83,12 @@ defmodule DataAggregator.Accounts.User do
       change HashPasswordChange
     end
 
+    update :accept_terms do
+      require_atomic? false
+
+      change AcceptTermsChange
+    end
+
     update :set_password do
       change set_context(%{strategy_name: :password})
 
@@ -94,7 +106,15 @@ defmodule DataAggregator.Accounts.User do
     create :register_with_password do
       change set_context(%{strategy_name: :password})
 
-      accept [:roles, :first_name, :last_name, :email, :phone, :institution_id]
+      accept [
+        :roles,
+        :first_name,
+        :last_name,
+        :email,
+        :phone,
+        :institution_id,
+        :terms_accepted_at
+      ]
 
       argument :password, :string do
         allow_nil? false

@@ -2007,7 +2007,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Encodings"
 msgstr ""
 
-#: lib/data_aggregator/accounts/user.ex:134
+#: lib/data_aggregator/accounts/user.ex:154
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregator.Accounts.User"
 msgid "is not a valid email address"
@@ -2319,13 +2319,13 @@ msgstr ""
 msgid "Sign out"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:118
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:138
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Sign out"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:118
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:138
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Sign out"
@@ -4396,4 +4396,75 @@ msgstr ""
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Filter Datasets"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:123
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:123
+#, elixir-autogen, elixir-format
+msgid "Terms&Conditions"
+msgstr ""
+
+#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:37
+#, elixir-autogen, elixir-format, fuzzy
+msgid "terms of use"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:120
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Primary"
+msgid "Terms&Conditions"
+msgstr ""
+
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:120
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.Layouts.Secondary"
+msgid "Terms&Conditions"
+msgstr ""
+
+#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:52
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
+msgid "Accept"
+msgstr ""
+
+#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:28
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
+msgid "By accessing the Data Aggregator, you agree to comply with the conditions laid down on our policy. These terms govern the use of our services and content. We encourage you to read them carefully. If you do not agree to these terms, please do not use our platform."
+msgstr ""
+
+#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:55
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
+msgid "Decline"
+msgstr ""
+
+#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:31
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
+msgid "I have read and agree with the"
+msgstr ""
+
+#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:24
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
+msgid "Terms and Conditions"
+msgstr ""
+
+#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:46
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
+msgid "Thank you for your understanding and welcome!"
+msgstr ""
+
+#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:43
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
+msgid "The terms of use are currently under revision and may change in the coming weeks to better meet legal and regulatory requirements. In the time being, the publication of the data will be done on the GBIF test environment. The publication of the data to GBIF will become effective on the 27th of January, date on which you will be asked to revise and re-publish your dataset, by accepting the final terms of use of the DAGI."
+msgstr ""
+
+#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:40
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
+msgid "of the DAGI and accept full responsibility for the data I upload and publish."
 msgstr ""

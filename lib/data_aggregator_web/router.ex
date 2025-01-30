@@ -45,7 +45,8 @@ defmodule DataAggregatorWeb.Router do
       DataAggregatorWeb.LiveLocale,
       Sentry.LiveViewHook,
       {DataAggregatorWeb.LiveUserAuth, :live_user_required},
-      {DataAggregatorWeb.LiveUserAuth, :password_set_required}
+      {DataAggregatorWeb.LiveUserAuth, :password_set_required},
+      {DataAggregatorWeb.LiveUserAuth, :terms_accepted_required}
     ]
 
     no_password_required_hooks = [
@@ -55,8 +56,21 @@ defmodule DataAggregatorWeb.Router do
       {DataAggregatorWeb.LiveUserAuth, :live_user_required}
     ]
 
+    no_terms_required_hooks = [
+      DataAggregatorWeb.LiveLogger,
+      DataAggregatorWeb.LiveLocale,
+      Sentry.LiveViewHook,
+      {DataAggregatorWeb.LiveUserAuth, :live_user_required},
+      {DataAggregatorWeb.LiveUserAuth, :password_set_required},
+      {DataAggregatorWeb.LiveUserAuth, :terms_not_accepted_required}
+    ]
+
     ash_authentication_live_session :no_password_set, on_mount: no_password_required_hooks do
       live "/set_password", AdministrationLive.SetPassword, :index
+    end
+
+    ash_authentication_live_session :no_terms_accepted, on_mount: no_terms_required_hooks do
+      live "/terms", TermsAndConditionsLive.Index, :index
     end
 
     ash_authentication_live_session :default, on_mount: default_hooks do
