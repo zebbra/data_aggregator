@@ -130,6 +130,12 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       assert Collection.can_approve?(actor, collection_same, %{})
     end
 
+    test "can set_publishing", %{
+      actor: actor
+    } do
+      assert Collection.can_publish?(actor, %Publication{})
+    end
+
     test "can publish", %{
       actor: actor
     } do
@@ -266,6 +272,12 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       refute Collection.can_enqueue_encoding?(actor, collection_other, %{})
     end
 
+    test "can set_publishing", %{
+      actor: actor
+    } do
+      assert Collection.can_publish?(actor, %Publication{})
+    end
+
     test "can publish", %{
       actor: actor
     } do
@@ -398,6 +410,12 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       refute Collection.can_enqueue_encoding?(actor, collection_other, %{})
     end
 
+    test "cannot set_publishing", %{
+      actor: actor
+    } do
+      refute Collection.can_publish?(actor, %Publication{})
+    end
+
     test "cannot publish", %{
       actor: actor
     } do
@@ -513,6 +531,12 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       collection_other: collection_other
     } do
       refute Collection.can_enqueue_encoding?(actor, collection_other, %{})
+    end
+
+    test "can set_publishing", %{
+      actor: actor
+    } do
+      assert Collection.can_publish?(actor, %Publication{})
     end
 
     test "can publish", %{
