@@ -20,8 +20,8 @@ defmodule Storybook.Blocks.EmptyState do
         id: :custom,
         attributes: %{
           title: "No records",
-          description: "Get started by importing a new dataset.",
-          label: "Import dataset",
+          description: "Get started by importing new data.",
+          label: "Import data",
           icon: "hero-bug-ant",
           href: "#"
         }

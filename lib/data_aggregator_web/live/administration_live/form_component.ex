@@ -368,8 +368,8 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
 
   defp toggle_group_options do
     [
-      "Collection Digitizer": "collection_digitizer",
-      "Data Administrator": "data_administrator",
+      "Collection Administrator": "collection_administrator",
+      "Data Digitizer": "data_digitizer",
       Admin: "admin"
     ]
   end

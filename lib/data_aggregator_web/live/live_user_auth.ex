@@ -32,16 +32,16 @@ defmodule DataAggregatorWeb.LiveUserAuth do
     end
   end
 
-  def on_mount(:live_collection_digitizer_required, _params, _session, socket) do
-    if has_role?(socket.assigns[:current_user], ["collection_digitizer", "admin"]) do
+  def on_mount(:live_collection_administrator_required, _params, _session, socket) do
+    if has_role?(socket.assigns[:current_user], ["collection_administrator", "admin"]) do
       {:cont, socket}
     else
       {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/datasets")}
     end
   end
 
-  def on_mount(:live_data_administrator_required, _params, _session, socket) do
-    if has_role?(socket.assigns[:current_user], ["data_administrator", "admin"]) do
+  def on_mount(:live_data_digitizer_required, _params, _session, socket) do
+    if has_role?(socket.assigns[:current_user], ["data_digitizer", "admin"]) do
       {:cont, socket}
     else
       {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/datasets")}

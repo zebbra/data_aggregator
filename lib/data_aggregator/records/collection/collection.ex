@@ -21,6 +21,20 @@ defmodule DataAggregator.Records.Collection do
 
   @type t :: %Collection{}
 
+  @dataset_actions [
+    :set_mapping,
+    :set_importing,
+    :set_exporting,
+    :set_encoding,
+    :set_approving,
+    :set_deleting,
+    :set_idle,
+    :set_idle_encoding,
+    :enqueue_encoding,
+    :approve,
+    :export
+  ]
+
   attributes do
     uuid_attribute :id, prefix: "set", public?: true
 
@@ -355,42 +369,30 @@ defmodule DataAggregator.Records.Collection do
       forbid_unless with_role("admin")
     end
 
-    policy_group with_role("collection_digitizer") do
+    policy_group with_role(["collection_administrator", "data_digitizer"]) do
       policy action_type(:read) do
         authorize_if relates_to_institution_filter(:grscicoll_institution_key)
-      end
-
-      policy action([
-               :set_mapping,
-               :set_importing,
-               :set_exporting,
-               :set_encoding,
-               :set_fast_track_publishing,
-               :set_approving,
-               :set_deleting,
-               :set_idle,
-               :set_idle_encoding,
-               :enqueue_encoding
-             ]) do
-        authorize_if with_role(["admin", "data_administrator"])
-      end
-
-      policy action_type([:create, :update, :destroy]) do
-        authorize_if relates_to_institution_check(:grscicoll_institution_key)
       end
     end
 
-    policy_group with_role("data_administrator") do
-      policy action_type(:read) do
-        authorize_if relates_to_institution_filter(:grscicoll_institution_key)
-      end
-
-      policy action_type(:update) do
+    policy_group with_role("collection_administrator") do
+      policy action_type([:create, :update, :destroy]) do
         authorize_if relates_to_institution_check(:grscicoll_institution_key)
       end
 
-      policy action(:update) do
-        authorize_if with_role("collection_digitizer")
+      policy action(@dataset_actions) do
+        forbid_unless with_role(["admin", "data_digitizer"])
+        authorize_if relates_to_institution_check(:grscicoll_institution_key)
+      end
+
+      policy action([:publish, :set_fast_track_publishing]) do
+        authorize_if always()
+      end
+    end
+
+    policy_group with_role("data_digitizer") do
+      policy action(@dataset_actions) do
+        authorize_if relates_to_institution_check(:grscicoll_institution_key)
       end
     end
   end

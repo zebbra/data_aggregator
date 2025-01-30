@@ -149,13 +149,15 @@ defmodule DataAggregator.Accounts.User do
       authorize_if always()
     end
 
-    policy_group with_role("collection_digitizer") do
-      policy action_type(:destroy) do
-        forbid_if always()
-      end
-
+    policy_group with_role(["collection_administrator", "data_digitizer"]) do
       policy action_type([:read]) do
         authorize_if relates_to_institution_filter(:institution_id)
+      end
+    end
+
+    policy_group with_role("collection_administrator") do
+      policy action_type(:destroy) do
+        forbid_if always()
       end
 
       policy action_type([:create, :update]) do

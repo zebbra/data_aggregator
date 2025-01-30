@@ -10,6 +10,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
   alias DataAggregator.Gbif
   alias DataAggregator.Gbif.RestAPIStub
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Publication
 
   @inst_1 RestAPIStub.institution_key()
   @inst_2 RestAPIStub.other_institution_key()
@@ -115,11 +116,45 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       assert Collection.can_enqueue_encoding?(actor, collection_other, %{})
     end
 
+    test "can approve for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      assert Collection.can_approve?(actor, collection_other, %{})
+    end
+
+    test "can approve for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
+    } do
+      assert Collection.can_approve?(actor, collection_same, %{})
+    end
+
+    test "can set_fast_track_publishing for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
+    } do
+      assert Collection.can_set_fast_track_publishing?(actor, collection_same)
+    end
+
+    test "can set_fast_track_publishing for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      assert Collection.can_set_fast_track_publishing?(actor, collection_other)
+    end
+
+    test "can publish", %{
+      actor: actor
+    } do
+      assert Collection.can_publish?(actor, %Publication{})
+    end
+
     set_test_cases = [
+      {:can_set_mapping?, "set mapping"},
       {:can_set_importing?, "set importing"},
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
-      {:can_set_fast_track_publishing?, "set fast track publishing"},
       {:can_set_approving?, "set approving"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
@@ -132,26 +167,26 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
         actor: actor,
         collection_same: collection_same
       } do
-        assert apply(Collection, unquote(method), [actor, collection_same])
+        assert apply(Collection, unquote(method), [actor, collection_same, %{}])
       end
 
       test "can #{method_description} for collection with other institution", %{
         actor: actor,
         collection_other: collection_other
       } do
-        assert apply(Collection, unquote(method), [actor, collection_other])
+        assert apply(Collection, unquote(method), [actor, collection_other, %{}])
       end
     end
   end
 
-  describe "as collection_digitizer" do
+  describe "as collection_administrator" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       actor = %User{
         id: "user_1",
-        email: "collection_digitizer@email.com",
-        roles: ["collection_digitizer"],
+        email: "collection_administrator@email.com",
+        roles: ["collection_administrator"],
         institution_id: @inst_1
       }
 
@@ -245,11 +280,31 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       refute Collection.can_enqueue_encoding?(actor, collection_other, %{})
     end
 
+    test "can set_fast_track_publishing for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
+    } do
+      assert Collection.can_set_fast_track_publishing?(actor, collection_same)
+    end
+
+    test "cannot set_fast_track_publishing for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      refute Collection.can_set_fast_track_publishing?(actor, collection_other)
+    end
+
+    test "can publish", %{
+      actor: actor
+    } do
+      assert Collection.can_publish?(actor, %Publication{})
+    end
+
     set_test_cases = [
+      {:can_set_mapping?, "set mapping"},
       {:can_set_importing?, "set importing"},
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
-      {:can_set_fast_track_publishing?, "set fast track publishing"},
       {:can_set_approving?, "set approving"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
@@ -274,14 +329,14 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
     end
   end
 
-  describe "as data_administrator" do
+  describe "as data_digitizer" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       actor = %User{
         id: "user_1",
-        email: "data_administrator@email.com",
-        roles: ["data_administrator"],
+        email: "data_digitizer@email.com",
+        roles: ["data_digitizer"],
         institution_id: @inst_1
       }
 
@@ -371,11 +426,31 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       refute Collection.can_enqueue_encoding?(actor, collection_other, %{})
     end
 
+    test "cannot set_fast_track_publishing for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
+    } do
+      refute Collection.can_set_fast_track_publishing?(actor, collection_same)
+    end
+
+    test "cannot set_fast_track_publishing for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      refute Collection.can_set_fast_track_publishing?(actor, collection_other)
+    end
+
+    test "cannot publish", %{
+      actor: actor
+    } do
+      refute Collection.can_publish?(actor, %Publication{})
+    end
+
     set_test_cases = [
+      {:can_set_mapping?, "set mapping"},
       {:can_set_importing?, "set importing"},
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
-      {:can_set_fast_track_publishing?, "set fast track publishing"},
       {:can_set_approving?, "set approving"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
@@ -399,14 +474,14 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
     end
   end
 
-  describe "as collection_digitizer and data_administrator" do
+  describe "as collection_administrator and data_digitizer" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       actor = %User{
         id: "user_1",
-        email: "data_administrator@email.com",
-        roles: ["collection_digitizer", "data_administrator"],
+        email: "data_digitizer@email.com",
+        roles: ["collection_administrator", "data_digitizer"],
         institution_id: @inst_1
       }
 
@@ -482,11 +557,31 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       refute Collection.can_enqueue_encoding?(actor, collection_other, %{})
     end
 
+    test "can set_fast_track_publishing for collection with same institution", %{
+      actor: actor,
+      collection_same: collection_same
+    } do
+      assert Collection.can_set_fast_track_publishing?(actor, collection_same)
+    end
+
+    test "cannot set_fast_track_publishing for collection with other institution", %{
+      actor: actor,
+      collection_other: collection_other
+    } do
+      refute Collection.can_set_fast_track_publishing?(actor, collection_other)
+    end
+
+    test "can publish", %{
+      actor: actor
+    } do
+      assert Collection.can_publish?(actor, %Publication{})
+    end
+
     set_test_cases = [
+      {:can_set_mapping?, "set mapping"},
       {:can_set_importing?, "set importing"},
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
-      {:can_set_fast_track_publishing?, "set fast track publishing"},
       {:can_set_approving?, "set approving"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
@@ -498,14 +593,14 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
         actor: actor,
         collection_same: collection_same
       } do
-        assert apply(Collection, unquote(method), [actor, collection_same])
+        assert apply(Collection, unquote(method), [actor, collection_same, %{}])
       end
 
       test "cannot #{method_description} for collection with other institution", %{
         actor: actor,
         collection_other: collection_other
       } do
-        refute apply(Collection, unquote(method), [actor, collection_other])
+        refute apply(Collection, unquote(method), [actor, collection_other, %{}])
       end
     end
   end
