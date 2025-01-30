@@ -99,38 +99,34 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
               class="join-item btn btn-outline border-base-content/20 max-lg:btn-square max-lg:inline-flex sm:max-lg:tooltip"
               data-tip={current_layer_label(@layer)}
             >
-              <.icon :if={@layer == "import"} name="hero-arrow-up-tray" />
-              <.icon :if={@layer == "encoding"} name="hero-puzzle-piece" />
-              <.icon :if={@layer == "approval"} name="hero-check-badge" />
-              <span class="max-lg:hidden">{current_layer_label(@layer)}</span>
+              <.icon name="hero-bars-2" />
+              <span class="max-lg:hidden">{~t"Layers"m}</span>
             </summary>
           </:summary>
           <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-56 gap-1 border p-2 shadow-2xl">
             <li>
-              <.link
-                patch={path_helper(@collection.id, "approval", @meta)}
-                class={@layer == "approval" && "active"}
-              >
-                <.icon name="hero-check-badge" class="size-5" />
-                <span class="font-[sans-serif]">{current_layer_label("approval")}</span>
-              </.link>
-            </li>
-            <li>
-              <.link
-                patch={path_helper(@collection.id, "encoding", @meta)}
-                class={@layer == "encoding" && "active"}
-              >
-                <.icon name="hero-puzzle-piece" class="size-5" />
+              <.link patch={path_helper(@collection.id, "encoding", @meta)}>
+                <input type="radio" name="layer" checked={@layer in ["encoding", "approval"]} />
                 <span class="font-[sans-serif]">{current_layer_label("encoding")}</span>
               </.link>
             </li>
             <li>
-              <.link
-                patch={path_helper(@collection.id, "import", @meta)}
-                class={@layer == "import" && "active"}
-              >
-                <.icon name="hero-arrow-up-tray" class="size-5" />
+              <.link patch={path_helper(@collection.id, "import", @meta)}>
+                <input type="radio" name="layer" checked={@layer == "import"} />
                 <span class="font-[sans-serif]">{current_layer_label("import")}</span>
+              </.link>
+            </li>
+            <div class="border-black-white/10 border-b"></div>
+            <li>
+              <.link patch={
+                if @layer == "approval" do
+                  path_helper(@collection.id, "encoding", @meta)
+                else
+                  path_helper(@collection.id, "approval", @meta)
+                end
+              }>
+                <input type="checkbox" name="approval" checked={@layer == "approval"} />
+                <span class="font-[sans-serif]">{current_layer_label("approval")}</span>
               </.link>
             </li>
           </ul>

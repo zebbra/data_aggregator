@@ -33,15 +33,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
 
   def path_helper(collection, layer, meta, scope \\ nil)
 
-  def path_helper(collection, "approval", meta, nil) do
-    build_path(~p"/datasets/#{collection}/records", meta)
+  def path_helper(collection, "encoding", meta, nil) do
+    build_path(~p"/datasets/#{collection}/records?", meta)
   end
 
   def path_helper(collection, layer, meta, nil) do
     build_path(~p"/datasets/#{collection}/records?layer=#{layer}", meta)
   end
 
-  def path_helper(collection, "approval", meta, scope) do
+  def path_helper(collection, "encoding", meta, scope) do
     build_scope_path(~p"/datasets/#{collection}/records", meta, scope)
   end
 

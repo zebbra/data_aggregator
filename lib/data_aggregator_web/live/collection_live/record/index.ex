@@ -92,7 +92,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    layer = params |> Map.get("layer", "approval") |> coalesce_layer()
+    layer = params |> Map.get("layer", "encoding") |> coalesce_layer()
     actor = get_actor(socket)
     tenant = get_tenant(socket)
 
