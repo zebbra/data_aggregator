@@ -11,7 +11,7 @@ defmodule DataAggregator.AccountsFixtures do
     last_name: "Doe",
     email: "john.doe@example.com",
     password: "secret42",
-    terms_accepted_at: ~D[2025-01-30]
+    terms_accepted_at: ~U[2025-01-30 00:00:00Z]
   }
 
   @doc """
