@@ -750,6 +750,12 @@ defmodule DataAggregator.WorkflowTest do
         imported: "ch",
         encoded: "CH",
         category_name: "loc"
+      },
+      tax_accepted_name_usage_id: %{
+        name: "acceptedNameUsageID",
+        imported: "-",
+        encoded: "1669856",
+        category_name: "tax"
       }
     ]
 
