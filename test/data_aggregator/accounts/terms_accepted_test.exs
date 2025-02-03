@@ -31,8 +31,7 @@ defmodule DataAggregator.Accounts.TermsAcceptedTest do
     test "calculation returns true when terms are accepted same day as last terms update", %{
       user: user
     } do
-      Application.put_env(:data_aggregator, Accounts, last_terms_update: ~D[2025-01-30])
-      user = Map.put(user, :terms_accepted_at, DateTime.utc_now())
+      user = Map.put(user, :terms_accepted_at, ~U[2025-01-28 00:00:00Z])
 
       assert TermsAccepted.calculate([user], nil, nil) == [true]
     end
@@ -40,8 +39,7 @@ defmodule DataAggregator.Accounts.TermsAcceptedTest do
     test "calculation returns false when terms are accepted before last terms update", %{
       user: user
     } do
-      Application.put_env(:data_aggregator, Accounts, last_terms_update: ~U[2025-01-31 00:00:00Z])
-
+      user = Map.put(user, :terms_accepted_at, ~U[2025-01-27 00:00:00Z])
       assert TermsAccepted.calculate([user], nil, nil) == [false]
     end
   end
