@@ -104,7 +104,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
 
     ## Example
 
-    iex> convert_to_string({:foo, nil"})
+    iex> convert_to_string({:foo, nil})
     nil
 
     iex> convert_to_string({:accepted_usage_key, "12345"})
