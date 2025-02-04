@@ -126,7 +126,7 @@ defmodule DataAggregator.EncodingFixtures do
          taxon_id_ch: 15_311,
          accepted_name: "Enantiulus dentigerus (Verhoeff, 1901)",
          usage_key: 2_435_194,
-         accepted_usage_key: nil,
+         accepted_usage_key: 1_669_856,
          scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
          rank: "SPECIES"
        }}
