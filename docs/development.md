@@ -128,7 +128,7 @@ after you have successfully applied the changes to the database, ensure committi
 
 Due to performance issues we introduced table partitions for all resources related to records. The partitions inherit their parent table schema and are splitted by collection_id. Following tables are partitioned:
 
-- approved_records
+- validated_records
 - published_records
 - encoded_records
 - encoded_record_versions

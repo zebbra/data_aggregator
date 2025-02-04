@@ -2890,7 +2890,7 @@
           "global": false,
           "strategy": "attribute"
         },
-        "name": "approved_records_record_id_fkey",
+        "name": "validated_records_record_id_fkey",
         "on_delete": "delete",
         "on_update": "update",
         "primary_key?": true,
@@ -2919,7 +2919,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "approved_records_collection_id_fkey",
+        "name": "validated_records_collection_id_fkey",
         "on_delete": "delete",
         "on_update": "update",
         "primary_key?": true,
@@ -2936,12 +2936,12 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "FE274C363D9A997269F27596FA0C439C792974139BFD8010C92DF7A56CDF8B88",
+  "hash": "278800C09542F5D38DBAD7BA19826DFE8C46880945B86D3F906F04A494C5C5BF",
   "identities": [
     {
       "all_tenants?": false,
       "base_filter": null,
-      "index_name": "approved_records_record_mte_catalog_number_index",
+      "index_name": "validated_records_record_mte_catalog_number_index",
       "keys": [
         {
           "type": "atom",
@@ -2964,5 +2964,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "approved_records"
+  "table": "validated_records"
 }

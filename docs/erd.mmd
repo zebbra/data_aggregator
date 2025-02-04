@@ -1059,7 +1059,7 @@ erDiagram
     timestamp version_updated_at
     uuid user_id
   }
-  approved_records {
+  validated_records {
     jsonb ext_vernacular_names
     jsonb ext_species_profile
     jsonb ext_species_distribution
@@ -1350,7 +1350,7 @@ erDiagram
     uuid record_id
     uuid collection_id PK
   }
-  approvals {
+  validations {
     uuid id PK
     varchar file_url
     integer rows_count
@@ -1402,8 +1402,6 @@ erDiagram
     timestamp inserted_at
     timestamp scheduled_at
   }
-  collections ||--|{ approvals : ""
-  collections ||--|{ approved_records : ""
   collections ||--|{ encoded_records : ""
   collections ||--|{ exports : ""
   collections ||--|{ image_uploads : ""
@@ -1414,10 +1412,10 @@ erDiagram
   collections ||--|{ record_encoding_results : ""
   collections ||--|{ record_images : ""
   collections ||--|{ records : ""
+  collections ||--|{ validated_records : ""
+  collections ||--|{ validations : ""
   encoded_records ||--|{ encoded_records_versions : ""
   encoded_records ||--|{ swiss_species : ""
-  file_attachments ||--|{ approvals : ""
-  file_attachments ||--|{ approvals : ""
   file_attachments ||--|{ exports : ""
   file_attachments ||--|{ image_uploads : ""
   file_attachments ||--|{ image_uploads : ""
@@ -1425,15 +1423,17 @@ erDiagram
   file_attachments ||--|{ imports : ""
   file_attachments ||--|{ publications : ""
   file_attachments ||--|{ record_images : ""
+  file_attachments ||--|{ validations : ""
+  file_attachments ||--|{ validations : ""
   image_uploads ||--|{ record_images : ""
   imports ||--|{ import_records : ""
   publications ||--|{ published_records : ""
-  records ||--|{ approved_records : ""
   records ||--o| encoded_records : ""
   records ||--|{ import_records : ""
   records ||--|{ record_encoding_results : ""
   records ||--|{ record_images : ""
   records ||--|{ records_versions : ""
+  records ||--|{ validated_records : ""
   users ||--|{ encoded_records_versions : ""
   users ||--|{ exports : ""
   users ||--|{ image_uploads : ""

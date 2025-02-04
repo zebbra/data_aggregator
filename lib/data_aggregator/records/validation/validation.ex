@@ -182,7 +182,7 @@ defmodule DataAggregator.Records.Validation do
   end
 
   postgres do
-    table "approvals"
+    table "validations"
     repo DataAggregator.Repo
 
     references do

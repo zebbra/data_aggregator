@@ -1165,25 +1165,25 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Show more"
 msgstr "Zeige mehr"
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:255
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:222
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Add all of the following fields to reach level two: taxon_id, part_of_organism"
 msgstr "Ergänze deine Daten mit den folgenden Felder um Stufe 2 zu erreichen: taxon_id, part_of_organism"
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:261
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:228
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Add one of the follwing fields to reach level four: verbatim_event_date, identified_by, identification_qualifier, identification_verification_status, last_verified_by, verbatim_identification, georeferenced_by, georeference_verification_status, verbatim_coordinates, verbatim_latitude, verbatim_longitude, verbatim_locality, associated_media, completeness, other_catalog_numbers, verbatim_label"
 msgstr "Ergänze deine Daten mit den folgenden Felder um Stufe 4 zu erreichen: verbatim_event_date, identified_by, identification_qualifier, identification_verification_status, last_verified_by, verbatim_identification, georeferenced_by, georeference_verification_status, verbatim_coordinates, verbatim_latitude, verbatim_longitude, verbatim_locality, associated_media, completeness, other_catalog_numbers, verbatim_label"
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:258
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:225
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Add the following fields to reach level three: event_date, ecorded_by, type_status, original_name_usage, continent, country, county, decimal_latitude, decimal_longitude, higher_geography, locality, state_province, verbatim_depth, verbatim_elevation, year_collection_entrance, occurrence_id"
 msgstr "Ergänze deine Daten mit den folgenden Felder um Stufe 3 zu erreichen: event_date, ecorded_by, type_status, original_name_usage, continent, country, county, decimal_latitude, decimal_longitude, higher_geography, locality, state_province, verbatim_depth, verbatim_elevation, year_collection_entrance, occurrence_id"
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:252
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:219
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Please submit at least the institution code with your data, to reach the lowest quality level"
@@ -1630,7 +1630,7 @@ msgid "close"
 msgstr "schließen"
 
 #: lib/data_aggregator_web/live/collection_live/components/header.ex:121
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:226
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:193
 #, elixir-autogen, elixir-format
 msgid "Show on GBIF"
 msgstr "Auf GBIF anzeigen"
@@ -1890,22 +1890,22 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "An unknown error occurred"
 msgstr "Ein unbekannter Fehler ist aufgetreten"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:270
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:251
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Import"
 msgstr "Import"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:267
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:249
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Publication"
 msgstr "Veröffentlichung"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:278
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:259
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Unknown"
 msgstr "Unbekannt"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:173
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:161
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Unknown activity"
@@ -2348,176 +2348,170 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Records count / est."
 msgstr "Einträge / geschätzt"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:452
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:396
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "A data import was updating the record"
 msgstr "Ein Datenimport hat den Eintrag aktualisiert"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:368
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:337
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Dataset imported"
 msgstr "Datenset wurde importiert"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:369
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:338
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Encoded data updated"
 msgstr "Enkodierte Daten wurden aktualisiert"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:371
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:340
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Encoding failed"
 msgstr "Enkodierung fehlgeschlagen"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:370
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:339
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Encoding successful"
 msgstr "Enkodierung erfolgreich"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:498
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:506
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:518
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:530
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:430
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:438
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:450
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Failed"
 msgstr "Fehlgeschlagen"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:504
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:436
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "In Publication"
 msgstr "In Veröffentlichung"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:379
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:348
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Publication in progress"
 msgstr "Veröffentlichung läuft"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:465
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:409
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Publication status was updated"
 msgstr "Veröffentlichungsstatus wurde aktualisiert"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:505
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:437
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Published"
 msgstr "Veröffentlicht"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:503
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:435
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Publishing"
 msgstr "Veröffentlichen"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:459
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:471
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:483
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:403
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:415
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Record is"
 msgstr "Einträge"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:460
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:472
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:484
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:404
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:416
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Record is currently"
 msgstr "Der Eintrag ist zur Zeit am"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:461
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:473
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:485
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:405
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:417
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Record is now"
 msgstr "Eintrag ist jetzt"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:463
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:407
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Record publication"
 msgstr "Die Veröffentlichung ist"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:462
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:474
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:486
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:406
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:418
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Record was successful"
 msgstr "Der Eintrag wurde erfolgreich"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:507
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:519
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:531
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:439
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:451
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Stale"
 msgstr "Veraltet"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:497
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:429
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Successful"
 msgstr "Erfolgreich"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:464
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:408
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "The publication is now"
 msgstr "Die Veröffentlichung ist jetzt"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:455
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:399
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "The record encoding has"
 msgstr "Das Enkodieren ist"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:454
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:398
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "The record encoding was"
 msgstr "Das Enkodieren war"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:453
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:397
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "The record was updated by encoding"
 msgstr "Der Eintrag wurde durch Enkodierung aktualisiert"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:388
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:357
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Publication failed. Process should be started again"
 msgstr "Veröffentlichung fehlgeschlagen. Der Prozess sollte erneut gestartet werden"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:382
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:351
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Record is now in the publication pipeline - no further action required"
 msgstr "Der Eintrag ist in Veröffentlichung - keine weitere Aktion erforderlich"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:385
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:354
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Record publication was successful"
 msgstr "Die Veröffentlichung ist"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:391
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:360
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Record was changed after publishing it and has to be republished"
 msgstr "Der Eintrag wurde geändert nachdem er veröffentlicht wurde und muss erneut publiziert werden"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:502
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:434
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Not Published"
@@ -2528,13 +2522,13 @@ msgstr "Nicht veröffentlicht"
 msgid "Attribute"
 msgstr "Attribut"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:264
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:246
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Anonym"
 msgstr "Anonym"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:265
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:247
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "System"
@@ -3212,13 +3206,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
 msgid "Edit for rerun"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:274
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:255
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Image Upload"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:448
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:493
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:392
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:425
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "associatedMedia was updated"
@@ -4072,13 +4066,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Index"
 msgid "Dataset Publications"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:376
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:345
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "No publication information available. Publish the dataset to see the status"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:264
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:231
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Record has a top quality. Add more data fields to improve your datasets relevance"
@@ -4209,8 +4203,7 @@ msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
 msgid "of the DAGI and accept full responsibility for the data I upload and publish."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:268
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:269
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:250
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Validation"
 msgstr "Validierung"
@@ -4281,92 +4274,79 @@ msgctxt "DataAggregatorWeb.CollectionLive.PublishedRecords.Index"
 msgid "Publications and Validations"
 msgstr "Veröffentlichungen und Genehmigungen"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:516
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:528
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:448
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "In Validation"
 msgstr "Validierung"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:401
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:426
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:370
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "No validation information available. Validate the dataset to see the status"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:514
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:526
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:446
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Not Validated"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:416
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:441
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:385
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Record data changed after validating it and has to be revalidated"
 msgstr "Der Eintrag wurde geändert nachdem er genehmigt wurde und muss erneut genehmigt werden"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:407
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:432
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:376
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Record is now in the validation pipeline - no further action required"
 msgstr "Der Eintrag ist in Genehmigung - keine weitere Aktion erforderlich"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:475
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:487
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:419
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Record validation"
 msgstr "Die Veröffentlichung ist"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:410
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:435
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:379
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Record validation was successful"
 msgstr "Die Genehmigung ist"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:476
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:488
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:420
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "The validation is now"
 msgstr "Die Veröffentlichung ist jetzt"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:517
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:529
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:449
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Validated"
 msgstr "Validierung"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:515
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:527
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:447
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Validating"
 msgstr "Validierung"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:413
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:438
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:382
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Validation failed. Process should be started again"
 msgstr "Genehmigung fehlgeschlagen. Prozess sollte erneut gestartet werden"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:404
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:429
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:373
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Validation in progress"
 msgstr "Veröffentlichung läuft"
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:477
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:489
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:421
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Validation status was updated"

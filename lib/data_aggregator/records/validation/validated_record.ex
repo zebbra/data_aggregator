@@ -121,7 +121,7 @@ defmodule DataAggregator.Records.ValidatedRecord do
   end
 
   postgres do
-    table "approved_records"
+    table "validated_records"
     repo DataAggregator.Repo
 
     references do

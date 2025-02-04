@@ -1076,7 +1076,7 @@ Table records_versions {
   user_id uuid
 }
 
-Table approved_records {
+Table validated_records {
   ext_vernacular_names jsonb
   ext_species_profile jsonb
   ext_species_distribution jsonb
@@ -1368,7 +1368,7 @@ Table approved_records {
   collection_id uuid [pk]
 }
 
-Table approvals {
+Table validations {
   id uuid [pk]
   file_url varchar
   rows_count integer
@@ -1431,8 +1431,6 @@ Table oban_jobs {
   scheduled_at timestamp
 }
 
-Ref: collections.id < approvals.collection_id
-Ref: collections.id < approved_records.collection_id
 Ref: collections.id < encoded_records.collection_id
 Ref: collections.id < exports.collection_id
 Ref: collections.id < image_uploads.collection_id
@@ -1443,10 +1441,10 @@ Ref: collections.id < published_records.collection_id
 Ref: collections.id < record_encoding_results.collection_id
 Ref: collections.id < record_images.collection_id
 Ref: collections.id < records.collection_id
+Ref: collections.id < validated_records.collection_id
+Ref: collections.id < validations.collection_id
 Ref: encoded_records.id < encoded_records_versions.version_source_id
 Ref: encoded_records.tax_taxon_id < swiss_species.usage_key
-Ref: file_attachments.id < approvals.attachment_id
-Ref: file_attachments.id < approvals.error_log_id
 Ref: file_attachments.id < exports.attachment_id
 Ref: file_attachments.id < image_uploads.attachment_id
 Ref: file_attachments.id < image_uploads.upload_log_id
@@ -1454,15 +1452,17 @@ Ref: file_attachments.id < imports.attachment_id
 Ref: file_attachments.id < imports.error_log_id
 Ref: file_attachments.id < publications.attachment_id
 Ref: file_attachments.id < record_images.attachment_id
+Ref: file_attachments.id < validations.attachment_id
+Ref: file_attachments.id < validations.error_log_id
 Ref: image_uploads.id < record_images.image_upload_id
 Ref: imports.id < import_records.import_id
 Ref: publications.id < published_records.publication_id
-Ref: records.id < approved_records.record_id
 Ref: records.id - encoded_records.record_id
 Ref: records.id < import_records.record_id
 Ref: records.id < record_encoding_results.record_id
 Ref: records.id < record_images.record_id
 Ref: records.id < records_versions.version_source_id
+Ref: records.id < validated_records.record_id
 Ref: users.id < encoded_records_versions.user_id
 Ref: users.id < exports.started_by_id
 Ref: users.id < image_uploads.created_by_id

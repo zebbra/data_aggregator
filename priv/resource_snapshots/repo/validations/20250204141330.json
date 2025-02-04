@@ -118,7 +118,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "approvals_attachment_id_fkey",
+        "name": "validations_attachment_id_fkey",
         "on_delete": "delete",
         "on_update": "update",
         "primary_key?": true,
@@ -147,7 +147,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "approvals_error_log_id_fkey",
+        "name": "validations_error_log_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
@@ -176,7 +176,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "approvals_collection_id_fkey",
+        "name": "validations_collection_id_fkey",
         "on_delete": "delete",
         "on_update": "update",
         "primary_key?": true,
@@ -203,7 +203,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "F8023508E9731624A7DD7FDB74670B65B42673887849F394315EDF139F67DFA7",
+  "hash": "8222F2C462BBA8D6F65E706A913A45213E5D5A34F217BECCD37EE83BC7C8CCAA",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",
@@ -212,5 +212,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "approvals"
+  "table": "validations"
 }
