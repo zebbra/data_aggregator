@@ -28,7 +28,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
     set_exporting
     set_encoding
     set_fast_track_publishing
-    set_approving
+    set_validating
     set_idle
     set_idle_encoding
   )
@@ -146,14 +146,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
       |> Ash.Query.filter(expr(not_published == true))
       |> Ash.count!()
 
-    count_not_approved =
+    count_not_validated =
       Record
       |> Ash.Query.set_tenant(collection)
-      |> Ash.Query.filter(expr(not_approved == true))
+      |> Ash.Query.filter(expr(not_validated == true))
       |> Ash.count!()
 
     %{
-      records_count_not_approved: origin_records_count_not_approved,
+      records_count_not_validated: origin_records_count_not_validated,
       records_count_not_encoded: origin_records_count_not_encoded,
       records_count_not_published: origin_records_count_not_published
     } = socket.assigns
@@ -161,8 +161,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
     socket
     |> assign(:collection, collection)
     |> assign(
-      :records_count_not_approved,
-      AsyncResult.ok(origin_records_count_not_approved, count_not_approved)
+      :records_count_not_validated,
+      AsyncResult.ok(origin_records_count_not_validated, count_not_validated)
     )
     |> assign(
       :records_count_not_encoded,

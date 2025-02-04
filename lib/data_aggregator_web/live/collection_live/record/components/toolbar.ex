@@ -18,7 +18,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
     {"export", "hero-arrow-down-tray", "collection:export"},
     {"encode", "hero-puzzle-piece", "encode:toggle"},
     {"publish", "hero-globe-alt", "fast_track_pub:toggle"},
-    {"approve", "hero-check-badge", "approval_pub:toggle"}
+    {"validate", "hero-check-badge", "validation_pub:toggle"}
   ]
 
   attr :search, Phoenix.HTML.Form, default: nil, doc: "The search form"
@@ -106,7 +106,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
           <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-56 gap-1 border p-2 shadow-2xl">
             <li>
               <.link patch={path_helper(@collection.id, "encoding", @meta)}>
-                <input type="radio" name="layer" checked={@layer in ["encoding", "approval"]} />
+                <input type="radio" name="layer" checked={@layer in ["encoding", "validation"]} />
                 <span class="font-[sans-serif]">{current_layer_label("encoding")}</span>
               </.link>
             </li>
@@ -119,14 +119,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
             <div class="border-black-white/10 border-b"></div>
             <li>
               <.link patch={
-                if @layer == "approval" do
+                if @layer == "validation" do
                   path_helper(@collection.id, "encoding", @meta)
                 else
-                  path_helper(@collection.id, "approval", @meta)
+                  path_helper(@collection.id, "validation", @meta)
                 end
               }>
-                <input type="checkbox" name="approval" checked={@layer == "approval"} />
-                <span class="font-[sans-serif]">{current_layer_label("approval")}</span>
+                <input type="checkbox" name="validation" checked={@layer == "validation"} />
+                <span class="font-[sans-serif]">{current_layer_label("validation")}</span>
               </.link>
             </li>
           </ul>
@@ -220,7 +220,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
     """
   end
 
-  defp current_layer_label("approval"), do: ~t"Approval Layer"m
+  defp current_layer_label("validation"), do: ~t"Validation Layer"m
   defp current_layer_label("encoding"), do: ~t"Encoding Layer"m
   defp current_layer_label("import"), do: ~t"Import Layer"m
 
@@ -230,12 +230,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
 
   defp action_allowed?(user, "publish", collection), do: Collection.can_set_fast_track_publishing?(user, collection)
 
-  defp action_allowed?(user, "approve", collection), do: Collection.can_set_approving?(user, collection)
+  defp action_allowed?(user, "validate", collection), do: Collection.can_set_validating?(user, collection)
 
   defp action_allowed?(_, _), do: false
 
   def action_label("export"), do: ~t"Export"m
   def action_label("encode"), do: ~t"Encode"m
   def action_label("publish"), do: ~t"Publish"m
-  def action_label("approve"), do: ~t"Approve"m
+  def action_label("validate"), do: ~t"Validate"m
 end

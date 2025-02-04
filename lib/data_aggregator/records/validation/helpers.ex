@@ -1,23 +1,23 @@
-defmodule DataAggregator.Records.Approval.Helpers do
+defmodule DataAggregator.Records.Validation.Helpers do
   @moduledoc """
-  Helper functions for the `DataAggregator.Records.Approval` context.
+  Helper functions for the `DataAggregator.Records.Validation` context.
   """
 
   alias Ash.Changeset
   alias Ash.Error.Changes.Required
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
-  alias DataAggregator.Records.Approval
-  alias DataAggregator.Records.ApprovedRecord
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidatedRecord
+  alias DataAggregator.Records.Validation
 
   require Logger
 
-  @type approval_result ::
+  @type validation_result ::
           [{map(), [Ash.Error.t()]}]
 
-  @type approval_error :: %{
+  @type validation_error :: %{
           catalog_number: String.t(),
           occurrence_id: String.t(),
           scientific_name: String.t(),
@@ -59,7 +59,7 @@ defmodule DataAggregator.Records.Approval.Helpers do
         Changeset.change_attribute(changeset, :rows_count, rows_count)
 
       {:error, error} ->
-        Logger.warning("Approval CSV could not be read, error was #{inspect(error)}")
+        Logger.warning("Validation CSV could not be read, error was #{inspect(error)}")
 
         Changeset.add_error(changeset, error)
     end
@@ -68,9 +68,9 @@ defmodule DataAggregator.Records.Approval.Helpers do
   @doc """
   Creates a changeset, validates the data and returns the changeset
   """
-  @spec valid_approval_row(map()) :: {boolean(), [Ash.Error.t()]}
-  def valid_approval_row(row) do
-    changeset = ApprovedRecord.changeset_to_approve(row)
+  @spec valid_validation_row(map()) :: {boolean(), [Ash.Error.t()]}
+  def valid_validation_row(row) do
+    changeset = ValidatedRecord.changeset_to_validate(row)
 
     {changeset.valid?, changeset.errors}
   end
@@ -129,14 +129,15 @@ defmodule DataAggregator.Records.Approval.Helpers do
   end
 
   @doc """
-  Opens a new error log file for the given approval resource and returns a
+  Opens a new error log file for the given validation resource and returns a
     tuple with the path and the file.
   """
-  @spec open_error_log_file(Approval.t()) :: {String.t(), any()}
-  def open_error_log_file(approval) do
-    directory_path = FlatFileUtils.create_directory!("approval_errors_#{approval.id}")
+  @spec open_error_log_file(Validation.t()) :: {String.t(), any()}
+  def open_error_log_file(validation) do
+    directory_path = FlatFileUtils.create_directory!("validation_errors_#{validation.id}")
 
-    path = directory_path <> "/approval_error_log-#{approval.id}-#{Uniq.UUID.uuid7(:slug)}.csv"
+    path =
+      directory_path <> "/validation_error_log-#{validation.id}-#{Uniq.UUID.uuid7(:slug)}.csv"
 
     {path,
      File.open!(path, [
@@ -148,12 +149,12 @@ defmodule DataAggregator.Records.Approval.Helpers do
   @doc """
   Writes the errors to a CSV file.
   """
-  @spec write_error_log_file(any(), approval_result()) :: :ok
-  def write_error_log_file(file, approval_result) do
+  @spec write_error_log_file(any(), validation_result()) :: :ok
+  def write_error_log_file(file, validation_result) do
     errors =
-      approval_result
-      |> Enum.map(fn {row, approval_errors} ->
-        Enum.map(approval_errors, &map_to_normalized_error(&1, row))
+      validation_result
+      |> Enum.map(fn {row, validation_errors} ->
+        Enum.map(validation_errors, &map_to_normalized_error(&1, row))
       end)
       |> List.flatten()
 
@@ -170,10 +171,10 @@ defmodule DataAggregator.Records.Approval.Helpers do
   end
 
   @doc """
-  Uploads the error log file to S3 and updates the approval with the attachment.
+  Uploads the error log file to S3 and updates the validation with the attachment.
   """
-  @spec upload_error_log_file!(String.t(), Approval.t()) :: Approval.t()
-  def upload_error_log_file!(path, approval) do
+  @spec upload_error_log_file!(String.t(), Validation.t()) :: Validation.t()
+  def upload_error_log_file!(path, validation) do
     upload_fn = fn ->
       attachment = FlatFileUtils.store_on_s3!(path)
 
@@ -182,23 +183,23 @@ defmodule DataAggregator.Records.Approval.Helpers do
           amount_of_errors = Explorer.DataFrame.n_rows(df)
 
           Logger.warning(
-            "#{amount_of_errors} errors occured while approving. Adding errors as file to `approval.error_log`"
+            "#{amount_of_errors} errors occured while validating. Adding errors as file to `validation.error_log`"
           )
 
-          approval =
-            approval
-            |> Approval.update!(%{rows_error_count: amount_of_errors})
-            |> Approval.update_error_log!(attachment)
+          validation =
+            validation
+            |> Validation.update!(%{rows_error_count: amount_of_errors})
+            |> Validation.update_error_log!(attachment)
 
           # remove file from local tmp dir, as it is now stored on s3
           File.rm!(path)
 
-          approval
+          validation
 
         {:error, _} ->
           Logger.debug("CSV could not be read or - more likely - it was empty, so no errors were found.")
 
-          approval
+          validation
       end
     end
 
@@ -211,7 +212,7 @@ defmodule DataAggregator.Records.Approval.Helpers do
     end
   end
 
-  @spec map_to_normalized_error(Ash.Error.t(), map()) :: approval_error()
+  @spec map_to_normalized_error(Ash.Error.t(), map()) :: validation_error()
   defp map_to_normalized_error(error, row) do
     case_result =
       case error do

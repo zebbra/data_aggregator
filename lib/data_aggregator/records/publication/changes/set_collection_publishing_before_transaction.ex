@@ -2,7 +2,7 @@ defmodule DataAggregator.Records.Publication.Changes.SetCollectionPublishingBefo
   @moduledoc """
   Set the collection to fast_track_publishing before we start the publication itself.
   If the collection is not idle, we will not allow the publication to start. If the channel
-  is approval, we do not update the collection state. This is done in the Collection.approve
+  is validation, we do not update the collection state. This is done in the Collection.validate
   action.
   """
 
@@ -17,7 +17,7 @@ defmodule DataAggregator.Records.Publication.Changes.SetCollectionPublishingBefo
   end
 
   defp set_collection_publishing(%Changeset{data: %{channel: channel}} = changeset)
-       when channel in [:approval, "approval"] do
+       when channel in [:validation, "validation"] do
     changeset
   end
 

@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
+defmodule DataAggregatorWeb.CollectionLive.Record.ValidationModal do
   @moduledoc false
 
   use DataAggregatorWeb, :live_component
@@ -27,11 +27,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
   def render(assigns) do
     ~H"""
     <div class="contents">
-      <.modal_header id={@id} title={~t"Approval summary"} />
+      <.modal_header id={@id} title={~t"Validation summary"} />
       <div id={"#{@id}_inner_body"} class="h-full space-y-4 overflow-y-auto p-6">
         <p class="mb-4 text-sm">
           {mgettext(
-            "You are about to send %{count} records for approval by InfoSpecies. These records will be reviewed, validated and then eventually published to GBIForg.",
+            "You are about to send %{count} records for validation by InfoSpecies. These records will be reviewed, validated and then eventually published to GBIForg.",
             count: format_number(@count)
           )}
         </p>
@@ -50,7 +50,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
             <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
           </div>
           <p class="text-sm">
-            {~t"Please note that only Swiss specimen will be reviewed. All other specimen will be ignored during the approval process."m}
+            {~t"Please note that only Swiss specimen will be reviewed. All other specimen will be ignored during the validation process."m}
           </p>
         </div>
         <div class="flex">
@@ -58,7 +58,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
             <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
           </div>
           <p class="text-sm">
-            {~t"Please note that the approval process will involve manual work by InfoSpecies, which will review and validate each record for accuracy before publication to GBIF."m}
+            {~t"Please note that the validation process will involve manual work by InfoSpecies, which will review and validate each record for accuracy before publication to GBIF."m}
           </p>
         </div>
         <p class="text-sm">
@@ -85,7 +85,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
           </p>
         </div>
         <p class="text-base-content/60 mt-4 text-sm">
-          {~t"By clicking"m} <span class="text-base-content italic">{~t"Approve"m}</span>
+          {~t"By clicking"m} <span class="text-base-content italic">{~t"Validate"m}</span>
           {~t"an export will be created and automatically sent to InfoSpecies. No further action is required. Please note that this process may take some time."m}
         </p>
       </div>
@@ -97,7 +97,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
             class="btn btn-primary"
             disabled={@busy or @centered_count == 0}
           >
-            {~t"Approve"m}
+            {~t"Validate"m}
           </button>
           <button class="btn btn-ghost">
             {~t"Cancel"m}
@@ -111,13 +111,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
   defp assign_counts(socket) do
     %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
     actor = get_actor(socket)
-    collection = Ash.load!(collection, [:approval_query], lazy?: true, actor: actor)
+    collection = Ash.load!(collection, [:validation_query], lazy?: true, actor: actor)
 
-    approval_query = filter_map(ash_pagify, collection.approval_query, socket.assigns.layer)
+    validation_query = filter_map(ash_pagify, collection.validation_query, socket.assigns.layer)
 
     count_query =
       Record
-      |> AshPagify.query_for_filters_map(approval_query)
+      |> AshPagify.query_for_filters_map(validation_query)
       |> Ash.Query.set_tenant(collection)
 
     count = Ash.count!(count_query)
@@ -127,7 +127,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ApprovalModal do
     center_and_record_counts =
       Enum.map(infospecies_centers, fn center ->
         records_query =
-          AshPagify.merge_filters(%AshPagify{filters: approval_query}, %{
+          AshPagify.merge_filters(%AshPagify{filters: validation_query}, %{
             encoded_record: %{swiss_species: %{center: %{eq: center}}}
           }).filters
 

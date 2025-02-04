@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.Approval.Changes.SetMandatoryAttributes do
+defmodule DataAggregator.Records.Validation.Changes.SetMandatoryAttributes do
   @moduledoc """
-  Set mandatory fields for a approval_record according to its provided record.
+  Set mandatory fields for a validation_record according to its provided record.
   """
 
   use Ash.Resource.Change

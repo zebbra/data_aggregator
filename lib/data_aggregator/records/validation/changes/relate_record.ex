@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.Approval.Changes.RelateRecord do
+defmodule DataAggregator.Records.Validation.Changes.RelateRecord do
   @moduledoc """
-  This change relates the `DataAggregator.Records.Record` to the `DataAggregator.Records.ApprovedRecord`
+  This change relates the `DataAggregator.Records.Record` to the `DataAggregator.Records.ValidatedRecord`
   """
 
   use Ash.Resource.Change

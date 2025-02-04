@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.ApprovedRecord do
+defmodule DataAggregator.Records.ValidatedRecord do
   @moduledoc """
-  Ash resource representing a approved_record.
+  Ash resource representing a validated_record.
 
   > #### Info {: .info}
   >
@@ -19,12 +19,12 @@ defmodule DataAggregator.Records.ApprovedRecord do
 
   alias __MODULE__
   alias DataAggregator.DarwinCore
-  alias DataAggregator.Records.Approval
-  alias DataAggregator.Records.Approval.Changes.SetMandatoryAttributes
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.Validation
+  alias DataAggregator.Records.Validation.Changes.SetMandatoryAttributes
 
-  @type t :: %ApprovedRecord{}
+  @type t :: %ValidatedRecord{}
 
   attributes do
     uuid_attribute :id, prefix: "apr", public?: true
@@ -65,24 +65,24 @@ defmodule DataAggregator.Records.ApprovedRecord do
       upsert_fields [:extra_data | DarwinCore.Schema.prefixed_attribute_names()]
 
       change SetMandatoryAttributes
-      change Approval.Changes.SetOptionalAttributes
+      change Validation.Changes.SetOptionalAttributes
 
       change manage_relationship(:record, type: :append)
       change manage_relationship(:collection, type: :append)
     end
 
-    create :approve do
+    create :validate do
       description """
-      Creates or updates a `ApprovedRecord` from the given `params`.
+      Creates or updates a `ValidatedRecord` from the given `params`.
 
-      The record is associated with the given `DataAggregator.Records.Approval`
+      The record is associated with the given `DataAggregator.Records.Validation`
       """
 
       argument :record, :struct, allow_nil?: true
       argument :collection, :struct, allow_nil?: true
 
       change SetMandatoryAttributes
-      change Approval.Changes.UpdateRawRecordStateAfterAction
+      change Validation.Changes.UpdateRawRecordStateAfterAction
 
       upsert? true
       upsert_identity :record_mte_catalog_number
@@ -92,16 +92,16 @@ defmodule DataAggregator.Records.ApprovedRecord do
       change manage_relationship(:collection, type: :append)
     end
 
-    action :bulk_approve, :map do
+    action :bulk_validate, :map do
       description """
-      Approves multiple records using `Ash.bulk_create/3`.
+      Validates multiple records using `Ash.bulk_create/3`.
 
       The `rows` can be any enumberable, where each item which will be used as `params` for
-      the `DataAggregator.Records.ApprovedRecord.approve/1` action.
+      the `DataAggregator.Records.ValidatedRecord.validate/1` action.
       """
 
       argument :rows, :term, allow_nil?: false
-      run Approval.Actions.BulkApprove
+      run Validation.Actions.BulkValidate
     end
   end
 
@@ -114,8 +114,8 @@ defmodule DataAggregator.Records.ApprovedRecord do
     define :create
     define :update
     define :destroy
-    define :bulk_approve, args: [:rows]
-    define :approve
+    define :bulk_validate, args: [:rows]
+    define :validate
     define :get_by_id, action: :read, get_by: [:id]
     define :get_by_record, action: :read, get_by: [:record_id]
   end
@@ -136,14 +136,14 @@ defmodule DataAggregator.Records.ApprovedRecord do
   end
 
   json_api do
-    type "approved_record"
+    type "validated_record"
 
     primary_key do
       keys [:id, :collection_id]
     end
 
     routes do
-      base "/approved_records"
+      base "/validated_records"
 
       get :read
       index :read

@@ -75,7 +75,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
         />
         <.secondary_navigation_item
           href={~p"/datasets/#{@collection}/publications"}
-          label={~t"Publications and Approvals"m}
+          label={~t"Publications and Validations"m}
         />
         <.secondary_navigation_item
           href={~p"/datasets/#{@collection}/image_uploads"}

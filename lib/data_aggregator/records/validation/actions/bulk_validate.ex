@@ -1,12 +1,12 @@
-defmodule DataAggregator.Records.Approval.Actions.BulkApprove do
+defmodule DataAggregator.Records.Validation.Actions.BulkValidate do
   @moduledoc """
-  Custom action to bulk approve a stream of rows using `DataAggregator.Records.AprovedRecord.approve/2`
+  Custom action to bulk validate a stream of rows using `DataAggregator.Records.AprovedRecord.validate/2`
   """
 
   use Ash.Resource.Actions.Implementation
 
   alias DataAggregator.Records
-  alias DataAggregator.Records.ApprovedRecord
+  alias DataAggregator.Records.ValidatedRecord
 
   require Logger
 
@@ -15,14 +15,14 @@ defmodule DataAggregator.Records.Approval.Actions.BulkApprove do
     %{rows: rows} = input.arguments
 
     max_concurrency = Records.import_max_concurrency()
-    batch_size = ceil(Records.approval_batch_size() / max_concurrency)
+    batch_size = ceil(Records.validation_batch_size() / max_concurrency)
 
-    Logger.debug("Bulk approving records with batch size #{batch_size} (concurrency: #{max_concurrency}) ...")
+    Logger.debug("Bulk validating records with batch size #{batch_size} (concurrency: #{max_concurrency}) ...")
 
     result =
       rows
       |> Stream.map(& &1)
-      |> Ash.bulk_create!(ApprovedRecord, :approve,
+      |> Ash.bulk_create!(ValidatedRecord, :validate,
         return_errors?: true,
         return_records?: true,
         max_concurrency: max_concurrency,

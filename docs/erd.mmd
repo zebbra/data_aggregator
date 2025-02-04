@@ -25,321 +25,6 @@ erDiagram
     timestamp inserted_at
     timestamp updated_at
   }
-  institutions {
-    uuid id PK
-    varchar name
-    varchar code
-    varchar address
-    varchar zip_code
-    varchar city
-    varchar country
-    varchar mail
-    varchar tel
-    varchar contact_person
-    varchar grscicoll_reference
-    timestamp inserted_at
-    timestamp updated_at
-  }
-  approvals {
-    uuid id PK
-    varchar file_url
-    integer rows_count
-    integer rows_invalid_count
-    integer rows_approved_count
-    integer rows_error_count
-    timestamp started_at
-    timestamp finished_at
-    timestamp inserted_at
-    timestamp updated_at
-    uuid attachment_id
-    uuid error_log_id
-    varchar state
-  }
-  approved_records {
-    jsonb ext_vernacular_names
-    jsonb ext_species_profile
-    jsonb ext_species_distribution
-    jsonb ext_references
-    jsonb ext_resource_relationship
-    jsonb ext_permit
-    jsonb ext_chronometric
-    jsonb ext_assertions
-    jsonb ext_amplification
-    varchar oth_specify_author_of_record
-    varchar oth_specify_event
-    varchar oth_specify_locality
-    varchar oth_specify_organism_name
-    varchar oth_specify_person
-    varchar oth_type
-    varchar oth_rights_holder
-    varchar oth_owner_institution_code
-    varchar oth_modified_by
-    varchar oth_license
-    varchar oth_language
-    varchar oth_institution_id
-    varchar oth_institution_code
-    varchar oth_information_withheld
-    varchar oth_date_available
-    varchar oth_dataset_name
-    varchar oth_dataset_id
-    varchar oth_data_generalizations
-    varchar oth_collection_id
-    varchar oth_collection_code
-    varchar oth_bibliographic_citation
-    varchar oth_basis_of_record
-    varchar oth_access_rights
-    varchar pvn_tissue_bank_institution
-    varchar pvn_storage_name
-    varchar pvn_preservation_type
-    varchar pvn_sequence
-    varchar pvn_preservation_temperature
-    varchar pvn_preservation_special_mode
-    varchar pvn_preservation_quality
-    varchar pvn_preservation_mode_text
-    varchar pvn_preservation_mode_keywords
-    varchar pvn_preservation_method
-    varchar pvn_preservation_id
-    varchar pvn_preservation_date_begin
-    varchar pvn_preservation_alteration_text
-    varchar pvn_dna_storage_code
-    varchar pvn_dna_bank_institution
-    varchar occ_occurrence_id
-    varchar org_organism_remarks
-    varchar org_organism_scope
-    varchar org_organism_name
-    varchar org_organism_id
-    varchar org_pathway
-    varchar org_degree_of_establishment
-    varchar org_establishment_means
-    varchar org_sex
-    varchar gec_place_of_origin
-    varchar gec_member
-    varchar gec_group
-    varchar gec_formation
-    varchar gec_lithostratigraphic_terms
-    varchar gec_highest_biostratigraphic_zone
-    varchar gec_lowest_biostratigraphic_zone
-    varchar gec_latest_age_or_highest_stage
-    varchar gec_latest_epoch_or_highest_series
-    varchar gec_latest_period_or_highest_system
-    varchar gec_latest_era_or_highest_erathem
-    varchar gec_latest_eon_or_highest_eonothem
-    varchar gec_earliest_period_or_lowest_system
-    varchar gec_earliest_era_or_lowest_erathem
-    varchar gec_earliest_epoch_or_lowest_series
-    varchar gec_earliest_eon_or_lowest_eonothem
-    varchar gec_earliest_age_or_lowest_stage
-    varchar gec_bed
-    varchar gec_geological_context_id
-    varchar mts_material_sample_type
-    varchar mts_material_sample_id
-    varchar mte_original_biominerals
-    varchar mte_orig_col_author
-    integer mte_year_collection_entrance
-    varchar mte_tissue_bank_id
-    varchar mte_taphonomy
-    varchar mte_sample_designation
-    varchar mte_orientation
-    varchar mte_organism_quantity_method
-    varchar mte_mineralization
-    varchar mte_matrix
-    varchar mte_gbif_doi
-    varchar mte_form
-    varchar mte_feeding_predation_traces
-    varchar mte_extraction_temporary_id
-    varchar mte_encrustation
-    varchar mte_dna_stable_id
-    varchar mte_dna_bank_id
-    varchar mte_depositional_environment_type
-    varchar mte_depositional_environment_text
-    varchar mte_completeness
-    varchar mte_paleo_completeness
-    varchar mte_catalog_number
-    varchar mte_bioerosion
-    varchar mte_assemblage_origin
-    varchar mte_articulation
-    varchar mte_permit_id
-    varchar mte_replacement_minerals
-    varchar mte_barcode_label
-    varchar mte_references
-    varchar mte_other_catalog_numbers
-    varchar mte_associated_media
-    varchar mte_occurrence_status
-    varchar mte_behavior
-    varchar mte_reproductive_condition
-    varchar mte_life_stage
-    varchar mte_organism_quantity_type
-    varchar mte_organism_quantity
-    varchar mte_recorded_by_id
-    varchar mte_recorded_by
-    varchar mte_record_number
-    varchar mte_material_entity_remarks
-    varchar mte_preparations
-    varchar mte_verbatim_label
-    varchar mte_post_burial_transportation
-    varchar mte_part_of_organism
-    varchar mte_parent_material_entity_id
-    varchar mte_anatomical_description
-    varchar mte_material_entity_id
-    float loc_swiss_coordinates_y
-    float loc_swiss_coordinates_x
-    varchar loc_georeference_verification_status
-    varchar loc_georeference_remarks
-    varchar loc_georeference_sources
-    varchar loc_georeference_protocol
-    date loc_georeferenced_date
-    varchar loc_georeferenced_by
-    float loc_footprint_spatial_fit
-    varchar loc_footprint_srs
-    varchar loc_footprint_wkt
-    varchar loc_verbatim_srs
-    varchar loc_verbatim_coordinate_system
-    varchar loc_verbatim_longitude
-    varchar loc_verbatim_latitude
-    varchar loc_verbatim_coordinates
-    float loc_point_radius_spatial_fit
-    float loc_coordinate_precision
-    integer loc_coordinate_uncertainty_in_meters
-    varchar loc_geodetic_datum
-    varchar loc_location_remarks
-    varchar loc_location_according_to
-    integer loc_maximum_distance_above_surface_in_meters
-    integer loc_minimum_distance_above_surface_in_meters
-    integer loc_verbatim_depth
-    integer loc_maximum_depth_in_meters
-    integer loc_minimum_depth_in_meters
-    varchar loc_vertical_datum
-    varchar loc_verbatim_elevation
-    integer loc_maximum_elevation_in_meters
-    integer loc_minimum_elevation_in_meters
-    varchar loc_country_code
-    varchar loc_municipality
-    varchar loc_county
-    float loc_decimal_latitude
-    float loc_decimal_longitude
-    varchar loc_state_province
-    varchar loc_verbatim_locality
-    varchar loc_locality
-    varchar loc_country
-    varchar loc_island
-    varchar loc_island_group
-    varchar loc_continent
-    varchar loc_higher_geography
-    varchar loc_water_body_id
-    varchar loc_water_body
-    varchar loc_higher_geography_id
-    varchar loc_location_id
-    varchar tax_taxon_remarks
-    varchar tax_nomenclatural_status
-    varchar tax_taxonomic_status
-    varchar tax_nomenclatural_code
-    varchar tax_vernacular_name
-    varchar tax_verbatim_taxon_rank
-    varchar tax_taxon_rank
-    varchar tax_accepted_name_usage_id
-    varchar tax_accepted_name_usage
-    integer tax_taxon_id_ch
-    varchar tax_cultivar_epithet
-    varchar tax_specific_epithet
-    varchar tax_infraspecific_epithet
-    varchar tax_infrageneric_epithet
-    varchar tax_scientific_name_authorship
-    varchar tax_generic_name
-    varchar tax_scientific_name
-    varchar tax_sub_tribe
-    varchar tax_tribe
-    varchar tax_sub_genus
-    varchar tax_genus
-    varchar tax_subfamily
-    varchar tax_family
-    varchar tax_order
-    varchar tax_class
-    varchar tax_superfamily
-    varchar tax_phylum
-    varchar tax_kingdom
-    varchar tax_taxon_concept_id
-    varchar tax_higher_classification
-    varchar tax_name_published_in_year
-    varchar tax_name_published_in
-    varchar tax_name_published_in_id
-    varchar tax_name_according_to
-    varchar tax_name_according_to_id
-    varchar tax_original_name_usage
-    varchar tax_original_name_usage_id
-    varchar tax_parent_name_usage
-    varchar tax_parent_name_usage_id
-    varchar tax_scientific_name_id
-    integer tax_identifier
-    integer tax_taxon_id
-    varchar idf_last_verified_by_id
-    varchar idf_last_verified_by
-    varchar idf_verbatim_identification
-    varchar idf_previous_identifications
-    varchar idf_identified_by_id
-    varchar idf_identification_verification_status
-    varchar idf_identification_remarks
-    varchar idf_identification_reference
-    varchar idf_identification_qualifier
-    varchar idf_evidence_type
-    varchar idf_type_status
-    varchar idf_identified_by
-    date idf_date_identified
-    float eve_shrub_layer_height_in_meters
-    varchar eve_start_day_of_year
-    varchar eve_sampling_effort
-    integer eve_sample_size_unit
-    integer eve_sample_size_value
-    varchar eve_sampling_protocol
-    varchar eve_substratum_state
-    varchar eve_substratum
-    varchar eve_micro_structure
-    varchar eve_landscape_structure
-    varchar eve_influence
-    varchar eve_habitat_ref
-    varchar eve_habitat_inclusion
-    varchar eve_habitat_contact
-    varchar eve_habitat_code
-    integer eve_end_of_period_year
-    integer eve_end_of_period_month
-    integer eve_end_of_period_day
-    integer eve_tree_layer_height_in_meters
-    varchar eve_syntaxon_name
-    varchar eve_project
-    boolean eve_mosses_identified
-    boolean eve_lichens_identified
-    integer eve_inclination_in_degrees
-    integer eve_herb_layer_height_in_centimeters
-    varchar eve_event_remarks
-    varchar eve_field_notes
-    varchar eve_habitat
-    varchar eve_verbatim_event_date
-    integer eve_year
-    integer eve_month
-    integer eve_day
-    integer eve_end_day_of_year
-    varchar eve_event_time
-    date eve_event_date
-    varchar eve_field_number
-    varchar eve_parent_event_id
-    varchar eve_event_id
-    float eve_cover_water_in_percentage
-    float eve_cover_trees_in_percentage
-    float eve_cover_total_in_percentage
-    float eve_cover_shrubs_in_percentage
-    float eve_cover_rock_in_percentage
-    float eve_cover_mosses_in_percentage
-    float eve_cover_litter_in_percentage
-    float eve_cover_lychens_in_percentage
-    float eve_cover_herbs_in_percentage
-    float eve_cover_cryptogams_in_percentage
-    float eve_cover_algae_in_percentage
-    varchar eve_aspect
-    uuid id PK
-    jsonb extra_data
-    timestamp inserted_at
-    timestamp updated_at
-    uuid record_id
-  }
   collections {
     uuid id PK
     integer items_to_digitize
@@ -349,13 +34,15 @@ erDiagram
     varchar grscicoll_reference
     varchar grscicoll_institution_key
     varchar grscicoll_institution_code
+    varchar grscicoll_institution_name
     varchar description
     varchar gbif_dataset_key
+    varchar gbif_doi
     array import_mapping
+    integer records_count
     varchar type
     timestamp inserted_at
     timestamp updated_at
-    uuid institution_id
     varchar state
   }
   encoded_records {
@@ -376,12 +63,16 @@ erDiagram
     varchar oth_type
     varchar oth_rights_holder
     varchar oth_owner_institution_code
+    varchar oth_modified
     varchar oth_modified_by
     varchar oth_license
     varchar oth_language
     varchar oth_institution_id
     varchar oth_institution_code
     varchar oth_information_withheld
+    varchar oth_gbif_ch_id
+    varchar oth_gbif_id
+    varchar oth_gbif_doi
     varchar oth_date_available
     varchar oth_dataset_name
     varchar oth_dataset_id
@@ -446,7 +137,6 @@ erDiagram
     varchar mte_organism_quantity_method
     varchar mte_mineralization
     varchar mte_matrix
-    varchar mte_gbif_doi
     varchar mte_form
     varchar mte_feeding_predation_traces
     varchar mte_extraction_temporary_id
@@ -484,13 +174,15 @@ erDiagram
     varchar mte_parent_material_entity_id
     varchar mte_anatomical_description
     varchar mte_material_entity_id
-    float loc_swiss_coordinates_y
-    float loc_swiss_coordinates_x
+    float loc_swiss_coordinates_lv95_y
+    float loc_swiss_coordinates_lv95_x
+    float loc_swiss_coordinates_lv03_y
+    float loc_swiss_coordinates_lv03_x
     varchar loc_georeference_verification_status
     varchar loc_georeference_remarks
     varchar loc_georeference_sources
     varchar loc_georeference_protocol
-    date loc_georeferenced_date
+    varchar loc_georeferenced_date
     varchar loc_georeferenced_by
     float loc_footprint_spatial_fit
     varchar loc_footprint_srs
@@ -502,19 +194,19 @@ erDiagram
     varchar loc_verbatim_coordinates
     float loc_point_radius_spatial_fit
     float loc_coordinate_precision
-    integer loc_coordinate_uncertainty_in_meters
+    float loc_coordinate_uncertainty_in_meters
     varchar loc_geodetic_datum
     varchar loc_location_remarks
     varchar loc_location_according_to
-    integer loc_maximum_distance_above_surface_in_meters
-    integer loc_minimum_distance_above_surface_in_meters
-    integer loc_verbatim_depth
-    integer loc_maximum_depth_in_meters
-    integer loc_minimum_depth_in_meters
+    float loc_maximum_distance_above_surface_in_meters
+    float loc_minimum_distance_above_surface_in_meters
+    varchar loc_verbatim_depth
+    float loc_maximum_depth_in_meters
+    float loc_minimum_depth_in_meters
     varchar loc_vertical_datum
     varchar loc_verbatim_elevation
-    integer loc_maximum_elevation_in_meters
-    integer loc_minimum_elevation_in_meters
+    float loc_maximum_elevation_in_meters
+    float loc_minimum_elevation_in_meters
     varchar loc_country_code
     varchar loc_municipality
     varchar loc_county
@@ -586,7 +278,7 @@ erDiagram
     varchar idf_evidence_type
     varchar idf_type_status
     varchar idf_identified_by
-    date idf_date_identified
+    varchar idf_date_identified
     float eve_shrub_layer_height_in_meters
     varchar eve_start_day_of_year
     varchar eve_sampling_effort
@@ -605,13 +297,13 @@ erDiagram
     integer eve_end_of_period_year
     integer eve_end_of_period_month
     integer eve_end_of_period_day
-    integer eve_tree_layer_height_in_meters
+    float eve_tree_layer_height_in_meters
     varchar eve_syntaxon_name
     varchar eve_project
     boolean eve_mosses_identified
     boolean eve_lichens_identified
-    integer eve_inclination_in_degrees
-    integer eve_herb_layer_height_in_centimeters
+    float eve_inclination_in_degrees
+    float eve_herb_layer_height_in_centimeters
     varchar eve_event_remarks
     varchar eve_field_notes
     varchar eve_habitat
@@ -621,7 +313,7 @@ erDiagram
     integer eve_day
     integer eve_end_day_of_year
     varchar eve_event_time
-    date eve_event_date
+    varchar eve_event_date
     varchar eve_field_number
     varchar eve_parent_event_id
     varchar eve_event_id
@@ -640,19 +332,27 @@ erDiagram
     uuid id PK
     jsonb extra_data
     varchar iucn_redlist_category
+    boolean iucn_redlist
+    boolean mids_level_one
+    boolean mids_level_two
+    boolean mids_level_three
+    boolean mids_level_four
     varchar tsv
     timestamp inserted_at
     timestamp updated_at
     uuid record_id
+    uuid collection_id
   }
   encoded_records_versions {
     uuid id PK
     varchar version_action_type
     varchar version_action_name
+    uuid collection_id
     uuid version_source_id
     jsonb changes
     timestamp version_inserted_at
     timestamp version_updated_at
+    uuid user_id
   }
   record_encoding_results {
     uuid id PK
@@ -664,6 +364,7 @@ erDiagram
     timestamp inserted_at
     timestamp updated_at
     uuid record_id
+    uuid collection_id PK
   }
   exports {
     uuid id PK
@@ -680,7 +381,23 @@ erDiagram
     timestamp inserted_at
     timestamp updated_at
     uuid collection_id
+    uuid started_by_id
     uuid attachment_id
+    varchar state
+  }
+  image_uploads {
+    uuid id PK
+    timestamp inserted_at
+    timestamp updated_at
+    timestamp started_at
+    timestamp finished_at
+    array invalid_file_infos
+    varchar mapping_identifier
+    uuid collection_id
+    uuid created_by_id
+    uuid started_by_id
+    uuid attachment_id
+    uuid upload_log_id
     varchar state
   }
   imports {
@@ -696,6 +413,8 @@ erDiagram
     integer rows_imported_count
     integer rows_error_count
     uuid collection_id
+    uuid created_by_id
+    uuid started_by_id
     uuid attachment_id
     uuid error_log_id
     varchar state
@@ -703,6 +422,7 @@ erDiagram
   import_records {
     uuid import_id PK
     uuid record_id PK
+    uuid collection_id PK
   }
   publications {
     uuid id PK
@@ -715,11 +435,307 @@ erDiagram
     integer published_count
     integer rows_count
     varchar center
+    varchar existing_dataset_key
+    varchar layer
+    varchar license
     timestamp inserted_at
     timestamp updated_at
     uuid collection_id
+    uuid started_by_id
     uuid attachment_id
     varchar state
+  }
+  published_records {
+    jsonb ext_vernacular_names
+    jsonb ext_species_profile
+    jsonb ext_species_distribution
+    jsonb ext_references
+    jsonb ext_resource_relationship
+    jsonb ext_permit
+    jsonb ext_chronometric
+    jsonb ext_assertions
+    jsonb ext_amplification
+    varchar oth_specify_author_of_record
+    varchar oth_specify_event
+    varchar oth_specify_locality
+    varchar oth_specify_organism_name
+    varchar oth_specify_person
+    varchar oth_type
+    varchar oth_rights_holder
+    varchar oth_owner_institution_code
+    varchar oth_modified
+    varchar oth_modified_by
+    varchar oth_license
+    varchar oth_language
+    varchar oth_institution_id
+    varchar oth_institution_code
+    varchar oth_information_withheld
+    varchar oth_gbif_ch_id
+    varchar oth_gbif_id
+    varchar oth_gbif_doi
+    varchar oth_date_available
+    varchar oth_dataset_name
+    varchar oth_dataset_id
+    varchar oth_data_generalizations
+    varchar oth_collection_id
+    varchar oth_collection_code
+    varchar oth_bibliographic_citation
+    varchar oth_basis_of_record
+    varchar oth_access_rights
+    varchar pvn_tissue_bank_institution
+    varchar pvn_storage_name
+    varchar pvn_preservation_type
+    varchar pvn_sequence
+    varchar pvn_preservation_temperature
+    varchar pvn_preservation_special_mode
+    varchar pvn_preservation_quality
+    varchar pvn_preservation_mode_text
+    varchar pvn_preservation_mode_keywords
+    varchar pvn_preservation_method
+    varchar pvn_preservation_id
+    varchar pvn_preservation_date_begin
+    varchar pvn_preservation_alteration_text
+    varchar pvn_dna_storage_code
+    varchar pvn_dna_bank_institution
+    varchar occ_occurrence_id
+    varchar org_organism_remarks
+    varchar org_organism_scope
+    varchar org_organism_name
+    varchar org_organism_id
+    varchar org_pathway
+    varchar org_degree_of_establishment
+    varchar org_establishment_means
+    varchar org_sex
+    varchar gec_place_of_origin
+    varchar gec_member
+    varchar gec_group
+    varchar gec_formation
+    varchar gec_lithostratigraphic_terms
+    varchar gec_highest_biostratigraphic_zone
+    varchar gec_lowest_biostratigraphic_zone
+    varchar gec_latest_age_or_highest_stage
+    varchar gec_latest_epoch_or_highest_series
+    varchar gec_latest_period_or_highest_system
+    varchar gec_latest_era_or_highest_erathem
+    varchar gec_latest_eon_or_highest_eonothem
+    varchar gec_earliest_period_or_lowest_system
+    varchar gec_earliest_era_or_lowest_erathem
+    varchar gec_earliest_epoch_or_lowest_series
+    varchar gec_earliest_eon_or_lowest_eonothem
+    varchar gec_earliest_age_or_lowest_stage
+    varchar gec_bed
+    varchar gec_geological_context_id
+    varchar mts_material_sample_type
+    varchar mts_material_sample_id
+    varchar mte_original_biominerals
+    varchar mte_orig_col_author
+    integer mte_year_collection_entrance
+    varchar mte_tissue_bank_id
+    varchar mte_taphonomy
+    varchar mte_sample_designation
+    varchar mte_orientation
+    varchar mte_organism_quantity_method
+    varchar mte_mineralization
+    varchar mte_matrix
+    varchar mte_form
+    varchar mte_feeding_predation_traces
+    varchar mte_extraction_temporary_id
+    varchar mte_encrustation
+    varchar mte_dna_stable_id
+    varchar mte_dna_bank_id
+    varchar mte_depositional_environment_type
+    varchar mte_depositional_environment_text
+    varchar mte_completeness
+    varchar mte_paleo_completeness
+    varchar mte_catalog_number
+    varchar mte_bioerosion
+    varchar mte_assemblage_origin
+    varchar mte_articulation
+    varchar mte_permit_id
+    varchar mte_replacement_minerals
+    varchar mte_barcode_label
+    varchar mte_references
+    varchar mte_other_catalog_numbers
+    varchar mte_associated_media
+    varchar mte_occurrence_status
+    varchar mte_behavior
+    varchar mte_reproductive_condition
+    varchar mte_life_stage
+    varchar mte_organism_quantity_type
+    varchar mte_organism_quantity
+    varchar mte_recorded_by_id
+    varchar mte_recorded_by
+    varchar mte_record_number
+    varchar mte_material_entity_remarks
+    varchar mte_preparations
+    varchar mte_verbatim_label
+    varchar mte_post_burial_transportation
+    varchar mte_part_of_organism
+    varchar mte_parent_material_entity_id
+    varchar mte_anatomical_description
+    varchar mte_material_entity_id
+    float loc_swiss_coordinates_lv95_y
+    float loc_swiss_coordinates_lv95_x
+    float loc_swiss_coordinates_lv03_y
+    float loc_swiss_coordinates_lv03_x
+    varchar loc_georeference_verification_status
+    varchar loc_georeference_remarks
+    varchar loc_georeference_sources
+    varchar loc_georeference_protocol
+    varchar loc_georeferenced_date
+    varchar loc_georeferenced_by
+    float loc_footprint_spatial_fit
+    varchar loc_footprint_srs
+    varchar loc_footprint_wkt
+    varchar loc_verbatim_srs
+    varchar loc_verbatim_coordinate_system
+    varchar loc_verbatim_longitude
+    varchar loc_verbatim_latitude
+    varchar loc_verbatim_coordinates
+    float loc_point_radius_spatial_fit
+    float loc_coordinate_precision
+    float loc_coordinate_uncertainty_in_meters
+    varchar loc_geodetic_datum
+    varchar loc_location_remarks
+    varchar loc_location_according_to
+    float loc_maximum_distance_above_surface_in_meters
+    float loc_minimum_distance_above_surface_in_meters
+    varchar loc_verbatim_depth
+    float loc_maximum_depth_in_meters
+    float loc_minimum_depth_in_meters
+    varchar loc_vertical_datum
+    varchar loc_verbatim_elevation
+    float loc_maximum_elevation_in_meters
+    float loc_minimum_elevation_in_meters
+    varchar loc_country_code
+    varchar loc_municipality
+    varchar loc_county
+    float loc_decimal_latitude
+    float loc_decimal_longitude
+    varchar loc_state_province
+    varchar loc_verbatim_locality
+    varchar loc_locality
+    varchar loc_country
+    varchar loc_island
+    varchar loc_island_group
+    varchar loc_continent
+    varchar loc_higher_geography
+    varchar loc_water_body_id
+    varchar loc_water_body
+    varchar loc_higher_geography_id
+    varchar loc_location_id
+    varchar tax_taxon_remarks
+    varchar tax_nomenclatural_status
+    varchar tax_taxonomic_status
+    varchar tax_nomenclatural_code
+    varchar tax_vernacular_name
+    varchar tax_verbatim_taxon_rank
+    varchar tax_taxon_rank
+    varchar tax_accepted_name_usage_id
+    varchar tax_accepted_name_usage
+    integer tax_taxon_id_ch
+    varchar tax_cultivar_epithet
+    varchar tax_specific_epithet
+    varchar tax_infraspecific_epithet
+    varchar tax_infrageneric_epithet
+    varchar tax_scientific_name_authorship
+    varchar tax_generic_name
+    varchar tax_scientific_name
+    varchar tax_sub_tribe
+    varchar tax_tribe
+    varchar tax_sub_genus
+    varchar tax_genus
+    varchar tax_subfamily
+    varchar tax_family
+    varchar tax_order
+    varchar tax_class
+    varchar tax_superfamily
+    varchar tax_phylum
+    varchar tax_kingdom
+    varchar tax_taxon_concept_id
+    varchar tax_higher_classification
+    varchar tax_name_published_in_year
+    varchar tax_name_published_in
+    varchar tax_name_published_in_id
+    varchar tax_name_according_to
+    varchar tax_name_according_to_id
+    varchar tax_original_name_usage
+    varchar tax_original_name_usage_id
+    varchar tax_parent_name_usage
+    varchar tax_parent_name_usage_id
+    varchar tax_scientific_name_id
+    integer tax_identifier
+    integer tax_taxon_id
+    varchar idf_last_verified_by_id
+    varchar idf_last_verified_by
+    varchar idf_verbatim_identification
+    varchar idf_previous_identifications
+    varchar idf_identified_by_id
+    varchar idf_identification_verification_status
+    varchar idf_identification_remarks
+    varchar idf_identification_reference
+    varchar idf_identification_qualifier
+    varchar idf_evidence_type
+    varchar idf_type_status
+    varchar idf_identified_by
+    varchar idf_date_identified
+    float eve_shrub_layer_height_in_meters
+    varchar eve_start_day_of_year
+    varchar eve_sampling_effort
+    integer eve_sample_size_unit
+    integer eve_sample_size_value
+    varchar eve_sampling_protocol
+    varchar eve_substratum_state
+    varchar eve_substratum
+    varchar eve_micro_structure
+    varchar eve_landscape_structure
+    varchar eve_influence
+    varchar eve_habitat_ref
+    varchar eve_habitat_inclusion
+    varchar eve_habitat_contact
+    varchar eve_habitat_code
+    integer eve_end_of_period_year
+    integer eve_end_of_period_month
+    integer eve_end_of_period_day
+    float eve_tree_layer_height_in_meters
+    varchar eve_syntaxon_name
+    varchar eve_project
+    boolean eve_mosses_identified
+    boolean eve_lichens_identified
+    float eve_inclination_in_degrees
+    float eve_herb_layer_height_in_centimeters
+    varchar eve_event_remarks
+    varchar eve_field_notes
+    varchar eve_habitat
+    varchar eve_verbatim_event_date
+    integer eve_year
+    integer eve_month
+    integer eve_day
+    integer eve_end_day_of_year
+    varchar eve_event_time
+    varchar eve_event_date
+    varchar eve_field_number
+    varchar eve_parent_event_id
+    varchar eve_event_id
+    float eve_cover_water_in_percentage
+    float eve_cover_trees_in_percentage
+    float eve_cover_total_in_percentage
+    float eve_cover_shrubs_in_percentage
+    float eve_cover_rock_in_percentage
+    float eve_cover_mosses_in_percentage
+    float eve_cover_litter_in_percentage
+    float eve_cover_lychens_in_percentage
+    float eve_cover_herbs_in_percentage
+    float eve_cover_cryptogams_in_percentage
+    float eve_cover_algae_in_percentage
+    varchar eve_aspect
+    uuid id PK
+    varchar record_id PK
+    jsonb extra_data
+    timestamp inserted_at
+    timestamp updated_at
+    uuid collection_id PK
+    uuid publication_id
   }
   records {
     jsonb ext_vernacular_names
@@ -739,12 +755,16 @@ erDiagram
     varchar oth_type
     varchar oth_rights_holder
     varchar oth_owner_institution_code
+    varchar oth_modified
     varchar oth_modified_by
     varchar oth_license
     varchar oth_language
     varchar oth_institution_id
     varchar oth_institution_code
     varchar oth_information_withheld
+    varchar oth_gbif_ch_id
+    varchar oth_gbif_id
+    varchar oth_gbif_doi
     varchar oth_date_available
     varchar oth_dataset_name
     varchar oth_dataset_id
@@ -809,7 +829,6 @@ erDiagram
     varchar mte_organism_quantity_method
     varchar mte_mineralization
     varchar mte_matrix
-    varchar mte_gbif_doi
     varchar mte_form
     varchar mte_feeding_predation_traces
     varchar mte_extraction_temporary_id
@@ -847,13 +866,15 @@ erDiagram
     varchar mte_parent_material_entity_id
     varchar mte_anatomical_description
     varchar mte_material_entity_id
-    float loc_swiss_coordinates_y
-    float loc_swiss_coordinates_x
+    float loc_swiss_coordinates_lv95_y
+    float loc_swiss_coordinates_lv95_x
+    float loc_swiss_coordinates_lv03_y
+    float loc_swiss_coordinates_lv03_x
     varchar loc_georeference_verification_status
     varchar loc_georeference_remarks
     varchar loc_georeference_sources
     varchar loc_georeference_protocol
-    date loc_georeferenced_date
+    varchar loc_georeferenced_date
     varchar loc_georeferenced_by
     float loc_footprint_spatial_fit
     varchar loc_footprint_srs
@@ -865,19 +886,19 @@ erDiagram
     varchar loc_verbatim_coordinates
     float loc_point_radius_spatial_fit
     float loc_coordinate_precision
-    integer loc_coordinate_uncertainty_in_meters
+    float loc_coordinate_uncertainty_in_meters
     varchar loc_geodetic_datum
     varchar loc_location_remarks
     varchar loc_location_according_to
-    integer loc_maximum_distance_above_surface_in_meters
-    integer loc_minimum_distance_above_surface_in_meters
-    integer loc_verbatim_depth
-    integer loc_maximum_depth_in_meters
-    integer loc_minimum_depth_in_meters
+    float loc_maximum_distance_above_surface_in_meters
+    float loc_minimum_distance_above_surface_in_meters
+    varchar loc_verbatim_depth
+    float loc_maximum_depth_in_meters
+    float loc_minimum_depth_in_meters
     varchar loc_vertical_datum
     varchar loc_verbatim_elevation
-    integer loc_maximum_elevation_in_meters
-    integer loc_minimum_elevation_in_meters
+    float loc_maximum_elevation_in_meters
+    float loc_minimum_elevation_in_meters
     varchar loc_country_code
     varchar loc_municipality
     varchar loc_county
@@ -949,7 +970,7 @@ erDiagram
     varchar idf_evidence_type
     varchar idf_type_status
     varchar idf_identified_by
-    date idf_date_identified
+    varchar idf_date_identified
     float eve_shrub_layer_height_in_meters
     varchar eve_start_day_of_year
     varchar eve_sampling_effort
@@ -968,13 +989,13 @@ erDiagram
     integer eve_end_of_period_year
     integer eve_end_of_period_month
     integer eve_end_of_period_day
-    integer eve_tree_layer_height_in_meters
+    float eve_tree_layer_height_in_meters
     varchar eve_syntaxon_name
     varchar eve_project
     boolean eve_mosses_identified
     boolean eve_lichens_identified
-    integer eve_inclination_in_degrees
-    integer eve_herb_layer_height_in_centimeters
+    float eve_inclination_in_degrees
+    float eve_herb_layer_height_in_centimeters
     varchar eve_event_remarks
     varchar eve_field_notes
     varchar eve_habitat
@@ -984,7 +1005,7 @@ erDiagram
     integer eve_day
     integer eve_end_day_of_year
     varchar eve_event_time
-    date eve_event_date
+    varchar eve_event_date
     varchar eve_field_number
     varchar eve_parent_event_id
     varchar eve_event_id
@@ -1005,9 +1026,9 @@ erDiagram
     jsonb extra_data
     jsonb errors
     varchar fast_track_status
-    varchar approval_status
+    varchar validation_status
     varchar iucn_redlist_category
-    timestamp last_approval_started_at
+    timestamp last_validation_started_at
     timestamp last_imported_at
     varchar tsv
     timestamp inserted_at
@@ -1022,6 +1043,8 @@ erDiagram
     timestamp updated_at
     uuid attachment_id
     uuid record_id
+    uuid image_upload_id
+    uuid collection_id PK
   }
   records_versions {
     uuid id PK
@@ -1029,10 +1052,319 @@ erDiagram
     varchar version_action_name
     varchar mte_catalog_number
     varchar tax_scientific_name
+    uuid collection_id
     uuid version_source_id
     jsonb changes
     timestamp version_inserted_at
     timestamp version_updated_at
+    uuid user_id
+  }
+  approved_records {
+    jsonb ext_vernacular_names
+    jsonb ext_species_profile
+    jsonb ext_species_distribution
+    jsonb ext_references
+    jsonb ext_resource_relationship
+    jsonb ext_permit
+    jsonb ext_chronometric
+    jsonb ext_assertions
+    jsonb ext_amplification
+    varchar oth_specify_author_of_record
+    varchar oth_specify_event
+    varchar oth_specify_locality
+    varchar oth_specify_organism_name
+    varchar oth_specify_person
+    varchar oth_type
+    varchar oth_rights_holder
+    varchar oth_owner_institution_code
+    varchar oth_modified
+    varchar oth_modified_by
+    varchar oth_license
+    varchar oth_language
+    varchar oth_institution_id
+    varchar oth_institution_code
+    varchar oth_information_withheld
+    varchar oth_gbif_ch_id
+    varchar oth_gbif_id
+    varchar oth_gbif_doi
+    varchar oth_date_available
+    varchar oth_dataset_name
+    varchar oth_dataset_id
+    varchar oth_data_generalizations
+    varchar oth_collection_id
+    varchar oth_collection_code
+    varchar oth_bibliographic_citation
+    varchar oth_basis_of_record
+    varchar oth_access_rights
+    varchar pvn_tissue_bank_institution
+    varchar pvn_storage_name
+    varchar pvn_preservation_type
+    varchar pvn_sequence
+    varchar pvn_preservation_temperature
+    varchar pvn_preservation_special_mode
+    varchar pvn_preservation_quality
+    varchar pvn_preservation_mode_text
+    varchar pvn_preservation_mode_keywords
+    varchar pvn_preservation_method
+    varchar pvn_preservation_id
+    varchar pvn_preservation_date_begin
+    varchar pvn_preservation_alteration_text
+    varchar pvn_dna_storage_code
+    varchar pvn_dna_bank_institution
+    varchar occ_occurrence_id
+    varchar org_organism_remarks
+    varchar org_organism_scope
+    varchar org_organism_name
+    varchar org_organism_id
+    varchar org_pathway
+    varchar org_degree_of_establishment
+    varchar org_establishment_means
+    varchar org_sex
+    varchar gec_place_of_origin
+    varchar gec_member
+    varchar gec_group
+    varchar gec_formation
+    varchar gec_lithostratigraphic_terms
+    varchar gec_highest_biostratigraphic_zone
+    varchar gec_lowest_biostratigraphic_zone
+    varchar gec_latest_age_or_highest_stage
+    varchar gec_latest_epoch_or_highest_series
+    varchar gec_latest_period_or_highest_system
+    varchar gec_latest_era_or_highest_erathem
+    varchar gec_latest_eon_or_highest_eonothem
+    varchar gec_earliest_period_or_lowest_system
+    varchar gec_earliest_era_or_lowest_erathem
+    varchar gec_earliest_epoch_or_lowest_series
+    varchar gec_earliest_eon_or_lowest_eonothem
+    varchar gec_earliest_age_or_lowest_stage
+    varchar gec_bed
+    varchar gec_geological_context_id
+    varchar mts_material_sample_type
+    varchar mts_material_sample_id
+    varchar mte_original_biominerals
+    varchar mte_orig_col_author
+    integer mte_year_collection_entrance
+    varchar mte_tissue_bank_id
+    varchar mte_taphonomy
+    varchar mte_sample_designation
+    varchar mte_orientation
+    varchar mte_organism_quantity_method
+    varchar mte_mineralization
+    varchar mte_matrix
+    varchar mte_form
+    varchar mte_feeding_predation_traces
+    varchar mte_extraction_temporary_id
+    varchar mte_encrustation
+    varchar mte_dna_stable_id
+    varchar mte_dna_bank_id
+    varchar mte_depositional_environment_type
+    varchar mte_depositional_environment_text
+    varchar mte_completeness
+    varchar mte_paleo_completeness
+    varchar mte_catalog_number
+    varchar mte_bioerosion
+    varchar mte_assemblage_origin
+    varchar mte_articulation
+    varchar mte_permit_id
+    varchar mte_replacement_minerals
+    varchar mte_barcode_label
+    varchar mte_references
+    varchar mte_other_catalog_numbers
+    varchar mte_associated_media
+    varchar mte_occurrence_status
+    varchar mte_behavior
+    varchar mte_reproductive_condition
+    varchar mte_life_stage
+    varchar mte_organism_quantity_type
+    varchar mte_organism_quantity
+    varchar mte_recorded_by_id
+    varchar mte_recorded_by
+    varchar mte_record_number
+    varchar mte_material_entity_remarks
+    varchar mte_preparations
+    varchar mte_verbatim_label
+    varchar mte_post_burial_transportation
+    varchar mte_part_of_organism
+    varchar mte_parent_material_entity_id
+    varchar mte_anatomical_description
+    varchar mte_material_entity_id
+    float loc_swiss_coordinates_lv95_y
+    float loc_swiss_coordinates_lv95_x
+    float loc_swiss_coordinates_lv03_y
+    float loc_swiss_coordinates_lv03_x
+    varchar loc_georeference_verification_status
+    varchar loc_georeference_remarks
+    varchar loc_georeference_sources
+    varchar loc_georeference_protocol
+    varchar loc_georeferenced_date
+    varchar loc_georeferenced_by
+    float loc_footprint_spatial_fit
+    varchar loc_footprint_srs
+    varchar loc_footprint_wkt
+    varchar loc_verbatim_srs
+    varchar loc_verbatim_coordinate_system
+    varchar loc_verbatim_longitude
+    varchar loc_verbatim_latitude
+    varchar loc_verbatim_coordinates
+    float loc_point_radius_spatial_fit
+    float loc_coordinate_precision
+    float loc_coordinate_uncertainty_in_meters
+    varchar loc_geodetic_datum
+    varchar loc_location_remarks
+    varchar loc_location_according_to
+    float loc_maximum_distance_above_surface_in_meters
+    float loc_minimum_distance_above_surface_in_meters
+    varchar loc_verbatim_depth
+    float loc_maximum_depth_in_meters
+    float loc_minimum_depth_in_meters
+    varchar loc_vertical_datum
+    varchar loc_verbatim_elevation
+    float loc_maximum_elevation_in_meters
+    float loc_minimum_elevation_in_meters
+    varchar loc_country_code
+    varchar loc_municipality
+    varchar loc_county
+    float loc_decimal_latitude
+    float loc_decimal_longitude
+    varchar loc_state_province
+    varchar loc_verbatim_locality
+    varchar loc_locality
+    varchar loc_country
+    varchar loc_island
+    varchar loc_island_group
+    varchar loc_continent
+    varchar loc_higher_geography
+    varchar loc_water_body_id
+    varchar loc_water_body
+    varchar loc_higher_geography_id
+    varchar loc_location_id
+    varchar tax_taxon_remarks
+    varchar tax_nomenclatural_status
+    varchar tax_taxonomic_status
+    varchar tax_nomenclatural_code
+    varchar tax_vernacular_name
+    varchar tax_verbatim_taxon_rank
+    varchar tax_taxon_rank
+    varchar tax_accepted_name_usage_id
+    varchar tax_accepted_name_usage
+    integer tax_taxon_id_ch
+    varchar tax_cultivar_epithet
+    varchar tax_specific_epithet
+    varchar tax_infraspecific_epithet
+    varchar tax_infrageneric_epithet
+    varchar tax_scientific_name_authorship
+    varchar tax_generic_name
+    varchar tax_scientific_name
+    varchar tax_sub_tribe
+    varchar tax_tribe
+    varchar tax_sub_genus
+    varchar tax_genus
+    varchar tax_subfamily
+    varchar tax_family
+    varchar tax_order
+    varchar tax_class
+    varchar tax_superfamily
+    varchar tax_phylum
+    varchar tax_kingdom
+    varchar tax_taxon_concept_id
+    varchar tax_higher_classification
+    varchar tax_name_published_in_year
+    varchar tax_name_published_in
+    varchar tax_name_published_in_id
+    varchar tax_name_according_to
+    varchar tax_name_according_to_id
+    varchar tax_original_name_usage
+    varchar tax_original_name_usage_id
+    varchar tax_parent_name_usage
+    varchar tax_parent_name_usage_id
+    varchar tax_scientific_name_id
+    integer tax_identifier
+    integer tax_taxon_id
+    varchar idf_last_verified_by_id
+    varchar idf_last_verified_by
+    varchar idf_verbatim_identification
+    varchar idf_previous_identifications
+    varchar idf_identified_by_id
+    varchar idf_identification_verification_status
+    varchar idf_identification_remarks
+    varchar idf_identification_reference
+    varchar idf_identification_qualifier
+    varchar idf_evidence_type
+    varchar idf_type_status
+    varchar idf_identified_by
+    varchar idf_date_identified
+    float eve_shrub_layer_height_in_meters
+    varchar eve_start_day_of_year
+    varchar eve_sampling_effort
+    integer eve_sample_size_unit
+    integer eve_sample_size_value
+    varchar eve_sampling_protocol
+    varchar eve_substratum_state
+    varchar eve_substratum
+    varchar eve_micro_structure
+    varchar eve_landscape_structure
+    varchar eve_influence
+    varchar eve_habitat_ref
+    varchar eve_habitat_inclusion
+    varchar eve_habitat_contact
+    varchar eve_habitat_code
+    integer eve_end_of_period_year
+    integer eve_end_of_period_month
+    integer eve_end_of_period_day
+    float eve_tree_layer_height_in_meters
+    varchar eve_syntaxon_name
+    varchar eve_project
+    boolean eve_mosses_identified
+    boolean eve_lichens_identified
+    float eve_inclination_in_degrees
+    float eve_herb_layer_height_in_centimeters
+    varchar eve_event_remarks
+    varchar eve_field_notes
+    varchar eve_habitat
+    varchar eve_verbatim_event_date
+    integer eve_year
+    integer eve_month
+    integer eve_day
+    integer eve_end_day_of_year
+    varchar eve_event_time
+    varchar eve_event_date
+    varchar eve_field_number
+    varchar eve_parent_event_id
+    varchar eve_event_id
+    float eve_cover_water_in_percentage
+    float eve_cover_trees_in_percentage
+    float eve_cover_total_in_percentage
+    float eve_cover_shrubs_in_percentage
+    float eve_cover_rock_in_percentage
+    float eve_cover_mosses_in_percentage
+    float eve_cover_litter_in_percentage
+    float eve_cover_lychens_in_percentage
+    float eve_cover_herbs_in_percentage
+    float eve_cover_cryptogams_in_percentage
+    float eve_cover_algae_in_percentage
+    varchar eve_aspect
+    uuid id PK
+    jsonb extra_data
+    timestamp inserted_at
+    timestamp updated_at
+    uuid record_id
+    uuid collection_id PK
+  }
+  approvals {
+    uuid id PK
+    varchar file_url
+    integer rows_count
+    integer rows_invalid_count
+    integer rows_validated_count
+    integer rows_error_count
+    timestamp started_at
+    timestamp finished_at
+    timestamp inserted_at
+    timestamp updated_at
+    uuid attachment_id
+    uuid error_log_id
+    uuid collection_id
+    varchar state
   }
   swiss_species {
     uuid id PK
@@ -1070,24 +1402,43 @@ erDiagram
     timestamp inserted_at
     timestamp scheduled_at
   }
+  collections ||--|{ approvals : ""
+  collections ||--|{ approved_records : ""
+  collections ||--|{ encoded_records : ""
   collections ||--|{ exports : ""
+  collections ||--|{ image_uploads : ""
+  collections ||--|{ import_records : ""
   collections ||--|{ imports : ""
   collections ||--|{ publications : ""
+  collections ||--|{ published_records : ""
+  collections ||--|{ record_encoding_results : ""
+  collections ||--|{ record_images : ""
   collections ||--|{ records : ""
   encoded_records ||--|{ encoded_records_versions : ""
+  encoded_records ||--|{ swiss_species : ""
   file_attachments ||--|{ approvals : ""
   file_attachments ||--|{ approvals : ""
   file_attachments ||--|{ exports : ""
+  file_attachments ||--|{ image_uploads : ""
+  file_attachments ||--|{ image_uploads : ""
   file_attachments ||--|{ imports : ""
   file_attachments ||--|{ imports : ""
   file_attachments ||--|{ publications : ""
   file_attachments ||--|{ record_images : ""
+  image_uploads ||--|{ record_images : ""
   imports ||--|{ import_records : ""
-  institutions ||--|{ collections : ""
+  publications ||--|{ published_records : ""
   records ||--|{ approved_records : ""
   records ||--o| encoded_records : ""
   records ||--|{ import_records : ""
   records ||--|{ record_encoding_results : ""
   records ||--|{ record_images : ""
   records ||--|{ records_versions : ""
-  swiss_species ||--|{ records : ""
+  users ||--|{ encoded_records_versions : ""
+  users ||--|{ exports : ""
+  users ||--|{ image_uploads : ""
+  users ||--|{ image_uploads : ""
+  users ||--|{ imports : ""
+  users ||--|{ imports : ""
+  users ||--|{ publications : ""
+  users ||--|{ records_versions : ""

@@ -47,7 +47,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "rows_approved_count",
+      "source": "rows_validated_count",
       "type": "bigint"
     },
     {
@@ -203,7 +203,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "809AC287D9ADEB6383284603415B928D9A368394FD3686E7A778A1923EA64C78",
+  "hash": "F8023508E9731624A7DD7FDB74670B65B42673887849F394315EDF139F67DFA7",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",

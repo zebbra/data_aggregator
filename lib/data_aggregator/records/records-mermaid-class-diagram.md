@@ -35,7 +35,7 @@ classDiagram
         set_exporting()
         set_encoding()
         set_fast_track_publishing()
-        set_approving()
+        set_validating()
         set_deleting()
         set_idle()
         set_idle_encoding()
@@ -46,7 +46,7 @@ classDiagram
         create_endpoint(Struct collection, String dwca_file_url)
         export(Struct export)
         publish(Struct publication)
-        approve(Struct collection, Map query)
+        validate(Struct collection, Map query)
     }
     class EncodedRecord {
         Map ext_vernacular_names
@@ -1128,9 +1128,9 @@ classDiagram
         Map extra_data
         Map errors
         PublicationStatusType fast_track_status
-        ApprovalStatusType approval_status
+        ValidationStatusType validation_status
         String iucn_redlist_category
-        UtcDatetime last_approval_started_at
+        UtcDatetime last_validation_started_at
         UtcDatetime last_imported_at
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
@@ -1161,8 +1161,8 @@ classDiagram
         set_encoded(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         set_encoding_failed(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         update_fast_track_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
-        update_approval_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
-        update_last_approval_started_at()
+        update_validation_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        update_last_validation_started_at()
         add_image(Struct image, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         destroy()
     }
@@ -1216,12 +1216,12 @@ classDiagram
         read()
         create(Atom version_action_type, Atom version_action_name, UUID collection_id, UUID version_source_id, ...)
     }
-    class Approval {
+    class Validation {
         UUID id
         String file_url
         Integer rows_count
         Integer rows_invalid_count
-        Integer rows_approved_count
+        Integer rows_validated_count
         Integer rows_error_count
         UtcDatetime started_at
         UtcDatetime finished_at
@@ -1234,21 +1234,20 @@ classDiagram
         Attachment attachment
         Attachment error_log
         Collection collection
-        update(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_approved_count, ...)
+        update(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
         destroy()
         read()
         create(Struct collection, String file_url)
         enqueue()
         set_running()
-        set_failed(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_approved_count, ...)
+        set_failed(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
         run()
         set_done()
         update_attachment(Struct attachment)
-        add_validation_progress(Integer valid, Integer invalid)
-        add_approval_progress(Integer approved, Integer invalid)
+        add_validation_progress(Integer validated, Integer invalid)
         update_error_log(Struct error_log)
     }
-    class ApprovedRecord {
+    class ValidatedRecord {
         Map ext_vernacular_names
         Map ext_species_profile
         Map ext_species_distribution
@@ -1544,8 +1543,8 @@ classDiagram
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read()
         create(Struct record, Struct collection, Map ext_vernacular_names, Map ext_species_profile, ...)
-        approve(Struct record, Struct collection, Map ext_vernacular_names, Map ext_species_profile, ...)
-        bulk_approve(Term rows)
+        validate(Struct record, Struct collection, Map ext_vernacular_names, Map ext_species_profile, ...)
+        bulk_validate(Term rows)
     }
 
     User -- Version
@@ -1554,16 +1553,13 @@ classDiagram
     User -- Import
     User -- Publication
     User -- Version
-    Attachment -- Approval
     Attachment -- Export
     Attachment -- ImageUpload
     Attachment -- Import
     Attachment -- Publication
     Attachment -- Record
     Attachment -- Image
-    Approval -- Collection
-    ApprovedRecord -- Collection
-    ApprovedRecord -- Record
+    Attachment -- Validation
     Collection -- EncodedRecord
     Collection -- RecordEncodingResult
     Collection -- Export
@@ -1574,6 +1570,8 @@ classDiagram
     Collection -- PublishedRecord
     Collection -- Record
     Collection -- Image
+    Collection -- ValidatedRecord
+    Collection -- Validation
     EncodedRecord -- Version
     EncodedRecord -- Record
     EncodedRecord -- SwissSpecies
@@ -1585,5 +1583,6 @@ classDiagram
     Publication -- PublishedRecord
     Record -- Image
     Record -- Version
+    Record -- ValidatedRecord
 
 ```

@@ -2882,12 +2882,12 @@
     },
     {
       "allow_nil?": false,
-      "default": "\"not_approved\"",
+      "default": "\"not_validated\"",
       "generated?": false,
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "approval_status",
+      "source": "validation_status",
       "type": "text"
     },
     {
@@ -2907,7 +2907,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "last_approval_started_at",
+      "source": "last_validation_started_at",
       "type": "utc_datetime"
     },
     {
@@ -2998,7 +2998,7 @@
       "concurrently": false,
       "error_fields": [
         "state",
-        "approval_status",
+        "validation_status",
         "fast_track_status"
       ],
       "fields": [
@@ -3008,7 +3008,7 @@
         },
         {
           "type": "atom",
-          "value": "approval_status"
+          "value": "validation_status"
         },
         {
           "type": "atom",
@@ -3030,7 +3030,7 @@
   ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "B49863EDC21CECCA70BB96112A4A66C84C3D49FA7A8448A87620774261303B3F",
+  "hash": "370527363E91D1DB2AFD50DA995C14E9DF5EFB0102C34CC98388C946E70F2870",
   "identities": [
     {
       "all_tenants?": false,

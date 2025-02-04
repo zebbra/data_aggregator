@@ -1,19 +1,19 @@
-defmodule DataAggregator.ApprovalFixtures do
+defmodule DataAggregator.ValidationFixtures do
   @moduledoc """
   This module defines test helpers for creating
   entities via the `DataAggregator.Records` context.
   """
 
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Records.Approval
-  alias DataAggregator.Records.ApprovedRecord
+  alias DataAggregator.Records.ValidatedRecord
+  alias DataAggregator.Records.Validation
   alias DataAggregator.RecordsFixtures
 
   @doc """
-  Generate a approval
+  Generate a validation
   """
-  def approval_fixture(attrs \\ %{}) do
-    path = "test/support/fixtures/files/approval_dwca.zip"
+  def validation_fixture(attrs \\ %{}) do
+    path = "test/support/fixtures/files/validation_dwca.zip"
 
     attachment = Attachment.import_from_path!(path)
 
@@ -24,13 +24,13 @@ defmodule DataAggregator.ApprovalFixtures do
         RecordsFixtures.collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
       end)
 
-    Approval.create!(params, tenant: params.collection)
+    Validation.create!(params, tenant: params.collection)
   end
 
   @doc """
-  Generate an approved_record
+  Generate an validated_record
   """
-  def approved_record_fixture(attrs \\ %{}, record_attrs \\ %{}) do
+  def validated_record_fixture(attrs \\ %{}, record_attrs \\ %{}) do
     collection =
       if Map.has_key?(attrs, :collection) do
         Map.get(attrs, :collection)
@@ -53,6 +53,6 @@ defmodule DataAggregator.ApprovalFixtures do
     |> Map.take(attributes)
     |> Map.put_new_lazy(:record, fn -> record end)
     |> Map.put_new_lazy(:collection, fn -> record.collection end)
-    |> ApprovedRecord.create!(tenant: record.collection)
+    |> ValidatedRecord.create!(tenant: record.collection)
   end
 end

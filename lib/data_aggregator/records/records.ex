@@ -17,10 +17,10 @@ defmodule DataAggregator.Records do
   @default_env [
     import_timeout: :timer.hours(12),
     import_batch_size: 1000,
-    approval_batch_size: 1000,
+    validation_batch_size: 1000,
     async_import_progress?: true,
     export_timeout: :timer.hours(24),
-    approval_timeout: :timer.minutes(60),
+    validation_timeout: :timer.minutes(60),
     encode_timeout: :timer.minutes(60),
     encode_batch_size: 1000,
     publication_verification_timeout: :timer.minutes(5),
@@ -48,8 +48,8 @@ defmodule DataAggregator.Records do
     resource DataAggregator.Records.Record.Image
     resource DataAggregator.Records.Record.Version
     resource DataAggregator.Records.EncodedRecord.Version
-    resource DataAggregator.Records.Approval
-    resource DataAggregator.Records.ApprovedRecord
+    resource DataAggregator.Records.Validation
+    resource DataAggregator.Records.ValidatedRecord
   end
 
   json_api do
@@ -67,7 +67,7 @@ defmodule DataAggregator.Records do
   def get_env(key, default \\ nil), do: Keyword.get(get_all_env(), key, default)
   def import_timeout, do: get_env(:import_timeout)
   def import_batch_size, do: get_env(:import_batch_size)
-  def approval_batch_size, do: get_env(:approval_batch_size)
+  def validation_batch_size, do: get_env(:validation_batch_size)
   def async_import_progress?, do: get_env(:async_import_progress?)
   def execute_async?, do: get_env(:execute_async)
 
@@ -85,7 +85,7 @@ defmodule DataAggregator.Records do
   end
 
   def export_timeout, do: get_env(:export_timeout)
-  def approval_timeout, do: get_env(:approval_timeout)
+  def validation_timeout, do: get_env(:validation_timeout)
 
   def image_upload_timeout, do: get_env(:image_upload_timeout)
   def extraction_timeout, do: get_env(:extraction_timeout)

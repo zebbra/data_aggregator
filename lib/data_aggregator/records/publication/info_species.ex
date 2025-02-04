@@ -15,7 +15,7 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
   require Logger
 
   @spec notify(Publication.t(), Ash.Query.t()) :: {:ok, Publication.t()} | {:error, any()}
-  def notify(%Publication{channel: :approval} = publication, query) do
+  def notify(%Publication{channel: :validation} = publication, query) do
     with {:ok, publication} <- Ash.load(publication, [:collection, :attachment]),
          {:ok, institution_name} <-
            get_institution_name(publication.collection.grscicoll_institution_key) do
@@ -42,7 +42,7 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
     end
   end
 
-  def notify(_publication, _query), do: {:error, "Channel has to be :approval to be published to infospecies"}
+  def notify(_publication, _query), do: {:error, "Channel has to be :validation to be published to infospecies"}
 
   @spec get_institution_name(String.t()) :: {:ok, String.t()}
   defp get_institution_name(nil), do: {:ok, "Unknown institution"}
@@ -80,32 +80,32 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
 
     email =
       new()
-      |> from(System.get_env("MAILBOX_FROM") || "museums.toapprove@gbif.ch")
+      |> from(System.get_env("MAILBOX_FROM") || "museums.tovalidate@gbif.ch")
       # |> to(to_mails) TODO: uncomment this line (and remove the next one) if you
       #    want to send the email to the infospecies centers directly
       |> to(["data@gbif.ch"])
-      |> subject("New records available for approval")
+      |> subject("New records available for validation")
       |> text_body(get_message_body(notification))
 
     Mailer.deliver(email)
 
     if Records.execute_async?() do
-      Task.start(fn -> update_records_approval_started_at(query) end)
+      Task.start(fn -> update_records_validation_started_at(query) end)
     else
-      update_records_approval_started_at(query)
+      update_records_validation_started_at(query)
     end
 
     :ok
   end
 
-  defp update_records_approval_started_at(query) do
+  defp update_records_validation_started_at(query) do
     query
     |> Ash.stream!()
     |> Enum.each(&process_record(&1))
   end
 
   defp process_record(record) do
-    Record.update_last_approval_started_at!(record)
+    Record.update_last_validation_started_at!(record)
   end
 
   defp get_date_time_now do

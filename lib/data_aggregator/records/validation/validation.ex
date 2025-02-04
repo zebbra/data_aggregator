@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.Approval do
+defmodule DataAggregator.Records.Validation do
   @moduledoc """
-  A approval represents a by infospecies approved set of records
+  A validation represents a by infospecies validated set of records
   """
 
   use Ash.Resource,
@@ -10,10 +10,10 @@ defmodule DataAggregator.Records.Approval do
 
   alias __MODULE__
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Records.Approval.Changes
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Validation.Changes
 
-  @type t :: %Approval{}
+  @type t :: %Validation{}
 
   attributes do
     uuid_attribute :id, prefix: "app", public?: true
@@ -22,7 +22,7 @@ defmodule DataAggregator.Records.Approval do
 
     attribute :rows_count, :integer, allow_nil?: true, public?: true
     attribute :rows_invalid_count, :integer, allow_nil?: true, public?: true
-    attribute :rows_approved_count, :integer, allow_nil?: true, public?: true
+    attribute :rows_validated_count, :integer, allow_nil?: true, public?: true
     attribute :rows_error_count, :integer, allow_nil?: true, public?: true
 
     attribute :started_at, :utc_datetime, allow_nil?: true, public?: true
@@ -90,7 +90,7 @@ defmodule DataAggregator.Records.Approval do
       require_atomic? false
 
       change transition_state(:queued)
-      change Changes.EnqueueApprover
+      change Changes.EnqueueValidater
     end
 
     update :set_running do
@@ -100,7 +100,7 @@ defmodule DataAggregator.Records.Approval do
       change transition_state(:running)
       change set_attribute(:started_at, &DateTime.utc_now/0)
       change set_attribute(:finished_at, nil)
-      change set_attribute(:rows_approved_count, 0)
+      change set_attribute(:rows_validated_count, 0)
       change set_attribute(:rows_invalid_count, 0)
       change set_attribute(:rows_error_count, 0)
     end
@@ -120,7 +120,7 @@ defmodule DataAggregator.Records.Approval do
       change Changes.SetTimeout
       change Changes.SetRunningBeforeTransaction
       change set_attribute(:started_at, &DateTime.utc_now/0)
-      change Changes.ApproveRecords
+      change Changes.ValidateRecords
       change Changes.SetDoneAfterAction
       change load(:attachment)
     end
@@ -144,24 +144,14 @@ defmodule DataAggregator.Records.Approval do
 
     update :add_validation_progress do
       accept []
-      argument :valid, :integer, allow_nil?: false
-      argument :invalid, :integer, allow_nil?: false
-      change atomic_update(:rows_valid_count, expr(rows_valid_count + ^arg(:valid)))
-      change atomic_update(:rows_invalid_count, expr(rows_invalid_count + ^arg(:invalid)))
-      change ensure_selected(:rows_valid_count)
-      change ensure_selected(:rows_invalid_count)
-    end
 
-    update :add_approval_progress do
-      accept []
-
-      argument :approved, :integer, allow_nil?: false
+      argument :validated, :integer, allow_nil?: false
       argument :invalid, :integer, allow_nil?: false
 
-      change atomic_update(:rows_approved_count, expr(rows_approved_count + ^arg(:approved)))
+      change atomic_update(:rows_validated_count, expr(rows_validated_count + ^arg(:validated)))
       change atomic_update(:rows_invalid_count, expr(rows_invalid_count + ^arg(:invalid)))
 
-      change ensure_selected(:rows_approved_count)
+      change ensure_selected(:rows_validated_count)
       change ensure_selected(:rows_invalid_count)
     end
 
@@ -187,7 +177,7 @@ defmodule DataAggregator.Records.Approval do
     define :set_running
     define :set_failed
     define :update_attachment, action: :update_attachment, args: [:attachment]
-    define :add_approval_progress, args: [:approved, :invalid]
+    define :add_validation_progress, args: [:validated, :invalid]
     define :update_error_log, args: [:error_log]
   end
 
@@ -202,10 +192,10 @@ defmodule DataAggregator.Records.Approval do
   end
 
   json_api do
-    type "approval"
+    type "validation"
 
     routes do
-      base "/approvals"
+      base "/validations"
 
       get :read
       index :read

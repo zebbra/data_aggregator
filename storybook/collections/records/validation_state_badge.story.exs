@@ -1,10 +1,10 @@
-defmodule Storybook.Collections.Records.ApprovalStateBadge do
+defmodule Storybook.Collections.Records.ValidationStateBadge do
   @moduledoc false
   use PhoenixStorybook.Story, :component
 
   alias DataAggregatorWeb.CollectionLive.Record.Components
 
-  def function, do: &Components.approval_state_badge/1
+  def function, do: &Components.validation_state_badge/1
 
   def variations do
     [
@@ -24,6 +24,6 @@ defmodule Storybook.Collections.Records.ApprovalStateBadge do
   end
 
   defp available_states do
-    ~w(not_approved approving in_approval approved approval_failed stale)a
+    ~w(not_validated validating in_validation validated validation_failed stale)a
   end
 end

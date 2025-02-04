@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.Collection.Actions.Approve do
+defmodule DataAggregator.Records.Collection.Actions.Validate do
   @moduledoc """
-  Custom action to start an approval process for a selection of records towards infospecies. It groups all records selected
+  Custom action to start an validation process for a selection of records towards infospecies. It groups all records selected
   by a given query according to their infospecies center creates a Publication resource and calls the Collection.publish action for
   each group of records to send a DWC-Archive to the infospecies center.
   """
@@ -39,7 +39,7 @@ defmodule DataAggregator.Records.Collection.Actions.Approve do
         if rows_count > 0 do
           %{
             name: "pub-#{collection.name}-#{:os.system_time()}",
-            channel: :approval,
+            channel: :validation,
             records_query: records_query,
             collection: collection,
             rows_count: rows_count,
@@ -55,11 +55,11 @@ defmodule DataAggregator.Records.Collection.Actions.Approve do
     total_rows_count =
       Enum.reduce(center_and_record_counts, 0, fn {_, rows_count}, acc -> acc + rows_count end)
 
-    # Mark the collection as approving only after all publications have been
+    # Mark the collection as validating only after all publications have been
     # created and enqueued and only if there are any publications. This has
-    # the potential to introduce a duplicated approval for the same collection
+    # the potential to introduce a duplicated validation for the same collection
     if total_rows_count > 0 do
-      Collection.set_approving!(collection)
+      Collection.set_validating!(collection)
     end
 
     {:ok, center_and_record_counts}

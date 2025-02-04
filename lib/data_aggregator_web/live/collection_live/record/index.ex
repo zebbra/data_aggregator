@@ -45,7 +45,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       |> assign(:show_filters, false)
       |> assign(:show_encode, false)
       |> assign(:show_fast_track_pub, false)
-      |> assign(:show_approval_pub, false)
+      |> assign(:show_validation_pub, false)
       |> assign(:record_tab, "data")
       |> assign(:agreed, false)
       |> assign_scope_stats()
@@ -59,7 +59,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
     assign_async(
       socket,
-      [:records_count_not_approved, :records_count_not_encoded, :records_count_not_published],
+      [:records_count_not_validated, :records_count_not_encoded, :records_count_not_published],
       fn ->
         count_not_encoded =
           Record
@@ -73,14 +73,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           |> Ash.Query.filter(expr(not_published == true))
           |> Ash.count!()
 
-        count_not_approved =
+        count_not_validated =
           Record
           |> Ash.Query.set_tenant(collection)
-          |> Ash.Query.filter(expr(not_approved == true))
+          |> Ash.Query.filter(expr(not_validated == true))
           |> Ash.count!()
 
         stats = %{
-          records_count_not_approved: count_not_approved,
+          records_count_not_validated: count_not_validated,
           records_count_not_encoded: count_not_encoded,
           records_count_not_published: count_not_published
         }
@@ -177,7 +177,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <.secondary_navigation_item href={~p"/datasets/#{@collection}/exports"} label={~t"Exports"m} />
         <.secondary_navigation_item
           href={~p"/datasets/#{@collection}/publications"}
-          label={~t"Publications and Approvals"m}
+          label={~t"Publications and Validations"m}
         />
         <.secondary_navigation_item
           href={~p"/datasets/#{@collection}/image_uploads"}
@@ -249,24 +249,24 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             }
           />
 
-          <.placeholder_stat :if={@records_count_not_approved.loading} title={~t"Not approved"m} />
+          <.placeholder_stat :if={@records_count_not_validated.loading} title={~t"Not validated"m} />
           <.scope_stat
-            :if={@records_count_not_approved.ok?}
-            href={path_helper(@collection, @layer, @meta.result, %{status: :not_approved})}
-            title={~t"Not approved"m}
+            :if={@records_count_not_validated.ok?}
+            href={path_helper(@collection, @layer, @meta.result, %{status: :not_validated})}
+            title={~t"Not validated"m}
             value={
-              if @records_count_not_approved.result == 0,
+              if @records_count_not_validated.result == 0,
                 do: 0,
-                else: @records_count_not_approved.result / @collection.records_count
+                else: @records_count_not_validated.result / @collection.records_count
             }
             desc={
-              mgettext("%{records_count_not_approved} of %{records_count} Records",
-                records_count_not_approved: format_number(@records_count_not_approved.result),
+              mgettext("%{records_count_not_validated} of %{records_count} Records",
+                records_count_not_validated: format_number(@records_count_not_validated.result),
                 records_count: format_number(@collection.records_count)
               )
             }
             active={
-              @meta.ok? && AshPagify.active_scope?(@meta.result.ash_pagify, %{status: :not_approved})
+              @meta.ok? && AshPagify.active_scope?(@meta.result.ash_pagify, %{status: :not_validated})
             }
           />
         </div>
@@ -490,12 +490,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection_type, :approval_status)}
-          field={:approval_status}
-          label={~t"Approval status"m}
+          :if={CollectionType.visible?(@collection_type, :validation_status)}
+          field={:validationon_status}
+          label={~t"Validation status"m}
           class="text-center"
         >
-          <.approval_state_badge state={record.approval_status} />
+          <.validation_state_badge state={record.validation_status} />
         </:col>
         <:col
           :let={{_id, record}}
@@ -553,7 +553,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <div class="mt-4 flex space-x-2 max-sm:hidden">
               <.encoding_state_badge state={@selected_record.state} tooltip={false} />
               <.publication_state_badge state={@selected_record.fast_track_status} tooltip={false} />
-              <.approval_state_badge state={@selected_record.approval_status} tooltip={false} />
+              <.validation_state_badge state={@selected_record.validation_status} tooltip={false} />
             </div>
           </:additional_header_content>
 
@@ -782,18 +782,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
         <.modal
           :if={@meta.ok?}
-          id="approval_pub_modal"
+          id="validation_pub_modal"
           size="xl"
-          show={@show_approval_pub}
+          show={@show_validation_pub}
           responsive
-          on_cancel={JS.push("approval_pub:toggle")}
-          on_confirm={JS.push("collection:approval_pub")}
+          on_cancel={JS.push("validation_pub:toggle")}
+          on_confirm={JS.push("collection:validation_pub")}
           overflow="manual"
         >
           <.live_component
-            :if={@show_approval_pub}
-            module={DataAggregatorWeb.CollectionLive.Record.ApprovalModal}
-            id="approval_pub_modal_component"
+            :if={@show_validation_pub}
+            module={DataAggregatorWeb.CollectionLive.Record.ValidationModal}
+            id="validation_pub_modal_component"
             meta={@meta.result}
             collection={@collection}
             current_user={@current_user}
@@ -934,34 +934,34 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
-  def handle_event("approval_pub:toggle", _, socket) do
-    socket = update(socket, :show_approval_pub, &(!&1))
+  def handle_event("validation_pub:toggle", _, socket) do
+    socket = update(socket, :show_validation_pub, &(!&1))
 
     {:noreply, socket}
   end
 
   @impl true
-  def handle_event("collection:approval_pub", _params, socket) do
+  def handle_event("collection:validation_pub", _params, socket) do
     %{collection: collection, meta: %{result: %{ash_pagify: ash_pagify}}} = socket.assigns
     actor = get_actor(socket)
-    collection = Ash.load!(collection, [:approval_query], lazy?: true, actor: actor)
+    collection = Ash.load!(collection, [:validation_query], lazy?: true, actor: actor)
 
-    approval_query = filter_map(ash_pagify, collection.approval_query, socket.assigns.layer)
+    validation_query = filter_map(ash_pagify, collection.validation_query, socket.assigns.layer)
 
     count_query =
       Record
-      |> AshPagify.query_for_filters_map(approval_query)
+      |> AshPagify.query_for_filters_map(validation_query)
       |> Ash.Query.set_tenant(collection)
 
-    case create_and_enqueue(collection, approval_query, count_query, :approval, actor) do
+    case create_and_enqueue(collection, validation_query, count_query, :validation, actor) do
       {:ok, _} ->
         {:noreply,
          socket
-         |> update(:show_approval_pub, &(!&1))
-         |> put_flash(:info, ~t"Approval started in background"m)}
+         |> update(:show_validation_pub, &(!&1))
+         |> put_flash(:info, ~t"Validation started in background"m)}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"An approval for this dataset is already in process"m)}
+        {:noreply, put_flash(socket, :error, ~t"An validation for this dataset is already in process"m)}
     end
   end
 
@@ -1005,8 +1005,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     {:noreply, assign(socket, :show_filters, false)}
   end
 
-  defp create_and_enqueue(collection, query, _count_query, :approval, actor) do
-    Collection.approve(collection, query, actor: actor, tenant: collection)
+  defp create_and_enqueue(collection, query, _count_query, :validation, actor) do
+    Collection.validate(collection, query, actor: actor, tenant: collection)
   end
 
   defp apply_action(socket, :index, _params) do
@@ -1042,7 +1042,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         :loc_decimal_longitude,
         :state,
         :fast_track_status,
-        :approval_status,
+        :validation_status,
         :updated_at
       ]
 
@@ -1163,8 +1163,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     """
   end
 
-  defp coalesce_layer(layer) when layer in ~w(approval encoding import), do: layer
-  defp coalesce_layer(_), do: "approval"
+  defp coalesce_layer(layer) when layer in ~w(validation encoding import), do: layer
+  defp coalesce_layer(_), do: "validation"
 
   def picture_th_label(assigns \\ %{}) do
     ~H"""

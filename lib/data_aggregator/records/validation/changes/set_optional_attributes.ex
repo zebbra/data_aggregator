@@ -1,7 +1,7 @@
-defmodule DataAggregator.Records.Approval.Changes.SetOptionalAttributes do
+defmodule DataAggregator.Records.Validation.Changes.SetOptionalAttributes do
   @moduledoc """
-  Set optional fields for a approved_record according to its provided record. We mirror the record data on the raw layer to the approved_record for convenience reasons.
-  This way we can easily access the record data from the approved_record. During encoding we overwrite all attributes which come back from the catalogs
+  Set optional fields for a validated_record according to its provided record. We mirror the record data on the raw layer to the validated_record for convenience reasons.
+  This way we can easily access the record data from the validated_record. During encoding we overwrite all attributes which come back from the catalogs
   """
 
   use Ash.Resource.Change

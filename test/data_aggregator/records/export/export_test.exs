@@ -183,12 +183,12 @@ defmodule DataAggregator.ExportTest do
       end)
     end
 
-    test "enqueue/1 fails if collection is in state approving", %{
+    test "enqueue/1 fails if collection is in state validating", %{
       collection: collection,
       export: export
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        Collection.set_approving!(collection)
+        Collection.set_validating!(collection)
         assert_not_enqueued(export)
       end)
     end
