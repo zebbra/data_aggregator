@@ -50,13 +50,25 @@ if System.get_env("EXPORT_TIMEOUT") do
   config :data_aggregator, DataAggregator.Records, export_timeout: export_timeout
 end
 
+if System.get_env("LAST_TERMS_UPDATE") do
+  last_terms_update = "LAST_TERMS_UPDATE" |> System.get_env() |> Date.from_iso8601!()
+  config :data_aggregator, DataAggregator.Accounts, last_terms_update: last_terms_update
+end
+
 http_cache_path = System.get_env("HTTP_CACHE_PATH") || "priv/cache/#{config_env()}/http"
 
 config :data_aggregator,
   # Cache http requests in the a directory on disk
   http_cache_path: http_cache_path,
   # API Key for opencagedata api
-  open_cage_data_api_key: System.get_env("OPEN_CAGE_DATA_API_KEY")
+  open_cage_data_api_key: System.get_env("OPEN_CAGE_DATA_API_KEY"),
+  terms_url: System.get_env("TERMS_URL", "https://swissnatcoll.hp.gbif-staging.org/en/terms/"),
+  guide_url: System.get_env("GUIDE_URL", "https://swissnatcoll.hp.gbif-staging.org/en/how-to-publish-data"),
+  tutorials_url:
+    System.get_env(
+      "TUTORIALS_URL",
+      "https://swissnatcoll.hp.gbif-staging.org/en/tutorial-sessions"
+    )
 
 # Configure Sentry runtime environment
 config :sentry,

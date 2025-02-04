@@ -534,7 +534,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
           <p class="text-sm">
             {~t"I have read and agree with the"m}
             <.link
-              href="https://swissnatcoll.hp.gbif-staging.org/en/terms"
+              href={Application.get_env(:data_aggregator, :terms_url)}
               target="_blank"
               rel="noopener noreferrer"
               class="text-primary"
