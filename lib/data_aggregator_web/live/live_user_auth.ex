@@ -57,4 +57,24 @@ defmodule DataAggregatorWeb.LiveUserAuth do
       {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/set_password")}
     end
   end
+
+  def on_mount(:terms_accepted_required, _params, _session, socket) do
+    user = Ash.load!(socket.assigns[:current_user], :terms_accepted?)
+
+    if user.terms_accepted? do
+      {:cont, socket}
+    else
+      {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/terms")}
+    end
+  end
+
+  def on_mount(:terms_not_accepted_required, _params, _session, socket) do
+    user = Ash.load!(socket.assigns[:current_user], :terms_accepted?)
+
+    if user.terms_accepted? do
+      {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/")}
+    else
+      {:cont, socket}
+    end
+  end
 end

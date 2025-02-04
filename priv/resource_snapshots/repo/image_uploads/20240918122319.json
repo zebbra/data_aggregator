@@ -190,6 +190,35 @@
       "type": "uuid"
     },
     {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": false,
+        "match_type": null,
+        "match_with": null,
+        "multitenancy": {
+          "attribute": null,
+          "global": null,
+          "strategy": null
+        },
+        "name": "image_uploads_upload_log_id_fkey",
+        "on_delete": null,
+        "on_update": null,
+        "primary_key?": true,
+        "schema": "public",
+        "table": "file_attachments"
+      },
+      "size": null,
+      "source": "upload_log_id",
+      "type": "uuid"
+    },
+    {
       "allow_nil?": false,
       "default": "\"new\"",
       "generated?": false,
@@ -205,7 +234,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "2E6F04E86758FD9BE16C822414E64C4EBE86A5D3247A3388F1B06E340CC8A3E3",
+  "hash": "6BE822E334DA73A9C92B0F00F7B1CBA162B09806581F59604AC22D6C68EDCB95",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",
