@@ -74,7 +74,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
                 state={String.to_existing_atom(change.value)}
               />
               <.validation_state_badge
-                :if={change.attr in ["validation_status", "approval_status"]}
+                :if={change.attr == "validation_status"}
                 state={String.to_existing_atom(change.value)}
               />
               <%= if change.attr not in ~w(validation_status fast_track_status) do %>
@@ -89,13 +89,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   def activity_feed_element(%{activity: activity} = assigns)
-      when activity.name in [
-             :set_encoded,
-             :set_encoding_failed,
-             :update_validation_status,
-             :update_approval_status,
-             :update_fast_track_status
-           ] do
+      when activity.name in [:set_encoded, :set_encoding_failed, :update_validation_status, :update_fast_track_status] do
     ~H"""
     <div class="grid w-full grid-cols-9 gap-y-2 ">
       <div class="bg-base-100 size-6 relative flex items-center justify-center">
@@ -140,7 +134,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
               :set_encoded,
               :set_encoding_failed,
               :update_validation_status,
-              :update_approval_status,
               :update_fast_track_status,
               :add_image_url
             ] do
@@ -180,13 +173,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   defp activity_text(%{activity: activity} = assigns)
-       when activity.name in [
-              :set_encoded,
-              :set_encoding_failed,
-              :update_validation_status,
-              :update_approval_status,
-              :update_fast_track_status
-            ] do
+       when activity.name in [:set_encoded, :set_encoding_failed, :update_validation_status, :update_fast_track_status] do
     ~H"""
     <span class="font-medium">
       {text(@activity.name, @activity.content)}
@@ -261,7 +248,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   defp version_source(%{version_action_name: :update_fast_track_status}), do: ~t"Publication"
   defp version_source(%{version_action_name: :update_validation_status}), do: ~t"Validation"
-  defp version_source(%{version_action_name: :update_approval_status}), do: ~t"Validation"
   defp version_source(%{version_action_name: :import}), do: ~t"Import"
 
   defp version_source(%{version_action_name: :update} = version), do: version_source_from_catalog(version.changes)
@@ -344,18 +330,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
-  def icon_lookup(:update_approval_status, content) do
-    case content["approval_status"] do
-      "not_approved" -> "hero-question-mark-circle"
-      "approving" -> "hero-cog-6-tooth-solid"
-      "in_approval" -> "hero-check-badge"
-      "approved" -> "hero-check"
-      "approval_failed" -> "hero-x-mark"
-      "stale" -> "hero-exclamation-triangle-solid"
-      _ -> "hero-check-badge"
-    end
-  end
-
   def icon_lookup(:add_image_url, _), do: "hero-photo"
 
   def icon_lookup(_, _), do: "hero-question-mark-circle-solid"
@@ -415,31 +389,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
-  def icon_tooltip(:update_approval_status, content) do
-    case content["approval_status"] do
-      "not_approved" ->
-        ~t"No validation information available. Validate the dataset to see the status"m
-
-      "approving" ->
-        ~t"Validation in progress"m
-
-      "in_approval" ->
-        ~t"Record is now in the validation pipeline - no further action required"m
-
-      "approved" ->
-        ~t"Record validation was successful"m
-
-      "approval_failed" ->
-        ~t"Validation failed. Process should be started again"m
-
-      "stale" ->
-        ~t"Record data changed after validating it and has to be revalidated"m
-
-      _ ->
-        nil
-    end
-  end
-
   def icon_tooltip(:add_image_url, _), do: ~t"associatedMedia was updated"m
 
   def icon_tooltip(_, _), do: nil
@@ -468,18 +417,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       "in_validation" -> ~t"Record is now"m
       "validated" -> ~t"Record was successful"m
       "validation_failed" -> ~t"Record validation"m
-      "stale" -> ~t"The validation is now"m
-      _ -> ~t"Validation status was updated"m
-    end
-  end
-
-  defp text(:update_approval_status, content) do
-    case content["approval_status"] do
-      "not_approved" -> ~t"Record is"m
-      "approving" -> ~t"Record is currently"m
-      "in_approval" -> ~t"Record is now"m
-      "approved" -> ~t"Record was successful"m
-      "approval_failed" -> ~t"Record validation"m
       "stale" -> ~t"The validation is now"m
       _ -> ~t"Validation status was updated"m
     end
@@ -516,18 +453,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
-  def badge_text(:update_approval_status, content) do
-    case content["approval_status"] do
-      "not_approved" -> ~t"Not Validated"m
-      "approving" -> ~t"Validating"m
-      "in_approval" -> ~t"In Validation"m
-      "approved" -> ~t"Validated"m
-      "approval_failed" -> ~t"Failed"m
-      "stale" -> ~t"Stale"m
-      _ -> nil
-    end
-  end
-
   def badge_text(_, _), do: nil
 
   def badge_color(:import, _), do: "blue"
@@ -554,18 +479,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       "in_validation" -> "blue"
       "validated" -> "green"
       "validation_failed" -> "red"
-      "stale" -> "orange"
-      _ -> "green"
-    end
-  end
-
-  def badge_color(:update_approval_status, content) do
-    case content["approval_status"] do
-      "not_approved" -> "gray"
-      "approving" -> "blue"
-      "in_approval" -> "blue"
-      "approved" -> "green"
-      "approval_failed" -> "red"
       "stale" -> "orange"
       _ -> "green"
     end

@@ -16,6 +16,7 @@ defmodule DataAggregator.Repo.Migrations.RenameApprovalToValidation do
       modify :validation_status, :text, default: "not_validated"
     end
 
+    # Update validation status from the old naming (approval) to validation
     execute """
     UPDATE records
     SET validation_status = CASE validation_status
@@ -26,6 +27,43 @@ defmodule DataAggregator.Repo.Migrations.RenameApprovalToValidation do
       WHEN 'approval_failed' THEN 'validation_failed'
       WHEN 'stale' THEN 'stale'
     END
+    """
+
+    # Update version_action_name from the old naming (approval) to validation
+    execute """
+    UPDATE records_versions
+    SET version_action_name = CASE version_action_name
+      WHEN 'update_approval_status' THEN 'update_validation_status'
+      ELSE version_action_name
+    END
+    """
+
+    # Update changes approval_status value naming to new naming
+    execute """
+    UPDATE records_versions
+    SET changes = jsonb_set(
+      changes,
+      '{approval_status}',
+      CASE changes->>'approval_status'
+        WHEN 'not_approved' THEN '"not_validated"'
+        WHEN 'approving' THEN '"validating"'
+        WHEN 'in_approval' THEN '"in_validation"'
+        WHEN 'approved' THEN '"validated"'
+        WHEN 'approval_failed' THEN '"validation_failed"'
+        WHEN 'stale' THEN '"stale"'
+      END::jsonb
+    )
+    WHERE changes ? 'approval_status'
+    """
+
+    # Update changes approval_status field_name to validation_status
+    execute """
+    UPDATE records_versions
+    SET changes = jsonb_set(
+      changes #- '{approval_status}',
+      '{validation_status}',
+      changes#>'{approval_status}')
+    WHERE changes ? 'approval_status'
     """
 
     drop_if_exists index(:records, [:collection_id, :state, :approval_status, :fast_track_status])
@@ -66,6 +104,40 @@ defmodule DataAggregator.Repo.Migrations.RenameApprovalToValidation do
       WHEN 'validation_failed' THEN 'approval_failed'
       WHEN 'stale' THEN 'stale'
     END
+    """
+
+    execute """
+    UPDATE records_versions
+    SET version_action_name = CASE version_action_name
+      WHEN 'update_validation_status' THEN 'update_approval_status'
+      ELSE version_action_name
+    END
+    """
+
+    execute """
+    UPDATE records_versions
+    SET changes = jsonb_set(
+      changes,
+      '{validation_status}',
+      CASE changes->>'validation_status'
+        WHEN 'not_validated' THEN '"not_approved"'
+        WHEN 'validating' THEN '"approving"'
+        WHEN 'in_validation' THEN '"in_approval"'
+        WHEN 'validated' THEN '"approved"'
+        WHEN 'validation_failed' THEN '"approval_failed"'
+        WHEN 'stale' THEN '"stale"'
+      END::jsonb
+    )
+    WHERE changes ? 'validation_status'
+    """
+
+    execute """
+    UPDATE records_versions
+    SET changes = jsonb_set(
+      changes #- '{validation_status}',
+      '{approval_status}',
+      changes#>'{validation_status}')
+    WHERE changes ? 'validation_status'
     """
 
     drop_if_exists index(:records, [
