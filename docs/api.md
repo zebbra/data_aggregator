@@ -480,11 +480,13 @@ classDiagram
         UUID created_by_id
         UUID started_by_id
         UUID attachment_id
+        UUID upload_log_id
         Atom state
         Collection collection
         User created_by
         User started_by
         Attachment attachment
+        Attachment upload_log
         Image[] images
         Attachment[] image_attachments
         update(UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, Atom mapping_identifier, ...)
@@ -503,6 +505,7 @@ classDiagram
         set_mapping_incomplete()
         set_mapping_failed()
         cancel_mapping()
+        update_upload_log(Struct upload_log)
         active()
         create(Struct collection, UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, ...)
         create_from_path(Struct collection, String path, String filename, UUID created_by_id)
@@ -1980,6 +1983,7 @@ erDiagram
         UUID created_by_id
         UUID started_by_id
         UUID attachment_id
+        UUID upload_log_id
         Atom state
     }
     Publication {
@@ -3524,13 +3528,14 @@ erDiagram
 | **created_by_id** | UUID |  |
 | **started_by_id** | UUID |  |
 | **attachment_id** | UUID |  |
+| **upload_log_id** | UUID |  |
 | **state** | Atom |  |
 
 #### Actions
 
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
-| **update** | _update_ | <ul><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>invalid_file_infos</b> <i>Map[]</i> attribute</li><li><b>mapping_identifier</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>created_by_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>invalid_file_infos</b> <i>Map[]</i> attribute</li><li><b>mapping_identifier</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>created_by_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>upload_log_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
 | **update_mapping_identifier** | _update_ | <ul><li><b>mapping_identifier</b> <i>Atom</i> attribute</li></ul> |  |
@@ -3546,8 +3551,9 @@ erDiagram
 | **set_mapping_incomplete** | _update_ | <ul></ul> |  |
 | **set_mapping_failed** | _update_ | <ul></ul> |  |
 | **cancel_mapping** | _update_ | <ul></ul> |  |
+| **update_upload_log** | _update_ | <ul><li><b>upload_log</b> <i>Struct</i> </li></ul> |  |
 | **active** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>invalid_file_infos</b> <i>Map[]</i> attribute</li><li><b>mapping_identifier</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>created_by_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>invalid_file_infos</b> <i>Map[]</i> attribute</li><li><b>mapping_identifier</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>created_by_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>upload_log_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **create_from_path** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>path</b> <i>String</i> </li><li><b>filename</b> <i>String</i> </li><li><b>created_by_id</b> <i>UUID</i> attribute</li></ul> |  |
 
 ### Publication
@@ -4890,12 +4896,14 @@ classDiagram
         String first_name
         String last_name
         String phone
+        UtcDatetime terms_accepted_at
         sign_in_with_token(String token)
         sign_in_with_password(CiString email, String password)
         get_by_subject(String subject)
         destroy()
         read()
         update(String password, String[] roles, String first_name, String last_name, ...)
+        accept_terms()
         set_password(String password)
         register_with_password(String password, String[] roles, String first_name, String last_name, ...)
     }
@@ -4923,6 +4931,7 @@ erDiagram
         String first_name
         String last_name
         String phone
+        UtcDatetime terms_accepted_at
     }
     Token {
         Map extra_data
@@ -4952,6 +4961,7 @@ erDiagram
 | **hashed_password** | String |  |
 | **roles** | String[] |  |
 | **institution_id** | UUID |  |
+| **terms_accepted_at** | UtcDatetime |  |
 
 #### Actions
 
@@ -4963,6 +4973,7 @@ erDiagram
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
 | **update** | _update_ | <ul><li><b>password</b> <i>String</i> </li><li><b>roles</b> <i>String[]</i> attribute</li><li><b>first_name</b> <i>String</i> attribute</li><li><b>last_name</b> <i>String</i> attribute</li><li><b>email</b> <i>CiString</i> attribute</li><li><b>phone</b> <i>String</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li></ul> |  |
+| **accept_terms** | _update_ | <ul></ul> |  |
 | **set_password** | _update_ | <ul><li><b>password</b> <i>String</i> </li></ul> |  |
 | **register_with_password** | _create_ | <ul><li><b>password</b> <i>String</i> </li><li><b>roles</b> <i>String[]</i> attribute</li><li><b>first_name</b> <i>String</i> attribute</li><li><b>last_name</b> <i>String</i> attribute</li><li><b>email</b> <i>CiString</i> attribute</li><li><b>phone</b> <i>String</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li></ul> |  |
 
