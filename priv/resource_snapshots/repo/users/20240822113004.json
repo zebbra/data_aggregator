@@ -82,6 +82,16 @@
       "size": null,
       "source": "institution_id",
       "type": "uuid"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "terms_accepted_at",
+      "type": "utc_datetime"
     }
   ],
   "base_filter": null,
@@ -89,7 +99,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "8ECAAB2FFF196F7ACFA5E9DB393F58EC4081DEB24E8D6B4778C1FBE07B5FCA10",
+  "hash": "6C39A0CCA0E8EF6BC6482250AD4C2DFB8AD087B1394EFE1A3BC54E92D76F185E",
   "identities": [
     {
       "all_tenants?": false,

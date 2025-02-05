@@ -53,7 +53,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         raise ~t"Something went wrong"m
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/imports")}
+        {:noreply, push_navigate(socket, to: ~p"/datasets/#{id}/imports")}
     end
   end
 
@@ -70,29 +70,23 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         busy_action={@busy_action}
       />
       <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/records"} label={~t"Records"m} />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/records"}
-          label={~t"Records"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/imports"}
+          href={~p"/datasets/#{@collection}/imports"}
           label={~t"Imports"m}
           active
         />
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/exports"} label={~t"Exports"m} />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/exports"}
-          label={~t"Exports"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/publications"}
+          href={~p"/datasets/#{@collection}/publications"}
           label={~t"Publications and Approvals"m}
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/image_uploads"}
+          href={~p"/datasets/#{@collection}/image_uploads"}
           label={~t"Image Upload"m}
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/published_records"}
+          href={~p"/datasets/#{@collection}/published_records"}
           label={~t"Published Records"m}
         />
       </.secondary_navigation>
@@ -102,7 +96,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           no_results_content:
             no_results_content(%{collection: @collection, current_user: @current_user})
         ]}
-        path={~p"/collections/#{@collection}/imports"}
+        path={~p"/datasets/#{@collection}/imports"}
         items={@streams.results}
         meta={@meta}
         row_click={
@@ -176,7 +170,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           <div class="border-black-white/10 mr-4 inline-flex border-r pr-4">
             <.table_action_button
               :if={can_edit?(import)}
-              patch={build_path(~p"/collections/#{@collection}/imports/#{import}/edit", @meta)}
+              patch={build_path(~p"/datasets/#{@collection}/imports/#{import}/edit", @meta)}
               data-tip={~t"Edit"m}
               disabled={@busy}
               icon="hero-pencil-square-mini"
@@ -194,7 +188,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           />
         </:action>
       </.table>
-      <.pagination meta={@meta} path={~p"/collections/#{@collection}/imports"} />
+      <.pagination meta={@meta} path={~p"/datasets/#{@collection}/imports"} />
 
       <:secondary>
         <.slideover
@@ -358,7 +352,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
                     type="button"
                     patch={
                       build_path(
-                        ~p"/collections/#{@collection}/imports/#{@selected_import}/edit",
+                        ~p"/datasets/#{@collection}/imports/#{@selected_import}/edit",
                         @meta
                       )
                     }
@@ -464,7 +458,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           size="3xl"
           responsive
           backdrop={false}
-          on_cancel={JS.patch(build_path(~p"/collections/#{@collection}/imports", @meta))}
+          on_cancel={JS.patch(build_path(~p"/datasets/#{@collection}/imports", @meta))}
           overflow="manual"
         >
           <.live_component
@@ -509,7 +503,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
         {:noreply, put_flash(socket, :info, ~t"Import started in background")}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"An import for this collection is already in process")}
+        {:noreply, put_flash(socket, :error, ~t"An import for this dataset is already in process")}
     end
   end
 
@@ -562,7 +556,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, ~t"Collection Imports"m)
+    |> assign(:page_title, ~t"Dataset Imports"m)
     |> assign(:import, nil)
   end
 
@@ -595,13 +589,14 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     else
       socket
       |> put_flash(:mapping_error, true)
-      |> push_navigate(to: ~p"/collections/#{collection_id}/imports/#{import}/edit")
+      |> push_navigate(to: ~p"/datasets/#{collection_id}/imports/#{import}/edit")
     end
   end
 
   defp list_imports(params, actor, tenant, opts \\ [load: @load]) do
     opts = Keyword.put_new(opts, :actor, actor)
     opts = Keyword.put_new(opts, :tenant, tenant)
+
     AshPagify.validate_and_run(Import, params, opts)
   end
 
@@ -612,10 +607,11 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
     <%= if Collection.can_set_importing?(@current_user, @collection) do %>
       <.empty_state
         title={~t"No imports"m}
-        description={~t"Get started by importing a new dataset."m}
-        label={~t"Import"m}
+        description={~t"Get started by importing new data."m}
+        label={~t"Import data"m}
         icon="hero-arrow-up-tray"
-        href={~p"/collections/#{@collection}/imports/new"}
+        href={~p"/datasets/#{@collection}/imports/new"}
+        action_icon="hero-arrow-up-tray"
       />
     <% else %>
       <.empty_state

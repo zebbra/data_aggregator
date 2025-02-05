@@ -175,7 +175,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   end
 
   attr :text, :string, required: true
-  attr :occurrence_id, :string, default: nil
+  attr :gbif_id, :string, default: nil
   attr :fast_track_status, :atom, default: nil
 
   def slideover_subtitle(assigns) do
@@ -185,10 +185,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         {@text}
       </p>
       <.link
-        :if={@occurrence_id !== nil && @fast_track_status == :published}
+        :if={@gbif_id !== nil && @fast_track_status == :published}
         class="link link-primary link-hover text-sm/6 mt-1 flex max-w-4xl items-center gap-x-2"
         target="_blank"
-        href={"#{gbif_base_url()}/occurrence/#{@occurrence_id}"}
+        href={"#{gbif_base_url()}/occurrence/#{@gbif_id}"}
       >
         {~t"Show on GBIF"} <.icon name="hero-arrow-top-right-on-square" class="size-4" />
       </.link>
@@ -228,7 +228,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         ~t"Add one of the follwing fields to reach level four: verbatim_event_date, identified_by, identification_qualifier, identification_verification_status, last_verified_by, verbatim_identification, georeferenced_by, georeference_verification_status, verbatim_coordinates, verbatim_latitude, verbatim_longitude, verbatim_locality, associated_media, completeness, other_catalog_numbers, verbatim_label"m
 
       4 ->
-        ~t"Record has a top quality. Add more data fields to improve your collections relevance"m
+        ~t"Record has a top quality. Add more data fields to improve your datasets relevance"m
     end
   end
 end

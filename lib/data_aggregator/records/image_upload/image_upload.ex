@@ -45,6 +45,7 @@ defmodule DataAggregator.Records.ImageUpload do
     belongs_to :created_by, User, public?: true
     belongs_to :started_by, User, public?: true
     belongs_to :attachment, Attachment, public?: true
+    belongs_to :upload_log, Attachment, public?: true
 
     has_many :images, Record.Image, public?: true
 
@@ -163,6 +164,7 @@ defmodule DataAggregator.Records.ImageUpload do
       change ImageUpload.Changes.SetMappingBeforeTransaction
       change ImageUpload.Changes.MapImages
       change ImageUpload.Changes.SetMappedAfterAction
+      change ImageUpload.Changes.CreateUploadLogAfterAction
       change ImageUpload.Changes.SetMappingIncompleteOnIncomplete
       change ImageUpload.Changes.SetMappingFailedOnError
     end
@@ -208,6 +210,15 @@ defmodule DataAggregator.Records.ImageUpload do
 
       change transition_state(:mapping_failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
+    end
+
+    update :update_upload_log do
+      accept []
+      argument :upload_log, :struct, allow_nil?: false
+      require_atomic? false
+
+      change manage_relationship(:upload_log, type: :append)
+      change load(:upload_log)
     end
 
     read :active do
@@ -266,6 +277,7 @@ defmodule DataAggregator.Records.ImageUpload do
     define :enqueue_mapping
     define :map
     define :cancel_mapping
+    define :update_upload_log, args: [:upload_log]
   end
 
   postgres do

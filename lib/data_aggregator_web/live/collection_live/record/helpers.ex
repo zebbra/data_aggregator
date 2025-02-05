@@ -34,22 +34,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   def path_helper(collection, layer, meta, scope \\ nil)
 
   def path_helper(collection, "approval", meta, nil) do
-    build_path(~p"/collections/#{collection}/records", meta)
+    build_path(~p"/datasets/#{collection}/records", meta)
   end
 
   def path_helper(collection, layer, meta, nil) do
-    build_path(~p"/collections/#{collection}/records?layer=#{layer}", meta)
+    build_path(~p"/datasets/#{collection}/records?layer=#{layer}", meta)
   end
 
   def path_helper(collection, "approval", meta, scope) do
-    build_scope_path(~p"/collections/#{collection}/records", meta, scope)
+    build_scope_path(~p"/datasets/#{collection}/records", meta, scope)
   end
 
   def path_helper(collection, layer, meta, scope) do
-    build_scope_path(~p"/collections/#{collection}/records?layer=#{layer}", meta, scope)
+    build_scope_path(~p"/datasets/#{collection}/records?layer=#{layer}", meta, scope)
   end
 
-  def attrs_by_category(record) do
+  def attrs_by_category(record, collection) do
     record = Ash.load!(record, :encoded_record, lazy?: true)
     output_dwc_fields = Catalog.get_all_output_dwc_attributes()
 
@@ -57,8 +57,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     |> Map.keys()
     |> Enum.filter(&imported_or_encoded?(&1, record, output_dwc_fields))
     |> Enum.map(fn key ->
-      imported_value = record |> Map.get(key) |> maybe_transform_value(key)
-      encoded_value = record.encoded_record |> Map.get(key) |> maybe_transform_value(key)
+      imported_value =
+        record
+        |> Map.get(key)
+        |> maybe_transform_value(key)
+        |> maybe_take_data_from_collection(key, collection)
+
+      encoded_value =
+        record.encoded_record
+        |> Map.get(key)
+        |> maybe_transform_value(key)
+        |> maybe_take_data_from_collection(key, collection)
 
       encoded_value =
         if encoded_value == imported_value and not Enum.member?(output_dwc_fields, key) do
@@ -77,8 +86,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     |> by_category()
   end
 
+  defp maybe_take_data_from_collection(value, key, collection) do
+    if Map.has_key?(Schema.data_from_collection(), key) do
+      Map.get(collection, Map.get(Schema.data_from_collection(), key))
+    else
+      value
+    end
+  end
+
   defp imported_or_encoded?(key, record, output_dwc_fields) do
     cond do
+      # show all fields that we take from the collection
+      Map.has_key?(Schema.data_from_collection(), key) ->
+        true
+
       Map.get(record, key) not in ["", nil] ->
         true
 

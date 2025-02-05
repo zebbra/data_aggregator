@@ -88,3 +88,10 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+postgres:
+  backup:
+    enabled: false
+    schedule: ""
+    destinationPath: ""
+    endpointURL: ""

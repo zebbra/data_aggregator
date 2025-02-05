@@ -106,7 +106,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
           push_patch(socket,
             to:
               build_path(
-                ~p"/collections/#{collection}/image_uploads/#{image_upload}/summary",
+                ~p"/datasets/#{collection}/image_uploads/#{image_upload}/summary",
                 meta
               )
           )
@@ -142,7 +142,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
 
   defp valid_links(collection, image_upload, meta) do
     summary =
-      build_path(~p"/collections/#{collection}/image_uploads/#{image_upload}/summary", meta)
+      build_path(~p"/datasets/#{collection}/image_uploads/#{image_upload}/summary", meta)
 
     [nil, nil, summary]
   end

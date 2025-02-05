@@ -446,13 +446,13 @@ defmodule DataAggregator.Records.Record do
       authorize_if always()
     end
 
-    policy_group with_role(["collection_digitizer", "data_administrator"]) do
+    policy_group with_role(["collection_administrator", "data_digitizer"]) do
       policy action_type(:read) do
         authorize_if relates_to_institution_filter([:collection], :grscicoll_institution_key)
       end
     end
 
-    policy_group with_role(["data_administrator"]) do
+    policy_group with_role(["data_digitizer"]) do
       policy action_type([:create, :update, :destroy]) do
         authorize_if relates_to_institution_check([:collection], :grscicoll_institution_key)
       end

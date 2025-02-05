@@ -1056,25 +1056,25 @@ loc_attributes = [
     }
   },
   %{
-    dwc_field: "swissCoordinatesLv03_x",
+    dwc_field: "swissCoordinatesLv03_E",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :swiss_coordinates_lv03_x, type: :float, allow_nil?: true}
   },
   %{
-    dwc_field: "swissCoordinatesLv03_y",
+    dwc_field: "swissCoordinatesLv03_N",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :swiss_coordinates_lv03_y, type: :float, allow_nil?: true}
   },
   %{
-    dwc_field: "swissCoordinatesLv95_x",
+    dwc_field: "swissCoordinatesLv95_E",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :swiss_coordinates_lv95_x, type: :float, allow_nil?: true}
   },
   %{
-    dwc_field: "swissCoordinatesLv95_y",
+    dwc_field: "swissCoordinatesLv95_N",
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :swiss_coordinates_lv95_y, type: :float, allow_nil?: true}
@@ -1303,12 +1303,6 @@ mte_attributes = [
     dwc_link: nil,
     dwca_file: :core,
     attribute: %Attribute{name: :form, type: :string, allow_nil?: true}
-  },
-  %{
-    dwc_field: "gbifDOI",
-    dwc_link: nil,
-    dwca_file: :core,
-    attribute: %Attribute{name: :gbif_doi, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "matrix",
@@ -1716,12 +1710,14 @@ oth_attributes = [
     dwc_field: "collectionCode",
     dwc_link: "http://rs.tdwg.org/dwc/terms/collectionCode",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :collection_code, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "collectionID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/collectionID",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :collection_id, type: :string, allow_nil?: true}
   },
   %{
@@ -1734,6 +1730,7 @@ oth_attributes = [
     dwc_field: "datasetID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/datasetID",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :dataset_id, type: :string, allow_nil?: true}
   },
   %{
@@ -1749,6 +1746,26 @@ oth_attributes = [
     attribute: %Attribute{name: :date_available, type: :string, allow_nil?: true}
   },
   %{
+    dwc_field: "gbifDOI",
+    dwc_link: nil,
+    dwca_file: :core,
+    available_for_import_mapping: false,
+    attribute: %Attribute{name: :gbif_doi, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "gbifID",
+    dwc_link: nil,
+    dwca_file: :core,
+    available_for_import_mapping: false,
+    attribute: %Attribute{name: :gbif_id, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "gbifCHID",
+    dwc_link: nil,
+    dwca_file: :core,
+    attribute: %Attribute{name: :gbif_ch_id, type: :string, allow_nil?: true}
+  },
+  %{
     dwc_field: "informationWithheld",
     dwc_link: "http://rs.tdwg.org/dwc/terms/informationWithheld",
     dwca_file: :core,
@@ -1758,12 +1775,14 @@ oth_attributes = [
     dwc_field: "institutionCode",
     dwc_link: "http://rs.tdwg.org/dwc/terms/institutionCode",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :institution_code, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "institutionID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/institutionID",
     dwca_file: :core,
+    available_for_import_mapping: false,
     attribute: %Attribute{name: :institution_id, type: :string, allow_nil?: true}
   },
   %{
@@ -2237,6 +2256,21 @@ defmodule DataAggregator.DarwinCore.Schema do
 
   @categories categories
 
+  @data_from_collection %{
+    oth_gbif_doi: :gbif_doi,
+    oth_dataset_id: :gbif_dataset_key,
+    oth_institution_id: :grscicoll_institution_key,
+    oth_institution_code: :grscicoll_institution_code,
+    oth_collection_id: :grscicoll_reference,
+    oth_collection_code: :code
+  }
+
+  @doc """
+  Returns a map to define which fields are not to be taken from the record, but collection
+  The key corresponds to the field in the record, the value to the field in the collection
+  """
+  def data_from_collection, do: @data_from_collection
+
   @doc """
   Returns a map attributes grouped by category.
   """
@@ -2333,8 +2367,13 @@ defmodule DataAggregator.DarwinCore.Schema do
     {required, _opts} = Keyword.pop(opts, :required?, true)
 
     for category <- @categories do
+      filtered_attributes =
+        Enum.filter(category.dwc_attributes, fn dwc_attribute ->
+          Map.get(dwc_attribute, :available_for_import_mapping, true)
+        end)
+
       options =
-        for dwc_attribute <- category.dwc_attributes do
+        for dwc_attribute <- filtered_attributes do
           attribute = dwc_attribute.attribute
 
           name =

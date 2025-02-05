@@ -45,7 +45,8 @@ defmodule DataAggregatorWeb.Router do
       DataAggregatorWeb.LiveLocale,
       Sentry.LiveViewHook,
       {DataAggregatorWeb.LiveUserAuth, :live_user_required},
-      {DataAggregatorWeb.LiveUserAuth, :password_set_required}
+      {DataAggregatorWeb.LiveUserAuth, :password_set_required},
+      {DataAggregatorWeb.LiveUserAuth, :terms_accepted_required}
     ]
 
     no_password_required_hooks = [
@@ -55,53 +56,69 @@ defmodule DataAggregatorWeb.Router do
       {DataAggregatorWeb.LiveUserAuth, :live_user_required}
     ]
 
+    no_terms_required_hooks = [
+      DataAggregatorWeb.LiveLogger,
+      DataAggregatorWeb.LiveLocale,
+      Sentry.LiveViewHook,
+      {DataAggregatorWeb.LiveUserAuth, :live_user_required},
+      {DataAggregatorWeb.LiveUserAuth, :password_set_required},
+      {DataAggregatorWeb.LiveUserAuth, :terms_not_accepted_required}
+    ]
+
     ash_authentication_live_session :no_password_set, on_mount: no_password_required_hooks do
       live "/set_password", AdministrationLive.SetPassword, :index
+    end
+
+    ash_authentication_live_session :no_terms_accepted, on_mount: no_terms_required_hooks do
+      live "/terms", TermsAndConditionsLive.Index, :index
     end
 
     ash_authentication_live_session :default, on_mount: default_hooks do
       live "/", DashboardLive.Index, :index
 
-      live "/collections", CollectionLive.Index, :index
-      live "/collections/:id/records", CollectionLive.Record.Index, :index
-      live "/collections/:id/imports", CollectionLive.Import.Index, :index
-      live "/collections/:id/exports", CollectionLive.Export.Index, :index
-      live "/collections/:id/publications", CollectionLive.Publication.Index, :index
-      live "/collections/:id/image_uploads", CollectionLive.ImageUpload.Index, :index
-      live "/collections/:id/published_records", CollectionLive.PublishedRecords.Index, :index
+      live "/datasets", CollectionLive.Index, :index
+      live "/datasets/:id/records", CollectionLive.Record.Index, :index
+      live "/datasets/:id/imports", CollectionLive.Import.Index, :index
+      live "/datasets/:id/exports", CollectionLive.Export.Index, :index
+      live "/datasets/:id/publications", CollectionLive.Publication.Index, :index
+      live "/datasets/:id/image_uploads", CollectionLive.ImageUpload.Index, :index
+      live "/datasets/:id/published_records", CollectionLive.PublishedRecords.Index, :index
 
+      @deprecated "is now generated in `DataAggregator.Records.ImageUpload.Changes.CreateUploadLogAfterAction` while mapping images `DataAggregator.Records.ImageUpload.Changes.MapImages`"
       get "/collecitons/:id/image_uploads/log/:image_upload_id/download",
           ImageUploadController,
           :download_log
     end
 
-    ash_authentication_live_session :collection_digitizer_required,
-      on_mount: default_hooks ++ [{DataAggregatorWeb.LiveUserAuth, :live_collection_digitizer_required}] do
+    ash_authentication_live_session :collection_administrator_required,
+      on_mount:
+        default_hooks ++
+          [{DataAggregatorWeb.LiveUserAuth, :live_collection_administrator_required}] do
       live "/administration", AdministrationLive.Index, :index
       live "/administration/new", AdministrationLive.Index, :new
       live "/administration/:user_id/edit", AdministrationLive.Index, :edit
 
-      live "/collections/new", CollectionLive.Index, :new
-      live "/collections/:id/edit", CollectionLive.Index, :edit
+      live "/datasets/new", CollectionLive.Index, :new
+      live "/datasets/:id/edit", CollectionLive.Index, :edit
     end
 
-    ash_authentication_live_session :data_administrator_required,
-      on_mount: default_hooks ++ [{DataAggregatorWeb.LiveUserAuth, :live_data_administrator_required}] do
-      live "/collections/:id/imports/new", CollectionLive.Import.Index, :new
-      live "/collections/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit
-      live "/collections/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary
-      live "/collections/:id/image_uploads/new", CollectionLive.ImageUpload.Index, :new
+    ash_authentication_live_session :data_digitizer_required,
+      on_mount: default_hooks ++ [{DataAggregatorWeb.LiveUserAuth, :live_data_digitizer_required}] do
+      live "/datasets/:id/imports/new", CollectionLive.Import.Index, :new
+      live "/datasets/:id/imports/:import_id/edit", CollectionLive.Import.Index, :edit
+      live "/datasets/:id/imports/:import_id/summary", CollectionLive.Import.Index, :summary
+      live "/datasets/:id/image_uploads/new", CollectionLive.ImageUpload.Index, :new
 
-      live "/collections/:id/image_uploads/:image_upload_id/edit",
+      live "/datasets/:id/image_uploads/:image_upload_id/edit",
            CollectionLive.ImageUpload.Index,
            :edit
 
-      live "/collections/:id/image_uploads/:image_upload_id/summary",
+      live "/datasets/:id/image_uploads/:image_upload_id/summary",
            CollectionLive.ImageUpload.Index,
            :summary
     end
 
-    get "/collections/:collection_id/image_uploads/images/:image_id",
+    get "/datasets/:collection_id/image_uploads/images/:image_id",
         ImageUploadController,
         :show_image
 

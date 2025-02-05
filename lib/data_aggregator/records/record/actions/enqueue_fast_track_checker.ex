@@ -12,12 +12,12 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackChecker do
   require Logger
 
   @impl true
-  def run(input, _opts, _ctx) do
-    enqueue_fast_track_checker(input.arguments.published_record)
+  def run(input, _opts, ctx) do
+    enqueue_fast_track_checker(input.arguments.published_record, ctx)
   end
 
-  defp enqueue_fast_track_checker(record) do
-    case insert_job(record) do
+  defp enqueue_fast_track_checker(record, %{actor: actor}) do
+    case insert_job(record, actor) do
       {:ok, job} ->
         Logger.debug("Enqueued record fast_track_checker job #{inspect(job.id)}")
         {:ok, job}
@@ -28,15 +28,34 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackChecker do
     end
   end
 
-  defp insert_job(%Record{id: id, collection_id: collection_id}) do
-    %{id: id, collection_id: collection_id}
-    |> Scheduler.FastTrackPublicationVerifier.new()
+  defp insert_job(%Record{id: id, collection_id: collection_id}, user) do
+    %{id: id, collection_id: collection_id, user_id: maybe_get_id(user)}
+    |> Scheduler.FastTrackPublicationVerifier.new(
+      unique: [
+        period: :infinity,
+        fields: [:args, :worker],
+        keys: [:id, :collection_id]
+      ],
+      replace: [scheduled: [:scheduled_at]],
+      schedule_in: {2, :hours}
+    )
     |> Oban.insert()
   end
 
-  defp insert_job(%PublishedRecord{record_id: id, collection_id: collection_id}) do
-    %{id: id, collection_id: collection_id}
-    |> Scheduler.FastTrackPublicationVerifier.new()
+  defp insert_job(%PublishedRecord{record_id: id, collection_id: collection_id}, user) do
+    %{id: id, collection_id: collection_id, user_id: maybe_get_id(user)}
+    |> Scheduler.FastTrackPublicationVerifier.new(
+      unique: [
+        period: :infinity,
+        fields: [:args, :worker],
+        keys: [:id, :collection_id]
+      ],
+      replace: [scheduled: [:scheduled_at]],
+      schedule_in: {2, :hours}
+    )
     |> Oban.insert()
   end
+
+  defp maybe_get_id(nil), do: nil
+  defp maybe_get_id(%{id: id}), do: id
 end

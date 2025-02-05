@@ -27,7 +27,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @load [:encoded_record, :mids_level, :iucn_redlist]
   @async_keys [:meta, :results]
-  @coordinate_attribute_names ~w(swissCoordinatesLv03_x swissCoordinatesLv03_y swissCoordinatesLv95_x swissCoordinatesLv95_y)
+  @coordinate_attribute_names ~w(swissCoordinatesLv03_x swissCoordinatesLv03_y swissCoordinatesLv95_E swissCoordinatesLv95_N)
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
@@ -150,7 +150,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         fail_async_keys(socket, ~t"Something went wrong"m)
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/collections/#{socket.assigns.collection.id}/records")}
+        {:noreply, push_navigate(socket, to: ~p"/datasets/#{socket.assigns.collection.id}/records")}
     end
   end
 
@@ -173,24 +173,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           label={~t"Records"m}
           active
         />
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/imports"} label={~t"Imports"m} />
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/exports"} label={~t"Exports"m} />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/imports"}
-          label={~t"Imports"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/exports"}
-          label={~t"Exports"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/publications"}
+          href={~p"/datasets/#{@collection}/publications"}
           label={~t"Publications and Approvals"m}
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/image_uploads"}
+          href={~p"/datasets/#{@collection}/image_uploads"}
           label={~t"Image Upload"m}
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/published_records"}
+          href={~p"/datasets/#{@collection}/published_records"}
           label={~t"Published Records"m}
         />
       </.secondary_navigation>
@@ -282,7 +276,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       <.toolbar
         search={@search}
         meta={@meta.result}
-        collection_id={@collection.id}
+        collection={@collection}
         records_count={@collection.records_count}
         filters_count={@filters_count}
         busy={@busy}
@@ -303,7 +297,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               meta: @meta.result
             })
         ]}
-        path={~p"/collections/#{@collection.id}/records?layer=#{@layer}"}
+        path={~p"/datasets/#{@collection.id}/records?layer=#{@layer}"}
         items={@streams.results}
         meta={@meta.result}
         row_click={
@@ -539,10 +533,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           />
         </:action>
       </.table>
-      <.pagination
-        meta={@meta.result}
-        path={~p"/collections/#{@collection.id}/records?layer=#{@layer}"}
-      />
+      <.pagination meta={@meta.result} path={~p"/datasets/#{@collection.id}/records?layer=#{@layer}"} />
 
       <:secondary>
         <.slideover
@@ -556,7 +547,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           <:additional_header_content>
             <.slideover_subtitle
               text={@selected_record.mte_catalog_number}
-              occurrence_id={@selected_record.occ_occurrence_id}
+              gbif_id={@selected_record.oth_gbif_id}
               fast_track_status={@selected_record.fast_track_status}
             />
             <div class="mt-4 flex space-x-2 max-sm:hidden">
@@ -827,7 +818,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             label={~t"records"m}
             meta={@meta.result}
             collection={@collection}
-            path={~p"/collections/#{@collection}/records?layer=#{@layer}"}
+            path={~p"/datasets/#{@collection}/records?layer=#{@layer}"}
           />
         </.modal>
 
@@ -882,7 +873,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         :record_encoding_results,
         RecordEncodingResult.filter_by_record!(id, tenant: tenant)
       )
-      |> assign(:attrs_in_categories, attrs_by_category(record))
+      |> assign(:attrs_in_categories, attrs_by_category(record, tenant))
 
     {:noreply, socket}
   end
@@ -928,7 +919,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         {:noreply, put_flash(socket, :info, ~t"Encoding started in background"m)}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"An encoding for this collection is already in process"m)}
+        {:noreply, put_flash(socket, :error, ~t"An encoding for this dataset is already in process"m)}
     end
   end
 
@@ -970,7 +961,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
          |> put_flash(:info, ~t"Approval started in background"m)}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"An approval for this collection is already in process"m)}
+        {:noreply, put_flash(socket, :error, ~t"An approval for this dataset is already in process"m)}
     end
   end
 
@@ -1019,7 +1010,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   defp apply_action(socket, :index, _params) do
-    assign(socket, :page_title, ~t"Collection Records"m)
+    assign(socket, :page_title, ~t"Dataset Records"m)
   end
 
   defp list_records(params, actor, tenant, opts \\ []) do
@@ -1146,10 +1137,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       <% Collection.can_set_importing?(@current_user, @collection) -> %>
         <.empty_state
           title={~t"No records"m}
-          description={~t"Get started by importing a new dataset"m}
-          label={~t"Import"m}
+          description={~t"Get started by importing new data"m}
+          label={~t"Import data"m}
           icon="hero-bug-ant"
-          href={~p"/collections/#{@collection.id}/imports/new"}
+          href={~p"/datasets/#{@collection.id}/imports/new"}
+          action_icon="hero-arrow-up-tray"
         />
       <% true -> %>
         <.empty_state

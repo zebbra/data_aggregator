@@ -1,7 +1,7 @@
 defmodule DataAggregator.MixProject do
   use Mix.Project
 
-  @version "0.10.9"
+  @version "0.10.11"
 
   def project do
     [
@@ -210,8 +210,7 @@ defmodule DataAggregator.MixProject do
       {:ash_postgres, "~> 2.4", override: true},
       {:ash_state_machine, "~> 0.2"},
       {:ash_uuid, "~> 1.1"},
-      # Undo once bulk versions are released
-      {:ash_paper_trail, git: "https://github.com/ash-project/ash_paper_trail"},
+      {:ash_paper_trail, "~> 0.4"},
       {:ash_pagify, "~> 1.3"},
       {:ash_authentication, "~> 4.0"},
       {:ash_authentication_phoenix, "~> 2.0"},
@@ -299,6 +298,7 @@ defmodule DataAggregator.MixProject do
       # Utilities and Helpers
       {:envy, "~> 1.1.1"},
       {:picosat_elixir, "~> 0.2"},
+      {:sourceror, "~> 1.7", only: [:dev, :test]},
 
       # Documentation
       {:ex_doc, "~> 0.35", runtime: false},

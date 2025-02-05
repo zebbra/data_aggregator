@@ -6,7 +6,6 @@ defmodule DataAggregatorWeb.CollectionLiveTest do
 
   import Phoenix.LiveViewTest
 
-  alias Ash.Error.Forbidden
   alias DataAggregator.Gbif
 
   setup do
@@ -16,60 +15,55 @@ defmodule DataAggregatorWeb.CollectionLiveTest do
   end
 
   describe "Collection Index" do
-    @tag authenticated: true
-    test "raise Ash.Error.Forbidden for empty roles", %{conn: conn} do
-      assert_raise Forbidden, fn -> live(conn, ~p"/collections") end
+    @tag authenticated: "data_digitizer"
+    test "renders /datasets for role data_digitizer", %{conn: conn} do
+      {:ok, _index_live, html} = live(conn, ~p"/datasets")
+
+      assert html =~ "Datasets"
     end
 
-    @tag authenticated: "data_administrator"
-    test "renders /collections for role data_administrator", %{conn: conn} do
-      {:ok, _index_live, html} = live(conn, ~p"/collections")
+    @tag authenticated: "collection_administrator"
+    test "renders /datasets for role collection_administrator", %{conn: conn} do
+      {:ok, _index_live, html} = live(conn, ~p"/datasets")
 
-      assert html =~ "Collections"
-    end
-
-    @tag authenticated: "collection_digitizer"
-    test "renders /collections for role collection_digitizer", %{conn: conn} do
-      {:ok, _index_live, html} = live(conn, ~p"/collections")
-
-      assert html =~ "Collections"
+      assert html =~ "Datasets"
     end
 
     @tag authenticated: "admin"
-    test "renders /collections for role admin", %{conn: conn} do
-      {:ok, _index_live, html} = live(conn, ~p"/collections")
+    test "renders /datasets for role admin", %{conn: conn} do
+      {:ok, _index_live, html} = live(conn, ~p"/datasets")
 
-      assert html =~ "Collections"
+      assert html =~ "Datasets"
     end
   end
 
   describe "Collection New" do
     @tag authenticated: true
     test "redirects to / for empty roles", %{conn: conn} do
-      {:error, {:redirect, %{to: path, flash: %{}}}} = live(conn, ~p"/collections/new")
+      {:error, {:redirect, %{to: path, flash: %{}}}} = live(conn, ~p"/datasets/new")
 
-      assert path == ~p"/collections"
+      assert path == ~p"/datasets"
     end
 
-    @tag authenticated: "data_administrator"
-    test "redirects to / for role data_administrator", %{conn: conn} do
-      {:error, {:redirect, %{to: path, flash: %{}}}} = live(conn, ~p"/collections/new")
+    @tag authenticated: "data_digitizer"
+    test "redirects to / for role data_digitizer", %{conn: conn} do
+      {:error, {:redirect, %{to: path, flash: %{}}}} = live(conn, ~p"/datasets/new")
 
-      assert path == ~p"/collections"
+      assert path == ~p"/datasets"
     end
 
-    @tag authenticated: "collection_digitizer"
-    test "renders /collections/new for role collection_digitizer", %{conn: conn} do
-      {:ok, _index_live, html} = live(conn, ~p"/collections/new")
+    @tag authenticated: "collection_administrator"
+    test "renders /datasets/new for role collection_administrator", %{conn: conn} do
+      {:ok, _index_live, html} = live(conn, ~p"/datasets/new")
 
-      assert html =~ "Collections"
+      assert html =~ "Datasets"
     end
 
     @tag authenticated: "admin"
-    test "renders /collections/new for role admin", %{conn: conn} do
-      {:ok, _index_live, html} = live(conn, ~p"/collections/new")
+    test "renders /datasets/new for role admin", %{conn: conn} do
+      {:ok, _index_live, html} = live(conn, ~p"/datasets/new")
 
-      assert html =~ "Collections"
+      assert html =~ "Datasets"
     end
   end
 end

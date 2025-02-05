@@ -11,7 +11,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
   import DataAggregatorWeb.Components.Input, only: [input: 1]
 
   alias DataAggregator.Accounts.User
-  alias DataAggregator.Records.Record
+  alias DataAggregator.Records.Collection
   alias Phoenix.LiveView.JS
 
   @actions [
@@ -23,7 +23,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
 
   attr :search, Phoenix.HTML.Form, default: nil, doc: "The search form"
   attr :meta, AshPagify.Meta, default: nil, doc: "The ash_pagify meta object"
-  attr :collection_id, :string, required: true, doc: "The collection id"
+  attr :collection, Collection, required: true, doc: "The collection"
   attr :records_count, :integer, required: true, doc: "The total number of records"
   attr :filters_count, :integer, required: true, doc: "The number of active filters"
   attr :busy, :boolean, required: true, doc: "Whether the actions are busy"
@@ -108,7 +108,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
           <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-56 gap-1 border p-2 shadow-2xl">
             <li>
               <.link
-                patch={path_helper(@collection_id, "approval", @meta)}
+                patch={path_helper(@collection.id, "approval", @meta)}
                 class={@layer == "approval" && "active"}
               >
                 <.icon name="hero-check-badge" class="size-5" />
@@ -117,7 +117,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
             </li>
             <li>
               <.link
-                patch={path_helper(@collection_id, "encoding", @meta)}
+                patch={path_helper(@collection.id, "encoding", @meta)}
                 class={@layer == "encoding" && "active"}
               >
                 <.icon name="hero-puzzle-piece" class="size-5" />
@@ -126,7 +126,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
             </li>
             <li>
               <.link
-                patch={path_helper(@collection_id, "import", @meta)}
+                patch={path_helper(@collection.id, "import", @meta)}
                 class={@layer == "import" && "active"}
               >
                 <.icon name="hero-arrow-up-tray" class="size-5" />
@@ -159,11 +159,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
         </div>
 
         <%!-- Join actions buttons (< sm) --%>
-        <.dropdown
-          :if={Record.can_create?(@current_user)}
-          id="actions-sm"
-          class="dropdown-end sm:hidden"
-        >
+        <.dropdown id="actions-sm" class="dropdown-end sm:hidden">
           <:summary>
             <summary
               disabled={@busy or is_nil(@meta)}
@@ -175,7 +171,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
           </:summary>
           <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-44 gap-1 border p-2 shadow-2xl">
             <li :for={{label, icon, action} <- @actions}>
-              <button phx-click={action}>
+              <button
+                phx-click={action}
+                disabled={@busy or is_nil(@meta) or not action_allowed?(@current_user, label)}
+              >
                 <.icon name={icon} class="size-5" />
                 <span class="font-[sans-serif]">{action_label(label)}</span>
               </button>
@@ -185,11 +184,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
       </div>
 
       <%!-- Dropdown action buttons (sm-xl) --%>
-      <.dropdown
-        :if={Record.can_create?(@current_user)}
-        id="actions-md"
-        class="dropdown-end max-sm:hidden 2xl:hidden"
-      >
+      <.dropdown id="actions-md" class="dropdown-end max-sm:hidden 2xl:hidden">
         <:summary>
           <summary
             disabled={@busy or is_nil(@meta)}
@@ -201,7 +196,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
         </:summary>
         <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-20 mt-14 w-44 gap-1 border p-2 shadow-2xl">
           <li :for={{label, icon, action} <- @actions}>
-            <button phx-click={action}>
+            <button
+              phx-click={action}
+              disabled={@busy or is_nil(@meta) or not action_allowed?(@current_user, label)}
+            >
               <.icon name={icon} class="size-5" />
               <span class="font-[sans-serif]">{action_label(label)}</span>
             </button>
@@ -210,12 +208,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
       </.dropdown>
 
       <%!-- Inline action buttons (> 2xl) --%>
-      <div :if={Record.can_create?(@current_user)} id="actions-xl" class="join max-2xl:hidden">
+      <div id="actions-xl" class="join max-2xl:hidden">
         <button
           :for={{label, icon, action} <- @actions}
           class="join-item btn btn-outline border-base-content/20"
           phx-click={action}
-          disabled={@busy or is_nil(@meta)}
+          disabled={@busy or is_nil(@meta) or not action_allowed?(@current_user, label, @collection)}
         >
           <.icon :if={busy?(action, @busy_action) == false} name={icon} />
           <.icon :if={busy?(action, @busy_action)} name="hero-cog-6-tooth-solid animate-spin" />
@@ -229,6 +227,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
   defp current_layer_label("approval"), do: ~t"Approval Layer"m
   defp current_layer_label("encoding"), do: ~t"Encoding Layer"m
   defp current_layer_label("import"), do: ~t"Import Layer"m
+
+  defp action_allowed?(user, "export", collection), do: Collection.can_set_exporting?(user, collection)
+
+  defp action_allowed?(user, "encode", collection), do: Collection.can_enqueue_encoding?(user, collection, %{})
+
+  defp action_allowed?(user, "publish", collection), do: Collection.can_set_fast_track_publishing?(user, collection)
+
+  defp action_allowed?(user, "approve", collection), do: Collection.can_set_approving?(user, collection)
+
+  defp action_allowed?(_, _), do: false
 
   def action_label("export"), do: ~t"Export"m
   def action_label("encode"), do: ~t"Encode"m

@@ -46,7 +46,7 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
       assert lookedup_encoded_record.tax_scientific_name ===
                "Enantiulus dentigerus (Verhoeff, 1901)"
 
-      assert lookedup_encoded_record.tax_accepted_name_usage_id === nil
+      assert lookedup_encoded_record.tax_accepted_name_usage_id === "1669856"
       assert lookedup_encoded_record.tax_taxon_rank === "SPECIES"
       assert encoded_record.state === :encoded
     end

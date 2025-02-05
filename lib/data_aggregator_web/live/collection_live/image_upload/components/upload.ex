@@ -43,9 +43,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
         <.stepper current={current_step(@action)} steps={3} />
         <.section_heading
           text={~t"Upload Images"}
-          description={
-            ~t"Please provide your zip file containing images to upload to this collection."m
-          }
+          description={~t"Please provide your zip file containing images to upload to this dataset."m}
           class="mt-4"
         />
       </.modal_header>
@@ -188,7 +186,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
           |> push_patch(
             to:
               build_path(
-                ~p"/collections/#{collection}/image_uploads/#{image_upload}/edit",
+                ~p"/datasets/#{collection}/image_uploads/#{image_upload}/edit",
                 socket.assigns.meta
               )
           )
@@ -201,7 +199,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
             :noreply,
             socket
             |> assign(error_message: error_message)
-            |> push_patch(to: ~p"/collections/#{collection}/image_uploads/new")
+            |> push_patch(to: ~p"/datasets/#{collection}/image_uploads/new")
           }
 
         _ ->
@@ -211,7 +209,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload do
             |> handle_flash(nil)
             |> push_patch(
               to:
-                build_path(~p"/collections/#{collection}/image_uploads",
+                build_path(~p"/datasets/#{collection}/image_uploads",
                   meta: socket.assigns.meta
                 )
             )

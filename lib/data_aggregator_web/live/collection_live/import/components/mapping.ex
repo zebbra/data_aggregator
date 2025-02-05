@@ -16,6 +16,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
 
   alias DataAggregator.DarwinCore
+  alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.Import
   alias Phoenix.HTML.Form
   alias Phoenix.LiveView.Socket
@@ -373,7 +374,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       case AshPhoenix.Form.submit(form, params: params) do
         {:ok, import} ->
           push_patch(socket,
-            to: build_path(~p"/collections/#{collection}/imports/#{import}/summary", meta)
+            to: build_path(~p"/datasets/#{collection}/imports/#{import}/summary", meta)
           )
 
         {:error, form} ->
@@ -439,7 +440,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   defp collection_mapping_from_import(import) do
     case import.collection.import_mapping do
-      nil -> {:error, ~t"Collection mapping not found"m}
+      nil -> {:error, ~t"Dataset mapping not found"m}
       import_mapping -> {:ok, import_mapping}
     end
   end
@@ -451,7 +452,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       end)
 
     case length(mapped) do
-      0 -> {:error, ~t"Collection mapping is empty"m}
+      0 -> {:error, ~t"Dataset mapping is empty"m}
       _ -> {:ok, mapped}
     end
   end
@@ -479,7 +480,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   defp auto_mapping_matched(import) do
     prefixed_attribute_to_dwc_field_mapping =
-      DarwinCore.Schema.prefixed_attribute_names_and_dwc_fields()
+      Enum.reject(DarwinCore.Schema.prefixed_attribute_names_and_dwc_fields(), fn {key, _} ->
+        key in Map.keys(Schema.data_from_collection())
+      end)
 
     dwc_field_names =
       Enum.map(prefixed_attribute_to_dwc_field_mapping, fn {_, dwc_field} -> dwc_field end)
@@ -768,7 +771,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   defp valid_links(collection, import, meta) do
     summary =
       if Enum.empty?(import.missing_mappings),
-        do: build_path(~p"/collections/#{collection}/imports/#{import}/summary", meta)
+        do: build_path(~p"/datasets/#{collection}/imports/#{import}/summary", meta)
 
     [nil, nil, summary]
   end

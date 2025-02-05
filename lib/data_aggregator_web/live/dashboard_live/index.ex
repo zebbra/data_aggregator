@@ -6,7 +6,7 @@ defmodule DataAggregatorWeb.DashboardLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, push_navigate(socket, to: ~p"/collections")}
+    {:ok, push_navigate(socket, to: ~p"/datasets")}
   end
 
   @impl true

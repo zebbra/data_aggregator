@@ -8,7 +8,6 @@ defmodule DataAggregator.EncodingFixtures do
 
   import DataAggregator.RecordsFixtures
 
-  alias DataAggregator.Gbif.RestAPIStub
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
@@ -127,7 +126,7 @@ defmodule DataAggregator.EncodingFixtures do
          taxon_id_ch: 15_311,
          accepted_name: "Enantiulus dentigerus (Verhoeff, 1901)",
          usage_key: 2_435_194,
-         accepted_usage_key: nil,
+         accepted_usage_key: 1_669_856,
          scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
          rank: "SPECIES"
        }}
@@ -174,33 +173,6 @@ defmodule DataAggregator.EncodingFixtures do
       |> Map.put(:loc_decimal_latitude, 46.086797)
       |> Map.put_new_lazy(:collection, fn ->
         collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
-      end)
-
-    Record.create!(params, tenant: params.collection)
-  end
-
-  @doc """
-    Generate a correct record for grscicoll institution encoding
-  """
-  def record_fixture_for_add_institution_code_encoding_correct(attrs \\ %{}) do
-    params =
-      @encoded_record_defaults
-      |> Map.merge(attrs)
-      |> Map.put_new_lazy(:collection, fn ->
-        collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
-      end)
-
-    Record.create!(params, tenant: params.collection)
-  end
-
-  def record_fixture_for_add_institution_code_encoding_failing(attrs \\ %{}) do
-    params =
-      @encoded_record_defaults
-      |> Map.merge(attrs)
-      |> Map.put_new_lazy(:collection, fn ->
-        collection_fixture(%{
-          grscicoll_reference: RestAPIStub.missing_institution_data_grscicoll_reference()
-        })
       end)
 
     Record.create!(params, tenant: params.collection)

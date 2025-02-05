@@ -53,6 +53,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
         {:ok,
          result
          |> Map.from_struct()
+         |> maybe_convert_values()
          |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)}
 
       {:error, %Ash.Error.Query.NotFound{}} ->
@@ -71,4 +72,55 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
       "[swiss_species] Error while encoding the encoded_record #{encoded_record_id} with the swiss species catalog: #{inspect(error)}"
     )
   end
+
+  @spec maybe_convert_values(map()) :: map()
+  defp maybe_convert_values(record) do
+    Enum.reduce(record, %{}, fn {key, value}, acc ->
+      Map.put(acc, key, convert_to_string({key, value}))
+    end)
+  end
+
+  @doc """
+    Convert values to string if necessary. Implement function convert_to_string/1 for each attribute of the encoded datastructure
+
+    %{
+      id: "spc_02vSBcLj4G1ReRVJNXDLVo",
+      calculations: %{},
+      aggregates: %{},
+      __lateral_join_source__: nil,
+      __meta__: #Ecto.Schema.Metadata<:built, "swiss_species">,
+      __metadata__: %{},
+      __order__: nil,
+      center: nil,
+      rank: "SPECIES",
+      inserted_at: nil,
+      updated_at: nil,
+      scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
+      taxon_id_ch: 15311,
+      accepted_name: "Enantiulus dentigerus (Verhoeff, 1901)",
+      accepted_usage_key: "1669856",
+      usage_key: 2435194
+    }
+
+    ## Example
+
+    iex> convert_to_string({:foo, nil})
+    nil
+
+    iex> convert_to_string({:accepted_usage_key, "12345"})
+    "12345"
+
+    iex> convert_to_string({:accepted_usage_key, 12345})
+    "12345"
+
+    iex> convert_to_string({:foo, "bar"})
+    "bar"
+  """
+  @spec convert_to_string({atom(), any()}) :: String.t() | nil
+  def convert_to_string(key_value)
+
+  def convert_to_string({_, nil}), do: nil
+  def convert_to_string({_, value}) when is_binary(value), do: value
+  def convert_to_string({:accepted_usage_key, value}), do: Integer.to_string(value)
+  def convert_to_string({_, value}), do: value
 end

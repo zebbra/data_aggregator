@@ -52,7 +52,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
         raise ~t"Something went wrong"m
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/collections/#{id}/publications")}
+        {:noreply, push_navigate(socket, to: ~p"/datasets/#{id}/publications")}
     end
   end
 
@@ -68,29 +68,20 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
         busy_action={@busy_action}
       />
       <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/records"} label={~t"Records"m} />
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/imports"} label={~t"Imports"m} />
+        <.secondary_navigation_item href={~p"/datasets/#{@collection}/exports"} label={~t"Exports"m} />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/records"}
-          label={~t"Records"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/imports"}
-          label={~t"Imports"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/exports"}
-          label={~t"Exports"m}
-        />
-        <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/publications"}
+          href={~p"/datasets/#{@collection}/publications"}
           label={~t"Publications and Approvals"m}
           active
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/image_uploads"}
+          href={~p"/datasets/#{@collection}/image_uploads"}
           label={~t"Image Upload"m}
         />
         <.secondary_navigation_item
-          href={~p"/collections/#{@collection}/published_records"}
+          href={~p"/datasets/#{@collection}/published_records"}
           label={~t"Published Records"m}
         />
       </.secondary_navigation>
@@ -99,7 +90,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
         opts={[
           no_results_content: no_results_content(%{collection: @collection})
         ]}
-        path={~p"/collections/#{@collection}/publications"}
+        path={~p"/datasets/#{@collection}/publications"}
         items={@streams.results}
         meta={@meta}
         row_click={
@@ -164,7 +155,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
           />
         </:action>
       </.table>
-      <.pagination meta={@meta} path={~p"/collections/#{@collection}/publications"} />
+      <.pagination meta={@meta} path={~p"/datasets/#{@collection}/publications"} />
 
       <:secondary>
         <.slideover
@@ -259,7 +250,10 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
             </:item>
           </.list>
 
-          <:footer :if={Collection.can_set_fast_track_publishing?(@current_user, @collection)}>
+          <:footer :if={
+            not is_nil(@selected_publication) &&
+              Publication.can_destroy?(@current_user, @selected_publication)
+          }>
             <button
               type="button"
               phx-click={JS.push("publication:delete", value: %{id: @selected_publication.id})}
@@ -303,7 +297,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
         {:noreply, put_flash(socket, :info, publication_success_message(publication))}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, ~t"A publication for this collection is already in process"m)}
+        {:noreply, put_flash(socket, :error, ~t"A publication for this dataset is already in process"m)}
     end
   end
 
@@ -346,7 +340,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, ~t"Collection Publications"m)
+    |> assign(:page_title, ~t"Dataset Publications"m)
     |> assign(:publication, nil)
   end
 

@@ -21,8 +21,22 @@ defmodule DataAggregator.Records.Collection do
 
   @type t :: %Collection{}
 
+  @dataset_actions [
+    :set_mapping,
+    :set_importing,
+    :set_exporting,
+    :set_encoding,
+    :set_approving,
+    :set_deleting,
+    :set_idle,
+    :set_idle_encoding,
+    :enqueue_encoding,
+    :approve,
+    :export
+  ]
+
   attributes do
-    uuid_attribute :id, prefix: "col", public?: true
+    uuid_attribute :id, prefix: "set", public?: true
 
     attribute :items_to_digitize, :integer, allow_nil?: false, default: 0, public?: true
     attribute :owner, :string, allow_nil?: true, public?: true
@@ -65,6 +79,12 @@ defmodule DataAggregator.Records.Collection do
 
     attribute :gbif_dataset_key, :string do
       description "the key of the dataset (to publish) in the GBIF database"
+      allow_nil? true
+      public? true
+    end
+
+    attribute :gbif_doi, :string do
+      description "the DOI of the dataset in the GBIF database"
       allow_nil? true
       public? true
     end
@@ -158,7 +178,6 @@ defmodule DataAggregator.Records.Collection do
     end
 
     update :register_at_gbif do
-      argument :dwca_file_url, :string, allow_nil?: false
       argument :existing_dataset_key, :string, allow_nil?: true
       require_atomic? false
 
@@ -260,6 +279,13 @@ defmodule DataAggregator.Records.Collection do
       change Changes.SetDeletingBeforeTransaction
     end
 
+    action :create_endpoint, :map do
+      argument :collection, :struct, allow_nil?: false
+      argument :dwca_file_url, :string, allow_nil?: false
+
+      run Actions.CreateEndpoint
+    end
+
     action :export, :map do
       argument :export, :struct, allow_nil?: false
 
@@ -314,10 +340,11 @@ defmodule DataAggregator.Records.Collection do
     define :get_by_grscicoll_reference, action: :read, get_by: [:grscicoll_reference]
     define :touch
     define :enqueue_encoding, args: [:query]
+    define :create_endpoint, args: [:collection, :dwca_file_url]
     define :export, action: :export, args: [:export]
     define :publish, args: [:publication]
     define :approve, args: [:collection, :query]
-    define :register_at_gbif, args: [:dwca_file_url, :existing_dataset_key]
+    define :register_at_gbif, args: [:existing_dataset_key]
 
     define :set_mapping
     define :set_importing
@@ -342,42 +369,30 @@ defmodule DataAggregator.Records.Collection do
       forbid_unless with_role("admin")
     end
 
-    policy_group with_role("collection_digitizer") do
+    policy_group with_role(["collection_administrator", "data_digitizer"]) do
       policy action_type(:read) do
         authorize_if relates_to_institution_filter(:grscicoll_institution_key)
-      end
-
-      policy action([
-               :set_mapping,
-               :set_importing,
-               :set_exporting,
-               :set_encoding,
-               :set_fast_track_publishing,
-               :set_approving,
-               :set_deleting,
-               :set_idle,
-               :set_idle_encoding,
-               :enqueue_encoding
-             ]) do
-        authorize_if with_role(["admin", "data_administrator"])
-      end
-
-      policy action_type([:create, :update, :destroy]) do
-        authorize_if relates_to_institution_check(:grscicoll_institution_key)
       end
     end
 
-    policy_group with_role("data_administrator") do
-      policy action_type(:read) do
-        authorize_if relates_to_institution_filter(:grscicoll_institution_key)
-      end
-
-      policy action_type(:update) do
+    policy_group with_role("collection_administrator") do
+      policy action_type([:create, :update, :destroy]) do
         authorize_if relates_to_institution_check(:grscicoll_institution_key)
       end
 
-      policy action(:update) do
-        authorize_if with_role("collection_digitizer")
+      policy action(@dataset_actions) do
+        forbid_unless with_role(["admin", "data_digitizer"])
+        authorize_if relates_to_institution_check(:grscicoll_institution_key)
+      end
+
+      policy action([:publish, :set_fast_track_publishing]) do
+        authorize_if always()
+      end
+    end
+
+    policy_group with_role("data_digitizer") do
+      policy action(@dataset_actions) do
+        authorize_if relates_to_institution_check(:grscicoll_institution_key)
       end
     end
   end
@@ -397,7 +412,7 @@ defmodule DataAggregator.Records.Collection do
     type "collection"
 
     routes do
-      base "/collections"
+      base "/datasets"
 
       get :read
       index :read
