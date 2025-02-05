@@ -106,13 +106,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
           <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-56 gap-1 border p-2 shadow-2xl">
             <li>
               <.link patch={path_helper(@collection.id, "encoding", @meta)}>
-                <input type="radio" name="layer" checked={@layer in ["encoding", "validation"]} />
+                <.input
+                  value=""
+                  type="radio"
+                  name="layer"
+                  checked={@layer in ["encoding", "validation"]}
+                />
                 <span class="font-[sans-serif]">{current_layer_label("encoding")}</span>
               </.link>
             </li>
             <li>
               <.link patch={path_helper(@collection.id, "import", @meta)}>
-                <input type="radio" name="layer" checked={@layer == "import"} />
+                <.input value="" type="radio" name="layer" checked={@layer == "import"} />
                 <span class="font-[sans-serif]">{current_layer_label("import")}</span>
               </.link>
             </li>
@@ -125,7 +130,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
                   path_helper(@collection.id, "validation", @meta)
                 end
               }>
-                <input type="checkbox" name="validation" checked={@layer == "validation"} />
+                <.input type="checkbox" name="validation" checked={@layer == "validation"} />
                 <span class="font-[sans-serif]">{current_layer_label("validation")}</span>
               </.link>
             </li>

@@ -1804,45 +1804,45 @@ msgstr "Einträge mit einem Mids Level von mind. 4"
 msgid "Search"
 msgstr "Suchen"
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:163
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:190
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:168
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:195
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Actions"
 msgstr "Aktionen"
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:238
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:243
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Encode"
 msgstr "Enkodieren"
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:224
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:229
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Encoding Layer"
 msgstr "Enkodierungs Layer"
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:237
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:242
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Export"
 msgstr "Exportieren"
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:149
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:153
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:154
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:158
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Filters"
 msgstr "Filter"
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:225
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:230
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Import Layer"
 msgstr "Import Layer"
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:239
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:244
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Publish"
@@ -4287,13 +4287,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Validation status was updated"
 msgstr "Veröffentlichungsstatus wurde aktualisiert"
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:240
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:245
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Validate"
 msgstr "Validierung"
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:223
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:228
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Validation Layer"
