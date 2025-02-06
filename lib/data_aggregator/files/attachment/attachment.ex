@@ -8,7 +8,10 @@ defmodule DataAggregator.Files.Attachment do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Files,
-    extensions: [AshUUID]
+    extensions: [AshUUID],
+    # to use preparations in primary read's is an anti pattern - prepare build(load: [:url]) - and generates warnings,
+    # we do it here intentionally, so we suppress the warning
+    primary_read_warning?: false
 
   alias __MODULE__
 
