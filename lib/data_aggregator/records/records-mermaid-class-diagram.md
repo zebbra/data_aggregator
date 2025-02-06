@@ -474,11 +474,13 @@ classDiagram
         UUID created_by_id
         UUID started_by_id
         UUID attachment_id
+        UUID upload_log_id
         Atom state
         Collection collection
         User created_by
         User started_by
         Attachment attachment
+        Attachment upload_log
         Image[] images
         Attachment[] image_attachments
         update(UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, Atom mapping_identifier, ...)
@@ -497,6 +499,7 @@ classDiagram
         set_mapping_incomplete()
         set_mapping_failed()
         cancel_mapping()
+        update_upload_log(Struct upload_log)
         active()
         create(Struct collection, UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, ...)
         create_from_path(Struct collection, String path, String filename, UUID created_by_id)

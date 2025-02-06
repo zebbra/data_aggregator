@@ -71,7 +71,7 @@
       <% end %>
       <li>
         <.link
-          href="https://swissnatcoll.hp.gbif-staging.org/en/how-to-publish-data"
+          href={Application.get_env(:data_aggregator, :guide_url)}
           class="flex md:flex-col md:p-3"
           target="_blank"
           aria-describedby="guide_tooltip"
@@ -91,7 +91,7 @@
       </li>
       <li>
         <.link
-          href="https://swissnatcoll.hp.gbif-staging.org/en/tutorial-sessions"
+          href={Application.get_env(:data_aggregator, :tutorials_url)}
           class="flex md:flex-col md:p-3"
           target="_blank"
           aria-describedby="tutorials_tooltip"
@@ -101,6 +101,26 @@
           <.fui_tooltip
             id="tutorials_tooltip"
             content={~t"Tutorials"}
+            visibility_class="hidden md:hidden lg:hidden"
+            show_class="md:block"
+            hide_class="md:hidden"
+            placement="right"
+            data-portal="portal_root_static"
+          />
+        </.link>
+      </li>
+      <li>
+        <.link
+          href={Application.get_env(:data_aggregator, :terms_url)}
+          class="flex md:flex-col md:p-3"
+          target="_blank"
+          aria-describedby="terms_tooltip"
+        >
+          <.icon name="hero-document-check" />
+          <span class="md:hidden lg:inline">{~t"Terms&Conditions"m}</span>
+          <.fui_tooltip
+            id="terms_tooltip"
+            content={~t"Terms&Conditions"}
             visibility_class="hidden md:hidden lg:hidden"
             show_class="md:block"
             hide_class="md:hidden"
