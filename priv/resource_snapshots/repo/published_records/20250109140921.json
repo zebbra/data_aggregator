@@ -97,6 +97,26 @@
       "primary_key?": false,
       "references": null,
       "size": null,
+      "source": "oth_swiss_species_registered_at",
+      "type": "utc_datetime"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "oth_swiss_species_center",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
       "source": "oth_specify_author_of_record",
       "type": "text"
     },
@@ -2944,7 +2964,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "C0DEC4BD586200F21E22AF712BF3C408CE70934A9234ED1C9B2D4A3CCD787319",
+  "hash": "C65C2E26FE4AD8B4112CFA127FF671E764246253558AE96BE662FA6BC2AB4736",
   "identities": [
     {
       "all_tenants?": false,

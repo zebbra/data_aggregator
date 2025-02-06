@@ -50,14 +50,23 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
 
     case SwissSpecies.get_by_usage_key(taxon_id) do
       {:ok, result} ->
-        {:ok,
-         result
-         |> Map.from_struct()
-         |> maybe_convert_values()
-         |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)}
+        encoded_record =
+          result
+          |> Map.from_struct()
+          |> maybe_convert_values()
+          |> Map.put(:registered_at, DateTime.utc_now())
+          |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)
+
+        {:ok, encoded_record}
 
       {:error, %Ash.Error.Query.NotFound{}} ->
         Logger.warning("[swiss_species] no matching encoded_record found for taxon_id: #{encoded_record.tax_taxon_id}")
+
+        encoded_record =
+          EncodedRecord.update!(encoded_record, %{oth_swiss_species_center: "_not_registered"},
+            actor: ctx.actor,
+            authorize?: false
+          )
 
         {:ok, encoded_record}
 

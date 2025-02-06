@@ -678,6 +678,15 @@ defmodule DataAggregator.WorkflowTest do
       |> Ash.load!([changes: [transform?: true, escape_nil?: true]], strict?: true, lazy?: true)
       |> Map.get(:changes)
 
+    changes =
+      Enum.reduce(changes, [], fn {key, value}, acc ->
+        if key == :oth_swiss_species_registered_at do
+          [{key, Map.put(value, :encoded, "test")} | acc]
+        else
+          [{key, value} | acc]
+        end
+      end)
+
     expected = [
       tax_taxon_id: %{
         name: "taxonID",
@@ -756,6 +765,18 @@ defmodule DataAggregator.WorkflowTest do
         imported: "-",
         encoded: "1669856",
         category_name: "tax"
+      },
+      oth_swiss_species_center: %{
+        name: "swissSpeciesCenter",
+        imported: "-",
+        encoded: "infofauna",
+        category_name: "oth"
+      },
+      oth_swiss_species_registered_at: %{
+        name: "swissSpeciesRegisteredAt",
+        imported: "-",
+        encoded: "test",
+        category_name: "oth"
       }
     ]
 

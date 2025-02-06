@@ -308,11 +308,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   def icon_lookup(:update_fast_track_status, content) do
     case content["fast_track_status"] do
-      "not_published" -> "hero-question-mark-circle"
+      "not_published" -> "hero-question-mark-circle-solid"
       "publishing" -> "hero-cog-6-tooth-solid"
-      "in_publication" -> "hero-globe-alt"
-      "published" -> "hero-check"
-      "publication_failed" -> "hero-x-mark"
+      "in_publication" -> "hero-globe-alt-solid"
+      "published" -> "hero-check-solid"
+      "publication_failed" -> "hero-x-mark-solid"
       "stale" -> "hero-exclamation-triangle-solid"
       _ -> "hero-globe-alt"
     end
@@ -320,11 +320,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   def icon_lookup(:update_approval_status, content) do
     case content["approval_status"] do
-      "not_approved" -> "hero-question-mark-circle"
+      "not_approved" -> "hero-question-mark-circle-solid"
       "approving" -> "hero-cog-6-tooth-solid"
-      "in_approval" -> "hero-check-badge"
-      "approved" -> "hero-check"
-      "approval_failed" -> "hero-x-mark"
+      "in_approval" -> "hero-check-badge-solid"
+      "approved" -> "hero-check-solid"
+      "approval_failed" -> "hero-x-mark-solid"
       "stale" -> "hero-exclamation-triangle-solid"
       _ -> "hero-check-badge"
     end

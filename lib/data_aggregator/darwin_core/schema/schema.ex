@@ -1856,6 +1856,22 @@ oth_attributes = [
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :specify_author_of_record, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "swissSpeciesCenter",
+    dwc_link: nil,
+    dwca_file: nil,
+    attribute: %Attribute{name: :swiss_species_center, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "swissSpeciesRegisteredAt",
+    dwc_link: nil,
+    dwca_file: nil,
+    attribute: %Attribute{
+      name: :swiss_species_registered_at,
+      type: :utc_datetime,
+      allow_nil?: true
+    }
   }
 ]
 

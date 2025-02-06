@@ -128,7 +128,8 @@ defmodule DataAggregator.EncodingFixtures do
          usage_key: 2_435_194,
          accepted_usage_key: 1_669_856,
          scientific_name: "Enantiulus dentigerus (Verhoeff, 1901)",
-         rank: "SPECIES"
+         rank: "SPECIES",
+         center: "infofauna"
        }}
     end)
   end

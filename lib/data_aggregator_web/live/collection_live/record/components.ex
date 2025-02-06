@@ -125,6 +125,45 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     """
   end
 
+  attr :center, :string, required: true
+
+  def swiss_species_center_badge(assigns) do
+    ~H"""
+    <.badge
+      class="tooltip"
+      color={swiss_species_color(@center)}
+      data-tip={swiss_species_tooltip(@center)}
+    >
+      <.icon name={swiss_species_icon_name(@center)} />
+      <span class="text-nowrap pr-1.5">
+        {swiss_species_text(@center)}
+      </span>
+    </.badge>
+    """
+  end
+
+  def swiss_species_text(nil), do: ~t"Unknown"m
+  def swiss_species_text("_not_registered"), do: ~t"Not registered"m
+  def swiss_species_text(center), do: center
+
+  defp swiss_species_color(nil), do: "gray"
+  defp swiss_species_color("_not_registered"), do: "blue"
+  defp swiss_species_color(_center), do: "green"
+
+  defp swiss_species_icon_name(nil), do: "hero-question-mark-circle-solid"
+  defp swiss_species_icon_name("_not_registered"), do: "hero-information-circle-solid"
+  defp swiss_species_icon_name(_center), do: "hero-check-circle-solid"
+
+  defp swiss_species_tooltip(nil),
+    do:
+      ~t"There is no information about whether this species has been registered by a Swiss species data center. Please run the ‘Encoding’ to update the information."m
+
+  defp swiss_species_tooltip("_not_registered"),
+    do: ~t"This species has not been registered by any Swiss species data center"m
+
+  defp swiss_species_tooltip(center),
+    do: mgettext("This species has been registered by the Swiss species data center %{center}", center: center)
+
   @level [0, 1, 2, 3, 4]
 
   attr :level, :integer, required: true, values: @level
