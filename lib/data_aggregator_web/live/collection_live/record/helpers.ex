@@ -137,7 +137,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
       %{
         label: category.label,
         description: category.description,
-        attributes: grouped[Atom.to_string(category.name)]
+        attributes: Enum.sort_by(grouped[Atom.to_string(category.name)], &Map.get(&1, :name))
       }
     end)
   end
