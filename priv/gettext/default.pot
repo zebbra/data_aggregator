@@ -3489,11 +3489,6 @@ msgid "Finished at"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:207
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
-msgid "Inavlid"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/image_upload/index.ex:119
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Index"
