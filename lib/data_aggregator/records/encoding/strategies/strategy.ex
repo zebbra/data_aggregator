@@ -20,6 +20,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.EncodingResult
   alias DataAggregator.Records.Encoding.RecordEncodingResult
+  alias DataAggregator.Records.Encoding.Strategy.ConvertDatesStrategy
   alias DataAggregator.Records.Encoding.Strategy.ForwardGeoEncodingStrategy
   alias DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy
   alias DataAggregator.Records.Encoding.Strategy.IUCNRedlistStrategy
@@ -99,6 +100,13 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :relate_images do
     encoded_record
     |> RelateImagesStrategy.apply_strategy(ctx)
+    |> check_for_changes(encoded_record, catalog)
+    |> handle_encoding_result(encoded_record, catalog, ctx)
+  end
+
+  def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :convert_dates do
+    encoded_record
+    |> ConvertDatesStrategy.apply_strategy(ctx)
     |> check_for_changes(encoded_record, catalog)
     |> handle_encoding_result(encoded_record, catalog, ctx)
   end
