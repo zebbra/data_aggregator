@@ -4,7 +4,8 @@ catalogs = [
   :geo_reverse,
   :geo_forward,
   :gbif_iucn_redlist,
-  :relate_images
+  :relate_images,
+  :convert_dates
 ]
 
 defmodule DataAggregator.Taxonomy.Catalog do
@@ -29,6 +30,7 @@ defmodule DataAggregator.Taxonomy.Catalog do
       :geo_forward -> "Geo Forward"
       :gbif_iucn_redlist -> "GBIF IUCN Redlist"
       :relate_images -> "Relate Images"
+      :convert_dates -> "Date Conversion"
       _ -> throw("no translation defined for catalog: #{catalog}")
     end
   end
@@ -59,6 +61,17 @@ defmodule DataAggregator.Taxonomy.Catalog do
 
       :relate_images ->
         []
+
+      :convert_dates ->
+        [
+          {:eve_event_date, :eve_event_date},
+          {:eve_day, :eve_day},
+          {:eve_month, :eve_month},
+          {:eve_year, :eve_year},
+          {:eve_end_of_period_day, :eve_end_of_period_day},
+          {:eve_end_of_period_month, :eve_end_of_period_month},
+          {:eve_end_of_period_year, :eve_end_of_period_year}
+        ]
 
       _ ->
         throw("no input attributes defined for catalog: #{catalog}")
@@ -123,6 +136,17 @@ defmodule DataAggregator.Taxonomy.Catalog do
 
       :relate_images ->
         [{:mte_associated_media, :mte_associated_media}]
+
+      :convert_dates ->
+        [
+          {:eve_event_date, :eve_event_date},
+          {:eve_day, :eve_day},
+          {:eve_month, :eve_month},
+          {:eve_year, :eve_year},
+          {:eve_end_of_period_day, :eve_end_of_period_day},
+          {:eve_end_of_period_month, :eve_end_of_period_month},
+          {:eve_end_of_period_year, :eve_end_of_period_year}
+        ]
 
       _ ->
         throw("no output attributes defined for catalog: #{catalog}")

@@ -173,7 +173,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
             <li :for={{label, icon, action} <- @actions}>
               <button
                 phx-click={action}
-                disabled={@busy or is_nil(@meta) or not action_allowed?(@current_user, label)}
+                disabled={
+                  @busy or is_nil(@meta) or not action_allowed?(@current_user, label, @collection)
+                }
               >
                 <.icon name={icon} class="size-5" />
                 <span class="font-[sans-serif]">{action_label(label)}</span>
@@ -198,7 +200,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
           <li :for={{label, icon, action} <- @actions}>
             <button
               phx-click={action}
-              disabled={@busy or is_nil(@meta) or not action_allowed?(@current_user, label)}
+              disabled={
+                @busy or is_nil(@meta) or not action_allowed?(@current_user, label, @collection)
+              }
             >
               <.icon name={icon} class="size-5" />
               <span class="font-[sans-serif]">{action_label(label)}</span>
@@ -236,7 +240,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
 
   defp action_allowed?(user, "approve", collection), do: Collection.can_set_approving?(user, collection)
 
-  defp action_allowed?(_, _), do: false
+  defp action_allowed?(_, _, _), do: false
 
   def action_label("export"), do: ~t"Export"m
   def action_label("encode"), do: ~t"Encode"m

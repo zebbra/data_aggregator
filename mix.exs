@@ -258,7 +258,8 @@ defmodule DataAggregator.MixProject do
       {:timex, "~> 3.0"},
 
       # HTTP and API Utilities
-      {:hackney, "~> 1.18"},
+      # TODO: Remove when CVE-2025-1211 is resolved and merged
+      {:hackney, github: "tank-bohr/hackney", branch: "cve-2025-1211", override: true},
       {:jason, "~> 1.4"},
       {:open_api_spex, "~> 3.18"},
       {:redoc_ui_plug, "~> 0.2.1"},
