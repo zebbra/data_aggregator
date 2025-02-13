@@ -20,7 +20,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       actor = %User{
-        id: "user_1",
+        id: "usr_02z55LjrUZFNkbZy1tVKje",
         email: "admin@email.com",
         roles: ["admin"],
         institution_id: @inst_1
@@ -167,7 +167,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       actor = %User{
-        id: "user_1",
+        id: "usr_02z55LjrUZFNkbZy1tVKje",
         email: "collection_administrator@email.com",
         roles: ["collection_administrator"],
         institution_id: @inst_1

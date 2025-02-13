@@ -20,6 +20,7 @@ defmodule DataAggregator.HelpersTest do
 
   doctest DataAggregator.Records.ImageUpload.Helpers, import: true
   doctest DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy, import: true
+  doctest DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers, import: true
 
   setup do
     stub_with(Gbif.RestAPI, Gbif.RestAPIStub)

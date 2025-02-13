@@ -41,6 +41,7 @@ defmodule DataAggregator.EncodingFixtures do
       @encoded_record_defaults
       |> Map.merge(attrs)
       |> Map.put(:loc_state_province, "Bern")
+      |> Map.put(:eve_event_date, "2025-01-01")
       |> Map.put(:loc_country, "Switzerland")
       |> Map.put_new_lazy(:collection, fn ->
         collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
