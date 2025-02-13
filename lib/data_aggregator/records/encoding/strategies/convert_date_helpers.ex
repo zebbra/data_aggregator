@@ -35,7 +35,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers do
   def get_dates(encoded_record) do
     encoded_record
     |> Map.from_struct()
-    |> Map.take(get_date_fields())
+    |> Map.take(@date_fields)
   end
 
   @doc """

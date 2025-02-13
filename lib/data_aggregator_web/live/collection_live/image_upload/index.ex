@@ -204,7 +204,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
             <:item title={~t"Unmapped"m}>
               {@selected_image_upload.unmapped_images_count}
             </:item>
-            <:item title={~t"Inavlid"m}>
+            <:item title={~t"Invalid"m}>
               {@selected_image_upload.invalid_files_count || 0}
             </:item>
             <:item title={~t"Logfile"}>
