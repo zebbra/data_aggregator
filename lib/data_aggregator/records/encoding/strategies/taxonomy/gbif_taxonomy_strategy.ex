@@ -102,11 +102,12 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     |> parse_species_api_body()
   end
 
-  defp handle_accepted_usage_key(%{acceptedUsageKey: nil} = body) do
-    Map.put(body, :acceptedUsageKey, body.usageKey)
+  defp handle_accepted_usage_key(body) do
+    case Map.get(body, :acceptedUsageKey, nil) do
+      nil -> Map.put(body, :acceptedUsageKey, body.usageKey)
+      _ -> body
+    end
   end
-
-  defp handle_accepted_usage_key(body), do: body
 
   @spec parse_species_api_body(map()) :: map()
   defp parse_species_api_body(unparsed_body) do
