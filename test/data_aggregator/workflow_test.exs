@@ -314,7 +314,6 @@ defmodule DataAggregator.WorkflowTest do
       [publication: publication, actor: actor, records: records]
     end
 
-    @tag run: true
     test "publishing workflow performs as expected", %{
       publication: publication,
       records: records,
