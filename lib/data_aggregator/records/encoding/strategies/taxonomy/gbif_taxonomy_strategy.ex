@@ -43,6 +43,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
      |> fetch_match_api()
      |> parse_response()
      |> parse_response_body()
+     |> handle_accepted_usage_key()
      |> handle_synonym()
      |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)}
   catch
@@ -100,6 +101,12 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     |> parse_response()
     |> parse_species_api_body()
   end
+
+  defp handle_accepted_usage_key(%{acceptedUsageKey: nil} = body) do
+    Map.put(body, :acceptedUsageKey, body.usageKey)
+  end
+
+  defp handle_accepted_usage_key(body), do: body
 
   @spec parse_species_api_body(map()) :: map()
   defp parse_species_api_body(unparsed_body) do
