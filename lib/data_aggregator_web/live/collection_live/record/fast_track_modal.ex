@@ -526,9 +526,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
             <input
               type="checkbox"
               id="confirm"
-              name="confirm"
               checked={@agreed}
               class="checkbox checkbox-sm"
+              phx-update="ignore"
             />
           </div>
           <p class="text-sm">

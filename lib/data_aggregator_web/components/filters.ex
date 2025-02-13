@@ -442,7 +442,7 @@ defmodule DataAggregatorWeb.Filters do
           filter_form_params =
             FilterForm.params_for_query(filter_form)
 
-          meta = AshPagify.set_filter_form(meta, filter_form_params)
+          meta = AshPagify.Meta.set_filter_form(meta, filter_form_params)
           path = build_path(path, meta)
 
           send(self(), {"filter_form:submit", meta})

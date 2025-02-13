@@ -190,7 +190,7 @@ jobs:
           cache-dependency-path: assets/package-lock.json
 
       - name: Sentry release
-        uses: getsentry/action-release@v1
+        uses: getsentry/action-release@v2
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: zebbra
