@@ -2368,7 +2368,7 @@
       "references": null,
       "size": null,
       "source": "eve_sample_size_unit",
-      "type": "bigint"
+      "type": "text"
     },
     {
       "allow_nil?": true,
@@ -2378,7 +2378,7 @@
       "references": null,
       "size": null,
       "source": "eve_sample_size_value",
-      "type": "bigint"
+      "type": "float"
     },
     {
       "allow_nil?": true,
@@ -2936,7 +2936,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "FE274C363D9A997269F27596FA0C439C792974139BFD8010C92DF7A56CDF8B88",
+  "hash": "93BB333038064EA15253B81077D30224DE07B760C748F9959EC95DEA0D961242",
   "identities": [
     {
       "all_tenants?": false,
