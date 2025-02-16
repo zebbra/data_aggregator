@@ -368,7 +368,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:idf_type_status}
           label={~t"Typus"m}
         >
-          {record.idf_type_status}
+          {encoded_attribute(record, :idf_type_status, @layer)}
         </:col>
         <:col
           :let={{_id, record}}
@@ -384,7 +384,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:idf_verbatim_identification}
           label={get_dwc_field(:idf_verbatim_identification)}
         >
-          {record.idf_verbatim_identification}
+          {encoded_attribute(record, :idf_verbatim_identification, @layer)}
         </:col>
         <:col
           :let={{_id, record}}
@@ -408,7 +408,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:eve_field_number}
           label={get_dwc_field(:eve_field_number)}
         >
-          {record.eve_field_number}
+          {encoded_attribute(record, :eve_field_number, @layer)}
         </:col>
         <:col
           :let={{_id, record}}
@@ -416,7 +416,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:mte_recorded_by}
           label={get_dwc_field(:mte_recorded_by)}
         >
-          {record.mte_recorded_by}
+          {encoded_attribute(record, :mte_recorded_by, @layer)}
         </:col>
         <:col
           :let={{_id, record}}
@@ -424,7 +424,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:idf_identified_by}
           label={get_dwc_field(:idf_identified_by)}
         >
-          {record.idf_identified_by}
+          {encoded_attribute(record, :idf_identified_by, @layer)}
         </:col>
         <:col
           :let={{_id, record}}
@@ -432,7 +432,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           field={:eve_event_date}
           label={get_dwc_field(:eve_event_date)}
         >
-          {record.eve_event_date}
+          {encoded_attribute(record, :eve_event_date, @layer)}
         </:col>
         <:col
           :let={{_id, record}}
