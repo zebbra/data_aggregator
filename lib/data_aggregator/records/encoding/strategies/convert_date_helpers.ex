@@ -37,6 +37,28 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers do
   end
 
   @doc """
+    Check if no dates are present in the map
+
+    ## Examples
+
+        iex> dates = %{eve_event_date: nil, eve_day: nil, eve_month: nil, eve_year: nil, eve_end_of_period_day: nil, eve_end_of_period_month: nil, eve_end_of_period_year: nil}
+        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
+        iex> ConvertDateHelpers.no_dates_present?(dates)
+        true
+
+        iex> dates = %{eve_event_date: "2020-01-01", eve_day: 1, eve_month: 1, eve_year: 2020, eve_end_of_period_day: 2, eve_end_of_period_month: 1, eve_end_of_period_year: 2020}
+        iex> alias DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers
+        iex> ConvertDateHelpers.no_dates_present?(dates)
+        false
+  """
+  @spec no_dates_present?(map()) :: boolean()
+  def no_dates_present?(dates) do
+    date_values = Map.values(dates)
+
+    Enum.all?(date_values, fn value -> value === nil end)
+  end
+
+  @doc """
     Check if only the event date is present in the map
 
     ## Examples

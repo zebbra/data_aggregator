@@ -9,12 +9,12 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDatesStrategy do
       date_range?: 1,
       day_month_year_present?: 1,
       event_date_missing?: 1,
+      no_dates_present?: 1,
       only_event_date_present?: 1,
       populate_day_month_year_range: 1,
       populate_day_month_year: 1,
       populate_event_date: 1,
-      get_dates: 1,
-      get_date_fields: 0
+      get_dates: 1
     ]
 
   alias Ash.Resource.Actions.Implementation.Context
@@ -56,6 +56,10 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDatesStrategy do
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   defp convert_dates(dates) do
     cond do
+      no_dates_present?(dates) ->
+        # if no dates are present, return and proceed - nothing to convert then
+        dates
+
       all_dates_present?(dates) or day_month_year_present?(dates) or event_date_missing?(dates) ->
         populate_event_date(dates)
 

@@ -152,8 +152,7 @@ defmodule DataAggregator.Records.Encoding.ConvertDatesTest do
          %{
            record_fixture_missing_all_dates: record
          } do
-      {{:ok, record}, logs} =
-        with_log(fn -> Record.encode(record, :convert_dates, tenant: record.collection_id) end)
+      {:ok, record} = Record.encode(record, :convert_dates, tenant: record.collection_id)
 
       record = Ash.load!(record, :encoded_record)
       encoded_record = record.encoded_record
@@ -162,10 +161,7 @@ defmodule DataAggregator.Records.Encoding.ConvertDatesTest do
         assert Map.get(encoded_record, date_field) == nil
       end)
 
-      assert record.state == :failed
-
-      assert logs =~
-               "No dates available: [:eve_event_date, :eve_day, :eve_month, :eve_year, :eve_end_of_period_day, :eve_end_of_period_month, :eve_end_of_period_year]"
+      assert record.state == :encoded
     end
 
     test "encode/2 for :convert_dates catalog - invalid event date",
