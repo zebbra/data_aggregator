@@ -142,14 +142,10 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   defp is_correct_match_type(body) when body.taxonomicStatus == ~c"ACCEPTED", do: true
   defp is_correct_match_type(body) when body.matchType == "EXACT", do: true
   defp is_correct_match_type(body) when body.matchType == "FUZZY", do: true
-  defp is_correct_match_type(body) when body.matchType == "HIGHERRANK", do: true
-  # has to be verified, if this is the correct way to handle HIGHERRANK matchTypes
-  # defp is_correct_match_type(body) when body.matchType == "HIGHERRANK",
-  #   do:
-  #     throw(
-  #       "For this species name we could not find a matching
-  #        taxonomy. matchType #{inspect(body.matchType)} is not accepted"
-  #     )
+
+  defp is_correct_match_type(body) when body.matchType == "HIGHERRANK",
+    do: throw("For this species name we could not find a matching
+         taxonomy. Only results in HIGHERRANK and Scientific Name '#{inspect(body.kingdom)}' was found ")
 
   defp is_correct_match_type(body) when body.matchType == "NONE",
     do:
