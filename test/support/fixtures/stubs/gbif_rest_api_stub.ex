@@ -1222,7 +1222,7 @@ defmodule DataAggregator.Gbif.RestAPIStub do
          "rank" => "GENUS",
          "status" => "ACCEPTED",
          "confidence" => 100,
-         "matchType" => "HIGHERRANK",
+         "matchType" => "EXACT",
          "kingdom" => "Animalia",
          "phylum" => "Chordata",
          "order" => "Passeriformes",
