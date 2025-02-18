@@ -46,10 +46,9 @@ defmodule DataAggregator.WorkflowTest do
     %{name: "endOfPeriodMonth", mapped_to: "eve_end_of_period_month"},
     %{name: "year", mapped_to: "eve_year"},
     %{name: "endOfPeriodYear", mapped_to: "eve_end_of_period_year"},
-    %{name: "eventDate", mapped_to: nil},
+    %{name: "eventDate", mapped_to: "eve_event_date"},
     %{name: "eventRemarks", mapped_to: "eve_event_remarks"},
     %{name: "lifeStage", mapped_to: "mte_life_stage"},
-    # %{name: "organismQuantity", mapped_to: "mte_organism_quantity"},
     %{name: "organismQuantityType", mapped_to: "mte_organism_quantity_type"},
     %{name: "recordedBy", mapped_to: "mte_recorded_by"},
     %{name: "kingdom", mapped_to: "tax_kingdom"},
@@ -57,7 +56,6 @@ defmodule DataAggregator.WorkflowTest do
     %{name: "genus", mapped_to: "tax_genus"},
     %{name: "specificEpithet", mapped_to: "tax_specific_epithet"},
     %{name: "scientificNameAuthorship", mapped_to: "tax_scientific_name_authorship"},
-    # %{name: "namePublishedInYear", mapped_to: "tax_name_published_in_year"},
     %{name: "taxonRank", mapped_to: "tax_taxon_rank"},
     %{name: "scientificName", mapped_to: "tax_scientific_name"},
     %{name: "identificationRemarks", mapped_to: "idf_identification_remarks"},
@@ -760,6 +758,12 @@ defmodule DataAggregator.WorkflowTest do
         imported: "-",
         encoded: "1669856",
         category_name: "tax"
+      },
+      eve_event_date: %{
+        name: "eventDate",
+        imported: "2025-01-01/2025-01-20",
+        encoded: "1907-06-06",
+        category_name: "eve"
       }
     ]
 
