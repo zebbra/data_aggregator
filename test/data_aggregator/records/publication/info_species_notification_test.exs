@@ -24,9 +24,9 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          approval_status: :not_approved,
+          validation_status: :not_validated,
           last_imported_at: nil,
-          last_approval_started_at: nil,
+          last_validation_started_at: nil,
           tax_taxon_id: 9368
         })
 
@@ -35,9 +35,9 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          approval_status: :not_approved,
+          validation_status: :not_validated,
           last_imported_at: nil,
-          last_approval_started_at: nil,
+          last_validation_started_at: nil,
           tax_taxon_id: 9368
         })
 
@@ -46,9 +46,9 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          approval_status: :not_approved,
+          validation_status: :not_validated,
           last_imported_at: nil,
-          last_approval_started_at: nil,
+          last_validation_started_at: nil,
           tax_taxon_id: 9368
         })
 
@@ -57,9 +57,9 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          approval_status: :not_approved,
+          validation_status: :not_validated,
           last_imported_at: nil,
-          last_approval_started_at: nil,
+          last_validation_started_at: nil,
           tax_taxon_id: 9368
         })
 
@@ -68,9 +68,9 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "My Kingdom",
-          approval_status: :not_approved,
+          validation_status: :not_validated,
           last_imported_at: nil,
-          last_approval_started_at: nil,
+          last_validation_started_at: nil,
           tax_taxon_id: 9368
         })
 
@@ -93,18 +93,18 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       publication =
         %{
           name: "Publication 1",
-          channel: :approval,
+          channel: :validation,
           records_query: query,
           collection: collection,
           center: :infofauna
         }
         |> Publication.create!(tenant: collection)
-        |> Publication.update_attachment!(Attachment.import_from_path!("test/support/fixtures/files/approval_dwca.zip"))
+        |> Publication.update_attachment!(Attachment.import_from_path!("test/support/fixtures/files/validation_dwca.zip"))
 
       [collection: collection, records: records, query: query, publication: publication]
     end
 
-    test "Collection.approve/2 publication has the published dwca file attached", %{
+    test "Collection.validate/2 publication has the published dwca file attached", %{
       collection: collection,
       publication: publication
     } do
@@ -116,12 +116,12 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       {:ok, publication} =
         InfoSpecies.notify(publication, query)
 
-      assert publication.channel == :approval
+      assert publication.channel == :validation
       assert publication.collection_id == collection.id
       assert publication.attachment_id != nil
     end
 
-    test "Collection.approve/2 all records have an updated last_approval_started_at date", %{
+    test "Collection.validate/2 all records have an updated last_validation_started_at date", %{
       publication: publication
     } do
       query =
@@ -136,7 +136,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       assert length(records) == 5
 
       Enum.each(records, fn record ->
-        assert record.last_approval_started_at !== nil
+        assert record.last_validation_started_at !== nil
       end)
     end
 
@@ -150,14 +150,14 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
         |> Ash.Query.filter_input(publication.records_query)
         |> Ash.Query.set_tenant(publication.collection)
 
-      {:error, "Channel has to be :approval to be published to infospecies"} =
+      {:error, "Channel has to be :validation to be published to infospecies"} =
         InfoSpecies.notify(publication, query)
 
       assert {:ok, records} = Record.read(tenant: publication.collection)
       assert length(records) == 5
 
       Enum.each(records, fn record ->
-        assert record.last_approval_started_at === nil
+        assert record.last_validation_started_at === nil
       end)
     end
   end

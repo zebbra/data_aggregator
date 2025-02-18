@@ -28,7 +28,6 @@ defmodule DataAggregator.Records.Record do
   alias __MODULE__
   alias DataAggregator.DarwinCore
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Records.ApprovalStatusType
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding
@@ -36,6 +35,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.PublicationStatusType
   alias DataAggregator.Records.Record.Calculations
   alias DataAggregator.Records.Record.Changes
+  alias DataAggregator.Records.ValidationStatusType
 
   require Ash.Expr
   require Ash.Query
@@ -55,8 +55,8 @@ defmodule DataAggregator.Records.Record do
           filter: %{fast_track_status: %{not_equals: :published}}
         },
         %{
-          name: :not_approved,
-          filter: %{approval_status: %{not_equals: :approved}}
+          name: :not_validated,
+          filter: %{validation_status: %{not_equals: :validated}}
         }
       ]
     },
@@ -79,14 +79,14 @@ defmodule DataAggregator.Records.Record do
       default: :not_published,
       public?: true
 
-    attribute :approval_status, ApprovalStatusType,
+    attribute :validation_status, ValidationStatusType,
       allow_nil?: false,
-      default: :not_approved,
+      default: :not_validated,
       public?: true
 
     attribute :iucn_redlist_category, :string, allow_nil?: true, public?: true
 
-    attribute :last_approval_started_at, :utc_datetime, allow_nil?: true, public?: true
+    attribute :last_validation_started_at, :utc_datetime, allow_nil?: true, public?: true
     attribute :last_imported_at, :utc_datetime, allow_nil?: true, public?: true
 
     attribute :tsv, :string, allow_nil?: true
@@ -182,9 +182,9 @@ defmodule DataAggregator.Records.Record do
               :boolean,
               expr(fast_track_status != :published)
 
-    calculate :not_approved,
+    calculate :not_validated,
               :boolean,
-              expr(approval_status != :approved)
+              expr(validation_status != :validated)
 
     calculate :changes, :map, Calculations.Changes do
       argument :transform?, :boolean, allow_nil?: true, default: false
@@ -206,7 +206,7 @@ defmodule DataAggregator.Records.Record do
     ]
 
     ignore_actions [:destroy]
-    on_actions [:update_fast_track_status, :update_approval_status]
+    on_actions [:update_fast_track_status, :update_validation_status]
 
     attributes_as_attributes [:mte_catalog_number, :tax_scientific_name, :collection_id]
     reference_source? true
@@ -372,18 +372,18 @@ defmodule DataAggregator.Records.Record do
       change set_attribute(:fast_track_status, expr(^arg(:status)))
     end
 
-    update :update_approval_status do
+    update :update_validation_status do
       argument :status, :atom, allow_nil?: false
       require_atomic? false
 
-      change set_attribute(:approval_status, expr(^arg(:status)))
+      change set_attribute(:validation_status, expr(^arg(:status)))
     end
 
-    update :update_last_approval_started_at do
+    update :update_last_validation_started_at do
       accept []
       require_atomic? false
 
-      change set_attribute(:last_approval_started_at, &DateTime.utc_now/0)
+      change set_attribute(:last_validation_started_at, &DateTime.utc_now/0)
     end
 
     update :add_image do
@@ -430,10 +430,10 @@ defmodule DataAggregator.Records.Record do
     define :set_encoding_failed
     define :enqueue_encoder
     define :update_fast_track_status, args: [:status]
-    define :update_approval_status, args: [:status]
+    define :update_validation_status, args: [:status]
     define :check_if_fast_track_pubished
     define :enqueue_fast_track_checker, args: [:published_record]
-    define :update_last_approval_started_at
+    define :update_last_validation_started_at
     define :add_image, args: [:image]
   end
 
@@ -468,7 +468,7 @@ defmodule DataAggregator.Records.Record do
     end
 
     custom_indexes do
-      index [:state, :approval_status, :fast_track_status], include: ["id"]
+      index [:state, :validation_status, :fast_track_status], include: ["id"]
     end
   end
 

@@ -1,6 +1,6 @@
 defmodule DataAggregator.Records.Record.Calculations.Changes do
   @moduledoc """
-  Module for calculating changes between imported, encoded, and approved records.
+  Module for calculating changes between imported, encoded, and validated records.
   """
 
   use Ash.Resource.Calculation

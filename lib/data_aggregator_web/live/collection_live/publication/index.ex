@@ -73,7 +73,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
         <.secondary_navigation_item href={~p"/datasets/#{@collection}/exports"} label={~t"Exports"m} />
         <.secondary_navigation_item
           href={~p"/datasets/#{@collection}/publications"}
-          label={~t"Publications and Approvals"m}
+          label={~t"Publications and Validations"m}
           active
         />
         <.secondary_navigation_item
@@ -362,8 +362,8 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
     """
   end
 
-  defp publication_success_message(%{channel: :approval}) do
-    ~t"Approval started in background"m
+  defp publication_success_message(%{channel: :validation}) do
+    ~t"Validation started in background"m
   end
 
   defp publication_success_message(_), do: ~t"Publication started in background"m

@@ -18,7 +18,7 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
       :exporting,
       :encoding,
       :publishing,
-      :approving,
+      :validating,
       :deleting,
       :busy
     ]
@@ -30,7 +30,7 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
     :exporting,
     :encoding,
     :publishing,
-    :approving,
+    :validating,
     :deleting,
     :busy
   ]
@@ -49,8 +49,8 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
   def busy_action(%{encoding: true}), do: "encode:toggle"
   def busy_action("set_fast_track_publishing"), do: "fast_track_pub:toggle"
   def busy_action(%{publishing: true}), do: "fast_track_pub:toggle"
-  def busy_action("set_approving"), do: "approval_pub:toggle"
-  def busy_action(%{approving: true}), do: "approval_pub:toggle"
+  def busy_action("set_validating"), do: "validation_pub:toggle"
+  def busy_action(%{validating: true}), do: "validation_pub:toggle"
   def busy_action(%{deleting: true}), do: "collection:delete"
   def busy_action(_), do: nil
 
@@ -61,7 +61,7 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
       "collection:export" -> ~t"Cancel export"m
       "encode:toggle" -> ~t"Cancel encoding"m
       "fast_track_pub:toggle" -> ~t"Cancel publication"m
-      "approval_pub:toggle" -> ~t"Cancel approval"m
+      "validation_pub:toggle" -> ~t"Cancel validation"m
       _ -> ~t"Cancel"m
     end
   end
@@ -73,7 +73,7 @@ defmodule DataAggregatorWeb.CollectionLive.Helpers do
       :exporting -> ~t"Cancel export"m
       :encoding -> ~t"Cancel encoding"m
       :fast_track_pubishing -> ~t"Cancel publication"m
-      :approving -> ~t"Cancel approval"m
+      :validating -> ~t"Cancel validation"m
       _ -> ~t"Cancel"m
     end
   end

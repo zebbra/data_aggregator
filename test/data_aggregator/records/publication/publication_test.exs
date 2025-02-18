@@ -342,7 +342,7 @@ defmodule DataAggregator.PublicationTest do
       published_records = Ash.read!(PublishedRecord, tenant: publication_1.collection)
       assert length(published_records) == 1
 
-      # default publication is on layer 'approval' so the value saved in published_records are the encoded_record values
+      # default publication is on layer 'validation' so the value saved in published_records are encoded_record values
       assert published_records |> List.first() |> Map.get(:tax_taxon_id) == 4762
       rows = DataFrame.to_rows(data_frame)
 
@@ -699,12 +699,12 @@ defmodule DataAggregator.PublicationTest do
       end)
     end
 
-    test "enqueue/1 fails if collection is in state approving", %{
+    test "enqueue/1 fails if collection is in state validating", %{
       collection: collection,
       publication: publication
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        Collection.set_approving!(collection)
+        Collection.set_validating!(collection)
         assert_not_enqueued(publication)
       end)
     end

@@ -62,7 +62,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components do
       :exporting -> ~t"Exporting"m
       :encoding -> ~t"Encoding"m
       :fast_track_publishing -> ~t"Publishing"m
-      :approving -> ~t"Approving"m
+      :validating -> ~t"Validating"m
       :deleting -> ~t"Deleting"m
       _ -> ~t"Ready"m
     end

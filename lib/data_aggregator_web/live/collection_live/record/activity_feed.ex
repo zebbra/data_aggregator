@@ -3,7 +3,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   use DataAggregatorWeb, :html
 
   import DataAggregatorWeb.CollectionLive.Record.Components,
-    only: [publication_state_badge: 1, approval_state_badge: 1]
+    only: [publication_state_badge: 1, validation_state_badge: 1]
 
   import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [get_dwc_field: 1]
 
@@ -73,11 +73,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
                 :if={change.attr == "fast_track_status"}
                 state={String.to_existing_atom(change.value)}
               />
-              <.approval_state_badge
-                :if={change.attr == "approval_status"}
+              <.validation_state_badge
+                :if={change.attr == "validation_status"}
                 state={String.to_existing_atom(change.value)}
               />
-              <%= if change.attr not in ~w(approval_status fast_track_status) do %>
+              <%= if change.attr not in ~w(validation_status fast_track_status) do %>
                 {inspect(change.value)}
               <% end %>
             </:col>
@@ -89,7 +89,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   def activity_feed_element(%{activity: activity} = assigns)
-      when activity.name in [:set_encoded, :set_encoding_failed, :update_approval_status, :update_fast_track_status] do
+      when activity.name in [:set_encoded, :set_encoding_failed, :update_validation_status, :update_fast_track_status] do
     ~H"""
     <div class="grid w-full grid-cols-9 gap-y-2 ">
       <div class="bg-base-100 size-6 relative flex items-center justify-center">
@@ -133,7 +133,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
               :update,
               :set_encoded,
               :set_encoding_failed,
-              :update_approval_status,
+              :update_validation_status,
               :update_fast_track_status,
               :add_image_url
             ] do
@@ -173,7 +173,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   defp activity_text(%{activity: activity} = assigns)
-       when activity.name in [:set_encoded, :set_encoding_failed, :update_approval_status, :update_fast_track_status] do
+       when activity.name in [:set_encoded, :set_encoding_failed, :update_validation_status, :update_fast_track_status] do
     ~H"""
     <span class="font-medium">
       {text(@activity.name, @activity.content)}
@@ -247,7 +247,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   defp maybe_set_actor(_), do: ~t"System"m
 
   defp version_source(%{version_action_name: :update_fast_track_status}), do: ~t"Publication"
-  defp version_source(%{version_action_name: :update_approval_status}), do: ~t"Approval"
+  defp version_source(%{version_action_name: :update_validation_status}), do: ~t"Validation"
   defp version_source(%{version_action_name: :import}), do: ~t"Import"
 
   defp version_source(%{version_action_name: :update} = version), do: version_source_from_catalog(version.changes)
@@ -318,13 +318,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
-  def icon_lookup(:update_approval_status, content) do
-    case content["approval_status"] do
-      "not_approved" -> "hero-question-mark-circle-solid"
-      "approving" -> "hero-cog-6-tooth-solid"
-      "in_approval" -> "hero-check-badge-solid"
-      "approved" -> "hero-check-solid"
-      "approval_failed" -> "hero-x-mark-solid"
+  def icon_lookup(:update_validation_status, content) do
+    case content["validation_status"] do
+      "not_validated" -> "hero-question-mark-circle-solid"
+      "validating" -> "hero-cog-6-tooth-solid"
+      "in_validation" -> "hero-check-badge-solid"
+      "validated" -> "hero-check-solid"
+      "validation_failed" -> "hero-x-mark-solid"
       "stale" -> "hero-exclamation-triangle-solid"
       _ -> "hero-check-badge"
     end
@@ -364,25 +364,25 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
-  def icon_tooltip(:update_approval_status, content) do
-    case content["approval_status"] do
-      "not_approved" ->
-        ~t"No approval information available. Approve the dataset to see the status"m
+  def icon_tooltip(:update_validation_status, content) do
+    case content["validation_status"] do
+      "not_validated" ->
+        ~t"No validation information available. Validate the dataset to see the status"m
 
-      "approving" ->
-        ~t"Approval in progress"m
+      "validating" ->
+        ~t"Validation in progress"m
 
-      "in_approval" ->
-        ~t"Record is now in the approval pipeline - no further action required"m
+      "in_validation" ->
+        ~t"Record is now in the validation pipeline - no further action required"m
 
-      "approved" ->
-        ~t"Record approval was successful"m
+      "validated" ->
+        ~t"Record validation was successful"m
 
-      "approval_failed" ->
-        ~t"Approval failed. Process should be started again"m
+      "validation_failed" ->
+        ~t"Validation failed. Process should be started again"m
 
       "stale" ->
-        ~t"Record data changed after approving it and has to be reapproved"m
+        ~t"Record data changed after validating it and has to be revalidated"m
 
       _ ->
         nil
@@ -410,15 +410,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
-  defp text(:update_approval_status, content) do
-    case content["approval_status"] do
-      "not_approved" -> ~t"Record is"m
-      "approving" -> ~t"Record is currently"m
-      "in_approval" -> ~t"Record is now"m
-      "approved" -> ~t"Record was successful"m
-      "approval_failed" -> ~t"Record approval"m
-      "stale" -> ~t"The approval is now"m
-      _ -> ~t"Approval status was updated"m
+  defp text(:update_validation_status, content) do
+    case content["validation_status"] do
+      "not_validated" -> ~t"Record is"m
+      "validating" -> ~t"Record is currently"m
+      "in_validation" -> ~t"Record is now"m
+      "validated" -> ~t"Record was successful"m
+      "validation_failed" -> ~t"Record validation"m
+      "stale" -> ~t"The validation is now"m
+      _ -> ~t"Validation status was updated"m
     end
   end
 
@@ -441,13 +441,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
-  def badge_text(:update_approval_status, content) do
-    case content["approval_status"] do
-      "not_approved" -> ~t"Not Approved"m
-      "approving" -> ~t"Approving"m
-      "in_approval" -> ~t"In Approval"m
-      "approved" -> ~t"Approved"m
-      "approval_failed" -> ~t"Failed"m
+  def badge_text(:update_validation_status, content) do
+    case content["validation_status"] do
+      "not_validated" -> ~t"Not Validated"m
+      "validating" -> ~t"Validating"m
+      "in_validation" -> ~t"In Validation"m
+      "validated" -> ~t"Validated"m
+      "validation_failed" -> ~t"Failed"m
       "stale" -> ~t"Stale"m
       _ -> nil
     end
@@ -472,13 +472,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
-  def badge_color(:update_approval_status, content) do
-    case content["approval_status"] do
-      "not_approved" -> "gray"
-      "approving" -> "blue"
-      "in_approval" -> "blue"
-      "approved" -> "green"
-      "approval_failed" -> "red"
+  def badge_color(:update_validation_status, content) do
+    case content["validation_status"] do
+      "not_validated" -> "gray"
+      "validating" -> "blue"
+      "in_validation" -> "blue"
+      "validated" -> "green"
+      "validation_failed" -> "red"
       "stale" -> "orange"
       _ -> "green"
     end

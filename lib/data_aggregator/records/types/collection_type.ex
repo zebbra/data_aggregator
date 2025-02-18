@@ -48,7 +48,7 @@ defmodule DataAggregator.Records.CollectionType do
           :oth_swiss_species_center -> true
           :state -> true
           :fast_track_status -> true
-          :approval_status -> true
+          :validation_status -> true
           :mids_level -> true
           :updated_at -> true
           _ -> false
@@ -71,7 +71,7 @@ defmodule DataAggregator.Records.CollectionType do
           :oth_swiss_species_center -> true
           :state -> true
           :fast_track_status -> true
-          :approval_status -> true
+          :validation_status -> true
           :mids_level -> true
           :updated_at -> true
           _ -> false
@@ -95,7 +95,7 @@ defmodule DataAggregator.Records.CollectionType do
           :oth_swiss_species_center -> true
           :state -> true
           :fast_track_status -> true
-          :approval_status -> true
+          :validation_status -> true
           :mids_level -> true
           :updated_at -> true
           _ -> false
@@ -119,7 +119,7 @@ defmodule DataAggregator.Records.CollectionType do
           :oth_swiss_species_center -> true
           :state -> true
           :fast_track_status -> true
-          :approval_status -> true
+          :validation_status -> true
           :mids_level -> true
           :updated_at -> true
           _ -> false

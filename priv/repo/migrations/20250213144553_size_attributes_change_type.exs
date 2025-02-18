@@ -23,14 +23,14 @@ defmodule DataAggregator.Repo.Migrations.SizeAttributesChangeType do
       modify :eve_sample_size_unit, :text
     end
 
-    alter table(:approved_records) do
+    alter table(:validated_records) do
       modify :eve_sample_size_value, :float
       modify :eve_sample_size_unit, :text
     end
   end
 
   def down do
-    alter table(:approved_records) do
+    alter table(:validated_records) do
       modify :eve_sample_size_unit, :bigint
       modify :eve_sample_size_value, :bigint
     end

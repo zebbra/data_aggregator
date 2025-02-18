@@ -76,14 +76,14 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
       assert publication.published_count == 5
     end
 
-    test "publication :approval success", %{publication: publication, collection: collection} do
-      publication = Publication.update!(publication, %{channel: :approval})
+    test "publication :validation success", %{publication: publication, collection: collection} do
+      publication = Publication.update!(publication, %{channel: :validation})
       perform_job(Publisher, %{id: publication.id, collection_id: publication.collection_id})
 
       publication = Publication.get_by_id!(publication.id, tenant: collection)
 
       assert publication.state == :done
-      assert publication.channel == :approval
+      assert publication.channel == :validation
       assert publication.published_count == 5
     end
   end

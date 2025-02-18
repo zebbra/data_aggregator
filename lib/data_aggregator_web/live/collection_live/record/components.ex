@@ -95,21 +95,21 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   attr :state, :atom,
     required: true,
     values: [
-      :not_approved,
-      :approving,
-      :in_approval,
-      :approved,
-      :approval_failed,
+      :not_validated,
+      :validating,
+      :in_validation,
+      :validated,
+      :validation_failed,
       :stale
     ]
 
   attr :tooltip, :boolean, default: true
 
-  def approval_state_badge(assigns) do
+  def validation_state_badge(assigns) do
     assigns =
       assigns
-      |> assign(:name, :update_approval_status)
-      |> assign(:content, %{"approval_status" => Atom.to_string(assigns.state)})
+      |> assign(:name, :update_validation_status)
+      |> assign(:content, %{"validation_status" => Atom.to_string(assigns.state)})
 
     ~H"""
     <.badge

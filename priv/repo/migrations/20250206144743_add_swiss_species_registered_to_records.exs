@@ -23,14 +23,14 @@ defmodule DataAggregator.Repo.Migrations.AddSwissSpeciesRegisteredToRecords do
       add :oth_swiss_species_center, :text
     end
 
-    alter table(:approved_records) do
+    alter table(:validated_records) do
       add :oth_swiss_species_registered_at, :utc_datetime
       add :oth_swiss_species_center, :text
     end
   end
 
   def down do
-    alter table(:approved_records) do
+    alter table(:validated_records) do
       remove :oth_swiss_species_center
       remove :oth_swiss_species_registered_at
     end

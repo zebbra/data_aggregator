@@ -35,7 +35,7 @@ defmodule DataAggregator.Records.Publication do
     attribute :rows_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :center, :atom, allow_nil?: true, public?: true
     attribute :existing_dataset_key, :string, allow_nil?: true, public?: true
-    attribute :layer, :string, allow_nil?: false, default: "approval", public?: true
+    attribute :layer, :string, allow_nil?: false, default: "validation", public?: true
 
     attribute :license, PublicationLicenseType,
       allow_nil?: false,
