@@ -155,18 +155,18 @@ The publication process is done by registering the previously created Darwin Cor
 
 `for_coders:` The publication process is handled by the `DataAggregator.Records.Actions.Publish` Ash Action.
 
-### Approve
+### Validate
 
-To have the data published on the GBIF portal, it must be approved by the Infospecies Switzerland team. The team will review the data and approve it if it meets the necessary requirements.
-To start the approval process, the user must click the `approve` button in the UI on the collection.
+To have the data published on the GBIF portal, it must be validated by the Infospecies Switzerland team. The team will review the data and validate it if it meets the necessary requirements.
+To start the validation process, the user must click the `validate` button in the UI on the collection.
 
-An API endpoint is available to import the approved data from Infospecies into the application. The data will be imported into the application and can records will be indicated as `approved`.
+An API endpoint is available to import the validated data from Infospecies into the application. The data will be imported into the application and can records will be indicated as `validated`.
 
-`for_coders:` The approval process is handled by the `DataAggregator.Records.Actions.Approve` Ash Action. There we collect the neccessary records according to the users selection, create Darwin Core Archives and notify the Infospecies team about the approval by mail.
+`for_coders:` The validation process is handled by the `DataAggregator.Records.Actions.Validate` Ash Action. There we collect the neccessary records according to the users selection, create Darwin Core Archives and notify the Infospecies team about the validation by mail.
 
-#### Inform the Data Aggregator about approved Records
+#### Inform the Data Aggregator about validated Records
 
-Once the Infospecies team has approved the data, the data will be published to the GBIF portal AND the data aggregator can be called by Rest API `POST /api/json/approvals` containing the link to the DWC-Archive to inform us, that the data is approved and was published. The endpoint expects a JSON object in the following structure:
+Once the Infospecies team has validated the data, the data will be published to the GBIF portal AND the data aggregator can be called by Rest API `POST /api/json/validations` containing the link to the DWC-Archive to inform us, that the data is validated and was published. The endpoint expects a JSON object in the following structure:
 
 ```json
 {
@@ -178,7 +178,7 @@ Once the Infospecies team has approved the data, the data will be published to t
 }
 ```
 
-this will return a json object like bellow to the calling client to indicate that the approval was successfully created:
+this will return a json object like bellow to the calling client to indicate that the validation was successfully created:
 
 ```json
 {
@@ -191,16 +191,16 @@ this will return a json object like bellow to the calling client to indicate tha
       "file_url": "https://s3.cloud.zebbra.ch/data-aggregator-stag/files/fat_02wlChzH8FcfF3L9VIXXY1/AY_qEyOtfpS2yzRehd1Ddg.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=data-aggregator-stag%2F20240710%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240710T141305Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=46e0768b97d5a72e5d4414e55fcc6aa0d7a3df5e1a6d261765a64bbc2e97cb44"
     },
     "id": "app_02x50wRhsNSm3e9aTd2p4B",
-    "type": "approval"
+    "type": "validation"
   }
 }
 ```
 
-#### Update Approval status of the Records within the Data Aggregator
+#### Update Validation status of the Records within the Data Aggregator
 
-Now the client has to call the `PATCH /api/json/approvals/{id}/enqueue` endpoint to enqueue and start the approval process.
+Now the client has to call the `PATCH /api/json/validations/{id}/enqueue` endpoint to enqueue and start the validation process.
 
-By calling `GET /api/json/approvals/{id}` the client can check the status of the approval process at any time.
+By calling `GET /api/json/validations/{id}` the client can check the status of the validation process at any time.
 
 #### Notification
 
@@ -215,6 +215,6 @@ As soon as the data processing within the aggregator is finished, the Infospecie
 }
 ```
 
-`error_log_url` will contain an url which points to the error log of the internal processing of the data. The `success_count` and `error_count` will contain the amount of successfully processed and approved records and the amount of records which failed during the processing.
+`error_log_url` will contain an url which points to the error log of the internal processing of the data. The `success_count` and `error_count` will contain the amount of successfully processed and validated records and the amount of records which failed during the processing.
 
-All the code necessary to handle the approval process is located in the `lib/data_aggregator/records/approval` modules.
+All the code necessary to handle the validation process is located in the `lib/data_aggregator/records/validation` modules.

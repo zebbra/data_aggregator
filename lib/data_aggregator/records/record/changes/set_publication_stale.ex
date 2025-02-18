@@ -1,6 +1,6 @@
 defmodule DataAggregator.Records.Record.Changes.SetPublicationStale do
   @moduledoc """
-  Sets the fast_track_status and approval_status to :stale if they are not :not_published and :not_approved respectively.
+  Sets the fast_track_status and validation_status to :stale if they are not :not_published and :not_validated respectively.
   """
 
   use Ash.Resource.Change
@@ -17,8 +17,8 @@ defmodule DataAggregator.Records.Record.Changes.SetPublicationStale do
       expr(if fast_track_status == :not_published, do: :not_published, else: :stale)
     )
     |> Changeset.atomic_update(
-      :approval_status,
-      expr(if approval_status == :not_approved, do: :not_approved, else: :stale)
+      :validation_status,
+      expr(if validation_status == :not_validated, do: :not_validated, else: :stale)
     )
   end
 end

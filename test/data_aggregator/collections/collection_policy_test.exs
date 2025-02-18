@@ -116,18 +116,18 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       assert Collection.can_enqueue_encoding?(actor, collection_other, %{})
     end
 
-    test "can approve for collection with other institution", %{
+    test "can validate for collection with other institution", %{
       actor: actor,
       collection_other: collection_other
     } do
-      assert Collection.can_approve?(actor, collection_other, %{})
+      assert Collection.can_validate?(actor, collection_other, %{})
     end
 
-    test "can approve for collection with same institution", %{
+    test "can validate for collection with same institution", %{
       actor: actor,
       collection_same: collection_same
     } do
-      assert Collection.can_approve?(actor, collection_same, %{})
+      assert Collection.can_validate?(actor, collection_same, %{})
     end
 
     test "can set_fast_track_publishing for collection with same institution", %{
@@ -155,7 +155,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       {:can_set_importing?, "set importing"},
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
-      {:can_set_approving?, "set approving"},
+      {:can_set_validating?, "set validating"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
       {:can_set_idle_encoding?, "set idle encoding"},
@@ -305,7 +305,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       {:can_set_importing?, "set importing"},
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
-      {:can_set_approving?, "set approving"},
+      {:can_set_validating?, "set validating"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
       {:can_set_idle_encoding?, "set idle encoding"},
@@ -451,7 +451,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       {:can_set_importing?, "set importing"},
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
-      {:can_set_approving?, "set approving"},
+      {:can_set_validating?, "set validating"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
       {:can_set_idle_encoding?, "set idle encoding"}
@@ -582,7 +582,7 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       {:can_set_importing?, "set importing"},
       {:can_set_exporting?, "set exporting"},
       {:can_set_encoding?, "set encoding"},
-      {:can_set_approving?, "set approving"},
+      {:can_set_validating?, "set validating"},
       {:can_set_deleting?, "set deleting"},
       {:can_set_idle?, "set idle"},
       {:can_set_idle_encoding?, "set idle encoding"}

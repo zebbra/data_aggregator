@@ -112,7 +112,7 @@
     },
     {
       "allow_nil?": false,
-      "default": "\"approval\"",
+      "default": "\"validation\"",
       "generated?": false,
       "primary_key?": false,
       "references": null,
@@ -253,7 +253,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "AB8FCD0BB11A7A79BD920F7BA1F103D31F6D4B62DD45157D3D709E00633C27F4",
+  "hash": "1E71818BD3D99654846599F1570871C2762FEC9A053B9151F905409DB2BC32AA",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",

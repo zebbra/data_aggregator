@@ -82,10 +82,10 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
       end)
     end
 
-    test "set_encoding/1 fails if collection is in state approving", %{collection: collection} do
+    test "set_encoding/1 fails if collection is in state validating", %{collection: collection} do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        collection = Collection.set_approving!(collection)
-        assert_state(collection, :approving)
+        collection = Collection.set_validating!(collection)
+        assert_state(collection, :validating)
       end)
     end
 

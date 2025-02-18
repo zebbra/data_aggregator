@@ -85,8 +85,8 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
 
   # gives you a map of all relevant record attributes and its values
   @spec map_record(Record.t(), list(), any()) :: map()
-  defp map_record(record, record_attributes, :approval) do
-    # for approval we always take data from 'raw layer'
+  defp map_record(record, record_attributes, :validation) do
+    # for validation we always take data from 'raw layer'
     record |> Map.from_struct() |> Map.take(record_attributes)
   end
 

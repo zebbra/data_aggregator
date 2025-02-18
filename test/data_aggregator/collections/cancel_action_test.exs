@@ -443,7 +443,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
       end)
     end
 
-    test "cancels an approving job and sets the approving to failed and the collection to idle" do
+    test "cancels an validating job and sets the validating to failed and the collection to idle" do
       Oban.Testing.with_testing_mode(:manual, fn ->
         collection = collection_fixture()
 
@@ -455,8 +455,8 @@ defmodule DataAggregator.Collections.CancelActionTest do
         publication =
           Publication.create!(
             %{
-              name: "Publication Approval 1",
-              channel: :approval,
+              name: "Publication Validation 1",
+              channel: :validation,
               records_query: query,
               collection: collection,
               center: "infofauna"
@@ -467,8 +467,8 @@ defmodule DataAggregator.Collections.CancelActionTest do
         publication2 =
           Publication.create!(
             %{
-              name: "Publication Approval 2",
-              channel: :approval,
+              name: "Publication Validation 2",
+              channel: :validation,
               records_query: query,
               collection: collection,
               center: "infofauna"
@@ -479,16 +479,16 @@ defmodule DataAggregator.Collections.CancelActionTest do
         assert {:ok, publication} = Publication.enqueue(publication)
         assert {:ok, publication2} = Publication.enqueue(publication2)
 
-        collection = Collection.set_approving!(collection)
-        assert collection.state === :approving
+        collection = Collection.set_validating!(collection)
+        assert collection.state === :validating
         assert publication.state === :queued
         assert publication2.state === :queued
 
-        approval_jobs =
+        validation_jobs =
           collection.id |> Job.query_to_publications_by_collection() |> Ash.read!()
 
-        assert length(approval_jobs) === 2
-        Enum.each(approval_jobs, fn job -> assert job.state === :available end)
+        assert length(validation_jobs) === 2
+        Enum.each(validation_jobs, fn job -> assert job.state === :available end)
 
         assert_enqueued(
           worker: Publisher,
@@ -517,11 +517,11 @@ defmodule DataAggregator.Collections.CancelActionTest do
       end)
     end
 
-    test "cancels an approving with no active approving and no approving job and sets collection to idle" do
+    test "cancels an validating with no active validating and no validating job and sets collection to idle" do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        collection = collection_fixture(%{state: :approving})
+        collection = collection_fixture(%{state: :validating})
 
-        assert collection.state === :approving
+        assert collection.state === :validating
 
         query = %{
           collection: %{id: %{eq: collection.id}},
@@ -531,8 +531,8 @@ defmodule DataAggregator.Collections.CancelActionTest do
         publication =
           Publication.create!(
             %{
-              name: "Publication Approving 1",
-              channel: :approval,
+              name: "Publication Validating 1",
+              channel: :validation,
               records_query: query,
               collection: collection,
               center: "infofauna"

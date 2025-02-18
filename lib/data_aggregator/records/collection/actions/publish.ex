@@ -99,7 +99,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       |> Publication.update_attachment(attachment)
       |> Ash.load!([:collection, :attachment])
 
-    # fast_track: create endpoint with attachment, approval: notify infospecies
+    # fast_track: create endpoint with attachment, validation: notify infospecies
     case publish(publication, query, ctx) do
       {:ok, publication} ->
         {:ok, publication}
@@ -145,9 +145,9 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     action =
       if publication.channel == :fast_track,
         do: :update_fast_track_status,
-        else: :update_approval_status
+        else: :update_validation_status
 
-    status = if action == :update_approval_status, do: translate_status(status), else: status
+    status = if action == :update_validation_status, do: translate_status(status), else: status
 
     max_concurrency = Records.import_max_concurrency()
     batch_size = ceil(Records.import_batch_size() / max_concurrency)
@@ -172,7 +172,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     stream
   end
 
-  defp maybe_append_published_records(%{channel: :approval} = _publication, _query), do: nil
+  defp maybe_append_published_records(%{channel: :validation} = _publication, _query), do: nil
 
   defp maybe_append_published_records(%{channel: :fast_track} = publication, query) do
     query
@@ -218,7 +218,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
   defp round_coordinates(value), do: value
 
-  defp maybe_update_count(%{channel: :approval} = publication, _tenant), do: publication
+  defp maybe_update_count(%{channel: :validation} = publication, _tenant), do: publication
 
   defp maybe_update_count(%{channel: :fast_track} = publication, tenant) do
     # now we update the rows count with the number of records that will be published
@@ -229,7 +229,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   defp stream_query_or_resource(_query, %{channel: :fast_track, collection: collection}),
     do: Ash.stream!(PublishedRecord, stream_with: :keyset, batch_size: 1000, tenant: collection)
 
-  defp stream_query_or_resource(query, %{channel: :approval}),
+  defp stream_query_or_resource(query, %{channel: :validation}),
     do: Ash.stream!(query, stream_with: :keyset, batch_size: 1000, load: :encoded_record)
 
   defp record_inputs(record, publication) do
@@ -244,18 +244,18 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     |> Map.put(:collection_id, publication.collection.id)
   end
 
-  defp translate_status(:publishing), do: :approving
-  defp translate_status(:in_publication), do: :in_approval
-  defp translate_status(:publication_failed), do: :approval_failed
+  defp translate_status(:publishing), do: :validating
+  defp translate_status(:in_publication), do: :in_validation
+  defp translate_status(:publication_failed), do: :validation_failed
 
-  defp register(%Publication{channel: :approval} = publication), do: {:ok, publication.collection}
+  defp register(%Publication{channel: :validation} = publication), do: {:ok, publication.collection}
 
   defp register(%Publication{channel: :fast_track} = publication) do
     Logger.debug("Registering collection: #{publication.collection.id} at GBIF for publishing")
     Collection.register_at_gbif(publication.collection, publication.existing_dataset_key)
   end
 
-  defp publish(%Publication{channel: :approval} = publication, query, _ctx) do
+  defp publish(%Publication{channel: :validation} = publication, query, _ctx) do
     case InfoSpecies.notify(publication, query) do
       {:ok, publication} ->
         {:ok, publication}

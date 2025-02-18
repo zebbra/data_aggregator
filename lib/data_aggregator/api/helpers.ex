@@ -62,8 +62,8 @@ defmodule DataAggregator.Api.Helpers do
     grscicoll_api_base_url() <> "/institution"
   end
 
-  @spec infospecies_approval_notification_url() :: String.t()
-  def infospecies_approval_notification_url do
-    infospecies_api_base_url() <> "/approval/notification"
+  @spec infospecies_validation_notification_url() :: String.t()
+  def infospecies_validation_notification_url do
+    infospecies_api_base_url() <> "/validation/notification"
   end
 end

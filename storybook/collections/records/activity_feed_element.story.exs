@@ -33,7 +33,7 @@ defmodule Storybook.Collections.Records.ActivityFeedElement do
 
   defp available_activities do
     activity_names =
-      ~w(import update set_encoded set_encoding_failed update_fast_track_status update_approval_status other)a
+      ~w(import update set_encoded set_encoding_failed update_fast_track_status update_validation_status other)a
 
     Enum.reduce(activity_names, [], fn name, acc ->
       activity = %Activity{
@@ -49,7 +49,7 @@ defmodule Storybook.Collections.Records.ActivityFeedElement do
 
       case name do
         :update_fast_track_status -> iterate_state_machine(acc, name)
-        :update_approval_status -> iterate_state_machine(acc, name)
+        :update_validation_status -> iterate_state_machine(acc, name)
         _ -> [activity | acc]
       end
     end)
@@ -72,17 +72,17 @@ defmodule Storybook.Collections.Records.ActivityFeedElement do
     end)
   end
 
-  defp iterate_state_machine(activities, :update_approval_status) do
-    states = ~w(not_approved approving in_approval approved approval_failed stale other)
+  defp iterate_state_machine(activities, :update_validation_status) do
+    states = ~w(not_validated validating in_validation validated validation_failed stale other)
 
     Enum.reduce(states, activities, fn state, acc ->
       activity = %Activity{
-        name: :update_approval_status,
+        name: :update_validation_status,
         actor: "John Doe",
         date_time: DateTime.utc_now(),
-        content: %{"approval_status" => state},
-        source: "approval_status_#{state}",
-        index: "approval_status_#{state}"
+        content: %{"validation_status" => state},
+        source: "validation_status_#{state}",
+        index: "validation_status_#{state}"
       }
 
       [activity | acc]

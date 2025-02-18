@@ -142,7 +142,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       {:can_enqueue_encoder?, "enqueue_encoder"},
       {:can_check_if_fast_track_pubished?, "check_if_fast_track_pubished"},
       {:can_enqueue_fast_track_checker?, "enqueue_fast_track_checker"},
-      {:can_update_last_approval_started_at?, "update_last_approval_started_at"}
+      {:can_update_last_validation_started_at?, "update_last_validation_started_at"}
     ]
 
     for {method, method_description} <- set_test_cases do
@@ -282,7 +282,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       {:can_set_encoded?, "set_encoded"},
       {:can_set_encoding_failed?, "set_encoding_failed"},
       {:can_enqueue_encoder?, "enqueue_encoder"},
-      {:can_update_last_approval_started_at?, "update_last_approval_started_at"}
+      {:can_update_last_validation_started_at?, "update_last_validation_started_at"}
     ]
 
     for {method, method_description} <- set_test_cases do
@@ -425,7 +425,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       {:can_set_encoded?, "set_encoded"},
       {:can_set_encoding_failed?, "set_encoding_failed"},
       {:can_enqueue_encoder?, "enqueue_encoder"},
-      {:can_update_last_approval_started_at?, "update_last_approval_started_at"}
+      {:can_update_last_validation_started_at?, "update_last_validation_started_at"}
     ]
 
     for {method, method_description} <- set_test_cases do
@@ -568,7 +568,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       {:can_set_encoded?, "set_encoded"},
       {:can_set_encoding_failed?, "set_encoding_failed"},
       {:can_enqueue_encoder?, "enqueue_encoder"},
-      {:can_update_last_approval_started_at?, "update_last_approval_started_at"}
+      {:can_update_last_validation_started_at?, "update_last_validation_started_at"}
     ]
 
     for {method, method_description} <- set_test_cases do
