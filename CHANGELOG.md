@@ -5,6 +5,297 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [0.10.12](https://github.com/zebbra/data_aggregator/compare/v0.10.11...0.10.12) (2025-02-18)
+
+
+
+
+### Features:
+
+* converting of dates in encoding step
+
+* terms: User has to accept terms on login.
+
+* various renamings; permission handing adjusted
+
+* store database backups in s3
+
+* publication-verifier: only do 3 attempts. Errors count as attempts. If still not published in last attempt, set record to publication_failed
+
+* sidepanel: show collection based values in sidepanel.
+
+* publication: add gbif_doi to collection when registering at gbif.
+
+* encoding: remove add institution code encoding step
+
+* dwca-file: take some data from the collection instead of the record in csv creation
+
+* publication: change order of publish, to set dataset id before dwc file creation
+
+* add unique identifiers to record resources. use gbifid instead of occurence id to store gbifid returned from fast track checker
+
+* changelog: reflect published status change in changelog with actor
+
+* published_records: do publication rules on appending records to published records
+
+* published_records: added table partitions
+
+* publication: change default of license of publication to cc by
+
+* publication: first implementation of publication table appending
+
+* publication-modal: correctly show info pretaining rules/checks
+
+* geo-reverse-encoding: dont overwrite data on conversion. Round results to 10cm precision
+
+* publication: implement publication rule
+
+* publication: first implementation of publication check.
+
+* publication: add funcitonality of choosing existing dataset keys on publication
+
+* publication: use updated texts for modal
+
+* publication: finish basic publication modal (override existing or create new dataset). Using an existing is blocked for now
+
+* publication: change metadata in eml file creation and tests
+
+* floating_tooltip: implemented with portal to and floating_ui
+
+* bulk_versions: use for import create records versions
+
+* publications: first work on performance improvements
+
+* images: add calculation for proxy image url
+
+* image-uplad: add incomplete status when there are unmapped images
+
+* image-upload: fix relate image upload encoding strategy. Add tests
+
+* oth_modified: added new dwc field
+
+* changes: display only changed values during encoding
+
+* redirects: change for collection/publication/approval create actions
+
+* user: validate and fix email on first modal step
+
+* image-upload: save proxy image address to associatedMedia. Handle proxy to return attachment url
+
+* helm: use CloudNativePG cluster
+
+* started_by: added relationships
+
+* table_partition: performance tweaks
+
+* table_partition: create partitions
+
+* table_partition: add multi-tenancy to records and records_versions
+
+* table_partition: add multi-tenancy to record_images
+
+* table_partition: add multi-tenancy to record_encoding_results
+
+* table_partition: add multi-tenancy to publications
+
+* table_partition: add multi-tenancy to imports
+
+* table_partition: add multi-tenancy to import_records
+
+* table_partition: add multi-tenancy to image_uploads
+
+* table_partition: add multi-tenancy to exports
+
+* table_partition: add multi-tenancy to encoded_records and it's versions
+
+* table_partition: add multi-tenancy to approvals and approved_records
+
+* table_partition: prepare records by adding a unique index on id,collection_id
+
+* images: add relate_images encoding strategy
+
+* image-upload: integrate into cancel action logic
+
+* image-upload: support hidden files and single subdiredctories
+
+* geo-encoding: use lv03 and lv95 swiss coords. Add logic to geo-reverse encoding.
+
+* geo_encoding: upcase country code on forward/reverse geo encoding
+
+* change some attributes from integer/text to float
+
+* image-upload: small ui changes.
+
+* image-upload: set collection busy when mapping images
+
+* image-upload: add activity feed for add_image_url change
+
+* image-upload: conditional edit text/icons depending on first run or rerun
+
+* kill-switch: implemented logic to abort import,export,encode,publish,approve actions
+
+* image-upload: add info text to mapping modal.
+
+* image-upload: rename and recolor image upload state
+
+* image-upload: Add log download button to summary
+
+* image-upload: validate and delete files when extracting.
+
+* image-upload: add file mapping and tests.
+
+* image-upload: add file extraction after zip upload
+
+* image-upload: First steps implementing image upload
+
+### Bug Fixes:
+
+* dependency pointing to non existing commit
+
+* squashed snapshots
+
+* mids_level: reset all mids level according to new spec
+
+* break-all: prevent first column of record attr labels from overflowing by allowing it to break to the next line
+
+* migration: schema modifications and migrations to change data type of simple_size_unit and simple_size_value
+
+* test: remove run tag
+
+* usageKey: usage key as backup for missing acceptedUsageKey
+
+* acceptedUsageKey: use usageKey if acceptedUsageKey isn't present
+
+* small fixes and merge
+
+* filters, fast_track_modal, and record actions on <2xl screens
+
+* module conflict
+
+* tests
+
+* update generated mids level on database level; i18n stuff
+
+* SCN-430; SCN-411; update i18n files
+
+* approach to fix node version for sentry release build
+
+* set correct sort order for attribute listing in record detail slideover view
+
+* migrate database to have correct roles in the database as well
+
+* refactoring and tests
+
+* tests
+
+* Merge branch 'fix/swiss_species_encoding_SCN-448' of https://github.com/zebbra/data_aggregator into fix/swiss_species_encoding_SCN-448
+
+* activate doctests for SwissSpeciesStrategy
+
+* fixing data conversion int to string for tax_accepted_usage_key
+
+* reactivate fast_track_publishing tests; clean up comments
+
+* reactivate fast_track_publishing tests; clean up comments
+
+* reactivate fast_track_publishing tests; clean up comments
+
+* reactivate fast_track_publishing tests; clean up comments
+
+* rename collection_digitizer to collection_administrator and data_administrator to data_digitizer; fix tests; fix seed data
+
+* renaming coordinates and import data text labels SCN-435 and SCN-415
+
+* ensure backwards compatibility with old image upload objects
+
+* fixing suggestion regarding readability from pr review
+
+* Merge branch 'fix/image_issues_on_dagi' of https://github.com/zebbra/data_aggregator into fix/image_issues_on_dagi
+
+* remove temp file after file was served to the requesting client
+
+* fixing tests
+
+* streams image records to log entry conversion and to a csv file stored @ /tmp; then sends back the file to the user
+
+* because on r2 image paths are urls with multiple params we have to get only the path to determine the content-type
+
+* Merge branch 'fix/prevent_browser_from_downloading_images_linked_on_gbif' of https://github.com/zebbra/data_aggregator into fix/prevent_browser_from_downloading_images_linked_on_gbif
+
+* guess content type according to file extension
+
+* prevent storage service from setting wrong response content type header
+
+* set fallback content type for file serving
+
+* set content-distribution header
+
+* Merge remote-tracking branch 'origin/main' into fix/prevent_browser_from_downloading_images_linked_on_gbif
+
+* proxy image requests: proxy images on the server side instead of making a http redirect to the file
+
+* fixing wrong arrity function call
+
+* explicit set content type to image to prevent the browser from start downloading the image instead of showing it
+
+* remove run tag from test
+
+* tackling division by zero error on calculation of import and validation progress; adding progress calculations to tests; adapted same logic and test to export logic; at prublication progress calculation similar checks already apply, tests extended
+
+* added format_float with default precision of 10 decimal digits; added transformer and calling format_float for each field mentioned in SCN-418; extended test data; extended publication tests; added doctests
+
+* deps: update formatters
+
+* publication: only use new publication rule on fast_track channel
+
+* migrations: delete unused migration
+
+* migrations: remove faulty migrations
+
+* publication_modal: change help text
+
+* publish: improve modal workflow
+
+* live_view: push_navigate change for release 1.0
+
+* ext: sidepanel display and export
+
+* image_upload_dialog: change dialog close refernce to image_upload_modal
+
+* combobox: wait for transitions to finish before portaling
+
+* tom-select: use new paths to require modules
+
+* image-mapping: fix image mapping logic for files that contain periods
+
+* image-upload: add edge case handling
+
+* refactor and test counter
+
+* throttle export progress updates
+
+* http cache typo
+
+* remove cache path compile env dependency
+
+* small fixes
+
+* sidepanel: display all imported and only changed encoded values
+
+* changes: handle reduce of empty list
+
+* jobs: increase pruner limit to 10_000
+
+* image-upload: handle hidden folders
+
+* linting error
+
+### Performance Improvements:
+
+* moved the logic of generating the image upload log file to a after change hook within the image mapping process; adjusted mapping change hook to have a more memory efficient processing of huge collections
+
+* records table: use generated db columns and assign_async operations
+
 ## [0.10.11](https://github.com/zebbra/data_aggregator/compare/v0.10.10...0.10.11) (2025-01-23)
 
 
