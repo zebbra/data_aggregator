@@ -306,13 +306,13 @@ eve_attributes = [
     dwc_field: "sampleSizeValue",
     dwc_link: "http://rs.tdwg.org/dwc/terms/sampleSizeValue",
     dwca_file: :core,
-    attribute: %Attribute{name: :sample_size_value, type: :integer, allow_nil?: true}
+    attribute: %Attribute{name: :sample_size_value, type: :float, allow_nil?: true}
   },
   %{
     dwc_field: "sampleSizeUnit",
     dwc_link: "http://rs.tdwg.org/dwc/terms/sampleSizeUnit",
     dwca_file: :core,
-    attribute: %Attribute{name: :sample_size_unit, type: :integer, allow_nil?: true}
+    attribute: %Attribute{name: :sample_size_unit, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "samplingEffort",

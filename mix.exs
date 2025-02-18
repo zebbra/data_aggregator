@@ -258,7 +258,8 @@ defmodule DataAggregator.MixProject do
       {:timex, "~> 3.0"},
 
       # HTTP and API Utilities
-      {:hackney, "~> 1.18"},
+      # TODO: Remove when a new release 1.20.2 is available
+      {:hackney, github: "benoitc/hackney", branch: "master", override: true},
       {:jason, "~> 1.4"},
       {:open_api_spex, "~> 3.18"},
       {:redoc_ui_plug, "~> 0.2.1"},

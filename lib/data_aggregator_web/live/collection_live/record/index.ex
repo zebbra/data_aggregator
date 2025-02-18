@@ -623,7 +623,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                   </p>
                   <.table
                     opts={[
-                      container_attrs: [class: "overflow-x-auto -mx-6 lg:-mx-8 pb-4"]
+                      container_attrs: [class: "overflow-x-auto -mx-6 lg:-mx-8 pb-4"],
+                      tbody_td_attrs: [
+                        class: "first:pl-6 last:pr-6 lg:first:pl-8 lg:last:pr-8 break-all lg:max-w-48"
+                      ]
                     ]}
                     id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
                     items={category.attributes}

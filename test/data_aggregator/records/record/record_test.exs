@@ -344,16 +344,17 @@ defmodule DataAggregator.Records.RecordTest do
       [record: record]
     end
 
-    test "mids level 0", %{record: record} do
+    test "mids level 0 - not possible", %{record: record} do
       params = %{
-        mte_catalog_number: "ex-123",
-        tax_scientific_name: "Example",
-        oth_institution_code: nil
+        mte_catalog_number: nil,
+        tax_scientific_name: nil
       }
 
-      record = record |> update_record_fixtures!(params) |> Ash.load!(:mids_level)
-
-      assert record.mids_level == 0
+      # due to the fact, that mte_catalog_number and tax_scientific_name are required, the record will not be created
+      # and therefore mids 0 is not possible at all
+      assert_raise Ash.Error.Invalid, fn ->
+        record |> update_record_fixtures!(params) |> Ash.load!(:mids_level)
+      end
     end
 
     test "mids level 1", %{record: record} do
