@@ -1591,12 +1591,6 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Subscriptions"
 msgid "The publication has been completed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:964
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
-msgid "Approval started in background"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:922
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
@@ -1810,38 +1804,26 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:167
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:196
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:168
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:197
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Actions"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:231
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
-msgid "Approval Layer"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:248
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
-msgid "Approve"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:246
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:247
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Encode"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:232
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:233
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Encoding Layer"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:245
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:246
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Export"
@@ -1854,13 +1836,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Filters"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:233
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:234
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Import Layer"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:247
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:248
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Publish"
@@ -2309,79 +2291,6 @@ msgstr ""
 #: lib/data_aggregator_web/live/collection_live/record/fast_track_modal.ex:190
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Publication summary"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/approval_modal.ex:88
-#: lib/data_aggregator_web/live/collection_live/record/approval_modal.ex:100
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ApprovalModal"
-msgid "Approve"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/approval_modal.ex:65
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ApprovalModal"
-msgid "Based on the information provided, we will create exports towards the following centers:"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/approval_modal.ex:88
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ApprovalModal"
-msgid "By clicking"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/approval_modal.ex:103
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ApprovalModal"
-msgid "Cancel"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/approval_modal.ex:43
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ApprovalModal"
-msgid "In addition to the filters provided, we also add the restriction for all records that the"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/approval_modal.ex:53
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ApprovalModal"
-msgid "Please note that only Swiss specimen will be reviewed. All other specimen will be ignored during the approval process."
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/approval_modal.ex:61
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ApprovalModal"
-msgid "Please note that the approval process will involve manual work by InfoSpecies, which will review and validate each record for accuracy before publication to GBIF."
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/approval_modal.ex:84
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ApprovalModal"
-msgid "There are no Swiss specimen availabe. Either your specimen are outside of Switzerland or you have applied a too restrictive filter."
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/approval_modal.ex:33
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ApprovalModal"
-msgid "You are about to send %{count} records for approval by InfoSpecies. These records will be reviewed, validated and then eventually published to GBIForg."
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/approval_modal.ex:89
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ApprovalModal"
-msgid "an export will be created and automatically sent to InfoSpecies. No further action is required. Please note that this process may take some time."
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/approval_modal.ex:45
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ApprovalModal"
-msgid "attribute must be set."
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/approval_modal.ex:44
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ApprovalModal"
-msgid "kingdom  "
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:747
@@ -4170,12 +4079,6 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.FastTrackModal"
 msgid "A publication for this dataset is already in process"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:967
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
-msgid "An approval for this dataset is already in process"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:925
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
@@ -4379,13 +4282,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Validation status was updated"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:245
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:249
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Validate"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:228
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:232
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Validation Layer"
@@ -4397,7 +4300,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "%{records_count_not_validated} of %{records_count} Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:964
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:967
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "An validation for this dataset is already in process"
@@ -4416,7 +4319,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Publications and Validations"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:961
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:964
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Validation started in background"
