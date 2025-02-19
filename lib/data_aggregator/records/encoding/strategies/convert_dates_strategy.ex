@@ -8,8 +8,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDatesStrategy do
       all_dates_present?: 1,
       date_range?: 1,
       day_month_year_present?: 1,
-      event_date_missing?: 1,
-      no_dates_present?: 1,
+      only_event_date_missing?: 1,
       only_event_date_present?: 1,
       populate_day_month_year_range: 1,
       populate_day_month_year: 1,
@@ -32,35 +31,33 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDatesStrategy do
   """
   @spec apply_strategy(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
   def apply_strategy(encoded_record, ctx) do
-    {:ok, process_encoded_record(encoded_record, ctx)}
-  rescue
-    error ->
-      handle_error(encoded_record.id, error)
+    case process_encoded_record(encoded_record, ctx) do
+      {:ok, encoded_record} ->
+        {:ok, encoded_record}
 
-      {:error, error, encoded_record}
+      {:error, error} ->
+        handle_error(encoded_record.id, error)
+
+        {:error, error, encoded_record}
+    end
   end
 
-  @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodedRecord.t()
+  @spec process_encoded_record(EncodedRecord.t(), Context.t()) ::
+          {:ok, EncodedRecord.t()} | {:error, String.t()}
   defp process_encoded_record(encoded_record, ctx) do
-    encoded_record
-    |> get_dates()
-    |> convert_dates()
-    |> Strategy.update_encoded_record(
-      encoded_record,
-      @output_attributes,
-      ctx
-    )
+    dates = get_dates(encoded_record)
+
+    with {:ok, converted_dates} <- convert_dates(dates) do
+      {:ok, Strategy.update_encoded_record(converted_dates, encoded_record, @output_attributes, ctx)}
+    end
   end
 
-  @spec convert_dates(map()) :: map()
+  @spec convert_dates(map()) :: {:ok, map()} | {:error, String.t()}
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   defp convert_dates(dates) do
     cond do
-      no_dates_present?(dates) ->
-        # if no dates are present, return and proceed - nothing to convert then
-        dates
-
-      all_dates_present?(dates) or day_month_year_present?(dates) or event_date_missing?(dates) ->
+      all_dates_present?(dates) or day_month_year_present?(dates) or
+          only_event_date_missing?(dates) ->
         populate_event_date(dates)
 
       only_event_date_present?(dates) and not date_range?(dates) ->
@@ -70,7 +67,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.ConvertDatesStrategy do
         populate_day_month_year_range(dates)
 
       true ->
-        dates
+        {:ok, dates}
     end
   end
 
