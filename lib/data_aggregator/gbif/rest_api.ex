@@ -8,8 +8,8 @@ defmodule DataAggregator.Gbif.RestAPI do
 
   alias DataAggregator.Accounts.User
   alias DataAggregator.Cache.HttpDiskCache
-  alias DataAggregator.Records.Approval
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Validation
   alias DataAggregator.Types.Api
 
   require Logger
@@ -235,35 +235,35 @@ defmodule DataAggregator.Gbif.RestAPI do
   end
 
   @doc """
-  We notify infospecies about the processed approval and its result
+  We notify infospecies about the processed validation and its result
   """
-  @spec notify_infospecies_with_approval_result(Approval.t()) :: Api.response()
-  def notify_infospecies_with_approval_result(approval) do
-    Logger.info("Notifying infospecies about approval result")
+  @spec notify_infospecies_with_validation_result(Validation.t()) :: Api.response()
+  def notify_infospecies_with_validation_result(validation) do
+    Logger.info("Notifying infospecies about validation result")
 
     Req.post(
-      url: infospecies_approval_notification_url(),
-      json: notify_infospecies_with_approval_result_params(approval)
+      url: infospecies_validation_notification_url(),
+      json: notify_infospecies_with_validation_result_params(validation)
     )
   end
 
-  @spec notify_infospecies_with_approval_result_params(Approval.t()) :: map()
-  defp notify_infospecies_with_approval_result_params(%Approval{error_log_id: nil} = approval),
+  @spec notify_infospecies_with_validation_result_params(Validation.t()) :: map()
+  defp notify_infospecies_with_validation_result_params(%Validation{error_log_id: nil} = validation),
     do: %{
-      "source_file" => approval.file_url,
-      "success_count" => approval.rows_approved_count,
-      "error_count" => approval.rows_invalid_count,
+      "source_file" => validation.file_url,
+      "success_count" => validation.rows_validated_count,
+      "error_count" => validation.rows_invalid_count,
       "error_log_url" => ""
     }
 
-  @spec notify_infospecies_with_approval_result_params(Approval.t()) :: map()
-  defp notify_infospecies_with_approval_result_params(approval) do
-    approval = Ash.load!(approval, [:error_log], lazy?: true)
-    error_log = Ash.load!(approval.error_log, [:url], lazy?: true)
+  @spec notify_infospecies_with_validation_result_params(Validation.t()) :: map()
+  defp notify_infospecies_with_validation_result_params(validation) do
+    validation = Ash.load!(validation, [:error_log], lazy?: true)
+    error_log = Ash.load!(validation.error_log, [:url], lazy?: true)
 
     %{
-      "success_count" => approval.rows_approved_count,
-      "error_count" => approval.rows_invalid_count,
+      "success_count" => validation.rows_validated_count,
+      "error_count" => validation.rows_invalid_count,
       "error_log_url" => error_log.url
     }
   end

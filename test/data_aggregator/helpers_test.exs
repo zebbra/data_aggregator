@@ -4,19 +4,19 @@ defmodule DataAggregator.HelpersTest do
   use DataAggregator.DataCase, async: true
   use Mimic
 
-  import DataAggregator.ApprovalFixtures
   import DataAggregator.EncodingFixtures
   import DataAggregator.Helpers, only: [maybe_performant_load_record: 3]
   import DataAggregator.RecordEncodingResultFixture
   import DataAggregator.RecordsFixtures
+  import DataAggregator.ValidationFixtures
 
   alias DataAggregator.Gbif
   alias DataAggregator.Opencage
-  alias DataAggregator.Records.ApprovedRecord
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidatedRecord
 
   doctest DataAggregator.Records.ImageUpload.Helpers, import: true
   doctest DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy, import: true
@@ -29,7 +29,7 @@ defmodule DataAggregator.HelpersTest do
 
     collection = collection_fixture()
     record = record_fixture(%{collection: collection})
-    approved_record = approved_record_fixture(%{collection: collection, record: record})
+    validated_record = validated_record_fixture(%{collection: collection, record: record})
     encoded_record = encoded_record_fixture(%{record: record})
 
     record_encoding_result =
@@ -38,40 +38,40 @@ defmodule DataAggregator.HelpersTest do
     [
       collection: collection,
       record: record,
-      approved_record: approved_record,
+      validated_record: validated_record,
       encoded_record: encoded_record,
       record_encoding_result: record_encoding_result
     ]
   end
 
-  describe "maybe_performant_load_record for approved_record" do
+  describe "maybe_performant_load_record for validated_record" do
     test "loads record if it is not yet loaded", %{
       collection: tenant,
-      approved_record: approved_record
+      validated_record: validated_record
     } do
-      approved_record = ApprovedRecord.get_by_id!(approved_record.id, tenant: tenant)
-      assert %Ash.NotLoaded{} = approved_record.record
+      validated_record = ValidatedRecord.get_by_id!(validated_record.id, tenant: tenant)
+      assert %Ash.NotLoaded{} = validated_record.record
 
-      approved_record =
-        maybe_performant_load_record(approved_record, tenant, :collection)
+      validated_record =
+        maybe_performant_load_record(validated_record, tenant, :collection)
 
-      assert %Record{} = approved_record.record
-      assert %Collection{} = approved_record.record.collection
+      assert %Record{} = validated_record.record
+      assert %Collection{} = validated_record.record.collection
     end
 
     test "does not load record again if it is already loaded", %{
       collection: tenant,
-      approved_record: approved_record
+      validated_record: validated_record
     } do
-      approved_record =
-        ApprovedRecord.get_by_id!(approved_record.id, tenant: tenant, load: :record)
+      validated_record =
+        ValidatedRecord.get_by_id!(validated_record.id, tenant: tenant, load: :record)
 
-      assert %Record{} = approved_record.record
-      assert %Ash.NotLoaded{} = approved_record.record.collection
+      assert %Record{} = validated_record.record
+      assert %Ash.NotLoaded{} = validated_record.record.collection
 
-      approved_record = maybe_performant_load_record(approved_record, tenant, :collection)
-      assert %Record{} = approved_record.record
-      assert %Ash.NotLoaded{} = approved_record.record.collection
+      validated_record = maybe_performant_load_record(validated_record, tenant, :collection)
+      assert %Record{} = validated_record.record
+      assert %Ash.NotLoaded{} = validated_record.record.collection
     end
   end
 

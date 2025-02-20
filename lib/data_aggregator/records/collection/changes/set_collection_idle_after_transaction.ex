@@ -29,14 +29,14 @@ defmodule DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransa
     collection = Collection.get_by_id!(collection_id)
 
     cond do
-      collection.state == :approving ->
-        active_approvals =
+      collection.state == :validating ->
+        active_validations =
           Publication
           |> Ash.Query.set_tenant(collection)
           |> Ash.Query.filter(state in [:queued, :running])
           |> Ash.count!()
 
-        if active_approvals == 0 do
+        if active_validations == 0 do
           Collection.set_idle(collection)
         end
 

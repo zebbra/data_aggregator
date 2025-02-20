@@ -27,7 +27,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
     set_exporting
     set_encoding
     set_fast_track_publishing
-    set_approving
+    set_validating
     set_idle
     set_idle_encoding
   )
