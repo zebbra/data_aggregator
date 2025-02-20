@@ -86,12 +86,12 @@ defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
     end
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example.csv"
-    test "enqueue_import/1 fails if collection is in state approving", %{
+    test "enqueue_import/1 fails if collection is in state validating", %{
       collection: collection,
       import: import
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        Collection.set_approving!(collection)
+        Collection.set_validating!(collection)
         assert_not_enqueued(import)
       end)
     end

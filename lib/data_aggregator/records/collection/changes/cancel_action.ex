@@ -50,8 +50,8 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
       :fast_track_publishing ->
         cancel_publication(changeset)
 
-      :approving ->
-        cancel_approvals(changeset)
+      :validating ->
+        cancel_validations(changeset)
 
       _ ->
         Changeset.add_error(
@@ -144,11 +144,11 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     changeset
   end
 
-  defp cancel_approvals(%Changeset{data: %{id: collection_id}} = changeset) do
-    # Approvals have the same underlying structure as publications. But each
-    # approval can have multiple publications. We need to cancel all active
-    # publications. The publications are enqueued with the Collection.approve
-    # action. There might occur the case the we abort the approval
+  defp cancel_validations(%Changeset{data: %{id: collection_id}} = changeset) do
+    # Validations have the same underlying structure as publications. But each
+    # validation can have multiple publications. We need to cancel all active
+    # publications. The publications are enqueued with the Collection.validate
+    # action. There might occur the case the we abort the validation
     # while some publications have not yet been enqueued. However, we do not
     # account for this case as it is not a common use case.
     cancel_all_jobs(Job.query_to_publications_by_collection(collection_id))
