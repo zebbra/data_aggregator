@@ -22,6 +22,7 @@ defmodule DataAggregator.HelpersTest do
   doctest DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy, import: true
   doctest DataAggregator.Records.Encoding.Strategy.ConvertDateHelpers, import: true
   doctest DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy, import: true
+  doctest DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter, import: true
 
   setup do
     stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
