@@ -63,9 +63,11 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
         Logger.warning("[swiss_species] no matching encoded_record found for taxon_id: #{encoded_record.tax_taxon_id}")
 
         encoded_record =
-          EncodedRecord.update!(encoded_record, %{oth_swiss_species_center: "_not_registered"},
-            actor: ctx.actor,
-            authorize?: false
+          Strategy.update_encoded_record(
+            %{center: "_not_registered", registered_at: DateTime.utc_now()},
+            encoded_record,
+            @output_attributes,
+            ctx
           )
 
         {:ok, encoded_record}
