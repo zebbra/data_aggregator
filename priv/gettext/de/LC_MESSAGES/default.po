@@ -1817,12 +1817,6 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Encode"
 msgstr "Enkodieren"
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:233
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
-msgid "Encoding Layer"
-msgstr "Enkodierungs Layer"
-
 #: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:246
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
@@ -1835,12 +1829,6 @@ msgstr "Exportieren"
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Filters"
 msgstr "Filter"
-
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:234
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
-msgid "Import Layer"
-msgstr "Import Layer"
 
 #: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:248
 #, elixir-autogen, elixir-format, fuzzy
@@ -4288,12 +4276,6 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Validate"
 msgstr "Validierung"
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:232
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
-msgid "Validation Layer"
-msgstr "Validierung"
-
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:263
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
@@ -4510,4 +4492,22 @@ msgstr "Unbekannt"
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Swiss Registry"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:233
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
+msgid "Encoded Data Layer"
+msgstr "Enkodierte Daten wurden aktualisiert"
+
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:234
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
+msgid "Imported Data Layer"
+msgstr "Datensatz importieren"
+
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:232
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
+msgid "Show validated values"
 msgstr ""

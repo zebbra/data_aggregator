@@ -1817,12 +1817,6 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Encode"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:233
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
-msgid "Encoding Layer"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:246
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
@@ -1834,12 +1828,6 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Filters"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:234
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
-msgid "Import Layer"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:248
@@ -4288,12 +4276,6 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
 msgid "Validate"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:232
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
-msgid "Validation Layer"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:263
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
@@ -4510,4 +4492,22 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Swiss Registry"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:233
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
+msgid "Encoded Data Layer"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:234
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
+msgid "Imported Data Layer"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/components/toolbar.ex:232
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Components.Toolbar"
+msgid "Show validated values"
 msgstr ""
