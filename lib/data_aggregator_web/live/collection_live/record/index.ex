@@ -491,6 +491,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <:col
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :oth_swiss_species_center)}
+          field={:oth_swiss_species_center}
           label={~t"Swiss Registry"m}
           class="text-center"
         >
@@ -499,7 +500,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <:col
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :validation_status)}
-          field={:validationon_status}
+          field={:validation_status}
           label={~t"Validation status"m}
           class="text-center"
         >
@@ -1118,6 +1119,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       value -> value
     end
   end
+
+  defp format_value(%DateTime{} = value, "swissSpeciesRegisteredAt"), do: format_datetime(value, format: :short)
 
   defp format_value(value, _) when is_map(value), do: format_map(value)
   defp format_value(value, _), do: value
