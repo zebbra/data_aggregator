@@ -37,90 +37,105 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
   @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
   defp process_encoded_record(encoded_record, ctx) do
-    {:ok,
-     encoded_record
-     |> build_request_params()
-     |> fetch_match_api()
-     |> parse_response()
-     |> parse_response_body()
-     |> handle_accepted_usage_key()
-     |> handle_synonym()
-     |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)}
-  catch
-    error ->
-      {:error, error, encoded_record}
+    with {:ok, params} <- build_request_params(encoded_record),
+         {:ok, response} <- fetch_match_api(params),
+         {:ok, body} <- parse_response(response),
+         {:ok, body} <- parse_response_body(body),
+         {:ok, body} <- handle_accepted_usage_key(body),
+         {:ok, body} <- handle_synonym(body) do
+      encoded_record =
+        Strategy.update_encoded_record(body, encoded_record, @output_attributes, ctx)
+
+      {:ok, encoded_record}
+    else
+      {:error, error} ->
+        {:error, error, encoded_record}
+    end
   end
 
-  @spec build_request_params(EncodedRecord.t()) :: list()
+  @spec build_request_params(EncodedRecord.t()) :: {:ok, list()}
   defp build_request_params(encoded_record) do
-    @input_attributes
-    |> Enum.map(fn {record_attribute, request_attribute} ->
-      request_value = Map.get(encoded_record, record_attribute)
-
-      if request_value != nil do
-        {request_attribute, request_value}
-      end
-    end)
-    |> check_parameters(encoded_record)
-    |> Enum.filter(&(&1 !== nil))
-    |> Enum.uniq()
+    with {:ok, params} <-
+           @input_attributes
+           |> Enum.map(&build_request_param(&1, encoded_record))
+           |> check_parameters(encoded_record) do
+      {:ok, params |> Enum.filter(&(&1 !== nil)) |> Enum.uniq()}
+    end
   end
 
-  @spec fetch_match_api(list()) :: Req.Response.t()
+  defp build_request_param({record_attribute, request_attribute}, encoded_record) do
+    request_value = Map.get(encoded_record, record_attribute)
+
+    if request_value != nil do
+      {request_attribute, request_value}
+    end
+  end
+
+  @spec fetch_match_api(list()) :: {:ok, Req.Response.t()} | {:error, String.t()}
   defp fetch_match_api(request_params) do
     case Gbif.RestAPI.get_matching_species(request_params) do
-      {:ok, response} -> response
-      {:error, error} -> log_and_throw(error)
+      {:ok, response} ->
+        {:ok, response}
+
+      {:error, error} ->
+        {:error, "[gbif_taxonomy] Error while fetching gbif taxonomy api: #{inspect(error)}"}
     end
   end
 
-  @spec fetch_species_api(String.t()) :: Req.Response.t()
+  @spec fetch_species_api(String.t()) :: {:ok, Req.Response.t()} | {:error, String.t()}
   defp fetch_species_api(species_key) do
     case Gbif.RestAPI.get_species(species_key) do
-      {:ok, response} -> response
-      {:error, error} -> log_and_throw(error)
+      {:ok, response} ->
+        {:ok, response}
+
+      {:error, error} ->
+        {:error, "[gbif_taxonomy] Error while fetching gbif taxonomy api: #{inspect(error)}"}
     end
   end
 
-  @spec parse_response(Req.Response.t()) :: map()
+  @spec parse_response(Req.Response.t()) :: {:ok, map()} | {:error, String.t()}
   defp parse_response(response) when is_nil(response.status) == false and is_nil(response.body) == false,
-    do: response.body
+    do: {:ok, response.body}
 
   defp parse_response(response) when is_nil(response.status) or is_nil(response.body),
-    do: throw("invalid response from gbif taxonomy api: #{inspect(response)}")
+    do: {:error, "invalid response from gbif taxonomy api: #{inspect(response)}"}
 
   defp parse_response(response) when response.status != 200,
-    do: throw("Non 200 response code while fetching gbif taxonomy api: #{inspect(response)}")
+    do: {:error, "Non 200 response code while fetching gbif taxonomy api: #{inspect(response)}"}
 
-  @spec handle_synonym(map()) :: map()
-  defp handle_synonym(body) when body.synonym == false, do: body
+  @spec handle_synonym(map()) :: {:ok, map()} | {:error, String.t()}
+  defp handle_synonym(body) when body.synonym == false, do: {:ok, body}
 
   defp handle_synonym(body) when body.synonym == true do
-    body.usageKey
-    |> fetch_species_api()
-    |> parse_response()
-    |> parse_species_api_body()
-  end
-
-  defp handle_accepted_usage_key(body) do
-    case Map.get(body, :acceptedUsageKey, nil) do
-      nil -> Map.put(body, :acceptedUsageKey, body.usageKey)
-      _ -> body
+    with {:ok, response} <- fetch_species_api(body.usageKey),
+         {:ok, body} <- parse_response(response) do
+      parse_species_api_body(body)
     end
   end
 
-  @spec parse_species_api_body(map()) :: map()
-  defp parse_species_api_body(unparsed_body) do
-    to_map(unparsed_body)
+  @spec handle_accepted_usage_key(map()) :: {:ok, map()}
+  defp handle_accepted_usage_key(body) do
+    case Map.get(body, :acceptedUsageKey, nil) do
+      nil -> {:ok, Map.put(body, :acceptedUsageKey, body.usageKey)}
+      _ -> {:ok, body}
+    end
   end
 
-  @spec parse_response_body(map()) :: map()
+  @spec parse_species_api_body(map()) :: {:ok, map()}
+  defp parse_species_api_body(unparsed_body) do
+    {:ok, to_map(unparsed_body)}
+  end
+
+  @spec parse_response_body(map()) :: {:ok, map()} | {:error, String.t()}
   defp parse_response_body(unparsed_body) do
     body = to_map(unparsed_body)
 
     case validate_body(body) do
-      {:ok, body} -> body
-      {:error, error} -> log_and_throw(error)
+      {:ok, body} ->
+        {:ok, body}
+
+      {:error, error} ->
+        {:error, "[gbif_taxonomy] Error while fetching gbif taxonomy api: #{inspect(error)}"}
     end
   end
 
@@ -130,87 +145,100 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
   @spec validate_body(map()) :: {:ok, map()} | {:error, any()}
   defp validate_body(body) do
-    is_correct_match_type(body)
-    is_confident(body)
-
-    {:ok, body}
-  catch
-    error -> {:error, error}
+    with :ok <- correct_match_type(body),
+         :ok <- confident?(body) do
+      {:ok, body}
+    end
   end
 
-  @spec is_correct_match_type(map()) :: boolean()
-  defp is_correct_match_type(body) when body.taxonomicStatus == ~c"ACCEPTED", do: true
-  defp is_correct_match_type(body) when body.matchType == "EXACT", do: true
-  defp is_correct_match_type(body) when body.matchType == "FUZZY", do: true
-  defp is_correct_match_type(body) when body.matchType == "HIGHERRANK", do: true
-  # has to be verified, if this is the correct way to handle HIGHERRANK matchTypes
-  # defp is_correct_match_type(body) when body.matchType == "HIGHERRANK",
-  #   do:
-  #     throw(
-  #       "For this species name we could not find a matching
-  #        taxonomy. matchType #{inspect(body.matchType)} is not accepted"
-  #     )
+  @doc ~S"""
+    Check if the matchType is correct
 
-  defp is_correct_match_type(body) when body.matchType == "NONE",
+    ## Examples
+
+        body = %{status: "ACCEPTED", matchType: "NONE}
+        alias DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy
+        assert GbifTaxonomyStrategy.correct_match_type(body) == :ok
+
+        body = %{taxonomicStatus: "ACCEPTED"}
+        assert GbifTaxonomyStrategy.correct_match_type(body) == :ok
+
+        body = %{matchType: "EXACT"}
+        assert GbifTaxonomyStrategy.correct_match_type(body) == :ok
+
+        body = %{matchType: "FUZZY"}
+        assert GbifTaxonomyStrategy.correct_match_type(body) == :ok
+
+        body = %{matchType: "something"}
+        assert GbifTaxonomyStrategy.correct_match_type(body) == {:error, "For this species name we could not find a matching taxonomy. matchType \"something\" is not accepted"}
+
+        body = %{matchType: "HIGHERRANK", kingdom: "Animalia"}
+        assert GbifTaxonomyStrategy.correct_match_type(body) == {:error, "For this species name we could not find a matching taxonomy. Only results in HIGHERRANK and Scientific Name 'Animalia' was found "}
+
+        body = %{matchType: "NONE"}
+        assert GbifTaxonomyStrategy.correct_match_type(body) = {:error, "For this species name we could not find a matching taxonomy. matchType NONE is not accepted"}
+
+        body = %{matchType: "blabla"}
+        assert GbifTaxonomyStrategy.correct_match_type(body) == {:error, "For this species name we could not find a matching taxonomy. matchType \"blabla\" is not accepted"}
+
+
+
+  """
+  @spec correct_match_type(map()) :: :ok | {:error, String.t()}
+  def correct_match_type(body) when body.status == ~c"ACCEPTED", do: :ok
+  def correct_match_type(body) when body.taxonomicStatus == ~c"ACCEPTED", do: :ok
+  def correct_match_type(body) when body.matchType == "EXACT", do: :ok
+  def correct_match_type(body) when body.matchType == "FUZZY", do: :ok
+
+  def correct_match_type(body) when body.matchType == "HIGHERRANK",
+    do: {:error, "For this species name we could not find a matching
+         taxonomy. Only results in HIGHERRANK and Scientific Name '#{inspect(body.kingdom)}' was found "}
+
+  def correct_match_type(body),
     do:
-      throw(
-        "For this species name we could not find a matching taxonomy. matchType #{inspect(body.matchType)} is not accepted"
-      )
+      {:error,
+       "For this species name we could not find a matching taxonomy. matchType #{inspect(body.matchType)} is not accepted"}
 
   # the gbif api returns a confidence value between 0 and 100,
   # we accept items only if the confidence is >= @min_confidence
-  @spec is_confident(map()) :: boolean()
-  defp is_confident(body) when body.confidence >= @min_confidence, do: true
+  @spec confident?(map()) :: :ok | {:error, String.t()}
+  defp confident?(body) when body.confidence >= @min_confidence, do: :ok
 
-  defp is_confident(body) when body.confidence < @min_confidence,
+  defp confident?(body) when body.confidence < @min_confidence,
     do:
-      throw(
-        "For this species name we could not find a matching taxonomy. response value #{inspect(body)} is not confident (min #{@min_confidence}) enough"
-      )
+      {:error,
+       "For this species name we could not find a matching taxonomy. response value #{inspect(body)} is not confident (min #{@min_confidence}) enough"}
 
-  @spec log_and_throw(map()) :: {:ok, map()} | {:error, any()}
-  defp log_and_throw(error) do
-    Logger.warning("[gbif_taxonomy] Error while fetching gbif taxonomy api: #{inspect(error)}")
-
-    throw(error)
-  end
-
+  @spec check_parameters(list(), map()) :: {:ok, list()} | {:error, String.t()}
   defp check_parameters(params, encoded_record) do
     tenant = encoded_record.collection_id
     encoded_record = maybe_performant_load_record(encoded_record, tenant)
     record = Ash.load!(encoded_record.record, [:collection], lazy?: true, tenant: tenant)
 
-    # check if there is at least a kingdom parameter set
-    case add_kingdom_fallback(params, record) do
-      [] ->
-        throw(
-          "No taxonomy parameters (eighter tax_kingdom, tax_phylum, tax_class, tax_order or tax_family) found to query the gbif_taxonomy api"
-        )
-
-      _ ->
-        params
-    end
+    add_kingdom_fallback(params, record)
   end
 
   # if no taxon attributes were found on the record, we try to add at least the kingdom
   # from the collection as fallback, if this was also not found we return an empty list
+  @spec add_kingdom_fallback(list(), EncodedRecord.t()) :: {:ok, list()} | {:error, String.t()}
   defp add_kingdom_fallback(params, record) do
     cond do
       params !== [] ->
-        params
+        {:ok, params}
 
       record.collection.type === :zoology ->
-        [kingdom: "Animalia"]
+        {:ok, [kingdom: "Animalia"]}
 
       record.collection.type === :botany ->
-        [kingdom: "Plantae"]
+        {:ok, [kingdom: "Plantae"]}
 
       true ->
-        Logger.warning(
+        msg =
           "[gbif_taxonomy] No fallback kingdom found for record #{record.id} on the collection #{record.collection.name}"
-        )
 
-        []
+        Logger.warning(msg)
+
+        {:error, msg}
     end
   end
 end
