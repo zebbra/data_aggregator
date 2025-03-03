@@ -71,7 +71,9 @@ defmodule DataAggregator.GbifIUCNRedlistEncodingTest do
       record = update_record_fixtures!(record, %{tax_taxon_id: nil})
 
       {{:ok, record}, logs} =
-        with_log(fn -> Record.encode(record, :gbif_iucn_redlist, tenant: record.collection_id) end)
+        with_log(fn ->
+          Record.encode(record, :gbif_iucn_redlist, tenant: record.collection_id)
+        end)
 
       assert record.state === :failed
 
