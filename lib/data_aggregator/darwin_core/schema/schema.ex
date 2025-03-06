@@ -436,6 +436,16 @@ idf_attributes = [
       type: :string,
       allow_nil?: true
     }
+  },
+  %{
+    dwc_field: "typifiedName",
+    dwc_link: nil,
+    dwca_file: :core,
+    attribute: %Attribute{
+      name: :typified_name,
+      type: :string,
+      allow_nil?: true
+    }
   }
 ]
 
@@ -1591,6 +1601,12 @@ occ_attributes = [
     dwc_link: "http://rs.tdwg.org/dwc/terms/occurrenceID",
     dwca_file: :core,
     attribute: %Attribute{name: :occurrence_id, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "caste",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/caste",
+    dwca_file: :core,
+    attribute: %Attribute{name: :caste, type: :string, allow_nil?: true}
   }
 ]
 
@@ -1856,6 +1872,30 @@ oth_attributes = [
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :specify_author_of_record, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "measurementUnit",
+    dwc_link: nil,
+    dwca_file: :core,
+    attribute: %Attribute{name: :measurement_unit, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "measurementValue",
+    dwc_link: nil,
+    dwca_file: :core,
+    attribute: %Attribute{name: :measurement_value, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "typeDesignatedBy",
+    dwc_link: nil,
+    dwca_file: :core,
+    attribute: %Attribute{name: :type_designated_by, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "dynamicProperties",
+    dwc_link: nil,
+    dwca_file: :core,
+    attribute: %Attribute{name: :dynamic_properties, type: :map, allow_nil?: true}
   }
 ]
 
@@ -1915,226 +1955,6 @@ ext_attributes = [
     attribute: %Attribute{name: :vernacular_names, type: :map, allow_nil?: true}
   }
 ]
-
-# not used yet
-# cma_attributes = [
-#   %{
-#     dwc_field: "chronometricAgeConversionProtocol",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/chronometricAgeConversionProtocol",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :chronometric_age_conversion_protocol,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "chronometricAgeDeterminedBy",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/chronometricAgeDeterminedBy",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :chronometric_age_determined_by,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "chronometricAgeDeterminedDate",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/chronometricAgeDeterminedDate",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :chronometric_age_determined_date,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "chronometricAgeProtocol",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/chronometricAgeProtocol",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :chronometric_age_protocol,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "chronometricAgeReferences",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/chronometricAgeReferences",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :chronometric_age_references,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "chronometricAgeRemarks",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/chronometricAgeRemarks",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :chronometric_age_remarks,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "chronometricAgeUncertaintyInYears",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/chronometricAgeUncertaintyInYears",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :chronometric_age_uncertainty_in_years,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "chronometricAgeUncertaintyMethod",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/chronometricAgeUncertaintyMethod",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :chronometric_age_uncertainty_method,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "earliestChronometricAge",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/earliestChronometricAge",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :earliest_chronometric_age,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "earliestChronometricAgeReferenceSystem",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/earliestChronometricAgeReferenceSystem",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :earliest_chronometric_age_reference_system,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "latestChronometricAge",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/latestChronometricAge",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :latest_chronometric_age,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "latestChronometricAgeReferenceSystem",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/latestChronometricAgeReferenceSystem",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :latest_chronometric_age_reference_system,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "materialDated",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/materialDated",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :material_dated,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "materialDatedID",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/materialDatedID",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :material_dated_id,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "materialDatedRelationship",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/materialDatedRelationship",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :material_dated_relationship,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "uncalibratedChronometricAge",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/uncalibratedChronometricAge",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :uncalibrated_chronometric_age,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   },
-#   %{
-#     dwc_field: "verbatimChronometricAge",
-#     dwc_link: "http://rs.tdwg.org/chrono/terms/verbatimChronometricAge",
-#     dwca_file: :chronometric_age,
-#     attribute: %Attribute{
-#       name: :verbatim_chronometric_age,
-#       type: :string,
-#       allow_nil?: true
-#     }
-#   }
-# ]
-
-# not used yet
-# spp_attributes = [
-#   %{
-#     attribute: %Attribute{name: :species_profile_id, type: :string, allow_nil?: true}
-#   },
-#   %{
-#     attribute: %Attribute{name: :age_in_days, type: :integer, allow_nil?: true}
-#   },
-#   %{
-#     attribute: %Attribute{name: :biotic_relationship, type: :string, allow_nil?: true}
-#   },
-#   %{
-#     attribute: %Attribute{name: :encoded_traits, type: :string, allow_nil?: true}
-#   },
-#   %{
-#     attribute: %Attribute{name: :host_disease_stat, type: :string, allow_nil?: true}
-#   },
-#   %{
-#     attribute: %Attribute{name: :is_hybrid, type: :boolean, allow_nil?: true}
-#   },
-#   %{
-#     attribute: %Attribute{name: :life_form, type: :string, allow_nil?: true}
-#   },
-#   %{
-#     attribute: %Attribute{name: :mass_in_grams, type: :integer, allow_nil?: true}
-#   },
-#   %{
-#     attribute: %Attribute{name: :pathogenicity, type: :string, allow_nil?: true}
-#   },
-#   %{
-#     attribute: %Attribute{name: :rel_to_oxygen, type: :string, allow_nil?: true}
-#   },
-#   %{
-#     attribute: %Attribute{name: :sex, type: :string, allow_nil?: true}
-#   },
-#   %{
-#     attribute: %Attribute{name: :size_in_millimeters, type: :integer, allow_nil?: true}
-#   },
-#   %{
-#     attribute: %Attribute{name: :specific_host, type: :string, allow_nil?: true}
-#   },
-#   %{
-#     attribute: %Attribute{name: :trophic_level, type: :string, allow_nil?: true}
-#   }
-# ]
 
 categories = [
   %Category{
@@ -2212,30 +2032,6 @@ categories = [
     description: "DWC Extension Data which belongs to the core data",
     dwc_attributes: ext_attributes
   }
-  # %Category{
-  #   name: :spp,
-  #   label: "Species Profile",
-  #   description: "Life stage and characteristics of the species",
-  #   attributes: Enum.map(spp_attributes, & &1.attribute),
-  #   dwc_attributes: spp_attributes
-  # },
-  # %Category{
-  #   name: :tas,
-  #   label: "Types And Specimen",
-  #   description:
-  #     "An extension for specimens and types, including type specimens, type species and
-  # type genera and simple specimens unrelated to types",
-  #   attributes: Enum.map(tas_attributes, & &1.attribute),
-  #   dwc_attributes: tas_attributes
-  # },
-  # %Category{
-  #   name: :cma,
-  #   label: "Chronometric Age",
-  #   description:
-  #     "Facilitate the sharing of information about chronometric ages and the techniques used to determine them",
-  #   attributes: Enum.map(cma_attributes, & &1.attribute),
-  #   dwc_attributes: cma_attributes
-  # },
 ]
 
 defmodule DataAggregator.DarwinCore.Schema do
