@@ -138,8 +138,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
             <div class="grid grid-cols-1 gap-8">
               <.toggle_group
                 field={@form[:roles]}
-                options={toggle_group_options()}
-                hidden_options={hidden_toggle_group_options(@current_user)}
+                options={edit_toggle_group_options(@current_user, @user)}
                 multiple
               />
             </div>
@@ -217,7 +216,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
               <.toggle_group
                 field={@form[:roles]}
                 label="Roles"
-                options={toggle_group_options()}
+                options={all_toggle_group_options()}
                 multiple
                 class="pointer-events-none"
               />
@@ -366,7 +365,7 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
     assign(socket, :grscicoll_institutions, options)
   end
 
-  defp toggle_group_options do
+  defp all_toggle_group_options do
     [
       "Collection Administrator": "collection_administrator",
       "Data Digitizer": "data_digitizer",
@@ -374,10 +373,50 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
     ]
   end
 
-  defp hidden_toggle_group_options(current_user) do
-    if !Enum.member?(current_user.roles, "admin") do
-      ["admin"]
+  defp edit_toggle_group_options(current_user, user) do
+    cond do
+      can_change_all?(current_user) ->
+        all_toggle_group_options()
+
+      can_change_all_but_admin?(current_user, user) ->
+        [
+          "Collection Administrator": "collection_administrator",
+          "Data Digitizer": "data_digitizer"
+        ]
+
+      can_only_change_data_digitizer?(current_user) ->
+        [
+          "Data Digitizer": "data_digitizer"
+        ]
+
+      true ->
+        []
     end
+  end
+
+  defp can_change_all?(current_user), do: admin?(current_user.roles)
+
+  defp can_only_change_data_digitizer?(current_user) do
+    not admin?(current_user.roles) and
+      collection_administrator?(current_user.roles)
+  end
+
+  defp can_change_all_but_admin?(current_user, user) do
+    not admin?(current_user.roles) and
+      collection_administrator?(current_user.roles) and
+      not current_user?(current_user, user)
+  end
+
+  defp current_user?(current_user, user) do
+    current_user.id == user.id
+  end
+
+  defp admin?(roles) do
+    Enum.member?(roles, "admin")
+  end
+
+  defp collection_administrator?(roles) do
+    Enum.member?(roles, "collection_administrator")
   end
 
   defp escape_roles(params) do
