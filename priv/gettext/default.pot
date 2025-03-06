@@ -1314,7 +1314,7 @@ msgstr ""
 msgid "Please review the form and try again"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:360
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:552
 #, elixir-autogen, elixir-format
 msgid "Something went wrong, please try again."
 msgstr ""
@@ -1367,13 +1367,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Phylum"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:246
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:259
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Continent"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:221
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:234
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Location"
@@ -1697,6 +1697,7 @@ msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:84
 #: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:132
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:315
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Any"
@@ -4473,4 +4474,100 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
 msgid "of the DAGI and accept full responsibility for the data I upload and publish."
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:221
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Family"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:272
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Locality"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:387
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Material Sample Type"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:336
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Other"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:400
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Preparations"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:361
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Recorded By"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:273
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Search your records by locality"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:362
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Search your records by the person(s) which recorded the occurrence first"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:374
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Type Status"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:285
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Event"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:311
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Event Date"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:317
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Event Date is not present"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:316
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Event Date is present"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:321
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Records having an event date"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:322
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Records having no event date"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/filter_component.ex:312
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
+msgid "Search your records by event date is present or not"
 msgstr ""
