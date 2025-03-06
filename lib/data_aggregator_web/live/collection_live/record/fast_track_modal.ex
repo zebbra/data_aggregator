@@ -197,11 +197,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
           {~t"You are about to send"m}
           <span class="font-bold">
             {mgettext(
-              "%{count} records",
-              count: format_number(@checked_fast_track_count)
+              "%{count} records from the %{layer} layer",
+              count: format_number(@checked_fast_track_count),
+              layer: @layer
             )}
           </span>
-          {~t"to GBIF, making them publicly available. Ensure that the current selection of records corresponds to the records you would like to publish. Please note that records without a value for the"m}
+          {~t"to GBIF, making them publicly available. Make sure that the layer you are publishing corresponds to the filters you wish to use. Also, be aware that the records without a value for the"m}
           <span class="font-bold">{~t"kingdom "m}</span>
           {~t"attribute will not be published."m}
         </p>
@@ -498,19 +499,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
             <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
           </div>
           <p class="text-sm">
-            {~t"The action of publishing data is irreversible and removing records after publication is not automatically supported by the Data Aggregator and requires manual intervention on GBIF. It is therefore"m}
+            {~t"The action of publishing data is irreversible and removing records after publication is not automatically supported by the Data Aggregator DAGI and requires manual intervention on GBIF. It is therefore"m}
             <span class="text-sm font-bold">
               {~t"your responsibility"m}
             </span>
-            {~t"to guarantee the quality of the data being served and to ensure that the dataset does not include sensitive information. Should you need to revise any dataset after publication, you will need to contact"m}
-            <.link class="link link-primary link-hover" target="_blank" href="https://gbif.ch">
-              {~t"GBIF.ch"}
-              <.icon name="hero-arrow-top-right-on-square" class="size-4" />
-            </.link>
+            {~t"to guarantee the quality of the data being served and to ensure that the dataset does not include sensitive information. Should you need to revise any dataset after publication, you will need to contact the GBIF Swiss Node"m}
             <.link href="mailto:contact@gbif.ch" class="text-primary">
               {"(contact@gbif.ch)"}
             </.link>
-            {~t" for assistance."m}
+            {~t"for assistance."m}
           </p>
         </div>
         <div class="flex">
@@ -518,7 +515,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
             <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
           </div>
           <p class="text-sm">
-            {~t"The publisher of your dataset on GBIF is SwissNatColl, but your institution retains ownership of the data at all times."m}
+            {~t"The Publisher of your dataset on GBIF is SwissNatColl, but your institution retains ownership of the data at all times."m}
           </p>
         </div>
         <label class="flex" phx-click="toggle:agree" phx-target={@myself}>
@@ -544,14 +541,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
             {~t"of the DAGI and accept full responsibility for the publication of these data."m}
           </p>
         </label>
-        <div class="flex">
-          <div class="mr-4 flex-shrink-0">
-            <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
-          </div>
-          <p class="text-base-content/60 text-sm">
-            {~t"The terms of use are currently under revision and may change in the coming weeks to better meet legal and regulatory requirements. In the time being, the publication of the data will be done on the GBIF test environment. The publication of the data to GBIF will become effective on the 27th of January, date on which you will be asked to revise and re-publish your dataset, by accepting the final terms of use of the DAGI."m}
-          </p>
-        </div>
+
         <p class="text-base-content/60 pt-4 text-sm">
           {~t"By clicking Publish the publication will be triggered and no further action is required. Please note that this process may take some time."m}
         </p>
