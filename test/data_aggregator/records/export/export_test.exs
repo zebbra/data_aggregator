@@ -236,8 +236,16 @@ defmodule DataAggregator.ExportTest do
       collection_other = collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
 
       # those two should be exported
-      exportable_record(collection, %{extra_data: %{"Custom Attribute" => "Value 1"}})
-      exportable_record(collection, %{extra_data: %{"Custom Attribute" => "Value 2"}})
+      exportable_record(collection, %{
+        extra_data: %{"Custom Attribute" => "Value 1"},
+        mte_verbatim_label: "foo\nbar"
+      })
+
+      exportable_record(collection, %{
+        extra_data: %{"Custom Attribute" => "Value 2"},
+        mte_verbatim_label: nil
+      })
+
       # this one should not be exported
       unexportable_record(collection_other)
 
@@ -340,6 +348,23 @@ defmodule DataAggregator.ExportTest do
       expected = [
         %{"decimalLatitude" => 46.8182, "decimalLongitude" => 640_000},
         %{"decimalLatitude" => 46.8182, "decimalLongitude" => 640_000}
+      ]
+
+      assert expected == transformed_attributes
+    end
+
+    @tag mapping: nil
+    @tag data_layer: :raw
+    @tag header_source: :dwc_attributes
+    test "replaces linebreaks", %{data_frame: data_frame} do
+      rows = Explorer.DataFrame.to_rows(data_frame)
+
+      transformed_attributes =
+        Enum.map(rows, &Map.take(&1, ["verbatimLabel"]))
+
+      expected = [
+        %{"verbatimLabel" => "foo bar"},
+        %{"verbatimLabel" => nil}
       ]
 
       assert expected == transformed_attributes
