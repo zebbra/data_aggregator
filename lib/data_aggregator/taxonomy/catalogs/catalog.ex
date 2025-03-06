@@ -110,7 +110,8 @@ defmodule DataAggregator.Taxonomy.Catalog do
           {:tax_scientific_name, :scientific_name},
           {:tax_taxon_rank, :rank},
           {:oth_swiss_species_center, :center},
-          {:oth_swiss_species_registered_at, :registered_at}
+          {:oth_swiss_species_registered_at, :registered_at},
+          {:oth_swiss_species_registered, :registered}
         ]
 
       :geo_reverse ->

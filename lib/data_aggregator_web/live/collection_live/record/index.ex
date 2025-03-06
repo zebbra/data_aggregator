@@ -495,7 +495,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           label={~t"Swiss Registry"m}
           class="text-center"
         >
-          <.swiss_species_center_badge center={record.encoded_record.oth_swiss_species_center} />
+          <.swiss_species_center_badge
+            registered={record.encoded_record.oth_swiss_species_registered}
+            center={record.encoded_record.oth_swiss_species_center}
+          />
         </:col>
         <:col
           :let={{_id, record}}
@@ -504,7 +507,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           label={~t"Validation status"m}
           class="text-center"
         >
-          <%= unless record.encoded_record.oth_swiss_species_center == "_not_registered" do %>
+          <%= unless record.encoded_record.oth_swiss_species_registered == false do %>
             <.validation_state_badge state={record.validation_status} />
           <% end %>
         </:col>
@@ -564,7 +567,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <div class="mt-4 flex space-x-2 max-sm:hidden">
               <.encoding_state_badge state={@selected_record.state} tooltip={false} />
               <.publication_state_badge state={@selected_record.fast_track_status} tooltip={false} />
-              <%= unless @selected_record.encoded_record.oth_swiss_species_center == "_not_registered" do %>
+              <%= unless @selected_record.encoded_record.oth_swiss_species_registered == false do %>
                 <.validation_state_badge state={@selected_record.validation_status} tooltip={false} />
               <% end %>
             </div>
@@ -602,9 +605,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 <.mids_level_indicator level={@selected_record.mids_level} />
               </:item>
               <:item title={~t"Swiss Registry"m}>
-                <.swiss_species_center_badge center={
-                  @selected_record.encoded_record.oth_swiss_species_center
-                } />
+                <.swiss_species_center_badge
+                  registered={@selected_record.encoded_record.oth_swiss_species_registered}
+                  center={@selected_record.encoded_record.oth_swiss_species_center}
+                />
               </:item>
             </.list>
             <div :if={@selected_record.encoded_record.mte_associated_media} class="pb-4">

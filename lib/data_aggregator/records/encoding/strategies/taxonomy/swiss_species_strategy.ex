@@ -45,6 +45,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
         |> Map.from_struct()
         |> maybe_convert_values()
         |> Map.put(:registered_at, DateTime.utc_now())
+        |> Map.put(:registered, true)
         |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)
 
       {:ok, encoded_record}
@@ -54,7 +55,7 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
 
         encoded_record =
           Strategy.update_encoded_record(
-            %{center: "_not_registered", registered_at: DateTime.utc_now()},
+            %{registered: false, registered_at: DateTime.utc_now()},
             encoded_record,
             @output_attributes,
             ctx

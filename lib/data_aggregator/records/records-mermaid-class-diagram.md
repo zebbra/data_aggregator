@@ -59,6 +59,7 @@ classDiagram
         Map ext_assertions
         Map ext_amplification
         UtcDatetime oth_swiss_species_registered_at
+        Boolean oth_swiss_species_registered
         String oth_swiss_species_center
         String oth_specify_author_of_record
         String oth_specify_event
@@ -554,6 +555,7 @@ classDiagram
         Map ext_assertions
         Map ext_amplification
         UtcDatetime oth_swiss_species_registered_at
+        Boolean oth_swiss_species_registered
         String oth_swiss_species_center
         String oth_specify_author_of_record
         String oth_specify_event
@@ -854,6 +856,7 @@ classDiagram
         Map ext_assertions
         Map ext_amplification
         UtcDatetime oth_swiss_species_registered_at
+        Boolean oth_swiss_species_registered
         String oth_swiss_species_center
         String oth_specify_author_of_record
         String oth_specify_event
@@ -1264,6 +1267,7 @@ classDiagram
         Map ext_assertions
         Map ext_amplification
         UtcDatetime oth_swiss_species_registered_at
+        Boolean oth_swiss_species_registered
         String oth_swiss_species_center
         String oth_specify_author_of_record
         String oth_specify_event

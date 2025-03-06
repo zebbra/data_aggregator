@@ -1864,6 +1864,12 @@ oth_attributes = [
     attribute: %Attribute{name: :swiss_species_center, type: :string, allow_nil?: true}
   },
   %{
+    dwc_field: "swissSpeciesRegistered",
+    dwc_link: nil,
+    dwca_file: nil,
+    attribute: %Attribute{name: :swiss_species_registered, type: :boolean, allow_nil?: true}
+  },
+  %{
     dwc_field: "swissSpeciesRegisteredAt",
     dwc_link: nil,
     dwca_file: nil,
@@ -2274,6 +2280,7 @@ defmodule DataAggregator.DarwinCore.Schema do
 
   @data_from_collection %{
     oth_gbif_doi: :gbif_doi,
+    oth_gbif_id: :gbif_id,
     oth_dataset_id: :gbif_dataset_key,
     oth_institution_id: :grscicoll_institution_key,
     oth_institution_code: :grscicoll_institution_code,

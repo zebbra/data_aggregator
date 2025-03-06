@@ -780,6 +780,12 @@ defmodule DataAggregator.WorkflowTest do
         encoded: "infofauna",
         category_name: "oth"
       },
+      oth_swiss_species_registered: %{
+        name: "swissSpeciesRegistered",
+        imported: "-",
+        encoded: true,
+        category_name: "oth"
+      },
       oth_swiss_species_registered_at: %{
         name: "swissSpeciesRegisteredAt",
         imported: "-",

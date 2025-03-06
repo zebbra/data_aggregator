@@ -392,7 +392,15 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
          {:ok, mapped_collection_mapping} <- collection_mapping_mapped(collection_mapping),
          {:ok, matched_columns} <-
            collection_mapping_matched(mapped_collection_mapping, import.columns) do
-      data = ensure_required_attributes(matched_columns)
+      data =
+        matched_columns
+        |> ensure_required_attributes()
+        |> Enum.reject(fn column ->
+          not_mappable_data =
+            Schema.data_from_collection() |> Map.keys() |> Enum.map(&Atom.to_string/1)
+
+          column.mapped_to in not_mappable_data
+        end)
 
       import = %Import{import | mappings: data}
 
