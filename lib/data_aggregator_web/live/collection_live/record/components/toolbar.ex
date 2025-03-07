@@ -229,9 +229,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
     """
   end
 
-  defp current_layer_label("validation"), do: ~t"Validation Layer"m
-  defp current_layer_label("encoding"), do: ~t"Encoding Layer"m
-  defp current_layer_label("import"), do: ~t"Import Layer"m
+  defp current_layer_label("validation"), do: ~t"Show validated values"m
+  defp current_layer_label("encoding"), do: ~t"Encoded Data Layer"m
+  defp current_layer_label("import"), do: ~t"Imported Data Layer"m
 
   defp action_allowed?(user, "export", collection), do: Collection.can_set_exporting?(user, collection)
 

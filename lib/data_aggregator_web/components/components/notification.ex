@@ -75,7 +75,7 @@ defmodule DataAggregatorWeb.Components.Notification do
 
   defp notification_icon("blue"), do: "hero-information-circle-solid"
   defp notification_icon("green"), do: "hero-check-circle-solid"
-  defp notification_icon("red"), do: "hero-exclamation-triangle"
-  defp notification_icon("orange"), do: "hero-exclamation-circle"
+  defp notification_icon("red"), do: "hero-exclamation-triangle-solid"
+  defp notification_icon("orange"), do: "hero-exclamation-circle-solid"
   defp notification_icon(_), do: "hero-information-circle-solid"
 end

@@ -34,35 +34,45 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
 
         {:error, error, encoded_record}
     end
-  rescue
-    error ->
-      handle_error(encoded_record.id, error)
-
-      {:error, error, encoded_record}
   end
 
   @spec process_encoded_record(EncodedRecord.t(), Context.t()) :: EncodingResult.t()
   defp process_encoded_record(encoded_record, ctx) do
-    taxon_id = Map.get(encoded_record, @input_attribute)
+    with {:ok, taxon_id} <- get_taxon_id(encoded_record),
+         {:ok, result} <- SwissSpecies.get_by_usage_key(taxon_id) do
+      encoded_record =
+        result
+        |> Map.from_struct()
+        |> maybe_convert_values()
+        |> Map.put(:registered_at, DateTime.utc_now())
+        |> Map.put(:registered, true)
+        |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)
 
-    # early return if taxon_id is empty
-    if taxon_id === nil, do: raise("taxon_id is empty")
-
-    case SwissSpecies.get_by_usage_key(taxon_id) do
-      {:ok, result} ->
-        {:ok,
-         result
-         |> Map.from_struct()
-         |> maybe_convert_values()
-         |> Strategy.update_encoded_record(encoded_record, @output_attributes, ctx)}
-
+      {:ok, encoded_record}
+    else
       {:error, %Ash.Error.Query.NotFound{}} ->
         Logger.warning("[swiss_species] no matching encoded_record found for taxon_id: #{encoded_record.tax_taxon_id}")
+
+        encoded_record =
+          Strategy.update_encoded_record(
+            %{registered: false, registered_at: DateTime.utc_now()},
+            encoded_record,
+            @output_attributes,
+            ctx
+          )
 
         {:ok, encoded_record}
 
       {:error, error} ->
         {:error, error, encoded_record}
+    end
+  end
+
+  @spec get_taxon_id(map()) :: {:ok, integer()} | {:error, String.t()}
+  defp get_taxon_id(encoded_record) do
+    case Map.get(encoded_record, @input_attribute) do
+      nil -> {:error, "taxon_id is empty"}
+      taxon_id -> {:ok, taxon_id}
     end
   end
 
