@@ -118,7 +118,7 @@ defmodule DataAggregatorWeb.Router do
            :summary
     end
 
-    get "/datasets/:collection_id/image_uploads/images/:image_id",
+    get "/datasets/:collection_id/image_uploads/images/:image_id/image.jpg",
         ImageUploadController,
         :show_image
 
