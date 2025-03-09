@@ -278,57 +278,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   end
 
   @impl true
-  def filter_form_component(%{component: %{source: %FilterForm{key: "event"}}} = assigns) do
-    ~H"""
-    <div class="py-4">
-      <.collapsible_group
-        title={~t"Event"m}
-        key="event"
-        target={@target}
-        open={open_collapsible?(@collapsible_state, "event")}
-        border_bottom={true}
-      >
-        <.inputs_for :let={component} field={@component[:components]}>
-          <.filter_form_component
-            component={component}
-            resource={@resource}
-            collapsible_state={@collapsible_state}
-            distinct_options={@distinct_options}
-            target={@target}
-          />
-        </.inputs_for>
-      </.collapsible_group>
-    </div>
-    """
-  end
-
-  @impl true
-  def filter_form_component(%{component: %{source: %Predicate{field: :eve_event_date}}} = assigns) do
-    ~H"""
-    <div class="px-6">
-      <.radio_group_filter
-        component={@component}
-        title={~t"Event Date"m}
-        description={~t"Search your records by event date is present or not"m}
-        target={@target}
-        options={[
-          [key: ~t"Any"m, value: ""],
-          [key: ~t"Event Date is present"m, value: "false"],
-          [key: ~t"Event Date is not present"m, value: "true"]
-        ]}
-        option_descriptions={
-          %{
-            "true" => ~t"Records having an event date"m,
-            "false" => ~t"Records having no event date"m
-          }
-        }
-        pills
-      />
-    </div>
-    """
-  end
-
-  @impl true
   def filter_form_component(%{component: %{source: %FilterForm{key: "other"}}} = assigns) do
     ~H"""
     <div class="py-4">
@@ -477,13 +426,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
         path: "encoded_record"
       )
     end)
-    |> FilterForm.add_group(return_id?: true, key: "event")
-    |> then(fn {form, event_id} ->
-      FilterForm.add_predicate(form, :eve_event_date, :is_nil, "",
-        to: event_id,
-        path: "encoded_record"
-      )
-    end)
     |> FilterForm.add_group(return_id?: true, key: "other", operator: :or)
     |> then(fn {form, other_group_id} ->
       form
@@ -545,8 +487,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     _ ->
       filter_form = init_form(socket.assigns.meta.resource)
 
-      # dbg(error)
-
       socket
       |> assign(:filter_form, filter_form)
       |> assign(:error, ~t"Something went wrong, please try again.")
@@ -570,16 +510,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
         &(&1 in active_filter_form_fields)
       )
 
-    active_event =
-      Enum.any?(
-        ~w[eve_event_date],
-        &(&1 in active_filter_form_fields)
-      )
-
     assign(socket, :collapsible_state, %{
       "taxonomy" => active_taxonomy,
       "location" => active_location,
-      "event" => active_event,
       "other" => active_others
     })
   end
