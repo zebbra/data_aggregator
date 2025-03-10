@@ -7,84 +7,55 @@ defmodule DataAggregator.Repo.Migrations.SwissRegistryEncoding do
 
   use Ecto.Migration
 
-  # Helper function to check if a column exists in a table
-  defp column_exists?(table, column) do
-    table_name = table |> to_string |> String.replace("\"", "")
-    column_name = column |> to_string |> String.replace("\"", "")
-
-    query = """
-    SELECT 1
-    FROM information_schema.columns
-    WHERE table_schema = 'public'
-    AND table_name = '#{table_name}'
-    AND column_name = '#{column_name}'
-    """
-
-    case repo().query(query) do
-      {:ok, %{num_rows: rows}} when rows > 0 -> true
-      _ -> false
-    end
-  end
-
-  # Helper to add column if it doesn't exist
-  defp add_if_not_exists(table, column, type) do
-    unless column_exists?(table, column) do
-      alter table(table) do
-        add column, type
-      end
-    end
-  end
-
   def up do
     # For validated_records
-    add_if_not_exists(:validated_records, :oth_swiss_species_registered_at, :utc_datetime)
-    add_if_not_exists(:validated_records, :oth_swiss_species_registered, :boolean)
-    add_if_not_exists(:validated_records, :oth_swiss_species_center, :text)
+    alter table(:validated_records) do
+      add_if_not_exists :oth_swiss_species_registered_at, :utc_datetime
+      add_if_not_exists :oth_swiss_species_registered, :boolean
+      add_if_not_exists :oth_swiss_species_center, :text
+    end
 
     # For records
-    add_if_not_exists(:records, :oth_swiss_species_registered_at, :utc_datetime)
-    add_if_not_exists(:records, :oth_swiss_species_registered, :boolean)
-    add_if_not_exists(:records, :oth_swiss_species_center, :text)
+    alter table(:records) do
+      add_if_not_exists :oth_swiss_species_registered_at, :utc_datetime
+      add_if_not_exists :oth_swiss_species_registered, :boolean
+      add_if_not_exists :oth_swiss_species_center, :text
+    end
 
     # For published_records
-    add_if_not_exists(:published_records, :oth_swiss_species_registered_at, :utc_datetime)
-    add_if_not_exists(:published_records, :oth_swiss_species_registered, :boolean)
-    add_if_not_exists(:published_records, :oth_swiss_species_center, :text)
+    alter table(:published_records) do
+      add_if_not_exists :oth_swiss_species_registered_at, :utc_datetime
+      add_if_not_exists :oth_swiss_species_registered, :boolean
+      add_if_not_exists :oth_swiss_species_center, :text
+    end
 
     # For encoded_records
-    add_if_not_exists(:encoded_records, :oth_swiss_species_registered_at, :utc_datetime)
-    add_if_not_exists(:encoded_records, :oth_swiss_species_registered, :boolean)
-    add_if_not_exists(:encoded_records, :oth_swiss_species_center, :text)
-  end
-
-  # Helper to remove column if it exists
-  defp remove_if_exists(table, column) do
-    if column_exists?(table, column) do
-      alter table(table) do
-        remove column
-      end
+    alter table(:encoded_records) do
+      add_if_not_exists :oth_swiss_species_registered_at, :utc_datetime
+      add_if_not_exists :oth_swiss_species_registered, :boolean
+      add_if_not_exists :oth_swiss_species_center, :text
     end
   end
 
   def down do
     # For encoded_records
-    remove_if_exists(:encoded_records, :oth_swiss_species_center)
-    remove_if_exists(:encoded_records, :oth_swiss_species_registered)
-    remove_if_exists(:encoded_records, :oth_swiss_species_registered_at)
+    remove_if_exists :encoded_records, :oth_swiss_species_center
+    remove_if_exists :encoded_records, :oth_swiss_species_registered
+    remove_if_exists :encoded_records, :oth_swiss_species_registered_at
 
     # For published_records
-    remove_if_exists(:published_records, :oth_swiss_species_center)
-    remove_if_exists(:published_records, :oth_swiss_species_registered)
-    remove_if_exists(:published_records, :oth_swiss_species_registered_at)
+    remove_if_exists :published_records, :oth_swiss_species_center
+    remove_if_exists :published_records, :oth_swiss_species_registered
+    remove_if_exists :published_records, :oth_swiss_species_registered_at
 
     # For records
-    remove_if_exists(:records, :oth_swiss_species_center)
-    remove_if_exists(:records, :oth_swiss_species_registered)
-    remove_if_exists(:records, :oth_swiss_species_registered_at)
+    remove_if_exists :records, :oth_swiss_species_center
+    remove_if_exists :records, :oth_swiss_species_registered
+    remove_if_exists :records, :oth_swiss_species_registered_at
 
     # For validated_records
-    remove_if_exists(:validated_records, :oth_swiss_species_center)
-    remove_if_exists(:validated_records, :oth_swiss_species_registered)
-    remove_if_exists(:validated_records, :oth_swiss_species_registered_at)
+    remove_if_exists :validated_records, :oth_swiss_species_center
+    remove_if_exists :validated_records, :oth_swiss_species_registered
+    remove_if_exists :validated_records, :oth_swiss_species_registered_at
   end
 end
