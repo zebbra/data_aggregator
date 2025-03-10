@@ -35,7 +35,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
 
   def map_data_to_headers(record_data, header_fields, nil) do
     Map.new(header_fields, fn {k, v} ->
-      {v, maybe_from_extra_data(record_data, k)}
+      {v, record_data |> maybe_from_extra_data(k) |> maybe_remove_linebreaks()}
     end)
   end
 
@@ -45,9 +45,10 @@ defmodule DataAggregator.Misc.FlatFileUtils do
         {v,
          record_data
          |> maybe_from_extra_data(k)
-         |> transformers[k].()}
+         |> transformers[k].()
+         |> maybe_remove_linebreaks()}
       else
-        {v, maybe_from_extra_data(record_data, k)}
+        {v, record_data |> maybe_from_extra_data(k) |> maybe_remove_linebreaks()}
       end
     end)
   end
@@ -60,7 +61,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
 
   def map_data_to_headers_list(record_data, header_fields, nil) do
     Enum.map(header_fields, fn k ->
-      maybe_from_extra_data(record_data, k)
+      record_data |> maybe_from_extra_data(k) |> maybe_remove_linebreaks()
     end)
   end
 
@@ -70,8 +71,9 @@ defmodule DataAggregator.Misc.FlatFileUtils do
         record_data
         |> maybe_from_extra_data(k)
         |> transformers[k].()
+        |> maybe_remove_linebreaks()
       else
-        maybe_from_extra_data(record_data, k)
+        record_data |> maybe_from_extra_data(k) |> maybe_remove_linebreaks()
       end
     end)
   end
@@ -83,6 +85,29 @@ defmodule DataAggregator.Misc.FlatFileUtils do
       get_in(record, [:extra_data, stringify(field)])
     end
   end
+
+  @doc ~S"""
+    removes linebreaks from the given value if it is a string
+
+    ## Example
+
+    iex> maybe_remove_linebreaks("foo\nbar")
+    "foo bar"
+
+    iex> maybe_remove_linebreaks("foo\r\nbar")
+    "foo bar"
+
+    iex> maybe_remove_linebreaks("foobar")
+    "foobar"
+
+    iex> maybe_remove_linebreaks(1337)
+    1337
+  """
+  def maybe_remove_linebreaks(value) when is_binary(value) do
+    String.replace(value, ~r/\r?\n/, " ")
+  end
+
+  def maybe_remove_linebreaks(value), do: value
 
   defp stringify(val) when is_atom(val), do: Atom.to_string(val)
   defp stringify(val), do: val

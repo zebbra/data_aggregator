@@ -48,6 +48,9 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
 
       assert lookedup_encoded_record.tax_accepted_name_usage_id === "1669856"
       assert lookedup_encoded_record.tax_taxon_rank === "SPECIES"
+      assert lookedup_encoded_record.oth_swiss_species_center === "infofauna"
+      assert lookedup_encoded_record.oth_swiss_species_registered == true
+      refute is_nil(lookedup_encoded_record.oth_swiss_species_registered_at)
       assert encoded_record.state === :encoded
     end
 
@@ -58,10 +61,16 @@ defmodule DataAggregator.SwissSpeciesEncodingTest do
           Record.encode(invalid_record, :swiss_species, tenant: invalid_record.collection_id)
         end)
 
-      encoded_record = Record.get_by_id!(invalid_record.id, tenant: invalid_record.collection_id)
+      lookedup_record = Record.get_by_id!(record.id, tenant: record.collection_id)
 
-      assert encoded_record.state === :encoded
-      assert record != nil
+      lookedup_encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record.collection_id)
+
+      assert lookedup_encoded_record.oth_swiss_species_center === nil
+      assert lookedup_encoded_record.oth_swiss_species_registered == false
+      refute is_nil(lookedup_encoded_record.oth_swiss_species_registered_at)
+      assert lookedup_record.state === :encoded
+      assert lookedup_record != nil
       assert logs =~ "no matching encoded_record found for taxon_id: 0"
     end
 

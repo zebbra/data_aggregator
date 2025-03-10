@@ -23,9 +23,9 @@ defmodule DataAggregatorWeb.TermsAndConditionsLive.Index do
             <.modal_header id="terms_modal_header">
               <.section_heading text={~t"Terms and Conditions"m} class="mt-4" />
             </.modal_header>
-            <div class="h-full space-y-12 overflow-y-auto px-6 py-8">
+            <div class="h-full space-y-4 overflow-y-auto px-6 py-8">
               <p class="text-sm">
-                {~t"By accessing the Data Aggregator, you agree to comply with the conditions laid down on our policy. These terms govern the use of our services and content. We encourage you to read them carefully. If you do not agree to these terms, please do not use our platform."m}
+                {~t"By accessing the Data Aggregator DAGI, you agree to comply with the conditions laid down on our policy. These terms govern the use of our services and content. We encourage you to read them carefully. If you do not agree to these terms, please do not use our platform."m}
               </p>
               <p class="text-sm">
                 {~t"I have read and agree with the"m}
@@ -40,10 +40,7 @@ defmodule DataAggregatorWeb.TermsAndConditionsLive.Index do
                 {~t"of the DAGI and accept full responsibility for the data I upload and publish."m}
               </p>
               <p class="text-sm">
-                {~t"The terms of use are currently under revision and may change in the coming weeks to better meet legal and regulatory requirements. In the time being, the publication of the data will be done on the GBIF test environment. The publication of the data to GBIF will become effective on the 27th of January, date on which you will be asked to revise and re-publish your dataset, by accepting the final terms of use of the DAGI."m}
-              </p>
-              <p class="text-sm">
-                {~t"Thank you for your understanding and welcome!"m}
+                {~t"Thank you and welcome!"m}
               </p>
             </div>
           </div>

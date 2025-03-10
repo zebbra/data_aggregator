@@ -490,12 +490,26 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
+          :if={CollectionType.visible?(@collection_type, :oth_swiss_species_center)}
+          field={:oth_swiss_species_center}
+          label={~t"Swiss Registry"m}
+          class="text-center"
+        >
+          <.swiss_species_center_badge
+            registered={record.encoded_record.oth_swiss_species_registered}
+            center={record.encoded_record.oth_swiss_species_center}
+          />
+        </:col>
+        <:col
+          :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :validation_status)}
-          field={:validationon_status}
+          field={:validation_status}
           label={~t"Validation status"m}
           class="text-center"
         >
-          <.validation_state_badge state={record.validation_status} />
+          <%= unless record.encoded_record.oth_swiss_species_registered == false do %>
+            <.validation_state_badge state={record.validation_status} />
+          <% end %>
         </:col>
         <:col
           :let={{_id, record}}
@@ -553,7 +567,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <div class="mt-4 flex space-x-2 max-sm:hidden">
               <.encoding_state_badge state={@selected_record.state} tooltip={false} />
               <.publication_state_badge state={@selected_record.fast_track_status} tooltip={false} />
-              <.validation_state_badge state={@selected_record.validation_status} tooltip={false} />
+              <%= unless @selected_record.encoded_record.oth_swiss_species_registered == false do %>
+                <.validation_state_badge state={@selected_record.validation_status} tooltip={false} />
+              <% end %>
             </div>
           </:additional_header_content>
 
@@ -587,6 +603,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               </:item>
               <:item title={~t"Quality"m}>
                 <.mids_level_indicator level={@selected_record.mids_level} />
+              </:item>
+              <:item title={~t"Swiss Registry"m}>
+                <.swiss_species_center_badge
+                  registered={@selected_record.encoded_record.oth_swiss_species_registered}
+                  center={@selected_record.encoded_record.oth_swiss_species_center}
+                />
               </:item>
             </.list>
             <div :if={@selected_record.encoded_record.mte_associated_media} class="pb-4">
@@ -1101,6 +1123,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       value -> value
     end
   end
+
+  defp format_value(%DateTime{} = value, "swissSpeciesRegisteredAt"), do: format_datetime(value, format: :short)
 
   defp format_value(value, _) when is_map(value), do: format_map(value)
   defp format_value(value, _), do: value

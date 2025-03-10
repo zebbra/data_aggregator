@@ -97,6 +97,46 @@
       "primary_key?": false,
       "references": null,
       "size": null,
+      "source": "oth_dynamic_properties",
+      "type": "map"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "oth_type_designated_by",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "oth_measurement_value",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "oth_measurement_unit",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
       "source": "oth_swiss_species_registered_at",
       "type": "utc_datetime"
     },
@@ -538,6 +578,16 @@
       "references": null,
       "size": null,
       "source": "pvn_dna_bank_institution",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "occ_caste",
       "type": "text"
     },
     {
@@ -2237,6 +2287,16 @@
       "primary_key?": false,
       "references": null,
       "size": null,
+      "source": "idf_typified_name",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
       "source": "idf_last_verified_by_id",
       "type": "text"
     },
@@ -2881,6 +2941,76 @@
       "type": "map"
     },
     {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "iucn_redlist_category",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "iucn_redlist",
+      "type": "boolean"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "mids_level_one",
+      "type": "boolean"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "mids_level_two",
+      "type": "boolean"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "mids_level_three",
+      "type": "boolean"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "mids_level_four",
+      "type": "boolean"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "tsv",
+      "type": "text"
+    },
+    {
       "allow_nil?": false,
       "default": "fragment(\"(now() AT TIME ZONE 'utc')\")",
       "generated?": false,
@@ -2920,7 +3050,7 @@
           "global": false,
           "strategy": "attribute"
         },
-        "name": "validated_records_record_id_fkey",
+        "name": "encoded_records_record_id_fkey",
         "on_delete": "delete",
         "on_update": "update",
         "primary_key?": true,
@@ -2935,7 +3065,7 @@
       "allow_nil?": false,
       "default": "nil",
       "generated?": false,
-      "primary_key?": true,
+      "primary_key?": false,
       "references": {
         "deferrable": false,
         "destination_attribute": "id",
@@ -2949,7 +3079,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "validated_records_collection_id_fkey",
+        "name": "encoded_records_collection_id_fkey",
         "on_delete": "delete",
         "on_update": "update",
         "primary_key?": true,
@@ -2963,15 +3093,66 @@
   ],
   "base_filter": null,
   "check_constraints": [],
-  "custom_indexes": [],
+  "custom_indexes": [
+    {
+      "all_tenants?": false,
+      "concurrently": false,
+      "error_fields": [
+        "loc_continent",
+        "tax_kingdom",
+        "tax_phylum"
+      ],
+      "fields": [
+        {
+          "type": "atom",
+          "value": "loc_continent"
+        },
+        {
+          "type": "atom",
+          "value": "tax_kingdom"
+        },
+        {
+          "type": "atom",
+          "value": "tax_phylum"
+        }
+      ],
+      "include": null,
+      "message": null,
+      "name": null,
+      "nulls_distinct": true,
+      "prefix": null,
+      "table": null,
+      "unique": false,
+      "using": null,
+      "where": null
+    }
+  ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "66414156CCB780576DBBD2D35F934C4EE5E3819039022C3FA23D69885D0FEE88",
+  "hash": "88564F7468540B2EC7592072436E30BEFDFAD05EE7945EB8C08A68D3658A50B7",
   "identities": [
     {
       "all_tenants?": false,
       "base_filter": null,
-      "index_name": "validated_records_record_mte_catalog_number_index",
+      "index_name": "encoded_records_by_collection_index",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "id"
+        },
+        {
+          "type": "atom",
+          "value": "collection_id"
+        }
+      ],
+      "name": "by_collection",
+      "nils_distinct?": true,
+      "where": null
+    },
+    {
+      "all_tenants?": false,
+      "base_filter": null,
+      "index_name": "encoded_records_record_mte_catalog_number_index",
       "keys": [
         {
           "type": "atom",
@@ -2994,5 +3175,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "validated_records"
+  "table": "encoded_records"
 }

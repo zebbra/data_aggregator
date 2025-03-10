@@ -58,6 +58,9 @@ classDiagram
         Map ext_chronometric
         Map ext_assertions
         Map ext_amplification
+        UtcDatetime oth_swiss_species_registered_at
+        Boolean oth_swiss_species_registered
+        String oth_swiss_species_center
         String oth_specify_author_of_record
         String oth_specify_event
         String oth_specify_locality
@@ -285,8 +288,8 @@ classDiagram
         Float eve_shrub_layer_height_in_meters
         String eve_start_day_of_year
         String eve_sampling_effort
-        Integer eve_sample_size_unit
-        Integer eve_sample_size_value
+        String eve_sample_size_unit
+        Float eve_sample_size_value
         String eve_sampling_protocol
         String eve_substratum_state
         String eve_substratum
@@ -551,6 +554,9 @@ classDiagram
         Map ext_chronometric
         Map ext_assertions
         Map ext_amplification
+        UtcDatetime oth_swiss_species_registered_at
+        Boolean oth_swiss_species_registered
+        String oth_swiss_species_center
         String oth_specify_author_of_record
         String oth_specify_event
         String oth_specify_locality
@@ -778,8 +784,8 @@ classDiagram
         Float eve_shrub_layer_height_in_meters
         String eve_start_day_of_year
         String eve_sampling_effort
-        Integer eve_sample_size_unit
-        Integer eve_sample_size_value
+        String eve_sample_size_unit
+        Float eve_sample_size_value
         String eve_sampling_protocol
         String eve_substratum_state
         String eve_substratum
@@ -849,6 +855,9 @@ classDiagram
         Map ext_chronometric
         Map ext_assertions
         Map ext_amplification
+        UtcDatetime oth_swiss_species_registered_at
+        Boolean oth_swiss_species_registered
+        String oth_swiss_species_center
         String oth_specify_author_of_record
         String oth_specify_event
         String oth_specify_locality
@@ -1076,8 +1085,8 @@ classDiagram
         Float eve_shrub_layer_height_in_meters
         String eve_start_day_of_year
         String eve_sampling_effort
-        Integer eve_sample_size_unit
-        Integer eve_sample_size_value
+        String eve_sample_size_unit
+        Float eve_sample_size_value
         String eve_sampling_protocol
         String eve_substratum_state
         String eve_substratum
@@ -1257,6 +1266,9 @@ classDiagram
         Map ext_chronometric
         Map ext_assertions
         Map ext_amplification
+        UtcDatetime oth_swiss_species_registered_at
+        Boolean oth_swiss_species_registered
+        String oth_swiss_species_center
         String oth_specify_author_of_record
         String oth_specify_event
         String oth_specify_locality
@@ -1484,8 +1496,8 @@ classDiagram
         Float eve_shrub_layer_height_in_meters
         String eve_start_day_of_year
         String eve_sampling_effort
-        Integer eve_sample_size_unit
-        Integer eve_sample_size_value
+        String eve_sample_size_unit
+        Float eve_sample_size_value
         String eve_sampling_protocol
         String eve_substratum_state
         String eve_substratum
