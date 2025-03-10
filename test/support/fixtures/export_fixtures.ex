@@ -368,7 +368,13 @@ defmodule DataAggregator.ExportFixtures do
       "eventDate",
       "organismID",
       "references_duplicated_0",
-      "originalBiominerals"
+      "originalBiominerals",
+      "typifiedName",
+      "caste",
+      "dynamicProperties",
+      "measurementUnit",
+      "measurementValue",
+      "typeDesignatedBy"
     ]
   end
 
@@ -659,7 +665,13 @@ defmodule DataAggregator.ExportFixtures do
       "tax_taxonomic_status" => "taxonomicStatus",
       "tax_tribe" => "tribe",
       "tax_verbatim_taxon_rank" => "verbatimTaxonRank",
-      "tax_vernacular_name" => "vernacularName"
+      "tax_vernacular_name" => "vernacularName",
+      "idf_typified_name" => "typifiedName",
+      "occ_caste" => "caste",
+      "oth_dynamic_properties" => "dynamicProperties",
+      "oth_measurement_unit" => "measurementUnit",
+      "oth_measurement_value" => "measurementValue",
+      "oth_type_designated_by" => "typeDesignatedBy"
     }
   end
 end

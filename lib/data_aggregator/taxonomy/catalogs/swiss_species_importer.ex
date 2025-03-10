@@ -132,9 +132,15 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter do
 
   """
   def parse_taxon_id_ch(name_and_value) do
-    [_name, value] = String.split(name_and_value, ":")
+    maybe_split_value(name_and_value)
+  end
 
-    value
+  defp maybe_split_value(name_and_value) do
+    if String.contains?(name_and_value, ":") do
+      [_name, value] = String.split(name_and_value, ":")
+
+      value
+    end
   end
 
   defp find_center_by_name(name) do

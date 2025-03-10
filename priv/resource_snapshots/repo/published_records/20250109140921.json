@@ -97,6 +97,46 @@
       "primary_key?": false,
       "references": null,
       "size": null,
+      "source": "oth_dynamic_properties",
+      "type": "map"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "oth_type_designated_by",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "oth_measurement_value",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "oth_measurement_unit",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
       "source": "oth_swiss_species_registered_at",
       "type": "utc_datetime"
     },
@@ -538,6 +578,16 @@
       "references": null,
       "size": null,
       "source": "pvn_dna_bank_institution",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "occ_caste",
       "type": "text"
     },
     {
@@ -2237,6 +2287,16 @@
       "primary_key?": false,
       "references": null,
       "size": null,
+      "source": "idf_typified_name",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
       "source": "idf_last_verified_by_id",
       "type": "text"
     },
@@ -2974,7 +3034,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "A8F7B7894554ACA6C25A73DD92EB29E9E710D7C68D366F2152871B62F9BF28B3",
+  "hash": "93BAFDC9505523CFA45C3A061B833C5083BB594572A61BE1296FC888907BD2F3",
   "identities": [
     {
       "all_tenants?": false,

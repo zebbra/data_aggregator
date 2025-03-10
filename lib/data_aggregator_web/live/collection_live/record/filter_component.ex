@@ -214,6 +214,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   end
 
   @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :tax_family}}} = assigns) do
+    ~H"""
+    <.checkbox_group_filter
+      component={@component}
+      title={~t"Family"m}
+      target={@target}
+      options={@distinct_options[:tax_family]}
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
   def filter_form_component(%{component: %{source: %FilterForm{key: "location"}}} = assigns) do
     ~H"""
     <div class="py-4">
@@ -222,7 +235,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
         key="location"
         target={@target}
         open={open_collapsible?(@collapsible_state, "location")}
-        border_bottom={false}
+        border_bottom={true}
       >
         <.inputs_for :let={component} field={@component[:components]}>
           <.filter_form_component
@@ -246,6 +259,96 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       title={~t"Continent"m}
       target={@target}
       options={@distinct_options[:loc_continent]}
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :loc_locality}}} = assigns) do
+    ~H"""
+    <.text_search
+      component={@component}
+      title={~t"Locality"m}
+      description={~t"Search your records by locality"m}
+      target={@target}
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %FilterForm{key: "other"}}} = assigns) do
+    ~H"""
+    <div class="py-4">
+      <.collapsible_group
+        title={~t"Other"m}
+        key="other"
+        target={@target}
+        open={open_collapsible?(@collapsible_state, "other")}
+        border_bottom={false}
+      >
+        <.inputs_for :let={component} field={@component[:components]}>
+          <.filter_form_component
+            component={component}
+            resource={@resource}
+            collapsible_state={@collapsible_state}
+            distinct_options={@distinct_options}
+            target={@target}
+          />
+        </.inputs_for>
+      </.collapsible_group>
+    </div>
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :mte_recorded_by}}} = assigns) do
+    ~H"""
+    <.text_search
+      component={@component}
+      title={~t"Recorded By"m}
+      description={~t"Search your records by the person(s) which recorded the occurrence first"m}
+      target={@target}
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :idf_type_status}}} = assigns) do
+    ~H"""
+    <.checkbox_group_filter
+      component={@component}
+      title={~t"Type Status"m}
+      target={@target}
+      options={@distinct_options[:idf_type_status]}
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :mts_material_sample_type}}} = assigns) do
+    ~H"""
+    <.checkbox_group_filter
+      component={@component}
+      title={~t"Material Sample Type"m}
+      target={@target}
+      options={@distinct_options[:mts_material_sample_type]}
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :mte_preparations}}} = assigns) do
+    ~H"""
+    <.checkbox_group_filter
+      component={@component}
+      title={~t"Preparations"m}
+      target={@target}
+      options={@distinct_options[:mte_preparations]}
       legend_size="md"
     />
     """
@@ -306,11 +409,40 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
         to: taxonomy_group_id,
         path: "encoded_record"
       )
+      |> FilterForm.add_predicate(:tax_family, :in, [],
+        to: taxonomy_group_id,
+        path: "encoded_record"
+      )
     end)
     |> FilterForm.add_group(return_id?: true, key: "location")
     |> then(fn {form, location_group_id} ->
-      FilterForm.add_predicate(form, :loc_continent, :in, [],
+      form
+      |> FilterForm.add_predicate(:loc_continent, :in, [],
         to: location_group_id,
+        path: "encoded_record"
+      )
+      |> FilterForm.add_predicate(:loc_locality, :contains, nil,
+        to: location_group_id,
+        path: "encoded_record"
+      )
+    end)
+    |> FilterForm.add_group(return_id?: true, key: "other", operator: :or)
+    |> then(fn {form, other_group_id} ->
+      form
+      |> FilterForm.add_predicate(:mte_recorded_by, :contains, nil,
+        to: other_group_id,
+        path: "encoded_record"
+      )
+      |> FilterForm.add_predicate(:idf_type_status, :in, [],
+        to: other_group_id,
+        path: "encoded_record"
+      )
+      |> FilterForm.add_predicate(:mts_material_sample_type, :in, [],
+        to: other_group_id,
+        path: "encoded_record"
+      )
+      |> FilterForm.add_predicate(:mte_preparations, :in, [],
+        to: other_group_id,
         path: "encoded_record"
       )
     end)
@@ -365,15 +497,23 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
 
     active_taxonomy =
       Enum.any?(
-        ~w[tax_scientific_name tax_kingdom tax_phylum],
+        ~w[tax_scientific_name tax_kingdom tax_phylum tax_family],
         &(&1 in active_filter_form_fields)
       )
 
-    active_location = Enum.any?(~w[loc_continent], &(&1 in active_filter_form_fields))
+    active_location =
+      Enum.any?(~w[loc_continent loc_locality], &(&1 in active_filter_form_fields))
+
+    active_others =
+      Enum.any?(
+        ~w[mte_recorded_by idf_type_status mts_material_sample_type mte_preparations],
+        &(&1 in active_filter_form_fields)
+      )
 
     assign(socket, :collapsible_state, %{
       "taxonomy" => active_taxonomy,
-      "location" => active_location
+      "location" => active_location,
+      "other" => active_others
     })
   end
 
@@ -385,8 +525,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     assign_new(socket, :distinct_options, fn ->
       %{
         loc_continent: loc_continent_options(socket.assigns.collection),
+        idf_type_status: idf_type_status_options(socket.assigns.collection),
+        mts_material_sample_type: mts_material_sample_type_options(socket.assigns.collection),
+        mte_preparations: mte_preparations_options(socket.assigns.collection),
         tax_kingdom: tax_kingdom_options(socket.assigns.collection),
-        tax_phylum: tax_phylum_options(socket.assigns.collection)
+        tax_phylum: tax_phylum_options(socket.assigns.collection),
+        tax_family: tax_family_options(socket.assigns.collection)
       }
     end)
   end
@@ -395,11 +539,27 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     distinct_ecto(:loc_continent, :encoded_records, collection)
   end
 
+  defp idf_type_status_options(collection) do
+    distinct_ecto(:idf_type_status, :encoded_records, collection)
+  end
+
+  defp mts_material_sample_type_options(collection) do
+    distinct_ecto(:mts_material_sample_type, :encoded_records, collection)
+  end
+
+  defp mte_preparations_options(collection) do
+    distinct_ecto(:mte_preparations, :encoded_records, collection)
+  end
+
   defp tax_kingdom_options(collection) do
     distinct_ecto(:tax_kingdom, :encoded_records, collection)
   end
 
   defp tax_phylum_options(collection) do
     distinct_ecto(:tax_phylum, :encoded_records, collection)
+  end
+
+  defp tax_family_options(collection) do
+    distinct_ecto(:tax_family, :encoded_records, collection)
   end
 end

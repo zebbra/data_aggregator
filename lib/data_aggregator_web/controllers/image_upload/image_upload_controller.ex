@@ -13,6 +13,19 @@ defmodule DataAggregatorWeb.ImageUploadController do
   require Logger
 
   @doc """
+  Permanently redirects from the old image URL to the new image URL with image.jpg suffix
+  """
+  @spec redirect_to_image(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def redirect_to_image(conn, %{"collection_id" => collection_id, "image_id" => image_id}) do
+    # Construct the new path directly
+    new_path = "/datasets/#{collection_id}/image_uploads/images/#{image_id}/image.jpg"
+
+    conn
+    |> put_status(301)
+    |> redirect(to: new_path)
+  end
+
+  @doc """
   Serves an image hosted on our static asset storage server over http
   """
   @spec show_image(Plug.Conn.t(), map()) :: Plug.Conn.t()
