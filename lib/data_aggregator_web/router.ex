@@ -118,6 +118,11 @@ defmodule DataAggregatorWeb.Router do
            :summary
     end
 
+    # Permanent redirect from old image URL to new image URL
+    get "/datasets/:collection_id/image_uploads/images/:image_id",
+        ImageUploadController,
+        :redirect_to_image
+
     get "/datasets/:collection_id/image_uploads/images/:image_id/image.jpg",
         ImageUploadController,
         :show_image
