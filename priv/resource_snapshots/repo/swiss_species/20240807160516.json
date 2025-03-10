@@ -11,10 +11,10 @@
       "type": "uuid"
     },
     {
-      "allow_nil?": false,
+      "allow_nil?": true,
       "default": "nil",
       "generated?": false,
-      "primary_key?": true,
+      "primary_key?": false,
       "references": null,
       "size": null,
       "source": "taxon_id_ch",
@@ -106,7 +106,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "E4AA5CDC5E466026A9EB909A5B4C3FF181E2435FE3418FD156679100F91B15DF",
+  "hash": "FDA66BD5A3A19DE2AC4DF9937DA48AA658D75F75A7C249DFBC05CA34B3F7FF0E",
   "identities": [],
   "multitenancy": {
     "attribute": null,
