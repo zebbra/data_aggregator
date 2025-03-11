@@ -41,6 +41,12 @@ defmodule DataAggregatorWeb.Helpers do
     iex> format_float(3000.56, nil)
     "3000.56"
 
+    iex> format_float(550000.0, nil)
+    "550000.0"
+
+    iex> format_float(165000.0, nil)
+    "165000.0"
+
     iex> format_float(nil, nil)
     nil
   """
