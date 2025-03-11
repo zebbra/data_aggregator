@@ -93,6 +93,6 @@ defmodule DataAggregator.Records.Record.Changes.CheckIfFastTrackPublished do
   defp extract_gbif_id({:ok, response}) do
     occurrence = hd(response.body["results"])
 
-    {:ok, occurrence["gbifID"]}
+    {:ok, occurrence["key"]}
   end
 end
