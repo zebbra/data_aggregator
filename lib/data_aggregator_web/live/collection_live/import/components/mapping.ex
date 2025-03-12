@@ -397,7 +397,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         |> ensure_required_attributes()
         |> Enum.reject(fn column ->
           not_mappable_data =
-            Schema.data_from_collection() |> Map.keys() |> Enum.map(&Atom.to_string/1)
+            Schema.not_mappable_fields() |> Map.keys() |> Enum.map(&Atom.to_string/1)
 
           column.mapped_to in not_mappable_data
         end)
@@ -489,7 +489,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   defp auto_mapping_matched(import) do
     prefixed_attribute_to_dwc_field_mapping =
       Enum.reject(DarwinCore.Schema.prefixed_attribute_names_and_dwc_fields(), fn {key, _} ->
-        key in Map.keys(Schema.data_from_collection())
+        key in Map.keys(Schema.not_mappable_fields())
       end)
 
     dwc_field_names =

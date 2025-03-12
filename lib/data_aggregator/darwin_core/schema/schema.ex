@@ -1726,14 +1726,12 @@ oth_attributes = [
     dwc_field: "collectionCode",
     dwc_link: "http://rs.tdwg.org/dwc/terms/collectionCode",
     dwca_file: :core,
-    available_for_import_mapping: false,
     attribute: %Attribute{name: :collection_code, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "collectionID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/collectionID",
     dwca_file: :core,
-    available_for_import_mapping: false,
     attribute: %Attribute{name: :collection_id, type: :string, allow_nil?: true}
   },
   %{
@@ -1746,7 +1744,6 @@ oth_attributes = [
     dwc_field: "datasetID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/datasetID",
     dwca_file: :core,
-    available_for_import_mapping: false,
     attribute: %Attribute{name: :dataset_id, type: :string, allow_nil?: true}
   },
   %{
@@ -1765,14 +1762,12 @@ oth_attributes = [
     dwc_field: "gbifDOI",
     dwc_link: nil,
     dwca_file: :core,
-    available_for_import_mapping: false,
     attribute: %Attribute{name: :gbif_doi, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "gbifID",
     dwc_link: nil,
     dwca_file: :core,
-    available_for_import_mapping: false,
     attribute: %Attribute{name: :gbif_id, type: :string, allow_nil?: true}
   },
   %{
@@ -1791,14 +1786,12 @@ oth_attributes = [
     dwc_field: "institutionCode",
     dwc_link: "http://rs.tdwg.org/dwc/terms/institutionCode",
     dwca_file: :core,
-    available_for_import_mapping: false,
     attribute: %Attribute{name: :institution_code, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "institutionID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/institutionID",
     dwca_file: :core,
-    available_for_import_mapping: false,
     attribute: %Attribute{name: :institution_id, type: :string, allow_nil?: true}
   },
   %{
@@ -2089,6 +2082,22 @@ defmodule DataAggregator.DarwinCore.Schema do
     }
 
   @doc """
+  Returns a map of fields that are not mappable during the import process.
+  Key are the prefixed attributes, values are the original attributes.
+  """
+  def not_mappable_fields do
+    %{
+      oth_gbif_doi: :gbif_doi,
+      oth_dataset_id: :dataset_id,
+      oth_institution_id: :institution_id,
+      oth_institution_code: :institution_code,
+      oth_collection_id: :collection_id,
+      oth_collection_code: :collection_code,
+      oth_gbif_id: :gbif_id
+    }
+  end
+
+  @doc """
   Returns a map attributes grouped by category.
   """
   @spec categories() :: [Category.t()]
@@ -2185,8 +2194,9 @@ defmodule DataAggregator.DarwinCore.Schema do
 
     for category <- @categories do
       filtered_attributes =
-        Enum.filter(category.dwc_attributes, fn dwc_attribute ->
-          Map.get(dwc_attribute, :available_for_import_mapping, true)
+        Enum.reject(category.dwc_attributes, fn dwc_attribute ->
+          not_mappable_fields = Map.values(not_mappable_fields())
+          dwc_attribute.attribute.name in not_mappable_fields
         end)
 
       options =
