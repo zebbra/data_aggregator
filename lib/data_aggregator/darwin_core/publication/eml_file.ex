@@ -8,6 +8,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
   alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
+  alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
 
   @spec create(Collection.t(), Publication.t(), String.t()) :: {:ok, String.t()} | {:error, any()}
   def create(collection, publication, path) do
@@ -17,7 +18,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
            RestAPI.get_one_collection(collection.grscicoll_reference) do
       path = path <> "/eml.xml"
 
-      xml_data = build(grscicoll_data, publication.license)
+      xml_data = build(grscicoll_data, publication)
 
       create_eml_file(xml_data, path)
 
@@ -37,7 +38,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
     file
   end
 
-  defp build(meta_data, license) do
+  defp build(meta_data, publication) do
     {:"eml:eml",
      [
        "xmlns:eml": "eml://ecoinformatics.org/eml-2.1.1",
@@ -48,13 +49,13 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
        scope: "system"
      ],
      [
-       dataset(meta_data, license)
+       dataset(meta_data, publication)
      ]}
     |> document()
     |> generate(format: :none)
   end
 
-  defp dataset(meta_data, license) do
+  defp dataset(meta_data, %Publication{center: center, license: license}) do
     element(
       :dataset,
       [
@@ -72,13 +73,26 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
             element(para: {:safe, intellectual_rights(license)})
           ],
           distribution: [
-            online: [element(:url, %{function: "information"}, "http://www.infoflora.ch")]
+            online: [
+              element(
+                :url,
+                %{function: "information"},
+                get_website(center)
+              )
+            ]
           ],
           maintenance: [description: [para: "n/a"], maintenanceUpdateFrequency: "unkown"]
         ] ++
         contacts(meta_data) ++
         additional_metadata(meta_data)
     )
+  end
+
+  defp get_website(center) do
+    case InfospeciesCenters.get_website(center) do
+      {:ok, website} -> website
+      {:error, _} -> "n/a"
+    end
   end
 
   defp additional_metadata(meta_data) do
