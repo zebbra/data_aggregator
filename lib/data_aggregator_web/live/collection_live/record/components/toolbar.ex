@@ -173,10 +173,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
           <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-10 mt-14 w-44 gap-1 border p-2 shadow-2xl">
             <li :for={{label, icon, action} <- @actions}>
               <button
+                :if={action_allowed?(@current_user, label, @collection)}
                 phx-click={action}
-                disabled={
-                  @busy or is_nil(@meta) or not action_allowed?(@current_user, label, @collection)
-                }
+                disabled={@busy or is_nil(@meta)}
               >
                 <.icon name={icon} class="size-5" />
                 <span class="font-[sans-serif]">{action_label(label)}</span>
@@ -200,10 +199,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
         <ul class="dropdown-content menu menu-sm bg-base-200 rounded-box border-black-white/10 top-px z-20 mt-14 w-44 gap-1 border p-2 shadow-2xl">
           <li :for={{label, icon, action} <- @actions}>
             <button
+              :if={action_allowed?(@current_user, label, @collection)}
               phx-click={action}
-              disabled={
-                @busy or is_nil(@meta) or not action_allowed?(@current_user, label, @collection)
-              }
+              disabled={@busy or is_nil(@meta)}
             >
               <.icon name={icon} class="size-5" />
               <span class="font-[sans-serif]">{action_label(label)}</span>
@@ -216,9 +214,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
       <div id="actions-xl" class="join max-2xl:hidden">
         <button
           :for={{label, icon, action} <- @actions}
+          :if={action_allowed?(@current_user, label, @collection)}
           class="join-item btn btn-outline border-base-content/20"
           phx-click={action}
-          disabled={@busy or is_nil(@meta) or not action_allowed?(@current_user, label, @collection)}
+          disabled={@busy or is_nil(@meta)}
         >
           <.icon :if={busy?(action, @busy_action) == false} name={icon} />
           <.icon :if={busy?(action, @busy_action)} name="hero-cog-6-tooth-solid animate-spin" />
