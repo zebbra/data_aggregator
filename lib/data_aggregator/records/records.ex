@@ -27,7 +27,7 @@ defmodule DataAggregator.Records do
     execute_async: true,
     image_upload_timeout: :timer.minutes(60),
     extraction_timeout: :timer.minutes(60),
-    mapping_timeout: :timer.hours(1)
+    mapping_timeout: :timer.hours(12)
   ]
 
   authorization do

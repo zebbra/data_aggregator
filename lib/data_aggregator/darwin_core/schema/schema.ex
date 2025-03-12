@@ -2074,21 +2074,19 @@ defmodule DataAggregator.DarwinCore.Schema do
 
   @categories categories
 
-  @data_from_collection %{
-    oth_gbif_doi: :gbif_doi,
-    oth_gbif_id: :gbif_id,
-    oth_dataset_id: :gbif_dataset_key,
-    oth_institution_id: :grscicoll_institution_key,
-    oth_institution_code: :grscicoll_institution_code,
-    oth_collection_id: :grscicoll_reference,
-    oth_collection_code: :code
-  }
-
   @doc """
   Returns a map to define which fields are not to be taken from the record, but collection
   The key corresponds to the field in the record, the value to the field in the collection
   """
-  def data_from_collection, do: @data_from_collection
+  def data_from_collection,
+    do: %{
+      oth_gbif_doi: :gbif_doi,
+      oth_dataset_id: :gbif_dataset_key,
+      oth_institution_id: :grscicoll_institution_key,
+      oth_institution_code: :grscicoll_institution_code,
+      oth_collection_id: :grscicoll_reference,
+      oth_collection_code: :code
+    }
 
   @doc """
   Returns a map attributes grouped by category.
