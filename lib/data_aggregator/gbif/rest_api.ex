@@ -222,6 +222,24 @@ defmodule DataAggregator.Gbif.RestAPI do
   end
 
   @doc """
+  Get one institution from the GrSciColl API, according to its key
+  """
+  @spec get_one_institution(String.t()) :: Api.response_body()
+  def get_one_institution(reference) do
+    url = grscicoll_entity_by_key_url(reference, :institution)
+
+    with {:ok, response} <-
+           [params: %{country: "CH", limit: 1000}]
+           |> Req.new()
+           |> HttpDiskCache.attach()
+           |> Req.get(url: url, max_cache_age_seconds: @hour)
+           |> ensure_response(reference),
+         :ok <- ensure_status(response) do
+      {:ok, response |> Map.from_struct() |> Map.get(:body)}
+    end
+  end
+
+  @doc """
   Get the IUCN Redlist category from the GBIF API for a given key
   """
   @spec get_iucn_redlist_category(String.t()) :: Api.response()

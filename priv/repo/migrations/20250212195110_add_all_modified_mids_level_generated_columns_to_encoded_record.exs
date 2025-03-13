@@ -1,4 +1,4 @@
-defmodule DataAggregator.Repo.Migrations.AddModifiedMidsLevelGeneratedColumnsToEncodedRecords do
+defmodule DataAggregator.Repo.Migrations.AddAllModifiedMidsLevelGeneratedColumnsToEncodedRecords do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
