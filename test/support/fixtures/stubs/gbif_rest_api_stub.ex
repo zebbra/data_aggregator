@@ -1137,6 +1137,175 @@ defmodule DataAggregator.Gbif.RestAPIStub do
      }}
   end
 
+  @spec get_one_institution(String.t()) :: Api.response_body()
+  def get_one_institution(_institution_key) do
+    {:ok,
+     %{
+       "key" => "5b487a79-76ef-4615-93d9-f4ea25a40c33",
+       "code" => "UZH =>Z",
+       "name" => "Universität Zürich, Herbarium",
+       "description" =>
+         "https =>//www.gbif.org/grscicoll/institution/5b487a79-76ef-4615-93d9-f4ea25a40c33. Worldwide, especially regional flora; central Europe (large holdings of Rosaceae); southern Africa; New Caledonia.",
+       "types" => ["Herbarium"],
+       "active" => true,
+       "email" => [],
+       "phone" => ["[41] 1 634 84 11"],
+       "homepage" => "https =>//www.herbarien.uzh.ch/en.html",
+       "catalogUrls" => [],
+       "apiUrls" => [],
+       "institutionalGovernances" => [],
+       "disciplines" => [],
+       "latitude" => 47.358798,
+       "longitude" => 8.559586,
+       "mailingAddress" => %{
+         "key" => 3266,
+         "address" => "Zollikerstrasse 107",
+         "city" => "Zürich",
+         "postalCode" => "CH-8008",
+         "country" => "CH"
+       },
+       "address" => %{
+         "key" => 10_001,
+         "city" => "Zürich",
+         "country" => "CH"
+       },
+       "additionalNames" => ["Herbarium"],
+       "foundingDate" => 1834,
+       "numberSpecimens" => 1_840_000,
+       "createdBy" => "GRBIO",
+       "modifiedBy" => "sofiawyler",
+       "created" => "2013-05-13T09 =>52 =>00.000+00 =>00",
+       "modified" => "2024-05-24T14 =>17 =>51.642+00 =>00",
+       "tags" => [],
+       "identifiers" => [
+         %{
+           "key" => 363_556,
+           "type" => "CITES",
+           "identifier" => "CH 015",
+           "createdBy" => "mlopezg",
+           "created" => "2024-04-10T07 =>56 =>37.837+00 =>00",
+           "primary" => false
+         },
+         %{
+           "key" => 352_958,
+           "type" => "NCBI_BIOCOLLECTION",
+           "identifier" => "947842",
+           "createdBy" => "mgrosjean",
+           "created" => "2023-08-15T11 =>13 =>36.903+00 =>00",
+           "primary" => false
+         },
+         %{
+           "key" => 347_318,
+           "type" => "WIKIDATA",
+           "identifier" => "http =>//www.wikidata.org/entity/Q206702",
+           "createdBy" => "mgrosjean",
+           "created" => "2023-08-15T10 =>53 =>31.936+00 =>00",
+           "primary" => false
+         },
+         %{
+           "key" => 174_815,
+           "type" => "GRSCICOLL_URI",
+           "identifier" => "http =>//grscicoll.org/institution/universität-zürich",
+           "createdBy" => "registry-migration-grbio.gbif.org",
+           "created" => "2019-08-15T08 =>12 =>27.572+00 =>00",
+           "primary" => false
+         },
+         %{
+           "key" => 166_662,
+           "type" => "GRSCICOLL_URI",
+           "identifier" => "http =>//grbio.org/institution/universität-zürich",
+           "createdBy" => "registry-migration-grbio.gbif.org",
+           "created" => "2019-08-15T08 =>12 =>20.362+00 =>00",
+           "primary" => false
+         },
+         %{
+           "key" => 131_315,
+           "type" => "GRSCICOLL_ID",
+           "identifier" => "7483",
+           "createdBy" => "registry-migration-grbio.gbif.org",
+           "created" => "2018-11-15T10 =>23 =>01.527+00 =>00",
+           "primary" => false
+         },
+         %{
+           "key" => 138_412,
+           "type" => "GRSCICOLL_URI",
+           "identifier" => "http =>//grbio.org/cool/e6hc-1y8v",
+           "createdBy" => "registry-migration-grbio.gbif.org",
+           "created" => "2018-11-15T10 =>23 =>01.527+00 =>00",
+           "primary" => false
+         }
+       ],
+       "contactPersons" => [
+         %{
+           "key" => 29_773,
+           "firstName" => "Reto",
+           "lastName" => "Nyffeler",
+           "position" => ["Curator of Phanerogams"],
+           "phone" => ["[044] 634 84 42"],
+           "fax" => [],
+           "email" => ["reto.nyffeler@systbot.uzh.ch"],
+           "address" => [],
+           "city" => "Zürich",
+           "country" => "CH",
+           "primary" => true,
+           "taxonomicExpertise" => [],
+           "notes" => "Research pursuits => Alpine plants; Cactaceae.",
+           "userIds" => [
+             %{
+               "type" => "IH_IRN",
+               "id" => "134592"
+             }
+           ],
+           "createdBy" => "gbif-collections",
+           "modifiedBy" => "sofiawyler",
+           "created" => "2022-01-12T14 =>47 =>17.075+00 =>00",
+           "modified" => "2024-05-24T12 =>22 =>50.990+00 =>00"
+         },
+         %{
+           "key" => 29_795,
+           "firstName" => "Heike",
+           "lastName" => "Hofmann",
+           "position" => ["Curator of Bryophytes"],
+           "phone" => [],
+           "fax" => [],
+           "email" => ["heike.hofmann@systbot.uzh.ch"],
+           "address" => [],
+           "city" => "Zürich",
+           "country" => "CH",
+           "primary" => false,
+           "taxonomicExpertise" => [],
+           "userIds" => [
+             %{
+               "type" => "IH_IRN",
+               "id" => "240840"
+             }
+           ],
+           "createdBy" => "gbif-collections",
+           "modifiedBy" => "sofiawyler",
+           "created" => "2022-01-12T14 =>47 =>17.475+00 =>00",
+           "modified" => "2024-04-19T06 =>34 =>19.300+00 =>00"
+         }
+       ],
+       "machineTags" => [],
+       "alternativeCodes" => [
+         %{
+           "code" => "Z+ZT",
+           "description" => "Alternative code"
+         },
+         %{
+           "code" => "Z",
+           "description" => "Alternative code"
+         }
+       ],
+       "comments" => [],
+       "occurrenceMappings" => [],
+       "masterSource" => "GRSCICOLL",
+       "displayOnNHCPortal" => true,
+       "occurrenceCount" => 374_492,
+       "typeSpecimenCount" => 286
+     }}
+  end
+
   @spec get_grscicoll_collection_attributes(String.t(), list()) :: Api.response_body()
   def get_grscicoll_collection_attributes(@other_grscicoll_reference, _attributes) do
     {:ok,
