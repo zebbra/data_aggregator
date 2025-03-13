@@ -8,7 +8,6 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
   alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
-  alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
 
   @spec create(Collection.t(), Publication.t(), String.t()) :: {:ok, String.t()} | {:error, any()}
   def create(collection, publication, path) do
@@ -18,7 +17,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
            RestAPI.get_one_collection(collection.grscicoll_reference) do
       path = path <> "/eml.xml"
 
-      xml_data = build(grscicoll_data, publication)
+      xml_data = build(grscicoll_data, publication, collection)
 
       create_eml_file(xml_data, path)
 
@@ -38,7 +37,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
     file
   end
 
-  defp build(meta_data, publication) do
+  defp build(meta_data, publication, collection) do
     {:"eml:eml",
      [
        "xmlns:eml": "eml://ecoinformatics.org/eml-2.1.1",
@@ -49,13 +48,15 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
        scope: "system"
      ],
      [
-       dataset(meta_data, publication)
+       dataset(meta_data, publication, collection)
      ]}
     |> document()
     |> generate(format: :none)
   end
 
-  defp dataset(meta_data, %Publication{center: center, license: license}) do
+  defp dataset(meta_data, %Publication{license: license}, %Collection{
+         grscicoll_institution_key: grscicoll_institution_key
+       }) do
     element(
       :dataset,
       [
@@ -77,7 +78,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
               element(
                 :url,
                 %{function: "information"},
-                get_website(center)
+                get_website(grscicoll_institution_key)
               )
             ]
           ],
@@ -88,10 +89,13 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
     )
   end
 
-  defp get_website(center) do
-    case InfospeciesCenters.get_website(center) do
-      {:ok, website} -> website
-      {:error, _} -> "n/a"
+  defp get_website(institution_key) do
+    case RestAPI.get_one_institution(institution_key) do
+      {:ok, institution} ->
+        institution["homepage"]
+
+      {:error, _} ->
+        "n/a"
     end
   end
 
