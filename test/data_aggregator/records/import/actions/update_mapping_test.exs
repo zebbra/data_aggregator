@@ -79,7 +79,8 @@ defmodule DataAggregator.Records.Import.Actions.UpdateMappingTest do
 
       mappings = [
         %{name: "Age", mapped_to: ""},
-        %{name: "Collecteur", mapped_to: "coll"}
+        %{name: "Collecteur", mapped_to: "coll"},
+        %{name: "eve_mosses_identified", mapped_to: "eve_mosses_identified"}
       ]
 
       {:ok, import} = Import.update_mapping(import, mappings)
