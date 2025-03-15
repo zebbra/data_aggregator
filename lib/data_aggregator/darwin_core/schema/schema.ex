@@ -2280,8 +2280,6 @@ defmodule DataAggregator.DarwinCore.Schema do
   @spec dwc_transformers() :: map()
   def dwc_transformers do
     %{
-      loc_swiss_coordinates_lv03_x: &format_float/1,
-      loc_swiss_coordinates_lv03_y: &format_float/1,
       loc_decimal_latitude: &format_coordinate/1,
       loc_decimal_longitude: &format_coordinate/1,
       loc_coordinate_uncertainty_in_meters: &format_float/1,

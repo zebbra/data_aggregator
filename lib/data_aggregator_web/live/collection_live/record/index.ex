@@ -27,7 +27,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @load [:encoded_record, :mids_level, :iucn_redlist]
   @async_keys [:meta, :results]
-  @coordinate_attribute_names ~w(swissCoordinatesLv03_x swissCoordinatesLv03_y swissCoordinatesLv95_E swissCoordinatesLv95_N)
+  @coordinate_attribute_names ~w(swissCoordinatesLv03_E swissCoordinatesLv03_N swissCoordinatesLv95_E swissCoordinatesLv95_N)
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
