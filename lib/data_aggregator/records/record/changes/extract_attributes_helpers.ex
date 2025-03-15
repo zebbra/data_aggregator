@@ -1,5 +1,7 @@
 defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
-  @moduledoc false
+  @moduledoc """
+  This module contains helper functions to make import data ready to be stored in the database
+  """
   alias DataAggregator.DarwinCore.Schema
 
   @attributes_to_convert [:boolean]
@@ -7,6 +9,9 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
                            Schema.attributes_of_type(type)
                          end)
                          |> List.flatten()
+
+  @spec extract_attributes(map()) :: {map(), map()}
+  def extract_attributes(_)
 
   def extract_attributes(nil), do: {%{}, nil}
 
