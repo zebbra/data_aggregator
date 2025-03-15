@@ -4,6 +4,7 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
   """
   alias DataAggregator.DarwinCore.Schema
 
+  # add here the (db) schema types that need to be converted
   @attributes_to_convert [:boolean]
                          |> Enum.map(fn type ->
                            Schema.attributes_of_type(type)
@@ -135,6 +136,8 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
 
   @doc """
   Converts a value to the correct type, according to the db schema (/Users/clau/projects/data_aggregator/lib/data_aggregator/darwin_core/schema/schema.ex)
+
+  implement your `maype_convert_value({value, :your_type})` function, to convert imported values of a certain type the way you want
 
     ## Examples
 
