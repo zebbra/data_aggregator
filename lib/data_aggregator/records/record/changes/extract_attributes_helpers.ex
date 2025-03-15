@@ -32,6 +32,8 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
         iex> to_map_and_stringify_keys(list)
         %{}
   """
+  @spec to_map_and_stringify_keys(Keyword.t()) :: map
+  def to_map_and_stringify_keys(_)
   def to_map_and_stringify_keys(nil), do: %{}
 
   def to_map_and_stringify_keys(list) do
@@ -56,7 +58,13 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
 
         iex> convert_attr_to_atom({"bluu", nil})
         {:bluu, nil}
+
+        iex> convert_attr_to_atom({:bluu, nil})
+        {:bluu, nil}
   """
+  @spec convert_attr_to_atom({atom() | String.t(), any()}) :: {atom(), any()}
+  def convert_attr_to_atom(_)
+
   def convert_attr_to_atom({attr, value}) when is_binary(attr) do
     attr = String.to_atom(attr)
 
@@ -106,6 +114,9 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
       iex> maybe_convert_values({:eve_mosses_identified, nil})
       {:eve_mosses_identified, nil}
   """
+  @spec maybe_convert_values({atom(), any()}) :: {atom(), any()}
+  def maybe_convert_values(_)
+
   def maybe_convert_values({import_attr, nil}), do: {import_attr, nil}
 
   def maybe_convert_values({import_attr, value}) do
@@ -156,6 +167,9 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
         nil
 
   """
+  @spec maybe_convert_value({any(), any()}) :: any()
+  def maybe_convert_value(_)
+
   def maybe_convert_value({nil, _}), do: nil
 
   # Convert value to string if it is not a binary
