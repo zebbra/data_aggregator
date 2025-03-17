@@ -155,44 +155,49 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
     Check if the matchType is correct
 
     ## Examples
+        iex> body = %{status: "ACCEPTED", matchType: "NONE"}
+        iex> correct_match_type(body)
+        :ok
 
-        body = %{status: "ACCEPTED", matchType: "NONE}
-        alias DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy
-        assert GbifTaxonomyStrategy.correct_match_type(body) == :ok
+        iex> body = %{taxonomicStatus: "ACCEPTED", matchType: "SOMETHING"}
+        iex> correct_match_type(body)
+        :ok
 
-        body = %{taxonomicStatus: "ACCEPTED"}
-        assert GbifTaxonomyStrategy.correct_match_type(body) == :ok
+        iex> body = %{matchType: "EXACT"}
+        iex> correct_match_type(body)
+        :ok
 
-        body = %{matchType: "EXACT"}
-        assert GbifTaxonomyStrategy.correct_match_type(body) == :ok
+        iex> body = %{matchType: "FUZZY"}
+        iex> correct_match_type(body)
+        :ok
 
-        body = %{matchType: "FUZZY"}
-        assert GbifTaxonomyStrategy.correct_match_type(body) == :ok
+        iex> body = %{matchType: "something"}
+        iex> correct_match_type(body)
+        {:error, "For this species name we could not find a matching taxonomy. matchType \"something\" is not accepted"}
 
-        body = %{matchType: "something"}
-        assert GbifTaxonomyStrategy.correct_match_type(body) == {:error, "For this species name we could not find a matching taxonomy. matchType \"something\" is not accepted"}
+        iex> body = %{matchType: "HIGHERRANK", kingdom: "Animalia"}
+        iex> correct_match_type(body)
+        {:error, "For this species name we could not find a matching taxonomy. Only results in HIGHERRANK and Scientific Name \"Animalia\" was found "}
 
-        body = %{matchType: "HIGHERRANK", kingdom: "Animalia"}
-        assert GbifTaxonomyStrategy.correct_match_type(body) == {:error, "For this species name we could not find a matching taxonomy. Only results in HIGHERRANK and Scientific Name 'Animalia' was found "}
+        iex> body = %{matchType: "NONE"}
+        iex> correct_match_type(body)
+        {:error, "For this species name we could not find a matching taxonomy. matchType \"NONE\" is not accepted"}
 
-        body = %{matchType: "NONE"}
-        assert GbifTaxonomyStrategy.correct_match_type(body) = {:error, "For this species name we could not find a matching taxonomy. matchType NONE is not accepted"}
-
-        body = %{matchType: "blabla"}
-        assert GbifTaxonomyStrategy.correct_match_type(body) == {:error, "For this species name we could not find a matching taxonomy. matchType \"blabla\" is not accepted"}
-
-
+        iex> body = %{matchType: "blabla"}
+        iex> correct_match_type(body)
+        {:error, "For this species name we could not find a matching taxonomy. matchType \"blabla\" is not accepted"}
 
   """
   @spec correct_match_type(map()) :: :ok | {:error, String.t()}
-  def correct_match_type(body) when body.status == ~c"ACCEPTED", do: :ok
-  def correct_match_type(body) when body.taxonomicStatus == ~c"ACCEPTED", do: :ok
+  def correct_match_type(body) when body.status == "ACCEPTED", do: :ok
+  def correct_match_type(body) when body.taxonomicStatus == "ACCEPTED", do: :ok
   def correct_match_type(body) when body.matchType == "EXACT", do: :ok
   def correct_match_type(body) when body.matchType == "FUZZY", do: :ok
 
   def correct_match_type(body) when body.matchType == "HIGHERRANK",
-    do: {:error, "For this species name we could not find a matching
-         taxonomy. Only results in HIGHERRANK and Scientific Name '#{inspect(body.kingdom)}' was found "}
+    do:
+      {:error,
+       "For this species name we could not find a matching taxonomy. Only results in HIGHERRANK and Scientific Name #{inspect(body.kingdom)} was found "}
 
   def correct_match_type(body),
     do:

@@ -48,7 +48,11 @@ defmodule DataAggregator.Records.DataFrame do
 
   def from_csv(file, opts \\ []) do
     with {:ok, delimiter} <- detect_csv_delimiter(file) do
-      opts = @csv_read_opts |> Keyword.merge(opts) |> Keyword.put(:delimiter, delimiter)
+      opts =
+        @csv_read_opts
+        |> Keyword.merge(opts)
+        |> Keyword.put(:delimiter, delimiter)
+
       Logger.debug("Reading CSV file #{inspect(file)} with options: #{inspect(opts)}")
 
       Explorer.DataFrame.from_csv(file, opts)

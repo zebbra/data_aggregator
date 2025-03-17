@@ -12,7 +12,8 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
   @valid_mapping [
     %{name: "Scientific Name", mapped_to: "tax_scientific_name"},
     %{name: "Numéro scientifique GBIF", mapped_to: "mte_catalog_number"},
-    %{name: "event_date", mapped_to: "eve_event_date"}
+    %{name: "event_date", mapped_to: "eve_event_date"},
+    %{name: "eve_mosses_identified", mapped_to: "eve_mosses_identified"}
   ]
 
   setup do
