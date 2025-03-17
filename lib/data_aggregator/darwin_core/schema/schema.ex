@@ -2071,6 +2071,7 @@ defmodule DataAggregator.DarwinCore.Schema do
   Returns a map to define which fields are not to be taken from the record, but collection
   The key corresponds to the field in the record, the value to the field in the collection
   """
+  @spec data_from_collection() :: map()
   def data_from_collection,
     do: %{
       oth_gbif_doi: :gbif_doi,
@@ -2085,6 +2086,7 @@ defmodule DataAggregator.DarwinCore.Schema do
   Returns a map of fields that are not mappable during the import process.
   Key are the prefixed attributes, values are the original attributes.
   """
+  @spec not_mappable_fields() :: map()
   def not_mappable_fields do
     %{
       oth_gbif_doi: :gbif_doi,
@@ -2106,6 +2108,7 @@ defmodule DataAggregator.DarwinCore.Schema do
   @doc """
   Returns the category label for a category description
   """
+  @spec category_label_by_description(String.t()) :: String.t() | nil
   def category_label_by_description(description) do
     case Enum.find(@categories, fn category -> category.description == description end) do
       nil -> nil
@@ -2132,6 +2135,7 @@ defmodule DataAggregator.DarwinCore.Schema do
   @doc """
   Returns a list of all mandatory (allow_nil == false) attribute names prefixed with their category name.
   """
+  @spec mandatory_prefixed_attribute_names() :: [atom()]
   def mandatory_prefixed_attribute_names do
     Enum.map(mandatory_prefixed_attributes(), & &1.name)
   end
@@ -2164,6 +2168,7 @@ defmodule DataAggregator.DarwinCore.Schema do
   Returns the dwc_field name for a prefixed attribute name if found, otherwise
   it returns the attribute name.
   """
+  @spec dwc_field_from_prefixed_attribute_name(atom()) :: atom()
   def dwc_field_from_prefixed_attribute_name(name) when is_binary(name) do
     dwc_field =
       List.keyfind(prefixed_attribute_names_and_dwc_fields(), String.to_atom(name), 0)
@@ -2189,6 +2194,7 @@ defmodule DataAggregator.DarwinCore.Schema do
   @doc """
   Returns the attributes as options for a select input grouped by category.
   """
+  @spec attribute_options(Keyword.t()) :: [{String.t(), [{String.t(), String.t()}]}]
   def attribute_options(opts \\ []) do
     {required, _opts} = Keyword.pop(opts, :required?, true)
 
@@ -2326,5 +2332,12 @@ defmodule DataAggregator.DarwinCore.Schema do
 
   def known_attribute?(attr) do
     Enum.member?(prefixed_attribute_names(), attr)
+  end
+
+  @spec attributes_of_type(atom()) :: [{atom(), atom()}]
+  def attributes_of_type(type) do
+    prefixed_attributes()
+    |> Enum.filter(fn attribute -> attribute.type == type end)
+    |> Enum.map(fn attribute -> {attribute.name, type} end)
   end
 end
