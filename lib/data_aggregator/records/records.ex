@@ -25,8 +25,8 @@ defmodule DataAggregator.Records do
     encode_batch_size: 1000,
     publication_verification_timeout: :timer.minutes(5),
     execute_async: true,
-    image_upload_timeout: :timer.minutes(60),
-    extraction_timeout: :timer.minutes(60),
+    image_upload_timeout: :timer.hours(12),
+    extraction_timeout: :timer.hours(12),
     mapping_timeout: :timer.hours(12)
   ]
 
