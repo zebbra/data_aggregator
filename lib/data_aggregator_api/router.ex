@@ -3,6 +3,8 @@ defmodule DataAggregatorApi.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+
+    plug :get_actor_from_token
   end
 
   scope "/json" do
@@ -19,5 +21,17 @@ defmodule DataAggregatorApi.Router do
             spec_url: "/api/json/open_api"
 
     forward "/", DataAggregatorApi.JsonApi.Router
+  end
+
+  def get_actor_from_token(conn, _opts) do
+    with ["" <> token] <- get_req_header(conn, "api_key"),
+         {:ok, %{"sub" => sub}, resource} <-
+           AshAuthentication.Jwt.verify(token, :data_aggregator),
+         {:ok, user} <-
+           AshAuthentication.subject_to_user(sub, resource) do
+      Ash.PlugHelpers.set_actor(conn, user)
+    else
+      _ -> conn
+    end
   end
 end

@@ -1,6 +1,6 @@
 defmodule DataAggregator.Accounts do
   @moduledoc false
-  use Ash.Domain
+  use Ash.Domain, extensions: [AshJsonApi.Domain]
 
   authorization do
     authorize :when_requested
@@ -9,6 +9,10 @@ defmodule DataAggregator.Accounts do
   resources do
     resource DataAggregator.Accounts.User
     resource DataAggregator.Accounts.Token
+  end
+
+  json_api do
+    prefix "/api/json"
   end
 
   @default_env [

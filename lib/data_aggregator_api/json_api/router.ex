@@ -5,7 +5,8 @@ defmodule DataAggregatorApi.JsonApi.Router do
     # The api modules you want to serve
     domains: [
       DataAggregator.Records,
-      DataAggregator.Taxonomy
+      DataAggregator.Taxonomy,
+      DataAggregator.Accounts
     ],
     # optionally a json_schema route
     json_schema: "/json_schema",
