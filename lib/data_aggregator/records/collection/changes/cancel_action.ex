@@ -17,6 +17,7 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
 
   alias Ash.Changeset
   alias DataAggregator.Jobs.Job
+  alias DataAggregator.Records
   alias DataAggregator.Records.Export
   alias DataAggregator.Records.ImageUpload
   alias DataAggregator.Records.Import
@@ -60,7 +61,10 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
         )
     end
   rescue
-    _ -> Changeset.add_error(changeset, "An error occured while cancelling the action")
+    error ->
+      Logger.error(error)
+
+      Changeset.add_error(changeset, "An error occured while cancelling the action")
   end
 
   defp cancel_import(%Changeset{data: %{id: collection_id}} = changeset) do
@@ -116,15 +120,29 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     cancel_all_jobs(Job.query_to_encodings_by_collection(collection_id))
 
     # Update all records which are in encoding / queued state to failed
-    Record.query_to_encoding()
-    |> Ash.Query.set_tenant(collection_id)
+    set_encoding_to_failed(collection_id)
+
+    changeset
+  end
+
+  defp set_encoding_to_failed(tenant) do
+    max_concurrency = Records.encode_max_concurrency()
+    batch_size = ceil(Records.encode_batch_size() / max_concurrency)
+
+    Record
+    |> Ash.Query.filter(state in [:encoding, :queued])
+    |> Ash.Query.set_tenant(tenant)
+    |> Ash.stream!()
     |> Ash.bulk_update!(
       :update,
       %{state: :failed},
-      tenant: collection_id
+      tenant: tenant,
+      domain: Records,
+      resource: Record,
+      max_concurrency: max_concurrency,
+      batch_size: batch_size,
+      return_records?: false
     )
-
-    changeset
   end
 
   defp cancel_publication(%Changeset{data: %{id: collection_id}} = changeset) do
