@@ -6,7 +6,7 @@ defmodule DataAggregator.Records.ImageUpload do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Records,
-    extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine],
+    extensions: [AshUUID, AshStateMachine],
     notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
@@ -286,18 +286,6 @@ defmodule DataAggregator.Records.ImageUpload do
 
     references do
       reference :collection, on_delete: :delete, on_update: :update, index?: true
-    end
-  end
-
-  json_api do
-    type "image_upload"
-
-    routes do
-      base "/image_uploads"
-
-      get :read
-      index :read
-      post :create_from_path
     end
   end
 

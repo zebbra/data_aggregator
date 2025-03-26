@@ -236,10 +236,10 @@ defmodule DataAggregator.Records.Export do
   end
 
   json_api do
-    type "export"
+    type "exports"
 
     routes do
-      base "/exports"
+      base "/datasets/:collection_id/exports"
 
       get :read
       index :read

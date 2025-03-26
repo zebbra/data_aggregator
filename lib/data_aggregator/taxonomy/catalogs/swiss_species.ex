@@ -24,9 +24,6 @@ defmodule DataAggregator.Taxonomy.Catalogs.SwissSpecies do
     timestamps public?: true, writable?: false
   end
 
-  relationships do
-  end
-
   actions do
     default_accept :*
     defaults [:create, :read, :update, :destroy]

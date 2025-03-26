@@ -136,14 +136,14 @@ defmodule DataAggregator.Records.ValidatedRecord do
   end
 
   json_api do
-    type "validated_record"
-
-    primary_key do
-      keys [:id, :collection_id]
-    end
+    type "validated_records"
 
     routes do
-      base "/validated_records"
+      base "/datasets/:collection_id/validated_records"
+
+      primary_key do
+        keys [:id]
+      end
 
       get :read
       index :read
