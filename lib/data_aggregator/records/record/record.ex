@@ -169,6 +169,11 @@ defmodule DataAggregator.Records.Record do
 
     calculate :encoded_tsvector, AshPostgres.Tsvector, expr(encoded_record.tsv)
 
+    calculate :eve_event_date_presence,
+              :boolean,
+              expr(not is_nil(encoded_record.eve_event_date)),
+              public?: true
+
     calculate :not_encoded,
               :boolean,
               expr(

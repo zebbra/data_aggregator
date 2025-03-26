@@ -216,12 +216,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   @impl true
   def filter_form_component(%{component: %{source: %Predicate{field: :tax_family}}} = assigns) do
     ~H"""
-    <.checkbox_group_filter
+    <.combobox_group_filter
       component={@component}
       title={~t"Family"m}
       target={@target}
       options={@distinct_options[:tax_family]}
       legend_size="md"
+      multiple
+      data-portal="filters_modal"
+      identificator="filter_tax_family"
+      clear_event="filter_tax_family:reset"
     />
     """
   end
@@ -286,7 +290,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
         key="other"
         target={@target}
         open={open_collapsible?(@collapsible_state, "other")}
-        border_bottom={false}
+        border_bottom={true}
       >
         <.inputs_for :let={component} field={@component[:components]}>
           <.filter_form_component
@@ -299,6 +303,67 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
         </.inputs_for>
       </.collapsible_group>
     </div>
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %FilterForm{key: "updated_at_range"}}} = assigns) do
+    ~H"""
+    <.date_range
+      component={@component}
+      title={~t"Last modified"m}
+      description={~t"Search your records by last modification date"m}
+      min_date={Cldr.Calendar.date_from_tuple({1800, 1, 1})}
+      max_date={Cldr.Calendar.next(Date.utc_today(), :day)}
+      presets={[
+        months: ~t"Last Month"m,
+        years: ~t"Last Year"m,
+        century: ~t"Last Century"m
+      ]}
+      target={@target}
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %FilterForm{key: "year_range"}}} = assigns) do
+    ~H"""
+    <.integer_range
+      component={@component}
+      title={~t"Year of event"m}
+      description={
+        ~t"The four-digit year in which the dwc:Event occurred, according to the Common Era Calendar"m
+      }
+      min_int={1600}
+      max_int={Cldr.Calendar.next(Date.utc_today(), :day).year}
+      target={@target}
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :eve_event_date_presence}}} = assigns) do
+    ~H"""
+    <.radio_group_filter
+      component={@component}
+      title={~t"Event Date"m}
+      description={~t"Look for species with or without and event date"m}
+      target={@target}
+      options={[
+        [key: ~t"Any"m, value: ""],
+        [key: ~t"Present"m, value: "true"],
+        [key: ~t"Absent"m, value: "false"]
+      ]}
+      option_descriptions={
+        %{
+          "true" => ~t"Species for which an event date is present"m,
+          "false" => ~t"Species without an event date"m
+        }
+      }
+      legend_size="md"
+    />
     """
   end
 
@@ -429,6 +494,31 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     |> FilterForm.add_group(return_id?: true, key: "other", operator: :or)
     |> then(fn {form, other_group_id} ->
       form
+      |> FilterForm.add_group(return_id?: true, key: "updated_at_range", to: other_group_id)
+      |> then(fn {form, updated_at_range_group_id} ->
+        form
+        |> FilterForm.add_predicate(:updated_at, :greater_than_or_equal, "",
+          to: updated_at_range_group_id,
+          path: "encoded_record"
+        )
+        |> FilterForm.add_predicate(:updated_at, :less_than_or_equal, "",
+          to: updated_at_range_group_id,
+          path: "encoded_record"
+        )
+      end)
+      |> FilterForm.add_group(return_id?: true, key: "year_range", to: other_group_id)
+      |> then(fn {form, year_range_group_id} ->
+        form
+        |> FilterForm.add_predicate(:eve_year, :greater_than_or_equal, "",
+          to: year_range_group_id,
+          path: "encoded_record"
+        )
+        |> FilterForm.add_predicate(:eve_year, :less_than_or_equal, "",
+          to: year_range_group_id,
+          path: "encoded_record"
+        )
+      end)
+      |> FilterForm.add_predicate(:eve_event_date_presence, :eq, "", to: other_group_id)
       |> FilterForm.add_predicate(:mte_recorded_by, :contains, nil,
         to: other_group_id,
         path: "encoded_record"
@@ -465,6 +555,25 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   # end
 
   @impl true
+  def handle_preset(filter_form, "updated_at_range", preset, socket) do
+    filter_form =
+      FilterForm.update_group(filter_form, "updated_at_range", fn predicate ->
+        case [predicate.field, predicate.operator] do
+          [:updated_at, :greater_than_or_equal] ->
+            %{predicate | value: shift_date(preset)}
+
+          [:updated_at, :less_than_or_equal] ->
+            %{predicate | value: Date.add(Date.utc_today(), 1)}
+
+          _ ->
+            predicate
+        end
+      end)
+
+    assign_and_update(socket, filter_form)
+  end
+
+  @impl true
   def handle_preset(_filter_form, _key, _preset, socket) do
     {:noreply, socket}
   end
@@ -492,6 +601,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       |> assign(:error, ~t"Something went wrong, please try again.")
   end
 
+  @impl true
+  def handle_event("filter_tax_family:reset", %{"predicate-id" => predicate_id}, socket) do
+    filter_form = socket.assigns.filter_form
+
+    filter_form =
+      FilterForm.update_predicate(filter_form, predicate_id, fn predicate ->
+        %{predicate | value: ""}
+      end)
+
+    # force combobox to reset
+    socket =
+      push_event(socket, "combobox:reset", %{name: "filter_tax_family"})
+
+    assign_and_update(socket, filter_form)
+  end
+
   defp assign_collapsible_state(socket) do
     active_filter_form_fields = FilterForm.active_filter_form_fields(socket.assigns.meta)
 
@@ -506,7 +631,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
 
     active_others =
       Enum.any?(
-        ~w[mte_recorded_by idf_type_status mts_material_sample_type mte_preparations],
+        ~w[mte_recorded_by idf_type_status mts_material_sample_type mte_preparations updated_at eve_year eve_event_date_presence],
         &(&1 in active_filter_form_fields)
       )
 

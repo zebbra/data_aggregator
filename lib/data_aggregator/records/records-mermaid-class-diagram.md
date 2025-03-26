@@ -58,6 +58,10 @@ classDiagram
         Map ext_chronometric
         Map ext_assertions
         Map ext_amplification
+        Map oth_dynamic_properties
+        String oth_type_designated_by
+        String oth_measurement_value
+        String oth_measurement_unit
         UtcDatetime oth_swiss_species_registered_at
         Boolean oth_swiss_species_registered
         String oth_swiss_species_center
@@ -103,6 +107,7 @@ classDiagram
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
+        String occ_caste
         String occ_occurrence_id
         String org_organism_remarks
         String org_organism_scope
@@ -272,6 +277,7 @@ classDiagram
         String tax_scientific_name_id
         Integer tax_identifier
         Integer tax_taxon_id
+        String idf_typified_name
         String idf_last_verified_by_id
         String idf_last_verified_by
         String idf_verbatim_identification
@@ -554,6 +560,10 @@ classDiagram
         Map ext_chronometric
         Map ext_assertions
         Map ext_amplification
+        Map oth_dynamic_properties
+        String oth_type_designated_by
+        String oth_measurement_value
+        String oth_measurement_unit
         UtcDatetime oth_swiss_species_registered_at
         Boolean oth_swiss_species_registered
         String oth_swiss_species_center
@@ -599,6 +609,7 @@ classDiagram
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
+        String occ_caste
         String occ_occurrence_id
         String org_organism_remarks
         String org_organism_scope
@@ -768,6 +779,7 @@ classDiagram
         String tax_scientific_name_id
         Integer tax_identifier
         Integer tax_taxon_id
+        String idf_typified_name
         String idf_last_verified_by_id
         String idf_last_verified_by
         String idf_verbatim_identification
@@ -855,6 +867,10 @@ classDiagram
         Map ext_chronometric
         Map ext_assertions
         Map ext_amplification
+        Map oth_dynamic_properties
+        String oth_type_designated_by
+        String oth_measurement_value
+        String oth_measurement_unit
         UtcDatetime oth_swiss_species_registered_at
         Boolean oth_swiss_species_registered
         String oth_swiss_species_center
@@ -900,6 +916,7 @@ classDiagram
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
+        String occ_caste
         String occ_occurrence_id
         String org_organism_remarks
         String org_organism_scope
@@ -1069,6 +1086,7 @@ classDiagram
         String tax_scientific_name_id
         Integer tax_identifier
         Integer tax_taxon_id
+        String idf_typified_name
         String idf_last_verified_by_id
         String idf_last_verified_by
         String idf_verbatim_identification
@@ -1150,6 +1168,7 @@ classDiagram
         Tsquery tsquery
         Boolean iucn_redlist
         Integer mids_level
+        Boolean eve_event_date_presence
         Collection collection
         Import[] imports
         Image[] images
@@ -1266,6 +1285,10 @@ classDiagram
         Map ext_chronometric
         Map ext_assertions
         Map ext_amplification
+        Map oth_dynamic_properties
+        String oth_type_designated_by
+        String oth_measurement_value
+        String oth_measurement_unit
         UtcDatetime oth_swiss_species_registered_at
         Boolean oth_swiss_species_registered
         String oth_swiss_species_center
@@ -1311,6 +1334,7 @@ classDiagram
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
+        String occ_caste
         String occ_occurrence_id
         String org_organism_remarks
         String org_organism_scope
@@ -1480,6 +1504,7 @@ classDiagram
         String tax_scientific_name_id
         Integer tax_identifier
         Integer tax_taxon_id
+        String idf_typified_name
         String idf_last_verified_by_id
         String idf_last_verified_by
         String idf_verbatim_identification

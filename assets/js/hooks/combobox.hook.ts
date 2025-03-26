@@ -26,7 +26,17 @@ class ComboboxHook extends Hook {
 
     this.handleEvent("combobox:reset", (payload) => {
       if (!this.tomSelect) return;
-      if (!this.el.querySelector(`input[name='${payload.name}']`)) return;
+
+      const identificator = (
+        this.el.querySelector("input[type='hidden']") as HTMLElement
+      )?.dataset.identificator;
+
+      if (
+        identificator !== payload.name &&
+        !this.el.querySelector(`input[name='${payload.name}']`)
+      ) {
+        return;
+      }
 
       const value = payload.value === null ? "" : payload.value;
       if (this.tomSelect.getValue() === value) return;
@@ -41,7 +51,10 @@ class ComboboxHook extends Hook {
 
     // This might be the case when the combobox is inside a form and the form structure
     // changes (for example for embedded resources which are added or removed dynamically)
-    if (input.getAttribute("name") !== selectEl.getAttribute("name")) {
+    if (
+      input.getAttribute("name") !== selectEl.getAttribute("name") &&
+      `${input.getAttribute("name")}[]` !== selectEl.getAttribute("name")
+    ) {
       selectEl.setAttribute("name", input.getAttribute("name")!);
     }
 

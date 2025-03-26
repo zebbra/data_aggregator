@@ -166,6 +166,13 @@ defmodule DataAggregatorWeb.Components.Combobox do
       It will merge the options with the existing ones.
     """
 
+  attr :identificator, :string,
+    default: nil,
+    doc: """
+    The identificator of the input. Use this approach if the id / name are generated dynamically and you need to
+    pass them to the input
+    """
+
   attr :rest, :global,
     include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
                 multiple pattern placeholder readonly required rows size step aria-invalid aria-describedby on-change),
@@ -207,6 +214,7 @@ defmodule DataAggregatorWeb.Components.Combobox do
       <input
         type="hidden"
         name={@name}
+        data-identificator={@identificator}
         value={Phoenix.HTML.Form.normalize_value("hidden", "")}
         readonly
         hidden
@@ -240,7 +248,7 @@ defmodule DataAggregatorWeb.Components.Combobox do
         else: assigns.name
 
     # If we have multiple options and the combobox is wrapped in a form field or input, then we need to
-    # remove the `[]` form the name (which was added by the .field / .input component)
+    # remove the `[]` from the name (which was added by the .field / .input component)
     name =
       if assigns.multiple && String.ends_with?(name, "[]"),
         do: String.replace_suffix(name, "[]", ""),

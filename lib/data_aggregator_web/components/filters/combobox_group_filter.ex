@@ -5,7 +5,7 @@ defmodule DataAggregatorWeb.Filters.ComboboxGroup do
   ## Example
 
   ```heex
-  <.combobox_group
+  <.combobox_group_filter
     component={@component}
     title={~t"Continent"m}
     target={@target}
@@ -55,19 +55,28 @@ defmodule DataAggregatorWeb.Filters.ComboboxGroup do
     default: false,
     doc: "Whether this is a top-level filter (for spacing and borders)"
 
+  attr :clear_event, :string,
+    default: "filter_predicate:reset",
+    doc: "The event to trigger when clearing the filter"
+
   attr :rest, :global,
     include: ~w(class prompt placeholder multiple create
                 max_items max_options tom_select_plugins remote_options_event_name
                 remove_button_title remove_button dropup no_results_text
-                tom_select_options tom_select_options_global_variable),
+                tom_select_options tom_select_options_global_variable identificator),
     doc: "Additional attributes for the combobox (see `Combobox` component for more details)"
 
-  def combobox_group(%{component: %{source: %Predicate{}}} = assigns) do
+  def combobox_group_filter(%{component: %{source: %Predicate{}}} = assigns) do
     ~H"""
     <.fieldset class={@top_level && "border-black-white/10 border-b py-8"}>
       <.section_heading as="legend" size={@legend_size}>
         {@title}
-        <.clear_link :if={present?(@component.source)} component={@component} target={@target} />
+        <.clear_link
+          :if={present?(@component.source)}
+          component={@component}
+          target={@target}
+          event={@clear_event}
+        />
         <:subtitle :if={@description}>
           {@description}
         </:subtitle>
