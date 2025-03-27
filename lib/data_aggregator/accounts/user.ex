@@ -41,7 +41,7 @@ defmodule DataAggregator.Accounts.User do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "usr"
+    uuid_attribute :id, prefix: "usr", public?: true
 
     attribute :email, :ci_string do
       allow_nil? false
@@ -66,6 +66,7 @@ defmodule DataAggregator.Accounts.User do
   end
 
   actions do
+    default_accept :*
     defaults [:read, :destroy]
 
     update :update do
@@ -211,6 +212,12 @@ defmodule DataAggregator.Accounts.User do
           %{token: user.__metadata__.token}
         end
       end
+
+      get :read
+      index :read
+      patch :update
+      post :register_with_password
+      delete :destroy
     end
   end
 end
