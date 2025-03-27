@@ -90,7 +90,7 @@ defmodule DataAggregator.Records.Import.Changes.ValidateRows do
       chunk
       |> Task.async_stream(&validate_import_row(import, &1),
         max_concurrency: max_concurrency,
-        timeout: :timer.seconds(30)
+        timeout: to_timeout(second: 30)
       )
       |> Enum.reduce({0, 0, []}, fn
         {:ok, []}, {valid, invalid, all_errors} -> {valid + 1, invalid, all_errors}

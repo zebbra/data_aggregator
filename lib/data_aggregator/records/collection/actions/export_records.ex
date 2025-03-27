@@ -56,7 +56,7 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
             Schema.dwc_transformers()
           )
         end,
-        timeout: :timer.seconds(30)
+        timeout: to_timeout(second: 30)
       )
       |> Stream.map(fn {:ok, record} -> record end)
       |> Counter.count_each(counter)

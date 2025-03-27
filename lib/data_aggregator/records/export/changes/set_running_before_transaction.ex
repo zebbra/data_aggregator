@@ -18,7 +18,7 @@ defmodule DataAggregator.Records.Export.Changes.SetRunningBeforeTransaction do
   defp set_running(%Changeset{data: export} = changeset) do
     case Export.set_running(export) do
       {:ok, export} ->
-        %Changeset{changeset | data: export}
+        %{changeset | data: export}
 
       {:error, reason} ->
         Changeset.add_error(changeset, reason)

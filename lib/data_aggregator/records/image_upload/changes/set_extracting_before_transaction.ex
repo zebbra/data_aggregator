@@ -18,7 +18,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.SetExtractingBeforeTransact
   defp set_extracting(%Changeset{data: image_upload} = changeset) do
     case ImageUpload.set_extracting(image_upload) do
       {:ok, image_upload} ->
-        %Changeset{changeset | data: image_upload}
+        %{changeset | data: image_upload}
 
       {:error, reason} ->
         Changeset.add_error(changeset, reason)

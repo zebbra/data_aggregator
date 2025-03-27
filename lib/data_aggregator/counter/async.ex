@@ -8,7 +8,7 @@ defmodule DataAggregator.Counter.Async do
 
   require Logger
 
-  @default_interval :timer.seconds(1)
+  @default_interval to_timeout(second: 1)
 
   ## Client API
 

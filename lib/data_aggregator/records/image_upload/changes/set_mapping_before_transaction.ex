@@ -18,7 +18,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.SetMappingBeforeTransaction
   defp set_mapping(%Changeset{data: image_upload} = changeset) do
     case ImageUpload.set_mapping(image_upload) do
       {:ok, image_upload} ->
-        %Changeset{changeset | data: image_upload}
+        %{changeset | data: image_upload}
 
       {:error, reason} ->
         Changeset.add_error(changeset, reason)
