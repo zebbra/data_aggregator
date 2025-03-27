@@ -86,7 +86,7 @@ defmodule DataAggregator.ExportTest do
       export = export_fixture()
       assert :ok = Export.destroy(export, tenant: export.collection)
 
-      assert_raise Ash.Error.Query.NotFound, fn ->
+      assert_raise Ash.Error.Invalid, fn ->
         Export.get_by_id!(export.id, tenant: export.collection)
       end
     end

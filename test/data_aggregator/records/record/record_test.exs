@@ -9,7 +9,6 @@ defmodule DataAggregator.Records.RecordTest do
   import DataAggregator.RecordsFixtures
 
   alias Ash.Error.Invalid
-  alias Ash.Error.Query.NotFound
   alias DataAggregator.Gbif
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.RecordEncodingResult
@@ -109,7 +108,10 @@ defmodule DataAggregator.Records.RecordTest do
     test "destroy/1 deletes the record" do
       record = record_fixture()
       assert :ok = Record.destroy(record, tenant: record.collection)
-      assert_raise NotFound, fn -> Record.get_by_id!(record.id, tenant: record.collection) end
+
+      assert_raise Invalid, fn ->
+        Record.get_by_id!(record.id, tenant: record.collection)
+      end
     end
 
     test "destroy/1 deletes the record and it's encoded_record" do
@@ -118,11 +120,11 @@ defmodule DataAggregator.Records.RecordTest do
 
       assert :ok = Record.destroy(record, tenant: encoded_record.collection)
 
-      assert_raise NotFound, fn ->
+      assert_raise Invalid, fn ->
         Record.get_by_id!(record.id, tenant: encoded_record.collection)
       end
 
-      assert_raise NotFound, fn ->
+      assert_raise Invalid, fn ->
         EncodedRecord.get_by_id!(encoded_record.id, tenant: encoded_record.collection)
       end
     end
@@ -133,11 +135,11 @@ defmodule DataAggregator.Records.RecordTest do
 
       assert :ok = Record.destroy(record, tenant: record_encoding_result.collection)
 
-      assert_raise NotFound, fn ->
+      assert_raise Invalid, fn ->
         Record.get_by_id!(record.id, tenant: record_encoding_result.collection)
       end
 
-      assert_raise NotFound, fn ->
+      assert_raise Invalid, fn ->
         RecordEncodingResult.get_by_id!(record_encoding_result.id,
           tenant: record_encoding_result.collection
         )
@@ -157,7 +159,7 @@ defmodule DataAggregator.Records.RecordTest do
 
       assert :ok = Record.destroy(record, tenant: record.collection)
 
-      assert_raise NotFound, fn -> Record.get_by_id!(record.id, tenant: record.collection) end
+      assert_raise Invalid, fn -> Record.get_by_id!(record.id, tenant: record.collection) end
 
       # TODO: Test versions are actually deleted, which is not easy because they are
       # deleted at the end of the transaction
@@ -352,7 +354,7 @@ defmodule DataAggregator.Records.RecordTest do
 
       # due to the fact, that mte_catalog_number and tax_scientific_name are required, the record will not be created
       # and therefore mids 0 is not possible at all
-      assert_raise Ash.Error.Invalid, fn ->
+      assert_raise Invalid, fn ->
         record |> update_record_fixtures!(params) |> Ash.load!(:mids_level)
       end
     end

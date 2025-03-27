@@ -61,7 +61,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Subscriptions do
     {:noreply, stream_insert(socket, :results, user, at: 0)}
   rescue
     # Ignore if the user was not found --> it was deleted
-    _error in [Ash.Error.Query.NotFound] -> {:noreply, socket}
+    _error in [Ash.Error.Query.NotFound, Ash.Error.Invalid] -> {:noreply, socket}
   end
 
   defp handle_user_destroyed(%Notification{data: user}, socket) do

@@ -18,7 +18,7 @@ defmodule DataAggregator.Records.Validation.Changes.SetRunningBeforeTransaction 
   defp set_running(%Changeset{data: validation} = changeset) do
     case Validation.set_running(validation) do
       {:ok, validation} ->
-        %Changeset{changeset | data: validation}
+        %{changeset | data: validation}
 
       {:error, reason} ->
         Changeset.add_error(changeset, reason)

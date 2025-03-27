@@ -13,5 +13,6 @@ encoding --> failed: set_encoding_failed
 failed --> imported: set_imported
 failed --> queued: enqueue_encoder
 failed --> encoding: set_encoding
+queued --> failed: set_encoding_failed
 imported --> encoding: set_encoding
 ```

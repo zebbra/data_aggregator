@@ -51,5 +51,5 @@ defmodule DataAggregator.Records.Import.Workers.Importer do
   end
 
   @impl Oban.Worker
-  def timeout(_job), do: Records.import_timeout() + :timer.minutes(1)
+  def timeout(_job), do: Records.import_timeout() + to_timeout(minute: 1)
 end

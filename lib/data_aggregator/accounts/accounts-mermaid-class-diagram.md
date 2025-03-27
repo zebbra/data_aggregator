@@ -19,12 +19,15 @@ classDiagram
     class Token {
         Map extra_data
         String purpose
+        UtcDatetime expires_at
+        String subject
         String jti
         get_token(String token, String jti, String purpose)
         store_token(String token, Map extra_data, String purpose)
         store_confirmation_changes(String token, Map extra_data, String purpose)
         get_confirmation_changes(String jti)
         revoked?(String token, String jti)
+        revoke_all_stored_for_subject(String subject, Map extra_data)
         revoke_token(String token, Map extra_data)
         read_expired()
         expunge_expired()

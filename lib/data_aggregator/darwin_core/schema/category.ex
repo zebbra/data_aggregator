@@ -21,7 +21,7 @@ defmodule DataAggregator.DarwinCore.Schema.Category do
       attribute = dwc_attribute.attribute
 
       prefixed_name = prefixed_attribute_name(category, attribute)
-      %Attribute{attribute | name: prefixed_name}
+      %{attribute | name: prefixed_name}
     end
   end
 

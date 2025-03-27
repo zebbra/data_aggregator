@@ -18,7 +18,7 @@ defmodule DataAggregator.Records.Publication.Changes.SetRunningBeforeTransaction
   defp set_running(%Changeset{data: publication} = changeset) do
     case Publication.set_running(publication) do
       {:ok, publication} ->
-        %Changeset{changeset | data: publication}
+        %{changeset | data: publication}
 
       {:error, reason} ->
         Changeset.add_error(changeset, reason)

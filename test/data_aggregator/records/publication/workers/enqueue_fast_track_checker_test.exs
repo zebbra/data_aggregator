@@ -27,7 +27,7 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackCheckerTest do
       not_published_record: not_published_record
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        assert :ok = Record.enqueue_fast_track_checker(not_published_record)
+        assert {:ok, _job} = Record.enqueue_fast_track_checker(not_published_record)
 
         assert_enqueued(
           worker: Scheduler.FastTrackPublicationVerifier,
@@ -40,7 +40,7 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackCheckerTest do
       published_record: published_record
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        :ok = Record.enqueue_fast_track_checker(published_record)
+        {:ok, _job} = Record.enqueue_fast_track_checker(published_record)
 
         assert_enqueued(
           worker: Scheduler.FastTrackPublicationVerifier,

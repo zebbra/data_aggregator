@@ -139,7 +139,7 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
       tenant: tenant,
       domain: Records,
       resource: Record,
-      max_concurrency: max_concurrency,
+      # max_concurrency: max_concurrency,
       batch_size: batch_size,
       return_records?: false
     )
@@ -175,7 +175,8 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     |> Ash.Query.set_tenant(collection_id)
     |> Ash.bulk_update!(
       :update,
-      %{state: :failed, finished_at: DateTime.utc_now()}
+      %{state: :failed, finished_at: DateTime.utc_now()},
+      tenant: collection_id
     )
 
     changeset

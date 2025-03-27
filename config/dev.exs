@@ -58,7 +58,7 @@ config :data_aggregator, publication_verification_scheduler_active: false
 config :data_aggregator, serve_files_from: "priv/storage/dev/files"
 
 config :esbuild,
-  version: "0.24.0",
+  version: "0.25.1",
   data_aggregator: [
     args:
       ~w(js/app.ts js/storybook.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),

@@ -51,21 +51,28 @@ defmodule DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy do
       {:ok, encoded_record}
     else
       {:error, %Ash.Error.Query.NotFound{}} ->
-        Logger.warning("[swiss_species] no matching encoded_record found for taxon_id: #{encoded_record.tax_taxon_id}")
+        handle_not_found_or_invalid(encoded_record, ctx)
 
-        encoded_record =
-          Strategy.update_encoded_record(
-            %{registered: false, registered_at: DateTime.utc_now()},
-            encoded_record,
-            @output_attributes,
-            ctx
-          )
-
-        {:ok, encoded_record}
+      {:error, %Ash.Error.Invalid{}} ->
+        handle_not_found_or_invalid(encoded_record, ctx)
 
       {:error, error} ->
         {:error, error, encoded_record}
     end
+  end
+
+  defp handle_not_found_or_invalid(encoded_record, ctx) do
+    Logger.warning("[swiss_species] no matching encoded_record found for taxon_id: #{encoded_record.tax_taxon_id}")
+
+    encoded_record =
+      Strategy.update_encoded_record(
+        %{registered: false, registered_at: DateTime.utc_now()},
+        encoded_record,
+        @output_attributes,
+        ctx
+      )
+
+    {:ok, encoded_record}
   end
 
   @spec get_taxon_id(map()) :: {:ok, integer()} | {:error, String.t()}
