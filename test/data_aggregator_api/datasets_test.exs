@@ -34,7 +34,7 @@ defmodule DataAggregatorApi.DatasetsTest do
     {:ok, conn: conn}
   end
 
-  describe "GET /api/json/datasets" do
+  describe "/api/json/datasets" do
     test "lists all datasets", %{conn: conn} do
       # Create some test collections
       collection_1 = HelpersTest.setup_collection()
@@ -49,9 +49,9 @@ defmodule DataAggregatorApi.DatasetsTest do
 
       assert length(data) == 3
 
-      assert Enum.at(data, 0)["id"] == collection_1.id
-      assert Enum.at(data, 1)["id"] == collection_2.id
-      assert Enum.at(data, 2)["id"] == collection_3.id
+      assert Enum.at(data, 0)["id"] in [collection_1.id, collection_2.id, collection_3.id]
+      assert Enum.at(data, 1)["id"] in [collection_1.id, collection_2.id, collection_3.id]
+      assert Enum.at(data, 2)["id"] in [collection_1.id, collection_2.id, collection_3.id]
       assert Enum.at(data, 3) == nil
     end
 
@@ -78,6 +78,23 @@ defmodule DataAggregatorApi.DatasetsTest do
                collection_1.grscicoll_reference
     end
 
+    test "get one dataset", %{
+      conn: conn
+    } do
+      # Create a test collection
+      collection = HelpersTest.setup_collection()
+
+      # Make the request
+      conn =
+        get(conn, "/api/json/datasets/#{collection.id}", status: 200)
+
+      # Assert on the response
+      assert %{"data" => data} = json_response(conn, 200)
+
+      assert not is_nil(data)
+      assert data["id"] == collection.id
+    end
+
     test "create dataset", %{conn: conn} do
       # Make the request with a filter
       conn =
@@ -86,7 +103,7 @@ defmodule DataAggregatorApi.DatasetsTest do
             "type" => "collection",
             "attributes" => %{
               "description" => "Dataset Number One",
-              "grscicoll_reference" => Ecto.UUID.generate(),
+              "grscicoll_reference" => "322ce107-3156-4420-8a2b-7f17efeaa472",
               "name" => "Dataset One",
               "type" => "botany"
             }
@@ -102,6 +119,12 @@ defmodule DataAggregatorApi.DatasetsTest do
 
       assert data["attributes"]["description"] == "Dataset Number One"
       assert data["attributes"]["type"] == "botany"
+
+      # the name (among other data) is fetched from the GBIF API
+      assert data["attributes"]["name"] == "Herbarium - Universität Zürich"
+
+      assert data["attributes"]["grscicoll_institution_name"] ==
+               "Universität Zürich"
     end
 
     test "update dataset", %{conn: conn} do
@@ -136,7 +159,7 @@ defmodule DataAggregatorApi.DatasetsTest do
       assert updated_collection.grscicoll_reference == collection.grscicoll_reference
     end
 
-    test "delete dataset", %{conn: conn} do
+    test "delete dataset succeeds", %{conn: conn} do
       # Create a test collection
       collection = HelpersTest.setup_collection(%{description: "WOW"})
 
@@ -145,6 +168,26 @@ defmodule DataAggregatorApi.DatasetsTest do
 
       # Verify that the dataset no longer exists in the database
       assert {:error, _} = Collection.get_by_id(collection.id)
+    end
+
+    test "delete dataset fails", %{conn: conn} do
+      # Create a test collection
+      HelpersTest.setup_collection(%{description: "WOW"})
+
+      # Make the DELETE request
+      conn = delete(conn, "/api/json/datasets/set_02y2QjtjI7sOmoAnmP0W1D")
+
+      errors = json_response(conn, 404)["errors"]
+
+      error = Enum.at(errors, 0)
+
+      # Assert on the response
+      assert not is_nil(error)
+      assert length(errors) == 1
+      assert error["code"] == "not_found"
+      assert error["detail"] =~ "No collection record found with "
+      assert error["status"] == "404"
+      assert error["title"] =~ "Entity Not Found"
     end
   end
 end

@@ -62,7 +62,7 @@ defmodule DataAggregatorApi.RecordsTest do
     {:ok, conn: conn, collection: collection, record_1: record_1, record_2: record_2, record_3: record_3}
   end
 
-  describe "GET /api/json/datasets/:collection_id/records" do
+  describe "/api/json/datasets/:collection_id/records" do
     test "lists all records", %{
       conn: conn,
       collection: collection,
@@ -84,7 +84,7 @@ defmodule DataAggregatorApi.RecordsTest do
       assert Enum.at(data, 3) == nil
     end
 
-    test "filters records by mte_catalog_number", %{
+    test "filters records by mte_catalog_number succeeded", %{
       conn: conn,
       collection: collection,
       record_1: record_1
@@ -106,7 +106,22 @@ defmodule DataAggregatorApi.RecordsTest do
                record_1.mte_catalog_number
     end
 
-    test "create record", %{
+    test "get one record", %{
+      conn: conn,
+      collection: collection,
+      record_1: record
+    } do
+      # Make the request
+      conn = get(conn, "/api/json/datasets/#{collection.id}/records/#{record.id}", status: 200)
+
+      # Assert on the response
+      assert %{"data" => data} = json_response(conn, 200)
+
+      assert not is_nil(data)
+      assert data["id"] == record.id
+    end
+
+    test "create record succeeded", %{
       conn: conn,
       collection: collection
     } do
@@ -135,7 +150,7 @@ defmodule DataAggregatorApi.RecordsTest do
       assert data["attributes"]["tax_scientific_name"] == "1234-asdf-scientific-name"
     end
 
-    test "update record", %{
+    test "update record succeeded", %{
       conn: conn,
       collection: collection,
       record_1: record
@@ -168,12 +183,30 @@ defmodule DataAggregatorApi.RecordsTest do
       assert updated_record.tax_scientific_name == "UPDATED TWICE"
     end
 
-    test "delete dataset", %{conn: conn, collection: collection, record_1: record} do
+    test "delete record succeeds", %{conn: conn, collection: collection, record_1: record} do
       # Make the DELETE request
       delete(conn, "/api/json/datasets/#{collection.id}/records/#{record.id}")
 
       # Verify that the dataset no longer exists in the database
       assert {:error, _} = Record.get_by_id(record.id, tenant: collection.id)
+    end
+
+    test "delete record fails", %{conn: conn, collection: collection} do
+      # Make the DELETE request
+      conn =
+        delete(conn, "/api/json/datasets/#{collection.id}/records/rec_02y2hKljGzKUvuLEL2s16m")
+
+      errors = json_response(conn, 404)["errors"]
+
+      error = Enum.at(errors, 0)
+
+      # Assert on the response
+      assert not is_nil(error)
+      assert length(errors) == 1
+      assert error["code"] == "not_found"
+      assert error["detail"] =~ "No records record found with "
+      assert error["status"] == "404"
+      assert error["title"] =~ "Entity Not Found"
     end
   end
 end

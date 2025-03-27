@@ -7,6 +7,9 @@ defmodule DataAggregatorApi.HelpersTest do
 
   doctest DataAggregatorApi.Router, import: true
 
+  Mimic.copy(DataAggregator.Records.Validation.Changes.ValidateRecords)
+  Mimic.copy(DataAggregator.Records.Validation.Changes.SetCount)
+
   @doc """
   Setup a collection for testing.
   """
