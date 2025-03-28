@@ -35,7 +35,7 @@ defmodule DataAggregator.Records.Record.Actions.BulkImport do
             return_errors?: true,
             max_concurrency: max_concurrency,
             batch_size: batch_size,
-            timeout: :timer.minutes(5),
+            timeout: to_timeout(minute: 5),
             actor: actor,
             authorize?: false,
             tenant: tenant

@@ -402,7 +402,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           column.mapped_to in not_mappable_data
         end)
 
-      import = %Import{import | mappings: data}
+      import = %{import | mappings: data}
 
       socket
       |> assign(:form, build_form(import, actor))
@@ -428,7 +428,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
       {:ok, matched_columns} ->
         data = ensure_required_attributes(matched_columns)
 
-        import = %Import{import | mappings: data}
+        import = %{import | mappings: data}
 
         socket
         |> assign(:form, build_form(import, actor))
@@ -483,7 +483,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
     mapping =
       Enum.find(mapped_collection_mapping, fn %{"name" => name} -> name == column.name end)
 
-    %Import.Column{column | mapped_to: mapping["mapped_to"], mapped?: true}
+    %{column | mapped_to: mapping["mapped_to"], mapped?: true}
   end
 
   defp auto_mapping_matched(import) do
@@ -512,7 +512,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         column.name == dwc_field
       end)
 
-    %Import.Column{column | mapped_to: Atom.to_string(elem(mapping, 0)), mapped?: true}
+    %{column | mapped_to: Atom.to_string(elem(mapping, 0)), mapped?: true}
   end
 
   defp ensure_required_attributes(mapped_columns) do
@@ -755,7 +755,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           category
 
         label ->
-          %DarwinCore.Schema.Category{category | description: "#{label}: #{category.description}"}
+          %{category | description: "#{label}: #{category.description}"}
       end
     end
   end

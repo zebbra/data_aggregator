@@ -70,7 +70,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
       collection_same: collection_same,
       collection_other: collection_other
     } do
-      assert Record.can_read?(actor)
+      assert Record.can_read?(actor, reuse_values?: true)
 
       records = Record.read!(actor: actor, tenant: collection_same)
       assert length(records) == 1
@@ -85,7 +85,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
     } do
       record = Map.from_struct(record_same)
 
-      assert Record.can_create?(actor, record)
+      assert Record.can_create?(actor, record, reuse_values?: true)
     end
 
     test "can create record with other institution", %{
@@ -94,43 +94,43 @@ defmodule DataAggregator.Records.RecordPolicyTest do
     } do
       record = Map.from_struct(record_other)
 
-      assert Record.can_create?(actor, record)
+      assert Record.can_create?(actor, record, reuse_values?: true)
     end
 
     test "can bulk_import same import", %{actor: actor, import_same: import} do
-      assert Record.can_bulk_import?(actor, import, %{})
+      assert Record.can_bulk_import?(actor, import, %{}, reuse_values?: true)
     end
 
     test "can bulk_import other import", %{actor: actor, import_other: import} do
-      assert Record.can_bulk_import?(actor, import, %{})
+      assert Record.can_bulk_import?(actor, import, %{}, reuse_values?: true)
     end
 
     test "can update record with same institution", %{
       actor: actor,
       record_same: record_same
     } do
-      assert Record.can_update?(actor, record_same)
+      assert Record.can_update?(actor, record_same, reuse_values?: true)
     end
 
     test "can update record with other institution", %{
       actor: actor,
       record_other: record_other
     } do
-      assert Record.can_update?(actor, record_other)
+      assert Record.can_update?(actor, record_other, reuse_values?: true)
     end
 
     test "can destroy record with same institution", %{
       actor: actor,
       record_same: record_same
     } do
-      assert Record.can_destroy?(actor, record_same)
+      assert Record.can_destroy?(actor, record_same, reuse_values?: true)
     end
 
     test "can destroy record with other institution", %{
       actor: actor,
       record_other: record_other
     } do
-      assert Record.can_destroy?(actor, record_other)
+      assert Record.can_destroy?(actor, record_other, reuse_values?: true)
     end
 
     set_test_cases = [
@@ -150,14 +150,14 @@ defmodule DataAggregator.Records.RecordPolicyTest do
         actor: actor,
         record_same: record_same
       } do
-        assert apply(Record, unquote(method), [actor, record_same])
+        assert apply(Record, unquote(method), [actor, record_same, [reuse_values?: true]])
       end
 
       test "can #{method_description} for record with other institution", %{
         actor: actor,
         record_other: record_other
       } do
-        assert apply(Record, unquote(method), [actor, record_other])
+        assert apply(Record, unquote(method), [actor, record_other, [reuse_values?: true]])
       end
     end
   end
@@ -210,7 +210,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
     end
 
     test "can read all", %{actor: actor, collection_same: tenant} do
-      assert Record.can_read?(actor)
+      assert Record.can_read?(actor, reuse_values?: true)
 
       records = Record.read!(actor: actor, tenant: tenant)
       assert length(records) == 1
@@ -227,7 +227,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
     } do
       record = Map.from_struct(record_same)
 
-      refute Record.can_create?(actor, record)
+      refute Record.can_create?(actor, record, reuse_values?: true)
     end
 
     test "cannot create record with other institution", %{
@@ -236,43 +236,43 @@ defmodule DataAggregator.Records.RecordPolicyTest do
     } do
       record = Map.from_struct(record_other)
 
-      refute Record.can_create?(actor, record)
+      refute Record.can_create?(actor, record, reuse_values?: true)
     end
 
     test "can bulk_import same import", %{actor: actor, import_same: import} do
-      assert Record.can_bulk_import?(actor, import, %{})
+      assert Record.can_bulk_import?(actor, import, %{}, reuse_values?: true)
     end
 
     test "can enqueue fast track checker", %{actor: actor, record_same: record_same} do
-      assert Record.can_enqueue_fast_track_checker?(actor, record_same)
+      assert Record.can_enqueue_fast_track_checker?(actor, record_same, reuse_values?: true)
     end
 
     test "cannot update record with same institution", %{
       actor: actor,
       record_same: record_same
     } do
-      refute Record.can_update?(actor, record_same)
+      refute Record.can_update?(actor, record_same, reuse_values?: true)
     end
 
     test "cannot update record with other institution", %{
       actor: actor,
       record_other: record_other
     } do
-      refute Record.can_update?(actor, record_other)
+      refute Record.can_update?(actor, record_other, reuse_values?: true)
     end
 
     test "cannot destroy record with same institution", %{
       actor: actor,
       record_same: record_same
     } do
-      refute Record.can_destroy?(actor, record_same)
+      refute Record.can_destroy?(actor, record_same, reuse_values?: true)
     end
 
     test "cannot destroy record with other institution", %{
       actor: actor,
       record_other: record_other
     } do
-      refute Record.can_destroy?(actor, record_other)
+      refute Record.can_destroy?(actor, record_other, reuse_values?: true)
     end
 
     set_test_cases = [
@@ -290,14 +290,14 @@ defmodule DataAggregator.Records.RecordPolicyTest do
         actor: actor,
         record_same: record_same
       } do
-        refute apply(Record, unquote(method), [actor, record_same])
+        refute apply(Record, unquote(method), [actor, record_same, [reuse_values?: true]])
       end
 
       test "cannot #{method_description} for record with other institution", %{
         actor: actor,
         record_other: record_other
       } do
-        refute apply(Record, unquote(method), [actor, record_other])
+        refute apply(Record, unquote(method), [actor, record_other, [reuse_values?: true]])
       end
     end
   end
@@ -350,7 +350,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
     end
 
     test "can read all", %{actor: actor, collection_same: tenant} do
-      assert Record.can_read?(actor)
+      assert Record.can_read?(actor, reuse_values?: true)
 
       records = Record.read!(actor: actor, tenant: tenant)
       assert length(records) == 1
@@ -370,7 +370,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
         |> Map.from_struct()
         |> Map.take([:tax_scientific_name, :mte_catalog_number, :collection])
 
-      assert Record.can_create?(actor, record)
+      assert Record.can_create?(actor, record, reuse_values?: true)
     end
 
     test "cannot create record with other institution", %{
@@ -379,43 +379,43 @@ defmodule DataAggregator.Records.RecordPolicyTest do
     } do
       record = Map.from_struct(record_other)
 
-      refute Record.can_create?(actor, record)
+      refute Record.can_create?(actor, record, reuse_values?: true)
     end
 
     test "can bulk_import same import", %{actor: actor, import_same: import} do
-      assert Record.can_bulk_import?(actor, import, %{})
+      assert Record.can_bulk_import?(actor, import, %{}, reuse_values?: true)
     end
 
     test "can enqueue fast track checker", %{actor: actor, record_same: record_same} do
-      assert Record.can_enqueue_fast_track_checker?(actor, record_same)
+      assert Record.can_enqueue_fast_track_checker?(actor, record_same, reuse_values?: true)
     end
 
     test "can update record with same institution", %{
       actor: actor,
       record_same: record_same
     } do
-      assert Record.can_update?(actor, record_same)
+      assert Record.can_update?(actor, record_same, reuse_values?: true)
     end
 
     test "cannot update record with other institution", %{
       actor: actor,
       record_other: record_other
     } do
-      refute Record.can_update?(actor, record_other)
+      refute Record.can_update?(actor, record_other, reuse_values?: true)
     end
 
     test "can destroy record with same institution", %{
       actor: actor,
       record_same: record_same
     } do
-      assert Record.can_destroy?(actor, record_same)
+      assert Record.can_destroy?(actor, record_same, reuse_values?: true)
     end
 
     test "cannot destroy record with other institution", %{
       actor: actor,
       record_other: record_other
     } do
-      refute Record.can_destroy?(actor, record_other)
+      refute Record.can_destroy?(actor, record_other, reuse_values?: true)
     end
 
     set_test_cases = [
@@ -433,14 +433,14 @@ defmodule DataAggregator.Records.RecordPolicyTest do
         actor: actor,
         record_same: record_same
       } do
-        assert apply(Record, unquote(method), [actor, record_same])
+        assert apply(Record, unquote(method), [actor, record_same, [reuse_values?: true]])
       end
 
       test "cannot #{method_description} for record with other institution", %{
         actor: actor,
         record_other: record_other
       } do
-        refute apply(Record, unquote(method), [actor, record_other])
+        refute apply(Record, unquote(method), [actor, record_other, [reuse_values?: true]])
       end
     end
   end
@@ -493,7 +493,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
     end
 
     test "can read all", %{actor: actor, collection_same: tenant} do
-      assert Record.can_read?(actor)
+      assert Record.can_read?(actor, reuse_values?: true)
 
       records = Record.read!(actor: actor, tenant: tenant)
       assert length(records) == 1
@@ -513,7 +513,7 @@ defmodule DataAggregator.Records.RecordPolicyTest do
         |> Map.from_struct()
         |> Map.take([:tax_scientific_name, :mte_catalog_number, :collection])
 
-      assert Record.can_create?(actor, record)
+      assert Record.can_create?(actor, record, reuse_values?: true)
     end
 
     test "cannot create record with other institution", %{
@@ -522,43 +522,43 @@ defmodule DataAggregator.Records.RecordPolicyTest do
     } do
       record = Map.from_struct(record_other)
 
-      refute Record.can_create?(actor, record)
+      refute Record.can_create?(actor, record, reuse_values?: true)
     end
 
     test "can bulk_import same import", %{actor: actor, import_same: import} do
-      assert Record.can_bulk_import?(actor, import, %{})
+      assert Record.can_bulk_import?(actor, import, %{}, reuse_values?: true)
     end
 
     test "can enqueue fast track checker", %{actor: actor, record_same: record_same} do
-      assert Record.can_enqueue_fast_track_checker?(actor, record_same)
+      assert Record.can_enqueue_fast_track_checker?(actor, record_same, reuse_values?: true)
     end
 
     test "can update record with same institution", %{
       actor: actor,
       record_same: record_same
     } do
-      assert Record.can_update?(actor, record_same)
+      assert Record.can_update?(actor, record_same, reuse_values?: true)
     end
 
     test "cannot update record with other institution", %{
       actor: actor,
       record_other: record_other
     } do
-      refute Record.can_update?(actor, record_other)
+      refute Record.can_update?(actor, record_other, reuse_values?: true)
     end
 
     test "can destroy record with same institution", %{
       actor: actor,
       record_same: record_same
     } do
-      assert Record.can_destroy?(actor, record_same)
+      assert Record.can_destroy?(actor, record_same, reuse_values?: true)
     end
 
     test "cannot destroy record with other institution", %{
       actor: actor,
       record_other: record_other
     } do
-      refute Record.can_destroy?(actor, record_other)
+      refute Record.can_destroy?(actor, record_other, reuse_values?: true)
     end
 
     set_test_cases = [
@@ -576,14 +576,14 @@ defmodule DataAggregator.Records.RecordPolicyTest do
         actor: actor,
         record_same: record_same
       } do
-        assert apply(Record, unquote(method), [actor, record_same])
+        assert apply(Record, unquote(method), [actor, record_same, [reuse_values?: true]])
       end
 
       test "cannot #{method_description} for record with other institution", %{
         actor: actor,
         record_other: record_other
       } do
-        refute apply(Record, unquote(method), [actor, record_other])
+        refute apply(Record, unquote(method), [actor, record_other, [reuse_values?: true]])
       end
     end
   end

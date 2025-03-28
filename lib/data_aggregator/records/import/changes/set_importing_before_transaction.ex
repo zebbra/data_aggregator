@@ -24,7 +24,7 @@ defmodule DataAggregator.Records.Import.Changes.SetImportingBeforeTransaction do
   defp set_importing(%Changeset{data: import} = changeset) do
     case Import.set_importing(import) do
       {:ok, import} ->
-        %Changeset{changeset | data: import}
+        %{changeset | data: import}
 
       {:error, reason} ->
         Changeset.add_error(changeset, reason)

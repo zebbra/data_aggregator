@@ -41,7 +41,7 @@ defmodule DataAggregatorApi.Router do
 
   path_info comes like this ["json", "datasets", set_02zJRhVkz8Z93Wtk95k7dM, "more"] if it's tenant specific
 
-  the tenant is alwaysthe third element in the path_info, as long as the path is tenant specific. if not, the default connection is returned
+  the tenant is always the third element in the path_info, as long as the path is tenant specific. if not, the default connection is returned
 
       ## Example
       iex> conn = %Plug.Conn{ path_info: ["json", "datasets", "set_02zJRhVkz8Z93Wtk95k7dM", "records"] }

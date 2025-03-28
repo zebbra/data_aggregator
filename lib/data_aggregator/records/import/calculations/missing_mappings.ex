@@ -38,7 +38,7 @@ defmodule DataAggregator.Records.Import.Calculations.MissingMappings do
       missing_attributes =
         Enum.filter(dwc_attributes, &missing_attribute?.(category, &1.attribute))
 
-      %Category{category | dwc_attributes: missing_attributes}
+      %{category | dwc_attributes: missing_attributes}
     end
 
     empty_category? = fn

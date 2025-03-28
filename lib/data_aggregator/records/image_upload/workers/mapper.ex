@@ -57,5 +57,5 @@ defmodule DataAggregator.Records.ImageUpload.Workers.Mapper do
   end
 
   @impl Oban.Worker
-  def timeout(_job), do: Records.mapping_timeout() + :timer.minutes(1)
+  def timeout(_job), do: Records.mapping_timeout() + to_timeout(minute: 1)
 end

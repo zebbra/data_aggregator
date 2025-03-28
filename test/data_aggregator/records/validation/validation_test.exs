@@ -76,7 +76,7 @@ defmodule DataAggregator.ValidationTest do
       validation = validation_fixture()
       assert :ok = Validation.destroy(validation, tenant: validation.collection)
 
-      assert_raise Ash.Error.Query.NotFound, fn ->
+      assert_raise Invalid, fn ->
         Validation.get_by_id!(validation.id, tenant: validation.collection)
       end
     end

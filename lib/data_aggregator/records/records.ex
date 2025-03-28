@@ -15,19 +15,19 @@ defmodule DataAggregator.Records do
   @external_resource class_diagram
 
   @default_env [
-    import_timeout: :timer.hours(12),
+    import_timeout: to_timeout(hour: 12),
     import_batch_size: 1000,
     validation_batch_size: 1000,
     async_import_progress?: true,
-    export_timeout: :timer.hours(24),
-    validation_timeout: :timer.minutes(60),
-    encode_timeout: :timer.minutes(60),
+    export_timeout: to_timeout(day: 1),
+    validation_timeout: to_timeout(hour: 1),
+    encode_timeout: to_timeout(hour: 1),
     encode_batch_size: 1000,
-    publication_verification_timeout: :timer.minutes(5),
+    publication_verification_timeout: to_timeout(minute: 5),
     execute_async: true,
-    image_upload_timeout: :timer.hours(12),
-    extraction_timeout: :timer.hours(12),
-    mapping_timeout: :timer.hours(12)
+    image_upload_timeout: to_timeout(hour: 12),
+    extraction_timeout: to_timeout(hour: 12),
+    mapping_timeout: to_timeout(hour: 12)
   ]
 
   authorization do

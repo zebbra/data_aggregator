@@ -92,7 +92,7 @@ defmodule DataAggregator.EncodedRecordTest do
       encoded_record = encoded_record_fixture()
       assert :ok = EncodedRecord.destroy(encoded_record)
 
-      assert_raise Ash.Error.Query.NotFound, fn ->
+      assert_raise Ash.Error.Invalid, fn ->
         EncodedRecord.get_by_id!(encoded_record.id, tenant: encoded_record.collection)
       end
     end

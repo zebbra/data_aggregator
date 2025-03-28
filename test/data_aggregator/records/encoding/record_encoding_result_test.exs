@@ -127,7 +127,7 @@ defmodule DataAggregator.RecordEncodingResultTest do
       record_encoding_result = record_encoding_result_fixture()
       assert :ok = RecordEncodingResult.destroy(record_encoding_result)
 
-      assert_raise Ash.Error.Query.NotFound, fn ->
+      assert_raise Ash.Error.Invalid, fn ->
         RecordEncodingResult.get_by_id!(record_encoding_result.id,
           tenant: record_encoding_result.collection
         )
