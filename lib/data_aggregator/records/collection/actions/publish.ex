@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
   use Ash.Resource.Actions.Implementation
 
+  alias Ash.Error.Invalid
   alias Ash.Error.Query.NotFound
   alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Counter
@@ -77,7 +78,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       file_metas
       |> Task.async_stream(
         &DwcaFile.write_file!(records, &1, publication.channel, collection),
-        timeout: :timer.seconds(30)
+        timeout: to_timeout(second: 30)
       )
       |> Stream.run()
 
@@ -202,6 +203,9 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
         |> Map.put(:loc_decimal_longitude, round_coordinates(record.loc_decimal_longitude))
 
       {:error, %NotFound{}} ->
+        record
+
+      {:error, %Invalid{}} ->
         record
 
       {:error, error} ->

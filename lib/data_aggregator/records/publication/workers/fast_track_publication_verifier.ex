@@ -62,7 +62,7 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
   def backoff(_), do: publication_interval_minutes()
 
   @impl Oban.Worker
-  def timeout(_job), do: :timer.hours(1)
+  def timeout(_job), do: to_timeout(hour: 1)
 
   defp maybe_queue_again(attempt, max_attempts, record) do
     if attempt < max_attempts && scheduler_active?() do

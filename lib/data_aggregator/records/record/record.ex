@@ -241,7 +241,7 @@ defmodule DataAggregator.Records.Record do
         to: :encoding
 
       transition :set_encoded, from: :encoding, to: :encoded
-      transition :set_encoding_failed, from: :encoding, to: :failed
+      transition :set_encoding_failed, from: [:encoding, :queued], to: :failed
     end
   end
 
@@ -312,7 +312,7 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.EnqueueEncoder
     end
 
-    action :enqueue_fast_track_checker do
+    action :enqueue_fast_track_checker, :map do
       argument :published_record, :struct, allow_nil?: false
 
       run Record.Actions.EnqueueFastTrackChecker

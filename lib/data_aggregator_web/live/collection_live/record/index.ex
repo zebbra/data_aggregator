@@ -532,7 +532,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
         <:action
           :let={{_id, record}}
-          :if={Record.can_create?(@current_user)}
+          :if={Record.can_create?(@current_user, reuse_values?: true)}
           tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
           col_class="bg-base-300/10 border-l border-black-white/5"
           label={~t"Actions"m}

@@ -8,6 +8,9 @@ defmodule DataAggregator.SentryEventFilter do
       match?(%Ash.Error.Query.NotFound{}, exception) ->
         false
 
+      match?(%Ash.Error.Invalid{}, exception) ->
+        false
+
       # Fall back to the default event filter.
       Sentry.DefaultEventFilter.exclude_exception?(exception, event.source) ->
         false

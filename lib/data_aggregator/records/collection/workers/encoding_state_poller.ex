@@ -40,7 +40,7 @@ defmodule DataAggregator.Records.Collection.Workers.EncodingStatePoller do
     Logger.info("Polling encoding state for collection #{id} (attempt #{attempt}) ...")
 
     # give it a bit of time to start encoding
-    if attempt == 1, do: :timer.sleep(:timer.seconds(1))
+    if attempt == 1, do: :timer.sleep(to_timeout(second: 1))
 
     collection = Collection.get_by_id!(id)
     state = encoding_state(collection)

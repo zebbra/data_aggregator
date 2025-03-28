@@ -5018,12 +5018,15 @@ classDiagram
     class Token {
         Map extra_data
         String purpose
+        UtcDatetime expires_at
+        String subject
         String jti
         get_token(String token, String jti, String purpose)
         store_token(String token, Map extra_data, String purpose)
         store_confirmation_changes(String token, Map extra_data, String purpose)
         get_confirmation_changes(String jti)
         revoked?(String token, String jti)
+        revoke_all_stored_for_subject(String subject, Map extra_data)
         revoke_token(String token, Map extra_data)
         read_expired()
         expunge_expired()
@@ -5044,6 +5047,8 @@ erDiagram
     Token {
         Map extra_data
         String purpose
+        UtcDatetime expires_at
+        String subject
         String jti
     }
 ```
@@ -5110,6 +5115,7 @@ erDiagram
 | **store_confirmation_changes** | _create_ | <ul><li><b>token</b> <i>String</i> </li><li><b>extra_data</b> <i>Map</i> attribute</li><li><b>purpose</b> <i>String</i> attribute</li></ul> |  |
 | **get_confirmation_changes** | _read_ | <ul><li><b>jti</b> <i>String</i> </li></ul> |  |
 | **revoked?** | _read_ | <ul><li><b>token</b> <i>String</i> </li><li><b>jti</b> <i>String</i> </li></ul> |  |
+| **revoke_all_stored_for_subject** | _update_ | <ul><li><b>subject</b> <i>String</i> </li><li><b>extra_data</b> <i>Map</i> attribute</li></ul> |  |
 | **revoke_token** | _create_ | <ul><li><b>token</b> <i>String</i> </li><li><b>extra_data</b> <i>Map</i> attribute</li></ul> |  |
 | **read_expired** | _read_ | <ul></ul> |  |
 | **expunge_expired** | _destroy_ | <ul></ul> |  |

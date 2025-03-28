@@ -64,7 +64,7 @@ defmodule DataAggregatorWeb.CollectionLive.Subscriptions do
     {:noreply, stream_insert(socket, :results, collection, at: 0)}
   rescue
     # Ignore if the collection was not found --> it was deleted
-    _error in [Ash.Error.Query.NotFound] -> {:noreply, socket}
+    _error in [Ash.Error.Query.NotFound, Ash.Error.Invalid] -> {:noreply, socket}
   end
 
   defp handle_collection_destroyed(%Notification{data: collection}, socket) do

@@ -82,7 +82,7 @@ config :data_aggregator, Oban,
   repo: DataAggregator.Repo,
   plugins: [
     {Oban.Plugins.Pruner, max_age: 5, limit: 10_000, interval: 1_000 * 60},
-    {Oban.Plugins.Lifeline, interval: :timer.seconds(60), rescue_after: :timer.minutes(60)}
+    {Oban.Plugins.Lifeline, interval: to_timeout(minute: 1), rescue_after: to_timeout(hour: 1)}
   ],
   queues: [
     imports: 1,
@@ -129,7 +129,7 @@ config :data_aggregator,
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.24.0",
+  version: "0.25.1",
   data_aggregator: [
     args: ~w(js/app.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
