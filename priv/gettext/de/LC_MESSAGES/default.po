@@ -1894,7 +1894,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Encodings"
 msgstr "Enkodierungen"
 
-#: lib/data_aggregator/accounts/user.ex:154
+#: lib/data_aggregator/accounts/user.ex:190
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregator.Accounts.User"
 msgid "is not a valid email address"

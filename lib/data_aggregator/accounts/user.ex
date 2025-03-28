@@ -6,7 +6,7 @@ defmodule DataAggregator.Accounts.User do
   use Ash.Resource,
     authorizers: [Ash.Policy.Authorizer],
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshAuthentication, AshUUID],
+    extensions: [AshAuthentication, AshUUID, AshJsonApi.Resource],
     notifiers: [Ash.Notifier.PubSub],
     domain: DataAggregator.Accounts
 
@@ -41,7 +41,7 @@ defmodule DataAggregator.Accounts.User do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "usr"
+    uuid_attribute :id, prefix: "usr", public?: true
 
     attribute :email, :ci_string do
       allow_nil? false
@@ -66,6 +66,7 @@ defmodule DataAggregator.Accounts.User do
   end
 
   actions do
+    default_accept :*
     defaults [:read, :destroy]
 
     update :update do
@@ -127,10 +128,6 @@ defmodule DataAggregator.Accounts.User do
     end
   end
 
-  identities do
-    identity :unique_email, [:email]
-  end
-
   pub_sub do
     module DataAggregator.PubSub
     prefix "user"
@@ -138,6 +135,10 @@ defmodule DataAggregator.Accounts.User do
     publish_all :create, ["created", [:id, nil]]
     publish_all :update, ["updated", [:id, nil]]
     publish_all :destroy, ["destroyed", [:id, nil]]
+  end
+
+  identities do
+    identity :unique_email, [:email]
   end
 
   code_interface do
@@ -149,14 +150,12 @@ defmodule DataAggregator.Accounts.User do
     define :destroy
   end
 
-  validations do
-    validate match(:email, ~r/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/) do
-      message ~t"is not a valid email address"m
-    end
-  end
-
   policies do
     bypass AshAuthentication.Checks.AshAuthenticationInteraction do
+      authorize_if always()
+    end
+
+    bypass action(:sign_in_with_password) do
       authorize_if always()
     end
 
@@ -186,8 +185,39 @@ defmodule DataAggregator.Accounts.User do
     end
   end
 
+  validations do
+    validate match(:email, ~r/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/) do
+      message ~t"is not a valid email address"m
+    end
+  end
+
   postgres do
     table "users"
     repo DataAggregator.Repo
+  end
+
+  json_api do
+    type "users"
+
+    routes do
+      base "/users"
+      # Read actions that return *only one resource* are allowed to be used with
+      # `post` routes.
+      post :sign_in_with_password do
+        route "/sign_in"
+
+        # Given a successful request, we will modify the response to include the
+        # generated token
+        metadata fn _subject, user, _request ->
+          %{token: user.__metadata__.token}
+        end
+      end
+
+      get :read
+      index :read
+      patch :update
+      post :register_with_password
+      delete :destroy
+    end
   end
 end

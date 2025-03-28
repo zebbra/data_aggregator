@@ -314,14 +314,16 @@ defmodule DataAggregator.Records.Import do
   end
 
   json_api do
-    type "import"
+    type "imports"
 
     routes do
-      base "/imports"
+      base "/datasets/:collection_id/imports"
 
       get :read
       index :read
       post :create_from_path
+      patch :update
+      delete :destroy
     end
   end
 
