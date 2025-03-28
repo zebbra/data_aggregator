@@ -25,7 +25,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   require Ash.Query
 
-  @load [:encoded_record, :mids_level, :iucn_redlist, :eve_event_date_presence]
+  @load [
+    :encoded_record,
+    :mids_level,
+    :iucn_redlist,
+    :eve_event_date_presence,
+    :iucn_redlist_category_group
+  ]
   @async_keys [:meta, :results]
   @coordinate_attribute_names ~w(swissCoordinatesLv03_E swissCoordinatesLv03_N swissCoordinatesLv95_E swissCoordinatesLv95_N)
 

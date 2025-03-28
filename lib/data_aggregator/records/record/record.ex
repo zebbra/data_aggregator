@@ -66,6 +66,7 @@ defmodule DataAggregator.Records.Record do
       ]
     ]
   }
+
   def ash_pagify_options, do: @ash_pagify_options
 
   attributes do
@@ -148,6 +149,8 @@ defmodule DataAggregator.Records.Record do
                 end
               ),
               public?: true
+
+    calculate :iucn_redlist_category_group, :string, Calculations.IucnRedlistCategoryGroup, public?: true
 
     calculate :mids_level_one,
               :boolean,

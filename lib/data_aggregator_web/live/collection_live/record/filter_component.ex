@@ -72,7 +72,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     doc: "The PID of the component that will receive the event"
 
   @impl true
-  def filter_form_component(%{component: %{source: %Predicate{field: :iucn_redlist}}} = assigns) do
+  def filter_form_component(%{component: %{source: %Predicate{field: :iucn_redlist_category_group}}} = assigns) do
     ~H"""
     <div class="px-6">
       <.radio_group_filter
@@ -82,13 +82,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
         target={@target}
         options={[
           [key: ~t"Any"m, value: ""],
-          [key: ~t"Endangered"m, value: "true"],
-          [key: ~t"Safe"m, value: "false"]
+          [key: ~t"Endangered"m, value: "endangered"],
+          [key: ~t"Not threatened"m, value: "not_threatened"],
+          [key: ~t"Other"m, value: "other"]
         ]}
         option_descriptions={
           %{
-            "true" => ~t"Endangered species according to IUCN Red List"m,
-            "false" => ~t"Safe species according to IUCN Red List"m
+            "endangered" => ~t"Endangered species according to IUCN Red List"m,
+            "not_threatened" => ~t"Safe species according to IUCN Red List"m,
+            "other" => ~t"Other category according to IUCN Red List"m
           }
         }
         top_level
@@ -203,12 +205,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   @impl true
   def filter_form_component(%{component: %{source: %Predicate{field: :tax_phylum}}} = assigns) do
     ~H"""
-    <.checkbox_group_filter
+    <.combobox_group_filter
       component={@component}
       title={~t"Phylum"m}
       target={@target}
       options={@distinct_options[:tax_phylum]}
       legend_size="md"
+      multiple
+      data-portal="filters_modal"
+      identificator="filter_tax_phylum"
+      clear_event="filter_tax_phylum:reset"
     />
     """
   end
@@ -264,6 +270,40 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       target={@target}
       options={@distinct_options[:loc_continent]}
       legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :loc_country}}} = assigns) do
+    ~H"""
+    <.combobox_group_filter
+      component={@component}
+      title={~t"Country"m}
+      target={@target}
+      options={@distinct_options[:loc_country]}
+      legend_size="md"
+      multiple
+      data-portal="filters_modal"
+      identificator="filter_loc_country"
+      clear_event="filter_loc_country:reset"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :loc_state_province}}} = assigns) do
+    ~H"""
+    <.combobox_group_filter
+      component={@component}
+      title={~t"State Province"m}
+      target={@target}
+      options={@distinct_options[:loc_state_province]}
+      legend_size="md"
+      multiple
+      data-portal="filters_modal"
+      identificator="filter_loc_state_province"
+      clear_event="filter_loc_state_province:reset"
     />
     """
   end
@@ -450,7 +490,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   def init_form(resource) do
     resource
     |> FilterForm.new()
-    |> FilterForm.add_predicate(:iucn_redlist, :eq, "")
+    |> FilterForm.add_predicate(:iucn_redlist_category_group, :eq, "")
     # Remove for now as we use strings in our database...
     # |> FilterForm.add_group(return_id?: true, key: "eve_event_date_range")
     # |> then(fn {form, date_range_group_id} ->
@@ -483,6 +523,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     |> then(fn {form, location_group_id} ->
       form
       |> FilterForm.add_predicate(:loc_continent, :in, [],
+        to: location_group_id,
+        path: "encoded_record"
+      )
+      |> FilterForm.add_predicate(:loc_country, :in, [],
+        to: location_group_id,
+        path: "encoded_record"
+      )
+      |> FilterForm.add_predicate(:loc_state_province, :in, [],
         to: location_group_id,
         path: "encoded_record"
       )
@@ -617,6 +665,54 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     assign_and_update(socket, filter_form)
   end
 
+  @impl true
+  def handle_event("filter_tax_phylum:reset", %{"predicate-id" => predicate_id}, socket) do
+    filter_form = socket.assigns.filter_form
+
+    filter_form =
+      FilterForm.update_predicate(filter_form, predicate_id, fn predicate ->
+        %{predicate | value: ""}
+      end)
+
+    # force combobox to reset
+    socket =
+      push_event(socket, "combobox:reset", %{name: "filter_tax_phylum"})
+
+    assign_and_update(socket, filter_form)
+  end
+
+  @impl true
+  def handle_event("filter_loc_country:reset", %{"predicate-id" => predicate_id}, socket) do
+    filter_form = socket.assigns.filter_form
+
+    filter_form =
+      FilterForm.update_predicate(filter_form, predicate_id, fn predicate ->
+        %{predicate | value: ""}
+      end)
+
+    # force combobox to reset
+    socket =
+      push_event(socket, "combobox:reset", %{name: "filter_loc_country"})
+
+    assign_and_update(socket, filter_form)
+  end
+
+  @impl true
+  def handle_event("filter_loc_state_province:reset", %{"predicate-id" => predicate_id}, socket) do
+    filter_form = socket.assigns.filter_form
+
+    filter_form =
+      FilterForm.update_predicate(filter_form, predicate_id, fn predicate ->
+        %{predicate | value: ""}
+      end)
+
+    # force combobox to reset
+    socket =
+      push_event(socket, "combobox:reset", %{name: "filter_loc_state_province"})
+
+    assign_and_update(socket, filter_form)
+  end
+
   defp assign_collapsible_state(socket) do
     active_filter_form_fields = FilterForm.active_filter_form_fields(socket.assigns.meta)
 
@@ -627,7 +723,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       )
 
     active_location =
-      Enum.any?(~w[loc_continent loc_locality], &(&1 in active_filter_form_fields))
+      Enum.any?(~w[loc_continent loc_country loc_locality], &(&1 in active_filter_form_fields))
 
     active_others =
       Enum.any?(
@@ -650,6 +746,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     assign_new(socket, :distinct_options, fn ->
       %{
         loc_continent: loc_continent_options(socket.assigns.collection),
+        loc_country: loc_country_options(socket.assigns.collection),
+        loc_state_province: loc_state_province_options(socket.assigns.collection),
         idf_type_status: idf_type_status_options(socket.assigns.collection),
         mts_material_sample_type: mts_material_sample_type_options(socket.assigns.collection),
         mte_preparations: mte_preparations_options(socket.assigns.collection),
@@ -662,6 +760,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
 
   defp loc_continent_options(collection) do
     distinct_ecto(:loc_continent, :encoded_records, collection)
+  end
+
+  defp loc_country_options(collection) do
+    distinct_ecto(:loc_country, :encoded_records, collection)
+  end
+
+  defp loc_state_province_options(collection) do
+    distinct_ecto(:loc_state_province, :encoded_records, collection)
   end
 
   defp idf_type_status_options(collection) do
