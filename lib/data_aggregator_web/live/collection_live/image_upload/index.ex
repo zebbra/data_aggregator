@@ -246,7 +246,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
           id="confirm_image_upload_alert"
           size="sm"
           title={~t"Are you sure you want to delete this Image Upload and the associated Images"m}
-          label={~t"Yes, delete image upload"m}
+          confirm_button_label={~t"Yes, delete image upload"m}
         />
       </:portal>
     </.page>

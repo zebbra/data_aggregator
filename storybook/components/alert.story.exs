@@ -44,20 +44,22 @@ defmodule Storybook.Components.Alert do
       %Variation{
         id: :with_label,
         attributes: %{
-          label: "Yes, apply"
+          confirm_button_label: "Yes, apply",
+          cancel_button_label: "NO, stop"
         }
       },
       %Variation{
         id: :with_color,
         attributes: %{
-          label: "Yes, apply",
+          confirm_button_label: "Yes, apply",
+          cancel_button_label: "NO, stop",
           color: "primary"
         }
       },
       %Variation{
         id: :disabled,
         attributes: %{
-          label: "Yes, apply",
+          confirm_button_label: "Yes, apply",
           color: "primary",
           disabled: true
         }

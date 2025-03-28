@@ -847,7 +847,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           />
         </.modal>
 
-        <.alert id="confirm_record_alert" size="sm" label={~t"Yes, delete record"m}>
+        <.alert id="confirm_record_alert" size="sm" confirm_button_label={~t"Yes, delete record"m}>
           <p class="text-sm">{~t"This will also delete the following associations:"m}</p>
           <ul class="mt-2 list-inside list-disc text-sm">
             <li class="text-info">
@@ -864,6 +864,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             </li>
           </ul>
         </.alert>
+
+        <.alert
+          id="confirm_cancel_alert"
+          size="sm"
+          title={~t"Are you sure you want to cancel this action?"m}
+          confirm_button_label={~t"Yes, confirm"m}
+          cancel_button_label={~t"No"m}
+        />
       </:portal>
     </.page>
     """

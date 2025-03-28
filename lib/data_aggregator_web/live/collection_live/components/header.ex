@@ -67,7 +67,8 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           <.link
             :if={@show_cancel_button}
             phx-click={JS.push("collection:cancel", value: %{id: @collection.id})}
-            data-confirm={~t"Are you sure?"m}
+            data-confirm="confirm_cancel_alert"
+            data-confirm_id="confirm_cancel_alert"
             type="button"
             class="btn btn-error btn-sm"
           >
@@ -135,7 +136,8 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         <.link
           :if={@show_cancel_button}
           phx-click={JS.push("collection:cancel", value: %{id: @collection.id})}
-          data-confirm={~t"Are you sure?"m}
+          data-confirm="confirm_cancel_alert"
+          data-confirm_id="confirm_cancel_alert"
           type="button"
           class="btn btn-error"
         >
