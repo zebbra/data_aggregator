@@ -155,12 +155,8 @@ defmodule DataAggregator.Records.EncodedRecord do
   json_api do
     type "encoded_records"
 
-    primary_key do
-      keys [:id]
-    end
-
     routes do
-      base "/encoded_records"
+      base "/datasets/:collection_id/encoded_records"
 
       get :read
       index :read

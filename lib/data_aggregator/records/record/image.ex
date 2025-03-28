@@ -6,7 +6,7 @@ defmodule DataAggregator.Records.Record.Image do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Records,
-    extensions: [AshUUID, AshJsonApi.Resource]
+    extensions: [AshUUID]
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
@@ -62,24 +62,6 @@ defmodule DataAggregator.Records.Record.Image do
         on_update: :update,
         index?: true,
         match_with: [collection_id: :collection_id]
-    end
-  end
-
-  json_api do
-    type "record_image"
-
-    primary_key do
-      keys [:id, :collection_id]
-    end
-
-    routes do
-      base "/record_images"
-
-      get :read
-      index :read
-      post :create
-      patch :update
-      delete :destroy
     end
   end
 

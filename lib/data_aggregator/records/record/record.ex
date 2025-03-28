@@ -476,11 +476,12 @@ defmodule DataAggregator.Records.Record do
     type "records"
 
     routes do
-      base "/records"
+      base "/datasets/:collection_id/records"
 
       get :read
       index :read
       patch :update
+      post :create
       delete :destroy
     end
   end

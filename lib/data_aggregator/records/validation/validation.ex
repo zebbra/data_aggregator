@@ -192,10 +192,10 @@ defmodule DataAggregator.Records.Validation do
   end
 
   json_api do
-    type "validation"
+    type "validations"
 
     routes do
-      base "/validations"
+      base "/datasets/:collection_id/validations"
 
       get :read
       index :read

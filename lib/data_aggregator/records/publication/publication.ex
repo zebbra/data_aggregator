@@ -239,10 +239,10 @@ defmodule DataAggregator.Records.Publication do
   end
 
   json_api do
-    type "publication"
+    type "publications"
 
     routes do
-      base "/publications"
+      base "/datasets/:collection_id/publications"
 
       get :read
       index :read

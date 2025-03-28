@@ -18,7 +18,7 @@ defmodule DataAggregator.Records.RecordVersionMixin do
         type "record_versions"
 
         routes do
-          base "/record_versions"
+          base "/datasets/:collection_id/record_versions"
 
           get :read
           index :read
