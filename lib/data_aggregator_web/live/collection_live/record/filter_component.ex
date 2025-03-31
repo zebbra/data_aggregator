@@ -322,6 +322,81 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   end
 
   @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :loc_decimal_presence}}} = assigns) do
+    ~H"""
+    <.radio_group_filter
+      component={@component}
+      title={~t"Decimal Coordinates"m}
+      description={~t"Search for records with or without decimal coordinates"m}
+      target={@target}
+      options={[
+        [key: ~t"Any"m, value: ""],
+        [key: ~t"Present"m, value: "true"],
+        [key: ~t"Absent"m, value: "false"]
+      ]}
+      option_descriptions={
+        %{
+          "true" => ~t"Species for which decimal coordinates are present"m,
+          "false" => ~t"Species for which decimal coordinates are absent"m
+        }
+      }
+      pills
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :loc_swiss_coordinates_95_presence}}} = assigns) do
+    ~H"""
+    <.radio_group_filter
+      component={@component}
+      title={~t"Swiss 95 Coordinates"m}
+      description={~t"Search for records with or without swiss 95 coordinates"m}
+      target={@target}
+      options={[
+        [key: ~t"Any"m, value: ""],
+        [key: ~t"Present"m, value: "true"],
+        [key: ~t"Absent"m, value: "false"]
+      ]}
+      option_descriptions={
+        %{
+          "true" => ~t"Species for which swiss 95 coordinates are present"m,
+          "false" => ~t"Species for which swiss 95 coordinates are absent"m
+        }
+      }
+      pills
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :loc_swiss_coordinates_03_presence}}} = assigns) do
+    ~H"""
+    <.radio_group_filter
+      component={@component}
+      title={~t"Swiss 03 Coordinates"m}
+      description={~t"Search for records with or without swiss 03 coordinates"m}
+      target={@target}
+      options={[
+        [key: ~t"Any"m, value: ""],
+        [key: ~t"Present"m, value: "true"],
+        [key: ~t"Absent"m, value: "false"]
+      ]}
+      option_descriptions={
+        %{
+          "true" => ~t"Species for which swiss 03 coordinates are present"m,
+          "false" => ~t"Species for which swiss 03 coordinates are absent"m
+        }
+      }
+      pills
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
   def filter_form_component(%{component: %{source: %FilterForm{key: "other"}}} = assigns) do
     ~H"""
     <div class="py-4">
@@ -538,6 +613,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
         to: location_group_id,
         path: "encoded_record"
       )
+      |> FilterForm.add_predicate(:loc_decimal_presence, :eq, "", to: location_group_id)
+      |> FilterForm.add_predicate(:loc_swiss_coordinates_95_presence, :eq, "", to: location_group_id)
+      |> FilterForm.add_predicate(:loc_swiss_coordinates_03_presence, :eq, "", to: location_group_id)
     end)
     |> FilterForm.add_group(return_id?: true, key: "other", operator: :or)
     |> then(fn {form, other_group_id} ->
@@ -723,7 +801,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       )
 
     active_location =
-      Enum.any?(~w[loc_continent loc_country loc_locality], &(&1 in active_filter_form_fields))
+      Enum.any?(
+        ~w[loc_continent loc_country loc_locality loc_decimal_presence loc_swiss_coordinates_95_presence loc_swiss_coordinates_03_presence],
+        &(&1 in active_filter_form_fields)
+      )
 
     active_others =
       Enum.any?(

@@ -30,7 +30,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     :mids_level,
     :iucn_redlist,
     :eve_event_date_presence,
-    :iucn_redlist_category_group
+    :iucn_redlist_category_group,
+    :loc_decimal_presence,
+    :loc_swiss_coordinates_95_presence,
+    :loc_swiss_coordinates_03_presence
   ]
   @async_keys [:meta, :results]
   @coordinate_attribute_names ~w(swissCoordinatesLv03_E swissCoordinatesLv03_N swissCoordinatesLv95_E swissCoordinatesLv95_N)
