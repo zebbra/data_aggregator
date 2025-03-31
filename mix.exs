@@ -238,7 +238,7 @@ defmodule DataAggregator.MixProject do
 
       # Assets
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2.3", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.3.1", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.2.0",
