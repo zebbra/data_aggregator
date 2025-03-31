@@ -294,7 +294,7 @@ defmodule DataAggregator.MixProject do
       {:recon, "~> 2.5", only: :dev},
 
       # Clustering
-      {:dns_cluster, "~> 0.1.1"},
+      {:dns_cluster, "~> 0.2.0"},
 
       # Utilities and Helpers
       {:envy, "~> 1.1.1"},
