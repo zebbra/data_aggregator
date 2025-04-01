@@ -27,6 +27,25 @@ defmodule DataAggregatorApi.Router do
 
   @spec get_actor_from_token(Plug.Conn.t(), Keyword.t()) :: Plug.Conn.t()
   def get_actor_from_token(conn, _opts) do
+    try do
+      Logger.info("Getting actor from token")
+      # Logger.error("conn: #{inspect(conn)}")
+      Logger.info("headers: #{inspect(conn.req_headers, pretty: true)}")
+
+      ["" <> token] = get_req_header(conn, "api_key")
+      {:ok, %{"sub" => sub}, resource} = AshAuthentication.Jwt.verify(token, :data_aggregator)
+      {:ok, _user} = AshAuthentication.subject_to_user(sub, resource)
+
+      Logger.info("Header: #{inspect(get_req_header(conn, "api_key"), pretty: true)}")
+
+      Logger.info("Token verify: #{inspect(AshAuthentication.Jwt.verify(token, :data_aggregator), pretty: true)}")
+
+      Logger.info("subject_to_user: #{inspect(AshAuthentication.subject_to_user(sub, resource), pretty: true)}")
+    rescue
+      e ->
+        Logger.error("Error looking for token: #{inspect(e)}")
+    end
+
     with ["" <> token] <- get_req_header(conn, "api_key"),
          {:ok, %{"sub" => sub}, resource} <-
            AshAuthentication.Jwt.verify(token, :data_aggregator),

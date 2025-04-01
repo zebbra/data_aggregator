@@ -92,14 +92,14 @@ defmodule DataAggregatorApi.RecordVersionsTest do
 
     test "get one record version", %{conn: conn, collection: collection, record: record} do
       # First get all record versions to find an ID
-      conn =
+      new_conn =
         get(
           conn,
           "/api/json/datasets/#{collection.id}/record_versions?filter[version_source][id]=#{record.id}",
           status: 200
         )
 
-      data = json_response(conn, 200)["data"]
+      assert %{"data" => data} = json_response(new_conn, 200)
       record_version = Enum.at(data, 0)
       record_version_id = record_version["id"]
 

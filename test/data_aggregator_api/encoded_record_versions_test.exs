@@ -107,14 +107,14 @@ defmodule DataAggregatorApi.EncodedRecordVersionsTest do
       encoded_record: encoded_record
     } do
       # First get all encoded_record versions to find an ID
-      conn =
+      new_conn =
         get(
           conn,
           "/api/json/datasets/#{collection.id}/encoded_record_versions?filter[version_source][id]=#{encoded_record.id}",
           status: 200
         )
 
-      data = json_response(conn, 200)["data"]
+      data = json_response(new_conn, 200)["data"]
       version = Enum.at(data, 0)
       version_id = version["id"]
 
