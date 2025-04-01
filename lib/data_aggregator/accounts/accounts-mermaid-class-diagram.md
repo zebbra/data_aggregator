@@ -1,6 +1,7 @@
 ```mermaid
 classDiagram
     class User {
+        UUID id
         CiString email
         String first_name
         String last_name
@@ -12,8 +13,8 @@ classDiagram
         destroy()
         read()
         update(String password, String[] roles, String first_name, String last_name, ...)
-        accept_terms()
-        set_password(String password)
+        accept_terms(CiString email, String first_name, String last_name, String phone, ...)
+        set_password(String password, CiString email, String first_name, String last_name, ...)
         register_with_password(String password, String[] roles, String first_name, String last_name, ...)
     }
     class Token {

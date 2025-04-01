@@ -248,7 +248,7 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
           id="confirm_export_alert"
           size="sm"
           title={~t"Are you sure?"m}
-          label={~t"Yes, delete export"m}
+          confirm_button_label={~t"Yes, delete export"m}
         />
       </:portal>
     </.page>

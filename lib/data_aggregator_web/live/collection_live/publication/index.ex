@@ -273,7 +273,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
           id="confirm_publication_alert"
           size="sm"
           title={~t"Are you sure?"m}
-          label={~t"Yes, delete publication"m}
+          confirm_button_label={~t"Yes, delete publication"m}
         />
       </:portal>
     </.page>

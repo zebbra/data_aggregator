@@ -3,7 +3,7 @@ import Config
 http_cache_path = System.get_env("HTTP_CACHE_PATH") || "priv/cache/prod/http"
 
 # Enable AppSignal in production
-config :appsignal, :config, active: true
+config :appsignal, :config, active: false
 
 # Enable Postgres SSL in production
 config :data_aggregator, DataAggregator.Repo,

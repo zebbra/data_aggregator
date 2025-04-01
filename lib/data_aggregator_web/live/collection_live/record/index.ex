@@ -25,7 +25,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   require Ash.Query
 
-  @load [:encoded_record, :mids_level, :iucn_redlist]
+  @load [
+    :encoded_record,
+    :mids_level,
+    :iucn_redlist,
+    :eve_event_date_presence,
+    :iucn_redlist_category_group,
+    :loc_decimal_presence,
+    :loc_swiss_coordinates_95_presence,
+    :loc_swiss_coordinates_03_presence
+  ]
   @async_keys [:meta, :results]
   @coordinate_attribute_names ~w(swissCoordinatesLv03_E swissCoordinatesLv03_N swissCoordinatesLv95_E swissCoordinatesLv95_N)
 
@@ -847,7 +856,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           />
         </.modal>
 
-        <.alert id="confirm_record_alert" size="sm" label={~t"Yes, delete record"m}>
+        <.alert id="confirm_record_alert" size="sm" confirm_button_label={~t"Yes, delete record"m}>
           <p class="text-sm">{~t"This will also delete the following associations:"m}</p>
           <ul class="mt-2 list-inside list-disc text-sm">
             <li class="text-info">
@@ -864,6 +873,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             </li>
           </ul>
         </.alert>
+
+        <.alert
+          id="confirm_cancel_alert"
+          size="sm"
+          title={~t"Are you sure you want to cancel this action?"m}
+          confirm_button_label={~t"Yes, confirm"m}
+          cancel_button_label={~t"No"m}
+        />
       </:portal>
     </.page>
     """

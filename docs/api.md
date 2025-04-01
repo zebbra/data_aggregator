@@ -1174,6 +1174,11 @@ classDiagram
         Tsquery tsquery
         Boolean iucn_redlist
         Integer mids_level
+        String iucn_redlist_category_group
+        Boolean loc_decimal_presence
+        Boolean loc_swiss_coordinates_95_presence
+        Boolean loc_swiss_coordinates_03_presence
+        Boolean eve_event_date_presence
         Collection collection
         Import[] imports
         Image[] images
@@ -2663,6 +2668,11 @@ erDiagram
         Tsquery tsquery
         Boolean iucn_redlist
         Integer mids_level
+        String iucn_redlist_category_group
+        Boolean loc_decimal_presence
+        Boolean loc_swiss_coordinates_95_presence
+        Boolean loc_swiss_coordinates_03_presence
+        Boolean eve_event_date_presence
     }
     Image {
         UUID id
@@ -4998,6 +5008,7 @@ erDiagram
 ```mermaid
 classDiagram
     class User {
+        UUID id
         CiString email
         String first_name
         String last_name
@@ -5009,8 +5020,8 @@ classDiagram
         destroy()
         read()
         update(String password, String[] roles, String first_name, String last_name, ...)
-        accept_terms()
-        set_password(String password)
+        accept_terms(CiString email, String first_name, String last_name, String phone, ...)
+        set_password(String password, CiString email, String first_name, String last_name, ...)
         register_with_password(String password, String[] roles, String first_name, String last_name, ...)
     }
     class Token {
@@ -5036,6 +5047,7 @@ classDiagram
 ```mermaid
 erDiagram
     User {
+        UUID id
         CiString email
         String first_name
         String last_name
@@ -5084,8 +5096,8 @@ erDiagram
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
 | **update** | _update_ | <ul><li><b>password</b> <i>String</i> </li><li><b>roles</b> <i>String[]</i> attribute</li><li><b>first_name</b> <i>String</i> attribute</li><li><b>last_name</b> <i>String</i> attribute</li><li><b>email</b> <i>CiString</i> attribute</li><li><b>phone</b> <i>String</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li></ul> |  |
-| **accept_terms** | _update_ | <ul></ul> |  |
-| **set_password** | _update_ | <ul><li><b>password</b> <i>String</i> </li></ul> |  |
+| **accept_terms** | _update_ | <ul><li><b>email</b> <i>CiString</i> attribute</li><li><b>first_name</b> <i>String</i> attribute</li><li><b>last_name</b> <i>String</i> attribute</li><li><b>phone</b> <i>String</i> attribute</li><li><b>terms_accepted_at</b> <i>UtcDatetime</i> attribute</li></ul> |  |
+| **set_password** | _update_ | <ul><li><b>password</b> <i>String</i> </li><li><b>email</b> <i>CiString</i> attribute</li><li><b>first_name</b> <i>String</i> attribute</li><li><b>last_name</b> <i>String</i> attribute</li><li><b>phone</b> <i>String</i> attribute</li><li><b>terms_accepted_at</b> <i>UtcDatetime</i> attribute</li></ul> |  |
 | **register_with_password** | _create_ | <ul><li><b>password</b> <i>String</i> </li><li><b>roles</b> <i>String[]</i> attribute</li><li><b>first_name</b> <i>String</i> attribute</li><li><b>last_name</b> <i>String</i> attribute</li><li><b>email</b> <i>CiString</i> attribute</li><li><b>phone</b> <i>String</i> attribute</li><li><b>institution_id</b> <i>UUID</i> attribute</li><li><b>terms_accepted_at</b> <i>UtcDatetime</i> attribute</li></ul> |  |
 
 ### Token

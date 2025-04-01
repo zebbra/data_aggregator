@@ -172,7 +172,7 @@ defmodule DataAggregatorWeb.AdministrationLive.Index do
           id="confirm_administration_alert"
           size="sm"
           title={~t"Are you sure?"m}
-          label={~t"Yes, delete user"m}
+          confirm_button_label={~t"Yes, delete user"m}
         />
       </:portal>
     </.page>

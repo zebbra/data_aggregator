@@ -1168,6 +1168,11 @@ classDiagram
         Tsquery tsquery
         Boolean iucn_redlist
         Integer mids_level
+        String iucn_redlist_category_group
+        Boolean loc_decimal_presence
+        Boolean loc_swiss_coordinates_95_presence
+        Boolean loc_swiss_coordinates_03_presence
+        Boolean eve_event_date_presence
         Collection collection
         Import[] imports
         Image[] images

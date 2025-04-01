@@ -13,6 +13,7 @@ defmodule DataAggregatorWeb.Filters.ClearLink do
   alias AshPhoenix.FilterForm.Predicate
 
   attr :component, :map, required: true, doc: "Could be a FilterForm (group) or a Predicate"
+  attr :event, :string, default: "filter_predicate:reset", doc: "The event to trigger"
 
   attr :target, :string,
     required: true,
@@ -22,7 +23,7 @@ defmodule DataAggregatorWeb.Filters.ClearLink do
     ~H"""
     <span
       class="link link-primary link-hover text-sm/4 pl-2 font-semibold"
-      phx-click="filter_predicate:reset"
+      phx-click={@event}
       phx-value-predicate-id={@component.source.id}
       phx-target={@target}
     >

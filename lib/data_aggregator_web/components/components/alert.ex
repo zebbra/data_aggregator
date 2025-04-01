@@ -56,12 +56,13 @@ defmodule DataAggregatorWeb.Components.Alert do
   attr :id, :string, required: true, doc: "The alert ID."
   attr :title, :string, default: nil, doc: "The alert title."
   attr :text, :string, default: nil, doc: "The alert text."
-  attr :label, :string, default: nil, doc: "The alert button label."
   attr :on_cancel, JS, default: %JS{}, doc: "JS commands to run when the modal is cancelled."
   attr :on_confirm, JS, default: %JS{}, doc: "JS commands to run when the modal is closed."
   attr :form, :boolean, default: false, doc: "Whether the alert provides a form."
   attr :color, :string, values: ["blue", "green", "red", "orange", "primary"], default: "red"
   attr :disabled, :boolean, default: false, doc: "Whether the alert is disabled."
+  attr :cancel_button_label, :string, default: nil, doc: "The text for the cancel button."
+  attr :confirm_button_label, :string, default: nil, doc: "The text for the confirm button."
 
   attr :size, :string,
     values: ["xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl", "5xl"],
@@ -90,7 +91,7 @@ defmodule DataAggregatorWeb.Components.Alert do
           <form :if={@form == false} method="dialog">
             <div class="modal-action">
               <button class="btn btn-ghost" value="cancel">
-                {~t"Cancel"m}
+                {@cancel_button_label || ~t"Cancel"m}
               </button>
               <button
                 type="submit"
@@ -98,7 +99,7 @@ defmodule DataAggregatorWeb.Components.Alert do
                 class={["btn", button_color(@color)]}
                 disabled={@disabled}
               >
-                {@label || ~t"OK"m}
+                {@confirm_button_label || ~t"Yes, confirm"m}
               </button>
             </div>
           </form>

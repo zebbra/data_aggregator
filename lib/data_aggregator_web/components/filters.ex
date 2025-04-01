@@ -419,6 +419,7 @@ defmodule DataAggregatorWeb.Filters do
       import DataAggregatorWeb.Filters.ComboboxGroup
       import DataAggregatorWeb.Filters.DateRange
       import DataAggregatorWeb.Filters.Helpers
+      import DataAggregatorWeb.Filters.IntegerRange
       import DataAggregatorWeb.Filters.RadioGroupFilter
       import DataAggregatorWeb.Filters.SimpleFilterForm
       import DataAggregatorWeb.Filters.TextSearch

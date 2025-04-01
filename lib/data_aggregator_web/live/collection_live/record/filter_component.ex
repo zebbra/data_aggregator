@@ -71,32 +71,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     required: true,
     doc: "The PID of the component that will receive the event"
 
-  @impl true
-  def filter_form_component(%{component: %{source: %Predicate{field: :iucn_redlist}}} = assigns) do
-    ~H"""
-    <div class="px-6">
-      <.radio_group_filter
-        component={@component}
-        title={~t"IUCN Red List"m}
-        description={~t"Search your records by IUCN Red List of Threatened Speciese"m}
-        target={@target}
-        options={[
-          [key: ~t"Any"m, value: ""],
-          [key: ~t"Endangered"m, value: "true"],
-          [key: ~t"Safe"m, value: "false"]
-        ]}
-        option_descriptions={
-          %{
-            "true" => ~t"Endangered species according to IUCN Red List"m,
-            "false" => ~t"Safe species according to IUCN Red List"m
-          }
-        }
-        top_level
-      />
-    </div>
-    """
-  end
-
   # @impl true
   # def filter_form_component(%{component: %{source: %FilterForm{key: "eve_event_date_range"}}} = assigns) do
   #   ~H"""
@@ -118,37 +92,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   #   </div>
   #   """
   # end
-
-  @impl true
-  def filter_form_component(%{component: %{source: %Predicate{field: :mids_level}}} = assigns) do
-    ~H"""
-    <div class="px-6">
-      <.radio_group_filter
-        component={@component}
-        title={~t"Mids Level"m}
-        description={~t"Search your records by data mids level"m}
-        target={@target}
-        options={[
-          [key: ~t"Any"m, value: ""],
-          [key: 1, value: "1"],
-          [key: 2, value: "2"],
-          [key: 3, value: "3"],
-          [key: 4, value: "4"]
-        ]}
-        option_descriptions={
-          %{
-            "1" => ~t"Records with a Mids Level of at least 1"m,
-            "2" => ~t"Records with a Mids Level of at least 2"m,
-            "3" => ~t"Records with a Mids Level of at least 3"m,
-            "4" => ~t"Records with a Mids Level of at least 4"m
-          }
-        }
-        pills
-        top_level
-      />
-    </div>
-    """
-  end
 
   @impl true
   def filter_form_component(%{component: %{source: %FilterForm{key: "taxonomy"}}} = assigns) do
@@ -203,12 +146,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   @impl true
   def filter_form_component(%{component: %{source: %Predicate{field: :tax_phylum}}} = assigns) do
     ~H"""
-    <.checkbox_group_filter
+    <.combobox_group_filter
       component={@component}
       title={~t"Phylum"m}
       target={@target}
       options={@distinct_options[:tax_phylum]}
       legend_size="md"
+      multiple
+      data-portal="filters_modal"
+      identificator="filter_tax_phylum"
+      clear_event="filter_tax_phylum:reset"
     />
     """
   end
@@ -216,11 +163,100 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   @impl true
   def filter_form_component(%{component: %{source: %Predicate{field: :tax_family}}} = assigns) do
     ~H"""
-    <.checkbox_group_filter
+    <.combobox_group_filter
       component={@component}
       title={~t"Family"m}
       target={@target}
       options={@distinct_options[:tax_family]}
+      legend_size="md"
+      multiple
+      data-portal="filters_modal"
+      identificator="filter_tax_family"
+      clear_event="filter_tax_family:reset"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %FilterForm{key: "date"}}} = assigns) do
+    ~H"""
+    <div class="pt-4">
+      <.collapsible_group
+        title={~t"Date"m}
+        key="date"
+        target={@target}
+        open={open_collapsible?(@collapsible_state, "date")}
+      >
+        <.inputs_for :let={component} field={@component[:components]}>
+          <.filter_form_component
+            component={component}
+            resource={@resource}
+            collapsible_state={@collapsible_state}
+            distinct_options={@distinct_options}
+            target={@target}
+          />
+        </.inputs_for>
+      </.collapsible_group>
+    </div>
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %FilterForm{key: "updated_at_range"}}} = assigns) do
+    ~H"""
+    <.date_range
+      component={@component}
+      title={~t"Last modified"m}
+      description={~t"Search your records by last modification date"m}
+      min_date={Cldr.Calendar.date_from_tuple({1800, 1, 1})}
+      max_date={Cldr.Calendar.next(Date.utc_today(), :day)}
+      presets={[
+        months: ~t"Last Month"m,
+        years: ~t"Last Year"m,
+        century: ~t"Last Century"m
+      ]}
+      target={@target}
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %FilterForm{key: "year_range"}}} = assigns) do
+    ~H"""
+    <.integer_range
+      component={@component}
+      title={~t"Year of event"m}
+      description={
+        ~t"The four-digit year in which the dwc:Event occurred, according to the Common Era Calendar"m
+      }
+      min_int={1600}
+      max_int={Cldr.Calendar.next(Date.utc_today(), :day).year}
+      target={@target}
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :eve_event_date_presence}}} = assigns) do
+    ~H"""
+    <.radio_group_filter
+      component={@component}
+      title={~t"Event Date"m}
+      description={~t"Look for species with or without and event date"m}
+      target={@target}
+      options={[
+        [key: ~t"Any"m, value: ""],
+        [key: ~t"Present"m, value: "true"],
+        [key: ~t"Absent"m, value: "false"]
+      ]}
+      option_descriptions={
+        %{
+          "true" => ~t"Species for which an event date is present"m,
+          "false" => ~t"Species without an event date"m
+        }
+      }
       legend_size="md"
     />
     """
@@ -229,7 +265,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   @impl true
   def filter_form_component(%{component: %{source: %FilterForm{key: "location"}}} = assigns) do
     ~H"""
-    <div class="py-4">
+    <div class="pt-4">
       <.collapsible_group
         title={~t"Location"m}
         key="location"
@@ -265,6 +301,40 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   end
 
   @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :loc_country}}} = assigns) do
+    ~H"""
+    <.combobox_group_filter
+      component={@component}
+      title={~t"Country"m}
+      target={@target}
+      options={@distinct_options[:loc_country]}
+      legend_size="md"
+      multiple
+      data-portal="filters_modal"
+      identificator="filter_loc_country"
+      clear_event="filter_loc_country:reset"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :loc_state_province}}} = assigns) do
+    ~H"""
+    <.combobox_group_filter
+      component={@component}
+      title={~t"State Province"m}
+      target={@target}
+      options={@distinct_options[:loc_state_province]}
+      legend_size="md"
+      multiple
+      data-portal="filters_modal"
+      identificator="filter_loc_state_province"
+      clear_event="filter_loc_state_province:reset"
+    />
+    """
+  end
+
+  @impl true
   def filter_form_component(%{component: %{source: %Predicate{field: :loc_locality}}} = assigns) do
     ~H"""
     <.text_search
@@ -272,6 +342,78 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       title={~t"Locality"m}
       description={~t"Search your records by locality"m}
       target={@target}
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :loc_decimal_presence}}} = assigns) do
+    ~H"""
+    <.radio_group_filter
+      component={@component}
+      title={~t"Decimal Coordinates"m}
+      description={~t"Search for records with or without decimal coordinates"m}
+      target={@target}
+      options={[
+        [key: ~t"Any"m, value: ""],
+        [key: ~t"Present"m, value: "true"],
+        [key: ~t"Absent"m, value: "false"]
+      ]}
+      option_descriptions={
+        %{
+          "true" => ~t"Species for which decimal coordinates are present"m,
+          "false" => ~t"Species for which decimal coordinates are absent"m
+        }
+      }
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :loc_swiss_coordinates_95_presence}}} = assigns) do
+    ~H"""
+    <.radio_group_filter
+      component={@component}
+      title={~t"Swiss 95 Coordinates"m}
+      description={~t"Search for records with or without swiss 95 coordinates"m}
+      target={@target}
+      options={[
+        [key: ~t"Any"m, value: ""],
+        [key: ~t"Present"m, value: "true"],
+        [key: ~t"Absent"m, value: "false"]
+      ]}
+      option_descriptions={
+        %{
+          "true" => ~t"Species for which swiss 95 coordinates are present"m,
+          "false" => ~t"Species for which swiss 95 coordinates are absent"m
+        }
+      }
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :loc_swiss_coordinates_03_presence}}} = assigns) do
+    ~H"""
+    <.radio_group_filter
+      component={@component}
+      title={~t"Swiss 03 Coordinates"m}
+      description={~t"Search for records with or without swiss 03 coordinates"m}
+      target={@target}
+      options={[
+        [key: ~t"Any"m, value: ""],
+        [key: ~t"Present"m, value: "true"],
+        [key: ~t"Absent"m, value: "false"]
+      ]}
+      option_descriptions={
+        %{
+          "true" => ~t"Species for which swiss 03 coordinates are present"m,
+          "false" => ~t"Species for which swiss 03 coordinates are absent"m
+        }
+      }
       legend_size="md"
     />
     """
@@ -299,6 +441,60 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
         </.inputs_for>
       </.collapsible_group>
     </div>
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :iucn_redlist_category_group}}} = assigns) do
+    ~H"""
+    <.radio_group_filter
+      component={@component}
+      title={~t"IUCN Red List"m}
+      description={~t"Search your records by IUCN Red List of Threatened Speciese"m}
+      target={@target}
+      options={[
+        [key: ~t"Any"m, value: ""],
+        [key: ~t"Endangered"m, value: "endangered"],
+        [key: ~t"Not threatened"m, value: "not_threatened"],
+        [key: ~t"Other"m, value: "other"]
+      ]}
+      option_descriptions={
+        %{
+          "endangered" => ~t"Endangered species according to IUCN Red List"m,
+          "not_threatened" => ~t"Safe species according to IUCN Red List"m,
+          "other" => ~t"Other category according to IUCN Red List"m
+        }
+      }
+      legend_size="md"
+    />
+    """
+  end
+
+  @impl true
+  def filter_form_component(%{component: %{source: %Predicate{field: :mids_level}}} = assigns) do
+    ~H"""
+    <.radio_group_filter
+      component={@component}
+      title={~t"Mids Level"m}
+      description={~t"Search your records by data mids level"m}
+      target={@target}
+      options={[
+        [key: ~t"Any"m, value: ""],
+        [key: 1, value: "1"],
+        [key: 2, value: "2"],
+        [key: 3, value: "3"],
+        [key: 4, value: "4"]
+      ]}
+      option_descriptions={
+        %{
+          "1" => ~t"Records with a Mids Level of at least 1"m,
+          "2" => ~t"Records with a Mids Level of at least 2"m,
+          "3" => ~t"Records with a Mids Level of at least 3"m,
+          "4" => ~t"Records with a Mids Level of at least 4"m
+        }
+      }
+      legend_size="md"
+    />
     """
   end
 
@@ -385,7 +581,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   def init_form(resource) do
     resource
     |> FilterForm.new()
-    |> FilterForm.add_predicate(:iucn_redlist, :eq, "")
     # Remove for now as we use strings in our database...
     # |> FilterForm.add_group(return_id?: true, key: "eve_event_date_range")
     # |> then(fn {form, date_range_group_id} ->
@@ -393,7 +588,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     #   |> FilterForm.add_predicate(:eve_event_date, :greater_than_or_equal, nil, to: date_range_group_id)
     #   |> FilterForm.add_predicate(:eve_event_date, :less_than_or_equal, nil, to: date_range_group_id)
     # end)
-    |> FilterForm.add_predicate(:mids_level, :greater_than_or_equal, "")
     |> FilterForm.add_group(return_id?: true, key: "taxonomy")
     |> then(fn {form, taxonomy_group_id} ->
       form
@@ -414,6 +608,35 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
         path: "encoded_record"
       )
     end)
+    |> FilterForm.add_group(return_id?: true, key: "date")
+    |> then(fn {form, date_group_id} ->
+      form
+      |> FilterForm.add_group(return_id?: true, key: "updated_at_range", to: date_group_id)
+      |> then(fn {form, date_group_id} ->
+        form
+        |> FilterForm.add_predicate(:updated_at, :greater_than_or_equal, "",
+          to: date_group_id,
+          path: "encoded_record"
+        )
+        |> FilterForm.add_predicate(:updated_at, :less_than_or_equal, "",
+          to: date_group_id,
+          path: "encoded_record"
+        )
+      end)
+      |> FilterForm.add_group(return_id?: true, key: "year_range", to: date_group_id)
+      |> then(fn {form, year_range_group_id} ->
+        form
+        |> FilterForm.add_predicate(:eve_year, :greater_than_or_equal, "",
+          to: year_range_group_id,
+          path: "encoded_record"
+        )
+        |> FilterForm.add_predicate(:eve_year, :less_than_or_equal, "",
+          to: year_range_group_id,
+          path: "encoded_record"
+        )
+      end)
+      |> FilterForm.add_predicate(:eve_event_date_presence, :eq, "", to: date_group_id)
+    end)
     |> FilterForm.add_group(return_id?: true, key: "location")
     |> then(fn {form, location_group_id} ->
       form
@@ -421,14 +644,27 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
         to: location_group_id,
         path: "encoded_record"
       )
+      |> FilterForm.add_predicate(:loc_country, :in, [],
+        to: location_group_id,
+        path: "encoded_record"
+      )
+      |> FilterForm.add_predicate(:loc_state_province, :in, [],
+        to: location_group_id,
+        path: "encoded_record"
+      )
       |> FilterForm.add_predicate(:loc_locality, :contains, nil,
         to: location_group_id,
         path: "encoded_record"
       )
+      |> FilterForm.add_predicate(:loc_decimal_presence, :eq, "", to: location_group_id)
+      |> FilterForm.add_predicate(:loc_swiss_coordinates_95_presence, :eq, "", to: location_group_id)
+      |> FilterForm.add_predicate(:loc_swiss_coordinates_03_presence, :eq, "", to: location_group_id)
     end)
     |> FilterForm.add_group(return_id?: true, key: "other", operator: :or)
     |> then(fn {form, other_group_id} ->
       form
+      |> FilterForm.add_predicate(:iucn_redlist_category_group, :eq, "", to: other_group_id)
+      |> FilterForm.add_predicate(:mids_level, :greater_than_or_equal, "", to: other_group_id)
       |> FilterForm.add_predicate(:mte_recorded_by, :contains, nil,
         to: other_group_id,
         path: "encoded_record"
@@ -465,6 +701,25 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   # end
 
   @impl true
+  def handle_preset(filter_form, "updated_at_range", preset, socket) do
+    filter_form =
+      FilterForm.update_group(filter_form, "updated_at_range", fn predicate ->
+        case [predicate.field, predicate.operator] do
+          [:updated_at, :greater_than_or_equal] ->
+            %{predicate | value: shift_date(preset)}
+
+          [:updated_at, :less_than_or_equal] ->
+            %{predicate | value: Date.add(Date.utc_today(), 1)}
+
+          _ ->
+            predicate
+        end
+      end)
+
+    assign_and_update(socket, filter_form)
+  end
+
+  @impl true
   def handle_preset(_filter_form, _key, _preset, socket) do
     {:noreply, socket}
   end
@@ -492,6 +747,70 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       |> assign(:error, ~t"Something went wrong, please try again.")
   end
 
+  @impl true
+  def handle_event("filter_tax_family:reset", %{"predicate-id" => predicate_id}, socket) do
+    filter_form = socket.assigns.filter_form
+
+    filter_form =
+      FilterForm.update_predicate(filter_form, predicate_id, fn predicate ->
+        %{predicate | value: ""}
+      end)
+
+    # force combobox to reset
+    socket =
+      push_event(socket, "combobox:reset", %{name: "filter_tax_family"})
+
+    assign_and_update(socket, filter_form)
+  end
+
+  @impl true
+  def handle_event("filter_tax_phylum:reset", %{"predicate-id" => predicate_id}, socket) do
+    filter_form = socket.assigns.filter_form
+
+    filter_form =
+      FilterForm.update_predicate(filter_form, predicate_id, fn predicate ->
+        %{predicate | value: ""}
+      end)
+
+    # force combobox to reset
+    socket =
+      push_event(socket, "combobox:reset", %{name: "filter_tax_phylum"})
+
+    assign_and_update(socket, filter_form)
+  end
+
+  @impl true
+  def handle_event("filter_loc_country:reset", %{"predicate-id" => predicate_id}, socket) do
+    filter_form = socket.assigns.filter_form
+
+    filter_form =
+      FilterForm.update_predicate(filter_form, predicate_id, fn predicate ->
+        %{predicate | value: ""}
+      end)
+
+    # force combobox to reset
+    socket =
+      push_event(socket, "combobox:reset", %{name: "filter_loc_country"})
+
+    assign_and_update(socket, filter_form)
+  end
+
+  @impl true
+  def handle_event("filter_loc_state_province:reset", %{"predicate-id" => predicate_id}, socket) do
+    filter_form = socket.assigns.filter_form
+
+    filter_form =
+      FilterForm.update_predicate(filter_form, predicate_id, fn predicate ->
+        %{predicate | value: ""}
+      end)
+
+    # force combobox to reset
+    socket =
+      push_event(socket, "combobox:reset", %{name: "filter_loc_state_province"})
+
+    assign_and_update(socket, filter_form)
+  end
+
   defp assign_collapsible_state(socket) do
     active_filter_form_fields = FilterForm.active_filter_form_fields(socket.assigns.meta)
 
@@ -501,17 +820,27 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
         &(&1 in active_filter_form_fields)
       )
 
+    active_date =
+      Enum.any?(
+        ~w[updated_at eve_year eve_event_date_presence],
+        &(&1 in active_filter_form_fields)
+      )
+
     active_location =
-      Enum.any?(~w[loc_continent loc_locality], &(&1 in active_filter_form_fields))
+      Enum.any?(
+        ~w[loc_continent loc_country loc_locality loc_decimal_presence loc_swiss_coordinates_95_presence loc_swiss_coordinates_03_presence],
+        &(&1 in active_filter_form_fields)
+      )
 
     active_others =
       Enum.any?(
-        ~w[mte_recorded_by idf_type_status mts_material_sample_type mte_preparations],
+        ~w[iucn_redlist_category_group mids_level mte_recorded_by idf_type_status mts_material_sample_type mte_preparations],
         &(&1 in active_filter_form_fields)
       )
 
     assign(socket, :collapsible_state, %{
       "taxonomy" => active_taxonomy,
+      "date" => active_date,
       "location" => active_location,
       "other" => active_others
     })
@@ -525,6 +854,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
     assign_new(socket, :distinct_options, fn ->
       %{
         loc_continent: loc_continent_options(socket.assigns.collection),
+        loc_country: loc_country_options(socket.assigns.collection),
+        loc_state_province: loc_state_province_options(socket.assigns.collection),
         idf_type_status: idf_type_status_options(socket.assigns.collection),
         mts_material_sample_type: mts_material_sample_type_options(socket.assigns.collection),
         mte_preparations: mte_preparations_options(socket.assigns.collection),
@@ -537,6 +868,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
 
   defp loc_continent_options(collection) do
     distinct_ecto(:loc_continent, :encoded_records, collection)
+  end
+
+  defp loc_country_options(collection) do
+    distinct_ecto(:loc_country, :encoded_records, collection)
+  end
+
+  defp loc_state_province_options(collection) do
+    distinct_ecto(:loc_state_province, :encoded_records, collection)
   end
 
   defp idf_type_status_options(collection) do

@@ -479,7 +479,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
           id="confirm_import_alert"
           size="sm"
           title={~t"Are you sure?"m}
-          label={~t"Yes, delete import"m}
+          confirm_button_label={~t"Yes, delete import"m}
         />
       </:portal>
     </.page>

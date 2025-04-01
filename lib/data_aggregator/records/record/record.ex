@@ -66,6 +66,7 @@ defmodule DataAggregator.Records.Record do
       ]
     ]
   }
+
   def ash_pagify_options, do: @ash_pagify_options
 
   attributes do
@@ -149,6 +150,32 @@ defmodule DataAggregator.Records.Record do
               ),
               public?: true
 
+    calculate :iucn_redlist_category_group, :string, Calculations.IucnRedlistCategoryGroup, public?: true
+
+    calculate :loc_decimal_presence,
+              :boolean,
+              expr(
+                not is_nil(encoded_record.loc_decimal_latitude) and
+                  not is_nil(encoded_record.loc_decimal_longitude)
+              ),
+              public?: true
+
+    calculate :loc_swiss_coordinates_95_presence,
+              :boolean,
+              expr(
+                not is_nil(encoded_record.loc_swiss_coordinates_lv95_x) and
+                  not is_nil(encoded_record.loc_swiss_coordinates_lv95_y)
+              ),
+              public?: true
+
+    calculate :loc_swiss_coordinates_03_presence,
+              :boolean,
+              expr(
+                not is_nil(encoded_record.loc_swiss_coordinates_lv03_x) and
+                  not is_nil(encoded_record.loc_swiss_coordinates_lv03_y)
+              ),
+              public?: true
+
     calculate :mids_level_one,
               :boolean,
               expr(encoded_record.mids_level_one)
@@ -168,6 +195,11 @@ defmodule DataAggregator.Records.Record do
     calculate :tsvector, AshPostgres.Tsvector, expr(tsv)
 
     calculate :encoded_tsvector, AshPostgres.Tsvector, expr(encoded_record.tsv)
+
+    calculate :eve_event_date_presence,
+              :boolean,
+              expr(not is_nil(encoded_record.eve_event_date)),
+              public?: true
 
     calculate :not_encoded,
               :boolean,

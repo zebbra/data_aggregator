@@ -181,7 +181,7 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           id="confirm_collection_alert"
           size="sm"
           title={~t"Are you sure?"m}
-          label={~t"Yes, delete dataset"m}
+          confirm_button_label={~t"Yes, delete dataset"m}
         />
       </:portal>
     </.page>
