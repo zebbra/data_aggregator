@@ -35,8 +35,10 @@ defmodule DataAggregator.Accounts.User do
     tokens do
       enabled? true
       token_resource DataAggregator.Accounts.Token
-
+      store_all_tokens? true
+      require_token_presence_for_authentication? true
       signing_secret DataAggregator.Accounts.Secrets
+      token_lifetime {24, :hours}
     end
   end
 

@@ -1,6 +1,8 @@
 defmodule DataAggregatorApi.Router do
   use Phoenix.Router, helpers: false
 
+  require Logger
+
   pipeline :api do
     plug :accepts, ["json"]
     plug :get_tenant_from_path
@@ -28,11 +30,17 @@ defmodule DataAggregatorApi.Router do
     with ["" <> token] <- get_req_header(conn, "api_key"),
          {:ok, %{"sub" => sub}, resource} <-
            AshAuthentication.Jwt.verify(token, :data_aggregator),
-         {:ok, user} <-
-           AshAuthentication.subject_to_user(sub, resource) do
+         {:ok, user} <- AshAuthentication.subject_to_user(sub, resource) do
+      Logger.info("Resource was #{inspect(resource)}")
+      Logger.info("Sub was #{inspect(sub)}")
+      Logger.info("User #{inspect(user, pretty: true)} authenticated with token")
+
       Ash.PlugHelpers.set_actor(conn, user)
     else
-      _ -> conn
+      e ->
+        Logger.error("Error getting actor from token: #{inspect(e)}")
+
+        conn
     end
   end
 
