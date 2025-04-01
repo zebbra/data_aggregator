@@ -239,7 +239,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
   @impl true
   def filter_form_component(%{component: %{source: %FilterForm{key: "location"}}} = assigns) do
     ~H"""
-    <div class="py-4">
+    <div class="pt-4">
       <.collapsible_group
         title={~t"Location"m}
         key="location"
