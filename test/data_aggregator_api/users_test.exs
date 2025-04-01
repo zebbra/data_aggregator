@@ -51,7 +51,6 @@ defmodule DataAggregatorApi.UsersTest do
   end
 
   describe "/api/json/users" do
-    @tag :run
     test "lists all users", %{
       conn: conn,
       user_1: user_1,
@@ -74,7 +73,6 @@ defmodule DataAggregatorApi.UsersTest do
       assert user_3.id in user_ids
     end
 
-    @tag :run
     test "filters users by email succeeded", %{
       conn: conn,
       user_1: user_1
@@ -94,7 +92,6 @@ defmodule DataAggregatorApi.UsersTest do
       assert Enum.at(data, 0)["attributes"]["email"] == "#{user_1.email}"
     end
 
-    @tag :run
     test "filters users by first_name succeeded", %{
       conn: conn,
       user_1: user_1,
@@ -119,7 +116,6 @@ defmodule DataAggregatorApi.UsersTest do
       assert user_3.id in user_ids
     end
 
-    @tag :run
     test "get one user", %{
       conn: conn,
       user_1: user
@@ -137,7 +133,6 @@ defmodule DataAggregatorApi.UsersTest do
       assert data["attributes"]["last_name"] == user.last_name
     end
 
-    @tag :run
     test "create user succeeded", %{
       conn: conn
     } do
@@ -169,7 +164,6 @@ defmodule DataAggregatorApi.UsersTest do
       assert data["attributes"]["last_name"] == "User"
     end
 
-    @tag :run
     test "update user succeeded", %{
       conn: conn,
       user_1: user
@@ -202,7 +196,6 @@ defmodule DataAggregatorApi.UsersTest do
       assert updated_user.last_name == "User"
     end
 
-    @tag :run
     test "delete user succeeds", %{conn: conn, user_1: user} do
       # Make the DELETE request
       delete(conn, "/api/json/users/#{user.id}")
@@ -211,7 +204,6 @@ defmodule DataAggregatorApi.UsersTest do
       assert {:error, _} = User.get_by_id(user.id)
     end
 
-    @tag :run
     test "delete user fails with non-existent ID", %{conn: conn} do
       # Make the DELETE request with a non-existent ID
       conn =
@@ -232,7 +224,6 @@ defmodule DataAggregatorApi.UsersTest do
   end
 
   describe "/api/json/users/sign_in" do
-    @tag :run
     test "sign in succeeds with valid credentials", %{conn: conn} do
       # Create a user for sign in
       user =
@@ -262,7 +253,6 @@ defmodule DataAggregatorApi.UsersTest do
       assert is_binary(meta["token"])
     end
 
-    @tag :run
     test "sign in fails with invalid credentials", %{conn: conn} do
       # Create a user for sign in
       AccountsFixtures.user_fixture(%{
