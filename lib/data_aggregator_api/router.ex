@@ -32,11 +32,11 @@ defmodule DataAggregatorApi.Router do
       # Logger.error("conn: #{inspect(conn)}")
       Logger.info("headers: #{inspect(conn.req_headers, pretty: true)}")
 
-      ["" <> token] = get_req_header(conn, "api_key")
+      ["" <> token] = get_req_header(conn, "authorization")
       {:ok, %{"sub" => sub}, resource} = AshAuthentication.Jwt.verify(token, :data_aggregator)
       {:ok, _user} = AshAuthentication.subject_to_user(sub, resource)
 
-      Logger.info("Header: #{inspect(get_req_header(conn, "api_key"), pretty: true)}")
+      Logger.info("Header: #{inspect(get_req_header(conn, "authorization"), pretty: true)}")
 
       Logger.info("Token verify: #{inspect(AshAuthentication.Jwt.verify(token, :data_aggregator), pretty: true)}")
 
@@ -46,7 +46,7 @@ defmodule DataAggregatorApi.Router do
         Logger.error("Error looking for token: #{inspect(e)}")
     end
 
-    with ["" <> token] <- get_req_header(conn, "api_key"),
+    with ["" <> token] <- get_req_header(conn, "authorization"),
          {:ok, %{"sub" => sub}, resource} <-
            AshAuthentication.Jwt.verify(token, :data_aggregator),
          {:ok, user} <- AshAuthentication.subject_to_user(sub, resource) do

@@ -31,7 +31,7 @@ defmodule DataAggregatorApi.SwissSpeciesTest do
       conn
       |> put_req_header("accept", "application/vnd.api+json")
       |> put_req_header("content-type", "application/vnd.api+json")
-      |> put_req_header("api_key", token)
+      |> put_req_header("authorization", token)
 
     # Create test swiss_species entries
     swiss_species_1 =
