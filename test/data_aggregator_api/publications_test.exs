@@ -32,7 +32,7 @@ defmodule DataAggregatorApi.PublicationsTest do
       conn
       |> put_req_header("accept", "application/vnd.api+json")
       |> put_req_header("content-type", "application/vnd.api+json")
-      |> put_req_header("api_key", token)
+      |> put_req_header("authorization", token)
 
     # Create a test collection
     collection = HelpersTest.setup_collection()
