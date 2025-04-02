@@ -27,40 +27,65 @@ defmodule DataAggregatorApi.Router do
 
   @spec get_actor_from_token(Plug.Conn.t(), Keyword.t()) :: Plug.Conn.t()
   def get_actor_from_token(conn, _opts) do
-    try do
-      Logger.info("Getting actor from token")
-      # Logger.error("conn: #{inspect(conn)}")
-      Logger.info("headers: #{inspect(conn.req_headers, pretty: true)}")
-
-      ["" <> token] = get_req_header(conn, "authorization")
-      {:ok, %{"sub" => sub}, resource} = AshAuthentication.Jwt.verify(token, :data_aggregator)
-      {:ok, _user} = AshAuthentication.subject_to_user(sub, resource)
-
-      Logger.info("Header: #{inspect(get_req_header(conn, "authorization"), pretty: true)}")
-
-      Logger.info("Token verify: #{inspect(AshAuthentication.Jwt.verify(token, :data_aggregator), pretty: true)}")
-
-      Logger.info("subject_to_user: #{inspect(AshAuthentication.subject_to_user(sub, resource), pretty: true)}")
-    rescue
-      e ->
-        Logger.error("Error looking for token: #{inspect(e)}")
-    end
-
-    with ["" <> token] <- get_req_header(conn, "authorization"),
-         {:ok, %{"sub" => sub}, resource} <-
-           AshAuthentication.Jwt.verify(token, :data_aggregator),
+    with {:ok, token} <- get_token_header(conn),
+         {:ok, sub, resource} <- verify_token(token),
          {:ok, user} <- AshAuthentication.subject_to_user(sub, resource) do
-      Logger.info("Resource was #{inspect(resource)}")
-      Logger.info("Sub was #{inspect(sub)}")
-      Logger.info("User #{inspect(user, pretty: true)} authenticated with token")
-
       Ash.PlugHelpers.set_actor(conn, user)
     else
+      {:error, :no_token} ->
+        Logger.debug("No token found in request")
+
+        conn
+
+      {:error, :invalid_token} ->
+        Logger.debug("Invalid token")
+
+        conn
+
       e ->
-        Logger.error("Error getting actor from token: #{inspect(e)}")
+        Logger.debug("Could not get actor from token: #{inspect(e)}")
 
         conn
     end
+  rescue
+    e ->
+      Logger.error("Error getting actor from token: #{inspect(e)}")
+
+      conn
+  end
+
+  # Get the token from the request header. Check for authorization (default) and api_key (swagger) headers
+  defp get_token_header(conn) do
+    {_key, authorization_header} = fetch_header(conn, "authorization")
+    {_key, api_key_header} = fetch_header(conn, "api_key")
+
+    cond do
+      not is_nil(authorization_header) ->
+        {:ok, authorization_header}
+
+      not is_nil(api_key_header) ->
+        {:ok, api_key_header}
+
+      true ->
+        {:error, :no_token}
+    end
+  end
+
+  # Verify the token and get the subject (user) from it
+  defp verify_token(token) do
+    case AshAuthentication.Jwt.verify(token, :data_aggregator) do
+      {:ok, %{"sub" => sub}, resource} ->
+        {:ok, sub, resource}
+
+      :error ->
+        {:error, :invalid_token}
+    end
+  end
+
+  defp fetch_header(conn, header_key) do
+    Enum.find(conn.req_headers, {header_key, nil}, fn {key, _} ->
+      key == header_key
+    end)
   end
 
   @doc """

@@ -101,15 +101,15 @@ defmodule DataAggregatorApi.RecordVersionsTest do
 
       assert %{"data" => data} = json_response(new_conn, 200)
       record_version = Enum.at(data, 0)
-      record_version_id = record_version["id"]
+      record_version_id = record_version["attributes"]["id"]
 
       # Now test getting a specific record version
       conn =
         get(conn, "/api/json/datasets/#{collection.id}/record_versions/#{record_version_id}", status: 200)
 
       assert %{"data" => data} = json_response(conn, 200)
-
-      assert data["id"] == record_version_id
+      record_version = Enum.at(data, 0)
+      assert record_version["attributes"]["id"] == record_version_id
     end
   end
 end

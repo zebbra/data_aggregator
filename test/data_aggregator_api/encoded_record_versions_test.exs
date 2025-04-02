@@ -114,9 +114,9 @@ defmodule DataAggregatorApi.EncodedRecordVersionsTest do
           status: 200
         )
 
-      data = json_response(new_conn, 200)["data"]
+      assert %{"data" => data} = json_response(new_conn, 200)
       version = Enum.at(data, 0)
-      version_id = version["id"]
+      version_id = version["attributes"]["id"]
 
       # Now test getting a specific encoded_record version
       conn =
@@ -127,8 +127,8 @@ defmodule DataAggregatorApi.EncodedRecordVersionsTest do
         )
 
       assert %{"data" => data} = json_response(conn, 200)
-
-      assert data["id"] == version_id
+      version = Enum.at(data, 0)
+      assert version["attributes"]["id"] == version_id
     end
   end
 end
