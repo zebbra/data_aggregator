@@ -7,16 +7,7 @@
 # General application configuration
 import Config
 
-# Configure AppSignal
-config :appsignal, :config,
-  otp_app: :data_aggregator,
-  name: "data_aggregator",
-  env: Mix.env()
-
 config :ash, :default_belongs_to_type, AshUUID.UUID
-
-# `config` supports a list, so this can be combined with other tracers
-config :ash, :tracer, [AshAppsignal]
 
 # Ash: Default belongs_to type, not required
 
@@ -26,21 +17,6 @@ config :ash, :use_all_identities_in_manage_relationship?, false
 
 # prevent deprecated warning for wrong usage of timestamp dateformat
 config :ash, :utc_datetime_type, :naive_datetime
-
-# Optionally configure span types to be sent to appsignal. The default is
-# [:custom, :action, :flow]
-# We suggest using this list. It trims down some noisy traces that Ash emits
-config :ash_appsignal,
-  trace_types: [
-    :custom,
-    :action,
-    :before_transaction,
-    :before_action,
-    :after_transaction,
-    :after_action,
-    :custom_flow_step,
-    :flow
-  ]
 
 # AshPagify global configuration
 config :ash_pagify,

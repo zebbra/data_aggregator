@@ -284,9 +284,6 @@ defmodule DataAggregator.MixProject do
       {:oban_live_dashboard, "~> 0.2.0"},
 
       # Monitoring and Tracing
-      {:appsignal, "~> 2.8"},
-      {:appsignal_phoenix, "~> 2.0"},
-      {:ash_appsignal, "~> 0.1.2"},
       {:phoenix_live_dashboard, "~> 0.8.4"},
       {:sentry, "~> 10.6"},
       {:telemetry_metrics, "~> 1.0"},

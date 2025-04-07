@@ -218,3 +218,7 @@ As soon as the data processing within the aggregator is finished, the Infospecie
 `error_log_url` will contain an url which points to the error log of the internal processing of the data. The `success_count` and `error_count` will contain the amount of successfully processed and validated records and the amount of records which failed during the processing.
 
 All the code necessary to handle the validation process is located in the `lib/data_aggregator/records/validation` modules.
+
+## JSON Rest API
+
+The application provides a JSON Rest API to interact with the data. The API is built using the Ash Framework and provides a set of endpoints to access and manipulate the data. Read full Rest API documentation [here](./api/json_api.md).
