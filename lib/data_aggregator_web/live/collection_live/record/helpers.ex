@@ -12,6 +12,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   alias DataAggregator.Taxonomy.Catalog
 
   @transformers Schema.dwc_transformers()
+  @fields_not_shown_in_ui [
+    :loc_decimal_presence,
+    :loc_swiss_coordinates_95_presence,
+    :loc_swiss_coordinates_03_presence,
+    :eve_event_date_presence
+  ]
 
   def busy?(action, busy_action), do: action == busy_action
 
@@ -55,7 +61,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
 
     record
     |> Map.keys()
-    |> Enum.filter(&imported_or_encoded?(&1, record, output_dwc_fields))
+    |> Enum.filter(&should_show_attribute?(&1, record, output_dwc_fields))
     |> Enum.map(fn key ->
       imported_value =
         record
@@ -94,8 +100,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     end
   end
 
-  defp imported_or_encoded?(key, record, output_dwc_fields) do
+  defp should_show_attribute?(key, record, output_dwc_fields) do
     cond do
+      key in @fields_not_shown_in_ui ->
+        false
+
       # show all fields that we take from the collection
       Map.has_key?(Schema.data_from_collection(), key) ->
         true
