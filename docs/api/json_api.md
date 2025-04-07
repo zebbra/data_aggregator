@@ -1,8 +1,8 @@
-## Rest API
+## JSON Rest API
 
 ### Accessible Resources
 
-The Application exposes a REST API. Which gives the User Access to the following resources:
+The application exposes a REST API that gives the user access to the following resources:
 
 #### Datasets
 
