@@ -7,6 +7,8 @@ defmodule DataAggregator.Records.ImageUpload.Calculations.MappedImages do
 
   alias DataAggregator.Records.ImageUpload
 
+  require Logger
+
   @impl true
   def load(_query, _opts, _context) do
     [images: [:record_id]]
@@ -18,6 +20,13 @@ defmodule DataAggregator.Records.ImageUpload.Calculations.MappedImages do
   end
 
   defp mapped_images(%ImageUpload{images: images}) do
-    Enum.reject(images, &is_nil(&1.record_id))
+    {time, rejection_result} =
+      :timer.tc(
+        fn -> Enum.reject(images, &is_nil(&1.record_id)) end,
+        :millisecond
+      )
+
+    Logger.info("Calculation of mapped images took #{time}ms")
+    rejection_result
   end
 end
