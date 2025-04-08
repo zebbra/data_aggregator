@@ -12,6 +12,12 @@
       {assigns[:page_title] || "Dashboard"}
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <script
+      :if={System.get_env("SENTRY_SESSION_REPLAY_SCRIPT_URL") != nil}
+      src={System.get_env("SENTRY_SESSION_REPLAY_SCRIPT_URL")}
+      crossorigin="anonymous"
+    >
+    </script>
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
   </head>

@@ -9,8 +9,8 @@ image:
 env:
   BASE_URL: https://staging.aggregator.scnat.zebbra.ch
   SENTRY_DSN: https://128c60631cb044ec8c353307d9352673@sentry.zebbra.ch/325
+  SENTRY_SESSION_REPLAY_SCRIPT_URL: https://sentry.zebbra.ch/js-sdk-loader/128c60631cb044ec8c353307d9352673.min.js
   SENTRY_ENVIRONMENT: staging
-  APPSIGNAL_APP_ENV: staging
   LOG_LEVEL: info
   WAFFLE_STORAGE: s3
   AWS_S3_HOST: s3.cloud.zebbra.ch
