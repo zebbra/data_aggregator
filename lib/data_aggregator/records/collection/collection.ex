@@ -31,7 +31,7 @@ defmodule DataAggregator.Records.Collection do
     :set_idle,
     :set_idle_encoding,
     :enqueue_encoding,
-    :validate,
+    :start_validations,
     :export
   ]
 
@@ -300,18 +300,18 @@ defmodule DataAggregator.Records.Collection do
     end
 
     # starts the validation process towards infospecies for the given query of records
-    action :send_validation, :map do
+    action :validate, :map do
       argument :publication, :struct, allow_nil?: false
 
-      run Actions.SendValidation
+      run Actions.Validate
     end
 
     # creates the publication resource and enqueues it to the publication queue (with channel :validation)
-    action :validate, :map do
+    action :start_validations, :map do
       argument :collection, :struct, allow_nil?: false
       argument :query, :map, allow_nil?: false
 
-      run Actions.Validate
+      run Actions.StartValidations
     end
   end
 
@@ -350,8 +350,8 @@ defmodule DataAggregator.Records.Collection do
     define :create_endpoint, args: [:collection, :dwca_file_url]
     define :export, action: :export, args: [:export]
     define :publish, args: [:publication]
-    define :send_validation, args: [:publication]
-    define :validate, args: [:collection, :query]
+    define :validate, args: [:publication]
+    define :start_validations, args: [:collection, :query]
     define :register_at_gbif, args: [:existing_dataset_key]
 
     define :set_mapping

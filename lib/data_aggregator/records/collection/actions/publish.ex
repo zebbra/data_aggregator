@@ -21,7 +21,6 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
-  alias DataAggregator.Records.Publication.InfoSpecies
   alias DataAggregator.Records.Publication.PublishedRecord
   alias DataAggregator.Records.Record
   alias DataAggregator.Taxonomy.Catalogs.SwissSpecies
@@ -42,8 +41,8 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       |> Ash.Query.set_tenant(tenant)
 
     # first we need to copy the data of these records to published_records table if fast track
-    maybe_append_published_records(publication, query)
-    publication = maybe_update_count(publication, tenant)
+    append_published_records(publication, query)
+    publication = update_count(publication, tenant)
 
     # we need to register now, so we can use the data in the dwc file creation process
     collection =
@@ -70,9 +69,9 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
     Enum.each(file_metas, &DwcaFile.write_headers(&1))
 
-    query
-    |> stream_query_or_resource(publication)
-    |> set_publication_status(:publishing, publication, ctx)
+    publication
+    |> stream_resource()
+    |> set_publication_status(:publishing, ctx)
     |> Stream.chunk_every(1000)
     |> Stream.flat_map(fn records ->
       file_metas
@@ -85,7 +84,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       records
     end)
     |> Counter.count_each(counter)
-    |> set_publication_status(:in_publication, publication, ctx)
+    |> set_publication_status(:in_publication, ctx)
 
     Enum.each(file_metas, &FlatFileUtils.close_file(&1.file_descriptor))
 
@@ -100,19 +99,18 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       |> Publication.update_attachment(attachment)
       |> Ash.load!([:collection, :attachment])
 
-    # fast_track: create endpoint with attachment, validation: notify infospecies
-    case publish(publication, query, ctx) do
+    # create endpoint with attachment
+    case publish(publication, ctx) do
       {:ok, publication} ->
         {:ok, publication}
 
       {:error, error} ->
         Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(error)}")
 
-        query
-        |> stream_query_or_resource(publication)
+        publication
+        |> stream_resource()
         |> set_publication_status(
           :publication_failed,
-          publication,
           ctx
         )
 
@@ -122,45 +120,27 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     e ->
       publication = input.arguments.publication
 
-      query =
-        Record
-        |> AshPagify.query_for_filters_map(publication.records_query)
-        |> Ash.Query.set_tenant(tenant)
-
       Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(e)}")
 
-      query
-      |> stream_query_or_resource(publication)
+      publication
+      |> stream_resource()
       |> set_publication_status(
         :publication_failed,
-        publication,
         ctx
       )
 
       {:error, e}
   end
 
-  @spec set_publication_status(Enumerable.t(), atom(), Publication.t(), Context.t()) ::
+  @spec set_publication_status(Enumerable.t(), atom(), Context.t()) ::
           Enumerable.t()
-  defp set_publication_status(stream, status, publication, %{actor: actor, tenant: tenant}) do
-    action =
-      if publication.channel == :fast_track,
-        do: :update_fast_track_status,
-        else: :update_validation_status
-
-    status = if action == :update_validation_status, do: translate_status(status), else: status
-
+  defp set_publication_status(stream, status, %{actor: actor, tenant: tenant}) do
     max_concurrency = Records.import_max_concurrency()
     batch_size = ceil(Records.import_batch_size() / max_concurrency)
 
-    stream_params =
-      if publication.channel == :fast_track do
-        Enum.map(stream, &%{id: &1.record_id})
-      else
-        stream
-      end
+    stream_params = Enum.map(stream, &%{id: &1.record_id})
 
-    Ash.bulk_update(stream_params, action, %{status: status},
+    Ash.bulk_update(stream_params, :update_fast_track_status, %{status: status},
       actor: actor,
       authorize?: false,
       domain: Records,
@@ -173,9 +153,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     stream
   end
 
-  defp maybe_append_published_records(%{channel: :validation} = _publication, _query), do: nil
-
-  defp maybe_append_published_records(%{channel: :fast_track} = publication, query) do
+  defp append_published_records(%{channel: :fast_track} = publication, query) do
     query
     |> Ash.stream!(stream_with: :keyset, batch_size: 1000, load: :encoded_record)
     |> Stream.map(fn record ->
@@ -222,19 +200,14 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
   defp round_coordinates(value), do: value
 
-  defp maybe_update_count(%{channel: :validation} = publication, _tenant), do: publication
-
-  defp maybe_update_count(%{channel: :fast_track} = publication, tenant) do
+  defp update_count(%{channel: :fast_track} = publication, tenant) do
     # now we update the rows count with the number of records that will be published
     published_records_count = Ash.count!(PublishedRecord, tenant: tenant)
     Publication.update!(publication, %{rows_count: published_records_count})
   end
 
-  defp stream_query_or_resource(_query, %{channel: :fast_track, collection: collection}),
+  defp stream_resource(%{channel: :fast_track, collection: collection}),
     do: Ash.stream!(PublishedRecord, stream_with: :keyset, batch_size: 1000, tenant: collection)
-
-  defp stream_query_or_resource(query, %{channel: :validation}),
-    do: Ash.stream!(query, stream_with: :keyset, batch_size: 1000, load: :encoded_record)
 
   defp record_inputs(record, publication) do
     layer = if publication.layer == "import", do: record, else: Map.get(record, :encoded_record)
@@ -248,30 +221,12 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     |> Map.put(:collection_id, publication.collection.id)
   end
 
-  defp translate_status(:publishing), do: :validating
-  defp translate_status(:in_publication), do: :in_validation
-  defp translate_status(:publication_failed), do: :validation_failed
-
-  defp register(%Publication{channel: :validation} = publication), do: {:ok, publication.collection}
-
   defp register(%Publication{channel: :fast_track} = publication) do
     Logger.debug("Registering collection: #{publication.collection.id} at GBIF for publishing")
     Collection.register_at_gbif(publication.collection, publication.existing_dataset_key)
   end
 
-  defp publish(%Publication{channel: :validation} = publication, query, _ctx) do
-    case InfoSpecies.notify(publication, query) do
-      {:ok, publication} ->
-        {:ok, publication}
-
-      {:error, error} ->
-        Logger.warning("Error while informing infospecies about new available records for review: #{inspect(error)}")
-
-        {:error, error}
-    end
-  end
-
-  defp publish(%Publication{channel: :fast_track} = publication, _query, ctx) do
+  defp publish(%Publication{channel: :fast_track} = publication, ctx) do
     with {:ok, _dataset_key} <-
            Collection.create_endpoint(publication.collection, publication.attachment.url),
          :ok <- queue_records_for_verification(publication.collection, ctx) do
