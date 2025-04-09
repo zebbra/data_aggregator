@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
+defmodule DataAggregatorWeb.CollectionLive.Validation.Index do
   @moduledoc false
   use DataAggregatorWeb, :live_view
   use DataAggregatorWeb.CollectionLive.Publication.Subscriptions
@@ -54,7 +54,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
         raise ~t"Something went wrong"m
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/datasets/#{id}/publications")}
+        {:noreply, push_navigate(socket, to: ~p"/datasets/#{id}/validations")}
     end
   end
 
@@ -76,11 +76,11 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
         <.secondary_navigation_item
           href={~p"/datasets/#{@collection}/publications"}
           label={~t"Publications"m}
-          active
         />
         <.secondary_navigation_item
           href={~p"/datasets/#{@collection}/validations"}
           label={~t"Validations"m}
+          active
         />
         <.secondary_navigation_item
           href={~p"/datasets/#{@collection}/image_uploads"}
@@ -96,7 +96,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
         opts={[
           no_results_content: no_results_content(%{collection: @collection})
         ]}
-        path={~p"/datasets/#{@collection}/publications"}
+        path={~p"/datasets/#{@collection}/validations"}
         items={@streams.results}
         meta={@meta}
         row_click={
@@ -107,6 +107,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
       >
         <:col :let={{_id, publication}} field={:state} label={~t"State"m}>
           <.publication_state_badge publication={publication} />
+        </:col>
+        <:col :let={{_id, publication}} field={:center} label={~t"Center"m} class="text-center">
+          {publication.center}
         </:col>
         <:col :let={{_id, publication}} label={~t"File"m}>
           <.file_info attachment={publication.attachment} rows={publication.rows_count} />
@@ -158,20 +161,20 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
           />
         </:action>
       </.table>
-      <.pagination meta={@meta} path={~p"/datasets/#{@collection}/publications"} />
+      <.pagination meta={@meta} path={~p"/datasets/#{@collection}/validations"} />
 
       <:secondary>
         <.slideover
           title={
             if @selected_publication != nil, do: @selected_publication.name, else: ~t"Publication"m
           }
-          subtitle={~t"Publication status details."m}
+          subtitle={~t"Validation status details."m}
           open={@selected_publication != nil}
           on_cancel={JS.push("publication:select", value: %{id: nil})}
           size="xl"
         >
           <.section_heading
-            text={~t"Publication"m}
+            text={~t"Validation"m}
             class="border-black-white/10 border-b px-6 pb-6 sm:px-8"
             align_items="center"
             size="md"
@@ -203,6 +206,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
           </.section_heading>
 
           <.list>
+            <:item title={~t"Center"m}>
+              {@selected_publication.center}
+            </:item>
             <:item title={~t"File"m}>
               <.file_info
                 attachment={@selected_publication.attachment}
@@ -245,9 +251,6 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
               </div>
               {@selected_publication.duration}
             </:item>
-            <:item title={~t"License"m}>
-              {@selected_publication.license}
-            </:item>
           </.list>
 
           <:footer :if={
@@ -273,7 +276,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
           id="confirm_publication_alert"
           size="sm"
           title={~t"Are you sure?"m}
-          confirm_button_label={~t"Yes, delete publication"m}
+          confirm_button_label={~t"Yes, delete validation"m}
         />
       </:portal>
     </.page>
@@ -310,7 +313,7 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
 
     {:noreply,
      socket
-     |> put_flash(:info, ~t"Publication deleted successfully"m)
+     |> put_flash(:info, ~t"Validation deleted successfully"m)
      |> assign(:selected_publication, nil)
      |> stream_delete(:results, publication)}
   end
@@ -340,12 +343,12 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, ~t"Dataset Publications"m)
+    |> assign(:page_title, ~t"Dataset Validations"m)
     |> assign(:publication, nil)
   end
 
   defp list_publications(params, actor, tenant, opts \\ [load: @load]) do
-    query = Ash.Query.filter(Publication, channel == "fast_track")
+    query = Ash.Query.filter(Publication, channel == "validation")
 
     opts = Keyword.put_new(opts, :actor, actor)
     opts = Keyword.put_new(opts, :tenant, tenant)
@@ -357,8 +360,8 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   defp no_results_content(assigns) do
     ~H"""
     <.empty_state
-      title={~t"No publications"m}
-      description={~t"Get started by publishing records."m}
+      title={~t"No validations"m}
+      description={~t"Get started by validating records."m}
       icon="hero-globe-alt"
     />
     """
