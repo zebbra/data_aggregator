@@ -153,7 +153,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
 
     image_upload =
       if Records.execute_async?() do
-        add_progress |> Task.async() |> Task.await()
+        add_progress |> Task.async() |> Task.await(to_timeout(second: 30))
       else
         add_progress.()
       end
@@ -172,7 +172,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
 
     image_upload =
       if Records.execute_async?() do
-        set_unmapped_count |> Task.async() |> Task.await()
+        set_unmapped_count |> Task.async() |> Task.await(to_timeout(second: 30))
       else
         set_unmapped_count.()
       end
@@ -191,7 +191,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
 
     image_upload =
       if Records.execute_async?() do
-        set_images_count |> Task.async() |> Task.await()
+        set_images_count |> Task.async() |> Task.await(to_timeout(second: 30))
       else
         set_images_count.()
       end
