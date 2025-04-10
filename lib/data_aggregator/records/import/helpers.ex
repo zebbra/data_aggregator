@@ -23,7 +23,7 @@ defmodule DataAggregator.Records.Import.Helpers do
   @doc """
   Returns `true` if the row is valid and can be imported.
   """
-  @spec valid_import_row?(Import.t(), map()) :: {:ok, boolean()}
+  @spec valid_import_row?(Import.t(), map()) :: boolean()
   def valid_import_row?(%Import{} = import, row) do
     changeset = Record.changeset_to_import(import, row)
 

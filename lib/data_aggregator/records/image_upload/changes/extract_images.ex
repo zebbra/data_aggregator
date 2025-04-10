@@ -52,6 +52,13 @@ defmodule DataAggregator.Records.ImageUpload.Changes.ExtractImages do
   end
 
   defp add_invalid_file_info(changeset, invalid_file_infos) do
+    changeset =
+      Changeset.force_change_attribute(
+        changeset,
+        :invalid_files_count,
+        length(invalid_file_infos)
+      )
+
     {:add_invalid_file_info, Changeset.force_change_attribute(changeset, :invalid_file_infos, invalid_file_infos)}
   end
 

@@ -30,6 +30,18 @@ defmodule DataAggregator.Records.ImageUpload do
 
     attribute :invalid_file_infos, {:array, :map}, allow_nil?: true, public?: true
 
+    attribute :mapped_images_count, :integer, allow_nil?: false, default: 0, public?: true
+    attribute :unmapped_images_count, :integer, allow_nil?: false, default: 0, public?: true
+
+    attribute :error_message, :string, allow_nil?: true, default: nil, public?: true
+
+    attribute :general_mapping_progress_count, :integer,
+      allow_nil?: false,
+      default: 0,
+      public?: true
+
+    attribute :invalid_files_count, :integer, allow_nil?: false, default: 0, public?: true
+
     attribute :mapping_identifier, :atom,
       allow_nil?: false,
       default: :mte_catalog_number,
@@ -61,9 +73,6 @@ defmodule DataAggregator.Records.ImageUpload do
   calculations do
     calculate :mapped_images, {:array, :string}, ImageUpload.Calculations.MappedImages
     calculate :unmapped_images, {:array, :string}, ImageUpload.Calculations.UnmappedImages
-    calculate :mapped_images_count, :integer, expr(length(mapped_images))
-    calculate :unmapped_images_count, :integer, expr(length(unmapped_images))
-    calculate :invalid_files_count, :integer, expr(length(invalid_file_infos))
   end
 
   state_machine do
@@ -115,6 +124,16 @@ defmodule DataAggregator.Records.ImageUpload do
       change ImageUpload.Changes.EnqueueExtractor
     end
 
+    update :add_mapping_progress do
+      accept []
+      argument :mapped, :integer, allow_nil?: false
+
+      require_atomic? false
+
+      change atomic_update(:mapped_images_count, expr(mapped_images_count + ^arg(:mapped)))
+      change ensure_selected(:mapped_images_count)
+    end
+
     update :extract do
       accept []
       require_atomic? false
@@ -162,6 +181,8 @@ defmodule DataAggregator.Records.ImageUpload do
 
       change SetTimeout
       change ImageUpload.Changes.SetMappingBeforeTransaction
+      change ImageUpload.Changes.ResetCountBeforeTransaction
+      change ImageUpload.Changes.ResetErrorMsgBeforeTransaction
       change ImageUpload.Changes.MapImages
       change ImageUpload.Changes.SetMappedAfterAction
       change ImageUpload.Changes.CreateUploadLogAfterAction
@@ -202,6 +223,15 @@ defmodule DataAggregator.Records.ImageUpload do
       change transition_state(:mapping_failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
       change SetCollectionIdleAfterTransaction
+    end
+
+    update :set_error_message do
+      accept []
+      argument :error_message, :string, allow_nil?: true
+
+      require_atomic? false
+
+      change set_attribute(:error_message, expr(^arg(:error_message)))
     end
 
     update :cancel_mapping do
@@ -259,6 +289,7 @@ defmodule DataAggregator.Records.ImageUpload do
 
   code_interface do
     define :read
+    define :update
     define :get_by_id, action: :read, get_by: [:id]
     define :active
     define :create, args: [:collection]
@@ -271,6 +302,7 @@ defmodule DataAggregator.Records.ImageUpload do
     define :set_mapped
     define :set_mapping_incomplete
     define :set_mapping_failed
+    define :set_error_message, args: [:error_message]
     define :enqueue_extraction
     define :extract
     define :update_mapping_identifier, args: [:mapping_identifier]
@@ -278,6 +310,7 @@ defmodule DataAggregator.Records.ImageUpload do
     define :map
     define :cancel_mapping
     define :update_upload_log, args: [:upload_log]
+    define :add_mapping_progress, args: [:mapped]
   end
 
   postgres do

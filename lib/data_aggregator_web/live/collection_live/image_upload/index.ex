@@ -18,6 +18,8 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.ImageUpload
 
+  require Logger
+
   @dialyzer {:no_unused, edit_data_tip: 1, edit_icon: 1}
 
   @load load()
@@ -198,6 +200,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
             <:item title={~t"Finished at"m}>
               {format_datetime(@selected_image_upload.finished_at)}
             </:item>
+            <:item title={~t"Processed Items"m}>
+              {@selected_image_upload.general_mapping_progress_count}
+            </:item>
             <:item title={~t"Mapped"m}>
               {@selected_image_upload.mapped_images_count}
             </:item>
@@ -212,6 +217,12 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
                 :if={@selected_image_upload.upload_log != nil}
                 attachment={@selected_image_upload.upload_log}
               />
+              <span :if={@selected_image_upload.upload_log == nil}>
+                -
+              </span>
+            </:item>
+            <:item title={~t"Error Message"m}>
+              {@selected_image_upload.error_message || ~c"-"}
             </:item>
           </.list>
           <:footer></:footer>
@@ -282,6 +293,15 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
   def handle_event("image_upload:select", %{"id" => id}, socket) do
     actor = get_actor(socket)
     tenant = get_tenant(socket)
+
+    {time, _image_upload} =
+      :timer.tc(
+        fn -> ImageUpload.get_by_id!(id, actor: actor, tenant: tenant, load: @load) end,
+        :millisecond
+      )
+
+    Logger.info("image_upload fetch took #{time}ms")
+
     image_upload = ImageUpload.get_by_id!(id, actor: actor, tenant: tenant, load: @load)
 
     {:noreply, assign(socket, selected_image_upload: image_upload)}
