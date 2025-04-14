@@ -51,6 +51,7 @@ defmodule DataAggregator.Records.ImageUpload.ExtractTest do
     assert {:ok, image_upload} = ImageUpload.extract(image_upload)
 
     assert image_upload.invalid_file_infos == []
+    assert image_upload.invalid_files_count === 0
 
     assert image_upload.state == :extracted
     assert image_upload.image_attachments != nil
@@ -85,7 +86,8 @@ defmodule DataAggregator.Records.ImageUpload.ExtractTest do
 
     assert image_upload.invalid_file_infos != nil
     assert is_list(image_upload.invalid_file_infos)
-    assert length(image_upload.invalid_file_infos) == 2
+    assert length(image_upload.invalid_file_infos) === 2
+    assert image_upload.invalid_files_count === 2
 
     Enum.each(image_upload.invalid_file_infos, fn invalid_file_info ->
       case invalid_file_info["filename"] do
@@ -117,6 +119,7 @@ defmodule DataAggregator.Records.ImageUpload.ExtractTest do
     assert {:ok, image_upload} = ImageUpload.extract(image_upload)
 
     assert image_upload.invalid_file_infos == []
+    assert image_upload.invalid_files_count === 0
 
     assert image_upload.state == :extracted
     assert image_upload.image_attachments != nil
@@ -141,6 +144,7 @@ defmodule DataAggregator.Records.ImageUpload.ExtractTest do
     assert {:ok, image_upload} = ImageUpload.extract(image_upload)
 
     assert image_upload.invalid_file_infos == []
+    assert image_upload.invalid_files_count === 0
 
     assert image_upload.state == :extracted
     assert image_upload.image_attachments != nil
@@ -169,6 +173,7 @@ defmodule DataAggregator.Records.ImageUpload.ExtractTest do
     assert {:ok, image_upload} = ImageUpload.extract(image_upload)
 
     assert image_upload.invalid_file_infos == []
+    assert image_upload.invalid_files_count === 0
 
     assert image_upload.state == :extracted
     assert image_upload.image_attachments != nil

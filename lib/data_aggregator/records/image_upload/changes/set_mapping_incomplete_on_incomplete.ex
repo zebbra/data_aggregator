@@ -16,8 +16,6 @@ defmodule DataAggregator.Records.ImageUpload.Changes.SetMappingIncompleteOnIncom
   end
 
   defp maybe_set_incomplete(_changeset, image_upload) do
-    image_upload = Ash.load!(image_upload, [:unmapped_images, :unmapped_images_count])
-
     if image_upload.unmapped_images_count > 0 do
       Logger.debug("Setting image upload to incomplete ...")
       ImageUpload.set_mapping_incomplete(image_upload)
