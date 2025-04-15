@@ -129,9 +129,13 @@ defmodule DataAggregator.Records.ImageUpload do
       argument :mapped, :integer, allow_nil?: false
 
       require_atomic? false
+      transaction? false
 
       change atomic_update(:mapped_images_count, expr(mapped_images_count + ^arg(:mapped)))
       change ensure_selected(:mapped_images_count)
+
+      change atomic_update(:unmapped_images_count, expr(unmapped_images_count - ^arg(:mapped)))
+      change ensure_selected(:unmapped_images_count)
     end
 
     update :extract do

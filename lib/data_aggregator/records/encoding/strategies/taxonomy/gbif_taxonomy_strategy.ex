@@ -106,7 +106,9 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   @spec handle_synonym(map()) :: {:ok, map()} | {:error, String.t()}
   defp handle_synonym(body) when body.synonym == false, do: {:ok, body}
 
-  defp handle_synonym(body) when body.synonym == true do
+  # if the response is a synonym or if there is no indication of a synonym in the response (body.synonym ),
+  # we need to fetch the species api with the usageKey to get the whole, desired taxonomy
+  defp handle_synonym(body) do
     with {:ok, response} <- fetch_species_api(body.usageKey),
          {:ok, body} <- parse_response(response) do
       parse_species_api_body(body)
@@ -177,7 +179,23 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
 
         iex> body = %{matchType: "HIGHERRANK", kingdom: "Animalia"}
         iex> correct_match_type(body)
-        {:error, "For this species name we could not find a matching taxonomy. Only results in HIGHERRANK and Scientific Name \"Animalia\" was found "}
+        :ok
+
+        iex> body = %{matchType: "HIGHERRANK"}
+        iex> correct_match_type(body)
+        :ok
+
+        iex> body = %{matchType: "HIGHERRANK", rank: "SPECIES"}
+        iex> correct_match_type(body)
+        :ok
+
+        iex> body = %{matchType: "HIGHERRANK", rank: "PHYLUM"}
+        iex> correct_match_type(body)
+        {:error, "For this species name we could not find a matching taxonomy. Only results in HIGHERRANK (rank \"PHYLUM\")"}
+
+        iex> body = %{matchType: "HIGHERRANK", rank: "KINGDOM"}
+        iex> correct_match_type(body)
+        {:error, "For this species name we could not find a matching taxonomy. Only results in HIGHERRANK (rank \"KINGDOM\")"}
 
         iex> body = %{matchType: "NONE"}
         iex> correct_match_type(body)
@@ -194,10 +212,14 @@ defmodule DataAggregator.Records.Encoding.Strategy.GbifTaxonomyStrategy do
   def correct_match_type(body) when body.matchType == "EXACT", do: :ok
   def correct_match_type(body) when body.matchType == "FUZZY", do: :ok
 
-  def correct_match_type(body) when body.matchType == "HIGHERRANK",
+  def correct_match_type(body) when body.matchType == "HIGHERRANK" and (body.rank == "PHYLUM" or body.rank == "KINGDOM"),
     do:
       {:error,
-       "For this species name we could not find a matching taxonomy. Only results in HIGHERRANK and Scientific Name #{inspect(body.kingdom)} was found "}
+       "For this species name we could not find a matching taxonomy. Only results in HIGHERRANK (rank #{inspect(body.rank)})"}
+
+  def correct_match_type(body) when body.matchType == "HIGHERRANK" do
+    :ok
+  end
 
   def correct_match_type(body),
     do:

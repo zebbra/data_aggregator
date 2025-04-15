@@ -15,10 +15,15 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
       correct_record = record_fixture_for_encoding()
+
+      correct_record_no_synonym =
+        record_fixture_for_encoding(%{tax_scientific_name: "Oenanthe Pallas no synonym"})
+
       invalid_record = record_fixture_for_encoding_gbif_taxonomy_invalid()
 
       [
         correct_record: correct_record,
+        correct_record_no_synonym: correct_record_no_synonym,
         invalid_record: invalid_record
       ]
     end
@@ -44,6 +49,35 @@ defmodule DataAggregator.GbifTaxonomyEncodingTest do
         tax_class: "Aves",
         tax_phylum: "Chordata",
         tax_kingdom: "Animalia"
+      })
+
+      assert encoded_record.state === :encoded
+    end
+
+    test "encode/2 for :gbif_taxonomy catalog, finds no synonym in the response and returns the encoded_record",
+         %{
+           correct_record_no_synonym: correct_record_no_synonym
+         } do
+      {:ok, encoded_record} =
+        Record.encode(correct_record_no_synonym, :gbif_taxonomy, tenant: correct_record_no_synonym.collection_id)
+
+      assert encoded_record !== nil
+
+      lookedup_encoded_record =
+        EncodedRecord.get_by_record!(encoded_record.id,
+          tenant: correct_record_no_synonym.collection_id
+        )
+
+      assert lookedup_encoded_record !== nil
+
+      assert_map_includes(lookedup_encoded_record, %{
+        tax_class: "Magnoliopsida",
+        tax_family: "Asteraceae",
+        tax_genus: "Bellis",
+        tax_kingdom: "Plantae",
+        tax_order: "Asterales",
+        tax_phylum: "Tracheophyta",
+        tax_scientific_name: "Bellis perennis L."
       })
 
       assert encoded_record.state === :encoded

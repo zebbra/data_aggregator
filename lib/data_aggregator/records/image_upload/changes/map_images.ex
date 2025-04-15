@@ -25,7 +25,9 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
 
     total_images = length(image_upload.images)
 
-    # chunk_size = Records.image_processing_batch_size()
+    changeset =
+      set_unmapped_images_count(changeset, total_images)
+
     changeset =
       Record
       |> Ash.Query.set_tenant(image_upload.collection)
@@ -76,15 +78,12 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
           Context.t()
         ) :: pos_integer()
   defp process_image_chunk({images_chunk, index}, record, image_upload, %{actor: actor, tenant: tenant}) do
-    Logger.debug("Processing images chunk ##{index} with #{length(images_chunk)} images")
-
-    max_concurrency = Records.general_max_concurrency()
+    Logger.info("Processing images chunk ##{index} with #{length(images_chunk)} images")
 
     # Process each image in the chunks asynchronously and check if it matches the record
     mapped_images =
       images_chunk
       |> Task.async_stream(&{&1, matching_image?(record, &1, image_upload.mapping_identifier)},
-        max_concurrency: max_concurrency,
         timeout: to_timeout(second: 30)
       )
       |> Enum.reduce([], fn
@@ -127,6 +126,8 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
   defp reduce_image_mapping_results(results, changeset, total_images) do
     Enum.reduce_while(results, changeset, fn
       mapped, changeset ->
+        Logger.info("Mapped #{mapped} images in this batch")
+
         changeset = report_process(changeset, mapped)
 
         current_mapped = Changeset.get_attribute(changeset, :mapped_images_count)
