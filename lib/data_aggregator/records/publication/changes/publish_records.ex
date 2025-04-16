@@ -16,7 +16,7 @@ defmodule DataAggregator.Records.Publication.Changes.PublishRecords do
     Changeset.before_transaction(changeset, &publish_records(&1, ctx), append?: true)
   end
 
-  defp publish_records(%Changeset{data: %{} = original_publication} = changeset, %{actor: actor, tenant: tenant}) do
+  defp publish_records(%Changeset{data: original_publication} = changeset, %{actor: actor, tenant: tenant}) do
     publication = Ash.load!(original_publication, [:collection])
 
     case publish_or_validate(publication, actor, tenant) do
