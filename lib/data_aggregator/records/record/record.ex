@@ -418,11 +418,11 @@ defmodule DataAggregator.Records.Record do
       change set_attribute(:last_validation_started_at, &DateTime.utc_now/0)
     end
 
-    update :add_image do
-      argument :image, :struct, allow_nil?: false
+    update :add_images do
+      argument :images, {:array, :struct}, allow_nil?: false
       require_atomic? false
 
-      change Changes.AddImage
+      change Changes.AddImages
     end
 
     destroy :destroy do
@@ -466,7 +466,7 @@ defmodule DataAggregator.Records.Record do
     define :check_if_fast_track_pubished
     define :enqueue_fast_track_checker, args: [:published_record]
     define :update_last_validation_started_at
-    define :add_image, args: [:image]
+    define :add_images, args: [:images]
   end
 
   policies do

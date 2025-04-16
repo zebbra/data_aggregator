@@ -5,11 +5,6 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Helpers do
 
   def load do
     [
-      :mapped_images,
-      :unmapped_images,
-      :mapped_images_count,
-      :unmapped_images_count,
-      :invalid_files_count,
       :created_by,
       :started_by,
       upload_log: [:filename, :url, :byte_size],

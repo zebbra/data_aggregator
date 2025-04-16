@@ -20,13 +20,6 @@ defmodule DataAggregator.Records.ImageUpload.Calculations.UnmappedImages do
   end
 
   defp unmapped_images(%ImageUpload{images: images}) do
-    {time, filter_result} =
-      :timer.tc(
-        fn -> Enum.filter(images, &(&1.record_id == nil)) end,
-        :millisecond
-      )
-
-    Logger.info("Calculation of unmapped images took #{time}ms")
-    filter_result
+    Enum.filter(images, &(&1.record_id == nil))
   end
 end
