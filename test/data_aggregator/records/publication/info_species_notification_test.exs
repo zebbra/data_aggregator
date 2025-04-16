@@ -104,7 +104,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       [collection: collection, records: records, query: query, publication: publication]
     end
 
-    test "Collection.start_validations/2 publication has the published dwca file attached", %{
+    test "InfoSpecies.notify/2 publication has the published dwca file attached", %{
       collection: collection,
       publication: publication
     } do
@@ -121,7 +121,7 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
       assert publication.attachment_id != nil
     end
 
-    test "Collection.start_validations/2 all records have an updated last_validation_started_at date",
+    test "InfoSpecies.notify/2 all records have an updated last_validation_started_at date",
          %{
            publication: publication
          } do
