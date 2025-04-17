@@ -47,7 +47,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
     # we have to stream the images, otherwise we bload the memory
     query
     |> Ash.stream!()
-    |> Stream.map(&process_image(&1, image_upload))
+    |> Stream.map(&map_image(&1, image_upload))
     |> reduce_image_mapping_results(changeset)
     |> error_if_no_images_mapped()
 
@@ -57,19 +57,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
   end
 
   # Maps the image to the record, returns 1 if successful mapped, 0 if not
-  @spec process_image(Record.Image.t(), ImageUpload.t()) :: pos_integer()
-  defp process_image(image, image_upload) do
-    image = Ash.load!(image, [:attachment], lazy?: true)
-
-    if map_image(image, image_upload) do
-      1
-    else
-      0
-    end
-  end
-
-  @spec map_image(Record.Image.t(), ImageUpload.t()) ::
-          boolean()
+  @spec map_image(Record.Image.t(), ImageUpload.t()) :: pos_integer()
   defp map_image(image, image_upload) do
     parts = String.split(image.attachment.filename, "_")
 
@@ -93,7 +81,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
           "Image #{image.attachment.filename} not mapped. No record found for identifier #{image_upload.mapping_identifier} and value #{identified_value}"
         )
 
-        false
+        0
 
       {:ok, record} ->
         # If the record is found, add the image to the record
@@ -101,12 +89,13 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
 
         # Add the image to the record
         Record.add_images!(record, [image], authorize?: false, tenant: image_upload.collection)
-        true
+
+        1
 
       {:error, reason} ->
         Logger.error("Error while mapping image #{image.attachment.filename}: #{reason}")
 
-        false
+        0
     end
   end
 
