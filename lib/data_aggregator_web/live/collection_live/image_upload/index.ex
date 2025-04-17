@@ -78,7 +78,11 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
         <.secondary_navigation_item href={~p"/datasets/#{@collection}/exports"} label={~t"Exports"m} />
         <.secondary_navigation_item
           href={~p"/datasets/#{@collection}/publications"}
-          label={~t"Publications and Validations"m}
+          label={~t"Publications"m}
+        />
+        <.secondary_navigation_item
+          href={~p"/datasets/#{@collection}/validations"}
+          label={~t"Validations"m}
         />
         <.secondary_navigation_item
           href={~p"/datasets/#{@collection}/image_uploads"}
@@ -200,8 +204,14 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
             <:item title={~t"Finished at"m}>
               {format_datetime(@selected_image_upload.finished_at)}
             </:item>
-            <:item title={~t"Processed Items"m}>
-              {@selected_image_upload.general_mapping_progress_count}
+            <:item title={~t"Progress"m}>
+              <progress
+                class="progress progress-primary w-56"
+                value={@selected_image_upload.mapping_progress * 100}
+                max="100"
+              >
+              </progress>
+              {format_percent(@selected_image_upload.mapping_progress)}
             </:item>
             <:item title={~t"Mapped"m}>
               {@selected_image_upload.mapped_images_count}
@@ -211,6 +221,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
             </:item>
             <:item title={~t"Invalid"m}>
               {@selected_image_upload.invalid_files_count || 0}
+            </:item>
+            <:item title={~t"Processed Items"m}>
+              {(@selected_image_upload.current_mapping_operations_count > 0 &&
+                  @selected_image_upload.current_mapping_operations_count) || ~c"-"}
             </:item>
             <:item title={~t"Logfile"}>
               <.attachment_download_badge
@@ -294,17 +308,14 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
     actor = get_actor(socket)
     tenant = get_tenant(socket)
 
-    {time, _image_upload} =
-      :timer.tc(
-        fn -> ImageUpload.get_by_id!(id, actor: actor, tenant: tenant, load: @load) end,
-        :millisecond
-      )
-
-    Logger.info("image_upload fetch took #{time}ms")
-
     image_upload = ImageUpload.get_by_id!(id, actor: actor, tenant: tenant, load: @load)
 
-    {:noreply, assign(socket, selected_image_upload: image_upload)}
+    socket =
+      socket
+      |> assign(selected_image_upload: image_upload)
+      |> subscribe_for_image_upload_updates(connected?(socket))
+
+    {:noreply, socket}
   end
 
   defp apply_action(socket, :index, _params) do

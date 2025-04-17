@@ -13,8 +13,8 @@ config :data_aggregator, DataAggregator.Files, cache_dir: "priv/storage/dev/cach
 
 config :data_aggregator, DataAggregator.Repo,
   url: System.get_env("DATABASE_URL") || database_url,
-  pool_size: 20,
-  queue_target: 100,
+  pool_size: 30,
+  queue_target: 5000,
   log: false,
   stacktrace: true,
   # backoff_max: 120_000,

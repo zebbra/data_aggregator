@@ -1,4 +1,4 @@
-defmodule DataAggregator.ValidationTest do
+defmodule DataAggregator.ValidationResponseTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true

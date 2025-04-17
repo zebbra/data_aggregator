@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Subscriptions do
 
   @load_all load_all()
 
-  @image_upload_update_events ~w(set_extracting set_extracted set_extraction_failed set_mapping set_mapped set_mapping_incomplete set_mapping_failed)
+  @image_upload_update_events ~w(set_extracting set_extracted set_extraction_failed set_mapping set_mapped set_mapping_incomplete set_mapping_failed add_current_mapping_operations_count)
   @collection_action_events ~w(
     set_mapping
     set_importing

@@ -22,10 +22,10 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   Writes the given records to a DwCA file on disk. Transforms the data according to the
   given header fields (from the meta) and transformers.
   """
-  @spec write_file!(Enumerable.t(), t(), any(), Collection.t()) :: any()
-  def write_file!(records, meta, channel, collection) do
+  @spec write_file!(Enumerable.t(), t(), Collection.t()) :: any()
+  def write_file!(records, meta, collection) do
     records
-    |> Stream.map(&map_record(&1, meta.record_attributes, channel))
+    |> Stream.map(&map_record(&1, meta.record_attributes))
     |> Stream.map(&use_data_from_collection(&1, collection))
     |> Stream.map(&FlatFileUtils.map_data_to_headers_list(&1, meta.header_fields, @transformers))
     |> FlatFileUtils.store_on_disk!(meta.file_descriptor)
@@ -84,14 +84,8 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   end
 
   # gives you a map of all relevant record attributes and its values
-  @spec map_record(Record.t(), list(), any()) :: map()
-  defp map_record(record, record_attributes, :validation) do
-    # for validation we always take data from 'raw layer'
-    record |> Map.from_struct() |> Map.take(record_attributes)
-  end
-
-  defp map_record(record, record_attributes, :fast_track) do
-    # for fast_track we already have the correct data (we copied it to published_records from the selected layer)
+  @spec map_record(Record.t(), list()) :: map()
+  defp map_record(record, record_attributes) do
     record |> Map.from_struct() |> Map.take(record_attributes)
   end
 

@@ -20,7 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
   attr :current, :atom,
     default: :records,
-    values: ~w(records imports encodings exports publications image_upload published_records)a
+    values: ~w(records imports encodings exports publications validations image_upload published_records)a
 
   attr :current_user, User, required: true
 

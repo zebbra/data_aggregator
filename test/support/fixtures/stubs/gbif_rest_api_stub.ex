@@ -1334,6 +1334,52 @@ defmodule DataAggregator.Gbif.RestAPIStub do
     ["Z - Herbarium -Universität Zürich", "XYZ"]
   end
 
+  def get_species(3_117_666) do
+    {:ok,
+     %{
+       status: 200,
+       body: %{
+         "key" => 3_117_424,
+         "nubKey" => 3_117_424,
+         "nameKey" => 1_414_349,
+         "taxonID" => "gbif:3117424",
+         "kingdom" => "Plantae",
+         "phylum" => "Tracheophyta",
+         "order" => "Asterales",
+         "family" => "Asteraceae",
+         "genus" => "Bellis",
+         "species" => "Bellis perennis",
+         "kingdomKey" => 6,
+         "phylumKey" => 7_707_728,
+         "classKey" => 220,
+         "orderKey" => 414,
+         "familyKey" => 3065,
+         "genusKey" => 3_117_399,
+         "speciesKey" => 3_117_424,
+         "datasetKey" => "d7dddbf4-2cf0-4f39-9b2a-bb099caae36c",
+         "constituentKey" => "7ddf754f-d193-4cc9-b351-99906754a03b",
+         "parentKey" => 3_117_399,
+         "parent" => "Bellis",
+         "scientificName" => "Bellis perennis L.",
+         "canonicalName" => "Bellis perennis",
+         "vernacularName" => "Lawndaisy",
+         "authorship" => "L.",
+         "nameType" => "SCIENTIFIC",
+         "rank" => "SPECIES",
+         "origin" => "SOURCE",
+         "taxonomicStatus" => "ACCEPTED",
+         "nomenclaturalStatus" => [],
+         "remarks" => "",
+         "publishedIn" => "L. (1753). In: Sp. Pl. 886.",
+         "numDescendants" => 0,
+         "lastCrawled" => "2023-08-22T23:20:59.545+00:00",
+         "lastInterpreted" => "2023-08-22T23:06:11.412+00:00",
+         "issues" => [],
+         "class" => "Magnoliopsida"
+       }
+     }}
+  end
+
   def get_species(species_key) do
     {:ok,
      %{
@@ -1376,6 +1422,37 @@ defmodule DataAggregator.Gbif.RestAPIStub do
          "lastInterpreted" => "2023-08-22T22:19:29.194+00:00",
          "issues" => [],
          "class" => "Aves"
+       }
+     }}
+  end
+
+  def get_matching_species(name: "Oenanthe Pallas no synonym", kingdom: "Animalia") do
+    {:ok,
+     %{
+       status: 200,
+       body: %{
+         "status" => "ACCEPTED",
+         "family" => "Asteraceae",
+         "class" => "Magnoliopsida",
+         "order" => "Asterales",
+         "rank" => "SPECIES",
+         "kingdom" => "Plantae",
+         "phylum" => "Tracheophyta",
+         "genus" => "Bellis",
+         "confidence" => 100,
+         "matchType" => "EXACT",
+         "acceptedUsageKey" => 3_117_666,
+         "usageKey" => 3_117_666,
+         "scientificName" => "Bellis perennis L.",
+         "canonicalName" => "Bellis perennis",
+         "classKey" => 220,
+         "familyKey" => 3065,
+         "genusKey" => 3_117_399,
+         "kingdomKey" => 6,
+         "orderKey" => 414,
+         "phylumKey" => 7_707_728,
+         "species" => "Bellis perennis",
+         "speciesKey" => 3_117_666
        }
      }}
   end

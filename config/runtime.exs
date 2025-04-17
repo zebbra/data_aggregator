@@ -146,9 +146,10 @@ if config_env() == :prod do
 
   config :data_aggregator, DataAggregator.Repo,
     url: database_url,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "20"),
     connect_timeout: String.to_integer(System.get_env("CONNECT_TIMEOUT") || "60000"),
-    socket_options: maybe_ipv6
+    socket_options: maybe_ipv6,
+    queue_target: 5000
 
   ## Configure Erlang clustering using DNS cluster
   config :data_aggregator, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
