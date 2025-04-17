@@ -18,7 +18,10 @@ defmodule DataAggregator.Records.Import.Changes.UpdateMapping do
         changeset
 
       {:ok, mappings} ->
-        columns = changeset |> Changeset.get_data(:columns) |> merge_mappings(mappings)
+        columns =
+          changeset
+          |> get_columns()
+          |> merge_mappings(mappings)
 
         changeset
         |> Changeset.change_attribute(:columns, columns)
@@ -26,10 +29,24 @@ defmodule DataAggregator.Records.Import.Changes.UpdateMapping do
     end
   end
 
-  defp save_mappings_to_collection(changeset, import) do
+  # get the columns from the already present `data` or the changed `attributes`
+  defp get_columns(changeset) do
+    columns = Changeset.get_data(changeset, :columns)
+
+    if columns == nil do
+      Changeset.get_attribute(changeset, :columns)
+    else
+      columns
+    end
+  end
+
+  defp save_mappings_to_collection(_changeset, import) do
     # update mapping on collection as well, so we can reuse it on future imports
-    collection = Changeset.get_data(changeset, :collection)
+
+    import = Ash.load!(import, [:collection])
+
     columns = import.columns
+    collection = import.collection
 
     Collection.update_import_mapping!(
       collection,

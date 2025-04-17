@@ -322,7 +322,12 @@ defmodule DataAggregator.Records.Import do
       get :read
       index :read
       post :create_from_path
-      patch :update
+
+      patch :update_mapping,
+        route: "/:id/update_mapping",
+        query_params: [:columns],
+        default_fields: [:id, :columns]
+
       delete :destroy
     end
   end

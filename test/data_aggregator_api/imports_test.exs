@@ -140,24 +140,28 @@ defmodule DataAggregatorApi.ImportsTest do
     } do
       # Make the PATCH request to update the import
       conn =
-        patch(conn, "/api/json/datasets/#{collection.id}/imports/#{import_1.id}", %{
-          "data" => %{
-            "id" => import_1.id,
-            "type" => "imports",
-            "attributes" => %{
-              "columns" => [
-                %{
-                  "name" => "Scientific Name",
-                  "mapped_to" => "tax_scientific_name"
-                },
-                %{
-                  "name" => "Catalog Number",
-                  "mapped_to" => "mte_catalog_number"
-                }
-              ]
+        patch(
+          conn,
+          "/api/json/datasets/#{collection.id}/imports/#{import_1.id}/update_mapping",
+          %{
+            "data" => %{
+              "id" => import_1.id,
+              "type" => "imports",
+              "attributes" => %{
+                "columns" => [
+                  %{
+                    "name" => "Scientific Name",
+                    "mapped_to" => "tax_scientific_name"
+                  },
+                  %{
+                    "name" => "Catalog Number",
+                    "mapped_to" => "mte_catalog_number"
+                  }
+                ]
+              }
             }
           }
-        })
+        )
 
       data = json_response(conn, 200)["data"]
 
