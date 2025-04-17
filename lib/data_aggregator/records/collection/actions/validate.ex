@@ -1,67 +1,149 @@
 defmodule DataAggregator.Records.Collection.Actions.Validate do
   @moduledoc """
-  Custom action to start an validation process for a selection of records towards infospecies. It groups all records selected
-  by a given query according to their infospecies center creates a Publication resource and calls the Collection.publish action for
-  each group of records to send a DWC-Archive to the infospecies center.
+  Custom action to send a validation request to the infospecies center for a selection of records.
   """
+
   use Ash.Resource.Actions.Implementation
 
-  alias DataAggregator.Records.Collection
+  alias DataAggregator.Counter
+  alias DataAggregator.DarwinCore.Publication.CoreFile
+  alias DataAggregator.DarwinCore.Publication.DwcaFile
+  alias DataAggregator.DarwinCore.Publication.EmlFile
+  alias DataAggregator.DarwinCore.Publication.MaterialSampleFile
+  alias DataAggregator.DarwinCore.Publication.MetaFile
+  alias DataAggregator.DarwinCore.Publication.PreservationFile
+  alias DataAggregator.DarwinCore.Publication.ReleveFile
+  alias DataAggregator.Misc.FlatFileUtils
+  alias DataAggregator.Records
   alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.Publication.InfoSpecies
   alias DataAggregator.Records.Record
-  alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
 
   require Ash.Query
   require Logger
 
   @impl true
-  def run(input, _opts, %{actor: actor, tenant: tenant}) do
-    collection = input.arguments.collection
-    query = input.arguments.query
+  def run(input, _opts, %{tenant: tenant} = ctx) do
+    validation = input.arguments.publication
 
-    infospecies_centers = InfospeciesCenters.get_center_names()
+    # these are the new records that will be validated
+    query =
+      Record
+      |> AshPagify.query_for_filters_map(validation.records_query)
+      |> Ash.Query.set_tenant(tenant)
 
-    center_and_record_counts =
-      Enum.map(infospecies_centers, fn center ->
-        records_query =
-          AshPagify.merge_filters(%AshPagify{filters: query}, %{
-            encoded_record: %{swiss_species: %{center: %{eq: center}}}
-          }).filters
+    collection = validation.collection
 
-        count_query =
-          Record
-          |> AshPagify.query_for_filters_map(records_query)
-          |> Ash.Query.set_tenant(tenant)
+    path = FlatFileUtils.create_directory!("publication_#{validation.channel}")
+    EmlFile.create(collection, validation, path)
+    MetaFile.create(collection, path)
 
-        rows_count = Ash.count!(count_query)
+    {:ok, counter} = Counter.start(&Publication.add_publication_progress(validation, &1))
 
-        # do only publish dwc file to infospecies center if there are records
-        if rows_count > 0 do
-          %{
-            name: "pub-#{collection.name}-#{:os.system_time()}",
-            channel: :validation,
-            records_query: records_query,
-            collection: collection,
-            rows_count: rows_count,
-            center: center
-          }
-          |> Publication.create!(tenant: tenant)
-          |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor, authorize?: false)
-        end
+    file_metas = [
+      CoreFile.open_file!(path),
+      MaterialSampleFile.open_file!(path),
+      PreservationFile.open_file!(path),
+      ReleveFile.open_file!(path)
+    ]
 
-        {center, rows_count}
-      end)
+    Enum.each(file_metas, &DwcaFile.write_headers(&1))
 
-    total_rows_count =
-      Enum.reduce(center_and_record_counts, 0, fn {_, rows_count}, acc -> acc + rows_count end)
+    query
+    |> stream_query()
+    |> set_publication_status(:validating, ctx)
+    |> Stream.chunk_every(1000)
+    |> Stream.flat_map(fn records ->
+      file_metas
+      |> Task.async_stream(
+        &DwcaFile.write_file!(records, &1, collection),
+        timeout: to_timeout(second: 30)
+      )
+      |> Stream.run()
 
-    # Mark the collection as validating only after all publications have been
-    # created and enqueued and only if there are any publications. This has
-    # the potential to introduce a duplicated validation for the same collection
-    if total_rows_count > 0 do
-      Collection.set_validating!(collection)
+      records
+    end)
+    |> Counter.count_each(counter)
+    |> set_publication_status(:in_validation, ctx)
+
+    Enum.each(file_metas, &FlatFileUtils.close_file(&1.file_descriptor))
+
+    Counter.stop(counter)
+
+    attachment = path |> FlatFileUtils.create_zip!() |> FlatFileUtils.store_on_s3!()
+    # remove file from local tmp dir, as it is now stored on s3
+    File.rm_rf(path)
+
+    validation =
+      validation
+      |> Publication.update_attachment(attachment)
+      |> Ash.load!([:collection, :attachment])
+
+    case validate(validation, query, ctx) do
+      {:ok, validation} ->
+        {:ok, validation}
+
+      {:error, error} ->
+        Logger.error("Error validating records on the #{validation.channel} channel: #{inspect(error)}")
+
+        query
+        |> stream_query()
+        |> set_publication_status(
+          :validation_failed,
+          ctx
+        )
+
+        {:error, error}
     end
+  rescue
+    e ->
+      validation = input.arguments.publication
 
-    {:ok, center_and_record_counts}
+      query =
+        Record
+        |> AshPagify.query_for_filters_map(validation.records_query)
+        |> Ash.Query.set_tenant(tenant)
+
+      Logger.error("Error validating records on the #{validation.channel} channel: #{inspect(e)}")
+
+      query
+      |> stream_query()
+      |> set_publication_status(
+        :validation_failed,
+        ctx
+      )
+
+      {:error, e}
+  end
+
+  defp stream_query(query), do: Ash.stream!(query, stream_with: :keyset, batch_size: 1000, load: :encoded_record)
+
+  defp set_publication_status(stream, status, %{actor: actor, tenant: tenant}) do
+    max_concurrency = Records.import_max_concurrency()
+    batch_size = ceil(Records.import_batch_size() / max_concurrency)
+
+    Ash.bulk_update(stream, :update_validation_status, %{status: status},
+      actor: actor,
+      authorize?: false,
+      domain: Records,
+      resource: Record,
+      tenant: tenant,
+      max_concurrency: max_concurrency,
+      batch_size: batch_size
+    )
+
+    stream
+  end
+
+  defp validate(%Publication{channel: :validation} = validation, query, _ctx) do
+    case InfoSpecies.notify(validation, query) do
+      {:ok, validation} ->
+        {:ok, validation}
+
+      {:error, error} ->
+        Logger.warning("Error while informing infospecies about new available records for review: #{inspect(error)}")
+
+        {:error, error}
+    end
   end
 end
