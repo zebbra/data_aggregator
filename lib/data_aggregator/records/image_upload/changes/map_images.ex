@@ -59,6 +59,8 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
   # Maps the image to the record, returns 1 if successful mapped, 0 if not
   @spec map_image(Record.Image.t(), ImageUpload.t()) :: pos_integer()
   defp map_image(image, image_upload) do
+    image = Ash.load!(image, [:attachment], lazy?: true)
+
     parts = String.split(image.attachment.filename, "_")
 
     # in case the there is no _ in the name split for the .
