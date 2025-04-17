@@ -32,8 +32,7 @@ defmodule DataAggregator.Records.Import.Changes.UpdateMapping do
   # get the columns from the already present `data` or the changed `attributes`
   defp get_columns(changeset)
 
-  defp get_columns(%Changeset{data: %{columns: nil}} = changeset),
-    do: Changeset.get_attribute(changeset, :columns)
+  defp get_columns(%Changeset{data: %{columns: nil}} = changeset), do: Changeset.get_attribute(changeset, :columns)
 
   defp get_columns(changeset), do: Changeset.get_data(changeset, :columns)
 
