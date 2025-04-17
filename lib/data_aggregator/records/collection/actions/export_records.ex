@@ -133,7 +133,9 @@ defmodule DataAggregator.Records.Collection.Actions.ExportRecords do
   end
 
   defp dwc_attribute_mapping do
-    Map.new(Schema.prefixed_attribute_names_and_dwc_fields())
+    collection_attributes = Enum.map(Schema.collection_attributes(), &{&1.name, &1.dwc_field})
+
+    Map.new(Schema.prefixed_attribute_names_and_dwc_fields() ++ collection_attributes)
   end
 
   defp get_default_mapping do

@@ -71,11 +71,21 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   # structure `[eve_event_id: "eventID", eve_parent_event_id: "parentEventID", ...]` for the given file type
   @spec file_mapping(atom()) :: list()
   def file_mapping(file_type) do
-    Schema.categories()
-    |> Enum.map(&attributes_by_category/1)
-    |> Enum.map(&header_fields(&1, file_type))
-    |> Enum.map(&attributes_prefixed/1)
-    |> Enum.flat_map(fn {_category, attributes} -> attributes end)
+    schema_attributes =
+      Schema.categories()
+      |> Enum.map(&attributes_by_category/1)
+      |> Enum.map(&header_fields(&1, file_type))
+      |> Enum.map(&attributes_prefixed/1)
+      |> Enum.flat_map(fn {_category, attributes} -> attributes end)
+
+    collection_attributes =
+      Schema.collection_attributes()
+      |> Enum.filter(fn attribute ->
+        attribute.dwca_file == file_type
+      end)
+      |> Enum.map(&{&1.name, &1.dwc_field})
+
+    schema_attributes ++ collection_attributes
   end
 
   defp set_id_as_first_column_header(header_fields, {key, column}) do
@@ -94,9 +104,13 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
   What values to be replaced is defined in @data_from_collection map.
   """
   def use_data_from_collection(record, collection) do
-    Enum.reduce(Schema.data_from_collection(), record, fn {k, v}, acc ->
-      Map.replace(acc, k, Map.get(collection, v))
+    Enum.reduce(Schema.collection_attributes(), record, fn attribute, acc ->
+      Map.put(acc, attribute.name, Map.get(collection, attribute.collection_field))
     end)
+
+    # Enum.reduce(Schema.data_from_collection(), record, fn {k, v}, acc ->
+    #   Map.put(acc, k, Map.get(collection, v))
+    # end)
   end
 
   # returns a tuple with the name and the dwc_attributes of a given category

@@ -24,9 +24,7 @@ defmodule DataAggregator.WorkflowTest do
   @catalog_versions length(Catalog.get_catalogs()) - 2
 
   @mapping [
-    %{name: "institutionCode", mapped_to: "oth_institution_code"},
     %{name: "basisOfRecord", mapped_to: "oth_basis_of_record"},
-    %{name: "collectionCode", mapped_to: "oth_collection_code"},
     %{name: "catalogNumber", mapped_to: "mte_catalog_number"},
     %{name: "verbatimLocality", mapped_to: "loc_verbatim_locality"},
     %{name: "verbatimElevation", mapped_to: "loc_verbatim_elevation"},

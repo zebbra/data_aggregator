@@ -287,26 +287,6 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "oth_institution_id",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "oth_institution_code",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
       "source": "oth_information_withheld",
       "type": "text"
     },
@@ -337,16 +317,6 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "oth_gbif_doi",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
       "source": "oth_date_available",
       "type": "text"
     },
@@ -367,37 +337,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "oth_dataset_id",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
       "source": "oth_data_generalizations",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "oth_collection_id",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "oth_collection_code",
       "type": "text"
     },
     {
@@ -3120,7 +3060,7 @@
   ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "333EBB406EEFB8CAC30DF511F1FCE2826A218992567458B9DDF2210894851E1B",
+  "hash": "69A395533F5847A76A2B65228C1473ED9F3C02A11EAD61949780F15FD6CFCC91",
   "identities": [
     {
       "all_tenants?": false,

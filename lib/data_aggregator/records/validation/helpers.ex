@@ -118,6 +118,31 @@ defmodule DataAggregator.Records.Validation.Helpers do
     {rows, index}
   end
 
+  def reject_collection_attributes_from_chunk(chunk, collection_attributes) do
+    {rows, index} = chunk
+
+    rows =
+      Enum.map(rows, fn row ->
+        filter_collection_attributes(row, collection_attributes)
+      end)
+
+    {rows, index}
+  end
+
+  defp filter_collection_attributes(row, collection_attributes) do
+    Enum.reduce(row, %{}, fn {dwc_field, value}, acc ->
+      if field_in_collection_attributes?(dwc_field, collection_attributes) do
+        acc
+      else
+        Map.put(acc, dwc_field, value)
+      end
+    end)
+  end
+
+  defp field_in_collection_attributes?(field, collection_attributes) do
+    Enum.any?(collection_attributes, fn {k, _v} -> k == field end)
+  end
+
   @doc """
   returns the internal db field name for a given dwc field name
   """

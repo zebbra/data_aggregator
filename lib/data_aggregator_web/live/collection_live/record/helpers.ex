@@ -59,8 +59,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     record = Ash.load!(record, :encoded_record, lazy?: true)
     output_dwc_fields = Catalog.get_all_output_dwc_attributes()
 
-    record
-    |> Map.keys()
+    # TODO: we need to add collection attributes here, and artificially add them to a  category?
+    # or we show colleciton attributes seperatley, like extra data?
+    Schema.prefixed_attribute_names()
     |> Enum.filter(&should_show_attribute?(&1, record, output_dwc_fields))
     |> Enum.map(fn key ->
       imported_value =
