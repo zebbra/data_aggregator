@@ -186,7 +186,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <.secondary_navigation_item href={~p"/datasets/#{@collection}/exports"} label={~t"Exports"m} />
         <.secondary_navigation_item
           href={~p"/datasets/#{@collection}/publications"}
-          label={~t"Publications and Validations"m}
+          label={~t"Publications"m}
+        />
+        <.secondary_navigation_item
+          href={~p"/datasets/#{@collection}/validations"}
+          label={~t"Validations"m}
         />
         <.secondary_navigation_item
           href={~p"/datasets/#{@collection}/image_uploads"}
@@ -1048,7 +1052,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   defp create_and_enqueue(collection, query, _count_query, :validation, actor) do
-    Collection.validate(collection, query, actor: actor, tenant: collection)
+    Collection.start_validations(collection, query, actor: actor, tenant: collection)
   end
 
   defp apply_action(socket, :index, _params) do

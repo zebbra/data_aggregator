@@ -66,7 +66,11 @@ defmodule DataAggregatorWeb.CollectionLive.PublishedRecords.Index do
         <.secondary_navigation_item href={~p"/datasets/#{@collection}/exports"} label={~t"Exports"m} />
         <.secondary_navigation_item
           href={~p"/datasets/#{@collection}/publications"}
-          label={~t"Publications and Validations"m}
+          label={~t"Publications"m}
+        />
+        <.secondary_navigation_item
+          href={~p"/datasets/#{@collection}/validations"}
+          label={~t"Validations"m}
         />
         <.secondary_navigation_item
           href={~p"/datasets/#{@collection}/image_uploads"}

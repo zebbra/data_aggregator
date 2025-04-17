@@ -165,7 +165,7 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
   defp cancel_validations(%Changeset{data: %{id: collection_id}} = changeset) do
     # Validations have the same underlying structure as publications. But each
     # validation can have multiple publications. We need to cancel all active
-    # publications. The publications are enqueued with the Collection.validate
+    # publications. The publications are enqueued with the Collection.start_validations
     # action. There might occur the case the we abort the validation
     # while some publications have not yet been enqueued. However, we do not
     # account for this case as it is not a common use case.

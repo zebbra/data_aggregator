@@ -120,14 +120,14 @@ defmodule DataAggregator.Collections.CollectionPolicyTest do
       actor: actor,
       collection_other: collection_other
     } do
-      assert Collection.can_validate?(actor, collection_other, %{})
+      assert Collection.can_start_validations?(actor, collection_other, %{})
     end
 
     test "can validate for collection with same institution", %{
       actor: actor,
       collection_same: collection_same
     } do
-      assert Collection.can_validate?(actor, collection_same, %{})
+      assert Collection.can_start_validations?(actor, collection_same, %{})
     end
 
     test "can set_fast_track_publishing for collection with same institution", %{
