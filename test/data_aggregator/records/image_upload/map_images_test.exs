@@ -77,7 +77,7 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
 
     assert image_upload.mapped_images_count === 4
     assert image_upload.unmapped_images_count === 1
-    assert image_upload.general_mapping_progress_count === 5
+    assert image_upload.current_mapping_operations_count === 5
 
     image_upload =
       Ash.load!(image_upload, [:mapped_images, :unmapped_images, images: [attachment: :filename]])
@@ -163,7 +163,7 @@ defmodule DataAggregator.Records.ImageUpload.MapImagesTest do
     assert image_upload.state == :mapped
     assert image_upload.mapped_images_count === 4
     assert image_upload.unmapped_images_count === 0
-    assert image_upload.general_mapping_progress_count === 4
+    assert image_upload.current_mapping_operations_count === 4
 
     image_upload =
       Ash.load!(
