@@ -2196,13 +2196,23 @@ defmodule DataAggregator.DarwinCore.Schema do
   """
   @spec attribute_options(Keyword.t()) :: [{String.t(), [{String.t(), String.t()}]}]
   def attribute_options(opts \\ []) do
+    # only attributes which are `required` on the schema
     {required, _opts} = Keyword.pop(opts, :required?, true)
+
+    # only attributes which are requested in the `:only` list
+    {only, _opts} = Keyword.pop(opts, :only, [])
 
     for category <- @categories do
       filtered_attributes =
         Enum.reject(category.dwc_attributes, fn dwc_attribute ->
           not_mappable_fields = Map.values(not_mappable_fields())
-          dwc_attribute.attribute.name in not_mappable_fields
+
+          if only == [] do
+            dwc_attribute.attribute.name in not_mappable_fields
+          else
+            dwc_attribute.attribute.name in not_mappable_fields or
+              dwc_attribute.attribute.name not in only
+          end
         end)
 
       options =

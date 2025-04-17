@@ -5,6 +5,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Helpers do
 
   def load do
     [
+      :mapping_progress,
       :created_by,
       :started_by,
       upload_log: [:filename, :url, :byte_size],
