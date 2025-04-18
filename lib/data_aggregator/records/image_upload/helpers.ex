@@ -137,42 +137,6 @@ defmodule DataAggregator.Records.ImageUpload.Helpers do
     %{changeset | data: image_upload}
   end
 
-  @doc """
-    reports the progress of image mapping process to the image upload record
-  """
-  @spec report_mapping_process(Changeset.t(), pos_integer()) ::
-          Changeset.t()
-  def report_mapping_process(changeset, mapped) do
-    %Changeset{data: image_upload} = changeset
-
-    add_progress = fn ->
-      ImageUpload.add_mapping_progress!(image_upload, mapped)
-    end
-
-    image_upload = maybe_execute_async(add_progress)
-
-    %{changeset | data: image_upload}
-  end
-
-  @doc """
-    increments the currently completed mapping operations for the image upload by the given number
-  """
-  @spec report_current_operations(Changeset.t(), pos_integer()) ::
-          Changeset.t()
-  def report_current_operations(changeset, operations) do
-    Logger.debug("Additional #{operations} completed)")
-
-    %Changeset{data: image_upload} = changeset
-
-    add_operations = fn ->
-      ImageUpload.add_current_mapping_operations_count!(image_upload, operations)
-    end
-
-    image_upload = maybe_execute_async(add_operations)
-
-    %{changeset | data: image_upload}
-  end
-
   # decides whenever a given function with a given timeout should be executed asynchronously
   defp maybe_execute_async(fnc, opts \\ []) do
     {timeout, _opts} = Keyword.pop(opts, :timeout, 30)

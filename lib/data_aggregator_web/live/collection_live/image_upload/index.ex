@@ -226,7 +226,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
               {(@selected_image_upload.current_mapping_operations_count > 0 &&
                   @selected_image_upload.current_mapping_operations_count) || ~c"-"}
             </:item>
-            <:item title={~t"Logfile"}>
+            <:item :if={@selected_image_upload.state != :mapping} title={~t"Logfile"}>
               <.attachment_download_badge
                 :if={@selected_image_upload.upload_log != nil}
                 attachment={@selected_image_upload.upload_log}
@@ -234,6 +234,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
               <span :if={@selected_image_upload.upload_log == nil}>
                 -
               </span>
+            </:item>
+            <:item :if={@selected_image_upload.state == :mapping} title={~t"Writing to Log..."m}>
+              <progress class="progress progress-neutral w-24"></progress>
             </:item>
             <:item title={~t"Error Message"m}>
               {@selected_image_upload.error_message || ~c"-"}

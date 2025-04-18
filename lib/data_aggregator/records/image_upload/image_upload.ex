@@ -151,16 +151,6 @@ defmodule DataAggregator.Records.ImageUpload do
       change ensure_selected(:unmapped_images_count)
     end
 
-    update :set_max_mapping_operations_count do
-      accept []
-      argument :max_operations_count, :integer, allow_nil?: false
-
-      require_atomic? false
-
-      change atomic_update(:max_mapping_operations_count, expr(^arg(:max_operations_count)))
-      change ensure_selected(:max_mapping_operations_count)
-    end
-
     update :add_current_mapping_operations_count do
       accept []
       argument :operations_count, :integer, allow_nil?: false
@@ -326,8 +316,7 @@ defmodule DataAggregator.Records.ImageUpload do
     publish :set_mapped, [[:_tenant], "updated", [:id, nil]]
     publish :set_mapping_incomplete, [[:_tenant], "updated", [:id, nil]]
     publish :set_mapping_failed, [[:_tenant], "updated", [:id, nil]]
-
-    publish :add_current_mapping_operations_count, [[:_tenant], "updated", [:id, nil]]
+    publish :add_mapping_progress, [[:_tenant], "updated", [:id, nil]]
   end
 
   code_interface do
@@ -354,7 +343,6 @@ defmodule DataAggregator.Records.ImageUpload do
     define :cancel_mapping
     define :update_upload_log, args: [:upload_log]
     define :add_mapping_progress, args: [:mapped]
-    define :set_max_mapping_operations_count, args: [:max_operations_count]
     define :add_current_mapping_operations_count, args: [:operations_count]
   end
 
