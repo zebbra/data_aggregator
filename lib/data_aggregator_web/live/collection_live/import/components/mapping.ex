@@ -13,7 +13,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Components, only: [import_mapping_validation: 1]
-  import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
+
+  import DataAggregatorWeb.CollectionLive.Import.Helpers,
+    only: [current_step: 1, not_mappable_fields: 0, attribute_options: 0]
 
   alias DataAggregator.DarwinCore
   alias DataAggregator.DarwinCore.Schema
@@ -396,8 +398,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         matched_columns
         |> ensure_required_attributes()
         |> Enum.reject(fn column ->
-          not_mappable_data =
-            Schema.not_mappable_fields() |> Map.keys() |> Enum.map(&Atom.to_string/1)
+          not_mappable_data = not_mappable_fields() |> Map.keys() |> Enum.map(&Atom.to_string/1)
 
           column.mapped_to in not_mappable_data
         end)
@@ -488,9 +489,9 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   defp auto_mapping_matched(import) do
     prefixed_attribute_to_dwc_field_mapping =
-      Schema.prefixed_attribute_names_and_dwc_fields()
-
-    # TODO: |> reject_not_mappable_fields()
+      Enum.reject(Schema.prefixed_attribute_names_and_dwc_fields(), fn {key, _} ->
+        key in Map.keys(not_mappable_fields())
+      end)
 
     dwc_field_names =
       Enum.map(prefixed_attribute_to_dwc_field_mapping, fn {_, dwc_field} -> dwc_field end)
@@ -673,7 +674,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   defp assign_attributes(socket, attributes_in_use) do
     available_attributes =
-      Enum.map(DarwinCore.Schema.attribute_options(), fn {category, attribute_tuple} ->
+      Enum.map(attribute_options(), fn {category, attribute_tuple} ->
         available_category_attributes =
           Enum.reject(attribute_tuple, fn {_, prefixed_attribute} ->
             Enum.member?(attributes_in_use, prefixed_attribute)

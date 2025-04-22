@@ -2,7 +2,7 @@ import DataAggregatorWeb.Helpers, only: [format_coordinate: 1, format_map: 1, fo
 
 alias Ash.Resource.Attribute
 alias DataAggregator.DarwinCore.Schema.Category
-alias DataAggregator.DarwinCore.Schema.DwcAttribute
+alias DataAggregator.DarwinCore.Schema.CollectionAttribute
 
 eve_attributes = [
   %{
@@ -2015,42 +2015,42 @@ categories = [
 ]
 
 collection_attributes = [
-  %{
+  %CollectionAttribute{
     dwc_field: "collectionID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/collectionID",
     dwca_file: :core,
     name: :oth_collection_id,
     collection_field: :grscicoll_reference
   },
-  %{
+  %CollectionAttribute{
     dwc_field: "collectionCode",
     dwc_link: "http://rs.tdwg.org/dwc/terms/datasetID",
     dwca_file: :core,
     name: :oth_collection_code,
     collection_field: :code
   },
-  %{
+  %CollectionAttribute{
     dwc_field: "datasetID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/institutionID",
     dwca_file: :core,
     name: :oth_dataset_id,
     collection_field: :gbif_dataset_key
   },
-  %{
+  %CollectionAttribute{
     dwc_field: "institutionCode",
     dwc_link: "http://rs.tdwg.org/dwc/terms/institutionCode",
     dwca_file: :core,
     name: :oth_institution_code,
     collection_field: :grscicoll_institution_code
   },
-  %{
+  %CollectionAttribute{
     dwc_field: "institutionID",
     dwc_link: "http://rs.tdwg.org/dwc/terms/institutionID",
     dwca_file: :core,
     name: :oth_institution_id,
     collection_field: :grscicoll_institution_key
   },
-  %{
+  %CollectionAttribute{
     dwc_field: "gbifDOI",
     dwc_link: nil,
     dwca_file: :core,
@@ -2073,42 +2073,11 @@ defmodule DataAggregator.DarwinCore.Schema do
 
   alias Ash.Resource.Attribute
   alias DataAggregator.DarwinCore.Schema.Category
+  alias DataAggregator.DarwinCore.Schema.CollectionAttribute
   alias DataAggregator.DarwinCore.Schema.DwcAttribute
 
   @categories categories
   @colleciton_attributes collection_attributes
-
-  @doc """
-  Returns a map to define which fields are not to be taken from the record, but collection
-  The key corresponds to the field in the record, the value to the field in the collection
-  """
-  @spec data_from_collection() :: map()
-  def data_from_collection,
-    do: %{
-      oth_gbif_doi: :gbif_doi,
-      oth_dataset_id: :gbif_dataset_key,
-      oth_institution_id: :grscicoll_institution_key,
-      oth_institution_code: :grscicoll_institution_code,
-      oth_collection_id: :grscicoll_reference,
-      oth_collection_code: :code
-    }
-
-  @doc """
-  Returns a map of fields that are not mappable during the import process.
-  Key are the prefixed attributes, values are the original attributes.
-  """
-  @spec not_mappable_fields() :: map()
-  def not_mappable_fields do
-    %{
-      oth_gbif_doi: :gbif_doi,
-      oth_dataset_id: :dataset_id,
-      oth_institution_id: :institution_id,
-      oth_institution_code: :institution_code,
-      oth_collection_id: :collection_id,
-      oth_collection_code: :collection_code,
-      oth_gbif_id: :gbif_id
-    }
-  end
 
   @doc """
   Returns a map attributes grouped by category.
@@ -2116,7 +2085,17 @@ defmodule DataAggregator.DarwinCore.Schema do
   @spec categories() :: [Category.t()]
   def categories, do: @categories
 
+  @doc """
+  Returns a list of all attributes that we take from the collection.
+  """
+  @spec collection_attributes() :: [CollectionAttribute.t()]
   def collection_attributes, do: @colleciton_attributes
+
+  def collection_attributes_by_prefixed_name(name) do
+    Enum.find(@colleciton_attributes, fn collection_attribute ->
+      collection_attribute.name == name
+    end)
+  end
 
   @doc """
   Returns the category label for a category description
@@ -2203,51 +2182,6 @@ defmodule DataAggregator.DarwinCore.Schema do
       name
     end
   end
-
-  @doc """
-  Returns the attributes as options for a select input grouped by category.
-  """
-  @spec attribute_options(Keyword.t()) :: [{String.t(), [{String.t(), String.t()}]}]
-  def attribute_options(opts \\ []) do
-    {required, _opts} = Keyword.pop(opts, :required?, true)
-
-    for category <- @categories do
-      filtered_attributes =
-        Enum.reject(category.dwc_attributes, fn dwc_attribute ->
-          not_mappable_fields = Map.values(not_mappable_fields())
-          dwc_attribute.attribute.name in not_mappable_fields
-        end)
-
-      options =
-        for dwc_attribute <- filtered_attributes do
-          attribute = dwc_attribute.attribute
-
-          name =
-            if is_nil(dwc_attribute.dwc_field) do
-              Atom.to_string(attribute.name)
-            else
-              dwc_attribute.dwc_field
-            end
-
-          name = maybe_suffix_required(name, required and not attribute.allow_nil?)
-
-          value = Category.prefixed_attribute_name(category, attribute)
-
-          {name, value}
-        end
-
-      category_label =
-        case category_label_by_description(category.description) do
-          nil -> category.description
-          label -> "#{label}: #{category.description}"
-        end
-
-      {category_label, options}
-    end
-  end
-
-  defp maybe_suffix_required(name, true), do: "#{name} (required)"
-  defp maybe_suffix_required(name, false), do: name
 
   @doc """
   Returns the category of an attribute by the attributes name prefixed with the category name.

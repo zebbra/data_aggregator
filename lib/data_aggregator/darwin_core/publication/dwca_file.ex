@@ -101,16 +101,12 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
 
   @doc """
   Replaces the values of the given record with the values from the collection
-  What values to be replaced is defined in @data_from_collection map.
+  What values to be replaced is defined in collection_attributes map defined in Schema.
   """
   def use_data_from_collection(record, collection) do
     Enum.reduce(Schema.collection_attributes(), record, fn attribute, acc ->
       Map.put(acc, attribute.name, Map.get(collection, attribute.collection_field))
     end)
-
-    # Enum.reduce(Schema.data_from_collection(), record, fn {k, v}, acc ->
-    #   Map.put(acc, k, Map.get(collection, v))
-    # end)
   end
 
   # returns a tuple with the name and the dwc_attributes of a given category

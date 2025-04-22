@@ -59,8 +59,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     record = Ash.load!(record, :encoded_record, lazy?: true)
     output_dwc_fields = Catalog.get_all_output_dwc_attributes()
 
-    # TODO: we need to add collection attributes here, and artificially add them to a  category?
-    # or we show colleciton attributes seperatley, like extra data?
+    collection_attributes =
+      Schema.collection_attributes()
+      |> Enum.map(fn attribute ->
+        %{
+          name: attribute.dwc_field,
+          category_name: "oth",
+          imported: Map.get(collection, attribute.collection_field),
+          encoded: "-"
+        }
+      end)
+      |> Enum.filter(fn %{imported: value} -> value not in ["", nil] end)
+
     Schema.prefixed_attribute_names()
     |> Enum.filter(&should_show_attribute?(&1, record, output_dwc_fields))
     |> Enum.map(fn key ->
@@ -68,13 +78,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
         record
         |> Map.get(key)
         |> maybe_transform_value(key)
-        |> maybe_take_data_from_collection(key, collection)
 
       encoded_value =
         record.encoded_record
         |> Map.get(key)
         |> maybe_transform_value(key)
-        |> maybe_take_data_from_collection(key, collection)
 
       encoded_value =
         if encoded_value == imported_value and not Enum.member?(output_dwc_fields, key) do
@@ -90,25 +98,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
         encoded: encoded_value
       }
     end)
+    |> Enum.concat(collection_attributes)
     |> by_category()
-  end
-
-  defp maybe_take_data_from_collection(value, key, collection) do
-    if Map.has_key?(Schema.data_from_collection(), key) do
-      Map.get(collection, Map.get(Schema.data_from_collection(), key))
-    else
-      value
-    end
   end
 
   defp should_show_attribute?(key, record, output_dwc_fields) do
     cond do
       key in @fields_not_shown_in_ui ->
         false
-
-      # show all fields that we take from the collection
-      Map.has_key?(Schema.data_from_collection(), key) ->
-        true
 
       Map.get(record, key) not in ["", nil] ->
         true

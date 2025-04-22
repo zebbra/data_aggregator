@@ -5,9 +5,10 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
   use DataAggregatorWeb, :live_component
 
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
-  import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
+  import DataAggregatorWeb.CollectionLive.ImageUpload.Helpers, only: [attribute_options: 0]
 
-  alias DataAggregator.DarwinCore.Schema
+  import DataAggregatorWeb.CollectionLive.Import.Helpers,
+    only: [current_step: 1]
 
   @impl true
   def update(assigns, socket) do
@@ -135,7 +136,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
   end
 
   defp assign_mapping_identifier_options(socket) do
-    options = Schema.attribute_options(required?: false)
+    options = attribute_options()
 
     assign(socket, :mapping_identifier_options, options)
   end

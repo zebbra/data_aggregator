@@ -48,17 +48,16 @@ defmodule DataAggregator.Records.Validation.Changes.ValidateRecords do
 
     Logger.debug("Validating records in chunks of #{chunk_size} rows ...")
 
-    collection_attributes = Enum.map(Schema.collection_attributes(), &{&1.name, &1.dwc_field})
+    collection_attributes = Enum.map(Schema.collection_attributes(), & &1.dwc_field)
 
-    # the internal db field names and the dwc field names in tuples
     attribute_name_pairs =
-      Schema.prefixed_attribute_names_and_dwc_fields() ++ collection_attributes
+      Schema.prefixed_attribute_names_and_dwc_fields()
 
     rows
     |> Stream.chunk_every(chunk_size)
     |> Enum.with_index()
-    |> Stream.map(&Helpers.convert_headers_of_chunk(&1, attribute_name_pairs))
     |> Stream.map(&Helpers.reject_collection_attributes_from_chunk(&1, collection_attributes))
+    |> Stream.map(&Helpers.convert_headers_of_chunk(&1, attribute_name_pairs))
     |> Stream.map(&Helpers.add_raw_record_to_chunk(&1, tenant))
     |> Stream.map(&validate_chunk(&1, ctx))
     |> reduce_validation_results(changeset)

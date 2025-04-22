@@ -118,6 +118,15 @@ defmodule DataAggregator.Records.Validation.Helpers do
     {rows, index}
   end
 
+  @doc """
+  removes the collection attributes from the chunk
+  The data we get from the CSV file may contain collection attributes, which we don't save on the record
+  We need to remove them from the chunk before we save the records
+  """
+  @spec reject_collection_attributes_from_chunk(
+          {[map()], integer()},
+          [{atom(), String.t()}]
+        ) :: {[map()], integer()}
   def reject_collection_attributes_from_chunk(chunk, collection_attributes) do
     {rows, index} = chunk
 
@@ -131,16 +140,12 @@ defmodule DataAggregator.Records.Validation.Helpers do
 
   defp filter_collection_attributes(row, collection_attributes) do
     Enum.reduce(row, %{}, fn {dwc_field, value}, acc ->
-      if field_in_collection_attributes?(dwc_field, collection_attributes) do
+      if dwc_field in collection_attributes do
         acc
       else
         Map.put(acc, dwc_field, value)
       end
     end)
-  end
-
-  defp field_in_collection_attributes?(field, collection_attributes) do
-    Enum.any?(collection_attributes, fn {k, _v} -> k == field end)
   end
 
   @doc """

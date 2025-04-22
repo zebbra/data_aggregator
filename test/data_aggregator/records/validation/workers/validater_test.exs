@@ -116,6 +116,7 @@ defmodule DataAggregator.Records.Validation.Workers.ValidaterTest do
       assert validation.state == :done
     end
 
+    @tag capture_log: true
     test "Validater.perform/1 check if error log is present and correct", %{
       validation: validation
     } do
