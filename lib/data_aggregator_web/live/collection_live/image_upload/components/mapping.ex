@@ -5,10 +5,11 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
   use DataAggregatorWeb, :live_component
 
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
-  import DataAggregatorWeb.CollectionLive.ImageUpload.Helpers, only: [attribute_options: 0]
 
   import DataAggregatorWeb.CollectionLive.Import.Helpers,
     only: [current_step: 1]
+
+  alias DataAggregator.Records.ImageUpload
 
   @impl true
   def update(assigns, socket) do
@@ -76,7 +77,12 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
         </div>
 
         <:actions modal>
-          <button type="submit" class="btn btn-primary">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            disabled={@image_upload.state in [:extraction_queued, :extracting, :mapping]}
+          >
+            {~t"Save"m}
             {~t"Update mapping"m}
           </button>
           <button type="button" class="btn btn-ghost" onclick="image_upload_modal.close()">
@@ -136,7 +142,7 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
   end
 
   defp assign_mapping_identifier_options(socket) do
-    options = attribute_options()
+    options = ImageUpload.Helpers.mapping_identifier_options()
 
     assign(socket, :mapping_identifier_options, options)
   end

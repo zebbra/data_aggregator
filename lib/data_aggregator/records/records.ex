@@ -27,8 +27,7 @@ defmodule DataAggregator.Records do
     execute_async: true,
     image_upload_timeout: to_timeout(hour: 12),
     extraction_timeout: to_timeout(hour: 12),
-    mapping_timeout: to_timeout(hour: 12),
-    image_processing_batch_size: 100
+    mapping_timeout: to_timeout(hour: 12)
   ]
 
   authorization do
@@ -91,16 +90,4 @@ defmodule DataAggregator.Records do
   def image_upload_timeout, do: get_env(:image_upload_timeout)
   def extraction_timeout, do: get_env(:extraction_timeout)
   def mapping_timeout, do: get_env(:mapping_timeout)
-
-  def image_processing_batch_size, do: get_env(:image_processing_batch_size)
-
-  def general_max_concurrency do
-    case :erlang.system_info(:logical_processors_available) do
-      :unknown ->
-        1
-
-      num_cpus ->
-        num_cpus
-    end
-  end
 end

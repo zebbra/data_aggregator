@@ -35,8 +35,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.SetMappingFailedOnError do
       end
 
     with {:ok, image_upload} <- set_error_message(image_upload, message),
-         {:ok, image_upload} <- set_mapping_failed(image_upload),
-         {:ok, image_upload} <- set_general_mapping_progress_count(image_upload, error) do
+         {:ok, image_upload} <- set_mapping_failed(image_upload) do
       {:ok, image_upload}
     else
       error ->
@@ -61,17 +60,5 @@ defmodule DataAggregator.Records.ImageUpload.Changes.SetMappingFailedOnError do
 
   defp set_mapping_failed(image_upload) do
     ImageUpload.set_mapping_failed(image_upload)
-  end
-
-  defp set_general_mapping_progress_count(image_upload, %{data: data}) do
-    ImageUpload.update(image_upload, %{
-      general_mapping_progress_count: data.general_mapping_progress_count
-    })
-  end
-
-  defp set_general_mapping_progress_count(image_upload, _error) do
-    ImageUpload.update(image_upload, %{
-      general_mapping_progress_count: 0
-    })
   end
 end
