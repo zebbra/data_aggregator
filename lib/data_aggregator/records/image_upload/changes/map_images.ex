@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
   use Ash.Resource.Change
 
   alias Ash.Changeset
+  alias DataAggregator.Counter
   alias DataAggregator.Records.ImageUpload
   alias DataAggregator.Records.ImageUpload.Helpers
   alias DataAggregator.Records.Record
@@ -44,12 +45,21 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
 
     total_images = Helpers.count_mappable_images(query)
 
+    {:ok, counter_operations} =
+      Counter.start(&ImageUpload.add_current_mapping_operations_count!(image_upload, &1))
+
+    {:ok, counter_process} =
+      Counter.start(&ImageUpload.add_mapping_progress!(image_upload, &1))
+
     # we have to stream the images, otherwise we bload the memory
     query
     |> Ash.stream!()
     |> Stream.map(&map_image(&1, image_upload))
-    |> reduce_image_mapping_results(changeset)
+    |> reduce_image_mapping_results(changeset, counter_operations, counter_process)
     |> error_if_no_images_mapped()
+
+    Counter.stop(counter_operations)
+    Counter.stop(counter_process)
 
     mapped_images_count = Changeset.get_attribute(changeset, :mapped_images_count)
 
@@ -101,11 +111,22 @@ defmodule DataAggregator.Records.ImageUpload.Changes.MapImages do
     end
   end
 
-  defp reduce_image_mapping_results(results, changeset) do
+  defp reduce_image_mapping_results(results, changeset, counter_operations, counter_process) do
     Enum.reduce(results, changeset, fn
       mapped, changeset ->
-        changeset = Helpers.report_current_operations(changeset, 1)
-        changeset = Helpers.report_mapping_process(changeset, mapped)
+        Counter.increment(counter_operations, 1)
+        Counter.increment(counter_process, mapped)
+
+        %Changeset{data: image_upload} = changeset
+
+        image_upload = %{
+          image_upload
+          | mapped_images_count: image_upload.mapped_images_count + mapped,
+            unmapped_images_count: image_upload.unmapped_images_count - mapped,
+            current_mapping_operations_count: image_upload.current_mapping_operations_count + 1
+        }
+
+        changeset = %{changeset | data: image_upload}
 
         changeset
     end)

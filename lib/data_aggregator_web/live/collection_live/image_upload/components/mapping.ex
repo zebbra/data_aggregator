@@ -75,7 +75,12 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
         </div>
 
         <:actions modal>
-          <button type="submit" class="btn btn-primary">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            disabled={@image_upload.state in [:extraction_queued, :extracting, :mapping]}
+          >
+            {~t"Save"m}
             {~t"Update mapping"m}
           </button>
           <button type="button" class="btn btn-ghost" onclick="image_upload_modal.close()">
