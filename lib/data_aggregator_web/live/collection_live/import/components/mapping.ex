@@ -17,14 +17,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   import DataAggregatorWeb.CollectionLive.Import.Helpers,
     only: [current_step: 1, not_mappable_fields: 0, attribute_options: 0]
 
-  alias DataAggregator.DarwinCore
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.Import
   alias Phoenix.HTML.Form
   alias Phoenix.LiveView.Socket
 
   @mandatory_attributes Enum.map(
-                          DarwinCore.Schema.mandatory_prefixed_attribute_names(),
+                          Schema.mandatory_prefixed_attribute_names(),
                           &Atom.to_string/1
                         )
 
@@ -146,7 +145,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                         type="combobox"
                         label={
                           Form.input_value(column_form, :mapped_to)
-                          |> DarwinCore.Schema.dwc_field_from_prefixed_attribute_name()
+                          |> Schema.dwc_field_from_prefixed_attribute_name()
                         }
                         field={column_form[:name]}
                         options={maybe_add_selected_column_name(column_form, @available_columns)}
@@ -730,7 +729,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           description = Map.fetch!(category, :description)
 
           attribute_name_without_prefix =
-            DarwinCore.Schema.attribute_name_without_prefix(prefixed_attribute)
+            Schema.attribute_name_without_prefix(prefixed_attribute)
 
           attribute =
             Enum.find(category.dwc_attributes, fn dwc_attribute ->
@@ -746,12 +745,12 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   defp prefixed_attribute_category(nil), do: nil
 
   defp prefixed_attribute_category(prefixed_attribute) do
-    category = DarwinCore.Schema.category_from_prefixed_attribute_name(prefixed_attribute)
+    category = Schema.category_from_prefixed_attribute_name(prefixed_attribute)
 
     if is_nil(category) do
       category
     else
-      case DarwinCore.Schema.category_label_by_description(category.description) do
+      case Schema.category_label_by_description(category.description) do
         nil ->
           category
 

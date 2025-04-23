@@ -380,7 +380,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components"
 msgid "close"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:49
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:48
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Map columns to record attributes"
@@ -504,37 +504,37 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Import deleted successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:169
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:168
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Additional columns"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:266
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:265
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Cancel"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:170
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:169
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Click on columns to add additional column to attribute mappings."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:48
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:47
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Mappings"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:129
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:128
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Please map all required attributes to one of your columns before continueing."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:127
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:126
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Required attributes"
@@ -546,12 +546,12 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Upload"
 msgid "Import records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:67
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:66
 #, elixir-autogen, elixir-format
 msgid "Search mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:240
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:239
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Remove mapping"
@@ -1524,13 +1524,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Export.Subscriptions"
 msgid "The export has been completed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:181
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:180
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Add all"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:263
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:262
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Update mapping"
@@ -2513,49 +2513,49 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Components"
 msgid "Custom Attribute"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:505
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:504
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Auto-mapping could not detect any matching columns"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:117
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:116
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Load existing mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:98
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:97
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Quick Start"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:275
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:274
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Reset mapping"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:153
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:152
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Select a column"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:219
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:218
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Select an attribute"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:478
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:477
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "The selected mapping isn't valid for the current import file"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:109
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:108
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Try auto-mapping"
@@ -3870,13 +3870,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.ImageUpload.Components.Upload"
 msgid "Please provide your zip file containing images to upload to this dataset."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:464
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:463
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Dataset mapping is empty"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:452
+#: lib/data_aggregator_web/live/collection_live/import/components/mapping.ex:451
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Import.Components.Mapping"
 msgid "Dataset mapping not found"
