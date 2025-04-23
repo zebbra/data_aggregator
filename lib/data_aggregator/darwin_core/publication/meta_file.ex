@@ -6,7 +6,6 @@ defmodule DataAggregator.DarwinCore.Publication.MetaFile do
   import XmlBuilder
 
   alias DataAggregator.DarwinCore.Schema
-  alias DataAggregator.DarwinCore.Schema.DwcAttribute
   alias DataAggregator.Records.Collection
 
   @dwca_extension_file_types [
@@ -125,20 +124,33 @@ defmodule DataAggregator.DarwinCore.Publication.MetaFile do
 
   @spec dwc_links(atom()) :: [String.t()]
   defp dwc_links(dwca_file_type) do
-    dwca_attributes = dwca_attribute(dwca_file_type)
+    dwca_attribute_links = dwca_attribute_links(dwca_file_type)
+
+    collection_attribute_links = collection_attribute_links(dwca_file_type)
 
     [
       "http://rs.tdwg.org/dwc/terms/occurrenceID"
-      | Enum.map(dwca_attributes, fn dwca_attribute -> dwca_attribute.dwc_link end)
+      | dwca_attribute_links ++ collection_attribute_links
     ]
   end
 
   # returns all dwca attributes for a given dwca file type if they have a dwc_field and dwc_link
   # and if it's not the occurrenceID, b'cause this is the ID and will be the set as the first column
-  @spec dwca_attribute(atom()) :: [DwcAttribute.t()]
-  defp dwca_attribute(dwca_file_type) do
+  @spec dwca_attribute_links(atom()) :: [String.t()]
+  defp dwca_attribute_links(dwca_file_type) do
     dwca_file_type
     |> Schema.dwc_attributes_by_dwca_file_type()
     |> Enum.filter(&(&1.dwc_field != nil and &1.dwc_link != nil and &1.dwc_field != "occurrenceID"))
+    |> Enum.map(& &1.dwc_link)
+  end
+
+  @spec collection_attribute_links(atom()) :: [String.t()]
+  defp collection_attribute_links(dwca_file_type) do
+    Schema.collection_attributes()
+    |> Enum.filter(fn attribute ->
+      attribute.dwca_file == dwca_file_type and attribute.dwc_field != nil and
+        attribute.dwc_link != nil
+    end)
+    |> Enum.map(& &1.dwc_link)
   end
 end

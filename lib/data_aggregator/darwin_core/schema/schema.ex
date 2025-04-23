@@ -2024,14 +2024,14 @@ collection_attributes = [
   },
   %CollectionAttribute{
     dwc_field: "collectionCode",
-    dwc_link: "http://rs.tdwg.org/dwc/terms/datasetID",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/collectionCode",
     dwca_file: :core,
     name: :oth_collection_code,
     collection_field: :code
   },
   %CollectionAttribute{
     dwc_field: "datasetID",
-    dwc_link: "http://rs.tdwg.org/dwc/terms/institutionID",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/datasetID",
     dwca_file: :core,
     name: :oth_dataset_id,
     collection_field: :gbif_dataset_key
@@ -2053,7 +2053,7 @@ collection_attributes = [
   %CollectionAttribute{
     dwc_field: "gbifDOI",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     name: :oth_gbif_doi,
     collection_field: :gbif_doi
   }
