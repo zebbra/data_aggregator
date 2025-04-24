@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.ValidatedRecord do
+defmodule DataAggregator.Records.ValidationResponse.ValidatedRecord do
   @moduledoc """
   Ash resource representing a validated_record.
 
@@ -21,8 +21,8 @@ defmodule DataAggregator.Records.ValidatedRecord do
   alias DataAggregator.DarwinCore
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
-  alias DataAggregator.Records.Validation
-  alias DataAggregator.Records.Validation.Changes.SetMandatoryAttributes
+  alias DataAggregator.Records.ValidationResponse
+  alias DataAggregator.Records.ValidationResponse.Changes.SetMandatoryAttributes
 
   @type t :: %ValidatedRecord{}
 
@@ -65,7 +65,7 @@ defmodule DataAggregator.Records.ValidatedRecord do
       upsert_fields [:extra_data | DarwinCore.Schema.prefixed_attribute_names()]
 
       change SetMandatoryAttributes
-      change Validation.Changes.SetOptionalAttributes
+      change ValidationResponse.Changes.SetOptionalAttributes
 
       change manage_relationship(:record, type: :append)
       change manage_relationship(:collection, type: :append)
@@ -82,7 +82,7 @@ defmodule DataAggregator.Records.ValidatedRecord do
       argument :collection, :struct, allow_nil?: true
 
       change SetMandatoryAttributes
-      change Validation.Changes.UpdateRawRecordStateAfterAction
+      change ValidationResponse.Changes.UpdateRawRecordStateAfterAction
 
       upsert? true
       upsert_identity :record_mte_catalog_number
@@ -97,11 +97,11 @@ defmodule DataAggregator.Records.ValidatedRecord do
       Validates multiple records using `Ash.bulk_create/3`.
 
       The `rows` can be any enumberable, where each item which will be used as `params` for
-      the `DataAggregator.Records.ValidatedRecord.validate/1` action.
+      the `DataAggregator.Records.ValidationResponse.ValidatedRecord.validate/1` action.
       """
 
       argument :rows, :term, allow_nil?: false
-      run Validation.Actions.BulkValidate
+      run ValidationResponse.Actions.BulkValidate
     end
   end
 

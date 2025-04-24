@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.Validation.Helpers do
+defmodule DataAggregator.Records.ValidationResponse.Helpers do
   @moduledoc """
-  Helper functions for the `DataAggregator.Records.Validation` context.
+  Helper functions for the `DataAggregator.Records.ValidationResponse` context.
   """
 
   alias Ash.Changeset
@@ -9,15 +9,15 @@ defmodule DataAggregator.Records.Validation.Helpers do
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
-  alias DataAggregator.Records.ValidatedRecord
-  alias DataAggregator.Records.Validation
+  alias DataAggregator.Records.ValidationResponse
+  alias DataAggregator.Records.ValidationResponse.ValidatedRecord
 
   require Logger
 
-  @type validation_result ::
+  @type validation_response_result ::
           [{map(), [Ash.Error.t()]}]
 
-  @type validation_error :: %{
+  @type validation_response_error :: %{
           catalog_number: String.t(),
           occurrence_id: String.t(),
           scientific_name: String.t(),
@@ -162,12 +162,14 @@ defmodule DataAggregator.Records.Validation.Helpers do
   Opens a new error log file for the given validation resource and returns a
     tuple with the path and the file.
   """
-  @spec open_error_log_file(Validation.t()) :: {String.t(), any()}
-  def open_error_log_file(validation) do
-    directory_path = FlatFileUtils.create_directory!("validation_errors_#{validation.id}")
+  @spec open_error_log_file(ValidationResponse.t()) :: {String.t(), any()}
+  def open_error_log_file(validation_response) do
+    directory_path =
+      FlatFileUtils.create_directory!("validation_response_errors_#{validation_response.id}")
 
     path =
-      directory_path <> "/validation_error_log-#{validation.id}-#{Uniq.UUID.uuid7(:slug)}.csv"
+      directory_path <>
+        "/validation_response_error_log-#{validation_response.id}-#{Uniq.UUID.uuid7(:slug)}.csv"
 
     {path,
      File.open!(path, [
@@ -179,12 +181,12 @@ defmodule DataAggregator.Records.Validation.Helpers do
   @doc """
   Writes the errors to a CSV file.
   """
-  @spec write_error_log_file(any(), validation_result()) :: :ok
-  def write_error_log_file(file, validation_result) do
+  @spec write_error_log_file(any(), validation_response_result()) :: :ok
+  def write_error_log_file(file, validation_response_result) do
     errors =
-      validation_result
-      |> Enum.map(fn {row, validation_errors} ->
-        Enum.map(validation_errors, &map_to_normalized_error(&1, row))
+      validation_response_result
+      |> Enum.map(fn {row, validation_response_errors} ->
+        Enum.map(validation_response_errors, &map_to_normalized_error(&1, row))
       end)
       |> List.flatten()
 
@@ -201,10 +203,10 @@ defmodule DataAggregator.Records.Validation.Helpers do
   end
 
   @doc """
-  Uploads the error log file to S3 and updates the validation with the attachment.
+  Uploads the error log file to S3 and updates the ValidationResponse with the attachment.
   """
-  @spec upload_error_log_file!(String.t(), Validation.t()) :: Validation.t()
-  def upload_error_log_file!(path, validation) do
+  @spec upload_error_log_file!(String.t(), ValidationResponse.t()) :: ValidationResponse.t()
+  def upload_error_log_file!(path, validation_response) do
     upload_fn = fn ->
       attachment = FlatFileUtils.store_on_s3!(path)
 
@@ -213,23 +215,23 @@ defmodule DataAggregator.Records.Validation.Helpers do
           amount_of_errors = Explorer.DataFrame.n_rows(df)
 
           Logger.warning(
-            "#{amount_of_errors} errors occured while validating. Adding errors as file to `validation.error_log`"
+            "#{amount_of_errors} errors occured while validating. Adding errors as file to `ValidationResponse.error_log`"
           )
 
-          validation =
-            validation
-            |> Validation.update!(%{rows_error_count: amount_of_errors})
-            |> Validation.update_error_log!(attachment)
+          validation_response =
+            validation_response
+            |> ValidationResponse.update!(%{rows_error_count: amount_of_errors})
+            |> ValidationResponse.update_error_log!(attachment)
 
           # remove file from local tmp dir, as it is now stored on s3
           File.rm!(path)
 
-          validation
+          validation_response
 
         {:error, _} ->
           Logger.debug("CSV could not be read or - more likely - it was empty, so no errors were found.")
 
-          validation
+          validation_response
       end
     end
 
@@ -242,7 +244,7 @@ defmodule DataAggregator.Records.Validation.Helpers do
     end
   end
 
-  @spec map_to_normalized_error(Ash.Error.t(), map()) :: validation_error()
+  @spec map_to_normalized_error(Ash.Error.t(), map()) :: validation_response_error()
   defp map_to_normalized_error(error, row) do
     case_result =
       case error do

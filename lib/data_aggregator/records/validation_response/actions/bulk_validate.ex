@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Validation.Actions.BulkValidate do
+defmodule DataAggregator.Records.ValidationResponse.Actions.BulkValidate do
   @moduledoc """
   Custom action to bulk validate a stream of rows using `DataAggregator.Records.AprovedRecord.validate/2`
   """
@@ -6,7 +6,7 @@ defmodule DataAggregator.Records.Validation.Actions.BulkValidate do
   use Ash.Resource.Actions.Implementation
 
   alias DataAggregator.Records
-  alias DataAggregator.Records.ValidatedRecord
+  alias DataAggregator.Records.ValidationResponse.ValidatedRecord
 
   require Logger
 
@@ -15,7 +15,7 @@ defmodule DataAggregator.Records.Validation.Actions.BulkValidate do
     %{rows: rows} = input.arguments
 
     max_concurrency = Records.import_max_concurrency()
-    batch_size = ceil(Records.validation_batch_size() / max_concurrency)
+    batch_size = ceil(Records.validation_response_batch_size() / max_concurrency)
 
     Logger.debug("Bulk validating records with batch size #{batch_size} (concurrency: #{max_concurrency}) ...")
 

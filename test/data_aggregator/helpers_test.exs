@@ -8,7 +8,7 @@ defmodule DataAggregator.HelpersTest do
   import DataAggregator.Helpers, only: [maybe_performant_load_record: 3]
   import DataAggregator.RecordEncodingResultFixture
   import DataAggregator.RecordsFixtures
-  import DataAggregator.ValidationFixtures
+  import DataAggregator.ValidationResponseFixtures
 
   alias DataAggregator.Gbif
   alias DataAggregator.Opencage
@@ -16,7 +16,7 @@ defmodule DataAggregator.HelpersTest do
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
-  alias DataAggregator.Records.ValidatedRecord
+  alias DataAggregator.Records.ValidationResponse.ValidatedRecord
 
   doctest DataAggregator.Records.ImageUpload.Helpers, import: true
   doctest DataAggregator.Records.Encoding.Strategy.SwissSpeciesStrategy, import: true

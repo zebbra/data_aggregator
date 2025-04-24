@@ -5,11 +5,11 @@ defmodule DataAggregator.ValidatedRecordTest do
   use Mimic
 
   import DataAggregator.RecordsFixtures
-  import DataAggregator.ValidationFixtures
+  import DataAggregator.ValidationResponseFixtures
 
   alias Ash.Error.Invalid
   alias DataAggregator.Gbif
-  alias DataAggregator.Records.ValidatedRecord
+  alias DataAggregator.Records.ValidationResponse.ValidatedRecord
 
   describe "validated_records" do
     @invalid_attrs %{

@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Validation.Changes.ValidateRecords do
+defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
   @moduledoc """
   Changeset hook to validate records
   """
@@ -11,9 +11,9 @@ defmodule DataAggregator.Records.Validation.Changes.ValidateRecords do
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records
-  alias DataAggregator.Records.ValidatedRecord
-  alias DataAggregator.Records.Validation
-  alias DataAggregator.Records.Validation.Helpers
+  alias DataAggregator.Records.ValidationResponse
+  alias DataAggregator.Records.ValidationResponse.Helpers
+  alias DataAggregator.Records.ValidationResponse.ValidatedRecord
 
   require Logger
 
@@ -44,7 +44,7 @@ defmodule DataAggregator.Records.Validation.Changes.ValidateRecords do
 
   @spec validate_in_chunks(Changeset.t(), Enum.t(), Context.t()) :: Changeset.t()
   defp validate_in_chunks(%Changeset{} = changeset, rows, %{tenant: tenant} = ctx) do
-    chunk_size = Records.validation_batch_size()
+    chunk_size = Records.validation_response_batch_size()
 
     Logger.debug("Validating records in chunks of #{chunk_size} rows ...")
 
@@ -94,8 +94,8 @@ defmodule DataAggregator.Records.Validation.Changes.ValidateRecords do
     {res, valid, invalid}
   end
 
-  defp reduce_validation_results(results, %Changeset{data: validation} = changeset) do
-    {path, error_log_file} = Helpers.open_error_log_file(validation)
+  defp reduce_validation_results(results, %Changeset{data: validation_response} = changeset) do
+    {path, error_log_file} = Helpers.open_error_log_file(validation_response)
 
     changeset =
       Enum.reduce_while(results, changeset, fn
@@ -113,9 +113,9 @@ defmodule DataAggregator.Records.Validation.Changes.ValidateRecords do
           {:halt, changeset}
       end)
 
-    validation = Helpers.upload_error_log_file!(path, changeset.data)
+    validation_response = Helpers.upload_error_log_file!(path, changeset.data)
 
-    %{changeset | data: validation}
+    %{changeset | data: validation_response}
   end
 
   @spec notify_infospecies(Changeset.t()) :: Changeset.t()
@@ -126,7 +126,7 @@ defmodule DataAggregator.Records.Validation.Changes.ValidateRecords do
       changeset
     else
       {:error, error} ->
-        Logger.warning("Could not notify Infospecies about validation result: #{inspect(error)}")
+        Logger.warning("Could not notify Infospecies about validation response result: #{inspect(error)}")
 
         # For now we just log the error and return the changeset without adding an error
         # add_error(changeset, error)
@@ -138,7 +138,7 @@ defmodule DataAggregator.Records.Validation.Changes.ValidateRecords do
 
   defp ensure_status(response) do
     msg =
-      "No valid response (status #{response.status}) from Infospecies API while notifying about processed validation: #{inspect(response.body)}"
+      "No valid response (status #{response.status}) from Infospecies API while notifying about processed validation response: #{inspect(response.body)}"
 
     {:error, msg}
   end
@@ -147,18 +147,20 @@ defmodule DataAggregator.Records.Validation.Changes.ValidateRecords do
   defp report_progress(changeset, validated, invalid) do
     Logger.debug("Batch successful (#{validated} validated, #{invalid} skipped)")
 
-    %Changeset{data: validation} = changeset
+    %Changeset{data: validation_response} = changeset
 
-    add_progress = fn -> Validation.add_validation_progress!(validation, validated, invalid) end
+    add_progress = fn ->
+      ValidationResponse.add_validation_progress!(validation_response, validated, invalid)
+    end
 
-    validation =
+    validation_response =
       if Records.execute_async?() do
         add_progress |> Task.async() |> Task.await()
       else
         add_progress.()
       end
 
-    %{changeset | data: validation}
+    %{changeset | data: validation_response}
   end
 
   defp stream_from_dataframe(df), do: {:ok, Explorer.DataFrame.to_rows_stream(df)}

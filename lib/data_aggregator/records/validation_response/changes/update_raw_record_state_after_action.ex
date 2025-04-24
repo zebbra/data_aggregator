@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.Validation.Changes.UpdateRawRecordStateAfterAction do
+defmodule DataAggregator.Records.ValidationResponse.Changes.UpdateRawRecordStateAfterAction do
   @moduledoc """
-  Action call to `DataAggregator.Records.Validation.set_done/1` after the action
+  Action call to `DataAggregator.Records.ValidationResponse.set_done/1` after the action
   """
 
   use Ash.Resource.Change

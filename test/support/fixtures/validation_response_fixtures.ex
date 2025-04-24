@@ -1,18 +1,18 @@
-defmodule DataAggregator.ValidationFixtures do
+defmodule DataAggregator.ValidationResponseFixtures do
   @moduledoc """
   This module defines test helpers for creating
   entities via the `DataAggregator.Records` context.
   """
 
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Records.ValidatedRecord
-  alias DataAggregator.Records.Validation
+  alias DataAggregator.Records.ValidationResponse
+  alias DataAggregator.Records.ValidationResponse.ValidatedRecord
   alias DataAggregator.RecordsFixtures
 
   @doc """
   Generate a validation
   """
-  def validation_fixture(attrs \\ %{}) do
+  def validation_response_fixture(attrs \\ %{}) do
     path = "test/support/fixtures/files/validation_dwca.zip"
 
     attachment = Attachment.import_from_path!(path)
@@ -24,7 +24,7 @@ defmodule DataAggregator.ValidationFixtures do
         RecordsFixtures.collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
       end)
 
-    Validation.create!(params, tenant: params.collection)
+    ValidationResponse.create!(params, tenant: params.collection)
   end
 
   @doc """

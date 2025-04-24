@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.Validation do
+defmodule DataAggregator.Records.ValidationResponse do
   @moduledoc """
-  A validation represents a by infospecies validated set of records
+  A ValidationResponse represents a by infospecies validated set of records
   """
 
   use Ash.Resource,
@@ -11,9 +11,9 @@ defmodule DataAggregator.Records.Validation do
   alias __MODULE__
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
-  alias DataAggregator.Records.Validation.Changes
+  alias DataAggregator.Records.ValidationResponse.Changes
 
-  @type t :: %Validation{}
+  @type t :: %ValidationResponse{}
 
   attributes do
     uuid_attribute :id, prefix: "app", public?: true
@@ -90,7 +90,7 @@ defmodule DataAggregator.Records.Validation do
       require_atomic? false
 
       change transition_state(:queued)
-      change Changes.EnqueueValidater
+      change Changes.EnqueueValidationResponseHandler
     end
 
     update :set_running do
@@ -182,7 +182,7 @@ defmodule DataAggregator.Records.Validation do
   end
 
   postgres do
-    table "validations"
+    table "validation_responses"
     repo DataAggregator.Repo
 
     references do
@@ -192,10 +192,10 @@ defmodule DataAggregator.Records.Validation do
   end
 
   json_api do
-    type "validations"
+    type "validation_responses"
 
     routes do
-      base "/datasets/:collection_id/validations"
+      base "/datasets/:collection_id/validation_responses"
 
       get :read
       index :read

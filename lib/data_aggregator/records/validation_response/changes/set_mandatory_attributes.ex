@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Validation.Changes.SetMandatoryAttributes do
+defmodule DataAggregator.Records.ValidationResponse.Changes.SetMandatoryAttributes do
   @moduledoc """
   Set mandatory fields for a validation_record according to its provided record.
   """

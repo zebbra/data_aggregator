@@ -1,12 +1,12 @@
-defmodule DataAggregator.Records.Validation.Changes.SetCount do
+defmodule DataAggregator.Records.ValidationResponse.Changes.SetCount do
   @moduledoc """
-  Sets the rows_count of the validation object according to the rows count in the provided file
+  Sets the rows_count of the ValidationResponse object according to the rows count in the provided file
   """
 
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Records.Validation.Helpers
+  alias DataAggregator.Records.ValidationResponse.Helpers
 
   require Logger
 

@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Validation.Changes.SetRunningBeforeTransaction do
+defmodule DataAggregator.Records.ValidationResponse.Changes.SetRunningBeforeTransaction do
   @moduledoc """
   Sets the state to `:running` before the transaction is started
   """
@@ -6,7 +6,7 @@ defmodule DataAggregator.Records.Validation.Changes.SetRunningBeforeTransaction 
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Records.Validation
+  alias DataAggregator.Records.ValidationResponse
 
   require Logger
 
@@ -15,10 +15,10 @@ defmodule DataAggregator.Records.Validation.Changes.SetRunningBeforeTransaction 
     Changeset.before_transaction(changeset, &set_running/1)
   end
 
-  defp set_running(%Changeset{data: validation} = changeset) do
-    case Validation.set_running(validation) do
-      {:ok, validation} ->
-        %{changeset | data: validation}
+  defp set_running(%Changeset{data: validation_response} = changeset) do
+    case ValidationResponse.set_running(validation_response) do
+      {:ok, validation_response} ->
+        %{changeset | data: validation_response}
 
       {:error, reason} ->
         Changeset.add_error(changeset, reason)

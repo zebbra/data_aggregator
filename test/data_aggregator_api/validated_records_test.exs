@@ -8,9 +8,9 @@ defmodule DataAggregatorApi.ValidatedRecordsTest do
   alias DataAggregator.AccountsFixtures
   alias DataAggregator.Gbif
   alias DataAggregator.Opencage
-  alias DataAggregator.Records.ValidatedRecord
+  alias DataAggregator.Records.ValidationResponse.ValidatedRecord
   alias DataAggregator.RecordsFixtures
-  alias DataAggregator.ValidationFixtures
+  alias DataAggregator.ValidationResponseFixtures
   alias DataAggregatorApi.HelpersTest
 
   setup %{conn: conn} do
@@ -62,7 +62,7 @@ defmodule DataAggregatorApi.ValidatedRecordsTest do
 
     # Create validated_records
     validated_record_1 =
-      ValidationFixtures.validated_record_fixture(%{
+      ValidationResponseFixtures.validated_record_fixture(%{
         record: record_1,
         collection: collection,
         mte_catalog_number: record_1.mte_catalog_number,
@@ -70,7 +70,7 @@ defmodule DataAggregatorApi.ValidatedRecordsTest do
       })
 
     validated_record_2 =
-      ValidationFixtures.validated_record_fixture(%{
+      ValidationResponseFixtures.validated_record_fixture(%{
         record: record_2,
         collection: collection,
         mte_catalog_number: record_2.mte_catalog_number,
@@ -78,7 +78,7 @@ defmodule DataAggregatorApi.ValidatedRecordsTest do
       })
 
     validated_record_3 =
-      ValidationFixtures.validated_record_fixture(%{
+      ValidationResponseFixtures.validated_record_fixture(%{
         record: record_3,
         collection: collection,
         mte_catalog_number: record_3.mte_catalog_number,
