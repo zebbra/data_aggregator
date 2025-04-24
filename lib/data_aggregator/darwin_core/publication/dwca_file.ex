@@ -81,7 +81,7 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
     collection_attributes =
       Schema.collection_attributes()
       |> Enum.filter(fn attribute ->
-        attribute.dwca_file == file_type
+        attribute.dwca_file == file_type and attribute.dwc_link != nil
       end)
       |> Enum.map(&{&1.name, &1.dwc_field})
 

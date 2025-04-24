@@ -1692,7 +1692,7 @@ pvn_attributes = [
   },
   %{
     dwc_field: "storageName",
-    dwc_link: nil,
+    dwc_link: "http://data.ggbn.org/schemas/ggbn/terms/sequence",
     dwca_file: :core,
     attribute: %Attribute{name: :storage_name, type: :string, allow_nil?: true}
   },
@@ -2090,12 +2090,6 @@ defmodule DataAggregator.DarwinCore.Schema do
   """
   @spec collection_attributes() :: [CollectionAttribute.t()]
   def collection_attributes, do: @colleciton_attributes
-
-  def collection_attributes_by_prefixed_name(name) do
-    Enum.find(@colleciton_attributes, fn collection_attribute ->
-      collection_attribute.name == name
-    end)
-  end
 
   @doc """
   Returns the category label for a category description
