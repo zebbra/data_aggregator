@@ -161,7 +161,7 @@ defmodule DataAggregator.Accounts.User do
     end
 
     policy action_type(:destroy) do
-      forbid_unless with_role("admin")
+      forbid_unless with_role(["admin", "collection_administrator"])
       authorize_unless it_is_myself()
     end
 
@@ -169,19 +169,20 @@ defmodule DataAggregator.Accounts.User do
       authorize_if always()
     end
 
-    policy_group with_role(["collection_administrator", "data_digitizer"]) do
-      policy action_type([:read]) do
+    policy_group with_role("collection_administrator") do
+      policy action_type([:create, :update]) do
+        authorize_if relates_to_institution_check(:institution_id)
+      end
+
+      policy action_type([:destroy]) do
+        forbid_if it_is_admin()
         authorize_if relates_to_institution_filter(:institution_id)
       end
     end
 
-    policy_group with_role("collection_administrator") do
-      policy action_type(:destroy) do
-        forbid_if always()
-      end
-
-      policy action_type([:create, :update]) do
-        authorize_if relates_to_institution_check(:institution_id)
+    policy_group with_role(["collection_administrator", "data_digitizer"]) do
+      policy action_type([:read]) do
+        authorize_if relates_to_institution_filter(:institution_id)
       end
     end
   end
