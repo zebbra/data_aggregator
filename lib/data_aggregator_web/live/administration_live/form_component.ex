@@ -138,7 +138,8 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
             <div class="grid grid-cols-1 gap-8">
               <.toggle_group
                 field={@form[:roles]}
-                options={edit_toggle_group_options(@current_user, @user)}
+                options={all_toggle_group_options()}
+                hidden_options={hidden_toggle_group_options(@current_user, @user)}
                 multiple
               />
             </div>
@@ -423,5 +424,15 @@ defmodule DataAggregatorWeb.AdministrationLive.FormComponent do
     roles = params["roles"] || []
     roles = Enum.reject(roles, &(&1 == ""))
     Map.put(params, "roles", roles)
+  end
+
+  defp hidden_toggle_group_options(current_user, user) do
+    editable_options = edit_toggle_group_options(current_user, user)
+
+    all_toggle_group_options()
+    |> Enum.reject(fn option ->
+      option in editable_options
+    end)
+    |> Keyword.values()
   end
 end

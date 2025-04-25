@@ -236,7 +236,7 @@ defmodule DataAggregatorWeb.Components.FieldGroup do
       <div class="grid grid-flow-row sm:grid-cols-2 sm:gap-x-2">
         <div
           :for={{label, value} <- options_for_group(@options, @as_atoms)}
-          class="flex cursor-pointer justify-between gap-4 py-2 sm:flex-row-reverse sm:justify-end"
+          class={"#{hidden_option?(value, @hidden_options) && "hidden"} flex cursor-pointer justify-between gap-4 py-2 sm:flex-row-reverse sm:justify-end"}
         >
           <%= if hidden_option?(value, @hidden_options) do %>
             <input
