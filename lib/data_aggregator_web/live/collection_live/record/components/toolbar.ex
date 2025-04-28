@@ -17,8 +17,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
   @actions [
     {"export", "hero-arrow-down-tray", "collection:export"},
     {"encode", "hero-puzzle-piece", "encode:toggle"},
-    {"publish", "hero-globe-alt", "fast_track_pub:toggle"},
-    {"validate", "hero-check-badge", "validation_pub:toggle"}
+    {"publish", "hero-globe-alt", "publication:toggle"},
+    {"validate", "hero-check-badge", "validation:toggle"}
   ]
 
   attr :search, Phoenix.HTML.Form, default: nil, doc: "The search form"
@@ -236,7 +236,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components.Toolbar do
 
   defp action_allowed?(user, "encode", collection), do: Collection.can_enqueue_encoding?(user, collection, %{})
 
-  defp action_allowed?(user, "publish", collection), do: Collection.can_set_fast_track_publishing?(user, collection)
+  defp action_allowed?(user, "publish", collection), do: Collection.can_set_publishing?(user, collection)
 
   defp action_allowed?(user, "validate", collection), do: Collection.can_set_validating?(user, collection)
 

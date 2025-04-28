@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifierTest do
+defmodule DataAggregator.Records.Publication.Scheduler.PublicationVerifierTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
@@ -7,14 +7,14 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.Gbif
-  alias DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier
+  alias DataAggregator.Records.Publication.Scheduler.PublicationVerifier
 
-  describe "DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier.perform/1" do
+  describe "DataAggregator.Records.Publication.Scheduler.PublicationVerifier.perform/1" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
-      not_published_record = record_fixture(%{fast_track_status: :in_publication})
-      published_record = record_fixture(%{fast_track_status: :published})
+      not_published_record = record_fixture(%{publication_status: :in_publication})
+      published_record = record_fixture(%{publication_status: :published})
 
       [
         not_published_record: not_published_record,
@@ -26,13 +26,13 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
       not_published_record: not_published_record
     } do
       {:ok, record} =
-        perform_job(FastTrackPublicationVerifier, %{
+        perform_job(PublicationVerifier, %{
           id: not_published_record.id,
           collection_id: not_published_record.collection_id,
           user_id: nil
         })
 
-      assert record.fast_track_status == :published
+      assert record.publication_status == :published
     end
 
     test "succeeds a already published record to check if its published on gbif", %{
@@ -40,14 +40,14 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
     } do
       {{:ok, record}, logs} =
         with_log(fn ->
-          perform_job(FastTrackPublicationVerifier, %{
+          perform_job(PublicationVerifier, %{
             id: published_record.id,
             collection_id: published_record.collection_id,
             user_id: nil
           })
         end)
 
-      assert record.fast_track_status == :published
+      assert record.publication_status == :published
 
       assert logs =~ ""
     end

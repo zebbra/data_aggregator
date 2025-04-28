@@ -102,15 +102,14 @@ defmodule DataAggregator.EmlFileTest do
       publication =
         Publication.create!(
           %{
-            name: "Publication Fast Track 2",
-            channel: :fast_track,
+            name: "Publication 2",
             records_query: query,
             collection: collection
           },
           tenant: collection
         )
 
-      path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
+      path = FlatFileUtils.create_directory!("publication}")
 
       [
         collection: collection,

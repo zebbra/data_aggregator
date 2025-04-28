@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackCheckerTest do
+defmodule DataAggregator.Records.Record.Actions.EnqueuePublicationVerifierTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
@@ -10,12 +10,12 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackCheckerTest do
   alias DataAggregator.Records.Publication.Scheduler
   alias DataAggregator.Records.Record
 
-  describe "DataAggregator.Records.Record.enqueue_fast_track_checker/2" do
+  describe "DataAggregator.Records.Record.enqueue_publication_verifier/2" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
-      not_published_record = record_fixture(%{fast_track_status: :in_publication})
-      published_record = record_fixture(%{fast_track_status: :published})
+      not_published_record = record_fixture(%{publication_status: :in_publication})
+      published_record = record_fixture(%{publication_status: :published})
 
       [
         not_published_record: not_published_record,
@@ -27,10 +27,10 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackCheckerTest do
       not_published_record: not_published_record
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        assert {:ok, _job} = Record.enqueue_fast_track_checker(not_published_record)
+        assert {:ok, _job} = Record.enqueue_publication_verifier(not_published_record)
 
         assert_enqueued(
-          worker: Scheduler.FastTrackPublicationVerifier,
+          worker: Scheduler.PublicationVerifier,
           args: %{id: not_published_record.id, collection_id: not_published_record.collection_id}
         )
       end)
@@ -40,10 +40,10 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackCheckerTest do
       published_record: published_record
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        {:ok, _job} = Record.enqueue_fast_track_checker(published_record)
+        {:ok, _job} = Record.enqueue_publication_verifier(published_record)
 
         assert_enqueued(
-          worker: Scheduler.FastTrackPublicationVerifier,
+          worker: Scheduler.PublicationVerifier,
           args: %{id: published_record.id, collection_id: published_record.collection_id}
         )
       end)

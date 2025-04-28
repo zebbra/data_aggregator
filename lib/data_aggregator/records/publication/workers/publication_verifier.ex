@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier do
+defmodule DataAggregator.Records.Publication.Scheduler.PublicationVerifier do
   @moduledoc """
   checks in a fixed interval if a record has been published on the gbif portal
 
@@ -40,9 +40,9 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
     record =
       id
       |> Record.get_by_id!(tenant: collection_id)
-      |> Record.check_if_fast_track_pubished!(actor: actor, authorize?: false)
+      |> Record.check_if_published!(actor: actor, authorize?: false)
 
-    if record.fast_track_status == :published do
+    if record.publication_status == :published do
       {:ok, record}
     else
       maybe_queue_again(attempt, max_attempts, record)
@@ -72,7 +72,7 @@ defmodule DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerif
     else
       Logger.debug("#{record.id} still not published on GBIF on the last attempt. set publicaiton status to failed.")
 
-      Record.update_fast_track_status(record, :publication_failed)
+      Record.update_publication_status(record, :publication_failed)
       :ok
     end
   end

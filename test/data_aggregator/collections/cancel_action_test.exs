@@ -354,7 +354,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
       end)
     end
 
-    test "cancels a fast_track_publication job and sets the fast_track_publication to failed and the collection to idle" do
+    test "cancels a publication job and sets the publication to failed and the collection to idle" do
       Oban.Testing.with_testing_mode(:manual, fn ->
         collection = collection_fixture()
 
@@ -366,8 +366,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
         publication =
           Publication.create!(
             %{
-              name: "Publication Fast Track 1",
-              channel: :fast_track,
+              name: "Publication 1",
               records_query: query,
               collection: collection
             },
@@ -376,8 +375,8 @@ defmodule DataAggregator.Collections.CancelActionTest do
 
         assert {:ok, publication} = Publication.enqueue(publication)
 
-        collection = Collection.set_fast_track_publishing!(collection)
-        assert collection.state === :fast_track_publishing
+        collection = Collection.set_publishing!(collection)
+        assert collection.state === :publishing
         assert publication.state === :queued
 
         active_job =
@@ -404,11 +403,11 @@ defmodule DataAggregator.Collections.CancelActionTest do
       end)
     end
 
-    test "cancels a fast_track_publication with no active fast_track_publication and no fast_track_publication job and sets collection to idle" do
+    test "cancels a publication with no active publication and no publication job and sets collection to idle" do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        collection = collection_fixture(%{state: :fast_track_publishing})
+        collection = collection_fixture(%{state: :publishing})
 
-        assert collection.state === :fast_track_publishing
+        assert collection.state === :publishing
 
         query = %{
           collection: %{id: %{eq: collection.id}},
@@ -418,8 +417,7 @@ defmodule DataAggregator.Collections.CancelActionTest do
         publication =
           Publication.create!(
             %{
-              name: "Publication Fast Track 1",
-              channel: :fast_track,
+              name: "Publication 1",
               records_query: query,
               collection: collection
             },

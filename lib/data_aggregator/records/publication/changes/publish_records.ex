@@ -19,13 +19,13 @@ defmodule DataAggregator.Records.Publication.Changes.PublishRecords do
   defp publish_records(%Changeset{data: original_publication} = changeset, %{actor: actor, tenant: tenant}) do
     publication = Ash.load!(original_publication, [:collection])
 
-    case publish_or_validate(publication, actor, tenant) do
+    case publish(publication, actor, tenant) do
       {:ok, publication} -> add_success(changeset, publication, tenant)
       {:error, error} -> add_error(changeset, error, publication)
     end
   end
 
-  defp publish_or_validate(%{channel: :fast_track} = publication, actor, tenant),
+  defp publish(publication, actor, tenant),
     do: Collection.publish(publication, actor: actor, authorize?: false, tenant: tenant)
 
   defp add_error(changeset, error, publication) do

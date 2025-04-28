@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.Record.Changes.CheckIfFastTrackPublished do
+defmodule DataAggregator.Records.Record.Changes.CheckIfPublished do
   @moduledoc """
-  Checks if a Record has been published on the GBIF portal if yes update the fast_track_status to :published
+  Checks if a Record has been published on the GBIF portal if yes update the publication_status to :published
   """
 
   use Ash.Resource.Change
@@ -19,7 +19,7 @@ defmodule DataAggregator.Records.Record.Changes.CheckIfFastTrackPublished do
 
     %{gbif_dataset_key: gbif_dataset_key} = Collection.get_by_id!(collection_id)
 
-    case check_if_fast_track_published(catalog_number, gbif_dataset_key) do
+    case check_if_published(catalog_number, gbif_dataset_key) do
       {:ok, nil} ->
         Logger.debug("Record is not published on GBIF yet. We do nothing.")
 
@@ -27,14 +27,14 @@ defmodule DataAggregator.Records.Record.Changes.CheckIfFastTrackPublished do
 
       {:ok, gbif_id} ->
         {:ok, updated_record} =
-          Record.update_fast_track_status(changeset.data.id, :published,
+          Record.update_publication_status(changeset.data.id, :published,
             tenant: collection_id,
             actor: actor,
             authorize?: false
           )
 
         changeset
-        |> Changeset.change_attribute(:fast_track_status, updated_record.fast_track_status)
+        |> Changeset.change_attribute(:publication_status, updated_record.publication_status)
         |> Changeset.change_attribute(:oth_gbif_id, gbif_id)
 
       {:error, error} ->
@@ -48,11 +48,11 @@ defmodule DataAggregator.Records.Record.Changes.CheckIfFastTrackPublished do
   end
 
   # checks if the record is published on the GBIF portal
-  @spec check_if_fast_track_published(String.t(), String.t()) ::
+  @spec check_if_published(String.t(), String.t()) ::
           {:ok, String.t() | nil} | {:error, any()}
-  defp check_if_fast_track_published(nil, _dataset_key), do: {:error, "Record's :mte_catalog_number is missing"}
+  defp check_if_published(nil, _dataset_key), do: {:error, "Record's :mte_catalog_number is missing"}
 
-  defp check_if_fast_track_published(catalog_number, dataset_key) do
+  defp check_if_published(catalog_number, dataset_key) do
     case Gbif.RestAPI.search_for_occurrences(catalog_number, dataset_key) do
       {:ok, response} ->
         response

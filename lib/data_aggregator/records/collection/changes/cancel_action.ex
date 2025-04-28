@@ -49,7 +49,7 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
       :encoding ->
         cancel_encoding(changeset)
 
-      :fast_track_publishing ->
+      :publishing ->
         cancel_publication(changeset)
 
       :validating ->

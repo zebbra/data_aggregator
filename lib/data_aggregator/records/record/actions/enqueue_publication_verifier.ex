@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackChecker do
+defmodule DataAggregator.Records.Record.Actions.EnqueuePublicationVerifier do
   @moduledoc """
-  Enques the record to be processed by the `DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier` worker.
+  Enques the record to be processed by the `DataAggregator.Records.Publication.Scheduler.PublicationVerifier` worker.
   """
 
   use Ash.Resource.Actions.Implementation
@@ -13,24 +13,24 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackChecker do
 
   @impl true
   def run(input, _opts, ctx) do
-    enqueue_fast_track_checker(input.arguments.published_record, ctx)
+    enqueue_publication_verifier(input.arguments.published_record, ctx)
   end
 
-  defp enqueue_fast_track_checker(record, %{actor: actor}) do
+  defp enqueue_publication_verifier(record, %{actor: actor}) do
     case insert_job(record, actor) do
       {:ok, job} ->
-        Logger.debug("Enqueued record fast_track_checker job #{inspect(job.id)}")
+        Logger.debug("Enqueued record publication_verifier job #{inspect(job.id)}")
         {:ok, job}
 
       {:error, error} ->
-        Logger.error("Failed to enqueue record fast_track_checker job: #{inspect(error)}")
+        Logger.error("Failed to enqueue record publication_verifier job: #{inspect(error)}")
         {:error, error}
     end
   end
 
   defp insert_job(%Record{id: id, collection_id: collection_id}, user) do
     %{id: id, collection_id: collection_id, user_id: maybe_get_id(user)}
-    |> Scheduler.FastTrackPublicationVerifier.new(
+    |> Scheduler.PublicationVerifier.new(
       unique: [
         period: :infinity,
         fields: [:args, :worker],
@@ -44,7 +44,7 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueFastTrackChecker do
 
   defp insert_job(%PublishedRecord{record_id: id, collection_id: collection_id}, user) do
     %{id: id, collection_id: collection_id, user_id: maybe_get_id(user)}
-    |> Scheduler.FastTrackPublicationVerifier.new(
+    |> Scheduler.PublicationVerifier.new(
       unique: [
         period: :infinity,
         fields: [:args, :worker],

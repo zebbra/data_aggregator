@@ -1,6 +1,6 @@
-defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
+defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
   @moduledoc """
-  Fast track publication modal
+  publication modal
   """
 
   use DataAggregatorWeb, :live_component
@@ -11,7 +11,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
   import DataAggregatorWeb.CollectionLive.Record.Helpers,
     only: [
       filter_map: 3,
-      checked_fast_track_query: 2,
+      checked_publication_query: 2,
       publication_rules_query: 1,
       count_from_query: 2
     ]
@@ -121,21 +121,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
   def handle_event("publication:submit", %{"publication" => params}, socket) do
     %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
     actor = get_actor(socket)
-    collection = Ash.load!(collection, [:fast_track_query], lazy?: true, actor: actor)
+    collection = Ash.load!(collection, [:publication_query], lazy?: true, actor: actor)
 
-    fast_track_query = filter_map(ash_pagify, collection.fast_track_query, socket.assigns.layer)
+    publication_query = filter_map(ash_pagify, collection.publication_query, socket.assigns.layer)
 
-    # filter for records that pass the fast track check (country is set, or no coordinates are set)
-    checked_fast_track_query = checked_fast_track_query(fast_track_query, socket.assigns.layer)
-    checked_fast_track_count = count_from_query(checked_fast_track_query, collection)
+    # filter for records that pass the publication check (country is set, or no coordinates are set)
+    checked_publication_query = checked_publication_query(publication_query, socket.assigns.layer)
+    checked_publication_count = count_from_query(checked_publication_query, collection)
 
     params =
       Map.merge(params, %{
         name: "pub-#{socket.assigns.collection.name}-#{:os.system_time()}",
-        channel: :fast_track,
-        records_query: checked_fast_track_query,
+        records_query: checked_publication_query,
         collection: collection,
-        rows_count: checked_fast_track_count,
+        rows_count: checked_publication_count,
         layer: socket.assigns.layer
       })
 
@@ -198,7 +197,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
           <span class="font-bold">
             {mgettext(
               "%{count} records from the %{layer} layer",
-              count: format_number(@checked_fast_track_count),
+              count: format_number(@checked_publication_count),
               layer: @layer
             )}
           </span>
@@ -444,14 +443,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
           {~t"and send"m}
           <span class="font-bold">
             {mgettext(
-              "%{checked_fast_track_count} records",
-              checked_fast_track_count: format_number(@checked_fast_track_count)
+              "%{checked_publication_count} records",
+              checked_publication_count: format_number(@checked_publication_count)
             )}
           </span>
           {~t"to GBIF"m}
         </p>
 
-        <div :if={@total_count - @checked_fast_track_count > 0} class="flex">
+        <div :if={@total_count - @checked_publication_count > 0} class="flex">
           <div class="mr-4 flex-shrink-0">
             <.icon name="hero-x-circle-mini" class="size-6 text-error" />
           </div>
@@ -459,7 +458,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
             {~t"There are"m}
             <span class="text-sm font-bold">
               {mgettext("%{possible_sensitive_count} out of %{total_count} records",
-                possible_sensitive_count: format_number(@total_count - @checked_fast_track_count),
+                possible_sensitive_count: format_number(@total_count - @checked_publication_count),
                 total_count: format_number(@total_count)
               )}
             </span>
@@ -553,7 +552,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
   defp footer(%{step: 1} = assigns) do
     ~H"""
     <button
-      disabled={dataset_validation_valid?(assigns) == false or @checked_fast_track_count == 0}
+      disabled={dataset_validation_valid?(assigns) == false or @checked_publication_count == 0}
       type="button"
       class="btn btn-primary"
       phx-click="publication:next"
@@ -561,7 +560,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
     >
       {~t"Next"m}
     </button>
-    <button type="button" class="btn btn-ghost" onclick="fast_track_pub_modal.close()">
+    <button type="button" class="btn btn-ghost" onclick="publication_modal.close()">
       {~t"Cancel"m}
     </button>
     """
@@ -623,22 +622,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FastTrackModal do
   defp assign_counts(socket) do
     %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
     actor = get_actor(socket)
-    collection = Ash.load!(collection, [:fast_track_query], lazy?: true, actor: actor)
+    collection = Ash.load!(collection, [:publication_query], lazy?: true, actor: actor)
 
-    fast_track_query =
-      filter_map(ash_pagify, collection.fast_track_query, socket.assigns.layer)
+    publication_query =
+      filter_map(ash_pagify, collection.publication_query, socket.assigns.layer)
 
-    total_count = count_from_query(fast_track_query, collection)
+    total_count = count_from_query(publication_query, collection)
 
-    checked_fast_track_query = checked_fast_track_query(fast_track_query, socket.assigns.layer)
-    checked_fast_track_count = count_from_query(checked_fast_track_query, collection)
+    checked_publication_query = checked_publication_query(publication_query, socket.assigns.layer)
+    checked_publication_count = count_from_query(checked_publication_query, collection)
 
-    publication_rules_query = publication_rules_query(checked_fast_track_query)
+    publication_rules_query = publication_rules_query(checked_publication_query)
     publication_rules_count = count_from_query(publication_rules_query, collection)
 
     socket
     |> assign(:total_count, total_count)
-    |> assign(:checked_fast_track_count, checked_fast_track_count)
+    |> assign(:checked_publication_count, checked_publication_count)
     |> assign(:publication_rules_count, publication_rules_count)
   end
 

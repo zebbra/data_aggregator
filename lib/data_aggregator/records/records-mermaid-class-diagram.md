@@ -34,7 +34,7 @@ classDiagram
         set_importing()
         set_exporting()
         set_encoding()
-        set_fast_track_publishing()
+        set_publishing()
         set_validating()
         set_deleting()
         set_idle()
@@ -46,7 +46,8 @@ classDiagram
         create_endpoint(Struct collection, String dwca_file_url)
         export(Struct export)
         publish(Struct publication)
-        validate(Struct collection, Map query)
+        validate(Struct validation_request)
+        start_validations(Struct collection, Map query)
     }
     class EncodedRecord {
         Map ext_vernacular_names
@@ -77,18 +78,12 @@ classDiagram
         String oth_modified_by
         String oth_license
         String oth_language
-        String oth_institution_id
-        String oth_institution_code
         String oth_information_withheld
         String oth_gbif_ch_id
         String oth_gbif_id
-        String oth_gbif_doi
         String oth_date_available
         String oth_dataset_name
-        String oth_dataset_id
         String oth_data_generalizations
-        String oth_collection_id
-        String oth_collection_code
         String oth_bibliographic_citation
         String oth_basis_of_record
         String oth_access_rights
@@ -478,6 +473,12 @@ classDiagram
         UtcDatetime started_at
         UtcDatetime finished_at
         Map[] invalid_file_infos
+        Integer mapped_images_count
+        Integer unmapped_images_count
+        Integer max_mapping_operations_count
+        Integer current_mapping_operations_count
+        String error_message
+        Integer invalid_files_count
         Atom mapping_identifier
         UUID collection_id
         UUID created_by_id
@@ -485,6 +486,7 @@ classDiagram
         UUID attachment_id
         UUID upload_log_id
         Atom state
+        Float mapping_progress
         Collection collection
         User created_by
         User started_by
@@ -492,11 +494,13 @@ classDiagram
         Attachment upload_log
         Image[] images
         Attachment[] image_attachments
-        update(UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, Atom mapping_identifier, ...)
+        update(UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, Integer mapped_images_count, ...)
         destroy()
         read()
         update_mapping_identifier(Atom mapping_identifier)
         enqueue_extraction()
+        add_mapping_progress(Integer mapped)
+        add_current_mapping_operations_count(Integer operations_count)
         extract()
         set_extracting()
         set_extracted()
@@ -507,6 +511,7 @@ classDiagram
         set_mapped()
         set_mapping_incomplete()
         set_mapping_failed()
+        set_error_message(String error_message)
         cancel_mapping()
         update_upload_log(Struct upload_log)
         active()
@@ -516,7 +521,6 @@ classDiagram
     class Publication {
         UUID id
         String name
-        Atom channel
         UtcDatetime published_at
         UtcDatetime started_at
         UtcDatetime finished_at
@@ -536,15 +540,15 @@ classDiagram
         Collection collection
         User started_by
         Attachment attachment
-        update(String name, Atom channel, UtcDatetime published_at, UtcDatetime started_at, ...)
+        update(String name, UtcDatetime published_at, UtcDatetime started_at, UtcDatetime finished_at, ...)
         destroy()
         read()
         active()
-        create(Struct collection, String name, Atom channel, UtcDatetime published_at, ...)
+        create(Struct collection, String name, UtcDatetime published_at, UtcDatetime started_at, ...)
         enqueue(UUID started_by_id)
         add_publication_progress(Integer published)
         set_running()
-        set_failed(String name, Atom channel, UtcDatetime published_at, UtcDatetime started_at, ...)
+        set_failed(String name, UtcDatetime published_at, UtcDatetime started_at, UtcDatetime finished_at, ...)
         run()
         set_done()
         update_attachment(Struct attachment)
@@ -579,18 +583,12 @@ classDiagram
         String oth_modified_by
         String oth_license
         String oth_language
-        String oth_institution_id
-        String oth_institution_code
         String oth_information_withheld
         String oth_gbif_ch_id
         String oth_gbif_id
-        String oth_gbif_doi
         String oth_date_available
         String oth_dataset_name
-        String oth_dataset_id
         String oth_data_generalizations
-        String oth_collection_id
-        String oth_collection_code
         String oth_bibliographic_citation
         String oth_basis_of_record
         String oth_access_rights
@@ -886,18 +884,12 @@ classDiagram
         String oth_modified_by
         String oth_license
         String oth_language
-        String oth_institution_id
-        String oth_institution_code
         String oth_information_withheld
         String oth_gbif_ch_id
         String oth_gbif_id
-        String oth_gbif_doi
         String oth_date_available
         String oth_dataset_name
-        String oth_dataset_id
         String oth_data_generalizations
-        String oth_collection_id
-        String oth_collection_code
         String oth_bibliographic_citation
         String oth_basis_of_record
         String oth_access_rights
@@ -1154,7 +1146,7 @@ classDiagram
         Map import_data
         Map extra_data
         Map errors
-        PublicationStatusType fast_track_status
+        PublicationStatusType publication_status
         ValidationStatusType validation_status
         String iucn_redlist_category
         UtcDatetime last_validation_started_at
@@ -1184,18 +1176,18 @@ classDiagram
         create(Struct collection, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         import(Struct import, Map params, Map ext_vernacular_names, Map ext_species_profile, ...)
         enqueue_encoder()
-        enqueue_fast_track_checker(Struct published_record)
+        enqueue_publication_verifier(Struct published_record)
         bulk_import(Struct import, Term rows)
         encode(Term record, Atom catalog)
-        check_if_fast_track_pubished(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
+        check_if_published(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         set_imported(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         set_encoding(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         set_encoded(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         set_encoding_failed(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
-        update_fast_track_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        update_publication_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         update_validation_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         update_last_validation_started_at()
-        add_image(Struct image, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
+        add_images(Struct[] images, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         destroy()
     }
     class Image {
@@ -1248,7 +1240,40 @@ classDiagram
         read()
         create(Atom version_action_type, Atom version_action_name, UUID collection_id, UUID version_source_id, ...)
     }
-    class Validation {
+    class ValidationRequest {
+        UUID id
+        String name
+        UtcDatetime started_at
+        UtcDatetime finished_at
+        Map records_query
+        Integer processed_rows_count
+        Integer total_rows_count
+        Atom center
+        PublicationLicenseType license
+        UtcDatetimeUsec inserted_at
+        UtcDatetimeUsec updated_at
+        UUID collection_id
+        UUID started_by_id
+        UUID attachment_id
+        Atom state
+        Collection collection
+        User started_by
+        Attachment attachment
+        update(String name, UtcDatetime started_at, UtcDatetime finished_at, Map records_query, ...)
+        destroy()
+        read()
+        active()
+        create(Struct collection, String name, UtcDatetime started_at, UtcDatetime finished_at, ...)
+        enqueue(UUID started_by_id)
+        add_validation_request_progress(Integer processed_rows)
+        set_running()
+        set_failed(String name, UtcDatetime started_at, UtcDatetime finished_at, Map records_query, ...)
+        run()
+        set_done()
+        update_attachment(Struct attachment)
+        cancel_validation_request()
+    }
+    class ValidationResponse {
         UUID id
         String file_url
         Integer rows_count
@@ -1308,18 +1333,12 @@ classDiagram
         String oth_modified_by
         String oth_license
         String oth_language
-        String oth_institution_id
-        String oth_institution_code
         String oth_information_withheld
         String oth_gbif_ch_id
         String oth_gbif_id
-        String oth_gbif_doi
         String oth_date_available
         String oth_dataset_name
-        String oth_dataset_id
         String oth_data_generalizations
-        String oth_collection_id
-        String oth_collection_code
         String oth_bibliographic_citation
         String oth_basis_of_record
         String oth_access_rights
@@ -1594,13 +1613,15 @@ classDiagram
     User -- Import
     User -- Publication
     User -- Version
+    User -- ValidationRequest
     Attachment -- Export
     Attachment -- ImageUpload
     Attachment -- Import
     Attachment -- Publication
     Attachment -- Record
     Attachment -- Image
-    Attachment -- Validation
+    Attachment -- ValidationRequest
+    Attachment -- ValidationResponse
     Collection -- EncodedRecord
     Collection -- RecordEncodingResult
     Collection -- Export
@@ -1611,8 +1632,9 @@ classDiagram
     Collection -- PublishedRecord
     Collection -- Record
     Collection -- Image
+    Collection -- ValidationRequest
+    Collection -- ValidationResponse
     Collection -- ValidatedRecord
-    Collection -- Validation
     EncodedRecord -- Version
     EncodedRecord -- Record
     EncodedRecord -- SwissSpecies

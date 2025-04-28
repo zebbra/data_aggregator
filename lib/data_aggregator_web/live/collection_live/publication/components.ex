@@ -104,15 +104,4 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
       true -> ~t"Unknown"m
     end
   end
-
-  attr :channel, :atom, required: true, values: [:fast_track, :validation]
-
-  def publication_channel_badge(%{channel: :fast_track} = assigns) do
-    ~H"""
-    <.badge class="tooltip" color="gray" data-tip={~t"Publication to the Gbif Switzerland Portal"m}>
-      <.icon name="hero-globe-alt" class="size-4 shrink-0" />
-      <span class="text-nowrap pr-1.5">{~t"Publication"m}</span>
-    </.badge>
-    """
-  end
 end

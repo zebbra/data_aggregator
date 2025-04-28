@@ -21,16 +21,6 @@
       "type": "text"
     },
     {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": null,
-      "size": null,
-      "source": "channel",
-      "type": "text"
-    },
-    {
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
@@ -253,7 +243,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "1E71818BD3D99654846599F1570871C2762FEC9A053B9151F905409DB2BC32AA",
+  "hash": "034A17DB268B2579722B0868D0ED736EA0014E2020A7F0F143D0BEC750E7C248",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",

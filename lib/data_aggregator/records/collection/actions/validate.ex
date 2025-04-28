@@ -24,7 +24,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
   @impl true
   def run(input, _opts, %{tenant: tenant} = ctx) do
-    validation_request = input.arguments.publication
+    validation_request = input.arguments.validation_request
 
     # these are the new records that will be validated
     query =
@@ -98,7 +98,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     end
   rescue
     e ->
-      validation_request = input.arguments.publication
+      validation_request = input.arguments.validation_request
 
       query =
         Record

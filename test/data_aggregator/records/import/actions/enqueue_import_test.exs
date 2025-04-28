@@ -97,12 +97,12 @@ defmodule DataAggregator.Records.Import.Actions.EnqueueImportTest do
     end
 
     @tag path: "test/support/fixtures/files/museum-dataset-import-example.csv"
-    test "enqueue_import/1 fails if collection is in state fast_track_publishing", %{
+    test "enqueue_import/1 fails if collection is in state publishing", %{
       collection: collection,
       import: import
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        Collection.set_fast_track_publishing!(collection)
+        Collection.set_publishing!(collection)
         assert_not_enqueued(import)
       end)
     end

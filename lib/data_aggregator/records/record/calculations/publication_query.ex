@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.Calculations.FastTrackQuery do
+defmodule DataAggregator.Records.Calculations.PublicationQuery do
   @moduledoc """
-  This `Ash.Resource.Calculation` calculates the records used for fast track publication of a collection and returns an `Ash.Query`.
+  This `Ash.Resource.Calculation` calculates the records used for publication of a collection and returns an `Ash.Query`.
   """
 
   use Ash.Resource.Calculation
