@@ -23,6 +23,7 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
   alias DataAggregator.Records.Import
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidationRequest
 
   require Ecto.Query
   require Logger
@@ -169,9 +170,9 @@ defmodule DataAggregator.Records.Collection.Changes.CancelAction do
     # action. There might occur the case the we abort the validation
     # while some publications have not yet been enqueued. However, we do not
     # account for this case as it is not a common use case.
-    cancel_all_jobs(Job.query_to_publications_by_collection(collection_id))
+    cancel_all_jobs(Job.query_to_validation_requests_by_collection(collection_id))
 
-    Publication.query_to_active()
+    ValidationRequest.query_to_active()
     |> Ash.Query.set_tenant(collection_id)
     |> Ash.bulk_update!(
       :update,

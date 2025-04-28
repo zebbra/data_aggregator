@@ -345,11 +345,9 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
   end
 
   defp list_publications(params, actor, tenant, opts \\ [load: @load]) do
-    query = Ash.Query.filter(Publication, channel == "fast_track")
-
     opts = Keyword.put_new(opts, :actor, actor)
     opts = Keyword.put_new(opts, :tenant, tenant)
-    AshPagify.validate_and_run(query, params, opts)
+    AshPagify.validate_and_run(Publication, params, opts)
   end
 
   attr :collection, :any
@@ -362,10 +360,6 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
       icon="hero-globe-alt"
     />
     """
-  end
-
-  defp publication_success_message(%{channel: :validation}) do
-    ~t"Validation started in background"m
   end
 
   defp publication_success_message(_), do: ~t"Publication started in background"m

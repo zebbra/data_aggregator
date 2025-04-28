@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Publication.InfoSpecies do
+defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
   @moduledoc """
   Handles the preparation and exchange of data towards infospecies centers
   """
@@ -8,32 +8,33 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
   alias DataAggregator.Gbif
   alias DataAggregator.Mailer
   alias DataAggregator.Records
-  alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
 
   require Logger
 
-  @spec notify(Publication.t(), Ash.Query.t()) :: {:ok, Publication.t()} | {:error, any()}
-  def notify(%Publication{channel: :validation} = publication, query) do
-    with {:ok, publication} <- Ash.load(publication, [:collection, :attachment]),
+  @spec notify(ValidationRequest.t(), Ash.Query.t()) ::
+          {:ok, ValidationRequest.t()} | {:error, any()}
+  def notify(%ValidationRequest{} = validation_request, query) do
+    with {:ok, validation_request} <- Ash.load(validation_request, [:collection, :attachment]),
          {:ok, institution_name} <-
-           get_institution_name(publication.collection.grscicoll_institution_key) do
+           get_institution_name(validation_request.collection.grscicoll_institution_key) do
       notification =
         %{
           count: to_string(Ash.count!(query)),
-          dwca_file_link: publication.attachment.url,
+          dwca_file_link: validation_request.attachment.url,
           institution: institution_name,
           date: get_date_time_now(),
           # for now we use institution_name as owner, because we don't have this
           # on the grscicoll collection
           owner: institution_name,
-          center: publication.center
+          center: validation_request.center
         }
 
       notify_infospecies(query, notification)
 
-      {:ok, publication}
+      {:ok, validation_request}
     else
       {:error, error} ->
         Logger.error("Error notifying infospecies center: #{inspect(error)}")
@@ -41,8 +42,6 @@ defmodule DataAggregator.Records.Publication.InfoSpecies do
         {:error, error}
     end
   end
-
-  def notify(_publication, _query), do: {:error, "Channel has to be :validation to be published to infospecies"}
 
   @spec get_institution_name(String.t()) :: {:ok, String.t()}
   defp get_institution_name(nil), do: {:ok, "Unknown institution"}

@@ -1,21 +1,21 @@
-defmodule DataAggregatorWeb.CollectionLive.Validation.Index do
+defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
   @moduledoc false
   use DataAggregatorWeb, :live_view
-  use DataAggregatorWeb.CollectionLive.Publication.Subscriptions
+  use DataAggregatorWeb.CollectionLive.ValidationRequest.Subscriptions
 
   import DataAggregatorWeb.CollectionLive.Components.Header, only: [collection_header: 1]
 
   import DataAggregatorWeb.CollectionLive.Helpers,
     only: [get_collection_light: 2, cancel_action: 2, busy_action: 1]
 
-  import DataAggregatorWeb.CollectionLive.Publication.Components,
-    only: [publication_state_badge: 1]
+  import DataAggregatorWeb.CollectionLive.ValidationRequest.Components,
+    only: [validation_request_state_badge: 1]
 
-  import DataAggregatorWeb.CollectionLive.Publication.Helpers
+  import DataAggregatorWeb.CollectionLive.ValidationRequest.Helpers
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   alias DataAggregator.Records.Collection
-  alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.ValidationRequest
 
   require Ash.Query
 
@@ -29,10 +29,12 @@ defmodule DataAggregatorWeb.CollectionLive.Validation.Index do
     socket =
       socket
       |> assign(:collection, collection)
-      |> assign(selected_validation: nil)
+      |> assign(selected_validation_request: nil)
       |> assign(:busy, collection.busy)
       |> assign(:busy_action, busy_action(collection))
-      |> subscribe_for_publication_updates(connected?(socket))
+      |> subscribe_for_validation_request_updates(connected?(socket))
+
+    # |> subscribe_for_publication_updates(connected?(socket))
 
     {:ok, socket}
   end
@@ -42,11 +44,11 @@ defmodule DataAggregatorWeb.CollectionLive.Validation.Index do
     actor = get_actor(socket)
     tenant = get_tenant(socket)
 
-    case list_validations(params, actor, tenant) do
-      {:ok, {validations, meta}} ->
+    case list_validation_requests(params, actor, tenant) do
+      {:ok, {validation_requests, meta}} ->
         socket
         |> assign(meta: meta)
-        |> stream(:results, validations, reset: true)
+        |> stream(:results, validation_requests, reset: true)
         |> apply_action(socket.assigns.live_action, params)
         |> noreply()
 
@@ -61,7 +63,11 @@ defmodule DataAggregatorWeb.CollectionLive.Validation.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <.page current="collections" current_user={@current_user} open={@selected_validation != nil}>
+    <.page
+      current="collections"
+      current_user={@current_user}
+      open={@selected_validation_request != nil}
+    >
       <.collection_header
         collection={@collection}
         current={:validations}
@@ -106,13 +112,13 @@ defmodule DataAggregatorWeb.CollectionLive.Validation.Index do
         }
       >
         <:col :let={{_id, validation}} field={:state} label={~t"State"m}>
-          <.publication_state_badge publication={validation} />
+          <.validation_request_state_badge validation_request={validation} />
         </:col>
         <:col :let={{_id, validation}} field={:center} label={~t"Center"m} class="text-center">
           {validation.center}
         </:col>
         <:col :let={{_id, validation}} label={~t"File"m}>
-          <.file_info attachment={validation.attachment} rows={validation.rows_count} />
+          <.file_info attachment={validation.attachment} rows={validation.total_rows_count} />
         </:col>
         <:col :let={{_id, validation}} label={~t"Size"m}>
           <.attachment_download_badge
@@ -129,8 +135,13 @@ defmodule DataAggregatorWeb.CollectionLive.Validation.Index do
         <:col :let={{_id, validation}} field={:started_by} label={~t"Started by"m}>
           {maybe_set_user(validation.started_by)}
         </:col>
-        <:col :let={{_id, validation}} field={:rows_count} label={~t"Records"m} class="text-right">
-          {format_number(validation.rows_count, format: :short)}
+        <:col
+          :let={{_id, validation}}
+          field={:total_rows_count}
+          label={~t"Records"m}
+          class="text-right"
+        >
+          {format_number(validation.total_rows_count, format: :short)}
         </:col>
 
         <:action
@@ -162,9 +173,13 @@ defmodule DataAggregatorWeb.CollectionLive.Validation.Index do
 
       <:secondary>
         <.slideover
-          title={if @selected_validation != nil, do: @selected_validation.name, else: ~t"Validation"m}
+          title={
+            if @selected_validation_request != nil,
+              do: @selected_validation_request.name,
+              else: ~t"Validation"m
+          }
           subtitle={~t"Validation status details."m}
-          open={@selected_validation != nil}
+          open={@selected_validation_request != nil}
           on_cancel={JS.push("validation:select", value: %{id: nil})}
           size="xl"
         >
@@ -175,87 +190,95 @@ defmodule DataAggregatorWeb.CollectionLive.Validation.Index do
             size="md"
           >
             <:subtitle>
-              <div :if={@selected_validation.state == :pending} class="mt-1 flex items-center gap-x-2">
+              <div
+                :if={@selected_validation_request.state == :pending}
+                class="mt-1 flex items-center gap-x-2"
+              >
                 <span class="text-sm">{~t"State:"m}</span>
-                <.publication_state_badge publication={@selected_validation} />
+                <.validation_request_state_badge validation_request={@selected_validation_request} />
               </div>
             </:subtitle>
             <:actions>
               <button
-                :if={can_run?(@selected_validation)}
+                :if={can_run?(@selected_validation_request)}
                 type="button"
-                phx-value-id={@selected_validation.id}
+                phx-value-id={@selected_validation_request.id}
                 phx-click="validation:run"
                 class="btn btn-primary max-sm:btn-sm"
               >
                 <.icon name="hero-play-circle-mini" class="size-6" /> {~t"Run"m}
               </button>
-              <div :if={can_run?(@selected_validation) == false} class="flex items-center gap-x-2">
+              <div
+                :if={can_run?(@selected_validation_request) == false}
+                class="flex items-center gap-x-2"
+              >
                 <span class="text-sm">{~t"State:"m}</span>
-                <.publication_state_badge publication={@selected_validation} />
+                <.validation_request_state_badge validation_request={@selected_validation_request} />
               </div>
             </:actions>
           </.section_heading>
 
           <.list>
             <:item title={~t"Center"m}>
-              {@selected_validation.center}
+              {@selected_validation_request.center}
             </:item>
             <:item title={~t"File"m}>
               <.file_info
-                attachment={@selected_validation.attachment}
-                rows={@selected_validation.rows_count}
+                attachment={@selected_validation_request.attachment}
+                rows={@selected_validation_request.total_rows_count}
                 badge
               />
             </:item>
             <:item title={~t"Created at"m}>
-              {format_datetime(@selected_validation.inserted_at)}
+              {format_datetime(@selected_validation_request.inserted_at)}
             </:item>
-            <:item title={~t"Rows"m}>{format_number(@selected_validation.rows_count)}</:item>
+            <:item title={~t"Rows"m}>
+              {format_number(@selected_validation_request.total_rows_count)}
+            </:item>
 
             <:item title={~t"Done"m}>
               <div class="flex flex-col">
                 <.progress
-                  value={@selected_validation.publication_progress || 0}
+                  value={@selected_validation_request.validation_request_progress || 0}
                   max={1}
                   class="progress progress-primary w-full"
                 />
                 <div>
-                  {format_number(@selected_validation.published_count)} / {format_number(
-                    @selected_validation.rows_count
+                  {format_number(@selected_validation_request.processed_rows_count)} / {format_number(
+                    @selected_validation_request.total_rows_count
                   )} {~t"rows"m}
                 </div>
               </div>
             </:item>
 
             <:item title={~t"Started by"m}>
-              {maybe_set_user(@selected_validation.started_by)}
+              {maybe_set_user(@selected_validation_request.started_by)}
             </:item>
             <:item title={~t"Started at"m}>
-              <div :if={@selected_validation.finished_at == nil}>
-                {format_datetime(@selected_validation.started_at)}
+              <div :if={@selected_validation_request.finished_at == nil}>
+                {format_datetime(@selected_validation_request.started_at)}
               </div>
-              <div :if={@selected_validation.finished_at != nil}>
+              <div :if={@selected_validation_request.finished_at != nil}>
                 {format_date_interval(
-                  @selected_validation.started_at,
-                  @selected_validation.finished_at
+                  @selected_validation_request.started_at,
+                  @selected_validation_request.finished_at
                 )}
               </div>
-              {@selected_validation.duration}
+              {@selected_validation_request.duration}
             </:item>
           </.list>
 
           <:footer :if={
-            not is_nil(@selected_validation) &&
-              Publication.can_destroy?(@current_user, @selected_validation)
+            not is_nil(@selected_validation_request) &&
+              ValidationRequest.can_destroy?(@current_user, @selected_validation_request)
           }>
             <button
               type="button"
-              phx-click={JS.push("validation:delete", value: %{id: @selected_validation.id})}
+              phx-click={JS.push("validation:delete", value: %{id: @selected_validation_request.id})}
               class="btn btn-error max-sm:btn-sm"
               data-confirm={~t"Are you sure?"m}
               data-confirm_id="confirm_validation_alert"
-              disbled={can_delete?(@selected_validation) == false}
+              disbled={can_delete?(@selected_validation_request) == false}
             >
               <.icon name="hero-x-circle-mini" class="size-6" /> {~t"Delete"m}
             </button>
@@ -286,8 +309,8 @@ defmodule DataAggregatorWeb.CollectionLive.Validation.Index do
     tenant = get_tenant(socket)
 
     case id
-         |> Publication.get_by_id!(actor: actor, tenant: tenant)
-         |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor) do
+         |> ValidationRequest.get_by_id!(actor: actor, tenant: tenant)
+         |> ValidationRequest.enqueue(%{started_by_id: actor.id}, actor: actor) do
       {:ok, validation} ->
         {:noreply, put_flash(socket, :info, validation_success_message(validation))}
 
@@ -300,20 +323,20 @@ defmodule DataAggregatorWeb.CollectionLive.Validation.Index do
   def handle_event("validation:delete", %{"id" => id}, socket) do
     actor = get_actor(socket)
     tenant = get_tenant(socket)
-    validation = Publication.get_by_id!(id, actor: actor, tenant: tenant)
-    :ok = Publication.destroy(validation, actor: actor, tenant: tenant)
+    validation = ValidationRequest.get_by_id!(id, actor: actor, tenant: tenant)
+    :ok = ValidationRequest.destroy(validation, actor: actor, tenant: tenant)
 
     {:noreply,
      socket
      |> put_flash(:info, ~t"Validation deleted successfully"m)
-     |> assign(:selected_validation, nil)
+     |> assign(:selected_validation_request, nil)
      |> stream_delete(:results, validation)}
   end
 
   @impl true
   def handle_event("validation:select", %{"id" => nil}, socket) do
     socket =
-      assign(socket, :selected_validation, nil)
+      assign(socket, :selected_validation_request, nil)
 
     {:noreply, socket}
   end
@@ -326,8 +349,8 @@ defmodule DataAggregatorWeb.CollectionLive.Validation.Index do
     socket =
       assign(
         socket,
-        :selected_validation,
-        Publication.get_by_id!(id, load: @load_validation, actor: actor, tenant: tenant)
+        :selected_validation_request,
+        ValidationRequest.get_by_id!(id, load: @load_validation, actor: actor, tenant: tenant)
       )
 
     {:noreply, socket}
@@ -339,12 +362,10 @@ defmodule DataAggregatorWeb.CollectionLive.Validation.Index do
     |> assign(:validation, nil)
   end
 
-  defp list_validations(params, actor, tenant, opts \\ [load: @load]) do
-    query = Ash.Query.filter(Publication, channel == "validation")
-
+  defp list_validation_requests(params, actor, tenant, opts \\ [load: @load]) do
     opts = Keyword.put_new(opts, :actor, actor)
     opts = Keyword.put_new(opts, :tenant, tenant)
-    AshPagify.validate_and_run(query, params, opts)
+    AshPagify.validate_and_run(ValidationRequest, params, opts)
   end
 
   attr :collection, :any
@@ -357,10 +378,6 @@ defmodule DataAggregatorWeb.CollectionLive.Validation.Index do
       icon="hero-globe-alt"
     />
     """
-  end
-
-  defp validation_success_message(%{channel: :validation}) do
-    ~t"Validation started in background"m
   end
 
   defp validation_success_message(_), do: ~t"Validation started in background"m

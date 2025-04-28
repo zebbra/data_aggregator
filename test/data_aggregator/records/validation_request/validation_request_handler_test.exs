@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
+defmodule DataAggregator.ValidationRequestHandlerTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
@@ -7,12 +7,10 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
   import DataAggregator.RecordsFixtures
 
   alias DataAggregator.Gbif
-  alias DataAggregator.Records.Publication
-  alias DataAggregator.Records.Publication.Workers.Publisher
+  alias DataAggregator.Records.ValidationRequest
+  alias DataAggregator.Records.ValidationRequest.Workers.ValidationRequestHandler
 
-  require Ash.Query
-
-  describe "DataAggregator.Records.Publication.Workers.Publisher.perform/1" do
+  describe "ValidationRequestHandler.perform/1" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
@@ -51,29 +49,29 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
         tax_kingdom: %{is_nil: false}
       }
 
-      publication =
-        Publication.create!(
+      validation_request =
+        ValidationRequest.create!(
           %{
-            name: "publication-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-            channel: :fast_track,
+            name: "validation-request-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
+            center: :infofauna,
             collection: collection,
-            records_query: query,
-            center: "infofauna"
+            records_query: query
           },
           tenant: collection
         )
 
-      [publication: publication, query: query, records: records, collection: collection]
+      [validation_request: validation_request, collection: collection, records: records]
     end
 
-    test "publication :fast_track success", %{publication: publication, collection: collection} do
-      perform_job(Publisher, %{id: publication.id, collection_id: publication.collection_id})
+    test "perform/1  success", %{validation_request: validation_request, collection: collection} do
+      perform_job(ValidationRequestHandler, %{
+        id: validation_request.id,
+        collection_id: validation_request.collection_id
+      })
 
-      publication = Publication.get_by_id!(publication.id, tenant: collection)
-
-      assert publication.state == :done
-      assert publication.channel == :fast_track
-      assert publication.published_count == 5
+      validation_request = ValidationRequest.get_by_id!(validation_request.id, tenant: collection)
+      assert validation_request.state == :done
+      assert validation_request.processed_rows_count == 5
     end
   end
 end

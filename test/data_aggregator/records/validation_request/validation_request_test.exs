@@ -1,4 +1,4 @@
-defmodule DataAggregator.ValidationTest do
+defmodule DataAggregator.ValidationRequestTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
@@ -6,16 +6,18 @@ defmodule DataAggregator.ValidationTest do
 
   import DataAggregator.EncodingFixtures
   import DataAggregator.RecordsFixtures
+  import DataAggregator.ValidationRequestFixtures
 
   alias DataAggregator.DarwinCore.Publication.DwcaFile
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
-  alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidationRequest
   alias Explorer.DataFrame
 
   require Ash.Query
 
-  describe "validation tests" do
+  describe "validation request tests" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
 
@@ -25,32 +27,21 @@ defmodule DataAggregator.ValidationTest do
         record_fixture(%{
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
-          tax_kingdom: "Animalia",
-          loc_decimal_latitude: 10.0,
-          loc_decimal_longitude: 10.0,
-          loc_coordinate_uncertainty_in_meters: 5000.0
+          tax_kingdom: "Animalia"
         })
 
       record2 =
         record_fixture(%{
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
-          tax_kingdom: "Animalia",
-          loc_decimal_latitude: 166.4713889,
-          loc_decimal_longitude: 640_000.0,
-          loc_coordinate_uncertainty_in_meters: 400.004
+          tax_kingdom: "Animalia"
         })
 
       record3 =
         record_fixture(%{
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
-          tax_kingdom: "Animalia",
-          tax_taxon_id: 4762,
-          loc_country: "Switzerland",
-          loc_decimal_latitude: 47.27606815,
-          loc_decimal_longitude: 9.408043484,
-          loc_coordinate_uncertainty_in_meters: 3.03
+          tax_kingdom: "Animalia"
         })
 
       record4 =
@@ -86,13 +77,20 @@ defmodule DataAggregator.ValidationTest do
         encoded_record: %{tax_kingdom: %{is_nil: false}}
       }
 
-      validation =
-        Publication.create!(
+      count_query =
+        Record
+        |> AshPagify.query_for_filters_map(query)
+        |> Ash.Query.set_tenant(collection)
+
+      total_rows_count = Ash.count!(count_query)
+
+      validation_request =
+        ValidationRequest.create!(
           %{
-            name: "Publication Fast Track 2",
-            channel: :validation,
+            name: "Validation Request",
             center: :infofauna,
             records_query: query,
+            total_rows_count: total_rows_count,
             collection: collection
           },
           tenant: collection
@@ -101,16 +99,17 @@ defmodule DataAggregator.ValidationTest do
       [
         collection: collection,
         records: records,
-        validation: validation
+        validation_request: validation_request
       ]
     end
 
     test "validate/1 successful", %{
-      validation: validation
+      validation_request: validation_request
     } do
-      {:ok, validation} = Collection.validate(validation, tenant: validation.collection)
+      {:ok, validation_request} =
+        Collection.validate(validation_request, tenant: validation_request.collection)
 
-      %{body: body} = Req.get!(validation.attachment.url)
+      %{body: body} = Req.get!(validation_request.attachment.url)
       # validating if the core file is correctly created
       {core_file_name, core_file_content} =
         Enum.find(body, fn {file_name, _content} -> file_name == ~c"core.csv" end)
@@ -128,59 +127,36 @@ defmodule DataAggregator.ValidationTest do
 
       assert DataFrame.n_rows(data_frame) == 5
 
-      rows = DataFrame.to_rows(data_frame)
+      assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
 
-      transformed_attributes =
-        Enum.map(
-          rows,
-          &Map.take(&1, [
-            "decimalLongitude",
-            "decimalLatitude",
-            "coordinateUncertaintyInMeters"
-          ])
-        )
-
-      # we expect the data to not be rounded
-      # because the validation is not a publication (where rounding is applied on swiss species records)
-      transformed_expected = [
-        %{
-          "decimalLatitude" => 10.0,
-          "decimalLongitude" => 10.0,
-          "coordinateUncertaintyInMeters" => 5000.0
-        },
-        %{
-          "decimalLatitude" => 166.4713889,
-          "decimalLongitude" => 640_000.0,
-          "coordinateUncertaintyInMeters" => 400.004
-        },
-        %{
-          "decimalLatitude" => 47.27606815,
-          "decimalLongitude" => 9.408043484,
-          "coordinateUncertaintyInMeters" => 3.03
-        },
-        %{
-          "decimalLatitude" => nil,
-          "decimalLongitude" => nil,
-          "coordinateUncertaintyInMeters" => nil
-        },
-        %{
-          "decimalLatitude" => nil,
-          "decimalLongitude" => nil,
-          "coordinateUncertaintyInMeters" => nil
-        }
-      ]
-
-      assert_lists_equal(transformed_expected, transformed_attributes)
+      assert DataFrame.n_columns(data_frame) == 179
     end
 
     @tag capture_log: true
     test "validate/1 fails with invalid center", %{
-      validation: validation
+      validation_request: validation_request
     } do
-      validation = Map.put(validation, :center, :not_existing_center)
+      validation_request = Map.put(validation_request, :center, :not_existing_center)
 
       {:error, _error} =
-        Collection.validate(validation, tenant: validation.collection)
+        Collection.validate(validation_request, tenant: validation_request.collection)
+    end
+
+    test "run/1 successful", %{
+      validation_request: validation_request
+    } do
+      {:ok, validation_request} =
+        ValidationRequest.run(validation_request)
+
+      validation_request =
+        ValidationRequest.get_by_id!(validation_request.id, tenant: validation_request.collection)
+
+      validation_request = Ash.load!(validation_request, [:validation_request_progress])
+
+      assert validation_request.state == :done
+      assert validation_request.processed_rows_count == 5
+      assert validation_request.total_rows_count == 5
+      assert validation_request.validation_request_progress == 1.0
     end
   end
 end

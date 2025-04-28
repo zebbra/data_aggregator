@@ -17,6 +17,8 @@ defmodule DataAggregator.WorkflowTest do
   alias DataAggregator.Records.Publication.Workers.Publisher
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.Record.Workers.Encoder
+  alias DataAggregator.Records.ValidationRequest
+  alias DataAggregator.Records.ValidationRequest.Workers.ValidationRequestHandler
   alias DataAggregator.Taxonomy.Catalog
 
   require Ash.Query
@@ -396,7 +398,7 @@ defmodule DataAggregator.WorkflowTest do
     end
   end
 
-  describe "Publisher.perform/1 validation" do
+  describe "ValidationRequestHandler.perform/1 validation request" do
     setup %{collection: collection, actor: actor} do
       path = "test/support/fixtures/files/workflow.csv"
 
@@ -424,11 +426,10 @@ defmodule DataAggregator.WorkflowTest do
         # encoded_record: %{swiss_species: %{center: %{eq: "infofauna"}}}
       }
 
-      publication =
-        Publication.create!(
+      validation_request =
+        ValidationRequest.create!(
           %{
-            name: "validation-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-            channel: :validation,
+            name: "validation-request-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
             collection: collection,
             records_query: query,
             center: "infofauna"
@@ -436,11 +437,11 @@ defmodule DataAggregator.WorkflowTest do
           tenant: collection
         )
 
-      [publication: publication, actor: actor, records: records]
+      [validation_request: validation_request, actor: actor, records: records]
     end
 
     test "publishing workflow performs as expected", %{
-      publication: publication,
+      validation_request: validation_request,
       records: records,
       actor: actor,
       collection: tenant
@@ -464,17 +465,16 @@ defmodule DataAggregator.WorkflowTest do
       # encoded_record versions for each record have been created
       assert_encode_versions(actor, tenant)
 
-      perform_job(Publisher, %{
-        id: publication.id,
-        collection_id: publication.collection_id,
+      perform_job(ValidationRequestHandler, %{
+        id: validation_request.id,
+        collection_id: validation_request.collection_id,
         user_id: actor.id
       })
 
-      publication = Publication.get_by_id!(publication.id, tenant: tenant)
+      validation_request = ValidationRequest.get_by_id!(validation_request.id, tenant: tenant)
 
-      assert publication.state == :done
-      assert publication.channel == :validation
-      assert publication.published_count == 6
+      assert validation_request.state == :done
+      assert validation_request.processed_rows_count == 6
 
       records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6

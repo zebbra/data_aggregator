@@ -115,17 +115,4 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Components do
     </.badge>
     """
   end
-
-  def publication_channel_badge(%{channel: :validation} = assigns) do
-    ~H"""
-    <.badge
-      class="tooltip"
-      color="gray"
-      data-tip={~t"Validation from Infospecies to publish on Gbif.org"m}
-    >
-      <.icon name="hero-check-badge" class="size-4 shrink-0" />
-      <span class="text-nowrap pr-1.5">{~t"Validation"m}</span>
-    </.badge>
-    """
-  end
 end

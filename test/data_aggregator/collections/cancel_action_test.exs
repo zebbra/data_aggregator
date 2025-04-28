@@ -24,6 +24,8 @@ defmodule DataAggregator.Collections.CancelActionTest do
   alias DataAggregator.Records.Publication.Workers.Publisher
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.Record.Workers.Encoder
+  alias DataAggregator.Records.ValidationRequest
+  alias DataAggregator.Records.ValidationRequest.Workers.ValidationRequestHandler
 
   require Ash.Query
 
@@ -452,11 +454,10 @@ defmodule DataAggregator.Collections.CancelActionTest do
           encoded_record: %{tax_kingdom: %{is_nil: false}}
         }
 
-        publication =
-          Publication.create!(
+        validation_request =
+          ValidationRequest.create!(
             %{
-              name: "Publication Validation 1",
-              channel: :validation,
+              name: "ValidationRequest 1",
               records_query: query,
               collection: collection,
               center: "infofauna"
@@ -464,11 +465,10 @@ defmodule DataAggregator.Collections.CancelActionTest do
             tenant: collection
           )
 
-        publication2 =
-          Publication.create!(
+        validation_request2 =
+          ValidationRequest.create!(
             %{
-              name: "Publication Validation 2",
-              channel: :validation,
+              name: "ValidationRequest 2",
               records_query: query,
               collection: collection,
               center: "infofauna"
@@ -476,41 +476,46 @@ defmodule DataAggregator.Collections.CancelActionTest do
             tenant: collection
           )
 
-        assert {:ok, publication} = Publication.enqueue(publication)
-        assert {:ok, publication2} = Publication.enqueue(publication2)
+        assert {:ok, validation_request} = ValidationRequest.enqueue(validation_request)
+        assert {:ok, validation_request2} = ValidationRequest.enqueue(validation_request2)
 
         collection = Collection.set_validating!(collection)
         assert collection.state === :validating
-        assert publication.state === :queued
-        assert publication2.state === :queued
+        assert validation_request.state === :queued
+        assert validation_request2.state === :queued
 
         validation_jobs =
-          collection.id |> Job.query_to_publications_by_collection() |> Ash.read!()
+          collection.id |> Job.query_to_validation_requests_by_collection() |> Ash.read!()
 
         assert length(validation_jobs) === 2
         Enum.each(validation_jobs, fn job -> assert job.state === :available end)
 
         assert_enqueued(
-          worker: Publisher,
-          args: %{id: publication.id, collection_id: publication.collection_id}
+          worker: ValidationRequestHandler,
+          args: %{id: validation_request.id, collection_id: validation_request.collection_id}
         )
 
         assert_enqueued(
-          worker: Publisher,
-          args: %{id: publication2.id, collection_id: publication2.collection_id}
+          worker: ValidationRequestHandler,
+          args: %{id: validation_request2.id, collection_id: validation_request2.collection_id}
         )
 
         Collection.cancel_action!(collection)
-        publication = Publication.get_by_id!(publication.id, tenant: collection)
-        publication2 = Publication.get_by_id!(publication2.id, tenant: collection)
+
+        validation_request =
+          ValidationRequest.get_by_id!(validation_request.id, tenant: collection)
+
+        validation_request2 =
+          ValidationRequest.get_by_id!(validation_request2.id, tenant: collection)
+
         collection = Collection.get_by_id!(collection.id)
 
-        assert publication.state === :failed
-        assert publication2.state === :failed
+        assert validation_request.state === :failed
+        assert validation_request2.state === :failed
         assert collection.state === :idle
 
         cancelled_jobs =
-          collection.id |> Job.query_to_publications_by_collection() |> Ash.read!()
+          collection.id |> Job.query_to_validation_requests_by_collection() |> Ash.read!()
 
         assert length(cancelled_jobs) === 2
         Enum.each(cancelled_jobs, fn job -> assert job.state === :cancelled end)
@@ -528,11 +533,10 @@ defmodule DataAggregator.Collections.CancelActionTest do
           encoded_record: %{tax_kingdom: %{is_nil: false}}
         }
 
-        publication =
-          Publication.create!(
+        validation_request =
+          ValidationRequest.create!(
             %{
-              name: "Publication Validating 1",
-              channel: :validation,
+              name: "validation_request 1",
               records_query: query,
               collection: collection,
               center: "infofauna"
@@ -540,22 +544,26 @@ defmodule DataAggregator.Collections.CancelActionTest do
             tenant: collection
           )
 
-        assert publication.state === :pending
+        assert validation_request.state === :pending
 
         refute_enqueued(
-          worker: Publisher,
-          args: %{id: publication.id, collection_id: publication.collection_id}
+          worker: ValidationRequestHandler,
+          args: %{id: validation_request.id, collection_id: validation_request.collection_id}
         )
 
         Collection.cancel_action!(collection)
 
-        publication = Publication.get_by_id!(publication.id, tenant: collection)
+        validation_request =
+          ValidationRequest.get_by_id!(validation_request.id, tenant: collection)
+
         collection = Collection.get_by_id!(collection.id)
 
-        assert publication.state === :pending
+        assert validation_request.state === :pending
         assert collection.state === :idle
 
-        refute collection.id |> Job.query_to_publications_by_collection() |> Ash.read_one!()
+        refute collection.id
+               |> Job.query_to_validation_requests_by_collection()
+               |> Ash.read_one!()
       end)
     end
   end

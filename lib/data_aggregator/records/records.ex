@@ -21,6 +21,7 @@ defmodule DataAggregator.Records do
     async_import_progress?: true,
     export_timeout: to_timeout(day: 1),
     validation_response_timeout: to_timeout(hour: 1),
+    validation_request_timeout: to_timeout(hour: 1),
     encode_timeout: to_timeout(hour: 1),
     encode_batch_size: 1000,
     publication_verification_timeout: to_timeout(minute: 5),
@@ -48,6 +49,7 @@ defmodule DataAggregator.Records do
     resource DataAggregator.Records.Record.Image
     resource DataAggregator.Records.Record.Version
     resource DataAggregator.Records.EncodedRecord.Version
+    resource DataAggregator.Records.ValidationRequest
     resource DataAggregator.Records.ValidationResponse
     resource DataAggregator.Records.ValidationResponse.ValidatedRecord
   end
@@ -86,6 +88,7 @@ defmodule DataAggregator.Records do
 
   def export_timeout, do: get_env(:export_timeout)
   def validation_response_timeout, do: get_env(:validation_response_timeout)
+  def validation_request_timeout, do: get_env(:validation_request_timeout)
 
   def image_upload_timeout, do: get_env(:image_upload_timeout)
   def extraction_timeout, do: get_env(:extraction_timeout)

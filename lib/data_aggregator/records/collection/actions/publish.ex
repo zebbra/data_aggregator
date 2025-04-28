@@ -55,7 +55,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       end
 
     path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
-    EmlFile.create(collection, publication, path)
+    EmlFile.create(collection, publication.license, path)
     MetaFile.create(collection, path)
 
     {:ok, counter} = Counter.start(&Publication.add_publication_progress(publication, &1))

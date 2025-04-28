@@ -28,9 +28,6 @@ defmodule DataAggregator.Records.Publication.Changes.PublishRecords do
   defp publish_or_validate(%{channel: :fast_track} = publication, actor, tenant),
     do: Collection.publish(publication, actor: actor, authorize?: false, tenant: tenant)
 
-  defp publish_or_validate(%{channel: :validation} = publication, actor, tenant),
-    do: Collection.validate(publication, actor: actor, authorize?: false, tenant: tenant)
-
   defp add_error(changeset, error, publication) do
     Logger.warning("Error while publishing records: #{inspect(error)}")
     Publication.set_failed(publication)

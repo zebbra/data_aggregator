@@ -129,7 +129,7 @@ defmodule DataAggregator.EmlFileTest do
       collection: collection,
       path: path
     } do
-      {:ok, path} = EmlFile.create(collection, publication, path)
+      {:ok, path} = EmlFile.create(collection, publication.license, path)
 
       {:ok, xmldoc} = File.read(path)
 
@@ -149,7 +149,7 @@ defmodule DataAggregator.EmlFileTest do
       collection_no_contact: collection,
       path: path
     } do
-      {:ok, path} = EmlFile.create(collection, publication, path)
+      {:ok, path} = EmlFile.create(collection, publication.license, path)
 
       {:ok, xmldoc} = File.read(path)
 
@@ -171,7 +171,7 @@ defmodule DataAggregator.EmlFileTest do
       collection_no_creator: collection,
       path: path
     } do
-      {:ok, path} = EmlFile.create(collection, publication, path)
+      {:ok, path} = EmlFile.create(collection, publication.license, path)
 
       {:ok, xmldoc} = File.read(path)
 
@@ -189,7 +189,7 @@ defmodule DataAggregator.EmlFileTest do
       collection_no_contact_creator: collection,
       path: path
     } do
-      {:ok, path} = EmlFile.create(collection, publication, path)
+      {:ok, path} = EmlFile.create(collection, publication.license, path)
 
       {:ok, xmldoc} = File.read(path)
 
@@ -207,7 +207,7 @@ defmodule DataAggregator.EmlFileTest do
       collection_multiple_contacts: collection,
       path: path
     } do
-      {:ok, path} = EmlFile.create(collection, publication, path)
+      {:ok, path} = EmlFile.create(collection, publication.license, path)
 
       {:ok, xmldoc} = File.read(path)
 

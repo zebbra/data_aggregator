@@ -68,7 +68,8 @@ config :data_aggregator, Oban,
     publication_verifications: 1,
     extractions: 1,
     mappings: 1,
-    validation_responses: 1
+    validation_responses: 1,
+    validation_requests: 1
   ]
 
 config :data_aggregator, :ash_uuid,

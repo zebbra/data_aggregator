@@ -7,17 +7,18 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
 
   alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records.Collection
-  alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.PublicationLicenseType
 
-  @spec create(Collection.t(), Publication.t(), String.t()) :: {:ok, String.t()} | {:error, any()}
-  def create(collection, publication, path) do
+  @spec create(Collection.t(), PublicationLicenseType.t(), String.t()) ::
+          {:ok, String.t()} | {:error, any()}
+  def create(collection, license, path) do
     with false <- collection.grscicoll_reference == nil,
          false <- collection.grscicoll_reference == "",
          {:ok, grscicoll_data} <-
            RestAPI.get_one_collection(collection.grscicoll_reference) do
       path = path <> "/eml.xml"
 
-      xml_data = build(grscicoll_data, publication, collection)
+      xml_data = build(grscicoll_data, license, collection)
 
       create_eml_file(xml_data, path)
 
@@ -37,7 +38,7 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
     file
   end
 
-  defp build(meta_data, publication, collection) do
+  defp build(meta_data, license, collection) do
     {:"eml:eml",
      [
        "xmlns:eml": "eml://ecoinformatics.org/eml-2.1.1",
@@ -48,15 +49,13 @@ defmodule DataAggregator.DarwinCore.Publication.EmlFile do
        scope: "system"
      ],
      [
-       dataset(meta_data, publication, collection)
+       dataset(meta_data, license, collection)
      ]}
     |> document()
     |> generate(format: :none)
   end
 
-  defp dataset(meta_data, %Publication{license: license}, %Collection{
-         grscicoll_institution_key: grscicoll_institution_key
-       }) do
+  defp dataset(meta_data, license, %Collection{grscicoll_institution_key: grscicoll_institution_key}) do
     element(
       :dataset,
       [

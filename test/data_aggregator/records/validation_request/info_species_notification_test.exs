@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
+defmodule DataAggregator.InfoSpeciesNotificationTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
@@ -9,9 +9,9 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
 
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Gbif
-  alias DataAggregator.Records.Publication
-  alias DataAggregator.Records.Publication.InfoSpecies
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidationRequest
+  alias DataAggregator.Records.ValidationRequest.InfoSpecies
 
   describe "notify infospecies tests" do
     setup do
@@ -90,75 +90,59 @@ defmodule DataAggregator.Records.Publication.InfoSpeciesNotificationTest do
 
       query = %{collection: %{id: %{eq: collection.id}}, tax_kingdom: %{is_nil: false}}
 
-      publication =
+      validation_request =
         %{
-          name: "Publication 1",
-          channel: :validation,
+          name: "Validation Request",
+          center: :infofauna,
           records_query: query,
-          collection: collection,
-          center: :infofauna
+          collection: collection
         }
-        |> Publication.create!(tenant: collection)
-        |> Publication.update_attachment!(Attachment.import_from_path!("test/support/fixtures/files/validation_dwca.zip"))
+        |> ValidationRequest.create!(tenant: collection)
+        |> ValidationRequest.update_attachment!(
+          Attachment.import_from_path!("test/support/fixtures/files/validation_dwca.zip")
+        )
 
-      [collection: collection, records: records, query: query, publication: publication]
+      [
+        collection: collection,
+        records: records,
+        query: query,
+        validation_request: validation_request
+      ]
     end
 
     test "InfoSpecies.notify/2 publication has the published dwca file attached", %{
       collection: collection,
-      publication: publication
+      validation_request: validation_request
     } do
       query =
         Record
-        |> Ash.Query.filter_input(publication.records_query)
-        |> Ash.Query.set_tenant(publication.collection)
+        |> Ash.Query.filter_input(validation_request.records_query)
+        |> Ash.Query.set_tenant(validation_request.collection)
 
-      {:ok, publication} =
-        InfoSpecies.notify(publication, query)
+      {:ok, validation_request} =
+        InfoSpecies.notify(validation_request, query)
 
-      assert publication.channel == :validation
-      assert publication.collection_id == collection.id
-      assert publication.attachment_id != nil
+      assert validation_request.collection_id == collection.id
+      assert validation_request.attachment_id != nil
     end
 
     test "InfoSpecies.notify/2 all records have an updated last_validation_started_at date",
          %{
-           publication: publication
+           validation_request: validation_request
          } do
       query =
         Record
-        |> Ash.Query.filter_input(publication.records_query)
-        |> Ash.Query.set_tenant(publication.collection)
+        |> Ash.Query.filter_input(validation_request.records_query)
+        |> Ash.Query.set_tenant(validation_request.collection)
 
-      {:ok, _publication} =
-        InfoSpecies.notify(publication, query)
+      {:ok, _validation_request} =
+        InfoSpecies.notify(validation_request, query)
 
-      assert {:ok, records} = Record.read(tenant: publication.collection)
+      assert {:ok, records} = Record.read(tenant: validation_request.collection)
       assert length(records) == 5
 
       Enum.each(records, fn record ->
         assert record.last_validation_started_at !== nil
-      end)
-    end
-
-    test "notify/2 should fail, wrong channel: :fast_track", %{
-      publication: publication
-    } do
-      publication = Publication.update!(publication, %{channel: :fast_track})
-
-      query =
-        Record
-        |> Ash.Query.filter_input(publication.records_query)
-        |> Ash.Query.set_tenant(publication.collection)
-
-      {:error, "Channel has to be :validation to be published to infospecies"} =
-        InfoSpecies.notify(publication, query)
-
-      assert {:ok, records} = Record.read(tenant: publication.collection)
-      assert length(records) == 5
-
-      Enum.each(records, fn record ->
-        assert record.last_validation_started_at === nil
       end)
     end
   end
