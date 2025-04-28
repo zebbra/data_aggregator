@@ -1,7 +1,7 @@
 defmodule DataAggregator.WorkflowTest do
   @moduledoc false
 
-  use DataAggregator.DataCase, async: true
+  use DataAggregator.DataCase, async: false
   use Mimic
 
   import DataAggregator.AccountsFixtures, only: [user_fixture: 0]
