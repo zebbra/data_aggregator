@@ -116,6 +116,10 @@ defmodule DataAggregator.StartValidationsTest do
       assert length(jobs) == 2
 
       Enum.each(jobs, &perform_job(ValidationRequestHandler, &1.args, []))
+
+      # ensure jobs are finished
+      :timer.sleep(to_timeout(second: 1))
+
       # after all validation requests are run, the collection state is set to :idle
       {:ok, collection} = Collection.get_by_id(collection.id)
       assert collection.state == :idle
