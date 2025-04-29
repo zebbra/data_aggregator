@@ -90,9 +90,6 @@ defmodule DataAggregator.StartValidationsTest do
         {:ok, result} =
           Collection.start_validations(collection, query, actor: actor, tenant: collection)
 
-        jobs = all_enqueued()
-        assert length(jobs) == 2
-
         # after all validation requests are created and enqueued, the collection state is set to :validating
         {:ok, collection} = Collection.get_by_id(collection.id)
         assert collection.state == :validating
@@ -113,29 +110,32 @@ defmodule DataAggregator.StartValidationsTest do
           assert vr.attachment_id == nil
           assert vr.state == :queued
         end)
-
-        Enum.each(jobs, &perform_job(ValidationRequestHandler, &1.args, []))
-        # after all validation requests are run, the collection state is set to :idle
-        {:ok, collection} = Collection.get_by_id(collection.id)
-        assert collection.state == :idle
-        {:ok, validation_requests} = Ash.read(ValidationRequest, tenant: collection)
-
-        assert length(validation_requests) == 2
-
-        Enum.each(validation_requests, fn vr ->
-          assert vr != nil
-          assert vr.attachment_id != nil
-          assert vr.state == :done
-        end)
-
-        infofauna_request = Enum.find(validation_requests, &(&1.center == :infofauna))
-        swissfungi_request = Enum.find(validation_requests, &(&1.center == :swissfungi))
-
-        assert infofauna_request.total_rows_count == 3
-        assert infofauna_request.processed_rows_count == 3
-        assert swissfungi_request.total_rows_count == 1
-        assert swissfungi_request.processed_rows_count == 1
       end)
+
+      jobs = all_enqueued()
+      assert length(jobs) == 2
+
+      Enum.each(jobs, &perform_job(ValidationRequestHandler, &1.args, []))
+      # after all validation requests are run, the collection state is set to :idle
+      {:ok, collection} = Collection.get_by_id(collection.id)
+      assert collection.state == :idle
+      {:ok, validation_requests} = Ash.read(ValidationRequest, tenant: collection)
+
+      assert length(validation_requests) == 2
+
+      Enum.each(validation_requests, fn vr ->
+        assert vr != nil
+        assert vr.attachment_id != nil
+        assert vr.state == :done
+      end)
+
+      infofauna_request = Enum.find(validation_requests, &(&1.center == :infofauna))
+      swissfungi_request = Enum.find(validation_requests, &(&1.center == :swissfungi))
+
+      assert infofauna_request.total_rows_count == 3
+      assert infofauna_request.processed_rows_count == 3
+      assert swissfungi_request.total_rows_count == 1
+      assert swissfungi_request.processed_rows_count == 1
     end
   end
 end
