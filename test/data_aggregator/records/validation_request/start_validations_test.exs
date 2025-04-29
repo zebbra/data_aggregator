@@ -6,6 +6,7 @@ defmodule DataAggregator.StartValidationsTest do
 
   import DataAggregator.EncodingFixtures
   import DataAggregator.RecordsFixtures
+  import DataAggregator.SwissSpeciesFixtures
 
   alias DataAggregator.AccountsFixtures
   alias DataAggregator.Gbif
@@ -16,6 +17,24 @@ defmodule DataAggregator.StartValidationsTest do
   describe "start validations action test" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
+      swiss_species_fixture(%{
+        taxon_id_ch: 10_001,
+        usage_key: 9368,
+        scientific_name: "Scientific Name 1",
+        accepted_name: "Accepted Name 1",
+        rank: "species",
+        center: :infofauna
+      })
+
+      swiss_species_fixture(%{
+        taxon_id_ch: 10_002,
+        usage_key: 5_497_504,
+        scientific_name: "Scientific Name 1",
+        accepted_name: "Accepted Name 1",
+        rank: "species",
+        center: :swissfungi
+      })
 
       actor =
         AccountsFixtures.user_fixture(%{
@@ -115,8 +134,7 @@ defmodule DataAggregator.StartValidationsTest do
       jobs = all_enqueued()
       assert length(jobs) == 2
 
-      {:ok, _result} = perform_job(ValidationRequestHandler, Enum.at(jobs, 0).args, [])
-      {:ok, _result} = perform_job(ValidationRequestHandler, Enum.at(jobs, 1).args, [])
+      Enum.each(jobs, &perform_job(ValidationRequestHandler, &1.args, []))
 
       # after all validation requests are run, the collection state is set to :idle
       {:ok, collection} = Collection.get_by_id(collection.id)
