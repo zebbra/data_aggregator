@@ -193,12 +193,12 @@ defmodule DataAggregator.ExportTest do
       end)
     end
 
-    test "enqueue/1 fails if collection is in state fast_track_publishing", %{
+    test "enqueue/1 fails if collection is in state publishing", %{
       collection: collection,
       export: export
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        Collection.set_fast_track_publishing!(collection)
+        Collection.set_publishing!(collection)
         assert_not_enqueued(export)
       end)
     end

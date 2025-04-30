@@ -89,12 +89,12 @@ defmodule DataAggregator.Records.Record.Actions.EnqueueImportTest do
       end)
     end
 
-    test "set_encoding/1 fails if collection is in state set_fast_track_publishing", %{
+    test "set_encoding/1 fails if collection is in state set_publishing", %{
       collection: collection
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        collection = Collection.set_fast_track_publishing!(collection)
-        assert_state(collection, :fast_track_publishing)
+        collection = Collection.set_publishing!(collection)
+        assert_state(collection, :publishing)
       end)
     end
 

@@ -52,7 +52,7 @@ defmodule DataAggregator.Records.Record do
         },
         %{
           name: :not_published,
-          filter: %{fast_track_status: %{not_equals: :published}}
+          filter: %{publication_status: %{not_equals: :published}}
         },
         %{
           name: :not_validated,
@@ -75,7 +75,7 @@ defmodule DataAggregator.Records.Record do
     attribute :extra_data, :map, public?: true
     attribute :errors, :map, public?: true
 
-    attribute :fast_track_status, PublicationStatusType,
+    attribute :publication_status, PublicationStatusType,
       allow_nil?: false,
       default: :not_published,
       public?: true
@@ -212,7 +212,7 @@ defmodule DataAggregator.Records.Record do
 
     calculate :not_published,
               :boolean,
-              expr(fast_track_status != :published)
+              expr(publication_status != :published)
 
     calculate :not_validated,
               :boolean,
@@ -238,7 +238,7 @@ defmodule DataAggregator.Records.Record do
     ]
 
     ignore_actions [:destroy]
-    on_actions [:update_fast_track_status, :update_validation_status]
+    on_actions [:update_publication_status, :update_validation_status]
 
     attributes_as_attributes [:mte_catalog_number, :tax_scientific_name, :collection_id]
     reference_source? true
@@ -339,10 +339,10 @@ defmodule DataAggregator.Records.Record do
       change Record.Changes.EnqueueEncoder
     end
 
-    action :enqueue_fast_track_checker, :map do
+    action :enqueue_publication_verifier, :map do
       argument :published_record, :struct, allow_nil?: false
 
-      run Record.Actions.EnqueueFastTrackChecker
+      run Record.Actions.EnqueuePublicationVerifier
     end
 
     action :bulk_import, :map do
@@ -366,10 +366,10 @@ defmodule DataAggregator.Records.Record do
       run Encoding.Actions.EncodeRecord
     end
 
-    update :check_if_fast_track_pubished do
+    update :check_if_published do
       require_atomic? false
 
-      change Changes.CheckIfFastTrackPublished
+      change Changes.CheckIfPublished
     end
 
     update :set_imported do
@@ -397,11 +397,11 @@ defmodule DataAggregator.Records.Record do
       change transition_state(:failed)
     end
 
-    update :update_fast_track_status do
+    update :update_publication_status do
       argument :status, :atom, allow_nil?: false
       require_atomic? false
 
-      change set_attribute(:fast_track_status, expr(^arg(:status)))
+      change set_attribute(:publication_status, expr(^arg(:status)))
     end
 
     update :update_validation_status do
@@ -461,10 +461,10 @@ defmodule DataAggregator.Records.Record do
     define :set_encoded
     define :set_encoding_failed
     define :enqueue_encoder
-    define :update_fast_track_status, args: [:status]
+    define :update_publication_status, args: [:status]
     define :update_validation_status, args: [:status]
-    define :check_if_fast_track_pubished
-    define :enqueue_fast_track_checker, args: [:published_record]
+    define :check_if_published
+    define :enqueue_publication_verifier, args: [:published_record]
     define :update_last_validation_started_at
     define :add_images, args: [:images]
   end
@@ -474,7 +474,7 @@ defmodule DataAggregator.Records.Record do
       authorize_if always()
     end
 
-    bypass action([:bulk_import, :import, :encode, :enqueue_fast_track_checker]) do
+    bypass action([:bulk_import, :import, :encode, :enqueue_publication_verifier]) do
       authorize_if always()
     end
 
@@ -500,7 +500,7 @@ defmodule DataAggregator.Records.Record do
     end
 
     custom_indexes do
-      index [:state, :validation_status, :fast_track_status], include: ["id"]
+      index [:state, :validation_status, :publication_status], include: ["id"]
     end
   end
 

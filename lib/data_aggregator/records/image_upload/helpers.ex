@@ -48,7 +48,38 @@ defmodule DataAggregator.Records.ImageUpload.Helpers do
   """
   @spec mapping_identifier_options() :: [{String.t(), [{String.t(), String.t()}]}]
   def mapping_identifier_options do
-    Schema.attribute_options(required?: false, only: Map.values(mapping_identifiers()))
+    only = Map.values(mapping_identifiers())
+
+    for category <- Schema.categories() do
+      filtered_attributes =
+        Enum.reject(category.dwc_attributes, fn dwc_attribute ->
+          dwc_attribute.attribute.name not in only
+        end)
+
+      options =
+        for dwc_attribute <- filtered_attributes do
+          attribute = dwc_attribute.attribute
+
+          name =
+            if is_nil(dwc_attribute.dwc_field) do
+              Atom.to_string(attribute.name)
+            else
+              dwc_attribute.dwc_field
+            end
+
+          value = Schema.Category.prefixed_attribute_name(category, attribute)
+
+          {name, value}
+        end
+
+      category_label =
+        case Schema.category_label_by_description(category.description) do
+          nil -> category.description
+          label -> "#{label}: #{category.description}"
+        end
+
+      {category_label, options}
+    end
   end
 
   @doc """

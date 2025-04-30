@@ -362,8 +362,7 @@ defmodule DataAggregator.Records.RecordTest do
     test "mids level 1", %{record: record} do
       params = %{
         mte_catalog_number: "ex-123",
-        tax_scientific_name: "Example",
-        oth_institution_code: "Baaa"
+        tax_scientific_name: "Example"
       }
 
       record = record |> update_record_fixtures!(params) |> Ash.load!(:mids_level)
@@ -375,7 +374,6 @@ defmodule DataAggregator.Records.RecordTest do
       params = %{
         mte_catalog_number: "ex-123",
         tax_scientific_name: "Example",
-        oth_institution_code: "Baaa",
         mte_part_of_organism: "bla",
         tax_taxon_id: 42
       }
@@ -389,7 +387,6 @@ defmodule DataAggregator.Records.RecordTest do
       params = %{
         mte_catalog_number: "ex-123",
         tax_scientific_name: "Example",
-        oth_institution_code: "Baaa",
         mte_part_of_organism: "bla",
         tax_taxon_id: 42,
         eve_event_date: "2001-1-1",
@@ -419,7 +416,6 @@ defmodule DataAggregator.Records.RecordTest do
       params = %{
         mte_catalog_number: "ex-123",
         tax_scientific_name: "Example",
-        oth_institution_code: "Baaa",
         mte_part_of_organism: "bla",
         tax_taxon_id: 42,
         eve_event_date: "2001-1-1",

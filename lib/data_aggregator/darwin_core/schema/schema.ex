@@ -2,6 +2,7 @@ import DataAggregatorWeb.Helpers, only: [format_coordinate: 1, format_map: 1, fo
 
 alias Ash.Resource.Attribute
 alias DataAggregator.DarwinCore.Schema.Category
+alias DataAggregator.DarwinCore.Schema.CollectionAttribute
 
 eve_attributes = [
   %{
@@ -440,7 +441,7 @@ idf_attributes = [
   %{
     dwc_field: "typifiedName",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{
       name: :typified_name,
       type: :string,
@@ -1215,37 +1216,37 @@ mte_attributes = [
   %{
     dwc_field: "barcodeLabel",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :barcode_label, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "replacementMinerals",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :replacement_minerals, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "permitID",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :permit_id, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "articulation",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :articulation, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "assemblageOrigin",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :assemblage_origin, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "bioerosion",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :bioerosion, type: :string, allow_nil?: true}
   },
   %{
@@ -1257,73 +1258,73 @@ mte_attributes = [
   %{
     dwc_field: "paleoCompleteness",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :paleo_completeness, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "completeness",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :completeness, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "depositionalEnvironmentText",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :depositional_environment_text, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "depositionalEnvironmentType",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :depositional_environment_type, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "dnaBankID",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :dna_bank_id, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "dnaStableID",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :dna_stable_id, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "encrustation",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :encrustation, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "extractionTemporaryID",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :extraction_temporary_id, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "feedingPredationTraces",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :feeding_predation_traces, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "form",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :form, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "matrix",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :matrix, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "mineralization",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :mineralization, type: :string, allow_nil?: true}
   },
   %{
@@ -1335,43 +1336,43 @@ mte_attributes = [
   %{
     dwc_field: "orientation",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :orientation, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "sampleDesignation",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :sample_designation, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "taphonomy",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :taphonomy, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "tissueBankID",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :tissue_bank_id, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "yearCollectionEntrance",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :year_collection_entrance, type: :integer, allow_nil?: true}
   },
   %{
     dwc_field: "origColAuthor",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :orig_col_author, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "originalBiominerals",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :original_biominerals, type: :string, allow_nil?: true}
   }
 ]
@@ -1539,7 +1540,7 @@ gec_attributes = [
   %{
     dwc_field: "placeOfOrigin",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :place_of_origin, type: :string, allow_nil?: true}
   }
 ]
@@ -1614,19 +1615,19 @@ pvn_attributes = [
   %{
     dwc_field: "dnaBankInstitution",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :dna_bank_institution, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "dnaStorageCode",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :dna_storage_code, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "preservationAlterationText",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :preservation_alteration_text, type: :string, allow_nil?: true}
   },
   %{
@@ -1644,31 +1645,31 @@ pvn_attributes = [
   %{
     dwc_field: "preservationMethod",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :preservation_method, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "preservationModeKeywords",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :preservation_mode_keywords, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "preservationModeText",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :preservation_mode_text, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "preservationQuality",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :preservation_quality, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "preservationSpecialMode",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :preservation_special_mode, type: :string, allow_nil?: true}
   },
   %{
@@ -1686,7 +1687,7 @@ pvn_attributes = [
   %{
     dwc_field: "preservationType",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :preservation_type, type: :string, allow_nil?: true}
   },
   %{
@@ -1698,7 +1699,7 @@ pvn_attributes = [
   %{
     dwc_field: "tissueBankInstitution",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :tissue_bank_institution, type: :string, allow_nil?: true}
   }
 ]
@@ -1723,28 +1724,10 @@ oth_attributes = [
     attribute: %Attribute{name: :bibliographic_citation, type: :string, allow_nil?: true}
   },
   %{
-    dwc_field: "collectionCode",
-    dwc_link: "http://rs.tdwg.org/dwc/terms/collectionCode",
-    dwca_file: :core,
-    attribute: %Attribute{name: :collection_code, type: :string, allow_nil?: true}
-  },
-  %{
-    dwc_field: "collectionID",
-    dwc_link: "http://rs.tdwg.org/dwc/terms/collectionID",
-    dwca_file: :core,
-    attribute: %Attribute{name: :collection_id, type: :string, allow_nil?: true}
-  },
-  %{
     dwc_field: "dataGeneralizations",
     dwc_link: "http://rs.tdwg.org/dwc/terms/dataGeneralizations",
     dwca_file: :core,
     attribute: %Attribute{name: :data_generalizations, type: :string, allow_nil?: true}
-  },
-  %{
-    dwc_field: "datasetID",
-    dwc_link: "http://rs.tdwg.org/dwc/terms/datasetID",
-    dwca_file: :core,
-    attribute: %Attribute{name: :dataset_id, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "datasetName",
@@ -1757,12 +1740,6 @@ oth_attributes = [
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :date_available, type: :string, allow_nil?: true}
-  },
-  %{
-    dwc_field: "gbifDOI",
-    dwc_link: nil,
-    dwca_file: :core,
-    attribute: %Attribute{name: :gbif_doi, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "gbifID",
@@ -1781,18 +1758,6 @@ oth_attributes = [
     dwc_link: "http://rs.tdwg.org/dwc/terms/informationWithheld",
     dwca_file: :core,
     attribute: %Attribute{name: :information_withheld, type: :string, allow_nil?: true}
-  },
-  %{
-    dwc_field: "institutionCode",
-    dwc_link: "http://rs.tdwg.org/dwc/terms/institutionCode",
-    dwca_file: :core,
-    attribute: %Attribute{name: :institution_code, type: :string, allow_nil?: true}
-  },
-  %{
-    dwc_field: "institutionID",
-    dwc_link: "http://rs.tdwg.org/dwc/terms/institutionID",
-    dwca_file: :core,
-    attribute: %Attribute{name: :institution_id, type: :string, allow_nil?: true}
   },
   %{
     dwc_field: "language",
@@ -1903,7 +1868,7 @@ oth_attributes = [
   %{
     dwc_field: "typeDesignatedBy",
     dwc_link: nil,
-    dwca_file: :core,
+    dwca_file: nil,
     attribute: %Attribute{name: :type_designated_by, type: :string, allow_nil?: true}
   },
   %{
@@ -2049,6 +2014,51 @@ categories = [
   }
 ]
 
+collection_attributes = [
+  %CollectionAttribute{
+    dwc_field: "collectionID",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/collectionID",
+    dwca_file: :core,
+    name: :oth_collection_id,
+    collection_field: :grscicoll_reference
+  },
+  %CollectionAttribute{
+    dwc_field: "collectionCode",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/collectionCode",
+    dwca_file: :core,
+    name: :oth_collection_code,
+    collection_field: :code
+  },
+  %CollectionAttribute{
+    dwc_field: "datasetID",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/datasetID",
+    dwca_file: :core,
+    name: :oth_dataset_id,
+    collection_field: :gbif_dataset_key
+  },
+  %CollectionAttribute{
+    dwc_field: "institutionCode",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/institutionCode",
+    dwca_file: :core,
+    name: :oth_institution_code,
+    collection_field: :grscicoll_institution_code
+  },
+  %CollectionAttribute{
+    dwc_field: "institutionID",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/institutionID",
+    dwca_file: :core,
+    name: :oth_institution_id,
+    collection_field: :grscicoll_institution_key
+  },
+  %CollectionAttribute{
+    dwc_field: "gbifDOI",
+    dwc_link: nil,
+    dwca_file: nil,
+    name: :oth_gbif_doi,
+    collection_field: :gbif_doi
+  }
+]
+
 defmodule DataAggregator.DarwinCore.Schema do
   @moduledoc """
   Defines the Darwin Core schema and it's attributes.
@@ -2063,47 +2073,23 @@ defmodule DataAggregator.DarwinCore.Schema do
 
   alias Ash.Resource.Attribute
   alias DataAggregator.DarwinCore.Schema.Category
+  alias DataAggregator.DarwinCore.Schema.CollectionAttribute
   alias DataAggregator.DarwinCore.Schema.DwcAttribute
 
   @categories categories
-
-  @doc """
-  Returns a map to define which fields are not to be taken from the record, but collection
-  The key corresponds to the field in the record, the value to the field in the collection
-  """
-  @spec data_from_collection() :: map()
-  def data_from_collection,
-    do: %{
-      oth_gbif_doi: :gbif_doi,
-      oth_dataset_id: :gbif_dataset_key,
-      oth_institution_id: :grscicoll_institution_key,
-      oth_institution_code: :grscicoll_institution_code,
-      oth_collection_id: :grscicoll_reference,
-      oth_collection_code: :code
-    }
-
-  @doc """
-  Returns a map of fields that are not mappable during the import process.
-  Key are the prefixed attributes, values are the original attributes.
-  """
-  @spec not_mappable_fields() :: map()
-  def not_mappable_fields do
-    %{
-      oth_gbif_doi: :gbif_doi,
-      oth_dataset_id: :dataset_id,
-      oth_institution_id: :institution_id,
-      oth_institution_code: :institution_code,
-      oth_collection_id: :collection_id,
-      oth_collection_code: :collection_code,
-      oth_gbif_id: :gbif_id
-    }
-  end
+  @colleciton_attributes collection_attributes
 
   @doc """
   Returns a map attributes grouped by category.
   """
   @spec categories() :: [Category.t()]
   def categories, do: @categories
+
+  @doc """
+  Returns a list of all attributes that we take from the collection.
+  """
+  @spec collection_attributes() :: [CollectionAttribute.t()]
+  def collection_attributes, do: @colleciton_attributes
 
   @doc """
   Returns the category label for a category description
@@ -2190,61 +2176,6 @@ defmodule DataAggregator.DarwinCore.Schema do
       name
     end
   end
-
-  @doc """
-  Returns the attributes as options for a select input grouped by category.
-  """
-  @spec attribute_options(Keyword.t()) :: [{String.t(), [{String.t(), String.t()}]}]
-  def attribute_options(opts \\ []) do
-    # only attributes which are `required` on the schema
-    {required, _opts} = Keyword.pop(opts, :required?, true)
-
-    # only attributes which are requested in the `:only` list
-    {only, _opts} = Keyword.pop(opts, :only, [])
-
-    for category <- @categories do
-      filtered_attributes =
-        Enum.reject(category.dwc_attributes, fn dwc_attribute ->
-          not_mappable_fields = Map.values(not_mappable_fields())
-
-          if only == [] do
-            dwc_attribute.attribute.name in not_mappable_fields
-          else
-            dwc_attribute.attribute.name in not_mappable_fields or
-              dwc_attribute.attribute.name not in only
-          end
-        end)
-
-      options =
-        for dwc_attribute <- filtered_attributes do
-          attribute = dwc_attribute.attribute
-
-          name =
-            if is_nil(dwc_attribute.dwc_field) do
-              Atom.to_string(attribute.name)
-            else
-              dwc_attribute.dwc_field
-            end
-
-          name = maybe_suffix_required(name, required and not attribute.allow_nil?)
-
-          value = Category.prefixed_attribute_name(category, attribute)
-
-          {name, value}
-        end
-
-      category_label =
-        case category_label_by_description(category.description) do
-          nil -> category.description
-          label -> "#{label}: #{category.description}"
-        end
-
-      {category_label, options}
-    end
-  end
-
-  defp maybe_suffix_required(name, true), do: "#{name} (required)"
-  defp maybe_suffix_required(name, false), do: name
 
   @doc """
   Returns the category of an attribute by the attributes name prefixed with the category name.

@@ -81,7 +81,7 @@ defmodule DataAggregatorWeb.Router do
       live "/datasets/:id/imports", CollectionLive.Import.Index, :index
       live "/datasets/:id/exports", CollectionLive.Export.Index, :index
       live "/datasets/:id/publications", CollectionLive.Publication.Index, :index
-      live "/datasets/:id/validations", CollectionLive.Validation.Index, :index
+      live "/datasets/:id/validations", CollectionLive.ValidationRequest.Index, :index
       live "/datasets/:id/image_uploads", CollectionLive.ImageUpload.Index, :index
       live "/datasets/:id/published_records", CollectionLive.PublishedRecords.Index, :index
 

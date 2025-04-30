@@ -27,7 +27,7 @@ defmodule DataAggregator.CreateEndpointTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          fast_track_status: :in_publication
+          publication_status: :in_publication
         })
 
       record2 =
@@ -35,7 +35,7 @@ defmodule DataAggregator.CreateEndpointTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          fast_track_status: :in_publication
+          publication_status: :in_publication
         })
 
       encoded_record_fixture(%{record: record1})
@@ -54,8 +54,7 @@ defmodule DataAggregator.CreateEndpointTest do
       publication =
         Publication.create!(
           %{
-            name: "Publication Fast Track",
-            channel: :fast_track,
+            name: "Publication",
             records_query: query,
             collection: collection
           },

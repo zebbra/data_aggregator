@@ -141,8 +141,7 @@ defmodule DataAggregator.PublicationTest do
       publication =
         Publication.create!(
           %{
-            name: "Publication Fast Track 2",
-            channel: :fast_track,
+            name: "Publication 2",
             records_query: query,
             collection: collection
           },
@@ -152,8 +151,7 @@ defmodule DataAggregator.PublicationTest do
       publication_append_1 =
         Publication.create!(
           %{
-            name: "Publication Fast Track append test",
-            channel: :fast_track,
+            name: "Publication append test",
             records_query: query_append_1,
             collection: collection_append
           },
@@ -163,8 +161,7 @@ defmodule DataAggregator.PublicationTest do
       publication_append_2 =
         Publication.create!(
           %{
-            name: "Publication Fast Track append test",
-            channel: :fast_track,
+            name: "Publication append test",
             records_query: query_append_2,
             collection: collection_append
           },
@@ -174,8 +171,7 @@ defmodule DataAggregator.PublicationTest do
       publication_append_3 =
         Publication.create!(
           %{
-            name: "Publication Fast Track append test",
-            channel: :fast_track,
+            name: "Publication append test",
             layer: "import",
             records_query: query_append_3,
             collection: collection_append
@@ -531,7 +527,7 @@ defmodule DataAggregator.PublicationTest do
           Collection.publish(publication, tenant: publication.collection)
         end)
 
-      assert logs =~ "Error publishing records on the fast_track channel:"
+      assert logs =~ "Error publishing records:"
       assert logs =~ "Error registering dataset at GBIF"
       assert logs =~ "error getting dataset"
     end
@@ -549,7 +545,7 @@ defmodule DataAggregator.PublicationTest do
           Collection.publish(publication, tenant: publication.collection)
         end)
 
-      assert logs =~ "Error publishing records on the fast_track channel:"
+      assert logs =~ "Error publishing records:"
       assert logs =~ "Error during collection registering"
       assert logs =~ "error registering collection"
     end
@@ -567,7 +563,7 @@ defmodule DataAggregator.PublicationTest do
           Collection.publish(publication, tenant: publication.collection)
         end)
 
-      assert logs =~ "Error publishing records on the fast_track channel:"
+      assert logs =~ "Error publishing records:"
       assert logs =~ "Error during endpoint creation"
       assert logs =~ "could not create endpoint"
     end
@@ -585,7 +581,7 @@ defmodule DataAggregator.PublicationTest do
           Collection.publish(publication, tenant: publication.collection)
         end)
 
-      assert logs =~ "Error publishing records on the fast_track channel:"
+      assert logs =~ "Error publishing records:"
       assert logs =~ "Error fetching existing endpoints for dataset"
       assert logs =~ "error getting endpoints"
     end
@@ -603,7 +599,7 @@ defmodule DataAggregator.PublicationTest do
           Collection.publish(publication, tenant: publication.collection)
         end)
 
-      assert logs =~ "Error publishing records on the fast_track channel:"
+      assert logs =~ "Error publishing records:"
       assert logs =~ "Error deleting endpoint"
       assert logs =~ "error response deleting endpoint"
     end
@@ -646,7 +642,7 @@ defmodule DataAggregator.PublicationTest do
           |> Stream.take(5)
           |> Enum.to_list()
 
-        assert Enum.all?(records, &(&1.fast_track_status == :publication_failed))
+        assert Enum.all?(records, &(&1.publication_status == :publication_failed))
 
         assert publication.state == :failed
         assert collection.state == :idle
@@ -665,7 +661,7 @@ defmodule DataAggregator.PublicationTest do
         )
 
         collection = Collection.get_by_id!(collection.id)
-        assert collection.state == :fast_track_publishing
+        assert collection.state == :publishing
       end)
     end
 
@@ -709,12 +705,12 @@ defmodule DataAggregator.PublicationTest do
       end)
     end
 
-    test "enqueue/1 fails if collection is in state fast_track_publishing", %{
+    test "enqueue/1 fails if collection is in state publishing", %{
       collection: collection,
       publication: publication
     } do
       Oban.Testing.with_testing_mode(:manual, fn ->
-        Collection.set_fast_track_publishing!(collection)
+        Collection.set_publishing!(collection)
         assert_not_enqueued(publication)
       end)
     end

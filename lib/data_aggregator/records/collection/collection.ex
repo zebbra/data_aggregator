@@ -119,13 +119,13 @@ defmodule DataAggregator.Records.Collection do
               public?: true
 
     calculate :records_to_export_query, :map, Calculations.RecordsToExport
-    calculate :fast_track_query, :map, Calculations.FastTrackQuery
+    calculate :publication_query, :map, Calculations.PublicationQuery
     calculate :validation_query, :map, Calculations.ValidationQuery
     calculate :mapping, :boolean, expr(state == :mapping)
     calculate :importing, :boolean, expr(state == :importing)
     calculate :exporting, :boolean, expr(state == :exporting)
     calculate :encoding, :boolean, expr(state == :encoding)
-    calculate :publishing, :boolean, expr(state == :fast_track_publishing)
+    calculate :publishing, :boolean, expr(state == :publishing)
     calculate :validating, :boolean, expr(state == :validating)
     calculate :deleting, :boolean, expr(state == :deleting)
     calculate :busy, :boolean, expr(state != :idle)
@@ -140,12 +140,12 @@ defmodule DataAggregator.Records.Collection do
       transition :set_importing, from: [:idle], to: :importing
       transition :set_exporting, from: [:idle], to: :exporting
       transition :set_encoding, from: [:idle], to: :encoding
-      transition :set_fast_track_publishing, from: [:idle], to: :fast_track_publishing
-      transition :set_validating, from: [:idle, :fast_track_publishing], to: :validating
+      transition :set_publishing, from: [:idle], to: :publishing
+      transition :set_validating, from: [:idle, :publishing], to: :validating
       transition :set_deleting, from: [:idle], to: :deleting
 
       transition :set_idle,
-        from: [:mapping, :importing, :exporting, :fast_track_publishing, :validating],
+        from: [:mapping, :importing, :exporting, :publishing, :validating],
         to: :idle
 
       transition :set_idle_encoding,
@@ -213,11 +213,11 @@ defmodule DataAggregator.Records.Collection do
       change Changes.SetEncoding
     end
 
-    update :set_fast_track_publishing do
+    update :set_publishing do
       accept []
       require_atomic? false
 
-      change transition_state(:fast_track_publishing)
+      change transition_state(:publishing)
     end
 
     update :set_validating do
@@ -301,12 +301,12 @@ defmodule DataAggregator.Records.Collection do
 
     # starts the validation process towards infospecies for the given query of records
     action :validate, :map do
-      argument :publication, :struct, allow_nil?: false
+      argument :validation_request, :struct, allow_nil?: false
 
       run Actions.Validate
     end
 
-    # creates the publication resource and enqueues it to the publication queue (with channel :validation)
+    # creates the validation request resources and enqueues it to the validation request queue
     action :start_validations, :map do
       argument :collection, :struct, allow_nil?: false
       argument :query, :map, allow_nil?: false
@@ -327,7 +327,7 @@ defmodule DataAggregator.Records.Collection do
     publish :set_importing, ["updated", [:id, nil]]
     publish :set_exporting, ["updated", [:id, nil]]
     publish :set_encoding, ["updated", [:id, nil]]
-    publish :set_fast_track_publishing, ["updated", [:id, nil]]
+    publish :set_publishing, ["updated", [:id, nil]]
     publish :set_validating, ["updated", [:id, nil]]
     publish :set_idle, ["updated", [:id, nil]]
     publish :set_idle_encoding, ["updated", [:id, nil]]
@@ -350,7 +350,7 @@ defmodule DataAggregator.Records.Collection do
     define :create_endpoint, args: [:collection, :dwca_file_url]
     define :export, action: :export, args: [:export]
     define :publish, args: [:publication]
-    define :validate, args: [:publication]
+    define :validate, args: [:validation_request]
     define :start_validations, args: [:collection, :query]
     define :register_at_gbif, args: [:existing_dataset_key]
 
@@ -358,7 +358,7 @@ defmodule DataAggregator.Records.Collection do
     define :set_importing
     define :set_exporting
     define :set_encoding
-    define :set_fast_track_publishing
+    define :set_publishing
     define :set_validating
     define :set_deleting
     define :set_idle
@@ -393,7 +393,7 @@ defmodule DataAggregator.Records.Collection do
         authorize_if relates_to_institution_check(:grscicoll_institution_key)
       end
 
-      policy action([:publish, :set_fast_track_publishing]) do
+      policy action([:publish, :set_publishing]) do
         authorize_if always()
       end
     end

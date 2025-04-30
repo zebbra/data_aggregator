@@ -1,14 +1,14 @@
 defmodule DataAggregator.Records.Collection.Actions.StartValidations do
   @moduledoc """
   Custom action to start an validation process for a selection of records towards infospecies. It groups all records selected
-  by a given query according to their infospecies center creates a Publication resource and calls the Collection.validate action for
+  by a given query according to their infospecies center creates a ValidationRequest resource and calls the Collection.validate action for
   each group of records to send a DWC-Archive to the infospecies center.
   """
   use Ash.Resource.Actions.Implementation
 
   alias DataAggregator.Records.Collection
-  alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
 
   require Ash.Query
@@ -35,18 +35,20 @@ defmodule DataAggregator.Records.Collection.Actions.StartValidations do
 
         rows_count = Ash.count!(count_query)
 
-        # do only publish dwc file to infospecies center if there are records
+        # do only create a validation request if there are records
         if rows_count > 0 do
           %{
-            name: "pub-#{collection.name}-#{:os.system_time()}",
-            channel: :validation,
+            name: "vrq-#{collection.name}-#{:os.system_time()}",
             records_query: records_query,
             collection: collection,
-            rows_count: rows_count,
+            total_rows_count: rows_count,
             center: center
           }
-          |> Publication.create!(tenant: tenant)
-          |> Publication.enqueue(%{started_by_id: actor.id}, actor: actor, authorize?: false)
+          |> ValidationRequest.create!(tenant: tenant)
+          |> ValidationRequest.enqueue(%{started_by_id: actor.id},
+            actor: actor,
+            authorize?: false
+          )
         end
 
         {center, rows_count}
@@ -55,8 +57,8 @@ defmodule DataAggregator.Records.Collection.Actions.StartValidations do
     total_rows_count =
       Enum.reduce(center_and_record_counts, 0, fn {_, rows_count}, acc -> acc + rows_count end)
 
-    # Mark the collection as validating only after all publications have been
-    # created and enqueued and only if there are any publications. This has
+    # Mark the collection as validating only after all validation requests have been
+    # created and enqueued and only if there are any validation requests. This has
     # the potential to introduce a duplicated validation for the same collection
     if total_rows_count > 0 do
       Collection.set_validating!(collection)

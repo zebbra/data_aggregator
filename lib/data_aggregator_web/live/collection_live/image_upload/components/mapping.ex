@@ -5,7 +5,9 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
   use DataAggregatorWeb, :live_component
 
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
-  import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
+
+  import DataAggregatorWeb.CollectionLive.Import.Helpers,
+    only: [current_step: 1]
 
   alias DataAggregator.Records.ImageUpload
 

@@ -1,7 +1,7 @@
 defmodule DataAggregator.WorkflowTest do
   @moduledoc false
 
-  use DataAggregator.DataCase, async: true
+  use DataAggregator.DataCase, async: false
   use Mimic
 
   import DataAggregator.AccountsFixtures, only: [user_fixture: 0]
@@ -17,6 +17,8 @@ defmodule DataAggregator.WorkflowTest do
   alias DataAggregator.Records.Publication.Workers.Publisher
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.Record.Workers.Encoder
+  alias DataAggregator.Records.ValidationRequest
+  alias DataAggregator.Records.ValidationRequest.Workers.ValidationRequestHandler
   alias DataAggregator.Taxonomy.Catalog
 
   require Ash.Query
@@ -24,9 +26,7 @@ defmodule DataAggregator.WorkflowTest do
   @catalog_versions length(Catalog.get_catalogs()) - 2
 
   @mapping [
-    %{name: "institutionCode", mapped_to: "oth_institution_code"},
     %{name: "basisOfRecord", mapped_to: "oth_basis_of_record"},
-    %{name: "collectionCode", mapped_to: "oth_collection_code"},
     %{name: "catalogNumber", mapped_to: "mte_catalog_number"},
     %{name: "verbatimLocality", mapped_to: "loc_verbatim_locality"},
     %{name: "verbatimElevation", mapped_to: "loc_verbatim_elevation"},
@@ -136,12 +136,32 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :imported, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :imported, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :imported, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :imported, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :imported, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :imported, fast_track_status: :not_published, validation_status: :not_validated}
+        %{
+          state: :imported,
+          publication_status: :not_published,
+          validation_status: :not_validated
+        },
+        %{
+          state: :imported,
+          publication_status: :not_published,
+          validation_status: :not_validated
+        },
+        %{
+          state: :imported,
+          publication_status: :not_published,
+          validation_status: :not_validated
+        },
+        %{
+          state: :imported,
+          publication_status: :not_published,
+          validation_status: :not_validated
+        },
+        %{
+          state: :imported,
+          publication_status: :not_published,
+          validation_status: :not_validated
+        },
+        %{state: :imported, publication_status: :not_published, validation_status: :not_validated}
       ]
 
       # assert that the records are in the correct state
@@ -158,20 +178,24 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :imported, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :imported, fast_track_status: :publishing, validation_status: :validating},
         %{
           state: :imported,
-          fast_track_status: :in_publication,
+          publication_status: :not_published,
+          validation_status: :not_validated
+        },
+        %{state: :imported, publication_status: :publishing, validation_status: :validating},
+        %{
+          state: :imported,
+          publication_status: :in_publication,
           validation_status: :in_validation
         },
-        %{state: :imported, fast_track_status: :published, validation_status: :validated},
+        %{state: :imported, publication_status: :published, validation_status: :validated},
         %{
           state: :imported,
-          fast_track_status: :publication_failed,
+          publication_status: :publication_failed,
           validation_status: :validation_failed
         },
-        %{state: :imported, fast_track_status: :stale, validation_status: :stale}
+        %{state: :imported, publication_status: :stale, validation_status: :stale}
       ]
 
       # assert that the records are in the correct state
@@ -194,12 +218,16 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :imported, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :imported, fast_track_status: :stale, validation_status: :stale},
-        %{state: :imported, fast_track_status: :stale, validation_status: :stale},
-        %{state: :imported, fast_track_status: :stale, validation_status: :stale},
-        %{state: :imported, fast_track_status: :stale, validation_status: :stale},
-        %{state: :imported, fast_track_status: :stale, validation_status: :stale}
+        %{
+          state: :imported,
+          publication_status: :not_published,
+          validation_status: :not_validated
+        },
+        %{state: :imported, publication_status: :stale, validation_status: :stale},
+        %{state: :imported, publication_status: :stale, validation_status: :stale},
+        %{state: :imported, publication_status: :stale, validation_status: :stale},
+        %{state: :imported, publication_status: :stale, validation_status: :stale},
+        %{state: :imported, publication_status: :stale, validation_status: :stale}
       ]
 
       assert_states_equal(expected, records)
@@ -242,12 +270,32 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :imported, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :imported, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :imported, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :imported, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :imported, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :imported, fast_track_status: :not_published, validation_status: :not_validated}
+        %{
+          state: :imported,
+          publication_status: :not_published,
+          validation_status: :not_validated
+        },
+        %{
+          state: :imported,
+          publication_status: :not_published,
+          validation_status: :not_validated
+        },
+        %{
+          state: :imported,
+          publication_status: :not_published,
+          validation_status: :not_validated
+        },
+        %{
+          state: :imported,
+          publication_status: :not_published,
+          validation_status: :not_validated
+        },
+        %{
+          state: :imported,
+          publication_status: :not_published,
+          validation_status: :not_validated
+        },
+        %{state: :imported, publication_status: :not_published, validation_status: :not_validated}
       ]
 
       # assert that the records are in the correct state
@@ -262,12 +310,12 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated}
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated}
       ]
 
       # assert we detected all changes
@@ -281,7 +329,7 @@ defmodule DataAggregator.WorkflowTest do
     end
   end
 
-  describe "Publisher.perform/1 fast_track_publication" do
+  describe "Publisher.perform/1 publication" do
     setup %{collection: collection, actor: actor} do
       path = "test/support/fixtures/files/workflow.csv"
 
@@ -308,7 +356,6 @@ defmodule DataAggregator.WorkflowTest do
         Publication.create!(
           %{
             name: "publication-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-            channel: :fast_track,
             collection: collection,
             records_query: query
           },
@@ -328,12 +375,12 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated}
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated}
       ]
 
       # assert that the records are in the correct state
@@ -352,19 +399,18 @@ defmodule DataAggregator.WorkflowTest do
       publication = Publication.get_by_id!(publication.id, tenant: tenant)
 
       assert publication.state == :done
-      assert publication.channel == :fast_track
       assert publication.published_count == 6
 
       records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, fast_track_status: :published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :published, validation_status: :not_validated}
+        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :published, validation_status: :not_validated}
       ]
 
       # assert that the records are in the correct state
@@ -382,7 +428,7 @@ defmodule DataAggregator.WorkflowTest do
           ])
         )
 
-      # import, fast_track_updated (3x -> publishing, in_publication, published)
+      # import, publication_updated (3x -> publishing, in_publication, published)
       expected_length = 6 * 4
       assert length(versions) == expected_length
 
@@ -390,7 +436,7 @@ defmodule DataAggregator.WorkflowTest do
       for index <- 0..(expected_length - 1) do
         version = Enum.at(versions, index)
         assert version.user_id == actor.id
-        assert version.version_action_name in [:import, :update_fast_track_status]
+        assert version.version_action_name in [:import, :update_publication_status]
       end
 
       # no new records versions should have been created
@@ -398,7 +444,7 @@ defmodule DataAggregator.WorkflowTest do
     end
   end
 
-  describe "Publisher.perform/1 validation" do
+  describe "ValidationRequestHandler.perform/1 validation request" do
     setup %{collection: collection, actor: actor} do
       path = "test/support/fixtures/files/workflow.csv"
 
@@ -426,11 +472,10 @@ defmodule DataAggregator.WorkflowTest do
         # encoded_record: %{swiss_species: %{center: %{eq: "infofauna"}}}
       }
 
-      publication =
-        Publication.create!(
+      validation_request =
+        ValidationRequest.create!(
           %{
-            name: "validation-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-            channel: :validation,
+            name: "validation-request-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
             collection: collection,
             records_query: query,
             center: "infofauna"
@@ -438,11 +483,11 @@ defmodule DataAggregator.WorkflowTest do
           tenant: collection
         )
 
-      [publication: publication, actor: actor, records: records]
+      [validation_request: validation_request, actor: actor, records: records]
     end
 
     test "publishing workflow performs as expected", %{
-      publication: publication,
+      validation_request: validation_request,
       records: records,
       actor: actor,
       collection: tenant
@@ -451,12 +496,12 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :not_validated}
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
+        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated}
       ]
 
       # assert that the records are in the correct state
@@ -466,28 +511,27 @@ defmodule DataAggregator.WorkflowTest do
       # encoded_record versions for each record have been created
       assert_encode_versions(actor, tenant)
 
-      perform_job(Publisher, %{
-        id: publication.id,
-        collection_id: publication.collection_id,
+      perform_job(ValidationRequestHandler, %{
+        id: validation_request.id,
+        collection_id: validation_request.collection_id,
         user_id: actor.id
       })
 
-      publication = Publication.get_by_id!(publication.id, tenant: tenant)
+      validation_request = ValidationRequest.get_by_id!(validation_request.id, tenant: tenant)
 
-      assert publication.state == :done
-      assert publication.channel == :validation
-      assert publication.published_count == 6
+      assert validation_request.state == :done
+      assert validation_request.processed_rows_count == 6
 
       records = Ash.read!(Record, load: [:paper_trail_versions], tenant: tenant)
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, fast_track_status: :not_published, validation_status: :in_validation}
+        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
+        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
+        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
+        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
+        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
+        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation}
       ]
 
       # assert that the records are in the correct state
@@ -536,7 +580,7 @@ defmodule DataAggregator.WorkflowTest do
   defp assert_states_equal(expected, records) do
     assert_lists_equal(
       expected,
-      Enum.map(records, &Map.take(&1, [:state, :fast_track_status, :validation_status]))
+      Enum.map(records, &Map.take(&1, [:state, :publication_status, :validation_status]))
     )
   end
 
@@ -546,7 +590,7 @@ defmodule DataAggregator.WorkflowTest do
 
       record
       |> Ash.update!(%{
-        fast_track_status: state,
+        publication_status: state,
         validation_status: @validation_state_lookup[state]
       })
       |> Ash.load!(:paper_trail_versions)

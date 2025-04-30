@@ -42,7 +42,6 @@ defmodule DataAggregatorApi.PublicationsTest do
       create_publication(%{
         collection: collection,
         name: "Test Publication 1",
-        channel: :fast_track,
         records_query: %{collection: %{id: %{eq: collection.id}}}
       })
 
@@ -50,7 +49,6 @@ defmodule DataAggregatorApi.PublicationsTest do
       create_publication(%{
         collection: collection,
         name: "Test Publication 2",
-        channel: :validation,
         records_query: %{collection: %{id: %{eq: collection.id}}}
       })
 
@@ -58,7 +56,6 @@ defmodule DataAggregatorApi.PublicationsTest do
       create_publication(%{
         collection: collection,
         name: "Test Publication 3",
-        channel: :fast_track,
         records_query: %{collection: %{id: %{eq: collection.id}}}
       })
 
@@ -139,7 +136,6 @@ defmodule DataAggregatorApi.PublicationsTest do
             "type" => "publications",
             "attributes" => %{
               "name" => "New Test Publication",
-              "channel" => "fast_track",
               "records_query" => %{collection: %{id: %{eq: collection.id}}},
               "collection" => collection,
               "collection_id" => collection.id
@@ -154,10 +150,8 @@ defmodule DataAggregatorApi.PublicationsTest do
                Publication.get_by_id(data["id"], tenant: collection.id)
 
       assert publication.name == data["attributes"]["name"]
-      assert publication.channel == String.to_atom(data["attributes"]["channel"])
 
       assert data["attributes"]["name"] == "New Test Publication"
-      assert data["attributes"]["channel"] == "fast_track"
     end
 
     test "update publication succeeded", %{

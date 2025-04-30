@@ -1,9 +1,7 @@
 defmodule DataAggregator.Records.Publication.Changes.SetCollectionPublishingBeforeTransaction do
   @moduledoc """
-  Set the collection to fast_track_publishing before we start the publication itself.
-  If the collection is not idle, we will not allow the publication to start. If the channel
-  is validation, we do not update the collection state. This is done in the Collection.start_validations
-  action.
+  Set the collection to publishing before we start the publication itself.
+  If the collection is not idle, we will not allow the publication to start.
   """
 
   use Ash.Resource.Change
@@ -16,16 +14,10 @@ defmodule DataAggregator.Records.Publication.Changes.SetCollectionPublishingBefo
     Changeset.before_transaction(changeset, &set_collection_publishing/1)
   end
 
-  defp set_collection_publishing(%Changeset{data: %{channel: channel}} = changeset)
-       when channel in [:validation, "validation"] do
-    changeset
-  end
-
-  defp set_collection_publishing(%Changeset{data: %{collection_id: collection_id, channel: channel}} = changeset)
-       when channel in [:fast_track, "fast_track"] do
+  defp set_collection_publishing(%Changeset{data: %{collection_id: collection_id}} = changeset) do
     collection = Collection.get_by_id!(collection_id)
 
-    case Collection.set_fast_track_publishing(collection) do
+    case Collection.set_publishing(collection) do
       {:ok, _collection} ->
         changeset
 

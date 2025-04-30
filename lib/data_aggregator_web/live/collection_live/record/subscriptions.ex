@@ -27,7 +27,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
     set_importing
     set_exporting
     set_encoding
-    set_fast_track_publishing
+    set_publishing
     set_validating
     set_idle
     set_idle_encoding

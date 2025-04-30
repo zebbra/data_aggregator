@@ -130,7 +130,7 @@ config :git_ops,
 
 # Enable http file cache
 
-# Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier`
+# Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.PublicationVerifier`
 
 # Serve uploaded files from the priv/storage directory
 

@@ -13,16 +13,17 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
   import DataAggregatorWeb.CollectionLive.Import.Components, only: [import_mapping_validation: 1]
-  import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1]
 
-  alias DataAggregator.DarwinCore
+  import DataAggregatorWeb.CollectionLive.Import.Helpers,
+    only: [current_step: 1, not_mappable_fields: 0, attribute_options: 0]
+
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.Import
   alias Phoenix.HTML.Form
   alias Phoenix.LiveView.Socket
 
   @mandatory_attributes Enum.map(
-                          DarwinCore.Schema.mandatory_prefixed_attribute_names(),
+                          Schema.mandatory_prefixed_attribute_names(),
                           &Atom.to_string/1
                         )
 
@@ -144,7 +145,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
                         type="combobox"
                         label={
                           Form.input_value(column_form, :mapped_to)
-                          |> DarwinCore.Schema.dwc_field_from_prefixed_attribute_name()
+                          |> Schema.dwc_field_from_prefixed_attribute_name()
                         }
                         field={column_form[:name]}
                         options={maybe_add_selected_column_name(column_form, @available_columns)}
@@ -396,8 +397,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
         matched_columns
         |> ensure_required_attributes()
         |> Enum.reject(fn column ->
-          not_mappable_data =
-            Schema.not_mappable_fields() |> Map.keys() |> Enum.map(&Atom.to_string/1)
+          not_mappable_data = not_mappable_fields() |> Map.keys() |> Enum.map(&Atom.to_string/1)
 
           column.mapped_to in not_mappable_data
         end)
@@ -488,8 +488,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   defp auto_mapping_matched(import) do
     prefixed_attribute_to_dwc_field_mapping =
-      Enum.reject(DarwinCore.Schema.prefixed_attribute_names_and_dwc_fields(), fn {key, _} ->
-        key in Map.keys(Schema.not_mappable_fields())
+      Enum.reject(Schema.prefixed_attribute_names_and_dwc_fields(), fn {key, _} ->
+        key in Map.keys(not_mappable_fields())
       end)
 
     dwc_field_names =
@@ -673,7 +673,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
 
   defp assign_attributes(socket, attributes_in_use) do
     available_attributes =
-      Enum.map(DarwinCore.Schema.attribute_options(), fn {category, attribute_tuple} ->
+      Enum.map(attribute_options(), fn {category, attribute_tuple} ->
         available_category_attributes =
           Enum.reject(attribute_tuple, fn {_, prefixed_attribute} ->
             Enum.member?(attributes_in_use, prefixed_attribute)
@@ -729,7 +729,7 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
           description = Map.fetch!(category, :description)
 
           attribute_name_without_prefix =
-            DarwinCore.Schema.attribute_name_without_prefix(prefixed_attribute)
+            Schema.attribute_name_without_prefix(prefixed_attribute)
 
           attribute =
             Enum.find(category.dwc_attributes, fn dwc_attribute ->
@@ -745,12 +745,12 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Components.Mapping do
   defp prefixed_attribute_category(nil), do: nil
 
   defp prefixed_attribute_category(prefixed_attribute) do
-    category = DarwinCore.Schema.category_from_prefixed_attribute_name(prefixed_attribute)
+    category = Schema.category_from_prefixed_attribute_name(prefixed_attribute)
 
     if is_nil(category) do
       category
     else
-      case DarwinCore.Schema.category_label_by_description(category.description) do
+      case Schema.category_label_by_description(category.description) do
         nil ->
           category
 

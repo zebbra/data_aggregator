@@ -47,7 +47,7 @@ defmodule DataAggregator.Records.CollectionType do
           :loc_decimal_latitude -> true
           :oth_swiss_species_center -> true
           :state -> true
-          :fast_track_status -> true
+          :publication_status -> true
           :validation_status -> true
           :mids_level -> true
           :updated_at -> true
@@ -70,7 +70,7 @@ defmodule DataAggregator.Records.CollectionType do
           :loc_decimal_latitude -> true
           :oth_swiss_species_center -> true
           :state -> true
-          :fast_track_status -> true
+          :publication_status -> true
           :validation_status -> true
           :mids_level -> true
           :updated_at -> true
@@ -94,7 +94,7 @@ defmodule DataAggregator.Records.CollectionType do
           :loc_decimal_latitude -> true
           :oth_swiss_species_center -> true
           :state -> true
-          :fast_track_status -> true
+          :publication_status -> true
           :validation_status -> true
           :mids_level -> true
           :updated_at -> true
@@ -118,7 +118,7 @@ defmodule DataAggregator.Records.CollectionType do
           :loc_decimal_latitude -> true
           :oth_swiss_species_center -> true
           :state -> true
-          :fast_track_status -> true
+          :publication_status -> true
           :validation_status -> true
           :mids_level -> true
           :updated_at -> true

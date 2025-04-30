@@ -39,8 +39,7 @@ defmodule DataAggregator.PublicationPolicyTest do
       publication =
         Publication.create!(
           %{
-            name: "Publication Fast Track 2",
-            channel: :fast_track,
+            name: "Publication 2",
             records_query: query,
             collection: collection
           },

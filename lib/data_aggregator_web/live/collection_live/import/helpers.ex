@@ -3,6 +3,8 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Helpers do
   This module contains helper functions for the collection > import live view.
   """
 
+  alias DataAggregator.DarwinCore.Schema
+
   def load do
     [
       :duration,
@@ -28,6 +30,59 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Helpers do
         error_log: [:filename, :url, :byte_size]
       ]
   end
+
+  @doc """
+  Returns a map of fields that are not mappable in the import mapping process
+  With the key being the prefixed attribute name and the value being the original attribute name.
+  """
+  def not_mappable_fields do
+    %{
+      oth_gbif_id: :gbif_id
+    }
+  end
+
+  @doc """
+  Returns the attributes as options for a select input grouped by category.
+  """
+  @spec attribute_options() :: [{String.t(), [{String.t(), String.t()}]}]
+  def attribute_options do
+    for category <- Schema.categories() do
+      filtered_attributes =
+        Enum.reject(category.dwc_attributes, fn dwc_attribute ->
+          not_mappable_fields = Map.values(not_mappable_fields())
+          dwc_attribute.attribute.name in not_mappable_fields
+        end)
+
+      options =
+        for dwc_attribute <- filtered_attributes do
+          attribute = dwc_attribute.attribute
+
+          name =
+            if is_nil(dwc_attribute.dwc_field) do
+              Atom.to_string(attribute.name)
+            else
+              dwc_attribute.dwc_field
+            end
+
+          name = maybe_suffix_required(name, not attribute.allow_nil?)
+
+          value = Schema.Category.prefixed_attribute_name(category, attribute)
+
+          {name, value}
+        end
+
+      category_label =
+        case Schema.category_label_by_description(category.description) do
+          nil -> category.description
+          label -> "#{label}: #{category.description}"
+        end
+
+      {category_label, options}
+    end
+  end
+
+  defp maybe_suffix_required(name, true), do: "#{name} (required)"
+  defp maybe_suffix_required(name, false), do: name
 
   def invalid?(nil), do: false
   def invalid?(import), do: length(import.missing_mappings) > 0

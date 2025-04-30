@@ -33,7 +33,7 @@ defmodule Storybook.Collections.Records.ActivityFeedElement do
 
   defp available_activities do
     activity_names =
-      ~w(import update set_encoded set_encoding_failed update_fast_track_status update_validation_status other)a
+      ~w(import update set_encoded set_encoding_failed update_publication_status update_validation_status other)a
 
     Enum.reduce(activity_names, [], fn name, acc ->
       activity = %Activity{
@@ -48,24 +48,24 @@ defmodule Storybook.Collections.Records.ActivityFeedElement do
       activity = maybe_put_content(activity, name)
 
       case name do
-        :update_fast_track_status -> iterate_state_machine(acc, name)
+        :update_publication_status -> iterate_state_machine(acc, name)
         :update_validation_status -> iterate_state_machine(acc, name)
         _ -> [activity | acc]
       end
     end)
   end
 
-  defp iterate_state_machine(activities, :update_fast_track_status) do
+  defp iterate_state_machine(activities, :update_publication_status) do
     states = ~w(not_published publishing in_publication published publication_failed stale other)
 
     Enum.reduce(states, activities, fn state, acc ->
       activity = %Activity{
-        name: :update_fast_track_status,
+        name: :update_publication_status,
         actor: "John Doe",
         date_time: DateTime.utc_now(),
-        content: %{"fast_track_status" => state},
-        source: "fast_track_status_#{state}",
-        index: "fast_track_status_#{state}"
+        content: %{"publication_status" => state},
+        source: "publication_status_#{state}",
+        index: "publication_status_#{state}"
       }
 
       [activity | acc]

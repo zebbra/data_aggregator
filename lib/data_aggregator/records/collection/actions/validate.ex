@@ -15,30 +15,31 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   alias DataAggregator.DarwinCore.Publication.ReleveFile
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
-  alias DataAggregator.Records.Publication
-  alias DataAggregator.Records.Publication.InfoSpecies
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidationRequest
+  alias DataAggregator.Records.ValidationRequest.InfoSpecies
 
   require Ash.Query
   require Logger
 
   @impl true
   def run(input, _opts, %{tenant: tenant} = ctx) do
-    validation = input.arguments.publication
+    validation_request = input.arguments.validation_request
 
     # these are the new records that will be validated
     query =
       Record
-      |> AshPagify.query_for_filters_map(validation.records_query)
+      |> AshPagify.query_for_filters_map(validation_request.records_query)
       |> Ash.Query.set_tenant(tenant)
 
-    collection = validation.collection
+    collection = validation_request.collection
 
-    path = FlatFileUtils.create_directory!("publication_#{validation.channel}")
-    EmlFile.create(collection, validation, path)
+    path = FlatFileUtils.create_directory!("validation_request")
+    EmlFile.create(collection, validation_request.license, path)
     MetaFile.create(collection, path)
 
-    {:ok, counter} = Counter.start(&Publication.add_publication_progress(validation, &1))
+    {:ok, counter} =
+      Counter.start(&ValidationRequest.add_validation_request_progress(validation_request, &1))
 
     file_metas = [
       CoreFile.open_file!(path),
@@ -51,7 +52,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
     query
     |> stream_query()
-    |> set_publication_status(:validating, ctx)
+    |> update_validation_status(:validating, ctx)
     |> Stream.chunk_every(1000)
     |> Stream.flat_map(fn records ->
       file_metas
@@ -64,7 +65,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
       records
     end)
     |> Counter.count_each(counter)
-    |> set_publication_status(:in_validation, ctx)
+    |> update_validation_status(:in_validation, ctx)
 
     Enum.each(file_metas, &FlatFileUtils.close_file(&1.file_descriptor))
 
@@ -74,21 +75,21 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     # remove file from local tmp dir, as it is now stored on s3
     File.rm_rf(path)
 
-    validation =
-      validation
-      |> Publication.update_attachment(attachment)
+    validation_request =
+      validation_request
+      |> ValidationRequest.update_attachment(attachment)
       |> Ash.load!([:collection, :attachment])
 
-    case validate(validation, query, ctx) do
-      {:ok, validation} ->
-        {:ok, validation}
+    case validate(validation_request, query, ctx) do
+      {:ok, validation_request} ->
+        {:ok, validation_request}
 
       {:error, error} ->
-        Logger.error("Error validating records on the #{validation.channel} channel: #{inspect(error)}")
+        Logger.error("Error sending validation request: #{inspect(error)}")
 
         query
         |> stream_query()
-        |> set_publication_status(
+        |> update_validation_status(
           :validation_failed,
           ctx
         )
@@ -97,18 +98,18 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     end
   rescue
     e ->
-      validation = input.arguments.publication
+      validation_request = input.arguments.validation_request
 
       query =
         Record
-        |> AshPagify.query_for_filters_map(validation.records_query)
+        |> AshPagify.query_for_filters_map(validation_request.records_query)
         |> Ash.Query.set_tenant(tenant)
 
-      Logger.error("Error validating records on the #{validation.channel} channel: #{inspect(e)}")
+      Logger.error("Error sending validation request: #{inspect(e)}")
 
       query
       |> stream_query()
-      |> set_publication_status(
+      |> update_validation_status(
         :validation_failed,
         ctx
       )
@@ -118,7 +119,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
   defp stream_query(query), do: Ash.stream!(query, stream_with: :keyset, batch_size: 1000, load: :encoded_record)
 
-  defp set_publication_status(stream, status, %{actor: actor, tenant: tenant}) do
+  defp update_validation_status(stream, status, %{actor: actor, tenant: tenant}) do
     max_concurrency = Records.import_max_concurrency()
     batch_size = ceil(Records.import_batch_size() / max_concurrency)
 
@@ -135,10 +136,10 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     stream
   end
 
-  defp validate(%Publication{channel: :validation} = validation, query, _ctx) do
-    case InfoSpecies.notify(validation, query) do
-      {:ok, validation} ->
-        {:ok, validation}
+  defp validate(%ValidationRequest{} = validation_request, query, _ctx) do
+    case InfoSpecies.notify(validation_request, query) do
+      {:ok, validation_request} ->
+        {:ok, validation_request}
 
       {:error, error} ->
         Logger.warning("Error while informing infospecies about new available records for review: #{inspect(error)}")

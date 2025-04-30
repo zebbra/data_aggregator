@@ -53,8 +53,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       |> assign(:filters_count, 0)
       |> assign(:show_filters, false)
       |> assign(:show_encode, false)
-      |> assign(:show_fast_track_pub, false)
-      |> assign(:show_validation_pub, false)
+      |> assign(:show_publication, false)
+      |> assign(:show_validation, false)
       |> assign(:record_tab, "data")
       |> assign(:agreed, false)
       |> assign_scope_stats()
@@ -494,12 +494,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         </:col>
         <:col
           :let={{_id, record}}
-          :if={CollectionType.visible?(@collection_type, :fast_track_status)}
-          field={:fast_track_status}
+          :if={CollectionType.visible?(@collection_type, :publication_status)}
+          field={:publication_status}
           label={~t"Publication status"m}
           class="text-center"
         >
-          <.publication_state_badge state={record.fast_track_status} />
+          <.publication_state_badge state={record.publication_status} />
         </:col>
         <:col
           :let={{_id, record}}
@@ -575,11 +575,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             <.slideover_subtitle
               text={@selected_record.mte_catalog_number}
               gbif_id={@selected_record.oth_gbif_id}
-              fast_track_status={@selected_record.fast_track_status}
+              publication_status={@selected_record.publication_status}
             />
             <div class="mt-4 flex space-x-2 max-sm:hidden">
               <.encoding_state_badge state={@selected_record.state} tooltip={false} />
-              <.publication_state_badge state={@selected_record.fast_track_status} tooltip={false} />
+              <.publication_state_badge state={@selected_record.publication_status} tooltip={false} />
               <%= unless @selected_record.encoded_record.oth_swiss_species_registered == false do %>
                 <.validation_state_badge state={@selected_record.validation_status} tooltip={false} />
               <% end %>
@@ -797,18 +797,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
         <.modal
           :if={@meta.ok?}
-          id="fast_track_pub_modal"
+          id="publication_modal"
           size="2xl"
           class="p-0"
-          show={@show_fast_track_pub}
+          show={@show_publication}
           responsive
-          on_cancel={JS.push("fast_track_pub:toggle")}
+          on_cancel={JS.push("publication:toggle")}
           overflow="manual"
         >
           <.live_component
-            :if={@show_fast_track_pub}
-            module={DataAggregatorWeb.CollectionLive.Record.FastTrackModal}
-            id="fast_track_pub_modal_component"
+            :if={@show_publication}
+            module={DataAggregatorWeb.CollectionLive.Record.PublicationModal}
+            id="publication_modal_component"
             meta={@meta.result}
             collection={@collection}
             current_user={@current_user}
@@ -822,14 +822,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :if={@meta.ok?}
           id="validation_pub_modal"
           size="xl"
-          show={@show_validation_pub}
+          show={@show_validation}
           responsive
-          on_cancel={JS.push("validation_pub:toggle")}
+          on_cancel={JS.push("validation:toggle")}
           on_confirm={JS.push("collection:validation_pub")}
           overflow="manual"
         >
           <.live_component
-            :if={@show_validation_pub}
+            :if={@show_validation}
             module={DataAggregatorWeb.CollectionLive.Record.ValidationModal}
             id="validation_pub_modal_component"
             meta={@meta.result}
@@ -970,18 +970,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   end
 
   @impl true
-  def handle_event("fast_track_pub:toggle", _, socket) do
+  def handle_event("publication:toggle", _, socket) do
     socket =
       socket
-      |> update(:show_fast_track_pub, &(!&1))
+      |> update(:show_publication, &(!&1))
       |> assign(:agreed, false)
 
     {:noreply, socket}
   end
 
   @impl true
-  def handle_event("validation_pub:toggle", _, socket) do
-    socket = update(socket, :show_validation_pub, &(!&1))
+  def handle_event("validation:toggle", _, socket) do
+    socket = update(socket, :show_validation, &(!&1))
 
     {:noreply, socket}
   end
@@ -1003,7 +1003,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       {:ok, _} ->
         {:noreply,
          socket
-         |> update(:show_validation_pub, &(!&1))
+         |> update(:show_validation, &(!&1))
          |> put_flash(:info, ~t"Validation started in background"m)}
 
       {:error, _} ->
@@ -1087,7 +1087,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         :loc_decimal_latitude,
         :loc_decimal_longitude,
         :state,
-        :fast_track_status,
+        :publication_status,
         :validation_status,
         :updated_at
       ]
