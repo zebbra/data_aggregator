@@ -67,8 +67,10 @@ defmodule DataAggregator.DarwinCore.Publication.DwcaFile do
     Enum.map(file_mapping(file_type), fn {_k, v} -> v end)
   end
 
-  # returns a list of record attributes and it's header field companion in the
-  # structure `[eve_event_id: "eventID", eve_parent_event_id: "parentEventID", ...]` for the given file type
+  @doc """
+  For relevant file types, return list of record attributes and their header fields
+  structure `[eve_event_id: "eventID", eve_parent_event_id: "parentEventID", ...]`
+  """
   @spec file_mapping(atom()) :: list()
   def file_mapping(file_type) do
     schema_attributes =

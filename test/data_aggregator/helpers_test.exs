@@ -25,6 +25,7 @@ defmodule DataAggregator.HelpersTest do
   doctest DataAggregator.Taxonomy.Catalogs.SwissSpeciesImporter, import: true
   doctest DataAggregator.Misc.FlatFileUtils, import: true
   doctest DataAggregator.Records.Record.ExtractAttributesHelpers, import: true
+  doctest DataAggregator.Records.ValidationResponse.Helpers, import: true
 
   setup do
     stub_with(Gbif.RestAPI, Gbif.RestAPIStub)

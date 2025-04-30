@@ -122,6 +122,23 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   removes the collection attributes from the chunk
   The data we get from the CSV file may contain collection attributes, which we don't save on the record
   We need to remove them from the chunk before we save the records
+
+  ## Example
+
+      iex> chunk = {[%{"mte_catalog_number" => "123"}], 0}
+      iex> collection_attributes = ["oth_collection_id"]
+      iex> reject_collection_attributes_from_chunk(chunk, collection_attributes)
+      {[%{"mte_catalog_number" => "123"}], 0}
+
+      iex> chunk = {[%{"mte_catalog_number" => "123", "tax_scientific_name" => "foo", "oth_collection_id" => "bar"}], 0}
+      iex> collection_attributes = ["oth_collection_id"]
+      iex> reject_collection_attributes_from_chunk(chunk, collection_attributes)
+      {[%{"mte_catalog_number" => "123", "tax_scientific_name" => "foo"}], 0}
+
+      iex> chunk = {[%{"mte_catalog_number" => "123", "tax_scientific_name" => "foo", "oth_collection_id" => "bar"},%{"mte_catalog_number" => "123", "tax_scientific_name" => "foo", "oth_collection_id" => "bar"}], 0}
+      iex> collection_attributes = ["oth_collection_id"]
+      iex> reject_collection_attributes_from_chunk(chunk, collection_attributes)
+      {[%{"mte_catalog_number" => "123", "tax_scientific_name" => "foo"},%{"mte_catalog_number" => "123", "tax_scientific_name" => "foo"}], 0}
   """
   @spec reject_collection_attributes_from_chunk(
           {[map()], integer()},
