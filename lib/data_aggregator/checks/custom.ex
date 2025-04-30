@@ -55,4 +55,12 @@ defmodule DataAggregator.Checks.Custom do
   def it_is_myself do
     DataAggregator.Checks.Myself
   end
+
+  @doc """
+  Check if the resource being accessed is a user with role "admin".
+  """
+  @spec it_is_admin() :: Check.ref()
+  def it_is_admin do
+    DataAggregator.Checks.Admin
+  end
 end

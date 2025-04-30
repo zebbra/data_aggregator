@@ -90,6 +90,13 @@ defmodule DataAggregator.Accounts.UserPolicyTest do
         institution_id: @inst_1
       }
 
+      same_admin = %User{
+        id: "admin",
+        email: "admin@email.com",
+        roles: ["admin"],
+        institution_id: @inst_1
+      }
+
       other = %User{
         id: "user_3",
         email: "data_digitizer@email.com",
@@ -97,7 +104,7 @@ defmodule DataAggregator.Accounts.UserPolicyTest do
         institution_id: @inst_2
       }
 
-      [actor: actor, same: same, other: other]
+      [actor: actor, same: same, other: other, same_admin: same_admin]
     end
 
     test "can read all", %{actor: actor} do
@@ -113,8 +120,8 @@ defmodule DataAggregator.Accounts.UserPolicyTest do
       assert User.can_update?(actor, same)
     end
 
-    test "cannot destroy same institution", %{actor: actor, same: same} do
-      refute User.can_destroy?(actor, same)
+    test "can destroy same institution", %{actor: actor, same: same} do
+      assert User.can_destroy?(actor, same)
     end
 
     test "cannot register_with_password other institution", %{actor: actor, other: other} do
@@ -128,6 +135,10 @@ defmodule DataAggregator.Accounts.UserPolicyTest do
 
     test "cannot destroy other institution", %{actor: actor, other: other} do
       refute User.can_destroy?(actor, other)
+    end
+
+    test "cannot destroy if admin", %{actor: actor, same_admin: same_admin} do
+      refute User.can_destroy?(actor, same_admin)
     end
 
     test "can update self", %{actor: actor} do
