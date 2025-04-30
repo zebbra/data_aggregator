@@ -30,7 +30,7 @@ config :data_aggregator,
   # different value set for key :http_cache_path during runtime compared to compile time.
   http_cache_path: http_cache_path
 
-# Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier`
+# Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.PublicationVerifier`
 config :data_aggregator, publication_verification_scheduler_active: true
 
 # Do not print debug messages in production

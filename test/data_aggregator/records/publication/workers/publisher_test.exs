@@ -55,7 +55,6 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
         Publication.create!(
           %{
             name: "publication-#{collection.name}-#{Uniq.UUID.uuid7(:slug)}",
-            channel: :fast_track,
             collection: collection,
             records_query: query,
             center: "infofauna"
@@ -66,24 +65,12 @@ defmodule DataAggregator.Records.Publication.Workers.PublisherTest do
       [publication: publication, query: query, records: records, collection: collection]
     end
 
-    test "publication :fast_track success", %{publication: publication, collection: collection} do
+    test "publication success", %{publication: publication, collection: collection} do
       perform_job(Publisher, %{id: publication.id, collection_id: publication.collection_id})
 
       publication = Publication.get_by_id!(publication.id, tenant: collection)
 
       assert publication.state == :done
-      assert publication.channel == :fast_track
-      assert publication.published_count == 5
-    end
-
-    test "publication :validation success", %{publication: publication, collection: collection} do
-      publication = Publication.update!(publication, %{channel: :validation})
-      perform_job(Publisher, %{id: publication.id, collection_id: publication.collection_id})
-
-      publication = Publication.get_by_id!(publication.id, tenant: collection)
-
-      assert publication.state == :done
-      assert publication.channel == :validation
       assert publication.published_count == 5
     end
   end

@@ -2907,7 +2907,7 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "fast_track_status",
+      "source": "publication_status",
       "type": "text"
     },
     {
@@ -3029,7 +3029,7 @@
       "error_fields": [
         "state",
         "validation_status",
-        "fast_track_status"
+        "publication_status"
       ],
       "fields": [
         {
@@ -3042,7 +3042,7 @@
         },
         {
           "type": "atom",
-          "value": "fast_track_status"
+          "value": "publication_status"
         }
       ],
       "include": [
@@ -3060,7 +3060,7 @@
   ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "69A395533F5847A76A2B65228C1473ED9F3C02A11EAD61949780F15FD6CFCC91",
+  "hash": "BD2E679D2919E711883BC1FB6EA76E6558F74D3F4AAEA3993CE2E1B5C8306049",
   "identities": [
     {
       "all_tenants?": false,

@@ -1,6 +1,6 @@
 defmodule DataAggregator.Records.Collection.Actions.Publish do
   @moduledoc """
-  Custom action to publish records of a collection through the fast track as DarwinCoreArchive (dwca) file.
+  Custom action to publish records of a collection as DarwinCoreArchive (dwca) file.
   """
 
   use Ash.Resource.Actions.Implementation
@@ -40,7 +40,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       |> AshPagify.query_for_filters_map(publication.records_query)
       |> Ash.Query.set_tenant(tenant)
 
-    # first we need to copy the data of these records to published_records table if fast track
+    # first we need to copy the data of these records to published_records table
     append_published_records(publication, query)
     publication = update_count(publication, tenant)
 
@@ -54,8 +54,8 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
           raise("Error registering dataset at GBIF: #{inspect(error)}")
       end
 
-    path = FlatFileUtils.create_directory!("publication_#{publication.channel}")
-    EmlFile.create(collection, publication, path)
+    path = FlatFileUtils.create_directory!("publication")
+    EmlFile.create(collection, publication.license, path)
     MetaFile.create(collection, path)
 
     {:ok, counter} = Counter.start(&Publication.add_publication_progress(publication, &1))
@@ -105,7 +105,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
         {:ok, publication}
 
       {:error, error} ->
-        Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(error)}")
+        Logger.error("Error publishing records: #{inspect(error)}")
 
         publication
         |> stream_resource()
@@ -120,7 +120,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     e ->
       publication = input.arguments.publication
 
-      Logger.error("Error publishing records on the #{publication.channel} channel: #{inspect(e)}")
+      Logger.error("Error publishing records: #{inspect(e)}")
 
       publication
       |> stream_resource()
@@ -140,7 +140,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
     stream_params = Enum.map(stream, &%{id: &1.record_id})
 
-    Ash.bulk_update(stream_params, :update_fast_track_status, %{status: status},
+    Ash.bulk_update(stream_params, :update_publication_status, %{status: status},
       actor: actor,
       authorize?: false,
       domain: Records,
@@ -153,7 +153,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     stream
   end
 
-  defp append_published_records(%{channel: :fast_track} = publication, query) do
+  defp append_published_records(publication, query) do
     query
     |> Ash.stream!(stream_with: :keyset, batch_size: 1000, load: :encoded_record)
     |> Stream.map(fn record ->
@@ -200,13 +200,13 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
   defp round_coordinates(value), do: value
 
-  defp update_count(%{channel: :fast_track} = publication, tenant) do
+  defp update_count(publication, tenant) do
     # now we update the rows count with the number of records that will be published
     published_records_count = Ash.count!(PublishedRecord, tenant: tenant)
     Publication.update!(publication, %{rows_count: published_records_count})
   end
 
-  defp stream_resource(%{channel: :fast_track, collection: collection}),
+  defp stream_resource(%{collection: collection}),
     do: Ash.stream!(PublishedRecord, stream_with: :keyset, batch_size: 1000, tenant: collection)
 
   defp record_inputs(record, publication) do
@@ -221,12 +221,12 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     |> Map.put(:collection_id, publication.collection.id)
   end
 
-  defp register(%Publication{channel: :fast_track} = publication) do
+  defp register(publication) do
     Logger.debug("Registering collection: #{publication.collection.id} at GBIF for publishing")
     Collection.register_at_gbif(publication.collection, publication.existing_dataset_key)
   end
 
-  defp publish(%Publication{channel: :fast_track} = publication, ctx) do
+  defp publish(publication, ctx) do
     with {:ok, _dataset_key} <-
            Collection.create_endpoint(publication.collection, publication.attachment.url),
          :ok <- queue_records_for_verification(publication.collection, ctx) do
@@ -238,6 +238,6 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   defp queue_records_for_verification(collection, %{actor: actor}) do
     PublishedRecord
     |> Ash.stream!(stream_with: :keyset, batch_size: 1000, tenant: collection)
-    |> Enum.each(&Record.enqueue_fast_track_checker(&1, nil, actor: actor))
+    |> Enum.each(&Record.enqueue_publication_verifier(&1, nil, actor: actor))
   end
 end

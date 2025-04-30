@@ -84,14 +84,14 @@
       "type": "bigint"
     },
     {
-      "allow_nil?": true,
-      "default": "nil",
+      "allow_nil?": false,
+      "default": "0",
       "generated?": false,
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "error_message",
-      "type": "text"
+      "source": "max_mapping_operations_count",
+      "type": "bigint"
     },
     {
       "allow_nil?": false,
@@ -100,8 +100,18 @@
       "primary_key?": false,
       "references": null,
       "size": null,
-      "source": "general_mapping_progress_count",
+      "source": "current_mapping_operations_count",
       "type": "bigint"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "error_message",
+      "type": "text"
     },
     {
       "allow_nil?": false,
@@ -284,7 +294,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "1C7113EABFA2B747FCC38A1551043C7C999C24F1CDD480400F0DD2AD0AEE4F33",
+  "hash": "20E4432BF3053B3A1A4E5223A516E17665BE8D00580D0C4973C0A69B120340E8",
   "identities": [],
   "multitenancy": {
     "attribute": "collection_id",

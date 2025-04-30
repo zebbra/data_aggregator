@@ -75,8 +75,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   def publication_state_badge(assigns) do
     assigns =
       assigns
-      |> assign(:name, :update_fast_track_status)
-      |> assign(:content, %{"fast_track_status" => Atom.to_string(assigns.state)})
+      |> assign(:name, :update_publication_status)
+      |> assign(:content, %{"publication_status" => Atom.to_string(assigns.state)})
 
     ~H"""
     <.badge
@@ -216,7 +216,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
 
   attr :text, :string, required: true
   attr :gbif_id, :string, default: nil
-  attr :fast_track_status, :atom, default: nil
+  attr :publication_status, :atom, default: nil
 
   def slideover_subtitle(assigns) do
     ~H"""
@@ -225,7 +225,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
         {@text}
       </p>
       <.link
-        :if={@gbif_id !== nil && @fast_track_status == :published}
+        :if={@gbif_id !== nil && @publication_status == :published}
         class="link link-primary link-hover text-sm/6 mt-1 flex max-w-4xl items-center gap-x-2"
         target="_blank"
         href={"#{gbif_base_url()}/occurrence/#{@gbif_id}"}

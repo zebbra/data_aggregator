@@ -46,7 +46,7 @@ config :data_aggregator,
   # Disabled http file cache
   http_cache_enabled: false
 
-# Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.FastTrackPublicationVerifier`
+# Activate the publication verification scheduler `DataAggregator.Records.Publication.Scheduler.PublicationVerifier`
 config :data_aggregator, publication_verification_scheduler_active: false
 
 # Serve uploaded files

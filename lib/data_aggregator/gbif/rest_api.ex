@@ -9,7 +9,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   alias DataAggregator.Accounts.User
   alias DataAggregator.Cache.HttpDiskCache
   alias DataAggregator.Records.Collection
-  alias DataAggregator.Records.Validation
+  alias DataAggregator.Records.ValidationResponse
   alias DataAggregator.Types.Api
 
   require Logger
@@ -255,7 +255,7 @@ defmodule DataAggregator.Gbif.RestAPI do
   @doc """
   We notify infospecies about the processed validation and its result
   """
-  @spec notify_infospecies_with_validation_result(Validation.t()) :: Api.response()
+  @spec notify_infospecies_with_validation_result(ValidationResponse.t()) :: Api.response()
   def notify_infospecies_with_validation_result(validation) do
     Logger.info("Notifying infospecies about validation result")
 
@@ -265,23 +265,23 @@ defmodule DataAggregator.Gbif.RestAPI do
     )
   end
 
-  @spec notify_infospecies_with_validation_result_params(Validation.t()) :: map()
-  defp notify_infospecies_with_validation_result_params(%Validation{error_log_id: nil} = validation),
+  @spec notify_infospecies_with_validation_result_params(ValidationResponse.t()) :: map()
+  defp notify_infospecies_with_validation_result_params(%ValidationResponse{error_log_id: nil} = validation_response),
     do: %{
-      "source_file" => validation.file_url,
-      "success_count" => validation.rows_validated_count,
-      "error_count" => validation.rows_invalid_count,
+      "source_file" => validation_response.file_url,
+      "success_count" => validation_response.rows_validated_count,
+      "error_count" => validation_response.rows_invalid_count,
       "error_log_url" => ""
     }
 
-  @spec notify_infospecies_with_validation_result_params(Validation.t()) :: map()
-  defp notify_infospecies_with_validation_result_params(validation) do
-    validation = Ash.load!(validation, [:error_log], lazy?: true)
-    error_log = Ash.load!(validation.error_log, [:url], lazy?: true)
+  @spec notify_infospecies_with_validation_result_params(ValidationResponse.t()) :: map()
+  defp notify_infospecies_with_validation_result_params(validation_response) do
+    validation_response = Ash.load!(validation_response, [:error_log], lazy?: true)
+    error_log = Ash.load!(validation_response.error_log, [:url], lazy?: true)
 
     %{
-      "success_count" => validation.rows_validated_count,
-      "error_count" => validation.rows_invalid_count,
+      "success_count" => validation_response.rows_validated_count,
+      "error_count" => validation_response.rows_invalid_count,
       "error_log_url" => error_log.url
     }
   end

@@ -70,14 +70,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
             </:col>
             <:col :let={change} label={~t"Value"}>
               <.publication_state_badge
-                :if={change.attr == "fast_track_status"}
+                :if={change.attr == "publication_status"}
                 state={String.to_existing_atom(change.value)}
               />
               <.validation_state_badge
                 :if={change.attr == "validation_status"}
                 state={String.to_existing_atom(change.value)}
               />
-              <%= if change.attr not in ~w(validation_status fast_track_status) do %>
+              <%= if change.attr not in ~w(validation_status publication_status) do %>
                 {inspect(change.value)}
               <% end %>
             </:col>
@@ -89,7 +89,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   def activity_feed_element(%{activity: activity} = assigns)
-      when activity.name in [:set_encoded, :set_encoding_failed, :update_validation_status, :update_fast_track_status] do
+      when activity.name in [:set_encoded, :set_encoding_failed, :update_validation_status, :update_publication_status] do
     ~H"""
     <div class="grid w-full grid-cols-9 gap-y-2 ">
       <div class="bg-base-100 size-6 relative flex items-center justify-center">
@@ -134,7 +134,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
               :set_encoded,
               :set_encoding_failed,
               :update_validation_status,
-              :update_fast_track_status,
+              :update_publication_status,
               :add_image_url
             ] do
     ~H"""
@@ -173,7 +173,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   end
 
   defp activity_text(%{activity: activity} = assigns)
-       when activity.name in [:set_encoded, :set_encoding_failed, :update_validation_status, :update_fast_track_status] do
+       when activity.name in [:set_encoded, :set_encoding_failed, :update_validation_status, :update_publication_status] do
     ~H"""
     <span class="font-medium">
       {text(@activity.name, @activity.content)}
@@ -246,7 +246,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   defp maybe_set_actor(%User{}), do: ~t"Anonym"m
   defp maybe_set_actor(_), do: ~t"System"m
 
-  defp version_source(%{version_action_name: :update_fast_track_status}), do: ~t"Publication"
+  defp version_source(%{version_action_name: :update_publication_status}), do: ~t"Publication"
   defp version_source(%{version_action_name: :update_validation_status}), do: ~t"Validation"
   defp version_source(%{version_action_name: :import}), do: ~t"Import"
 
@@ -306,8 +306,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   def icon_lookup(:set_encoded, _), do: "hero-check"
   def icon_lookup(:set_encoding_failed, _), do: "hero-x-mark"
 
-  def icon_lookup(:update_fast_track_status, content) do
-    case content["fast_track_status"] do
+  def icon_lookup(:update_publication_status, content) do
+    case content["publication_status"] do
       "not_published" -> "hero-question-mark-circle-solid"
       "publishing" -> "hero-cog-6-tooth-solid"
       "in_publication" -> "hero-globe-alt-solid"
@@ -339,8 +339,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   def icon_tooltip(:set_encoded, _), do: ~t"Encoding successful"m
   def icon_tooltip(:set_encoding_failed, _), do: ~t"Encoding failed"m
 
-  def icon_tooltip(:update_fast_track_status, content) do
-    case content["fast_track_status"] do
+  def icon_tooltip(:update_publication_status, content) do
+    case content["publication_status"] do
       "not_published" ->
         ~t"No publication information available. Publish the dataset to see the status"m
 
@@ -398,8 +398,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   defp text(:set_encoded, _), do: ~t"The record encoding was"m
   defp text(:set_encoding_failed, _), do: ~t"The record encoding has"m
 
-  defp text(:update_fast_track_status, content) do
-    case content["fast_track_status"] do
+  defp text(:update_publication_status, content) do
+    case content["publication_status"] do
       "not_published" -> ~t"Record is"m
       "publishing" -> ~t"Record is currently"m
       "in_publication" -> ~t"Record is now"m
@@ -429,8 +429,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   def badge_text(:set_encoded, _), do: ~t"Successful"m
   def badge_text(:set_encoding_failed, _), do: ~t"Failed"m
 
-  def badge_text(:update_fast_track_status, content) do
-    case content["fast_track_status"] do
+  def badge_text(:update_publication_status, content) do
+    case content["publication_status"] do
       "not_published" -> ~t"Not Published"m
       "publishing" -> ~t"Publishing"m
       "in_publication" -> ~t"In Publication"m
@@ -460,8 +460,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
   def badge_color(:set_encoded, _), do: "green"
   def badge_color(:set_encoding_failed, _), do: "red"
 
-  def badge_color(:update_fast_track_status, content) do
-    case content["fast_track_status"] do
+  def badge_color(:update_publication_status, content) do
+    case content["publication_status"] do
       "not_published" -> "gray"
       "publishing" -> "blue"
       "in_publication" -> "blue"

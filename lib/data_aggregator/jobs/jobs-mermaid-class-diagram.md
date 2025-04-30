@@ -17,6 +17,7 @@ classDiagram
         image_mappings_by_collection(String collection_id)
         exports_by_collection(String collection_id)
         publications_by_collection(String collection_id)
+        validation_requests_by_collection(String collection_id)
         publication_verifications_by_collection(String collection_id)
         encodings_by_collection(String collection_id)
     }

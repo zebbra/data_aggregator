@@ -8,10 +8,10 @@ idle --> exporting: set_exporting
 exporting --> idle: set_idle
 idle --> encoding: set_encoding
 encoding --> idle: set_idle_encoding
-idle --> fast_track_publishing: set_fast_track_publishing
-fast_track_publishing --> validating: set_validating
+idle --> publishing: set_publishing
+publishing --> validating: set_validating
 validating --> idle: set_idle
-fast_track_publishing --> idle: set_idle
+publishing --> idle: set_idle
 idle --> validating: set_validating
 idle --> deleting: set_deleting
 ```

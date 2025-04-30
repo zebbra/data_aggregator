@@ -26,7 +26,6 @@ defmodule DataAggregator.Records.Publication do
     uuid_attribute :id, prefix: "pub", public?: true
 
     attribute :name, :string, allow_nil?: false, public?: true
-    attribute :channel, :atom, allow_nil?: false, public?: true
     attribute :published_at, :utc_datetime, allow_nil?: true, public?: true
     attribute :started_at, :utc_datetime, allow_nil?: true, public?: true
     attribute :finished_at, :utc_datetime, allow_nil?: true, public?: true

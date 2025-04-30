@@ -149,8 +149,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     end)
   end
 
-  def checked_fast_track_query(fast_track_query, "import" = _layer) do
-    AshPagify.merge_filters(%AshPagify{filters: fast_track_query}, %{
+  def checked_publication_query(publication_query, "import" = _layer) do
+    AshPagify.merge_filters(%AshPagify{filters: publication_query}, %{
       or: [
         %{loc_country: %{is_nil: false}},
         %{
@@ -179,8 +179,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     }).filters
   end
 
-  def checked_fast_track_query(fast_track_query, _layer) do
-    AshPagify.merge_filters(%AshPagify{filters: fast_track_query}, %{
+  def checked_publication_query(publication_query, _layer) do
+    AshPagify.merge_filters(%AshPagify{filters: publication_query}, %{
       or: [
         %{encoded_record: %{loc_country: %{is_nil: false}}},
         %{
@@ -209,8 +209,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     }).filters
   end
 
-  def publication_rules_query(fast_track_query) do
-    AshPagify.merge_filters(%AshPagify{filters: fast_track_query}, %{
+  def publication_rules_query(publication_query) do
+    AshPagify.merge_filters(%AshPagify{filters: publication_query}, %{
       and: [
         %{encoded_record: %{swiss_species: %{center: %{is_nil: false}}}},
         %{encoded_record: %{loc_country: %{eq: "Switzerland"}}}
@@ -237,7 +237,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     end
   end
 
-  def get_dwc_field("fast_track_status"), do: "publicationStatus"
+  def get_dwc_field("publication_status"), do: "publicationStatus"
   def get_dwc_field("validation_status"), do: "validationStatus"
 
   def get_dwc_field(prefixed_attribute_name) do

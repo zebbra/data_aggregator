@@ -30,7 +30,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          fast_track_status: :in_publication
+          publication_status: :in_publication
         })
 
       record2 =
@@ -38,7 +38,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          fast_track_status: :in_publication
+          publication_status: :in_publication
         })
 
       record3 =
@@ -46,7 +46,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          fast_track_status: :in_publication
+          publication_status: :in_publication
         })
 
       record4 =
@@ -54,7 +54,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          fast_track_status: :in_publication
+          publication_status: :in_publication
         })
 
       record5 =
@@ -62,7 +62,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "My Kingdom",
-          fast_track_status: :in_publication
+          publication_status: :in_publication
         })
 
       encoded_record_fixture(%{record: record1})
@@ -87,8 +87,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
       publication =
         Publication.create!(
           %{
-            name: "Publication Fast Track",
-            channel: :fast_track,
+            name: "Publication",
             records_query: query,
             collection: collection
           },
@@ -138,27 +137,27 @@ defmodule DataAggregator.RegisterAtGbifTest do
       assert logs =~ "Failed due to bla"
     end
 
-    test "check_if_fast_track_published/2 success", %{collection: collection} do
+    test "check_if_published/2 success", %{collection: collection} do
       record_to_check = get_record_to_check(collection)
 
-      {:ok, record} = Record.check_if_fast_track_pubished(record_to_check)
+      {:ok, record} = Record.check_if_published(record_to_check)
 
-      assert record.fast_track_status === :published
+      assert record.publication_status === :published
     end
 
-    test "check_if_fast_track_published/2 not published yet", %{collection: collection} do
+    test "check_if_published/2 not published yet", %{collection: collection} do
       stub(Gbif.RestAPI, :search_for_occurrences, fn _catalog_number, _dataset_key ->
         {:ok, %{status: 200, body: %{"results" => []}}}
       end)
 
       record_to_check = get_record_to_check(collection)
 
-      {:ok, record} = Record.check_if_fast_track_pubished(record_to_check)
+      {:ok, record} = Record.check_if_published(record_to_check)
 
-      assert record.fast_track_status === :in_publication
+      assert record.publication_status === :in_publication
     end
 
-    test "check_if_fast_track_published/2 failed with non http 200", %{collection: collection} do
+    test "check_if_published/2 failed with non http 200", %{collection: collection} do
       stub(Gbif.RestAPI, :search_for_occurrences, fn _catalog_number, _dataset_key ->
         {:ok, %{status: 500, body: %{}}}
       end)
@@ -166,18 +165,18 @@ defmodule DataAggregator.RegisterAtGbifTest do
       record_to_check = get_record_to_check(collection)
 
       {{:error, error}, logs} =
-        with_log(fn -> Record.check_if_fast_track_pubished(record_to_check) end)
+        with_log(fn -> Record.check_if_published(record_to_check) end)
 
       record = Record.get_by_id!(record_to_check.id, tenant: collection)
 
-      assert record.fast_track_status === :in_publication
+      assert record.publication_status === :in_publication
       assert %Invalid{} = error
 
       assert logs =~
                "Error while checking if record is published: \"No valid response (status 500) from GBIF API while searching for occurrences"
     end
 
-    test "check_if_fast_track_published/2 failed with multiple occurrences found", %{
+    test "check_if_published/2 failed with multiple occurrences found", %{
       collection: collection
     } do
       stub(Gbif.RestAPI, :search_for_occurrences, fn _catalog_number, _dataset_key ->
@@ -187,11 +186,11 @@ defmodule DataAggregator.RegisterAtGbifTest do
       record_to_check = get_record_to_check(collection)
 
       {{:error, error}, logs} =
-        with_log(fn -> Record.check_if_fast_track_pubished(record_to_check) end)
+        with_log(fn -> Record.check_if_published(record_to_check) end)
 
       record = Record.get_by_id!(record_to_check.id, tenant: collection)
 
-      assert record.fast_track_status === :in_publication
+      assert record.publication_status === :in_publication
       assert %Invalid{} = error
 
       assert logs =~
@@ -203,7 +202,7 @@ defmodule DataAggregator.RegisterAtGbifTest do
     record_fixture(%{
       collection: collection,
       mte_catalog_number: "MZL-INVERT-182861",
-      fast_track_status: :in_publication
+      publication_status: :in_publication
     })
   end
 end
