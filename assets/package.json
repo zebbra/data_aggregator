@@ -1,7 +1,7 @@
 {
   "license": "MIT",
   "devDependencies": {
-    "@floating-ui/dom": "^1.6.13",
+    "@floating-ui/dom": "^1.7.0",
     "@types/phoenix": "^1.6.6",
     "@types/phoenix_live_view": "^1.0.0",
     "daisyui": "^4.12.24",
