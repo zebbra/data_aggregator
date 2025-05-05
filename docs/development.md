@@ -178,7 +178,7 @@ Use `mix format` (instead of Elixir LS) to format source code:
 
 ### mcp server
 
-we expose a mcp server on port 4000 with [tidewave-ai](https://github.com/tidewave-ai/tidewave_phoenix?tab=readme-ov-file). There is a configuration for copilot under `./vscode` already in place. If you don't use copilot, set http://localhost:4000/tidewave/mcp as endpoint for your ai assistant of choice.
+we expose a mcp server on port 4000 with [tidewave-ai](https://github.com/tidewave-ai/tidewave_phoenix?tab=readme-ov-file). There is a configuration for copilot under `/.vscode` already in place. If you don't use copilot, set http://localhost:4000/tidewave/mcp as endpoint for your ai assistant of choice.
 
 ## Contribution
 
