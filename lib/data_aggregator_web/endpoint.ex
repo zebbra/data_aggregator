@@ -44,6 +44,11 @@ defmodule DataAggregatorWeb.Endpoint do
     plug Plug.Static, at: "/files", from: serve_files_from, gzip: false
   end
 
+  # inject tidewave mcp server if available
+  if Code.ensure_loaded?(Tidewave) do
+    plug Tidewave
+  end
+
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
