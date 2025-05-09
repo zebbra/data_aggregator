@@ -183,7 +183,7 @@ defmodule DataAggregator.Gbif.RestAPI do
     req = HttpDiskCache.attach(Req.new())
 
     Req.get(req,
-      url: gbif_api_base_url() <> "/species/#{species_key}",
+      url: gbif_species_api_base_url() <> "/species/#{species_key}",
       max_cache_age_seconds: @month
     )
   end
@@ -198,7 +198,7 @@ defmodule DataAggregator.Gbif.RestAPI do
       HttpDiskCache.attach(Req.new(params: params))
 
     Req.get(req,
-      url: gbif_api_base_url() <> "/species/match",
+      url: gbif_species_api_base_url() <> "/species/match",
       max_cache_age_seconds: @month
     )
   end
@@ -247,7 +247,7 @@ defmodule DataAggregator.Gbif.RestAPI do
     req = HttpDiskCache.attach(Req.new())
 
     Req.get(req,
-      url: gbif_api_base_url() <> "/species/" <> key <> "/iucnRedListCategory",
+      url: gbif_species_api_base_url() <> "/species/" <> key <> "/iucnRedListCategory",
       max_cache_age_seconds: @month
     )
   end
