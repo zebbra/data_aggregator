@@ -1912,7 +1912,7 @@ ext_attributes = [
     attribute: %Attribute{name: :resource_relationship, type: :map, allow_nil?: true}
   },
   %{
-    dwc_field: "references",
+    dwc_field: "ext_references",
     dwc_link: nil,
     dwca_file: :references,
     attribute: %Attribute{name: :references, type: :map, allow_nil?: true}
