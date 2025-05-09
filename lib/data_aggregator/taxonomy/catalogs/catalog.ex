@@ -31,7 +31,7 @@ defmodule DataAggregator.Taxonomy.Catalog do
       :gbif_iucn_redlist -> "GBIF IUCN Redlist"
       :relate_images -> "Relate Images"
       :convert_dates -> "Date Conversion"
-      _ -> throw("no translation defined for catalog: #{catalog}")
+      _ -> "Unknown"
     end
   end
 
