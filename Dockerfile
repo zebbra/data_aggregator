@@ -76,7 +76,6 @@ RUN mix release
 # start a new build stage so that the final image will only contain
 # the compiled release and other runtime necessities
 FROM ${RUNNER_IMAGE}
-ARG APP_VERSION=undefined
 
 RUN apk add --no-cache libstdc++ openssl ncurses-libs ca-certificates
 
@@ -84,7 +83,6 @@ RUN apk add --no-cache libstdc++ openssl ncurses-libs ca-certificates
 ENV LANG="en_US.UTF-8"
 ENV LANGUAGE="en_US:en"
 ENV LC_ALL="en_US.UTF-8"
-ENV APP_VERSION=${APP_VERSION:-undefined}
 
 WORKDIR "/app"
 RUN chown nobody /app

@@ -60,6 +60,8 @@ defmodule DataAggregatorWeb.Components.SystemInfo do
   end
 
   def version_tag do
-    Application.get_env(:data_aggregator, :app_version)
+    {:ok, vsn} = :application.get_key(:data_aggregator, :vsn)
+
+    List.to_string(vsn)
   end
 end

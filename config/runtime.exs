@@ -35,9 +35,6 @@ system_stage =
   |> System.get_env("dev")
   |> String.to_atom()
 
-app_version = System.get_env("APP_VERSION", "undefined")
-
-config :data_aggregator, :app_version, app_version
 config :data_aggregator, :system_stage, system_stage
 
 if System.get_env("LOG_LEVEL") do

@@ -145,9 +145,7 @@ jobs:
           context: .
           load: true
           platforms: linux/amd64
-          tags: |
-            ${{ steps.meta.outputs.tags }}
-            ${{ github.ref_type != 'tag' && 'quay.expires-after=30d' || '' }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -162,8 +160,6 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          build-args: |
-            ${{ github.ref_type == 'tag' && format('APP_VERSION={0}', github.ref_name) || '' }}
 
   deploy:
     name: Deploy to staging
