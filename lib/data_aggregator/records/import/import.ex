@@ -210,6 +210,7 @@ defmodule DataAggregator.Records.Import do
       change Import.Changes.ImportRecords
       change Import.Changes.SetImportedAfterAction
       change Import.Changes.SetFailedOnError
+      change Import.Changes.SetRecordsCountAfterTransaction
       change load(:records_count)
     end
 

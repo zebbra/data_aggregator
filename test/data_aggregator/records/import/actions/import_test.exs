@@ -83,7 +83,11 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       {result, _logs} = with_log(fn -> Import.import(import, tenant: import.collection) end)
       assert {:ok, import} = result
 
-      import = Ash.load!(import, [:validation_progress, :import_progress])
+      import = Ash.load!(import, [:validation_progress, :import_progress, :collection])
+
+      collection = import.collection
+
+      assert collection.records_count == 0
 
       assert import.state == :failed
       assert import.records_count == 0
@@ -111,7 +115,11 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       assert {:ok, import} = result
 
-      import = Ash.load!(import, [:validation_progress, :import_progress])
+      import = Ash.load!(import, [:validation_progress, :import_progress, :collection])
+
+      collection = import.collection
+
+      assert collection.records_count == 0
 
       assert logs =~ "Found 1161/1161 invalid rows. Adding error to changeset"
 
@@ -133,6 +141,11 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
     @tag capture_log: true
     test "cannot be run multiple times", %{import: import} do
       assert {:ok, import} = Import.import(import, tenant: import.collection)
+
+      collection = Collection.get_by_id!(import.collection_id)
+
+      assert collection.records_count == 2
+
       assert import.state == :imported
       assert import.records_count == 2
       assert import.rows_imported_count == 2
@@ -152,6 +165,9 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
       column_names = Enum.map(import.columns, & &1.name)
       column_order = DataAggregator.Records.Import.Changes.DetectColumns.column_order(path)
 
+      collection = Collection.get_by_id!(import.collection_id)
+
+      assert collection.records_count == 2
       assert column_names == column_order
     end
 
@@ -166,6 +182,10 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       assert {result, logs} = with_log(fn -> Import.import(import, tenant: import.collection) end)
       assert {:ok, import} = result
+
+      collection = Collection.get_by_id!(import.collection_id)
+
+      assert collection.records_count == 0
 
       assert logs =~ "Found 1/2 invalid rows. Adding error to changeset"
 
@@ -191,6 +211,10 @@ defmodule DataAggregator.Records.Import.Actions.ImportTest do
 
       assert {result, logs} = with_log(fn -> Import.import(import, tenant: import.collection) end)
       assert {:ok, import} = result
+
+      collection = Collection.get_by_id!(import.collection_id)
+
+      assert collection.records_count == 0
 
       assert logs =~ "Found 1/1 invalid rows. Adding error to changeset"
 
