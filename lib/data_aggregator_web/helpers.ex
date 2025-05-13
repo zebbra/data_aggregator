@@ -132,9 +132,44 @@ defmodule DataAggregatorWeb.Helpers do
 
   def format_coordinate(val), do: val
 
+  @doc ~S"""
+  Returns a string representation of a map or a value.
+  If the value is a map, it will be inspected. Otherwise, it will be returned as is.
+
+  ## Examples
+
+      iex> DataAggregatorWeb.Helpers.format_map(%{foo: "bar"})
+      "%{foo: \"bar\"}"
+
+      iex> DataAggregatorWeb.Helpers.format_map("foo")
+      "foo"
+
+      iex> DataAggregatorWeb.Helpers.format_map(123)
+      123
+  """
   def format_map(val)
   def format_map(%{} = val), do: inspect(val)
   def format_map(val), do: val
+
+  @doc ~S"""
+  Returns a JSON string representation of a map or a value.
+  If the value is a map, it will be encoded to JSON. Otherwise, it will be returned as is.
+
+  ## Examples
+
+      iex> DataAggregatorWeb.Helpers.format_json(%{foo: "bar"})
+      "{\"foo\":\"bar\"}"
+
+      iex> DataAggregatorWeb.Helpers.format_json("foo")
+      "foo"
+
+      iex> DataAggregatorWeb.Helpers.format_json(123)
+      123
+  """
+  @spec format_json(any()) :: String.t() | any()
+  def format_json(val)
+  def format_json(%{} = val), do: Jason.encode!(val, pretty: false)
+  def format_json(val), do: val
 
   @doc ~S"""
   Returns a string of class names from a list of class names.

@@ -1,4 +1,5 @@
-import DataAggregatorWeb.Helpers, only: [format_coordinate: 1, format_map: 1, format_float: 1]
+import DataAggregatorWeb.Helpers,
+  only: [format_coordinate: 1, format_float: 1, format_json: 1]
 
 alias Ash.Resource.Attribute
 alias DataAggregator.DarwinCore.Schema.Category
@@ -1911,7 +1912,7 @@ ext_attributes = [
     attribute: %Attribute{name: :resource_relationship, type: :map, allow_nil?: true}
   },
   %{
-    dwc_field: "references",
+    dwc_field: "ext_references",
     dwc_link: nil,
     dwca_file: :references,
     attribute: %Attribute{name: :references, type: :map, allow_nil?: true}
@@ -2233,15 +2234,15 @@ defmodule DataAggregator.DarwinCore.Schema do
       loc_point_radius_spatial_fit: &format_float/1,
       loc_coordinate_precision: &format_float/1,
       loc_maximum_distance_above_surface_in_meters: &format_float/1,
-      ext_vernacular_names: &format_map/1,
-      ext_species_profile: &format_map/1,
-      ext_species_distribution: &format_map/1,
-      ext_references: &format_map/1,
-      ext_resource_relationship: &format_map/1,
-      ext_permit: &format_map/1,
-      ext_chronometric: &format_map/1,
-      ext_assertions: &format_map/1,
-      ext_amplification: &format_map/1,
+      ext_vernacular_names: &format_json/1,
+      ext_species_profile: &format_json/1,
+      ext_species_distribution: &format_json/1,
+      ext_references: &format_json/1,
+      ext_resource_relationship: &format_json/1,
+      ext_permit: &format_json/1,
+      ext_chronometric: &format_json/1,
+      ext_assertions: &format_json/1,
+      ext_amplification: &format_json/1,
       eve_cover_water_in_percentage: &format_float/1,
       eve_cover_shrubs_in_percentage: &format_float/1,
       eve_cover_algae_in_percentage: &format_float/1,
@@ -2256,7 +2257,8 @@ defmodule DataAggregator.DarwinCore.Schema do
       eve_cover_herbs_in_percentage: &format_float/1,
       eve_cover_rock_in_percentage: &format_float/1,
       eve_cover_total_in_percentage: &format_float/1,
-      eve_tree_layer_height_in_meters: &format_float/1
+      eve_tree_layer_height_in_meters: &format_float/1,
+      oth_dynamic_properties: &format_json/1
     }
   end
 
