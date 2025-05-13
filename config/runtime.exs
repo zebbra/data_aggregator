@@ -30,6 +30,16 @@ if System.get_env("PHX_SERVER") do
   config :data_aggregator, DataAggregatorWeb.Endpoint, server: true
 end
 
+system_stage =
+  "SYSTEM_STAGE"
+  |> System.get_env("dev")
+  |> String.to_atom()
+
+app_version = System.get_env("APP_VERSION", "undefined")
+
+config :data_aggregator, :app_version, app_version
+config :data_aggregator, :system_stage, system_stage
+
 if System.get_env("LOG_LEVEL") do
   level = "LOG_LEVEL" |> System.get_env() |> String.to_atom()
   config :logger, level: level

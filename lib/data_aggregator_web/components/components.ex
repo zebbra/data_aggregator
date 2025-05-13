@@ -106,6 +106,7 @@ defmodule DataAggregatorWeb.Components do
       import DataAggregatorWeb.Components.Notification
       import DataAggregatorWeb.Components.Pagination
       import DataAggregatorWeb.Components.Progress
+      import DataAggregatorWeb.Components.SystemInfo
       import DataAggregatorWeb.Components.Tab
       import DataAggregatorWeb.Components.Transitions
       import DataAggregatorWeb.LiveComponents.ThemeSelect

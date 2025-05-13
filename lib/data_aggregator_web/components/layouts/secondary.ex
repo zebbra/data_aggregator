@@ -98,9 +98,4 @@ defmodule DataAggregatorWeb.Layouts.Secondary do
     <div id="portal_root_static" phx-update="ignore" class="isolate" />
     """
   end
-
-  defp version_tag do
-    {:ok, vsn} = :application.get_key(:data_aggregator, :vsn)
-    List.to_string(vsn)
-  end
 end
