@@ -93,6 +93,7 @@ defmodule DataAggregatorWeb.Components do
       import DataAggregatorWeb.Components.Combobox
       import DataAggregatorWeb.Components.Drawer
       import DataAggregatorWeb.Components.Dropdown
+      import DataAggregatorWeb.Components.EnvInfo
       import DataAggregatorWeb.Components.Field
       import DataAggregatorWeb.Components.FieldGroup
       import DataAggregatorWeb.Components.Flash
@@ -106,7 +107,6 @@ defmodule DataAggregatorWeb.Components do
       import DataAggregatorWeb.Components.Notification
       import DataAggregatorWeb.Components.Pagination
       import DataAggregatorWeb.Components.Progress
-      import DataAggregatorWeb.Components.SystemInfo
       import DataAggregatorWeb.Components.Tab
       import DataAggregatorWeb.Components.Transitions
       import DataAggregatorWeb.LiveComponents.ThemeSelect
