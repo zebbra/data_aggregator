@@ -38,6 +38,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
     socket =
       socket
       |> assign(assigns)
+      |> assign_dataset_still_exists()
       |> assign_counts()
       |> assign_grscicoll_data()
       |> assign_form()
@@ -205,7 +206,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
           <span class="font-bold">{~t"kingdom "m}</span>
           {~t"attribute will not be published."m}
         </p>
-        <%= if @collection.gbif_dataset_key do %>
+        <%= if @dataset_still_exist? do %>
           <div class="flex">
             <div class="mr-4 flex-shrink-0">
               <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
@@ -225,15 +226,27 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
           </div>
         <% else %>
           <div class="flex">
-            <div class="mr-4 flex-shrink-0">
-              <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
-            </div>
-            <p class="text-sm">
-              {~t"These records have not yet been published; therefore, a new dataset will be created on GBIF. If you wish to publish your records in an existing dataset on GBIF, please contact"m}
-              <.link href="mailto:contact@gbif.ch" class="text-primary">
-                {"contact@gbif.ch"}
-              </.link>
-            </p>
+            <%= if @collection.gbif_dataset_key != nil do %>
+              <div class="mr-4 flex-shrink-0">
+                <.icon name="hero-exclamation-triangle-solid" class="size-6 text-warning" />
+              </div>
+              <p class="text-sm">
+                {~t"These records have been published to a dataset that could not be found anymore; Either it has been deleted on GBIF or the instance has changed (uat/prod). Therefore, a new dataset will be created on GBIF. If you wish to publish your records in an existing dataset on GBIF, please contact"m}
+                <.link href="mailto:contact@gbif.ch" class="text-primary">
+                  {"contact@gbif.ch"}
+                </.link>
+              </p>
+            <% else %>
+              <div class="mr-4 flex-shrink-0">
+                <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
+              </div>
+              <p class="text-sm">
+                {~t"These records have not yet been published; therefore, a new dataset will be created on GBIF. If you wish to publish your records in an existing dataset on GBIF, please contact"m}
+                <.link href="mailto:contact@gbif.ch" class="text-primary">
+                  {"contact@gbif.ch"}
+                </.link>
+              </p>
+            <% end %>
           </div>
           <.fieldgroup class="space-y-3">
             <.field
@@ -619,6 +632,16 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
          assigns.target_dataset_name == assigns.dataset.result["title"])
   end
 
+  defp assign_dataset_still_exists(socket) do
+    existing_dataset_key = socket.assigns.collection.gbif_dataset_key
+
+    if existing_dataset_key != nil and does_datset_still_exist?(existing_dataset_key) do
+      assign(socket, :dataset_still_exist?, true)
+    else
+      assign(socket, :dataset_still_exist?, false)
+    end
+  end
+
   defp assign_counts(socket) do
     %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
     actor = get_actor(socket)
@@ -646,5 +669,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
       RestAPI.get_one_collection(socket.assigns.collection.grscicoll_reference)
 
     assign(socket, :grscicoll_data, grscicoll_data)
+  end
+
+  defp does_datset_still_exist?(gbif_dataset_key) do
+    case RestAPI.get_grscicoll_entity(gbif_dataset_key, :dataset) do
+      {:ok, _} -> true
+      {:error, _} -> false
+    end
   end
 end
