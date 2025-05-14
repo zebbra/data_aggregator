@@ -76,7 +76,7 @@ config :data_aggregator,
 
 # Configure Sentry runtime environment
 config :sentry,
-  environment_name: System.get_env("SENTRY_ENVIRONMENT", to_string(config_env()))
+  environment_name: System.get_env("ENV_NAME", to_string(config_env()))
 
 # ## Waffle
 config :waffle,
