@@ -2184,8 +2184,8 @@ msgctxt "DataAggregatorWeb.Components.FieldGroup"
 msgid "No entries found"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/appbar.html.heex:29
-#: lib/data_aggregator_web/components/layouts/shared/appbar.html.heex:29
+#: lib/data_aggregator_web/components/layouts/shared/appbar.html.heex:30
+#: lib/data_aggregator_web/components/layouts/shared/appbar.html.heex:30
 #, elixir-autogen, elixir-format
 msgid "Sign out"
 msgstr ""

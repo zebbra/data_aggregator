@@ -30,6 +30,10 @@ if System.get_env("PHX_SERVER") do
   config :data_aggregator, DataAggregatorWeb.Endpoint, server: true
 end
 
+env_name = System.get_env("ENV_NAME", "dev")
+
+config :data_aggregator, :env_name, env_name
+
 if System.get_env("LOG_LEVEL") do
   level = "LOG_LEVEL" |> System.get_env() |> String.to_atom()
   config :logger, level: level
@@ -72,7 +76,7 @@ config :data_aggregator,
 
 # Configure Sentry runtime environment
 config :sentry,
-  environment_name: System.get_env("SENTRY_ENVIRONMENT", to_string(config_env()))
+  environment_name: System.get_env("ENV_NAME", to_string(config_env()))
 
 # ## Waffle
 config :waffle,

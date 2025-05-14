@@ -93,6 +93,7 @@ defmodule DataAggregatorWeb.Components do
       import DataAggregatorWeb.Components.Combobox
       import DataAggregatorWeb.Components.Drawer
       import DataAggregatorWeb.Components.Dropdown
+      import DataAggregatorWeb.Components.EnvInfo
       import DataAggregatorWeb.Components.Field
       import DataAggregatorWeb.Components.FieldGroup
       import DataAggregatorWeb.Components.Flash
