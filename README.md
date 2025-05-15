@@ -106,6 +106,6 @@ We provide additional documentation to help you understand and comply with the A
 
 ## Acknowledgements
 
-- Thanks to all our [contributors](https://github.com/zebbra/data_aggregator/graphs/contributors) 
+- Thanks to all our [contributors](https://github.com/zebbra/data_aggregator/graphs/contributors)
 - Built with [Phoenix](https://www.phoenixframework.org/), [Ash Framework](https://ash-hq.org/), and [Tailwind CSS](https://tailwindcss.com/)
 - Darwin Core standards by [TDWG](https://www.tdwg.org/standards/dwc/)

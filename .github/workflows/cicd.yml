@@ -103,6 +103,7 @@ jobs:
     name: Build Docker image
     needs: test
     runs-on: hetzner
+    if: github.repository == 'zebbra/data_aggregator'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -166,10 +167,9 @@ jobs:
 
   deploy:
     name: Deploy to staging
-    if: github.ref == 'refs/heads/main'
+    if: github.repository == 'zebbra/data_aggregator' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: hetzner
-
     environment:
       name: staging
       url: https://staging.aggregator.scnat.zebbra.ch
