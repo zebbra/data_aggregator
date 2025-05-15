@@ -1,0 +1,6 @@
+name: "Check SemVer on Branch"
+description: "A GitHub Action that checks SemVer integrity on a branch"
+author: "Zebbra AG"
+runs:
+  using: "docker"
+  image: "Dockerfile"
