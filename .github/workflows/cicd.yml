@@ -6,6 +6,7 @@ on:
   pull_request:
     branches:
       - main
+      - develop
 
 env:
   MIX_ENV: test
@@ -167,7 +168,7 @@ jobs:
 
   deploy:
     name: Deploy to staging
-    if: github.repository == 'zebbra/data_aggregator' && github.ref == 'refs/heads/main'
+    if: github.repository == 'zebbra/data_aggregator' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop)
     needs: build
     runs-on: hetzner
     environment:
