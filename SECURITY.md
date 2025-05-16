@@ -4,7 +4,7 @@
 
 The Data Aggregator team takes security issues seriously. We appreciate your efforts to responsibly disclose your findings and will make every effort to acknowledge your contributions.
 
-To report a security vulnerability, please **DO NOT** open a public GitHub issue. Instead, please send an email to [ciso@zebbra.ch](mailto:ciso@zebbra.ch) with the following information:
+To report a security vulnerability, please **DO NOT** open a public GitHub issue. Instead, please send an email to [security@zebbra.ch](mailto:security@zebbra.ch) with the following information:
 
 * A description of the vulnerability
 * Steps to reproduce the issue

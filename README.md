@@ -68,6 +68,10 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 - [Development](./docs/development.md)
 - [Deployment](./docs/deployment.md)
 - [API](./docs/api.md)
+- [Security](./SECURITY.md)
+- [License](./LICENSE.md)
+- [Code Of Conduct](./CODE_OF_CONDUCT.md)
+- [Contribution](./CONTRIBUTION.md)
 
 ### API Documentation
 

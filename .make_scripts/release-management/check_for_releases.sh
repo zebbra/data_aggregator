@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Enter the repositories you want to check here, eg. REPOS=("zebbra/neops-web-sdk" "zebbra/neops-core"). Do not separate with commas.
+# Enter the repositories you want to check here, eg. REPOS=("zebbra/data_aggregator"). Do not separate with commas.
 REPOS=()
 
 if [ ${#REPOS[@]} -eq 0 ]; then

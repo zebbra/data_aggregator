@@ -172,7 +172,7 @@ Once the Infospecies team has validated the data, the data will be published to 
 {
   "data": {
     "attributes": {
-      "file_url": "https://s3.cloud.zebbra.ch/data-aggregator-stag/files/fat_02wlChzH8FcfF3L9VIXXY1/AY_qEyOtfpS2yzRehd1Ddg.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=data-aggregator-stag%2F20240710%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240710T141305Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=46e0768b97d5a72e5d4414e55fcc6aa0d7a3df5e1a6d261765a64bbc2e97cb44"
+      "file_url": "https://your.s3.cloud.storage.com/data-aggregator/files/fat_02wlChzH8FcfF3er43XXY1/AY_qEyOtfpS2y3eehd1Ddg.zip"
     }
   }
 }
@@ -188,9 +188,9 @@ this will return a json object like bellow to the calling client to indicate tha
       "rows_count": 18,
       "inserted_at": "2024-07-10T14:32:47.282217Z",
       "updated_at": "2024-07-10T14:32:47.282217Z",
-      "file_url": "https://s3.cloud.zebbra.ch/data-aggregator-stag/files/fat_02wlChzH8FcfF3L9VIXXY1/AY_qEyOtfpS2yzRehd1Ddg.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=data-aggregator-stag%2F20240710%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240710T141305Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=46e0768b97d5a72e5d4414e55fcc6aa0d7a3df5e1a6d261765a64bbc2e97cb44"
+      "file_url": "https://your.s3.cloud.storage.com/data-aggregator/files/fat_02wlChzH8FcfF3er43XXY1/AY_qEyOtfpS2y3eehd1Ddg.zip"
     },
-    "id": "app_02x50wRhsNSm3e9aTd2p4B",
+    "id": "app_02x50wRhsNSm3e9aeM2p4B",
     "type": "validation"
   }
 }
@@ -208,7 +208,7 @@ As soon as the data processing within the aggregator is finished, the Infospecie
 
 ```json
 {
-  "source_file": "https://s3.cloud.zebbra.ch/data-aggregator-stag/files/fat_02wlChzH8FcfF3L9VIXXY1/AY_qEyOtfpS2yzRehd1Ddg.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=data-aggregator-stag%2F20240710%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240710T141305Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=46e0768b97d5a72e5d4414e55fcc6aa0d7a3df5e1a6d261765a64bbc2e97cb44",
+  "source_file": "https://your.s3.cloud.storage.com/data-aggregator/files/fat_02wlChzH8FcfF3er43XXY1/AY_qEyOtfpS2y3eehd1Ddg.zip",
   "success_count": 98,
   "error_count": 2,
   "error_log_url": "http://s3.bla.org/files/error-log-102838728371.zip"
