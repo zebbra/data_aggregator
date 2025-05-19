@@ -86,29 +86,14 @@ The project is structured in a way that the code is separated into different fol
 - Run `mix deps.get && mix compile --force && mix git_hooks.install` to work with the project specific git hooks
 - Run `docker compose up` in one of your terminals, to start services around our application - if there are any
 - Run `mix setup` to install and setup dependencies
+- Add some users with ``
 - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser to see the app and start developing.
 
 ### Working with and modifying the database
 
-hard init whole system including reset of all migrations (during development):
-
-```bash
-# delete snapshots
-rm -rf priv/resource_snapshots/*
-
-# delete all migrations
-rm -rf priv/repo/migrations/*_*.exs
-
-# drop database
-mix repo.drop
-
-# create database and run migrations
-mix setup
-```
-
-gradualy apply changes to the database (regular development):
+gradualy apply changes to the database during development:
 
 ```bash
 # generate migration with new database changes
@@ -182,4 +167,4 @@ we expose a mcp server on port 4000 with [tidewave-ai](https://github.com/tidewa
 
 ## Contribution
 
-Contributors are welcome! Please ensure you provide a detailed description of your changes and/or expected behaviour and the reason behind it. If you are unsure, please open an issue first to discuss what you would like to change.
+Contributors are welcome! Please ensure you provide a detailed description of your changes and/or expected behaviour and the reason behind it. If you are unsure, please open an issue first to discuss what you would like to change. For more information checkout the [Contribution Guide](../CONTRIBUTING.md)

@@ -4,7 +4,7 @@ First of all, thank you for considering contributing to Data Aggregator! It's pe
 
 ## Code of Conduct
 
-By participating in this project, you are expected to uphold our Code of Conduct. Please report unacceptable behavior to the project maintainers.
+By participating in this project, you are expected to uphold our [Code of Conduct](CODE_OF_CONDUCT.md). Please report unacceptable behavior to the project maintainers.
 
 ## Getting Started
 

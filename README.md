@@ -1,20 +1,22 @@
 # Data Aggregator
 
 <!-- MDOC -->
-
+[![CI/CD](https://github.com/zebbra/data_aggregator/actions/workflows/cicd.yml/badge.svg?branch=develop)](https://github.com/zebbra/data_aggregator/actions/workflows/cicd.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 Data Aggregator is an open-source tool designed to integrate biodiversity data into a Darwin Core compatible format. It provides a robust framework for scientists, researchers, and biodiversity data managers to standardize and consolidate various data sources.
 
 ## Features
 
-- Convert biodiversity data to Darwin Core format
-- Validate and clean data entries
-- Manage taxonomic hierarchies
-- Geolocation support and validation
-- Export data to various formats
-- RESTful API for integration with other systems
-- Interactive web interface using Phoenix LiveView
+- Manage your GrSciColl collection data in a web interface
+- Upload your biodiversity data in CSV format
+- Map your data to the darwin core format
+- Upload your images and map them to your data
+- Encode the data to have enriched information for taxonomy, geolocation (forward and reverse), swiss species registry and iucn redlists
+- Export data to CSV for further processing on your end
+- Retrieve your data trought the REST API
+- Submit data for validation to infospecies centers
+- Publish your collection data to gbif
 
 ## Project
 
@@ -23,7 +25,7 @@ Data Aggregator is an open-source tool designed to integrate biodiversity data i
 - Explore the current [data model](https://dbdiagram.io/d/data-aggregator-basic-65393c35ffbf5169f071ed3f)
 - View our development notes on [Miro](https://miro.com/app/board/uXjVMBLi0fk=/)
 
-## Getting Started
+## Quick Setup
 
 ### Prerequisites
 
@@ -43,14 +45,13 @@ Data Aggregator is an open-source tool designed to integrate biodiversity data i
 2. Install dependencies
    ```bash
    mix deps.get
-   cd assets && npm install && cd ..
    ```
 
 3. Configure the database (copy `config/dev.exs.example` to `config/dev.exs` if available and update settings)
 
-4. Create and migrate your database
+4. Create and migrate your database and build assets
    ```bash
-   mix ecto.setup
+   mix setup
    ```
 
 5. Start the Phoenix server
@@ -82,7 +83,7 @@ When running the application, you can access:
 
 For production instances, replace the localhost URL with your deployment URL.
 
-### Development Tools (Local Development Only)
+### Development Tools Resources
 
 - [Styleguide](http://localhost:4000/storybook/welcome)
 - [Dashboard](http://localhost:4000/dev/dashboard/home)
