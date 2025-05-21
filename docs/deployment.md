@@ -38,9 +38,7 @@ to have the most recent static thesaurus data available. and
 bin/users_init
 ```
 
-to populate the database with some users.
-
-CAUTION: only use this on non production or development systems.
+to populate the database with some users. CAUTION: only use this on non production or development systems.
 
 ## Staging - @zebbra
 
