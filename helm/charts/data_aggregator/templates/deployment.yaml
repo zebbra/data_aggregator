@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "aggregator.fullname" . }}
+  name: {{ include "data_aggregator.fullname" . }}
   labels:
-    {{- include "aggregator.labels" . | nindent 4 }}
+    {{- include "data_aggregator.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "aggregator.selectorLabels" . | nindent 6 }}
+      {{- include "data_aggregator.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
-        {{- include "aggregator.selectorLabels" . | nindent 8 }}
+        {{- include "data_aggregator.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "aggregator.serviceAccountName" . }}
+      serviceAccountName: {{ include "data_aggregator.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -33,7 +33,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: DNS_CLUSTER_QUERY
-              value: "{{ include "aggregator.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local"
+              value: "{{ include "data_aggregator.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local"
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
@@ -45,13 +45,13 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: "{{ include "aggregator.fullname" . }}-pg-app"
+                  name: "{{ include "data_aggregator.fullname" . }}-pg-app"
                   key: uri
           envFrom:
             - secretRef:
                 name: {{ .Values.envSecret }}
             - configMapRef:
-                name: {{ include "aggregator.fullname" . }}
+                name: {{ include "data_aggregator.fullname" . }}
           ports:
             - name: http
               containerPort: {{ .Values.env.PORT }}

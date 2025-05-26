@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "aggregator.fullname" . }}-headless
+  name: {{ include "data_aggregator.fullname" . }}-headless
   labels:
-    {{- include "aggregator.labels" . | nindent 4 }}
+    {{- include "data_aggregator.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   clusterIP: None
@@ -13,4 +13,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "aggregator.selectorLabels" . | nindent 4 }}
+    {{- include "data_aggregator.selectorLabels" . | nindent 4 }}

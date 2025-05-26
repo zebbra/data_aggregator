@@ -1,0 +1,36 @@
+name: Helm
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "helm/charts/data_aggregator/**"
+
+jobs:
+  publish:
+    name: Publish Helm chart
+    runs-on: hetzner
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Run Helm lint
+        run: |
+          helm lint helm/charts/data_aggregator
+
+      - name: Login to Quay.io
+        run: |
+          helm registry login quay.io \
+            --username ${{ secrets.QUAY_USERNAME }} \
+            --password ${{ secrets.QUAY_PASSWORD }}
+
+      - name: Package and push Helm chart
+        run: |
+          echo "Packaging and pushing Helm chart..."
+          CHART_FILE=$(helm package helm/charts/data_aggregator | awk -F': ' '{print $2}')
+          helm push "$CHART_FILE" oci://quay.io/zebbra/charts

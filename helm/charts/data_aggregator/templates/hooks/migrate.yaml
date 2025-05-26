@@ -1,9 +1,9 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "aggregator.fullname" . }}-migrate
+  name: {{ include "data_aggregator.fullname" . }}-migrate
   labels:
-    {{- include "aggregator.labels" . | nindent 4 }}
+    {{- include "data_aggregator.labels" . | nindent 4 }}
   annotations:
     helm.sh/hook: post-install,pre-upgrade
     helm.sh/hook-delete-policy: before-hook-creation
@@ -11,14 +11,14 @@ spec:
   activeDeadlineSeconds: 43200
   template:
     metadata:
-      name: {{ include "aggregator.fullname" . }}-migrate
+      name: {{ include "data_aggregator.fullname" . }}-migrate
     spec:
       restartPolicy: Never
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "aggregator.serviceAccountName" . }}
+      serviceAccountName: {{ include "data_aggregator.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -29,28 +29,28 @@ spec:
             - secretRef:
                 name: {{ .Values.envSecret }}
             - configMapRef:
-                name: {{ include "aggregator.fullname" . }}
+                name: {{ include "data_aggregator.fullname" . }}
           env:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: "{{ include "aggregator.fullname" . }}-pg-app"
+                  name: "{{ include "data_aggregator.fullname" . }}-pg-app"
                   key: uri
           command:
             - /bin/sh
           args:
             - -c
             - "/app/bin/migrate"
-        # - name: catalog-init
-        #   image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        #   imagePullPolicy: {{ .Values.image.pullPolicy }}
-        #   envFrom:
-        #     - secretRef:
-        #         name: {{ .Values.envSecret }}
-        #     - configMapRef:
-        #         name: {{ include "aggregator.fullname" . }}
-        #   command:
-        #     - /bin/sh
-        #   args:
-        #     - -c
-        #     - "/app/bin/catalog_init"
+        - name: catalog-init
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.envSecret }}
+            - configMapRef:
+                name: {{ include "data_aggregator.fullname" . }}
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - "/app/bin/catalog_init"
