@@ -32,8 +32,6 @@ service:
 # for a complete list of env variables, including the ones which should be injected via Secrets, see config/.env.prod
 env: {}
 
-envSecret: data_aggregator
-
 ingress:
   enabled: false
   className: ""
