@@ -184,7 +184,18 @@ defmodule DataAggregator.ValidationRequestFixtures do
       "collectionCode",
       "datasetID",
       "institutionCode",
-      "institutionID"
+      "institutionID",
+      "eventType",
+      "associatedOccurrences",
+      "associatedReferences",
+      "associatedTaxa",
+      "identificationID",
+      "individualCount",
+      "associatedOrganisms",
+      "associatedSequences",
+      "disposition",
+      "occurrenceRemarks",
+      "vitality"
     ]
   end
 end

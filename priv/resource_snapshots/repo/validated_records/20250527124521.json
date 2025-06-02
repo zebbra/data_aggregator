@@ -527,6 +527,66 @@
       "primary_key?": false,
       "references": null,
       "size": null,
+      "source": "occ_vitality",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "occ_occurrence_remarks",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "occ_associated_taxa",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "occ_associated_references",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "occ_associated_occurrences",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "occ_individual_count",
+      "type": "bigint"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
       "source": "occ_caste",
       "type": "text"
     },
@@ -538,6 +598,16 @@
       "references": null,
       "size": null,
       "source": "occ_occurrence_id",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "org_associated_organisms",
       "type": "text"
     },
     {
@@ -828,6 +898,26 @@
       "references": null,
       "size": null,
       "source": "mts_material_sample_id",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "mte_associated_sequences",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "mte_disposition",
       "type": "text"
     },
     {
@@ -2227,6 +2317,16 @@
       "primary_key?": false,
       "references": null,
       "size": null,
+      "source": "idf_identification_id",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
       "source": "idf_typified_name",
       "type": "text"
     },
@@ -2358,6 +2458,16 @@
       "references": null,
       "size": null,
       "source": "idf_date_identified",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": false,
+      "references": null,
+      "size": null,
+      "source": "eve_event_type",
       "type": "text"
     },
     {
@@ -2871,16 +2981,6 @@
       "type": "uuid"
     },
     {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": true,
-      "references": null,
-      "size": null,
-      "source": "record_id",
-      "type": "text"
-    },
-    {
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
@@ -2914,6 +3014,37 @@
       "allow_nil?": false,
       "default": "nil",
       "generated?": false,
+      "primary_key?": false,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": true,
+        "match_type": null,
+        "match_with": {
+          "collection_id": "collection_id"
+        },
+        "multitenancy": {
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
+        },
+        "name": "validated_records_record_id_fkey",
+        "on_delete": "delete",
+        "on_update": "update",
+        "primary_key?": true,
+        "schema": "public",
+        "table": "records"
+      },
+      "size": null,
+      "source": "record_id",
+      "type": "uuid"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
       "primary_key?": true,
       "references": {
         "deferrable": false,
@@ -2928,7 +3059,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "published_records_collection_id_fkey",
+        "name": "validated_records_collection_id_fkey",
         "on_delete": "delete",
         "on_update": "update",
         "primary_key?": true,
@@ -2938,35 +3069,6 @@
       "size": null,
       "source": "collection_id",
       "type": "uuid"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "index?": false,
-        "match_type": null,
-        "match_with": null,
-        "multitenancy": {
-          "attribute": "collection_id",
-          "global": false,
-          "strategy": "attribute"
-        },
-        "name": "published_records_publication_id_fkey",
-        "on_delete": "nothing",
-        "on_update": "update",
-        "primary_key?": true,
-        "schema": "public",
-        "table": "publications"
-      },
-      "size": null,
-      "source": "publication_id",
-      "type": "uuid"
     }
   ],
   "base_filter": null,
@@ -2974,37 +3076,23 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "392F267F3C61A0A0469C11BA88862F5BE8F619367C282F057AE2F3D8D725EBAA",
+  "hash": "AF9A77FA698385DA2564CC7CDC0E4DD19FE6A05E92FAE534E77B9BF8D681D32F",
   "identities": [
     {
       "all_tenants?": false,
       "base_filter": null,
-      "index_name": "published_records_by_collection_index",
-      "keys": [
-        {
-          "type": "atom",
-          "value": "id"
-        },
-        {
-          "type": "atom",
-          "value": "collection_id"
-        }
-      ],
-      "name": "by_collection",
-      "nils_distinct?": true,
-      "where": null
-    },
-    {
-      "all_tenants?": false,
-      "base_filter": null,
-      "index_name": "published_records_unique_record_id_index",
+      "index_name": "validated_records_record_mte_catalog_number_index",
       "keys": [
         {
           "type": "atom",
           "value": "record_id"
+        },
+        {
+          "type": "atom",
+          "value": "mte_catalog_number"
         }
       ],
-      "name": "unique_record_id",
+      "name": "record_mte_catalog_number",
       "nils_distinct?": true,
       "where": null
     }
@@ -3016,5 +3104,5 @@
   },
   "repo": "Elixir.DataAggregator.Repo",
   "schema": null,
-  "table": "published_records"
+  "table": "validated_records"
 }

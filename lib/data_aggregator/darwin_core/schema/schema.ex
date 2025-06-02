@@ -333,6 +333,12 @@ eve_attributes = [
     dwc_link: "http://rs.gbif.org/terms/1.0/shrubLayerHeightInMeters",
     dwca_file: :releve,
     attribute: %Attribute{name: :shrub_layer_height_in_meters, type: :float, allow_nil?: true}
+  },
+  %{
+    dwc_field: "eventType",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/eventType",
+    dwca_file: :core,
+    attribute: %Attribute{name: :event_type, type: :string, allow_nil?: true}
   }
 ]
 
@@ -448,6 +454,12 @@ idf_attributes = [
       type: :string,
       allow_nil?: true
     }
+  },
+  %{
+    dwc_field: "identificationID",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/identificationID",
+    dwca_file: :core,
+    attribute: %Attribute{name: :identification_id, type: :string, allow_nil?: true}
   }
 ]
 
@@ -1375,6 +1387,18 @@ mte_attributes = [
     dwc_link: nil,
     dwca_file: nil,
     attribute: %Attribute{name: :original_biominerals, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "disposition",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/disposition",
+    dwca_file: :core,
+    attribute: %Attribute{name: :disposition, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "associatedSequences",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/associatedSequences",
+    dwca_file: :core,
+    attribute: %Attribute{name: :associated_sequences, type: :string, allow_nil?: true}
   }
 ]
 
@@ -1594,6 +1618,12 @@ org_attributes = [
     dwc_link: "http://rs.tdwg.org/dwc/terms/organismRemarks",
     dwca_file: :core,
     attribute: %Attribute{name: :organism_remarks, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "associatedOrganisms",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/associatedOrganisms",
+    dwca_file: :core,
+    attribute: %Attribute{name: :associated_organisms, type: :string, allow_nil?: true}
   }
 ]
 
@@ -1609,6 +1639,42 @@ occ_attributes = [
     dwc_link: "http://rs.tdwg.org/dwc/terms/caste",
     dwca_file: :core,
     attribute: %Attribute{name: :caste, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "individualCount",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/individualCount",
+    dwca_file: :core,
+    attribute: %Attribute{name: :individual_count, type: :integer, allow_nil?: true}
+  },
+  %{
+    dwc_field: "associatedOccurrences",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/associatedOccurrences",
+    dwca_file: :core,
+    attribute: %Attribute{name: :associated_occurrences, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "associatedReferences",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/associatedReferences",
+    dwca_file: :core,
+    attribute: %Attribute{name: :associated_references, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "associatedTaxa",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/associatedTaxa",
+    dwca_file: :core,
+    attribute: %Attribute{name: :associated_taxa, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "occurrenceRemarks",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/occurrenceRemarks",
+    dwca_file: :core,
+    attribute: %Attribute{name: :occurrence_remarks, type: :string, allow_nil?: true}
+  },
+  %{
+    dwc_field: "vitality",
+    dwc_link: "http://rs.tdwg.org/dwc/terms/vitality",
+    dwca_file: :core,
+    attribute: %Attribute{name: :vitality, type: :string, allow_nil?: true}
   }
 ]
 
