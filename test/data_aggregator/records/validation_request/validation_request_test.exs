@@ -129,7 +129,7 @@ defmodule DataAggregator.ValidationRequestTest do
 
       assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
 
-      assert DataFrame.n_columns(data_frame) == 179
+      assert DataFrame.n_columns(data_frame) == 190
     end
 
     @tag capture_log: true
