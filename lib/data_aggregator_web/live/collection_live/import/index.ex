@@ -180,16 +180,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               icon="hero-pencil-square-mini"
             />
           </div>
-
-          <.table_action_button
-            type="button"
-            phx-click={JS.push("import:delete", value: %{id: import.id})}
-            data-tip={~t"Delete"m}
-            data-confirm={~t"Are you sure?"m}
-            data-confirm_id="confirm_import_alert"
-            disabled={@busy || can_delete?(import) == false}
-            icon="hero-trash-mini"
-          />
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/datasets/#{@collection}/imports"} />

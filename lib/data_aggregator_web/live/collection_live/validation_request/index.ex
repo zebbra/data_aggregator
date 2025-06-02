@@ -159,14 +159,6 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
               icon="hero-play-circle-mini"
             />
           </div>
-          <.table_action_button
-            phx-click={JS.push("validation:delete", value: %{id: validation.id})}
-            data-tip={~t"Delete"m}
-            data-confirm={~t"Are you sure?"m}
-            data-confirm_id="confirm_validation_alert"
-            disabled={can_delete?(validation) == false}
-            icon="hero-trash-mini"
-          />
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/datasets/#{@collection}/validations"} />

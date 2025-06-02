@@ -148,14 +148,6 @@ defmodule DataAggregatorWeb.CollectionLive.Publication.Index do
               icon="hero-play-circle-mini"
             />
           </div>
-          <.table_action_button
-            phx-click={JS.push("publication:delete", value: %{id: publication.id})}
-            data-tip={~t"Delete"m}
-            data-confirm={~t"Are you sure?"m}
-            data-confirm_id="confirm_publication_alert"
-            disabled={can_delete?(publication) == false}
-            icon="hero-trash-mini"
-          />
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/datasets/#{@collection}/publications"} />
