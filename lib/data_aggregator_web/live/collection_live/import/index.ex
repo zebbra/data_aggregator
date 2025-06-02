@@ -620,8 +620,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   defp error_log_preview_data(error_log) do
     error_log = Ash.load!(error_log, [:url], lazy?: true)
 
-    error_log.url
-    |> Explorer.DataFrame.from_csv!(max_rows: 100)
-    |> Explorer.DataFrame.to_rows(atom_keys: true)
+    case Explorer.DataFrame.from_csv(error_log.url, max_rows: 100) do
+      {:ok, df} ->
+        Explorer.DataFrame.to_rows(df, atom_keys: true)
+
+      {:error, _} ->
+        # :error happens if the csv file is empty, so we return an empty list
+        []
+    end
   end
 end

@@ -183,7 +183,8 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
           title={~t"Are you sure you want to delete this dataset?"m}
           confirm_button_label={~t"Yes, delete dataset"m}
         >
-          <p class="text-sm">
+          <p class="mt-2 text-sm">
+            <.icon name="hero-exclamation-triangle-mini" class="text-warning" />
             {~t"This will delete the dataset and all related information, such as records, encodings and images. DAGI does not support unpublishing whole datasets on GBIF. Should you need to remove a dataset from GBIF, please contact the GBIF Swiss Node"m}
             <.link href="mailto:contact@gbif.ch" class="text-primary">
               {"(contact@gbif.ch)"}

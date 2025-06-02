@@ -27,7 +27,6 @@ defmodule DataAggregator.Records.Collection.Changes.DeleteAllMedia do
     Changeset.after_action(changeset, &delete_media_files(&1, &2, attachments_to_delete))
   end
 
-  # collect all media from the given collection and delete it
   defp collect_media_files(collection) do
     [
       collect_records_media(collection) ++
@@ -124,11 +123,17 @@ defmodule DataAggregator.Records.Collection.Changes.DeleteAllMedia do
 
   defp delete_attachment(nil), do: :ok
 
-  defp delete_attachment(attachment) do
-    Attachment.destroy!(attachment)
+  defp delete_attachment(%Attachment{} = attachment) do
+    case Attachment.get_by_id(attachment.id) do
+      {:ok, attachment} ->
+        Attachment.destroy!(attachment)
+
+      {:error, error} ->
+        Logger.info("Error deleting attachment: ID: #{attachment.id}, Error: #{inspect(error)}")
+    end
 
     :ok
   end
 
-  # test and ship!!
+  defp delete_attachment(_), do: :ok
 end

@@ -119,6 +119,14 @@ defmodule DataAggregator.Records.Import.Helpers do
         {:error, _} ->
           Logger.debug("CSV could not be read or - more likely - it was empty, so no errors were found.")
 
+          import =
+            import
+            |> Import.update!(%{rows_error_count: 0})
+            |> Import.update_error_log!(attachment)
+
+          # remove file from local tmp dir, as it is now stored on s3
+          File.rm!(path)
+
           import
       end
     end
