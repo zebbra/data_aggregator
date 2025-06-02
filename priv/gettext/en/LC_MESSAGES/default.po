@@ -25,7 +25,6 @@ msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/index.ex:135
 #: lib/data_aggregator_web/live/collection_live/index.ex:150
-#: lib/data_aggregator_web/live/collection_live/index.ex:183
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Are you sure?"
@@ -230,7 +229,6 @@ msgid "Encoding"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:700
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:867
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Record encodings"
@@ -356,7 +354,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "New Import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1187
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1180
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "No records"
@@ -739,34 +737,10 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Delete"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:936
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:929
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Record deleted successfully"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:870
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
-msgid "Record encoding results"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:876
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
-msgid "Record images"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:873
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
-msgid "Record imports"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:864
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
-msgid "This will also delete the following associations:"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/index.ex:49
@@ -1560,27 +1534,27 @@ msgctxt "DataAggregatorWeb.CollectionLive.Publication.Subscriptions"
 msgid "The publication has been completed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:965
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:958
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Encoding started in background"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1181
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1196
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1207
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1174
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1189
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1200
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "No records found"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1208
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1201
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Try with a different filter"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:863
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:867
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Yes, delete record"
@@ -2202,7 +2176,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "There are no imports yet for your institution"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1197
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1190
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "There are no records yet for your institution"
@@ -2648,7 +2622,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Last Changes"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1182
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1175
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Try with a different scope"
@@ -3608,32 +3582,32 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Dataset Imports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:224
+#: lib/data_aggregator_web/live/collection_live/index.ex:232
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Dataset deleted successfully"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/index.ex:43
-#: lib/data_aggregator_web/live/collection_live/index.ex:193
+#: lib/data_aggregator_web/live/collection_live/index.ex:201
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Datasets"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:205
+#: lib/data_aggregator_web/live/collection_live/index.ex:213
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Edit Dataset"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:238
+#: lib/data_aggregator_web/live/collection_live/index.ex:246
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Get started by adding a new Dataset."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:199
+#: lib/data_aggregator_web/live/collection_live/index.ex:207
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "New Dataset"
@@ -3645,20 +3619,20 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "New dataset"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:239
+#: lib/data_aggregator_web/live/collection_live/index.ex:247
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "New datasets"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:237
 #: lib/data_aggregator_web/live/collection_live/index.ex:245
+#: lib/data_aggregator_web/live/collection_live/index.ex:253
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "No datasets"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/index.ex:246
+#: lib/data_aggregator_web/live/collection_live/index.ex:254
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "There are no datasets yet for your institution"
@@ -3694,13 +3668,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Record has a top quality. Add more data fields to improve your datasets relevance"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:968
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:961
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "An encoding for this dataset is already in process"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1059
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1052
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Dataset Records"
@@ -3724,7 +3698,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.FormComponent"
 msgid "Filter Datasets"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1188
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1181
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Get started by importing new data"
@@ -3736,7 +3710,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Import.Index"
 msgid "Import data"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1189
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1182
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Import data"
@@ -3861,7 +3835,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "%{records_count_not_validated} of %{records_count} Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1010
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1003
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "An validation for this dataset is already in process"
@@ -3874,7 +3848,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Not validated"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:1007
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1000
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Validation started in background"
@@ -4218,19 +4192,19 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Year of event"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:884
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:877
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Are you sure you want to cancel this action?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:886
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:879
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "No"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/index.ex:885
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:878
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Yes, confirm"
@@ -5015,4 +4989,34 @@ msgstr ""
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "to ensure the quality of the data being served and to verify that the dataset does not include any sensitive information. Should you need to revise a dataset after publication, please contact the GBIF Swiss Node"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:183
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "Are you sure you want to delete this dataset?"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:187
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "This will delete the dataset and all related information, such as records, encodings and images. DAGI does not support unpublishing whole datasets on GBIF. Should you need to remove a dataset from GBIF, please contact the GBIF Swiss Node"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/index.ex:191
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Index"
+msgid "for assistance."
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:866
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "Are you sure you want to delete this record?"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:870
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
+msgid "This will delete the record and all related information, such as encodings, validations and images. Upon the next publication, the record will also be removed from GBIF."
 msgstr ""

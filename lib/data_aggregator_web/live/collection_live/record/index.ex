@@ -860,22 +860,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           />
         </.modal>
 
-        <.alert id="confirm_record_alert" size="sm" confirm_button_label={~t"Yes, delete record"m}>
-          <p class="text-sm">{~t"This will also delete the following associations:"m}</p>
-          <ul class="mt-2 list-inside list-disc text-sm">
-            <li class="text-info">
-              <span class="text-base-content">{~t"Record encodings"m}</span>
-            </li>
-            <li class="text-info">
-              <span class="text-base-content">{~t"Record encoding results"m}</span>
-            </li>
-            <li class="text-info">
-              <span class="text-base-content">{~t"Record imports"m}</span>
-            </li>
-            <li class="text-info">
-              <span class="text-base-content">{~t"Record images"m}</span>
-            </li>
-          </ul>
+        <.alert
+          id="confirm_record_alert"
+          size="sm"
+          title={~t"Are you sure you want to delete this record?"m}
+          confirm_button_label={~t"Yes, delete record"m}
+        >
+          <p class="text-sm">
+            {~t"This will delete the record and all related information, such as encodings, validations and images. Upon the next publication, the record will also be removed from GBIF."m}
+          </p>
         </.alert>
 
         <.alert
