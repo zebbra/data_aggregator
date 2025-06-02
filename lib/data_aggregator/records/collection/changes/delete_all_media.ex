@@ -4,7 +4,7 @@ defmodule DataAggregator.Records.Collection.Changes.DeleteAllMedia do
 
   This is necessary due to the fact that the media files are stored in s3 and can not be deleted
   by referential integrity over the database. This change ensures that all media files/attachments are deleted
-  before the collection is deleted.
+  after the collection is deleted successfully.
   """
 
   use Ash.Resource.Change
