@@ -384,19 +384,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               {col}
             </span>
           </div>
-
-          <:footer :if={Collection.can_set_importing?(@current_user, @collection)}>
-            <button
-              type="button"
-              phx-click={JS.push("import:delete", value: %{id: @selected_import.id})}
-              class="btn btn-error max-sm:btn-sm"
-              data-confirm={~t"Are you sure?"m}
-              data-confirm_id="confirm_import_alert"
-              disabled={can_delete?(@selected_import) == false}
-            >
-              <.icon name="hero-x-circle-mini" class="size-6" /> {~t"Delete"m}
-            </button>
-          </:footer>
         </.slideover>
       </:secondary>
 
@@ -499,20 +486,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
       {:error, _} ->
         {:noreply, put_flash(socket, :error, ~t"An import for this dataset is already in process")}
     end
-  end
-
-  @impl true
-  def handle_event("import:delete", %{"id" => id}, socket) do
-    actor = get_actor(socket)
-    tenant = get_tenant(socket)
-    import = Import.get_by_id!(id, actor: actor, tenant: tenant)
-    :ok = Import.destroy(import, actor: actor)
-
-    {:noreply,
-     socket
-     |> put_flash(:info, ~t"Import deleted successfully"m)
-     |> assign(:selected_import, nil)
-     |> stream_delete(:results, import)}
   end
 
   @impl true

@@ -194,26 +194,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     """
   end
 
-  attr :associated_media, :string, required: true
-  attr :class, :string, default: ""
-
-  def first_associated_media(%{associated_media: nil} = assigns), do: ~H""
-
-  def first_associated_media(%{associated_media: associated_media} = assigns) do
-    split =
-      associated_media
-      |> String.split("|")
-      |> Enum.map(&String.trim/1)
-
-    assigns = assign(assigns, :split, split)
-
-    ~H"""
-    <div class={@class}>
-      <img src={List.first(@split)} class="max-h-128 w-2/3 rounded-lg px-8" />
-    </div>
-    """
-  end
-
   attr :text, :string, required: true
   attr :gbif_id, :string, default: nil
   attr :publication_status, :atom, default: nil
@@ -234,6 +214,49 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       </.link>
     </div>
     """
+  end
+
+  attr :record, DataAggregator.Records.Record, required: true
+  attr :deletable, :boolean, default: false
+  attr :delete_action, :string, default: nil
+  attr :rest, :global
+
+  def image_carousel(assigns) do
+    images = build_carousel_items(assigns.record)
+
+    assigns = assign(assigns, images: images)
+
+    ~H"""
+    <div class="carousel space-x-4">
+      <div :for={{image, _index} <- @images} class="carousel-item relative" id={"item-#{image.id}"}>
+        <img src={image.image_url} class="max-h-[350px] w-auto" />
+        <button
+          :if={@deletable}
+          class="btn tooltip tooltip-left btn-sm btn-circle btn-ghost absolute right-3 bottom-3 inline-flex bg-black"
+          phx-click={JS.push(@delete_action, value: %{id: image.id})}
+          {@rest}
+        >
+          <.icon name="hero-trash-mini" class="size-5" />
+        </button>
+      </div>
+    </div>
+    <div class="flex w-full justify-center gap-2 py-2">
+      <a
+        :for={{image, index} <- @images}
+        :if={length(@images) > 1}
+        href={"#item-#{image.id}"}
+        class="btn btn-xs"
+      >
+        {index + 1}
+      </a>
+    </div>
+    """
+  end
+
+  defp build_carousel_items(record) do
+    record = Ash.load!(record, images: :image_url)
+
+    Enum.with_index(record.images)
   end
 
   defp level_indicator(level) do

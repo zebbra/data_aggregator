@@ -22,9 +22,11 @@ defmodule DataAggregator.Records.ImageUpload.Changes.DeleteAllMedia do
 
     attachments_to_delete = collect_media_files(image_upload)
 
+    images = Ash.load!(image_upload.images, [:image_url, record: :encoded_record])
+
     Changeset.after_action(
       changeset,
-      &delete_media_files(&1, &2, attachments_to_delete, image_upload.images)
+      &delete_media_files(&1, &2, attachments_to_delete, images)
     )
   end
 
@@ -74,13 +76,7 @@ defmodule DataAggregator.Records.ImageUpload.Changes.DeleteAllMedia do
   defp delete_image(nil), do: :ok
 
   defp delete_image(%Image{} = image) do
-    case Image.get_by_id(image.id) do
-      {:ok, image} ->
-        Image.destroy!(image)
-
-      {:error, error} ->
-        Logger.info("Error deleting image: ID: #{image.id}, Error: #{inspect(error)}")
-    end
+    Image.destroy!(image)
 
     :ok
   end
