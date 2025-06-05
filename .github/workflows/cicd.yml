@@ -6,6 +6,7 @@ on:
   pull_request:
     branches:
       - main
+      - develop
 
 env:
   MIX_ENV: test
@@ -128,7 +129,7 @@ jobs:
             type=sha
 
       - name: Login to quay.io
-        if: github.ref == 'refs/heads/main' || github.ref_type == 'tag'
+        if: github.ref == 'refs/heads/develop' || github.ref_type == 'tag'
         uses: docker/login-action@v3
         with:
           registry: quay.io
@@ -154,7 +155,7 @@ jobs:
             ELIXIR_VERSION=${{ steps.versions.outputs.elixir }}
 
       - name: Push image to quay.io
-        if: github.ref == 'refs/heads/main' || github.ref_type == 'tag'
+        if: github.ref == 'refs/heads/develop' || github.ref_type == 'tag'
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -163,7 +164,7 @@ jobs:
 
   deploy:
     name: Deploy to staging
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/develop'
     needs: build
     runs-on: hetzner
 
