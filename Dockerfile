@@ -13,7 +13,7 @@
 #
 ARG ELIXIR_VERSION=1.18.3
 ARG OTP_VERSION=27.3.2
-ARG ALPINE_VERSION=3.21.3
+ARG ALPINE_VERSION=3.22
 
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-alpine-${ALPINE_VERSION}"
 ARG RUNNER_IMAGE="alpine:${ALPINE_VERSION}"
@@ -31,7 +31,7 @@ WORKDIR /app
 
 # install hex + rebar
 RUN mix local.hex --force && \
-  mix local.rebar --force
+    mix local.rebar --force
 
 # set build ENV
 ENV MIX_ENV="prod"
