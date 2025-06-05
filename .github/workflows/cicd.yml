@@ -18,7 +18,7 @@ permissions:
 jobs:
   test:
     name: Run tests
-    runs-on: hetzner
+    runs-on: ubuntu-latest
 
     env:
       OPEN_CAGE_DATA_API_KEY: ${{ secrets.OPEN_CAGE_DATA_API_KEY }}
@@ -100,7 +100,7 @@ jobs:
   build:
     name: Build Docker image
     needs: test
-    runs-on: hetzner
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -166,7 +166,7 @@ jobs:
     name: Deploy to staging
     if: github.ref == 'refs/heads/develop'
     needs: build
-    runs-on: hetzner
+    runs-on: ubuntu-latest
 
     environment:
       name: staging
