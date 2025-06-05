@@ -20,6 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.Record.Image
   alias DataAggregator.Taxonomy.Catalog
   alias Phoenix.LiveView.AsyncResult
 
@@ -624,10 +625,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 />
               </:item>
             </.list>
-            <div :if={@selected_record.encoded_record.mte_associated_media} class="pb-4">
-              <.first_associated_media
-                associated_media={@selected_record.encoded_record.mte_associated_media}
-                class="border-black-white/10 border-b py-8"
+            <div :if={@selected_record.encoded_record.mte_associated_media} class="p-8">
+              <.image_carousel
+                deletable={true}
+                delete_action="image:delete"
+                data-tip={~t"Delete this image"m}
+                data-confirm={~t"Are you sure you want to delete this image?"m}
+                data-confirm_id="confirm_image_alert"
+                record={@selected_record}
               />
             </div>
             <%= for category <- @attrs_in_categories do %>
@@ -860,22 +865,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           />
         </.modal>
 
-        <.alert id="confirm_record_alert" size="sm" confirm_button_label={~t"Yes, delete record"m}>
-          <p class="text-sm">{~t"This will also delete the following associations:"m}</p>
-          <ul class="mt-2 list-inside list-disc text-sm">
-            <li class="text-info">
-              <span class="text-base-content">{~t"Record encodings"m}</span>
-            </li>
-            <li class="text-info">
-              <span class="text-base-content">{~t"Record encoding results"m}</span>
-            </li>
-            <li class="text-info">
-              <span class="text-base-content">{~t"Record imports"m}</span>
-            </li>
-            <li class="text-info">
-              <span class="text-base-content">{~t"Record images"m}</span>
-            </li>
-          </ul>
+        <.alert
+          id="confirm_record_alert"
+          size="sm"
+          title={~t"Are you sure you want to delete this record?"m}
+          confirm_button_label={~t"Yes, delete record"m}
+        >
+          <p class="mt-2 text-sm">
+            {~t"This will delete the record and all related information, such as encodings, validations and images. Upon the next publication, the record will also be removed from GBIF."m}
+          </p>
         </.alert>
 
         <.alert
@@ -885,9 +883,38 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           confirm_button_label={~t"Yes, confirm"m}
           cancel_button_label={~t"No"m}
         />
+
+        <.alert
+          id="confirm_image_alert"
+          size="sm"
+          title={~t"Are you sure you want to delete this image?"m}
+          confirm_button_label={~t"Yes, delete image"m}
+        >
+          <p class="mt-2 text-sm">
+            {~t"The image will be permanently removed. This operation cannot be undone."m}
+          </p>
+        </.alert>
       </:portal>
     </.page>
     """
+  end
+
+  @impl true
+  def handle_event("image:delete", %{"id" => id}, socket) do
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+    record = socket.assigns.selected_record
+
+    :ok =
+      id
+      |> Image.get_by_id!(actor: actor, tenant: tenant)
+      |> Image.destroy!(actor: actor, tenant: tenant)
+
+    record = get_record(record.id, actor, tenant)
+
+    socket = assign(socket, :selected_record, record)
+
+    {:noreply, put_flash(socket, :info, ~t"Image deleted successfully"m)}
   end
 
   @impl true

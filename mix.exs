@@ -7,7 +7,7 @@ defmodule DataAggregator.MixProject do
     [
       app: :data_aggregator,
       version: @version,
-      elixir: "~> 1.17",
+      elixir: "~> 1.18",
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [ignore_module_conflict: true],
       start_permanent: Mix.env() == :prod,
@@ -194,6 +194,8 @@ defmodule DataAggregator.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:usage_rules, "~> 0.1", only: [:dev]},
+      {:igniter, "~> 0.5", only: [:dev, :test]},
       # Phoenix Framework
       {:bandit, "~> 1.7.0"},
       {:phoenix, "~> 1.7.14"},

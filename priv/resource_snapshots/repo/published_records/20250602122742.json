@@ -2981,16 +2981,6 @@
       "type": "uuid"
     },
     {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "primary_key?": true,
-      "references": null,
-      "size": null,
-      "source": "record_id",
-      "type": "text"
-    },
-    {
       "allow_nil?": true,
       "default": "nil",
       "generated?": false,
@@ -3077,6 +3067,37 @@
       "size": null,
       "source": "publication_id",
       "type": "uuid"
+    },
+    {
+      "allow_nil?": false,
+      "default": "nil",
+      "generated?": false,
+      "primary_key?": true,
+      "references": {
+        "deferrable": false,
+        "destination_attribute": "id",
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null,
+        "index?": true,
+        "match_type": null,
+        "match_with": {
+          "collection_id": "collection_id"
+        },
+        "multitenancy": {
+          "attribute": "collection_id",
+          "global": false,
+          "strategy": "attribute"
+        },
+        "name": "published_records_record_id_fkey",
+        "on_delete": "delete",
+        "on_update": "update",
+        "primary_key?": true,
+        "schema": "public",
+        "table": "records"
+      },
+      "size": null,
+      "source": "record_id",
+      "type": "uuid"
     }
   ],
   "base_filter": null,
@@ -3084,7 +3105,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "46ADE4323F708E08EB828C19F589271843A9398A4223B63E213E9D1E33B1E86A",
+  "hash": "5185763A37668714B07B95A991B6DE358B390F7D61E5E09CC48599A7E1944446",
   "identities": [
     {
       "all_tenants?": false,
