@@ -4992,10 +4992,10 @@ msgstr "Ja, Import löschen"
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:406
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:407
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:408
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "The publication status is now"
-msgstr "Die Veröffentlichung ist jetzt"
+msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:396
 #, elixir-autogen, elixir-format
@@ -5022,7 +5022,7 @@ msgstr ""
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:418
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:419
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:420
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "The validation status is now"
-msgstr "Die Veröffentlichung ist jetzt"
+msgstr ""
