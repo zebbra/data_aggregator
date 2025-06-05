@@ -20,6 +20,7 @@ defmodule DataAggregator.Repo.Migrations.MigratePublishedRecordsRecordIdsToUuids
     Enum.each(collections, fn collection ->
       # Get all published records for this collection
       PublishedRecord
+      |> Ash.Query.select([:id, :record_id, :collection_id])
       |> Ash.Query.set_tenant(collection)
       |> Ash.stream!()
       # Update each record directly using Ecto
