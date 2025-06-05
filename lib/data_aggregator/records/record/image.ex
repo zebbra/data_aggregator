@@ -12,6 +12,7 @@ defmodule DataAggregator.Records.Record.Image do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.ImageUpload
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.Record.Image.Changes
 
   attributes do
     uuid_attribute :id, prefix: "img", public?: true
@@ -37,7 +38,14 @@ defmodule DataAggregator.Records.Record.Image do
 
   actions do
     default_accept :*
-    defaults [:create, :read, :update, :destroy]
+    defaults [:create, :read, :update]
+
+    destroy :destroy do
+      primary? true
+      require_atomic? false
+
+      change Changes.RemoveAssociatedMedia
+    end
   end
 
   code_interface do

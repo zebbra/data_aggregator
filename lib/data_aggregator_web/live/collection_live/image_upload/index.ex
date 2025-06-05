@@ -154,6 +154,14 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
             data-tip={edit_data_tip(image_upload)}
             icon={edit_icon(image_upload)}
           />
+          <.table_action_button
+            phx-click={JS.push("image_upload:delete", value: %{id: image_upload.id})}
+            data-tip={~t"Delete"m}
+            data-confirm={~t"Are you sure?"m}
+            data-confirm_id="confirm_image_upload_alert"
+            disabled={@collection.busy}
+            icon="hero-trash-mini"
+          />
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/datasets/#{@collection}/image_uploads"} />
@@ -273,9 +281,14 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Index do
         <.alert
           id="confirm_image_upload_alert"
           size="sm"
-          title={~t"Are you sure you want to delete this Image Upload and the associated Images"m}
+          title={~t"Are you sure you want to delete this image upload?"m}
           confirm_button_label={~t"Yes, delete image upload"m}
-        />
+        >
+          <p class="mt-2 text-sm">
+            <.icon name="hero-exclamation-triangle-mini" class="text-warning" />
+            {~t"This will delete all related images and also remove any existing relation from or to the images."m}
+          </p>
+        </.alert>
       </:portal>
     </.page>
     """

@@ -141,14 +141,6 @@ defmodule DataAggregatorWeb.CollectionLive.Export.Index do
               icon="hero-play-circle-mini"
             />
           </div>
-          <.table_action_button
-            phx-click={JS.push("export:delete", value: %{id: export.id})}
-            data-tip={~t"Delete"m}
-            data-confirm={~t"Are you sure?"m}
-            data-confirm_id="confirm_export_alert"
-            disabled={can_delete?(export) == false}
-            icon="hero-trash-mini"
-          />
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/datasets/#{@collection}/exports"} />

@@ -511,11 +511,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
             <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
           </div>
           <p class="text-sm">
-            {~t"The action of publishing data is irreversible and removing records after publication is not automatically supported by the Data Aggregator DAGI and requires manual intervention on GBIF. It is therefore"m}
+            {~t"Unpublishing records from GBIF is only possible by deleting them from the Data Aggregator DAGI and then republishing the updated dataset to GBIF. It is not possible to unpublish an entire dataset via DAGI. It is therefore"m}
             <span class="text-sm font-bold">
               {~t"your responsibility"m}
             </span>
-            {~t"to guarantee the quality of the data being served and to ensure that the dataset does not include sensitive information. Should you need to revise any dataset after publication, you will need to contact the GBIF Swiss Node"m}
+            {~t"to ensure the quality of the data being served and to verify that the dataset does not include any sensitive information. Should you need to revise a dataset after publication, please contact the GBIF Swiss Node"m}
             <.link href="mailto:contact@gbif.ch" class="text-primary">
               {"(contact@gbif.ch)"}
             </.link>

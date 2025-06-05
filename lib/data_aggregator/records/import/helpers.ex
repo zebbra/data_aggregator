@@ -2,6 +2,7 @@ defmodule DataAggregator.Records.Import.Helpers do
   @moduledoc false
 
   alias Ash.Changeset
+  alias DataAggregator.Files.Attachment
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
   alias DataAggregator.Records.Import
@@ -118,6 +119,12 @@ defmodule DataAggregator.Records.Import.Helpers do
 
         {:error, _} ->
           Logger.debug("CSV could not be read or - more likely - it was empty, so no errors were found.")
+
+          # delete error log, because it is not needed anymore
+          Attachment.destroy!(attachment)
+
+          # remove file from local tmp dir, as it is now stored on s3
+          File.rm!(path)
 
           import
       end

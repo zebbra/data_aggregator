@@ -15,7 +15,8 @@ defmodule DataAggregator.Records.ImageUpload do
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
   alias DataAggregator.Records.ImageUpload
-  alias DataAggregator.Records.ImageUpload.Changes.SetTimeout
+  alias DataAggregator.Records.ImageUpload.Calculations
+  alias DataAggregator.Records.ImageUpload.Changes
   alias DataAggregator.Records.Record
 
   @type t :: %ImageUpload{}
@@ -76,8 +77,8 @@ defmodule DataAggregator.Records.ImageUpload do
   end
 
   calculations do
-    calculate :mapped_images, {:array, :string}, ImageUpload.Calculations.MappedImages
-    calculate :unmapped_images, {:array, :string}, ImageUpload.Calculations.UnmappedImages
+    calculate :mapped_images, {:array, :string}, Calculations.MappedImages
+    calculate :unmapped_images, {:array, :string}, Calculations.UnmappedImages
 
     calculate :mapping_progress,
               :float,
@@ -123,7 +124,7 @@ defmodule DataAggregator.Records.ImageUpload do
 
   actions do
     default_accept :*
-    defaults [:read, :destroy, :update]
+    defaults [:read, :update]
 
     update :update_mapping_identifier do
       accept [:mapping_identifier]
@@ -135,7 +136,7 @@ defmodule DataAggregator.Records.ImageUpload do
       require_atomic? false
 
       change transition_state(:extraction_queued)
-      change ImageUpload.Changes.EnqueueExtractor
+      change Changes.EnqueueExtractor
     end
 
     update :add_mapping_progress do
@@ -169,11 +170,11 @@ defmodule DataAggregator.Records.ImageUpload do
       accept []
       require_atomic? false
 
-      change SetTimeout
-      change ImageUpload.Changes.SetExtractingBeforeTransaction
-      change ImageUpload.Changes.ExtractImages
-      change ImageUpload.Changes.SetExtractedAfterAction
-      change ImageUpload.Changes.SetExtractionFailedOnError
+      change Changes.SetTimeout
+      change Changes.SetExtractingBeforeTransaction
+      change Changes.ExtractImages
+      change Changes.SetExtractedAfterAction
+      change Changes.SetExtractionFailedOnError
     end
 
     update :set_extracting do
@@ -201,24 +202,24 @@ defmodule DataAggregator.Records.ImageUpload do
       accept [:started_by_id]
       require_atomic? false
 
-      change ImageUpload.Changes.SetCollectionMappingBeforeTransaction
+      change Changes.SetCollectionMappingBeforeTransaction
       change transition_state(:mapping_queued)
-      change ImageUpload.Changes.EnqueueMapper
+      change Changes.EnqueueMapper
     end
 
     update :map do
       accept []
       require_atomic? false
 
-      change SetTimeout
-      change ImageUpload.Changes.SetMappingBeforeTransaction
-      change ImageUpload.Changes.ResetCountBeforeTransaction
-      change ImageUpload.Changes.ResetErrorMsgBeforeTransaction
-      change ImageUpload.Changes.MapImages
-      change ImageUpload.Changes.SetMappedAfterAction
-      change ImageUpload.Changes.CreateUploadLogAfterAction
-      change ImageUpload.Changes.SetMappingIncompleteOnIncomplete
-      change ImageUpload.Changes.SetMappingFailedOnError
+      change Changes.SetTimeout
+      change Changes.SetMappingBeforeTransaction
+      change Changes.ResetCountBeforeTransaction
+      change Changes.ResetErrorMsgBeforeTransaction
+      change Changes.MapImages
+      change Changes.SetMappedAfterAction
+      change Changes.CreateUploadLogAfterAction
+      change Changes.SetMappingIncompleteOnIncomplete
+      change Changes.SetMappingFailedOnError
     end
 
     update :set_mapping do
@@ -298,8 +299,17 @@ defmodule DataAggregator.Records.ImageUpload do
       argument :path, :string, allow_nil?: false
       argument :filename, :string, allow_nil?: true
       change manage_relationship(:collection, type: :append)
-      change ImageUpload.Changes.ValidateFile
-      change ImageUpload.Changes.CreateAttachment
+      change Changes.ValidateFile
+      change Changes.CreateAttachment
+    end
+
+    destroy :destroy do
+      accept []
+
+      primary? true
+      require_atomic? false
+
+      change Changes.DeleteAllMedia
     end
   end
 
