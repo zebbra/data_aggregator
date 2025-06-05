@@ -389,40 +389,40 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
     end
   end
 
-  def icon_tooltip(:add_image_url, _), do: ~t"associatedMedia was updated"m
+  def icon_tooltip(:add_image_url, _), do: ~t"The record has been updated by an image upload."m
 
   def icon_tooltip(_, _), do: nil
 
-  defp text(:import, _), do: ~t"A data import was updating the record"m
-  defp text(:update, _), do: ~t"The record was updated by encoding"m
+  defp text(:import, _), do: ~t"The record has been updated by a data import."m
+  defp text(:update, _), do: ~t"The record has been updated by an encoding step."m
   defp text(:set_encoded, _), do: ~t"The record encoding was"m
   defp text(:set_encoding_failed, _), do: ~t"The record encoding has"m
 
   defp text(:update_publication_status, content) do
     case content["publication_status"] do
-      "not_published" -> ~t"Record is"m
-      "publishing" -> ~t"Record is currently"m
-      "in_publication" -> ~t"Record is now"m
-      "published" -> ~t"Record was successful"m
-      "publication_failed" -> ~t"Record publication"m
-      "stale" -> ~t"The publication is now"m
+      "not_published" -> ~t"The publication status is now"m
+      "publishing" -> ~t"The publication status is now"m
+      "in_publication" -> ~t"The publication status is now"m
+      "published" -> ~t"The publication status is now"m
+      "publication_failed" -> ~t"The publication status is now"m
+      "stale" -> ~t"The publication status is now"m
       _ -> ~t"Publication status was updated"m
     end
   end
 
   defp text(:update_validation_status, content) do
     case content["validation_status"] do
-      "not_validated" -> ~t"Record is"m
-      "validating" -> ~t"Record is currently"m
-      "in_validation" -> ~t"Record is now"m
-      "validated" -> ~t"Record was successful"m
-      "validation_failed" -> ~t"Record validation"m
-      "stale" -> ~t"The validation is now"m
+      "not_validated" -> ~t"The validation status is now"m
+      "validating" -> ~t"The validation status is now"m
+      "in_validation" -> ~t"The validation status is now"m
+      "validated" -> ~t"The validation status is now"m
+      "validation_failed" -> ~t"The validation status is now"m
+      "stale" -> ~t"The validation status is now"m
       _ -> ~t"Validation status was updated"m
     end
   end
 
-  defp text(:add_image_url, _), do: ~t"associatedMedia was updated"m
+  defp text(:add_image_url, _), do: ~t"The record has been updated by an image upload."m
 
   defp text(name, _), do: name
 
