@@ -73,6 +73,7 @@ jobs:
       - run: mix deps.clean --all
       - run: mix deps.get
       - run: mix compile
+      - run: rm -rf priv/plts
       - run: mix dialyzer --plt
 
       - name: Save cache
