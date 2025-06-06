@@ -40,8 +40,11 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       |> AshPagify.query_for_filters_map(publication.records_query)
       |> Ash.Query.set_tenant(tenant)
 
-    # Store the original query records for status updates and verification
-    original_records = Ash.stream!(query, stream_with: :keyset, batch_size: 1000)
+    original_ids =
+      query
+      |> Ash.Query.select([:id])
+      |> Ash.stream!(stream_with: :keyset, batch_size: 1000)
+      |> MapSet.new(& &1.id)
 
     # first we need to copy the data of these records to published_records table
     append_published_records(publication, query)
@@ -75,7 +78,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     # Use all published records for file generation and set status for original records
     publication
     |> stream_resource()
-    |> set_publication_status(original_records, :publishing, ctx)
+    |> set_publication_status(original_ids, :publishing, ctx)
     |> Stream.chunk_every(1000)
     |> Stream.flat_map(fn records ->
       file_metas
@@ -88,7 +91,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       records
     end)
     |> Counter.count_each(counter)
-    |> set_publication_status(original_records, :in_publication, ctx)
+    |> set_publication_status(original_ids, :in_publication, ctx)
 
     Enum.each(file_metas, &FlatFileUtils.close_file(&1.file_descriptor))
 
@@ -104,7 +107,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       |> Ash.load!([:collection, :attachment])
 
     # create endpoint with attachment
-    case publish(publication, original_records, ctx) do
+    case publish(publication, query, ctx) do
       {:ok, publication} ->
         {:ok, publication}
 
@@ -113,7 +116,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
         publication
         |> stream_resource()
-        |> set_publication_status(original_records, :publication_failed, ctx)
+        |> set_publication_status(original_ids, :publication_failed, ctx)
 
         {:error, error}
     end
@@ -129,23 +132,24 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
         |> AshPagify.query_for_filters_map(publication.records_query)
         |> Ash.Query.set_tenant(tenant)
 
-      original_records_for_error = Ash.stream!(query, stream_with: :keyset, batch_size: 1000)
+      original_ids =
+        query
+        |> Ash.Query.select([:id])
+        |> Ash.stream!(stream_with: :keyset, batch_size: 1000)
+        |> MapSet.new(& &1.id)
 
       publication
       |> stream_resource()
-      |> set_publication_status(original_records_for_error, :publication_failed, ctx)
+      |> set_publication_status(original_ids, :publication_failed, ctx)
 
       {:error, e}
   end
 
   @spec set_publication_status(Enumerable.t(), Enumerable.t(), atom(), Context.t()) ::
           Enumerable.t()
-  defp set_publication_status(all_records_stream, original_records, status, %{actor: actor, tenant: tenant}) do
+  defp set_publication_status(all_records_stream, original_ids, status, %{actor: actor, tenant: tenant}) do
     max_concurrency = Records.import_max_concurrency()
     batch_size = ceil(Records.import_batch_size() / max_concurrency)
-
-    # Create a set of original record IDs for efficient lookup
-    original_ids = MapSet.new(original_records, & &1.id)
 
     # Filter and update only records that are in the original set
     stream_params =
@@ -246,16 +250,17 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     Collection.register_at_gbif(publication.collection, publication.existing_dataset_key)
   end
 
-  defp publish(publication, original_records, ctx) do
+  defp publish(publication, query, ctx) do
     with {:ok, _dataset_key} <-
            Collection.create_endpoint(publication.collection, publication.attachment.url),
-         :ok <- queue_records_for_verification(original_records, ctx) do
+         :ok <- queue_records_for_verification(query, ctx) do
       {:ok, publication}
     end
   end
 
-  @spec queue_records_for_verification(Enumerable.t(), any()) :: :ok
-  defp queue_records_for_verification(original_records, %{actor: actor}) do
-    Enum.each(original_records, &Record.enqueue_publication_verifier(&1, nil, actor: actor))
+  defp queue_records_for_verification(query, %{actor: actor}) do
+    query
+    |> Ash.stream!(stream_with: :keyset, batch_size: 1000)
+    |> Enum.each(&Record.enqueue_publication_verifier(&1, nil, actor: actor))
   end
 end
