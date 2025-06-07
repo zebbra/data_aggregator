@@ -6,6 +6,7 @@ on:
   pull_request:
     branches:
       - main
+      - develop
 
 env:
   MIX_ENV: test
@@ -17,7 +18,7 @@ permissions:
 jobs:
   test:
     name: Run tests
-    runs-on: hetzner
+    runs-on: ubuntu-latest
 
     env:
       OPEN_CAGE_DATA_API_KEY: ${{ secrets.OPEN_CAGE_DATA_API_KEY }}
@@ -72,6 +73,7 @@ jobs:
       - run: mix deps.clean --all
       - run: mix deps.get
       - run: mix compile
+      - run: rm -rf priv/plts
       - run: mix dialyzer --plt
 
       - name: Save cache
@@ -99,7 +101,7 @@ jobs:
   build:
     name: Build Docker image
     needs: test
-    runs-on: hetzner
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -128,7 +130,7 @@ jobs:
             type=sha
 
       - name: Login to quay.io
-        if: github.ref == 'refs/heads/main' || github.ref_type == 'tag'
+        if: github.ref == 'refs/heads/develop' || github.ref_type == 'tag'
         uses: docker/login-action@v3
         with:
           registry: quay.io
@@ -154,7 +156,7 @@ jobs:
             ELIXIR_VERSION=${{ steps.versions.outputs.elixir }}
 
       - name: Push image to quay.io
-        if: github.ref == 'refs/heads/main' || github.ref_type == 'tag'
+        if: github.ref == 'refs/heads/develop' || github.ref_type == 'tag'
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -163,9 +165,9 @@ jobs:
 
   deploy:
     name: Deploy to staging
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/develop'
     needs: build
-    runs-on: hetzner
+    runs-on: ubuntu-latest
 
     environment:
       name: staging
