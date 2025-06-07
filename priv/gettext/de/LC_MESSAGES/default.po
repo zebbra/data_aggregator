@@ -3232,37 +3232,37 @@ msgstr "Guide"
 msgid "Tutorials"
 msgstr "Tutorials"
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:401
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:433
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Address"
 msgstr "Adresse"
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:422
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:454
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Administrative point of contact"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:376
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:408
 #, elixir-autogen, elixir-format
 msgid "Authors"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:220
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:252
 #, elixir-autogen, elixir-format
 msgid "GBIF"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:398
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:430
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Institution Code"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:415
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:447
 #, elixir-autogen, elixir-format
 msgid "Metadata Provider"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:410
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:442
 #, elixir-autogen, elixir-format
 msgid "Originator"
 msgstr ""
@@ -3277,7 +3277,7 @@ msgstr "Veröffentlichung"
 msgid "Target Dataset"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:296
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:328
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Checking..."
 msgstr ""
@@ -4573,7 +4573,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Subscriptions"
 msgid "The validation request has been completed"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:456
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:488
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "%{checked_publication_count} records"
@@ -4585,13 +4585,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "%{count} records from the %{layer} layer"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:471
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:215
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "%{possible_sensitive_count} out of %{total_count} records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:255
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:287
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "A new dataset will be created on GBIF."
@@ -4603,117 +4603,117 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "A publication for this dataset is already in process"
 msgstr "Eine Veröffentlichung für diese Sammlung ist bereits im Gange"
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:587
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:598
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:588
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:599
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Back"
 msgstr "Zurück"
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:354
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:386
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Basic metadata regarding the dataset."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:557
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:558
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "By clicking Publish the publication will be triggered and no further action is required. Please note that this process may take some time."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:576
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:577
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:298
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:330
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Check"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:254
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:286
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Create new dataset"
 msgstr "Erstellt am"
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:353
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:385
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Dataset"
 msgstr "Daten"
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:306
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:338
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Dataset \"%{dataset_title}\" was found"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:277
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:309
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Dataset Key"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:496
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:497
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Dataset Title"
 msgstr "Datenset wurde importiert"
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:319
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:351
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "For security reasons: Please type in the name of the target dataset you are going to publish into."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:543
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:544
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "I have read and agree with the"
 msgstr "Ich habe die"
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:395
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:427
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Institution"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:389
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:421
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Institution and contact Information"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:430
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:462
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Intellectual property rights"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:390
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:422
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Metadata regarding the institution and contacts based on GrSciColl."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:324
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:356
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Name of target dataset"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:573
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:584
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:574
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:585
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Next"
 msgstr "Weiter"
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:435
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:467
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Please choose under what license this publication and dataset is covered."
@@ -4725,141 +4725,141 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Publication started in background"
 msgstr "Veröffentlichung im Hintergrund gestartet"
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:595
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:596
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Publish"
 msgstr "Veröffentlichen"
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:361
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:393
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Publisher"
 msgstr "Veröffentlicht"
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:529
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:530
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "The Publisher of your dataset on GBIF is SwissNatColl, but your institution retains ownership of the data at all times."
 msgstr "Der Herausgeber deiner Daten auf GBIF ist SwissNatColl, aber deine Institution behält jederzeit die Eigentumsrechte an den Daten."
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:469
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:484
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:213
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:228
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "There are"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:242
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:274
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "These records have not yet been published; therefore, a new dataset will be created on GBIF. If you wish to publish your records in an existing dataset on GBIF, please contact"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:358
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:390
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Title"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:265
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:297
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Use existing dataset"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:446
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:478
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "You are about to"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:213
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:245
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Your records will be published into an existing dataset on"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:266
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:298
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Your records will be published into an existing dataset on GBIF."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:454
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:486
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "and send"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:450
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:482
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "create a new dataset"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:521
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:522
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "for assistance."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:503
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:504
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "loading..."
 msgstr "Lädt hoch..."
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:552
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:553
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "of the DAGI and accept full responsibility for the publication of these data."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:449
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:451
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:481
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:483
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "publish into an already existing dataset"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:550
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:551
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "terms of use"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:476
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:220
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "that may contain sensitive information and, therefore, will not be published. Run the encoding process to enhance your data."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:461
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:493
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "to GBIF"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:515
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:516
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "your responsibility"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:232
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:264
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "These records have been published to a dataset that could not be found anymore; Either it has been deleted on GBIF or the instance has changed (uat/prod). Therefore, a new dataset will be created on GBIF. If you wish to publish your records in an existing dataset on GBIF, please contact"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:513
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:514
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "Unpublishing records from GBIF is only possible by deleting them from the Data Aggregator DAGI and then republishing the updated dataset to GBIF. It is not possible to unpublish an entire dataset via DAGI. It is therefore"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:517
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:518
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "to ensure the quality of the data being served and to verify that the dataset does not include any sensitive information. Should you need to revise a dataset after publication, please contact the GBIF Swiss Node"
@@ -4991,7 +4991,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "The validation status is now"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:486
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:230
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "%{publication_rules_count} out of %{total_count} records"
@@ -5009,7 +5009,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "for publication to GBIF, which will make them publicly available. Make sure the layer and filters are corresponding to the selection you’d like to publish."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:491
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:235
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "that hold sensitive information and where publication rules will be applied. These rules will obfuscate the exact location information upon publication."
