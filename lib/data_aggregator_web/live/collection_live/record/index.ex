@@ -356,24 +356,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           label={iucn_redlist_th_label()}
           directions={{:asc, :desc_nils_last}}
         >
-          <div
-            class="tooltip tooltip-right cursor-help"
-            data-tip={
-              if record.iucn_redlist,
-                do: ~t"According to IUCN an endangered species"m,
-                else: ~t"According to IUCN not an endangered species"m
-            }
-          >
-            <.icon
-              name={if record.iucn_redlist, do: "hero-flag-mini", else: "hero-flag"}
-              class={
-                class_names([
-                  "size-5",
-                  record.iucn_redlist == false && "text-base-content",
-                  record.iucn_redlist == true && "text-error"
-                ])
-              }
-            />
+          <div class="tooltip tooltip-right cursor-help" data-tip={iucn_redlist_tooltip(record)}>
+            <.icon name="hero-flag-mini" class={class_names(["size-5", iucn_redlist_flag(record)])} />
           </div>
         </:col>
         <:col
@@ -529,7 +513,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :mids_level)}
           field={:mids_level}
-          label={~t"Quality"m}
+          label={~t"MIDS Level"m}
           class="text-center"
         >
           <.mids_level_indicator level={record.mids_level} />
@@ -573,11 +557,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           class=""
         >
           <:additional_header_content>
-            <.slideover_subtitle
-              text={@selected_record.mte_catalog_number}
-              gbif_id={@selected_record.oth_gbif_id}
-              publication_status={@selected_record.publication_status}
-            />
+            <.slideover_subtitle record={@selected_record} />
             <div class="mt-4 flex space-x-2 max-sm:hidden">
               <.encoding_state_badge state={@selected_record.state} tooltip={false} />
               <.publication_state_badge state={@selected_record.publication_status} tooltip={false} />
@@ -615,7 +595,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               <:item title={~t"Last Changes"m}>
                 {format_datetime(@selected_record.updated_at)}
               </:item>
-              <:item title={~t"Quality"m}>
+              <:item title={~t"MIDS Level"m}>
                 <.mids_level_indicator level={@selected_record.mids_level} />
               </:item>
               <:item title={~t"Swiss Registry"m}>
@@ -1251,5 +1231,45 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     ~H"""
     <.icon name="hero-flag" class="size-5" />
     """
+  end
+
+  def iucn_redlist_tooltip(%{encoded_record: %{iucn_redlist_category: nil}}) do
+    ~t"Unknown"m
+  end
+
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def iucn_redlist_tooltip(%{encoded_record: %{iucn_redlist_category: iucn_redlist_category}}) do
+    case iucn_redlist_category do
+      "NE" -> ~t"Not Evaluated (NE)"m
+      "DD" -> ~t"Data Deficient (DD)"m
+      "LC" -> ~t"Least Concern (LC)"m
+      "NT" -> ~t"Near threatened (NT)"m
+      "VU" -> ~t"Vulnerable (VU)"m
+      "EN" -> ~t"Endangered (EN)"m
+      "CR" -> ~t"Critically Endangered (CR)"m
+      "RE" -> ~t"Regionally Extinct (RE)"m
+      "EW" -> ~t"Extinct in the Wild (EW)"m
+      "EX" -> ~t"Extinct (EX)"m
+    end
+  end
+
+  def iucn_redlist_flag(%{encoded_record: %{iucn_redlist_category: nil}}) do
+    "text-[#C1B5A5]"
+  end
+
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def iucn_redlist_flag(%{encoded_record: %{iucn_redlist_category: iucn_redlist_category}}) do
+    case iucn_redlist_category do
+      "NE" -> "text-[#FFFFFF]"
+      "DD" -> "text-[#D1D1C6]"
+      "LC" -> "text-[#60C659]"
+      "NT" -> "text-[#CCE226]"
+      "VU" -> "text-[#F9E814]"
+      "EN" -> "text-[#FC7F3F]"
+      "CR" -> "text-[#D81E05]"
+      "RE" -> "text-[#9B4F96]"
+      "EW" -> "text-[#542344]"
+      "EX" -> "text-[#000000]"
+    end
   end
 end
