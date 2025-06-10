@@ -194,11 +194,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
     <div class={unless @step == 1, do: "hidden"}>
       <div class="space-y-4">
         <p class="text-sm">
-          {~t"You’ve selected"m}
+          {~t"You've selected"m}
           <span class="font-bold">
             {mgettext(
               "%{count} records from the %{layer} layer",
-              count: format_number(@checked_publication_count),
+              count: format_number(@total_count),
               layer: @layer
             )}
           </span>

@@ -4948,12 +4948,6 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "%{publication_rules_count} out of %{total_count} records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:197
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
-msgid "You’ve selected"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:205
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
@@ -5073,4 +5067,10 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Vulnerable (VU)"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/publication_modal.ex:197
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
+msgid "You've selected"
 msgstr ""
