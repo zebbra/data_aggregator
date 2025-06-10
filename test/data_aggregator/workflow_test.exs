@@ -486,7 +486,7 @@ defmodule DataAggregator.WorkflowTest do
       [validation_request: validation_request, actor: actor, records: records]
     end
 
-    test "publishing workflow performs as expected", %{
+    test "validation request workflow performs as expected", %{
       validation_request: validation_request,
       records: records,
       actor: actor,

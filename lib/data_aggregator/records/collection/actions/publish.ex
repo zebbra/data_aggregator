@@ -69,9 +69,15 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
     Enum.each(file_metas, &DwcaFile.write_headers(&1))
 
+    set_publication_status(
+      Ash.stream!(query, stream_with: :keyset, batch_size: 1000),
+      :publishing,
+      ctx
+    )
+
+    # Use all published records for file generation and set status for original records
     publication
     |> stream_resource()
-    |> set_publication_status(:publishing, ctx)
     |> Stream.chunk_every(1000)
     |> Stream.flat_map(fn records ->
       file_metas
@@ -84,7 +90,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       records
     end)
     |> Counter.count_each(counter)
-    |> set_publication_status(:in_publication, ctx)
+    |> Stream.run()
 
     Enum.each(file_metas, &FlatFileUtils.close_file(&1.file_descriptor))
 
@@ -99,17 +105,22 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       |> Publication.update_attachment(attachment)
       |> Ash.load!([:collection, :attachment])
 
+    set_publication_status(
+      Ash.stream!(query, stream_with: :keyset, batch_size: 1000),
+      :in_publication,
+      ctx
+    )
+
     # create endpoint with attachment
-    case publish(publication, ctx) do
+    case publish(publication, query, ctx) do
       {:ok, publication} ->
         {:ok, publication}
 
       {:error, error} ->
         Logger.error("Error publishing records: #{inspect(error)}")
 
-        publication
-        |> stream_resource()
-        |> set_publication_status(
+        set_publication_status(
+          Ash.stream!(query, stream_with: :keyset, batch_size: 1000),
           :publication_failed,
           ctx
         )
@@ -122,9 +133,14 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
       Logger.error("Error publishing records: #{inspect(e)}")
 
-      publication
-      |> stream_resource()
-      |> set_publication_status(
+      # In case of error, we need to recreate the original query to update status
+      query =
+        Record
+        |> AshPagify.query_for_filters_map(publication.records_query)
+        |> Ash.Query.set_tenant(tenant)
+
+      set_publication_status(
+        Ash.stream!(query, stream_with: :keyset, batch_size: 1000),
         :publication_failed,
         ctx
       )
@@ -138,9 +154,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     max_concurrency = Records.import_max_concurrency()
     batch_size = ceil(Records.import_batch_size() / max_concurrency)
 
-    stream_params = Enum.map(stream, &%{id: &1.record_id})
-
-    Ash.bulk_update(stream_params, :update_publication_status, %{status: status},
+    Ash.bulk_update(stream, :update_publication_status, %{status: status},
       actor: actor,
       authorize?: false,
       domain: Records,
@@ -226,18 +240,17 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
     Collection.register_at_gbif(publication.collection, publication.existing_dataset_key)
   end
 
-  defp publish(publication, ctx) do
+  defp publish(publication, query, ctx) do
     with {:ok, _dataset_key} <-
            Collection.create_endpoint(publication.collection, publication.attachment.url),
-         :ok <- queue_records_for_verification(publication.collection, ctx) do
+         :ok <- queue_records_for_verification(query, ctx) do
       {:ok, publication}
     end
   end
 
-  @spec queue_records_for_verification(Ash.Query.t(), any()) :: :ok
-  defp queue_records_for_verification(collection, %{actor: actor}) do
-    PublishedRecord
-    |> Ash.stream!(stream_with: :keyset, batch_size: 1000, tenant: collection)
+  defp queue_records_for_verification(query, %{actor: actor}) do
+    query
+    |> Ash.stream!(stream_with: :keyset, batch_size: 1000)
     |> Enum.each(&Record.enqueue_publication_verifier(&1, nil, actor: actor))
   end
 end
