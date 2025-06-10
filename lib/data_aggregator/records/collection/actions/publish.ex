@@ -48,7 +48,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
     # first we need to copy the data of these records to published_records table
     append_published_records(publication, query)
-    publication = update_count(publication, query, tenant)
+    publication = update_count(publication, tenant)
 
     # we need to register now, so we can use the data in the dwc file creation process
     collection =
@@ -224,10 +224,10 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
   defp round_coordinates(value), do: value
 
-  defp update_count(publication, query, tenant) do
-    # now we update the rows count with the number of records that were in the original query
-    rows_count = Ash.count!(query, tenant: tenant)
-    Publication.update!(publication, %{rows_count: rows_count})
+  defp update_count(publication, tenant) do
+    # now we update the rows count with the number of records that will be published
+    published_records_count = Ash.count!(PublishedRecord, tenant: tenant)
+    Publication.update!(publication, %{rows_count: published_records_count})
   end
 
   defp stream_resource(%{collection: collection}),
