@@ -165,14 +165,14 @@ msgctxt "DataAggregatorWeb.CollectionLive.Encoding.Components"
 msgid "Unknown"
 msgstr "Unbekannt"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:89
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:101
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:87
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:99
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Add"
 msgstr "Neu"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:65
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:63
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Current"
@@ -1522,7 +1522,7 @@ msgctxt "DataAggregatorWeb.Components.Button"
 msgid "close"
 msgstr "schließen"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:125
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:123
 #: lib/data_aggregator_web/live/collection_live/record/components.ex:211
 #, elixir-autogen, elixir-format
 msgid "Show on GBIF"
@@ -2520,7 +2520,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Try with a different scope"
 msgstr "Versuche es mit einem anderen Filter"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:77
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:75
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Cancel"
@@ -2577,7 +2577,7 @@ msgstr ""
 msgid "Upload Images"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:182
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:180
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Upload Images"
@@ -3358,14 +3358,14 @@ msgstr "Ein Import für diese Sammlung ist bereits im Gange"
 msgid "Datasets"
 msgstr "Daten"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:64
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:109
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:62
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:107
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Datasets"
 msgstr "Daten"
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:170
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:168
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Import data"
@@ -4966,7 +4966,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "that hold sensitive information and where publication rules will be applied. These rules will obfuscate the exact location information upon publication."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:141
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:139
 #: lib/data_aggregator_web/live/collection_live/record/components.ex:223
 #, elixir-autogen, elixir-format
 msgid "Show on SwissNatColl"

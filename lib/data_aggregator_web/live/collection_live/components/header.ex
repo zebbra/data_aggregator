@@ -29,8 +29,6 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   def collection_header(%{collection: nil} = assigns) do
     assigns
     |> assign(:collection, get_collection_light(assigns.collection_id, get_actor(assigns)))
-    |> assign(:gbif_dataset_base_url, "#{gbif_base_url()}/dataset")
-    |> assign(:swiss_nat_coll_base_url, "#{swiss_nat_coll_base_url()}")
     |> collection_header()
   end
 
@@ -49,7 +47,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
     assigns =
       assigns
-      |> assign_new(:gbif_dataset_base_url, fn -> "#{gbif_base_url()}/dataset" end)
+      |> assign(:gbif_dataset_base_url, "#{gbif_base_url()}/dataset")
       |> assign(:swiss_nat_coll_base_url, "#{swiss_nat_coll_base_url()}")
       |> assign(:show_import_button, show_import_button)
       |> assign(:show_image_upload_button, show_image_upload_button)
