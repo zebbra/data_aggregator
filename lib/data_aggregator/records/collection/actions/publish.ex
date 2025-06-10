@@ -17,6 +17,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   alias DataAggregator.DarwinCore.Publication.PreservationFile
   alias DataAggregator.DarwinCore.Publication.ReleveFile
   alias DataAggregator.DarwinCore.Schema
+  alias DataAggregator.Files.Attachment
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
@@ -242,7 +243,10 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
   defp publish(publication, query, ctx) do
     with {:ok, _dataset_key} <-
-           Collection.create_endpoint(publication.collection, publication.attachment.url),
+           Collection.create_endpoint(
+             publication.collection,
+             Attachment.Helpers.attachment_public_url(publication.attachment.id)
+           ),
          :ok <- queue_records_for_verification(query, ctx) do
       {:ok, publication}
     end

@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
 
   import Swoosh.Email
 
+  alias DataAggregator.Files.Attachment
   alias DataAggregator.Gbif
   alias DataAggregator.Mailer
   alias DataAggregator.Records
@@ -23,7 +24,7 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
       notification =
         %{
           count: to_string(Ash.count!(query)),
-          dwca_file_link: validation_request.attachment.url,
+          dwca_file_link: Attachment.Helpers.attachment_public_url(validation_request.attachment.id),
           institution: institution_name,
           date: get_date_time_now(),
           # for now we use institution_name as owner, because we don't have this
