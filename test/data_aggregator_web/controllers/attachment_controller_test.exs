@@ -4,6 +4,7 @@ defmodule DataAggregatorWeb.AttachmentControllerTest do
   use DataAggregatorWeb.ConnCase, async: true
 
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Files.Attachment.Helpers
 
   @example_file "test/support/fixtures/files/gbifch_swiss-species-registry-small.csv"
 
@@ -19,6 +20,18 @@ defmodule DataAggregatorWeb.AttachmentControllerTest do
       assert response(conn, 200)
       assert get_resp_header(conn, "content-type") == ["text/csv; charset=utf-8"]
       assert get_resp_header(conn, "content-disposition") == ["inline"]
+    end
+
+    test "attachment_public_url helper generates correct URL for attachment", %{
+      attachment: attachment
+    } do
+      public_url = Helpers.attachment_public_url(attachment.id)
+
+      # Verify the URL structure is correct regardless of port
+      uri = URI.parse(public_url)
+      assert uri.scheme == "http"
+      assert uri.host == "localhost"
+      assert uri.path == "/attachments/#{attachment.id}/download"
     end
 
     test "returns 404 for non-existent attachment", %{conn: conn} do
