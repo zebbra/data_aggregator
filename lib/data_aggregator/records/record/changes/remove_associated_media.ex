@@ -26,25 +26,25 @@ defmodule DataAggregator.Records.Record.Image.Changes.RemoveAssociatedMedia do
   end
 
   defp remove_obsolete_image_url(_changeset, _deleted_image, image) do
-    old_media_urls =
-      case image.record.encoded_record.mte_associated_media do
-        nil -> ""
-        urls -> urls
-      end
+    case image do
+      %{record: %{encoded_record: %{mte_associated_media: media}}} when not is_nil(media) ->
+        updated_media_urls =
+          media
+          |> String.split(" | ")
+          |> Enum.reject(fn url -> url == image.image_url end)
+          |> Enum.join(" | ")
 
-    updated_media_urls =
-      old_media_urls
-      |> String.split(" | ")
-      |> Enum.reject(fn url ->
-        url == image.image_url
-      end)
-      |> Enum.join(" | ")
+        EncodedRecord.update!(image.record.encoded_record, %{
+          mte_associated_media: updated_media_urls
+        })
 
-    EncodedRecord.update!(image.record.encoded_record, %{mte_associated_media: updated_media_urls})
+        delete_attachment(image.attachment)
 
-    delete_attachment(image.attachment)
+        {:ok, image}
 
-    {:ok, image}
+      _ ->
+        {:ok, image}
+    end
   end
 
   defp delete_attachment(nil), do: :ok
