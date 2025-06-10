@@ -40,12 +40,6 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       |> AshPagify.query_for_filters_map(publication.records_query)
       |> Ash.Query.set_tenant(tenant)
 
-    original_ids =
-      query
-      |> Ash.Query.select([:id])
-      |> Ash.stream!(stream_with: :keyset, batch_size: 1000)
-      |> MapSet.new(& &1.id)
-
     # first we need to copy the data of these records to published_records table
     append_published_records(publication, query)
     publication = update_count(publication, tenant)
@@ -75,10 +69,15 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
     Enum.each(file_metas, &DwcaFile.write_headers(&1))
 
+    set_publication_status(
+      Ash.stream!(query, stream_with: :keyset, batch_size: 1000),
+      :publishing,
+      ctx
+    )
+
     # Use all published records for file generation and set status for original records
     publication
     |> stream_resource()
-    |> set_publication_status(original_ids, :publishing, ctx)
     |> Stream.chunk_every(1000)
     |> Stream.flat_map(fn records ->
       file_metas
@@ -91,7 +90,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       records
     end)
     |> Counter.count_each(counter)
-    |> set_publication_status(original_ids, :in_publication, ctx)
+    |> Stream.run()
 
     Enum.each(file_metas, &FlatFileUtils.close_file(&1.file_descriptor))
 
@@ -106,6 +105,12 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       |> Publication.update_attachment(attachment)
       |> Ash.load!([:collection, :attachment])
 
+    set_publication_status(
+      Ash.stream!(query, stream_with: :keyset, batch_size: 1000),
+      :in_publication,
+      ctx
+    )
+
     # create endpoint with attachment
     case publish(publication, query, ctx) do
       {:ok, publication} ->
@@ -114,9 +119,11 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       {:error, error} ->
         Logger.error("Error publishing records: #{inspect(error)}")
 
-        publication
-        |> stream_resource()
-        |> set_publication_status(original_ids, :publication_failed, ctx)
+        set_publication_status(
+          Ash.stream!(query, stream_with: :keyset, batch_size: 1000),
+          :publication_failed,
+          ctx
+        )
 
         {:error, error}
     end
@@ -132,49 +139,32 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
         |> AshPagify.query_for_filters_map(publication.records_query)
         |> Ash.Query.set_tenant(tenant)
 
-      original_ids =
-        query
-        |> Ash.Query.select([:id])
-        |> Ash.stream!(stream_with: :keyset, batch_size: 1000)
-        |> MapSet.new(& &1.id)
-
-      publication
-      |> stream_resource()
-      |> set_publication_status(original_ids, :publication_failed, ctx)
+      set_publication_status(
+        Ash.stream!(query, stream_with: :keyset, batch_size: 1000),
+        :publication_failed,
+        ctx
+      )
 
       {:error, e}
   end
 
-  @spec set_publication_status(Enumerable.t(), Enumerable.t(), atom(), Context.t()) ::
+  @spec set_publication_status(Enumerable.t(), atom(), Context.t()) ::
           Enumerable.t()
-  defp set_publication_status(all_records_stream, original_ids, status, %{actor: actor, tenant: tenant}) do
+  defp set_publication_status(stream, status, %{actor: actor, tenant: tenant}) do
     max_concurrency = Records.import_max_concurrency()
     batch_size = ceil(Records.import_batch_size() / max_concurrency)
 
-    # Filter and update only records that are in the original set
-    stream_params =
-      all_records_stream
-      |> Stream.filter(fn record ->
-        MapSet.member?(original_ids, record.record_id)
-      end)
-      |> Enum.map(fn record ->
-        %{id: record.record_id}
-      end)
+    Ash.bulk_update(stream, :update_publication_status, %{status: status},
+      actor: actor,
+      authorize?: false,
+      domain: Records,
+      resource: Record,
+      tenant: tenant,
+      max_concurrency: max_concurrency,
+      batch_size: batch_size
+    )
 
-    # Only perform bulk update if there are records to update
-    if length(stream_params) > 0 do
-      Ash.bulk_update(stream_params, :update_publication_status, %{status: status},
-        actor: actor,
-        authorize?: false,
-        domain: Records,
-        resource: Record,
-        tenant: tenant,
-        max_concurrency: max_concurrency,
-        batch_size: batch_size
-      )
-    end
-
-    all_records_stream
+    stream
   end
 
   defp append_published_records(publication, query) do
