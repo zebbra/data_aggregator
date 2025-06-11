@@ -17,6 +17,10 @@ env:
   WAFFLE_ASSET_HOST: https://${AWS_S3_HOST}/${WAFFLE_S3_BUCKET}
   POOL_SIZE: 20
   IMPORT_MAX_CONCURRENCY: 4 # k8s nodes have 8 cpus
+  SWISS_NAT_COLL_BASE_URL: https://swissnatcoll.hp.gbif-staging.org
+  GBIF_SPECIES_API_BASE_URL: https://api.gbif.org/v1
+  GBIF_API_BASE_URL: https://api.gbif-uat.org/v1
+  GBIF_BASE_URL: https://www.gbif-uat.org
 
 ingress:
   enabled: true
