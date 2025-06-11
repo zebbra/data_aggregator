@@ -134,7 +134,7 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
             :if={@collection.code !== nil}
             class="link link-primary link-hover text-sm/6 flex max-w-4xl items-center gap-x-2 sm:mt-2"
             target="_blank"
-            href={"#{@swiss_nat_coll_base_url}/collections?code=#{@collection.code}"}
+            href={"#{@swiss_nat_coll_base_url}/collection?code=#{@collection.code}"}
           >
             {~t"Show on SwissNatColl"}
             <.icon name="hero-arrow-top-right-on-square" class="size-4" />
