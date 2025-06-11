@@ -197,6 +197,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   attr :record, DataAggregator.Records.Record, required: true
 
   def slideover_subtitle(assigns) do
+    assigns = assign(assigns, :record, Ash.load!(assigns.record, :collection, lazy?: true))
+
     ~H"""
     <div class="my-auto flex space-x-3">
       <p class="text-base-content/60 text-sm/6 line-clamp-2 mt-1 max-w-4xl">

@@ -1523,7 +1523,7 @@ msgid "close"
 msgstr "schließen"
 
 #: lib/data_aggregator_web/live/collection_live/components/header.ex:123
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:211
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:213
 #, elixir-autogen, elixir-format
 msgid "Show on GBIF"
 msgstr "Auf GBIF anzeigen"
@@ -4961,36 +4961,36 @@ msgid "that hold sensitive information and where publication rules will be appli
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/components/header.ex:139
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:223
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:225
 #, elixir-autogen, elixir-format
 msgid "Show on SwissNatColl"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:295
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:297
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS Level 0 - Bare: Minimal metadata linking a specimen to its digital representation. Consider adding essential details to enhance usability. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:298
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:300
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS Level 1 - Basic: Contains fundamental metadata supporting specimen discoverability and management. Additional details will improve scientific value. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:301
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:303
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS level 2 - IntermediaryIncludes key scientific data essential for research applications. Adding georeferencing and extended metadata will further enhance its utility. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:304
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:306
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS level 3 - Extended: Comprehensive metadata with links to external resources, maximizing interoperability and open data usability."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:292
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:294
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "No MIDS Level: Not enough metadata available. See the guide for recommendations."
