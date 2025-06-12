@@ -12,16 +12,10 @@ defmodule DataAggregator.Records.Collection.Changes.SetDeletingBeforeTransaction
 
   @impl true
   def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_transaction(changeset, &set_deleting/1)
-  end
+    %Changeset{data: collection} = changeset
 
-  defp set_deleting(%Changeset{data: collection} = changeset) do
-    case Collection.set_deleting(collection) do
-      {:ok, _collection} ->
-        changeset
+    Collection.set_deleting(collection)
 
-      {:error, error} ->
-        Changeset.add_error(changeset, error)
-    end
+    changeset
   end
 end

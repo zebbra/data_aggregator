@@ -277,8 +277,8 @@ defmodule DataAggregator.Records.Collection do
       primary? true
       require_atomic? false
 
-      change Changes.DeleteAllMedia
       change Changes.SetDeletingBeforeTransaction
+      change Changes.DeleteAllMedia
     end
 
     action :create_endpoint, :map do

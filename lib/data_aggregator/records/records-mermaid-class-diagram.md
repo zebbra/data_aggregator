@@ -102,8 +102,15 @@ classDiagram
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
+        String occ_vitality
+        String occ_occurrence_remarks
+        String occ_associated_taxa
+        String occ_associated_references
+        String occ_associated_occurrences
+        Integer occ_individual_count
         String occ_caste
         String occ_occurrence_id
+        String org_associated_organisms
         String org_organism_remarks
         String org_organism_scope
         String org_organism_name
@@ -133,6 +140,8 @@ classDiagram
         String gec_geological_context_id
         String mts_material_sample_type
         String mts_material_sample_id
+        String mte_associated_sequences
+        String mte_disposition
         String mte_original_biominerals
         String mte_orig_col_author
         Integer mte_year_collection_entrance
@@ -272,6 +281,7 @@ classDiagram
         String tax_scientific_name_id
         Integer tax_identifier
         Integer tax_taxon_id
+        String idf_identification_id
         String idf_typified_name
         String idf_last_verified_by_id
         String idf_last_verified_by
@@ -286,6 +296,7 @@ classDiagram
         String idf_type_status
         String idf_identified_by
         String idf_date_identified
+        String eve_event_type
         Float eve_shrub_layer_height_in_meters
         String eve_start_day_of_year
         String eve_sampling_effort
@@ -495,7 +506,6 @@ classDiagram
         Image[] images
         Attachment[] image_attachments
         update(UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, Integer mapped_images_count, ...)
-        destroy()
         read()
         update_mapping_identifier(Atom mapping_identifier)
         enqueue_extraction()
@@ -517,6 +527,7 @@ classDiagram
         active()
         create(Struct collection, UtcDatetime started_at, UtcDatetime finished_at, Map[] invalid_file_infos, ...)
         create_from_path(Struct collection, String path, String filename, UUID created_by_id)
+        destroy()
     }
     class Publication {
         UUID id
@@ -607,8 +618,15 @@ classDiagram
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
+        String occ_vitality
+        String occ_occurrence_remarks
+        String occ_associated_taxa
+        String occ_associated_references
+        String occ_associated_occurrences
+        Integer occ_individual_count
         String occ_caste
         String occ_occurrence_id
+        String org_associated_organisms
         String org_organism_remarks
         String org_organism_scope
         String org_organism_name
@@ -638,6 +656,8 @@ classDiagram
         String gec_geological_context_id
         String mts_material_sample_type
         String mts_material_sample_id
+        String mte_associated_sequences
+        String mte_disposition
         String mte_original_biominerals
         String mte_orig_col_author
         Integer mte_year_collection_entrance
@@ -777,6 +797,7 @@ classDiagram
         String tax_scientific_name_id
         Integer tax_identifier
         Integer tax_taxon_id
+        String idf_identification_id
         String idf_typified_name
         String idf_last_verified_by_id
         String idf_last_verified_by
@@ -791,6 +812,7 @@ classDiagram
         String idf_type_status
         String idf_identified_by
         String idf_date_identified
+        String eve_event_type
         Float eve_shrub_layer_height_in_meters
         String eve_start_day_of_year
         String eve_sampling_effort
@@ -842,14 +864,15 @@ classDiagram
         Float eve_cover_algae_in_percentage
         String eve_aspect
         UUID id
-        String record_id
         Map extra_data
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID collection_id
         UUID publication_id
+        UUID record_id
         Collection collection
         Publication publication
+        Record record
         destroy()
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read()
@@ -908,8 +931,15 @@ classDiagram
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
+        String occ_vitality
+        String occ_occurrence_remarks
+        String occ_associated_taxa
+        String occ_associated_references
+        String occ_associated_occurrences
+        Integer occ_individual_count
         String occ_caste
         String occ_occurrence_id
+        String org_associated_organisms
         String org_organism_remarks
         String org_organism_scope
         String org_organism_name
@@ -939,6 +969,8 @@ classDiagram
         String gec_geological_context_id
         String mts_material_sample_type
         String mts_material_sample_id
+        String mte_associated_sequences
+        String mte_disposition
         String mte_original_biominerals
         String mte_orig_col_author
         Integer mte_year_collection_entrance
@@ -1078,6 +1110,7 @@ classDiagram
         String tax_scientific_name_id
         Integer tax_identifier
         Integer tax_taxon_id
+        String idf_identification_id
         String idf_typified_name
         String idf_last_verified_by_id
         String idf_last_verified_by
@@ -1092,6 +1125,7 @@ classDiagram
         String idf_type_status
         String idf_identified_by
         String idf_date_identified
+        String eve_event_type
         Float eve_shrub_layer_height_in_meters
         String eve_start_day_of_year
         String eve_sampling_effort
@@ -1170,6 +1204,7 @@ classDiagram
         Image[] images
         Attachment[] image_attachments
         EncodedRecord encoded_record
+        PublishedRecord published_record
         update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
         read()
         encoding()
@@ -1203,10 +1238,10 @@ classDiagram
         Record record
         ImageUpload image_upload
         Collection collection
-        destroy()
         update(Integer size, UUID attachment_id, UUID record_id, UUID image_upload_id, ...)
         read()
         create(Integer size, UUID attachment_id, UUID record_id, UUID image_upload_id, ...)
+        destroy()
     }
     class Version {
         UUID id
@@ -1357,8 +1392,15 @@ classDiagram
         String pvn_preservation_alteration_text
         String pvn_dna_storage_code
         String pvn_dna_bank_institution
+        String occ_vitality
+        String occ_occurrence_remarks
+        String occ_associated_taxa
+        String occ_associated_references
+        String occ_associated_occurrences
+        Integer occ_individual_count
         String occ_caste
         String occ_occurrence_id
+        String org_associated_organisms
         String org_organism_remarks
         String org_organism_scope
         String org_organism_name
@@ -1388,6 +1430,8 @@ classDiagram
         String gec_geological_context_id
         String mts_material_sample_type
         String mts_material_sample_id
+        String mte_associated_sequences
+        String mte_disposition
         String mte_original_biominerals
         String mte_orig_col_author
         Integer mte_year_collection_entrance
@@ -1527,6 +1571,7 @@ classDiagram
         String tax_scientific_name_id
         Integer tax_identifier
         Integer tax_taxon_id
+        String idf_identification_id
         String idf_typified_name
         String idf_last_verified_by_id
         String idf_last_verified_by
@@ -1541,6 +1586,7 @@ classDiagram
         String idf_type_status
         String idf_identified_by
         String idf_date_identified
+        String eve_event_type
         Float eve_shrub_layer_height_in_meters
         String eve_start_day_of_year
         String eve_sampling_effort
@@ -1644,6 +1690,7 @@ classDiagram
     Import -- Record
     Record -- Record
     Publication -- PublishedRecord
+    PublishedRecord -- Record
     Record -- Image
     Record -- Version
     Record -- ValidatedRecord

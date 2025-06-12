@@ -12,6 +12,7 @@ defmodule DataAggregator.Records.RecordTest do
   alias DataAggregator.Gbif
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding.RecordEncodingResult
+  alias DataAggregator.Records.Publication.PublishedRecord
   alias DataAggregator.Records.Record
 
   require Logger
@@ -167,6 +168,108 @@ defmodule DataAggregator.Records.RecordTest do
 
     test "destroy/1 with invalid id returns error" do
       assert {:error, %Invalid{}} = Record.destroy(%Record{id: "invalid"})
+    end
+
+    test "destroy/1 deletes the record and its published_record" do
+      # Create a record
+      record = record_fixture()
+
+      # Create a publication
+      publication = publication_fixture(%{collection: record.collection})
+
+      # Create a published record associated with the record
+      published_record_attrs = %{
+        record_id: record.id,
+        collection_id: record.collection_id,
+        publication_id: publication.id,
+        extra_data: %{},
+        mte_catalog_number: "test-catalog-123",
+        tax_scientific_name: "Test species"
+      }
+
+      assert {:ok, published_record} =
+               PublishedRecord.create(published_record_attrs, tenant: record.collection)
+
+      # Verify the published record exists
+      assert [tenant: record.collection]
+             |> PublishedRecord.read!()
+             |> Enum.any?(&(&1.id == published_record.id))
+
+      # Delete the record
+      assert :ok = Record.destroy(record, tenant: record.collection)
+
+      # Verify the record is deleted
+      assert_raise Invalid, fn ->
+        Record.get_by_id!(record.id, tenant: record.collection)
+      end
+
+      # Verify the published record is also deleted (cascade)
+      refute [tenant: record.collection]
+             |> PublishedRecord.read!()
+             |> Enum.any?(&(&1.id == published_record.id))
+    end
+
+    test "has_one published_record relationship works correctly" do
+      # Create two records
+      record1 = record_fixture()
+      record2 = record_fixture(%{collection: record1.collection, mte_catalog_number: "record2"})
+
+      # Create a publication
+      publication = publication_fixture(%{collection: record1.collection})
+
+      # Create published records for each record (unique constraint on record_id)
+      published_record_attrs_1 = %{
+        record_id: record1.id,
+        collection_id: record1.collection_id,
+        publication_id: publication.id,
+        extra_data: %{},
+        mte_catalog_number: "test-catalog-123",
+        tax_scientific_name: "Test species 1"
+      }
+
+      published_record_attrs_2 = %{
+        record_id: record2.id,
+        collection_id: record2.collection_id,
+        publication_id: publication.id,
+        extra_data: %{},
+        mte_catalog_number: "test-catalog-456",
+        tax_scientific_name: "Test species 2"
+      }
+
+      assert {:ok, published_record_1} =
+               PublishedRecord.create(published_record_attrs_1, tenant: record1.collection)
+
+      assert {:ok, published_record_2} =
+               PublishedRecord.create(published_record_attrs_2, tenant: record1.collection)
+
+      # Load the relationship and verify published record is associated with record1
+      record1_with_published = Ash.load!(record1, :published_record, tenant: record1.collection)
+      assert record1_with_published.published_record != nil
+      assert record1_with_published.published_record.id == published_record_1.id
+
+      # Load the relationship and verify published record is associated with record2
+      record2_with_published = Ash.load!(record2, :published_record, tenant: record2.collection)
+      assert record2_with_published.published_record != nil
+      assert record2_with_published.published_record.id == published_record_2.id
+
+      # Delete record1
+      assert :ok = Record.destroy(record1, tenant: record1.collection)
+
+      # Verify record1's published record is deleted (cascade)
+      remaining_published_records = PublishedRecord.read!(tenant: record1.collection)
+      remaining_ids = Enum.map(remaining_published_records, & &1.id)
+
+      refute published_record_1.id in remaining_ids
+      assert published_record_2.id in remaining_ids
+
+      # Delete record2
+      assert :ok = Record.destroy(record2, tenant: record2.collection)
+
+      # Verify record2's published record is also deleted (cascade)
+      final_published_records = PublishedRecord.read!(tenant: record1.collection)
+      final_ids = Enum.map(final_published_records, & &1.id)
+
+      refute published_record_2.id in final_ids
     end
   end
 

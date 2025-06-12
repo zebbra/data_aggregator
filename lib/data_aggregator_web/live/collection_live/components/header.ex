@@ -131,10 +131,13 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
           </div>
 
           <.link
-            :if={@collection.code !== nil}
+            :if={
+              @collection.code !== nil &&
+                @collection.gbif_dataset_key !== nil
+            }
             class="link link-primary link-hover text-sm/6 flex max-w-4xl items-center gap-x-2 sm:mt-2"
             target="_blank"
-            href={"#{@swiss_nat_coll_base_url}/collection?code=#{@collection.code}"}
+            href={"#{@swiss_nat_coll_base_url}/collection/search?code=#{@collection.code}"}
           >
             {~t"Show on SwissNatColl"}
             <.icon name="hero-arrow-top-right-on-square" class="size-4" />
