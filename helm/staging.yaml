@@ -12,8 +12,8 @@ env:
   SENTRY_SESSION_REPLAY_SCRIPT_URL: https://sentry.zebbra.ch/js-sdk-loader/128c60631cb044ec8c353307d9352673.min.js
   LOG_LEVEL: info
   WAFFLE_STORAGE: s3
-  AWS_S3_HOST: a8c524e0ea4a653c03bf5db26dba19a4.eu.r2.cloudflarestorage.com/zebbra-data-aggregator-staging
-  WAFFLE_S3_BUCKET: data-aggregator-stag
+  AWS_S3_HOST: a8c524e0ea4a653c03bf5db26dba19a4.eu.r2.cloudflarestorage.com
+  WAFFLE_S3_BUCKET: zebbra-data-aggregator-staging
   WAFFLE_ASSET_HOST: https://${AWS_S3_HOST}/${WAFFLE_S3_BUCKET}
   POOL_SIZE: 20
   IMPORT_MAX_CONCURRENCY: 4 # k8s nodes have 8 cpus
