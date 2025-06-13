@@ -5,6 +5,7 @@ defmodule DataAggregator.RecordsFixtures do
   """
 
   alias DataAggregator.Records.Collection
+  alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
 
   @record_defaults %{
@@ -18,6 +19,13 @@ defmodule DataAggregator.RecordsFixtures do
     type: :zoology,
     grscicoll_reference: "322ce107-3156-4420-8a2b-7f17efeaa472",
     code: "Z"
+  }
+
+  @publication_defaults %{
+    name: "Test Publication",
+    records_query: %{},
+    license: :cc_by,
+    layer: "validation"
   }
 
   @doc """
@@ -41,5 +49,19 @@ defmodule DataAggregator.RecordsFixtures do
       |> Collection.create!()
 
     Ash.load!(collection, [:records_to_export_query])
+  end
+
+  @doc """
+  Generate a publication
+  """
+  def publication_fixture(attrs \\ %{}) do
+    params =
+      @publication_defaults
+      |> Map.merge(attrs)
+      |> Map.put_new_lazy(:collection, fn ->
+        collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
+      end)
+
+    Publication.create!(params, tenant: params.collection)
   end
 end
