@@ -10,10 +10,10 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
 
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.Record
 
   attributes do
     uuid_attribute :id, prefix: "pur", public?: true
-    attribute :record_id, :string, primary_key?: true, allow_nil?: false, public?: true
 
     attribute :extra_data, :map, public?: true
 
@@ -28,6 +28,12 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
     end
 
     belongs_to :publication, Publication do
+      allow_nil? false
+      public? true
+    end
+
+    belongs_to :record, Record do
+      primary_key? true
       allow_nil? false
       public? true
     end
@@ -46,6 +52,7 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
   code_interface do
     define :read
     define :create
+    define :update
   end
 
   postgres do
@@ -55,6 +62,12 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
     references do
       reference :collection, on_delete: :delete, on_update: :update
       reference :publication, on_delete: :nothing, on_update: :update
+
+      reference :record,
+        on_delete: :delete,
+        on_update: :update,
+        index?: true,
+        match_with: [collection_id: :collection_id]
     end
   end
 

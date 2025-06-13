@@ -20,6 +20,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
   alias DataAggregator.Records.CollectionType
   alias DataAggregator.Records.Encoding.RecordEncodingResult
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.Record.Image
   alias DataAggregator.Taxonomy.Catalog
   alias Phoenix.LiveView.AsyncResult
 
@@ -355,24 +356,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           label={iucn_redlist_th_label()}
           directions={{:asc, :desc_nils_last}}
         >
-          <div
-            class="tooltip tooltip-right cursor-help"
-            data-tip={
-              if record.iucn_redlist,
-                do: ~t"According to IUCN an endangered species"m,
-                else: ~t"According to IUCN not an endangered species"m
-            }
-          >
-            <.icon
-              name={if record.iucn_redlist, do: "hero-flag-mini", else: "hero-flag"}
-              class={
-                class_names([
-                  "size-5",
-                  record.iucn_redlist == false && "text-base-content",
-                  record.iucn_redlist == true && "text-error"
-                ])
-              }
-            />
+          <div class="tooltip tooltip-right cursor-help" data-tip={iucn_redlist_tooltip(record)}>
+            <.icon name="hero-flag-mini" class={class_names(["size-5", iucn_redlist_flag(record)])} />
           </div>
         </:col>
         <:col
@@ -528,7 +513,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :mids_level)}
           field={:mids_level}
-          label={~t"Quality"m}
+          label={~t"MIDS Level"m}
           class="text-center"
         >
           <.mids_level_indicator level={record.mids_level} />
@@ -572,11 +557,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           class=""
         >
           <:additional_header_content>
-            <.slideover_subtitle
-              text={@selected_record.mte_catalog_number}
-              gbif_id={@selected_record.oth_gbif_id}
-              publication_status={@selected_record.publication_status}
-            />
+            <.slideover_subtitle record={@selected_record} />
             <div class="mt-4 flex space-x-2 max-sm:hidden">
               <.encoding_state_badge state={@selected_record.state} tooltip={false} />
               <.publication_state_badge state={@selected_record.publication_status} tooltip={false} />
@@ -614,7 +595,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               <:item title={~t"Last Changes"m}>
                 {format_datetime(@selected_record.updated_at)}
               </:item>
-              <:item title={~t"Quality"m}>
+              <:item title={~t"MIDS Level"m}>
                 <.mids_level_indicator level={@selected_record.mids_level} />
               </:item>
               <:item title={~t"Swiss Registry"m}>
@@ -624,10 +605,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 />
               </:item>
             </.list>
-            <div :if={@selected_record.encoded_record.mte_associated_media} class="pb-4">
-              <.first_associated_media
-                associated_media={@selected_record.encoded_record.mte_associated_media}
-                class="border-black-white/10 border-b py-8"
+            <div :if={@selected_record.encoded_record.mte_associated_media} class="p-8">
+              <.image_carousel
+                deletable={true}
+                delete_action="image:delete"
+                data-tip={~t"Delete this image"m}
+                data-confirm={~t"Are you sure you want to delete this image?"m}
+                data-confirm_id="confirm_image_alert"
+                record={@selected_record}
               />
             </div>
             <%= for category <- @attrs_in_categories do %>
@@ -860,22 +845,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           />
         </.modal>
 
-        <.alert id="confirm_record_alert" size="sm" confirm_button_label={~t"Yes, delete record"m}>
-          <p class="text-sm">{~t"This will also delete the following associations:"m}</p>
-          <ul class="mt-2 list-inside list-disc text-sm">
-            <li class="text-info">
-              <span class="text-base-content">{~t"Record encodings"m}</span>
-            </li>
-            <li class="text-info">
-              <span class="text-base-content">{~t"Record encoding results"m}</span>
-            </li>
-            <li class="text-info">
-              <span class="text-base-content">{~t"Record imports"m}</span>
-            </li>
-            <li class="text-info">
-              <span class="text-base-content">{~t"Record images"m}</span>
-            </li>
-          </ul>
+        <.alert
+          id="confirm_record_alert"
+          size="sm"
+          title={~t"Are you sure you want to delete this record?"m}
+          confirm_button_label={~t"Yes, delete record"m}
+        >
+          <p class="mt-2 text-sm">
+            {~t"This will delete the record and all related information, such as encodings, validations and images. Upon the next publication, the record will also be removed from GBIF."m}
+          </p>
         </.alert>
 
         <.alert
@@ -885,9 +863,38 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           confirm_button_label={~t"Yes, confirm"m}
           cancel_button_label={~t"No"m}
         />
+
+        <.alert
+          id="confirm_image_alert"
+          size="sm"
+          title={~t"Are you sure you want to delete this image?"m}
+          confirm_button_label={~t"Yes, delete image"m}
+        >
+          <p class="mt-2 text-sm">
+            {~t"The image will be permanently removed. This operation cannot be undone."m}
+          </p>
+        </.alert>
       </:portal>
     </.page>
     """
+  end
+
+  @impl true
+  def handle_event("image:delete", %{"id" => id}, socket) do
+    actor = get_actor(socket)
+    tenant = get_tenant(socket)
+    record = socket.assigns.selected_record
+
+    :ok =
+      id
+      |> Image.get_by_id!(actor: actor, tenant: tenant)
+      |> Image.destroy!(actor: actor, tenant: tenant)
+
+    record = get_record(record.id, actor, tenant)
+
+    socket = assign(socket, :selected_record, record)
+
+    {:noreply, put_flash(socket, :info, ~t"Image deleted successfully"m)}
   end
 
   @impl true
@@ -1224,5 +1231,45 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     ~H"""
     <.icon name="hero-flag" class="size-5" />
     """
+  end
+
+  def iucn_redlist_tooltip(%{encoded_record: %{iucn_redlist_category: nil}}) do
+    ~t"Unknown"m
+  end
+
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def iucn_redlist_tooltip(%{encoded_record: %{iucn_redlist_category: iucn_redlist_category}}) do
+    case iucn_redlist_category do
+      "NE" -> ~t"Not Evaluated (NE)"m
+      "DD" -> ~t"Data Deficient (DD)"m
+      "LC" -> ~t"Least Concern (LC)"m
+      "NT" -> ~t"Near threatened (NT)"m
+      "VU" -> ~t"Vulnerable (VU)"m
+      "EN" -> ~t"Endangered (EN)"m
+      "CR" -> ~t"Critically Endangered (CR)"m
+      "RE" -> ~t"Regionally Extinct (RE)"m
+      "EW" -> ~t"Extinct in the Wild (EW)"m
+      "EX" -> ~t"Extinct (EX)"m
+    end
+  end
+
+  def iucn_redlist_flag(%{encoded_record: %{iucn_redlist_category: nil}}) do
+    "text-[#C1B5A5]"
+  end
+
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def iucn_redlist_flag(%{encoded_record: %{iucn_redlist_category: iucn_redlist_category}}) do
+    case iucn_redlist_category do
+      "NE" -> "text-[#FFFFFF]"
+      "DD" -> "text-[#D1D1C6]"
+      "LC" -> "text-[#60C659]"
+      "NT" -> "text-[#CCE226]"
+      "VU" -> "text-[#F9E814]"
+      "EN" -> "text-[#FC7F3F]"
+      "CR" -> "text-[#D81E05]"
+      "RE" -> "text-[#9B4F96]"
+      "EW" -> "text-[#542344]"
+      "EX" -> "text-[#000000]"
+    end
   end
 end

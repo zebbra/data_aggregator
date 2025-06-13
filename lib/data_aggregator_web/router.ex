@@ -128,6 +128,10 @@ defmodule DataAggregatorWeb.Router do
         ImageUploadController,
         :show_image
 
+    # Attachment routes
+    get "/attachments/:id", AttachmentController, :show
+    get "/attachments/:id/download", AttachmentController, :download
+
     auth_routes(AuthController, User, path: "/auth")
     sign_out_route AuthController
 

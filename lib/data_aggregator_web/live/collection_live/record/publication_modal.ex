@@ -194,18 +194,48 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
     <div class={unless @step == 1, do: "hidden"}>
       <div class="space-y-4">
         <p class="text-sm">
-          {~t"You are about to send"m}
+          {~t"You've selected"m}
           <span class="font-bold">
             {mgettext(
               "%{count} records from the %{layer} layer",
-              count: format_number(@checked_publication_count),
+              count: format_number(@total_count),
               layer: @layer
             )}
           </span>
-          {~t"to GBIF, making them publicly available. Make sure that the layer you are publishing corresponds to the filters you wish to use. Also, be aware that the records without a value for the"m}
-          <span class="font-bold">{~t"kingdom "m}</span>
-          {~t"attribute will not be published."m}
+          {~t"for publication to GBIF, which will make them publicly available. Make sure the layer and filters are corresponding to the selection you’d like to publish."m}
         </p>
+
+        <div :if={@total_count - @checked_publication_count > 0} class="flex">
+          <div class="mr-4 flex-shrink-0">
+            <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
+          </div>
+          <p class="text-sm">
+            {~t"There are"m}
+            <span class="text-sm font-bold">
+              {mgettext("%{possible_sensitive_count} out of %{total_count} records",
+                possible_sensitive_count: format_number(@total_count - @checked_publication_count),
+                total_count: format_number(@total_count)
+              )}
+            </span>
+            {~t"that may contain sensitive information and, therefore, will not be published. Run the encoding process to enhance your data."m}
+          </p>
+        </div>
+        <div :if={@publication_rules_count > 0} class="flex">
+          <div class="mr-4 flex-shrink-0">
+            <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
+          </div>
+          <p class="text-sm">
+            {~t"There are"m}
+            <span class="text-sm font-bold">
+              {mgettext("%{publication_rules_count} out of %{total_count} records",
+                publication_rules_count: format_number(@publication_rules_count),
+                total_count: format_number(@total_count - (@total_count - @checked_publication_count))
+              )}
+            </span>
+            {~t"that hold sensitive information and where publication rules will be applied. These rules will obfuscate the exact location information upon publication."m}
+          </p>
+        </div>
+
         <%= if @dataset_still_exist? do %>
           <div class="flex">
             <div class="mr-4 flex-shrink-0">
@@ -463,36 +493,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
           {~t"to GBIF"m}
         </p>
 
-        <div :if={@total_count - @checked_publication_count > 0} class="flex">
-          <div class="mr-4 flex-shrink-0">
-            <.icon name="hero-x-circle-mini" class="size-6 text-error" />
-          </div>
-          <p class="text-sm">
-            {~t"There are"m}
-            <span class="text-sm font-bold">
-              {mgettext("%{possible_sensitive_count} out of %{total_count} records",
-                possible_sensitive_count: format_number(@total_count - @checked_publication_count),
-                total_count: format_number(@total_count)
-              )}
-            </span>
-            {~t"that may contain sensitive information and, therefore, will not be published. Run the encoding process to enhance your data."m}
-          </p>
-        </div>
-        <div :if={@publication_rules_count > 0} class="flex">
-          <div class="mr-4 flex-shrink-0">
-            <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
-          </div>
-          <p class="text-sm">
-            {~t"There are"m}
-            <span class="text-sm font-bold">
-              {mgettext("%{publication_rules_count} records",
-                publication_rules_count: format_number(@publication_rules_count)
-              )}
-            </span>
-            {~t"that hold sensitive information and where publication rules will be applied. These rules will obfuscate the exact location information."m}
-          </p>
-        </div>
-
         <.list dense>
           <:item title={~t"Dataset Title"m}>
             <%= if @creation_option == "new" do %>
@@ -511,11 +511,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
             <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
           </div>
           <p class="text-sm">
-            {~t"The action of publishing data is irreversible and removing records after publication is not automatically supported by the Data Aggregator DAGI and requires manual intervention on GBIF. It is therefore"m}
+            {~t"Unpublishing records from GBIF is only possible by deleting them from the Data Aggregator DAGI and then republishing the updated dataset to GBIF. It is not possible to unpublish an entire dataset via DAGI. It is therefore"m}
             <span class="text-sm font-bold">
               {~t"your responsibility"m}
             </span>
-            {~t"to guarantee the quality of the data being served and to ensure that the dataset does not include sensitive information. Should you need to revise any dataset after publication, you will need to contact the GBIF Swiss Node"m}
+            {~t"to ensure the quality of the data being served and to verify that the dataset does not include any sensitive information. Should you need to revise a dataset after publication, please contact the GBIF Swiss Node"m}
             <.link href="mailto:contact@gbif.ch" class="text-primary">
               {"(contact@gbif.ch)"}
             </.link>

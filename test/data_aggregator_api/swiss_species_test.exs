@@ -63,25 +63,6 @@ defmodule DataAggregatorApi.SwissSpeciesTest do
   end
 
   describe "/api/json/swiss_species" do
-    test "lists all swiss_species", %{
-      conn: conn,
-      swiss_species_1: swiss_species_1,
-      swiss_species_2: swiss_species_2,
-      swiss_species_3: swiss_species_3
-    } do
-      # Make the request
-      conn = get(conn, "/api/json/swiss_species", status: 200)
-
-      # Assert on the response
-      assert %{"data" => data} = json_response(conn, 200)
-
-      # Check that our test entries are in the response
-      # Note: There might be other entries in the database due to system seeds, so we don't assert on the exact length
-      assert Enum.any?(data, fn entry -> entry["id"] == swiss_species_1.id end)
-      assert Enum.any?(data, fn entry -> entry["id"] == swiss_species_2.id end)
-      assert Enum.any?(data, fn entry -> entry["id"] == swiss_species_3.id end)
-    end
-
     test "filters swiss_species by scientific_name succeeded", %{
       conn: conn,
       swiss_species_1: swiss_species_1

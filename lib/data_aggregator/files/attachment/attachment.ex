@@ -33,6 +33,8 @@ defmodule DataAggregator.Files.Attachment do
       argument :expires_in, :integer, default: @day
     end
 
+    calculate :public_url, :string, expr("#")
+
     calculate :cached_file, :string, Attachment.Calculations.CachedFile
   end
 

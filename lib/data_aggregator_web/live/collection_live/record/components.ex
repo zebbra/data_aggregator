@@ -194,46 +194,81 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     """
   end
 
-  attr :associated_media, :string, required: true
-  attr :class, :string, default: ""
+  attr :record, DataAggregator.Records.Record, required: true
 
-  def first_associated_media(%{associated_media: nil} = assigns), do: ~H""
-
-  def first_associated_media(%{associated_media: associated_media} = assigns) do
-    split =
-      associated_media
-      |> String.split("|")
-      |> Enum.map(&String.trim/1)
-
-    assigns = assign(assigns, :split, split)
+  def slideover_subtitle(assigns) do
+    assigns = assign(assigns, :record, Ash.load!(assigns.record, :collection, lazy?: true))
 
     ~H"""
-    <div class={@class}>
-      <img src={List.first(@split)} class="max-h-128 w-2/3 rounded-lg px-8" />
+    <div class="my-auto flex space-x-3">
+      <p class="text-base-content/60 text-sm/6 line-clamp-2 mt-1 max-w-4xl">
+        {@record.mte_catalog_number}
+      </p>
+      <.link
+        :if={@record.oth_gbif_id !== nil && @record.publication_status == :published}
+        class="link link-primary link-hover text-sm/6 mt-1 flex max-w-4xl items-center gap-x-2"
+        target="_blank"
+        href={"#{gbif_base_url()}/occurrence/#{@record.oth_gbif_id}"}
+      >
+        {~t"Show on GBIF"} <.icon name="hero-arrow-top-right-on-square" class="size-4" />
+      </.link>
+
+      <.link
+        :if={
+          @record.collection.code !== nil && @record.mte_catalog_number !== nil &&
+            @record.publication_status == :published
+        }
+        class="link link-primary link-hover text-sm/6 mt-1 flex max-w-4xl items-center gap-x-2"
+        target="_blank"
+        href={"#{swiss_nat_coll_base_url()}/occurrence/search?catalogNumber=#{@record.mte_catalog_number}&collectionCode=#{@record.collection.code}"}
+      >
+        {~t"Show on SwissNatColl"} <.icon name="hero-arrow-top-right-on-square" class="size-4" />
+      </.link>
     </div>
     """
   end
 
-  attr :text, :string, required: true
-  attr :gbif_id, :string, default: nil
-  attr :publication_status, :atom, default: nil
+  attr :record, DataAggregator.Records.Record, required: true
+  attr :deletable, :boolean, default: false
+  attr :delete_action, :string, default: nil
+  attr :rest, :global
 
-  def slideover_subtitle(assigns) do
+  def image_carousel(assigns) do
+    images = build_carousel_items(assigns.record)
+
+    assigns = assign(assigns, images: images)
+
     ~H"""
-    <div class="my-auto flex space-x-3">
-      <p class="text-base-content/60 text-sm/6 line-clamp-2 mt-1 max-w-4xl">
-        {@text}
-      </p>
-      <.link
-        :if={@gbif_id !== nil && @publication_status == :published}
-        class="link link-primary link-hover text-sm/6 mt-1 flex max-w-4xl items-center gap-x-2"
-        target="_blank"
-        href={"#{gbif_base_url()}/occurrence/#{@gbif_id}"}
+    <div class="carousel space-x-4">
+      <div :for={{image, _index} <- @images} class="carousel-item relative" id={"item-#{image.id}"}>
+        <img src={image.image_url} class="max-h-[350px] w-auto" />
+        <button
+          :if={@deletable}
+          class="btn tooltip tooltip-left btn-sm btn-circle btn-ghost absolute right-3 bottom-3 inline-flex bg-black"
+          phx-click={JS.push(@delete_action, value: %{id: image.id})}
+          {@rest}
+        >
+          <.icon name="hero-trash-mini" class="size-5" />
+        </button>
+      </div>
+    </div>
+    <div class="flex w-full justify-center gap-2 py-2">
+      <a
+        :for={{image, index} <- @images}
+        :if={length(@images) > 1}
+        href={"#item-#{image.id}"}
+        class="btn btn-xs"
       >
-        {~t"Show on GBIF"} <.icon name="hero-arrow-top-right-on-square" class="size-4" />
-      </.link>
+        {index + 1}
+      </a>
     </div>
     """
+  end
+
+  defp build_carousel_items(record) do
+    record = Ash.load!(record, images: :image_url)
+
+    Enum.with_index(record.images)
   end
 
   defp level_indicator(level) do
@@ -256,19 +291,19 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   defp level_translation(level) do
     case level do
       0 ->
-        ~t"Please submit at least the institution code with your data, to reach the lowest quality level"m
+        ~t"No MIDS Level: Not enough metadata available. See the guide for recommendations."m
 
       1 ->
-        ~t"Add all of the following fields to reach level two: taxon_id, part_of_organism"m
+        ~t"MIDS Level 0 - Bare: Minimal metadata linking a specimen to its digital representation. Consider adding essential details to enhance usability. See the guide for recommendations."m
 
       2 ->
-        ~t"Add the following fields to reach level three: event_date, ecorded_by, type_status, original_name_usage, continent, country, county, decimal_latitude, decimal_longitude, higher_geography, locality, state_province, verbatim_depth, verbatim_elevation, year_collection_entrance, occurrence_id"m
+        ~t"MIDS Level 1 - Basic: Contains fundamental metadata supporting specimen discoverability and management. Additional details will improve scientific value. See the guide for recommendations."m
 
       3 ->
-        ~t"Add one of the follwing fields to reach level four: verbatim_event_date, identified_by, identification_qualifier, identification_verification_status, last_verified_by, verbatim_identification, georeferenced_by, georeference_verification_status, verbatim_coordinates, verbatim_latitude, verbatim_longitude, verbatim_locality, associated_media, completeness, other_catalog_numbers, verbatim_label"m
+        ~t"MIDS level 2 - IntermediaryIncludes key scientific data essential for research applications. Adding georeferencing and extended metadata will further enhance its utility. See the guide for recommendations."m
 
       4 ->
-        ~t"Record has a top quality. Add more data fields to improve your datasets relevance"m
+        ~t"MIDS level 3 - Extended: Comprehensive metadata with links to external resources, maximizing interoperability and open data usability."m
     end
   end
 end

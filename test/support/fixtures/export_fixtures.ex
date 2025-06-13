@@ -374,7 +374,18 @@ defmodule DataAggregator.ExportFixtures do
       "dynamicProperties",
       "measurementUnit",
       "measurementValue",
-      "typeDesignatedBy"
+      "typeDesignatedBy",
+      "associatedTaxa",
+      "associatedOccurrences",
+      "vitality",
+      "eventType",
+      "occurrenceRemarks",
+      "identificationID",
+      "associatedSequences",
+      "individualCount",
+      "associatedOrganisms",
+      "associatedReferences",
+      "disposition"
     ]
   end
 
@@ -671,7 +682,18 @@ defmodule DataAggregator.ExportFixtures do
       "oth_dynamic_properties" => "dynamicProperties",
       "oth_measurement_unit" => "measurementUnit",
       "oth_measurement_value" => "measurementValue",
-      "oth_type_designated_by" => "typeDesignatedBy"
+      "oth_type_designated_by" => "typeDesignatedBy",
+      "eve_event_type" => "eventType",
+      "idf_identification_id" => "identificationID",
+      "mte_associated_sequences" => "associatedSequences",
+      "mte_disposition" => "disposition",
+      "occ_associated_occurrences" => "associatedOccurrences",
+      "occ_associated_references" => "associatedReferences",
+      "occ_associated_taxa" => "associatedTaxa",
+      "occ_individual_count" => "individualCount",
+      "occ_occurrence_remarks" => "occurrenceRemarks",
+      "occ_vitality" => "vitality",
+      "org_associated_organisms" => "associatedOrganisms"
     }
   end
 end

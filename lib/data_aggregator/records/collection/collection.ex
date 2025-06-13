@@ -273,9 +273,11 @@ defmodule DataAggregator.Records.Collection do
 
     destroy :destroy do
       accept []
+
       primary? true
       require_atomic? false
 
+      change Changes.DeleteAllMedia
       change Changes.SetDeletingBeforeTransaction
     end
 

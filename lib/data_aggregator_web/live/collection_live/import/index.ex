@@ -180,16 +180,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               icon="hero-pencil-square-mini"
             />
           </div>
-
-          <.table_action_button
-            type="button"
-            phx-click={JS.push("import:delete", value: %{id: import.id})}
-            data-tip={~t"Delete"m}
-            data-confirm={~t"Are you sure?"m}
-            data-confirm_id="confirm_import_alert"
-            disabled={@busy || can_delete?(import) == false}
-            icon="hero-trash-mini"
-          />
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/datasets/#{@collection}/imports"} />
@@ -394,19 +384,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
               {col}
             </span>
           </div>
-
-          <:footer :if={Collection.can_set_importing?(@current_user, @collection)}>
-            <button
-              type="button"
-              phx-click={JS.push("import:delete", value: %{id: @selected_import.id})}
-              class="btn btn-error max-sm:btn-sm"
-              data-confirm={~t"Are you sure?"m}
-              data-confirm_id="confirm_import_alert"
-              disabled={can_delete?(@selected_import) == false}
-            >
-              <.icon name="hero-x-circle-mini" class="size-6" /> {~t"Delete"m}
-            </button>
-          </:footer>
         </.slideover>
       </:secondary>
 
@@ -509,20 +486,6 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
       {:error, _} ->
         {:noreply, put_flash(socket, :error, ~t"An import for this dataset is already in process")}
     end
-  end
-
-  @impl true
-  def handle_event("import:delete", %{"id" => id}, socket) do
-    actor = get_actor(socket)
-    tenant = get_tenant(socket)
-    import = Import.get_by_id!(id, actor: actor, tenant: tenant)
-    :ok = Import.destroy(import, actor: actor)
-
-    {:noreply,
-     socket
-     |> put_flash(:info, ~t"Import deleted successfully"m)
-     |> assign(:selected_import, nil)
-     |> stream_delete(:results, import)}
   end
 
   @impl true
@@ -630,8 +593,13 @@ defmodule DataAggregatorWeb.CollectionLive.Import.Index do
   defp error_log_preview_data(error_log) do
     error_log = Ash.load!(error_log, [:url], lazy?: true)
 
-    error_log.url
-    |> Explorer.DataFrame.from_csv!(max_rows: 100)
-    |> Explorer.DataFrame.to_rows(atom_keys: true)
+    case Explorer.DataFrame.from_csv(error_log.url, max_rows: 100) do
+      {:ok, df} ->
+        Explorer.DataFrame.to_rows(df, atom_keys: true)
+
+      {:error, _} ->
+        # :error happens if the csv file is empty, so we return an empty list
+        []
+    end
   end
 end

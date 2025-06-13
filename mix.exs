@@ -1,13 +1,13 @@
 defmodule DataAggregator.MixProject do
   use Mix.Project
 
-  @version "0.12.0"
+  @version "0.12.2"
 
   def project do
     [
       app: :data_aggregator,
       version: @version,
-      elixir: "~> 1.17",
+      elixir: "~> 1.18",
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [ignore_module_conflict: true],
       start_permanent: Mix.env() == :prod,
@@ -194,8 +194,10 @@ defmodule DataAggregator.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:usage_rules, "~> 0.1", only: [:dev]},
+      {:igniter, "~> 0.5", only: [:dev, :test]},
       # Phoenix Framework
-      {:bandit, "~> 1.6.0"},
+      {:bandit, "~> 1.7.0"},
       {:phoenix, "~> 1.7.14"},
       {:phoenix_ecto, "~> 4.6"},
       {:phoenix_html, "~> 4.1"},
@@ -230,7 +232,7 @@ defmodule DataAggregator.MixProject do
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:assertions, "~> 0.19", only: :test},
-      {:git_ops, "~> 2.7.2", only: [:dev]},
+      {:git_ops, "~> 2.8.0", only: [:dev]},
       {:git_hooks, "~> 0.8.0", only: [:dev], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
       {:mimic, "~> 1.11", only: :test},

@@ -29,7 +29,6 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
   def collection_header(%{collection: nil} = assigns) do
     assigns
     |> assign(:collection, get_collection_light(assigns.collection_id, get_actor(assigns)))
-    |> assign(:gbif_dataset_base_url, "#{gbif_base_url()}/dataset")
     |> collection_header()
   end
 
@@ -48,7 +47,8 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
 
     assigns =
       assigns
-      |> assign_new(:gbif_dataset_base_url, fn -> "#{gbif_base_url()}/dataset" end)
+      |> assign(:gbif_dataset_base_url, "#{gbif_base_url()}/dataset")
+      |> assign(:swiss_nat_coll_base_url, "#{swiss_nat_coll_base_url()}")
       |> assign(:show_import_button, show_import_button)
       |> assign(:show_image_upload_button, show_image_upload_button)
       |> assign(:show_cancel_button, show_cancel_button)
@@ -113,20 +113,32 @@ defmodule DataAggregatorWeb.CollectionLive.Components.Header do
         </h2>
       </:title>
       <:subtitle>
-        <.link
-          :if={@collection.gbif_dataset_key !== nil}
-          class="link link-primary link-hover text-sm/6 flex max-w-4xl items-center gap-x-2 sm:mt-2"
-          target="_blank"
-          href={"#{@gbif_dataset_base_url}/#{@collection.gbif_dataset_key}"}
-        >
-          {~t"Show on GBIF"} <.icon name="hero-arrow-top-right-on-square" class="size-4" />
-        </.link>
+        <div class="flex gap-x-5">
+          <.link
+            :if={@collection.gbif_dataset_key !== nil}
+            class="link link-primary link-hover text-sm/6 flex max-w-4xl items-center gap-x-2 sm:mt-2"
+            target="_blank"
+            href={"#{@gbif_dataset_base_url}/#{@collection.gbif_dataset_key}"}
+          >
+            {~t"Show on GBIF"} <.icon name="hero-arrow-top-right-on-square" class="size-4" />
+          </.link>
 
-        <div
-          :if={@collection.gbif_dataset_key === nil}
-          class="text-base-content/60 text-sm/6 flex max-w-4xl items-center gap-x-2 sm:mt-2"
-        >
-          {@collection.code}
+          <div
+            :if={@collection.gbif_dataset_key === nil}
+            class="text-base-content/60 text-sm/6 flex max-w-4xl items-center gap-x-2 sm:mt-2"
+          >
+            {@collection.code}
+          </div>
+
+          <.link
+            :if={@collection.code !== nil}
+            class="link link-primary link-hover text-sm/6 flex max-w-4xl items-center gap-x-2 sm:mt-2"
+            target="_blank"
+            href={"#{@swiss_nat_coll_base_url}/collection?code=#{@collection.code}"}
+          >
+            {~t"Show on SwissNatColl"}
+            <.icon name="hero-arrow-top-right-on-square" class="size-4" />
+          </.link>
         </div>
       </:subtitle>
       <:actions
