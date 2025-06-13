@@ -1,6 +1,6 @@
-defmodule DataAggregator.Records.Collection.Changes.SetDeletingBeforeTransaction do
+defmodule DataAggregator.Records.Collection.Changes.SetDeleting do
   @moduledoc """
-  Sets the state to `:deleting` before the transaction is started.
+  Sets the state to `:deleting` while the collection is being deleted.
   """
 
   use Ash.Resource.Change

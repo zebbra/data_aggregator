@@ -277,7 +277,7 @@ defmodule DataAggregator.Records.Collection do
       primary? true
       require_atomic? false
 
-      change Changes.SetDeletingBeforeTransaction
+      change Changes.SetDeleting
       change Changes.DeleteAllMedia
     end
 
