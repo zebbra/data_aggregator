@@ -18,6 +18,16 @@ defmodule DataAggregator.Records.Import.Changes.SetRecordsCountAfterTransaction 
   end
 
   defp set_records_count(_changeset, {:ok, import}) do
+    set_count(import)
+  end
+
+  defp set_records_count(%Changeset{data: import}, {:error, error}) do
+    {:ok, _import} = set_count(import)
+
+    {:error, error}
+  end
+
+  defp set_count(import) do
     import = Ash.load!(import, [:collection], lazy?: true, tenant: import.collection_id)
 
     collection = import.collection
@@ -36,9 +46,5 @@ defmodule DataAggregator.Records.Import.Changes.SetRecordsCountAfterTransaction 
     )
 
     {:ok, import}
-  end
-
-  defp set_records_count(_changeset, {:error, error}) do
-    {:error, error}
   end
 end
