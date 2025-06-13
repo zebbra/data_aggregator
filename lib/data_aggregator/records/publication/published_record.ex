@@ -53,6 +53,7 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
     define :read
     define :create
     define :update
+    define :get_by_id, action: :read, get_by: [:id]
   end
 
   postgres do
@@ -66,7 +67,6 @@ defmodule DataAggregator.Records.Publication.PublishedRecord do
       reference :record,
         on_delete: :delete,
         on_update: :update,
-        index?: true,
         match_with: [collection_id: :collection_id]
     end
   end

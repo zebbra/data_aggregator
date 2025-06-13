@@ -936,7 +936,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     actor = get_actor(socket)
     tenant = get_tenant(socket)
     record = Record.get_by_id!(id, actor: actor, tenant: tenant)
-    :ok = Record.destroy(record, actor: actor)
+    :ok = Record.destroy(record, actor: actor, tenant: tenant)
 
     {:noreply,
      socket

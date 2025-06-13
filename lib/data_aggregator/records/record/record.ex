@@ -32,6 +32,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.EncodedRecord
   alias DataAggregator.Records.Encoding
   alias DataAggregator.Records.Import
+  alias DataAggregator.Records.Publication.PublishedRecord
   alias DataAggregator.Records.PublicationStatusType
   alias DataAggregator.Records.Record.Calculations
   alias DataAggregator.Records.Record.Changes
@@ -122,6 +123,11 @@ defmodule DataAggregator.Records.Record do
 
     has_one :encoded_record, EncodedRecord do
       allow_nil? true
+      public? true
+      filter expr(collection_id == parent(collection_id))
+    end
+
+    has_one :published_record, PublishedRecord do
       public? true
       filter expr(collection_id == parent(collection_id))
     end

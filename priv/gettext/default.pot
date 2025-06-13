@@ -2577,7 +2577,7 @@ msgstr ""
 msgid "Upload Images"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:180
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:183
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Upload Images"
@@ -3365,7 +3365,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Datasets"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:168
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:171
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Components.Header"
 msgid "Import data"
@@ -4960,7 +4960,7 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "that hold sensitive information and where publication rules will be applied. These rules will obfuscate the exact location information upon publication."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/components/header.ex:139
+#: lib/data_aggregator_web/live/collection_live/components/header.ex:142
 #: lib/data_aggregator_web/live/collection_live/record/components.ex:225
 #, elixir-autogen, elixir-format
 msgid "Show on SwissNatColl"
