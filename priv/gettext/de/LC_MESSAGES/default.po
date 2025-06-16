@@ -24,7 +24,6 @@ msgid "Type"
 msgstr "Typ"
 
 #: lib/data_aggregator_web/live/collection_live/index.ex:135
-#: lib/data_aggregator_web/live/collection_live/index.ex:150
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Are you sure?"
@@ -35,12 +34,6 @@ msgstr "Bist Du sicher?"
 msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Code"
 msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/index.ex:149
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Index"
-msgid "Delete"
-msgstr "Löschen"
 
 #: lib/data_aggregator_web/live/collection_live/index.ex:142
 #, elixir-autogen, elixir-format
