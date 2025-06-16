@@ -2052,13 +2052,13 @@ msgctxt "DataAggregatorWeb.AdministrationLive.SetPassword"
 msgid "Something went wrong"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:59
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:68
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Administration"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:59
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:68
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Administration"
@@ -2102,13 +2102,13 @@ msgstr ""
 msgid "Sign out"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:138
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:147
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Sign out"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:138
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:147
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Sign out"
@@ -2439,25 +2439,25 @@ msgctxt "DataAggregatorWeb.AdministrationLive.Index"
 msgid "Yes, delete user"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:80
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:89
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Guide"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:100
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:109
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Tutorials"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:80
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:89
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Guide"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:100
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:109
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Tutorials"
@@ -3171,20 +3171,20 @@ msgstr ""
 msgid "The mapping identifier links image filenames to records by matching the part before an underscore (or the file extension if no underscore exists) with a chosen attribute, like catalogNumber, materialEntitiyId or occurenceId."
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:62
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:62
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:71
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:71
 #, elixir-autogen, elixir-format
 msgid "Administration"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:83
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:83
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:92
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:92
 #, elixir-autogen, elixir-format
 msgid "Guide"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:103
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:103
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:112
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:112
 #, elixir-autogen, elixir-format
 msgid "Tutorials"
 msgstr ""
@@ -3352,8 +3352,8 @@ msgstr ""
 msgid "An import for this dataset is already in process"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:39
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:39
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:48
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:48
 #, elixir-autogen, elixir-format
 msgid "Datasets"
 msgstr ""
@@ -3553,13 +3553,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Dataset Records"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:36
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:45
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Datasets"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:36
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:45
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Datasets"
@@ -3794,8 +3794,8 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
 msgid "kingdom  "
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:123
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:123
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:132
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:132
 #, elixir-autogen, elixir-format
 msgid "Terms&Conditions"
 msgstr ""
@@ -3805,25 +3805,25 @@ msgstr ""
 msgid "terms of use"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:120
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:129
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Primary"
 msgid "Terms&Conditions"
 msgstr ""
 
-#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:120
+#: lib/data_aggregator_web/components/layouts/shared/main_navigation.html.heex:129
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.Layouts.Secondary"
 msgid "Terms&Conditions"
 msgstr ""
 
-#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:49
+#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:57
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
 msgid "Accept"
 msgstr ""
 
-#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:52
+#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:60
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
 msgid "Decline"
@@ -3853,7 +3853,7 @@ msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
 msgid "By accessing the Data Aggregator DAGI, you agree to comply with the conditions laid down on our policy. These terms govern the use of our services and content. We encourage you to read them carefully. If you do not agree to these terms, please do not use our platform."
 msgstr ""
 
-#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:43
+#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:51
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
 msgid "Thank you and welcome!"
@@ -5073,4 +5073,10 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.PublicationModal"
 msgid "You've selected"
+msgstr ""
+
+#: lib/data_aggregator_web/live/terms_and_conditions_live/index.ex:47
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
+msgid "Data Aggregator DAGI does not use personal data outside its environment. By pressing ‘Accept’ I authorize the collection and processing of my personal information as part of the use of DAGI services."
 msgstr ""

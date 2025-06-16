@@ -171,4 +171,4 @@ The API is documented with [OpenAPI](https://swagger.io/specification/) and can 
 
 ### Postman Collection
 
-The [Postman Collection](./postman_collection) gives you a better usability to test and explore the API. You need an active user to login, to use the API.
+The [Postman Collection](./postman_collection.json) gives you a better usability to test and explore the API. You need an active user to login, to use the API.
