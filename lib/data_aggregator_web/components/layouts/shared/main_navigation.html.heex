@@ -12,8 +12,17 @@
         aria-label="Datasets"
         class="avatar btn btn-ghost w-full space-x-2 max-md:justify-start md:btn-circle"
       >
-        <div class="w-10 rounded-full">
-          <img src="/images/logo.png" alt="Data Aggregator" />
+        <div class="w-12 rounded-full">
+          <img
+            src="/images/logo-light.png"
+            alt="Data Aggregator"
+            class="[[data-theme=dark]_&]:hidden [[data-theme=light]_&]:block block dark:hidden"
+          />
+          <img
+            src="/images/logo-dark.png"
+            alt="Data Aggregator"
+            class="[[data-theme=dark]_&]:block [[data-theme=light]_&]:hidden hidden dark:block"
+          />
         </div>
         <span class="font-title text-base-content text-lg md:hidden">Data Aggregator</span>
       </.link>

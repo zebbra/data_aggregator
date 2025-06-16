@@ -40,7 +40,8 @@ defmodule DataAggregatorWeb.AuthOverrides do
 
     set :text, "Data Aggregator"
     set :text_class, "text-xl font-semibold"
-    set :image_url, "/images/logo.png"
+    set :image_url, "/images/logo-light.png"
+    set :image_url, "/images/logo-dark.png"
     set :image_class, "size-12"
     set :dark_image_class, "hidden"
   end

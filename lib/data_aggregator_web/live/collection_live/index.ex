@@ -144,14 +144,14 @@ defmodule DataAggregatorWeb.CollectionLive.Index do
               icon="hero-pencil-square-mini"
             />
           </div>
-          <.table_action_button
+          <%!-- <.table_action_button
             phx-click={JS.push("collection:delete", value: %{id: collection.id})}
             data-tip={~t"Delete"m}
             data-confirm={~t"Are you sure?"m}
             data-confirm_id="confirm_collection_alert"
             disabled={collection.busy}
             icon="hero-trash-mini"
-          />
+          /> --%>
         </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/datasets"} />
