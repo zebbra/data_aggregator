@@ -39,6 +39,14 @@ defmodule DataAggregatorWeb.TermsAndConditionsLive.Index do
                 </.link>
                 {~t"of the DAGI and accept full responsibility for the data I upload and publish."m}
               </p>
+              <div class="flex">
+                <div class="mr-4 flex-shrink-0">
+                  <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
+                </div>
+                <p class="text-sm">
+                  {~t"Data Aggregator DAGI does not use personal data outside its environment. By pressing ‘Accept’ I authorize the collection and processing of my personal information as part of the use of DAGI services."m}
+                </p>
+              </div>
               <p class="text-sm">
                 {~t"Thank you and welcome!"m}
               </p>

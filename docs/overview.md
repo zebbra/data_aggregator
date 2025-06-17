@@ -1,14 +1,8 @@
-# Overview
-
-Get insights to the project on a medium depht level. Understand concepts, without diving into the code.
-
-## Brief summary
+# Summary
 
 The Data Aggregator is a web application that is used to integrate biodiversity data into a Darwin Core compatible data format. The application is built using the Phoenix, and Ash Frameworks which are development utilities written in Elixir. The application is designed to be modular and extensible, allowing for the addition of new features and functionality as needed. It is a project of the Swiss Academy of Sciences (SCNAT) and is developed by Zebbra.
 
 If there are - in your opinion - parts missing or if you detect issues, please create an issue on [Github]("https://github.com/zebbra/data_aggregator") or consider contribute by submitting a [PR]("https://github.com/zebbra/data_aggregator")
-
-# The Application
 
 We will describe the High- to Mid-Level concepts of the application. The goal is to give you a good understanding of the applications architecture and the main modules that cover the processes needed for import, enrichment, and publication of biodiversity data.
 
@@ -18,207 +12,648 @@ Throughout the documentation, we will use the `for_coders:` tag to indicate sect
 
 Consider as well play around with some tutorials or getting-started guides of the [Ash Framework]("https://ash-hq.org/") and the [Phoenix Framework]("https://www.phoenixframework.org/") which are the core of the application.
 
-## Process
+- [Data Model](#data-model)
+- [Core Modules](#core-modules)
+- [System Features](#system-features)
+- [Integration Points](#integration-points)
+- [JSON Rest API](#json-rest-api)
 
-Among other sophisticated logic in the background, the core functionality is the pipeline of tranforming raw import data to a Darwin Core compatible format and publish it to GBIF. The process is divided into several steps, each of which is responsible for a specific task.
+# Data Model
 
-<img src="images/main_process.png" alt="Main process" width="100%">
-
-`for_coders:` All the modules relevant to the backend functionality are located in the `lib/data_aggregator` directory. The `data_aggregator` module contains the core logic for the data aggregation process, while the `data_aggregator_api` module contains the API endpoints for the application. The `data_aggregator_web` module contains the web interface for the application.
-
----
-
-### Upload
-
-#### Validation
-
-To ensure that the data is in the correct format and that it is complete, the application performs a series of validation checks on the data. If the data fails any of these checks, an error message is displayed to the user, and the data is not imported.
-
-<img src="images/upload.png" alt="File Upload" width="50%">
-
-Checks contain:
-
-- File format: must be CSV, TSV, TXT, ARROW, IPC, PARQUET, PQT
-- File size: must be less than 200MB
-- Column headers must be present
-- Line separators must be unix compatible (`\n`)
-- Column separators must be compatible to the chosen file type (e.g. for `*.csv` or `*.tsv` it must be `,`, `;` or `\t`)
-- The file must contain at least one row of data
-- The file must contain at least two column of data
-- The file must contain only valid UTF-8 characters
-
-If one of those conditions do not match, the file will be rejected.
-
-<img src="images/validation_error.png" alt="Validation" width="75%">
-
-`for_coders:` All validation is done transaction save with [ash changes]("https://ash-hq.org/docs/guides/ash/latest/resources/changes"). So if one validation fails, the whole transaction will be rolled back and no records will be persisted. The same applies to the import process later on.
-
-#### Mapping
-
-The application allows the user to map the columns in the data file to the corresponding fields in the Darwin Core data model. This is done by selecting the appropriate field from a dropdown list for each column in the data file.
-
-<img src="images/mapping.png" alt="Mapping" width="75%">
-
-The mapping will then be used to transform the data into a Darwin Core compatible format. This means as well, that the chosen fields must be compatible with the Darwin Core fields. For example, if a selected column from my file contains integers, but the Darwin Core fild requires a `string` value, it will be rejected, and fails the import.
-
-So please check if all the fields are correctly mapped, to avoid errors in the import process.
-
----
-
-### Import
-
-Importing the Data means, that the selected file will be stored on the S3, an import-object will be created in the database, and the data will be transformed into a Darwin Core compatible format according to the selected mapping in the previous step.
-
-#### Store Data
-
-The file will be stored on the S3, and the import object will be created in the database. The import object contains all the necessary information about the import, like the file name, the mapping, the amount of columns and rows, validation information and the status of the import.
-
-`for_coders:` Handling files and storing them on the S3 is done by the `lib/data_aggregator/files` and `lib/data_aggregator/misc` modules
-
-#### Report Errors
-
-Should there be incompatibilities in the data, the application will report them on the import itself, so the user can correct them and re-import the data.
-
-<img src="images/import_error.png" alt="Import Error" width="100%">
-
-`for_coders:` The import process is handled by the `lib/data_aggregator/records/import` modules. This modules contain the logic for storing the file on the S3, creating the import object in the database, and transforming the data into a Darwin Core compatible format.
-
----
-
-### Encoding
-
-While for the user, the whole encoding process is abstracted and manageable over a single button on the collection in the UI, the application does a lot of work behind the curtain by checking if the raw data can be enriched with information stored in various catalogs/thesauri.
-
-<img src="images/encode.png" alt="Encoding">
-
-`for_coders:` The encoding process is handled by the `lib/data_aggregator/records/encoding` modules. This modules contain the logic for enriching the data with information from the catalogs/thesauri.
-
-The overlaying `lib/data_aggregator/records/encoding/strategies/strategy.ex` module contains the logic for selecting the correct encoding strategy and provides some abstraction and common used helper functions for the encoding process.
-
-Each encoding strategy is a module that implements the `encode/1` function, which takes the data and returns the enriched data.
-
-Each encoding step produces a new version of the data, which is then passed to the next encoding step. This way, the data is enriched step by step until it is fully enriched.
-
-Each encoding step produces ash resource objects of type `DataAggregator.Records.Encoding.RecordEncodingResult` which then will be stored in the database and can be used for further processing or as we do, for showing it to the user in the UI.
-
-<img src="images/encoding_result.png" alt="Location Encoding">
-
-#### Location
-
-The Geo or Location Encoding is used to enrich the data with information about the location where the data was collected. This information is used to create a map of the data, which can be used to visualize the data in a more meaningful way on the Gbif portal.
-
-We do reverse geo encoding, which means that we take the coordinates of the data and enrich it with information about the location.
-
-And we do forward geo encoding, which means that we take the location information and enrich it with additional location information like municipality, canton, or country, but we do not use the provided coordinates, because this could lead to wrong information and is not reliable.
-
-`for_coders:` The location encoding process is handled by the `lib/data_aggregator/records/encoding/strategies/location/reverse_geo_encoding_strategy.ex` and `forward_geo_encoding_strategy.ex` modules. This modules contains the logic for enriching the data with location information.
-
-#### Gbif Taxonomy
-
-The Gbif Taxonomy Encoding is used to enrich the data with information about the taxonomy tree of the record. It's important to have the correct taxonomy information, because this is used by Gbif and it's researchers to classify the data. It uses the gbif API to get the taxonomy information according to (at least) scientific name and kingdom.
-
-`for_coders:` The Gbif Taxonomy Encoding process is handled by the `lib/data_aggregator/records/encoding/strategies/taxonomy/gbif_taxonomy_encoding_strategy.ex` module.
-
-#### Swiss Taxonomy
-
-To enrich the data with information about the Swiss taxonomy, we use the Swiss Taxonomic Backbone Catalog to get the taxonomy information according to the taxonID.
-
-`for_coders:` Update the catalog, which is checked in to the git repository of this project under `priv/repo/swiss_taxonomic_backbone_catalog.csv`. create a PR with the updated catalog, if you want to add or change information in the catalog.
-
-#### IUCN Redlist
-
-To enrich the data with information about the IUCN Redlist which indicates how "endangered" a certain classified species is, we use the GBIF IUCN Redlist API Endpoint at `https://api.gbif.org/v1/species/2496198/iucnRedListCategory` to get the redlist information according to the taxonID of the species.
-
----
-
-### Publication
-
-Under the term "Publication" we understand the process of transforming the data into a Darwin Core Archive and publishing it to the GBIF Switzerland or "SwissNatColl" portal. It's done fully automatic and the user only has to click a single button in the UI to start the process --> "publish".
-
-<img src="images/publish.png" alt="Publish">
-
-The publication process starts and generates an publication object.
-
-<img src="images/publication.png" alt="Publication">
-
-`for_coders:` The publication process is handled by the `lib/data_aggregator/records/publication` modules. This modules contains the logic for transforming the data into a Darwin Core Archive and publishing it to the GBIF portal.
-
-#### Create DWC-Archive
-
-The Darwin Core Archive is a zip file that contains the data in a Darwin Core compatible format. The archive is created by the application and contains all the necessary information for the data to be published to the GBIF portal.
-
-`for_coders:` The creation of the Darwin Core Archive is handled by the modules under `lib/data_aggregator/darwin_core/publication`.
-
-#### Publish to SwissNatColl
-
-The publication process is done by registering the previously created Darwin Core Archive with the Registration API `https://api.gbif-uat.org/v1/dataset` on Gbif and makes it then available to be crawled from Gbif for making it available to the public.
-
-`for_coders:` The publication process is handled by the `DataAggregator.Records.Actions.Publish` Ash Action.
-
-### Validate
-
-To have the data published on the GBIF portal, it must be validated by the Infospecies Switzerland team. The team will review the data and validate it if it meets the necessary requirements.
-To start the validation process, the user must click the `validate` button in the UI on the collection.
-
-An API endpoint is available to import the validated data from Infospecies into the application. The data will be imported into the application and can records will be indicated as `validated`.
-
-`for_coders:` The validation process is handled by the `DataAggregator.Records.Actions.Validate` Ash Action. There we collect the neccessary records according to the users selection, create Darwin Core Archives and notify the Infospecies team about the validation by mail.
-
-#### Inform the Data Aggregator about validated Records
-
-Once the Infospecies team has validated the data, the data will be published to the GBIF portal AND the data aggregator can be called by Rest API `POST /api/json/validations` containing the link to the DWC-Archive to inform us, that the data is validated and was published. The endpoint expects a JSON object in the following structure:
-
-```json
-{
-  "data": {
-    "attributes": {
-      "file_url": "https://your.s3.cloud.storage.com/data-aggregator/files/fat_02wlChzH8FcfF3er43XXY1/AY_qEyOtfpS2y3eehd1Ddg.zip"
-    }
-  }
-}
+The Data Aggregator uses a comprehensive data model that follows Darwin Core standards and includes additional fields for Swiss-specific requirements. The system's data structure is defined in detail in the [Entity Relationship Diagram](./erd.mmd), which shows all entities, their attributes, and relationships.
+
+# Core Modules
+
+This section details the main workflows and functionalities provided by the application.
+
+**Note:** The term "Collection" is used throughout the codebase and resource definitions, but often corresponds to the concept of a "Dataset" from a user perspective.
+
+## Collection Management (Datasets)
+
+Collections (Datasets) are the top-level containers for managing biodiversity records through their lifecycle. Different information is stored on the collection item:
+
+- **Metadata:** Metadata such as name, code, description, type but also information from external ressources like GrSciColl (`grscicoll_reference`, `grscicoll_institution_key`, etc.) and/or GBIF (`gbif_dataset_key`, `gbif_doi`).
+- **Mapping:** The import mapping is also stored in the dataset.
+- **State Management:** The state of a collection (dataset) is stored on the object (`:idle`, `:mapping`, `:importing`, `:encoding`, `:exporting`, `:publishing`, `:validating`, `:deleting`).
+
+## Import
+
+### Description
+
+The import module handles uploading tabular data files (e.g., CSV, TSV), mapping source columns to the system's data model, validating data, and creating/updating `Record` resources within a Collection (Dataset).
+
+### Key Features
+
+- Upload tabular data files (CSV, TSV).
+- Guided column mapping UI with mandatory field highlighting.
+- Option to reuse previous mappings for a Collection.
+- Automatic column detection and row counting.
+- File type and size validation.
+- Background processing for validation and record creation/update (upsert).
+- Real-time progress monitoring (status, row counts).
+- Detailed error logging for failed imports.
+
+### Process
+
+1. **File Upload & Validation**
+
+   - User uploads a tabular data file (CSV, TSV)
+   - System performs initial validation:
+     - File format check (must be CSV, TSV, TXT, ARROW, IPC, PARQUET, PQT)
+     - File size validation (max 200MB)
+     - Column header presence
+     - Line separator compatibility (Unix-style `\n`)
+     - Column separator validation (`,` or `;` for CSV, `\t` for TSV)
+     - Minimum data requirements (at least one row, two columns)
+     - UTF-8 character validation
+   - File is stored in S3 storage with unique identifier
+   - Initial import object is created in database with metadata
+
+2. **Column Mapping**
+
+   - User maps source columns to Darwin Core fields through UI
+   - System validates field type compatibility:
+     - String fields must map to string data
+     - Date fields must map to date-compatible data
+     - Numeric fields must map to numeric data
+   - Mapping configuration is stored with import
+   - System tracks mandatory field mappings
+   - Option to reuse previous mappings for efficiency
+
+3. **Background Processing**
+
+   - Import job is enqueued via Oban worker (`DataAggregator.Records.Import.Workers.Importer`)
+   - Records are processed in configurable batch sizes (default: 1000 records)
+   - Progress is tracked and updated in real-time:
+     - Row count validation
+     - Record creation progress
+     - Error accumulation
+   - Errors are logged and can be reviewed in UI
+   - Process can be monitored through collection state
+
+4. **Record Creation**
+   - Valid records are created/updated in database using upsert logic
+   - Each record is linked to its collection
+   - Initial state is set to `:imported`
+   - Error log is generated for failed records
+   - Collection state is updated to reflect import status
+
+`for_coders:` The import process is handled by the `lib/data_aggregator/records/import` modules. Key components include:
+
+- `Import.Changes.ImportRecords`: Handles the actual record creation
+- `Import.Workers.Importer`: Manages background processing
+- `Import.Calculations.AttachmentData`: Processes file data
+- Configuration options in `config/runtime.exs` control batch sizes and timeouts
+
+### State Machine (`Import` Resource)
+
+The `Import` resource tracks the progress of a single import job.
+
+- **`pending`**: Initial state after resource creation, before job enqueueing.
+- **`import_queued`**: The `Importer` background job has been scheduled.
+- **`importing`**: The `Importer` worker is actively validating rows and creating/updating records.
+- **`imported`**: The import job completed successfully.
+- **`failed`**: An error occurred during the import process or it was cancelled.
+
+```mermaid
+stateDiagram-v2
+    [*] --> pending: Create Import
+    pending --> import_queued: Enqueue Import Job
+    import_queued --> importing: Worker Starts Job
+    importing --> imported: Success
+    importing --> failed: Error / Cancel
+    imported --> [*]
+    failed --> [*]
 ```
 
-this will return a json object like bellow to the calling client to indicate that the validation was successfully created:
+## Encoding
 
-```json
-{
-  "data": {
-    "attributes": {
-      "state": "pending",
-      "rows_count": 18,
-      "inserted_at": "2024-07-10T14:32:47.282217Z",
-      "updated_at": "2024-07-10T14:32:47.282217Z",
-      "file_url": "https://your.s3.cloud.storage.com/data-aggregator/files/fat_02wlChzH8FcfF3er43XXY1/AY_qEyOtfpS2y3eehd1Ddg.zip"
-    },
-    "id": "app_02x50wRhsNSm3e9aeM2p4B",
-    "type": "validation"
-  }
-}
+### Description
+
+The encoding module standardizes and enriches raw imported `Record` data using a sequence of defined strategies (e.g., date conversion, geocoding, taxonomic lookups). Results are stored in a corresponding `EncodedRecord` resource, aligned with Darwin Core standards.
+
+### Key Features
+
+- Standardizes data formats (e.g., dates to ISO 8601).
+- Enriches records with external/internal data (Taxonomy, Geocoordinates, IUCN status, Image URLs).
+- Populates Darwin Core fields in `EncodedRecord`.
+- Calculates MIDS (Minimum Information about a Digital Specimen) levels.
+- Uses modular, extensible encoding strategies.
+- Logs detailed results (success/failure/unchanged) per strategy per record via `RecordEncodingResult`.
+- Executes asynchronously via the `Encoder` Oban worker.
+- Creates/updates `EncodedRecord` using upsert logic.
+
+### Encoding Strategies
+
+The encoding process sequentially applies the following strategies, controlled by `DataAggregator.Taxonomy.Catalog.get_catalogs()` and dispatched via `DataAggregator.Records.Encoding.Strategy`:
+
+1.  **`:gbif_taxonomy`**: Looks up taxonomic names against the GBIF Backbone Taxonomy. _Crucially, this first step also initializes/resets the `EncodedRecord` based on the source `Record` data before applying its specific logic._
+2.  **`:swiss_species`**: Looks up taxonomic information in the integrated Swiss Species catalog.
+3.  **`:geo_reverse`**: Performs reverse geocoding (coordinates to administrative levels like country, canton) using an external service (likely OpenCage).
+4.  **`:geo_forward`**: Performs forward geocoding (place names to coordinates) using an external service (likely OpenCage).
+5.  **`:gbif_iucn_redlist`**: Determines the IUCN Red List conservation status, likely querying GBIF.
+6.  **`:relate_images`**: Associates URLs of linked `Image` attachments with the `EncodedRecord`.
+7.  **`:convert_dates`**: Parses various date/time formats found in eventDate, dateIdentified, etc., into standardized formats.
+
+### Process
+
+1. **Initialization**
+
+   - User triggers encoding for selected records through UI
+   - Collection state is set to `:encoding`
+   - Records are enqueued for processing via Oban
+   - System validates collection state (must be `:idle`)
+   - Encoding job is created and tracked
+
+2. **Sequential Strategy Application**
+
+   - Records are processed through each strategy in order:
+
+     1. **GBIF Taxonomy** (`:gbif_taxonomy`):
+
+        - Initializes/resets EncodedRecord from source Record
+        - Queries GBIF Backbone Taxonomy API
+        - Updates taxonomic information
+        - Minimum confidence level: 80%
+
+     2. **Swiss Species** (`:swiss_species`):
+
+        - Queries integrated Swiss Species catalog
+        - Updates taxonomic information
+        - Records registration status
+
+     3. **Reverse Geocoding** (`:geo_reverse`):
+
+        - Processes coordinates to administrative levels
+        - Updates country, canton, municipality
+        - Uses external geocoding service
+
+     4. **Forward Geocoding** (`:geo_forward`):
+
+        - Processes place names to coordinates
+        - Updates coordinate information
+        - Uses external geocoding service
+
+     5. **IUCN Red List** (`:gbif_iucn_redlist`):
+
+        - Queries GBIF for conservation status
+        - Updates IUCN category information
+
+     6. **Image Association** (`:relate_images`):
+
+        - Links related image URLs
+        - Updates image metadata
+
+     7. **Date Standardization** (`:convert_dates`):
+        - Parses various date formats
+        - Converts to ISO 8601 standard
+        - Updates event dates and identification dates
+
+3. **Progress Tracking**
+
+   - Each strategy execution is logged via `RecordEncodingResult`
+   - Results include:
+     - Success/failure status
+     - Input values used
+     - Output values generated
+     - Error messages if applicable
+   - Collection state is monitored through polling
+   - Encoding status is updated per record
+   - Real-time progress updates in UI
+
+4. **Completion**
+   - Records are marked as `:encoded` or `:failed`
+   - Collection returns to `:idle` state
+   - Results can be reviewed in UI
+   - Error logs are available for failed records
+   - Encoding statistics are updated
+
+`for_coders:` The encoding process is handled by the `lib/data_aggregator/records/encoding` modules. Key components include:
+
+- `Strategy`: Main module for strategy selection and execution
+- `Workers.Encoder`: Manages background processing
+- Individual strategy modules in `strategies/` directory
+- Configuration in `config/runtime.exs` for timeouts and batch sizes
+- State management through `Record` and `Collection` resources
+
+### State Machine (`Record` Resource - Encoding Status)
+
+The encoding status is reflected in the `Record` resource's state machine.
+
+- **`imported`**: Initial state after successful import, before encoding.
+- **`queued`**: Encoding job has been enqueued for this record.
+- **`encoding`**: The `Encoder` worker is actively processing the record.
+- **`encoded`**: All encoding strategies completed successfully.
+- **`failed`**: An error occurred during encoding.
+
+```mermaid
+stateDiagram-v2
+    imported --> queued: Enqueue Encoding Job
+    queued --> encoding: Worker Starts Job
+    encoding --> encoded: Success
+    encoding --> failed: Error / Cancel
+    encoded --> [*]  % Or back to imported if re-encoding needed? Needs clarification
+    failed --> [*] % Or back to imported for retry? Needs clarification
+    [*] --> imported : Record Created (via Import)
 ```
 
-#### Update Validation status of the Records within the Data Aggregator
+## Export
 
-Now the client has to call the `PATCH /api/json/validations/{id}/enqueue` endpoint to enqueue and start the validation process.
+### Description
 
-By calling `GET /api/json/validations/{id}` the client can check the status of the validation process at any time.
+The export module allows users to generate downloadable files (e.g., CSV, TSV) of selected record data from a Collection. Users can filter records, choose between raw imported or standardized encoded data, and select the source for output file headers.
 
-#### Notification
+### Key Features
 
-As soon as the data processing within the aggregator is finished, the Infospecies team will be notified by Rest API call `POST https://the-infospecies-domain.org/api/approval/notification` with the JSON body:
+- Generates downloadable data files (likely CSV/TSV).
+- Allows filtering of records to be exported using current UI filters (`records_query`).
+- Option to export "Raw" (original imported) or "Encoded" (standardized) data.
+- Choice of header source: "Dataset Mapping" (import mapping) or "DWC Attributes" (standard Darwin Core).
+- Background processing via the `Exporter` Oban worker.
+- Real-time progress monitoring and status updates.
+- Downloadable export file upon completion.
 
-```json
-{
-  "source_file": "https://your.s3.cloud.storage.com/data-aggregator/files/fat_02wlChzH8FcfF3er43XXY1/AY_qEyOtfpS2y3eehd1Ddg.zip",
-  "success_count": 98,
-  "error_count": 2,
-  "error_log_url": "http://s3.bla.org/files/error-log-102838728371.zip"
-}
+### Process
+
+1. **Export Configuration**
+
+   - User selects records to export (using UI filters)
+   - User chooses data type (Raw/Encoded)
+   - User selects header source (Dataset Mapping/DWC Attributes)
+   - System validates configuration
+   - Export job is created
+
+2. **Background Processing**
+
+   - Export job is enqueued via Oban worker
+   - Records are processed in batches
+   - Progress is tracked in real-time
+   - Export file is generated
+   - File is stored in S3
+
+3. **Completion**
+   - Export file is made available for download
+   - Export status is updated
+   - User is notified of completion
+
+`for_coders:` The export process is handled by the `lib/data_aggregator/records/export` modules. Key components include:
+
+- `Export.Workers.Exporter`: Manages background processing
+- `Export.Calculations.ExportData`: Processes record data
+- Configuration in `config/runtime.exs` for batch sizes and timeouts
+
+## Publication
+
+### Description
+
+The publication module handles the process of publishing data to GBIF through the SwissNatColl portal. It generates a Darwin Core Archive (DwC-A) and submits it to GBIF's registration API.
+
+### Key Features
+
+- Generates Darwin Core Archive (DwC-A) from encoded records
+- Submits data to GBIF through SwissNatColl portal
+- Tracks publication status and metadata
+- Handles GBIF dataset registration
+- Manages DOI assignment
+- Provides publication history
+
+### Process
+
+1. **Pre-publication Checks**
+
+   - Validates record requirements
+   - Checks for mandatory fields
+   - Verifies data quality
+   - Ensures proper encoding
+
+2. **Darwin Core Archive Generation**
+
+   - Creates DwC-A structure
+   - Includes metadata.xml
+   - Generates occurrence.txt
+   - Packages files into archive
+   - Stores archive in S3
+
+3. **GBIF Submission**
+
+   - Registers dataset with GBIF
+   - Submits DwC-A
+   - Tracks submission status
+   - Handles response
+
+4. **Completion**
+   - Updates collection state
+   - Stores GBIF metadata
+   - Records DOI
+   - Updates publication history
+
+`for_coders:` The publication process is handled by the `lib/data_aggregator/records/publication` modules. Key components include:
+
+- `Publication.Workers.Publisher`: Manages background processing
+- `DarwinCore.Publication`: Handles DwC-A generation
+- Configuration in `config/runtime.exs` for GBIF API settings
+
+## Validation
+
+### Description
+
+The validation module manages the process of having data validated by the InfoSpecies Switzerland team before publication to GBIF. It handles the creation of validation requests, notification of validators, and processing of validation responses.
+
+### Key Features
+
+- Creates validation requests for selected records
+- Generates Darwin Core Archive for validation
+- Notifies InfoSpecies team
+- Processes validation responses
+- Updates record validation status
+- Maintains validation history
+
+### Process
+
+1. **Validation Request Initiation**
+
+   - User selects records for validation
+   - System identifies target InfoSpecies data center
+   - Validation request is created
+   - Collection state is set to `:validating`
+
+2. **Data Package Preparation**
+
+   - Selected records are extracted
+   - Darwin Core Archive is generated
+   - Package is stored in S3
+   - Download link is generated
+
+3. **Notification**
+
+   - Email notification is generated
+   - Sent to InfoSpecies center
+   - Includes download link
+   - Contains validation request details
+
+4. **Response Handling**
+   - API endpoint for validation responses
+   - Processes validation results
+   - Updates records based on validation
+   - Notifies users of completion
+
+`for_coders:` The validation process is handled by the `lib/data_aggregator/records/validation` modules. Key components include:
+
+- `Validation.Workers.ValidationRequestHandler`: Manages validation requests
+- `Validation.Changes.CreateDwCA`: Generates validation packages
+- Configuration in `config/runtime.exs` for validation settings
+
+## Image Upload
+
+### Description
+
+The image upload module manages the process of uploading and associating images with records. It handles file validation, storage, and linking to records based on catalog numbers and identifiers.
+
+### Key Features
+
+- Bulk image upload support
+- Automatic record association
+- Image metadata extraction
+- S3 storage integration
+- Progress tracking
+- Error handling and reporting
+
+### Process
+
+1. **Image Upload Initiation**
+
+   - User selects images for upload
+   - System validates:
+     - File types (JPEG, PNG, etc.)
+     - File sizes
+     - Image dimensions
+     - Metadata presence
+   - Upload session is created
+
+2. **Background Processing**
+
+   - Images are processed in batches
+   - Files are stored in S3
+   - Metadata is extracted
+   - Progress is tracked
+
+3. **Record Association**
+
+   - Images are linked to records
+   - Association metadata is stored
+   - Links are verified
+   - Statistics are updated
+
+4. **Completion**
+   - Upload statistics are updated
+   - Success/error summary is generated
+   - User is notified of completion
+
+`for_coders:` The image upload process is handled by the `lib/data_aggregator/records/image` modules. Key components include:
+
+- `Image.Workers.ImageProcessor`: Manages background processing
+- `Image.Changes.ProcessImage`: Handles image processing
+- Configuration in `config/runtime.exs` for upload settings
+
+## Deletion
+
+### Description
+
+The deletion module manages the process of removing collections, records, and their associated data from the system. This is a complex process that involves handling cascading deletions, cleaning up external storage, and maintaining data integrity.
+
+### Key Features
+
+- Cascading deletion of all related resources
+- Cleanup of external storage (S3)
+- Partition management for database tables
+- State tracking during deletion
+- Background processing for large deletions
+- Audit trail preservation
+
+### Process
+
+1. **Collection Deletion**
+
+   - Sets collection state to `:deleting`
+   - Triggers database partition cleanup
+   - Cascades deletion to all related resources:
+     - Records and their versions
+     - Encoded records and their versions
+     - Validated records
+     - Published records
+     - Import/Export files
+     - Validation requests/responses
+     - Image uploads and attachments
+   - Cleans up S3 storage:
+     - Deletes all associated media files
+     - Removes import/export files
+     - Cleans up validation packages
+     - Removes image attachments
+
+2. **Record Deletion**
+
+   - Cascades to related resources:
+     - Encoded records
+     - Validated records
+     - Published records
+     - Image attachments
+   - Updates collection record count
+   - Removes from GBIF on next publication
+   - Preserves audit trail
+
+3. **Media Deletion**
+   - Handles cleanup of S3 storage
+   - Removes file attachments
+   - Updates record associations
+   - Maintains referential integrity
+
+`for_coders:` The deletion process is implemented across several modules:
+
+- `Collection.Changes.DeleteAllMedia`: Handles S3 cleanup
+- `Collection.Changes.SetDeleting`: Manages deletion state
+- Database triggers for partition management
+- Cascading foreign key constraints
+- Configuration in `config/runtime.exs`
+
+### State Machine (Collection Resource - Deletion Status)
+
+The deletion status is reflected in the Collection resource's state machine.
+
+- **`idle`**: Normal state
+- **`deleting`**: Collection is being deleted
+- **`deleted`**: Collection has been removed
+
+```mermaid
+stateDiagram-v2
+    [*] --> idle: Create Collection
+    idle --> deleting: Start Deletion
+    deleting --> deleted: Success
+    deleting --> failed: Error
+    deleted --> [*]
+    failed --> [*]
 ```
 
-`error_log_url` will contain an url which points to the error log of the internal processing of the data. The `success_count` and `error_count` will contain the amount of successfully processed and validated records and the amount of records which failed during the processing.
+# System Features
 
-All the code necessary to handle the validation process is located in the `lib/data_aggregator/records/validation` modules.
+## User Management and Authentication
 
-## JSON Rest API
+The system utilizes the `AshAuthentication` extension for user management and authentication, combined with Ash's built-in policy authorization framework for permissions.
+
+### Authentication
+
+- Password-based strategy with email
+- Case-insensitive email identity
+- Sign-in token management
+- Terms acceptance tracking
+- Session handling
+
+### Roles
+
+Authorization is primarily based on roles assigned to users. Roles are stored as an array of strings in the `User.roles` attribute:
+
+- **`admin`:** Has broad access across the system (often bypassing specific policy checks).
+- **`collection_administrator`:** Manages users and resources (like Collections, Publications, etc.) within a specific institution. Their permissions are scoped by the `institution_id` associated with their user account.
+- **`data_digitizer`:** Has read access to resources within their associated institution.
+
+### Permissions and Policies
+
+- **Framework:** Permissions are enforced using `Ash.Policy.Authorizer` defined on resources.
+- **Checks:** Policies use built-in Ash checks (e.g., `action_type/1`) and custom checks defined in `lib/data_aggregator/checks/`:
+  - `with_role(role_or_roles)`: Checks if the current user (actor) has at least one of the specified roles.
+  - `it_is_myself()`: Checks if the actor is the same as the user resource being accessed.
+  - `it_is_admin()`: Checks if the user resource being accessed has the `admin` role.
+  - `relates_to_institution_check(foreign_key)`: Checks if the actor and the resource being acted upon belong to the same institution (via `institution_id`).
+  - `relates_to_institution_filter(foreign_key)`: Applies a filter to queries to restrict results to the actor's institution.
+
+`for_coders:` The user management system is implemented using:
+
+- `AshAuthentication` for authentication
+- `Ash.Policy.Authorizer` for permissions
+- Custom checks in `lib/data_aggregator/checks/`
+- Configuration in `config/runtime.exs`
+
+## Additional Features
+
+### Process Cancellation
+
+Most long-running background processes (Import, Export, Publication, Validation Request Send, Image Mapping) support cancellation.
+
+- **Mechanism:** Each process resource (`Import`, `Export`, etc.) typically has a specific `cancel_` action (e.g., `cancel_import`, `cancel_export`).
+- **Effect & Job Handling:**
+  - Standard cancellation actions (`cancel_import`, etc.) primarily transition the state machine to `:failed` and set `finished_at`. They **do not** actively stop the running Oban job; the job may continue until completion, error, or timeout.
+  - The admin-only `Collection.cancel_action` is more forceful. It finds the active process, calls its specific `cancel_` action, and also **actively signals Oban to kill** the associated running job(s) (`ash_cancel_all_jobs` helper in `CancelAction` change).
+- **Outcome:** A cancelled job's corresponding resource is marked as `:failed`.
+
+### Auditing and Versioning
+
+The system provides an audit trail for changes made to core data resources using the `AshPaperTrail` extension.
+
+- **Tracked Resources:** Versioning is enabled for `Record` and `EncodedRecord` resources.
+- **Tracking Mode:** Only the _changes_ made during an update are stored, not the full record state for each version (`change_tracking_mode :changes_only`).
+- **Recorded Information:** Each version typically stores:
+  - The changes made to tracked attributes.
+  - The action that triggered the change (`store_action_name? true`).
+  - A reference to the user (actor) who performed the action (`belongs_to_actor :user`).
+  - A reference back to the original record (`reference_source? true`).
+  - Copies of certain key attributes for easier querying (e.g., `mte_catalog_number`, `tax_scientific_name` on `Record` versions).
+- **Scope:**
+  - For `Record`, versioning specifically tracks changes made via the `:update_publication_status` and `:update_validation_status` actions.
+  - For `EncodedRecord`, versioning tracks updates but ignores create/destroy actions.
+  - Certain attributes (like timestamps, internal state fields) are explicitly ignored.
+
+### Search Functionality
+
+Users can search for records within a Collection using PostgreSQL's full-text search capabilities, integrated via the `AshPagify.Tsearch` extension.
+
+- **Target:** Full-text search operates on the data stored in the `EncodedRecord` resource (the standardized version of the record), specifically targeting its pre-calculated text search vector (`tsv`) column.
+- **Mechanism:** Queries entered by the user are converted into PostgreSQL `ts_query` format and executed efficiently against the indexed `tsv` column.
+- **Filtering:** In addition to full-text search, predefined filter scopes are available (via `AshPagify` configuration) to easily filter records based on their status, such as `:not_encoded`, `:not_published`, and `:not_validated`.
+
+`for_coders:` Additional features are implemented using:
+
+- `AshPaperTrail` for versioning
+- `AshPagify.Tsearch` for search
+- Custom cancellation actions
+- Configuration in `config/runtime.exs`
+
+# Integration Points
+
+The Data Aggregator interacts with several external biodiversity informatics platforms and services:
+
+## GBIF Integration
+
+The Global Biodiversity Information Facility (GBIF) is the primary target for data publication and a source for taxonomic and institutional information.
+
+- **Dataset Publication:** The core publication workflow generates Darwin Core Archives (DwC-A) and submits them to the GBIF registry endpoint associated with a Collection's registered `gbif_dataset_key`.
+- **Dataset Registration:** Provides functionality (`Collection.register_at_gbif` action) to register the dataset entity with GBIF.
+- **Taxonomic Resolution:** Uses the GBIF Backbone Taxonomy during the Encoding process (`:gbif_taxonomy` strategy) to standardize scientific names and classifications.
+- **IUCN Status:** Queries GBIF during encoding (`:gbif_iucn_redlist` strategy) to enrich records with IUCN Red List conservation status.
+- **GrSciColl Data Source:** Leverages GBIF's API to retrieve information about institutions and collections registered in the Global Registry of Scientific Collections (GrSciColl).
+- **Publication Verification:** Includes a background job (`PublicationVerifier`) to periodically check via the GBIF API if records marked as published are actually discoverable on the GBIF portal.
+
+## GrSciColl Integration
+
+The Global Registry of Scientific Collections (GrSciColl) is used for institutional context.
+
+- **Metadata Association:** Collections within the Data Aggregator are linked to GrSciColl entries by storing `grscicoll_reference` (for the collection) and associated `grscicoll_institution_key`, `_code`, and `_name`.
+- **Metadata Retrieval:** Uses the GBIF API to fetch and populate institution details based on the provided GrSciColl identifiers during Collection creation.
+- **Validation:** May include specific validation rules related to GrSciColl identifiers (`GrSciCollValidator`).
+
+## InfoSpecies Data Centers Integration
+
+The system facilitates an external data review process with Swiss InfoSpecies data centers.
+
+- **Validation Workflow:** Manages sending selected record data (as DwC-A) to the appropriate InfoSpecies center for expert review.
+- **Email Notification:** Sends an email with a download link for the DwC-A to the relevant center (contacts managed via `InfospeciesCenters` catalog).
+- **Results Ingestion:** Processes a results file (provided back by the center via a URL) to update the `validation_status` of records and store corrected/validated data in `ValidatedRecord` resources.
+
+`for_coders:` Integration points are implemented in:
+
+- `lib/data_aggregator/gbif`
+- `lib/data_aggregator/grscicoll`
+- `lib/data_aggregator/infospecies`
+- Configuration in `config/runtime.exs`
+
+# JSON Rest API
 
 The application provides a JSON Rest API to interact with the data. The API is built using the Ash Framework and provides a set of endpoints to access and manipulate the data. Read full Rest API documentation [here](./api/json_api.md).

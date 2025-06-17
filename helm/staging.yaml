@@ -42,5 +42,5 @@ postgres:
   backup:
     enabled: true
     schedule: "0 0 0 * * *"
-    destinationPath: "s3://data-aggregator-stag/postgres"
-    endpointURL: "http://minio.minio.svc.cluster.local:9000"
+    destinationPath: "s3://a8c524e0ea4a653c03bf5db26dba19a4.eu.r2.cloudflarestorage.com/zebbra-data-aggregator-staging-postgres/backups"
+    endpointURL: "https://a8c524e0ea4a653c03bf5db26dba19a4.eu.r2.cloudflarestorage.com"

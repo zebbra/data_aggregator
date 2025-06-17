@@ -1,7 +1,7 @@
 defmodule DataAggregator.MixProject do
   use Mix.Project
 
-  @version "0.12.2"
+  @version "1.0.0"
 
   def project do
     [
