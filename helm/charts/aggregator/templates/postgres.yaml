@@ -24,23 +24,6 @@ spec:
       cpu: 200m
       memory: 8Gi
 
-  backup:
-    retentionPolicy: "30d"
-    barmanObjectStore:
-      destinationPath: {{ .Values.postgres.backup.destinationPath | quote }}
-      endpointURL: {{ .Values.postgres.backup.endpointURL | quote }}
-      s3Credentials:
-        accessKeyId:
-          name: {{ include "aggregator.fullname" . }}
-          key: AWS_ACCESS_KEY_ID
-        secretAccessKey:
-          name: {{ include "aggregator.fullname" . }}
-          key: AWS_SECRET_ACCESS_KEY
-      wal:
-        compression: bzip2
-      data:
-        compression: bzip2
-
   postgresql:
     parameters:
       # DB Version: 17
