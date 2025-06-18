@@ -22,7 +22,7 @@ defmodule DataAggregatorWeb.AuthController do
     return_to = get_session(conn, :return_to) || ~p"/"
 
     conn
-    |> clear_session()
+    |> clear_session(:data_aggregator)
     |> redirect(to: return_to)
   end
 end

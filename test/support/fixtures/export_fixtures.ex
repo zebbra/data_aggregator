@@ -488,7 +488,7 @@ defmodule DataAggregator.ExportFixtures do
       "ext_amplification" => "amplification",
       "ext_assertions" => "assertions",
       "ext_permit" => "permit",
-      "ext_references" => "ext_references",
+      "ext_refs" => "ext_references",
       "ext_resource_relationship" => "resourceRelationship",
       "ext_species_distribution" => "speciesDistribution",
       "ext_species_profile" => "speciesProfile",
