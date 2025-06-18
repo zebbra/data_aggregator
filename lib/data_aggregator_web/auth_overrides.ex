@@ -41,9 +41,14 @@ defmodule DataAggregatorWeb.AuthOverrides do
     set :text, "Data Aggregator"
     set :text_class, "text-xl font-semibold"
     set :image_url, "/images/logo-light.png"
-    set :image_url, "/images/logo-dark.png"
-    set :image_class, "size-12"
-    set :dark_image_class, "hidden"
+    set :dark_image_url, "/images/logo-dark.png"
+    set :href_url, nil
+
+    set :image_class,
+        "size-12 shrink-0 [[data-theme=dark]_&]:hidden [[data-theme=light]_&]:block block dark:hidden"
+
+    set :dark_image_class,
+        "size-12 right-0 shrink-0 [[data-theme=dark]_&]:block [[data-theme=light]_&]:hidden hidden dark:block"
   end
 
   override Components.Password.Input do

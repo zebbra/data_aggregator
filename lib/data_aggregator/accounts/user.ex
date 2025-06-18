@@ -38,8 +38,9 @@ defmodule DataAggregator.Accounts.User do
       signing_secret DataAggregator.Accounts.Secrets
       store_all_tokens? true
       token_lifetime {24, :hours}
-      require_token_presence_for_authentication? true
     end
+
+    session_identifier :jti
   end
 
   attributes do
