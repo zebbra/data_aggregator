@@ -149,6 +149,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     end)
   end
 
+  def no_kingdom_query(publication_query, "import" = _layer) do
+    AshPagify.merge_filters(%AshPagify{filters: publication_query}, %{
+      or: [%{tax_kingdom: %{is_nil: true}}]
+    }).filters
+  end
+
+  def no_kingdom_query(publication_query, _layer) do
+    AshPagify.merge_filters(%AshPagify{filters: publication_query}, %{
+      or: [
+        %{encoded_record: %{tax_kingdom: %{is_nil: true}}}
+      ]
+    }).filters
+  end
+
   def checked_publication_query(publication_query, "import" = _layer) do
     AshPagify.merge_filters(%AshPagify{filters: publication_query}, %{
       or: [
@@ -213,7 +227,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     AshPagify.merge_filters(%AshPagify{filters: publication_query}, %{
       and: [
         %{encoded_record: %{swiss_species: %{center: %{is_nil: false}}}},
-        %{encoded_record: %{loc_country: %{eq: "Switzerland"}}}
+        %{encoded_record: %{loc_country: %{eq: "Switzerland"}}},
+        %{encoded_record: %{tax_kingdom: %{is_nil: false}}}
       ]
     }).filters
   end
