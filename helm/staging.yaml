@@ -37,10 +37,3 @@ ingress:
     - secretName: staging-aggregator-tls
       hosts:
         - staging.aggregator.scnat.zebbra.ch
-
-postgres:
-  backup:
-    enabled: true
-    schedule: "0 0 0 * * *"
-    destinationPath: "s3://a8c524e0ea4a653c03bf5db26dba19a4.eu.r2.cloudflarestorage.com/zebbra-data-aggregator-staging-postgres/backups"
-    endpointURL: "https://a8c524e0ea4a653c03bf5db26dba19a4.eu.r2.cloudflarestorage.com"
