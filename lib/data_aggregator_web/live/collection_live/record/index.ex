@@ -352,7 +352,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <:col
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :iucn_redlist)}
-          field={:iucn_redlist}
           label={iucn_redlist_th_label()}
           directions={{:asc, :desc_nils_last}}
         >
@@ -457,7 +456,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <:col
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :loc_decimal_latitude)}
-          field={:loc_decimal_latitude}
           label={coordinates_th_label()}
           directions={{:asc, :desc_nils_last}}
         >
@@ -512,7 +510,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <:col
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :mids_level)}
-          field={:mids_level}
           label={~t"MIDS Level"m}
           class="text-center"
         >
