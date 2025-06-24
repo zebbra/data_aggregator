@@ -16,7 +16,7 @@ defmodule DataAggregator.Records.Record.Calculations.IucnRedlistCategoryGroup do
     Enum.map(records, &map_iucn_category_to_group(&1))
   end
 
-  defp map_iucn_category_to_group(%{iucn_redlist_category: iucn_redlist_category}) do
+  defp map_iucn_category_to_group(%{encoded_record: %{iucn_redlist_category: iucn_redlist_category}}) do
     cond do
       is_nil(iucn_redlist_category) ->
         nil
@@ -35,20 +35,28 @@ defmodule DataAggregator.Records.Record.Calculations.IucnRedlistCategoryGroup do
     end
   end
 
+  defp map_iucn_category_to_group(%{encoded_record: nil}) do
+    nil
+  end
+
+  defp map_iucn_category_to_group(_record) do
+    nil
+  end
+
   @impl true
   def expression(_opts, _context) do
     expr(
       cond do
-        is_nil(iucn_redlist_category) ->
+        is_nil(encoded_record.iucn_redlist_category) ->
           nil
 
-        iucn_redlist_category in @endangered_categories ->
+        encoded_record.iucn_redlist_category in @endangered_categories ->
           "endangered"
 
-        iucn_redlist_category in @not_threatened_categories ->
+        encoded_record.iucn_redlist_category in @not_threatened_categories ->
           "not_threatened"
 
-        iucn_redlist_category in @other_categories ->
+        encoded_record.iucn_redlist_category in @other_categories ->
           "other"
 
         true ->
