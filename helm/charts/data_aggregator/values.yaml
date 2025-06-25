@@ -24,6 +24,7 @@ serviceAccount:
   name: ""
 
 podAnnotations: {}
+podLabels: {}
 
 service:
   type: ClusterIP
@@ -52,12 +53,16 @@ ingress:
 # for a complete list of env variables, including the ones which should be injected via Secrets, see config/.env.prod
 env: {}
 
-extraEnvVars: []
+envSecret: {}
+
+# extraEnvVars: []
 # - name: DATABASE_URL
 #   valueFrom:
 #     secretKeyRef:
 #       name: database-url-pg-app
 #       key: uri
+
+extraEnvFrom: []
 
 resources: {}
 
@@ -66,3 +71,10 @@ podSecurityContext: {}
 nodeSelector: {}
 affinity: []
 tolerations: []
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80

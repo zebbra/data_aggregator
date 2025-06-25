@@ -14,9 +14,14 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         {{- include "data_aggregator.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -42,12 +47,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            {{- if .Values.extraEnvVars }}
             {{- toYaml .Values.extraEnvVars | nindent 12 }}
+            {{- end }}
           envFrom:
-            - secretRef:
-                name: {{ .Values.envSecret }}
-            - configMapRef:
-                name: {{ include "data_aggregator.fullname" . }}
+            {{- toYaml .Values.extraEnvFrom | nindent 12 }}
           ports:
             - name: http
               containerPort: {{ .Values.env.PORT }}
