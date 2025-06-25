@@ -42,11 +42,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: "{{ include "data_aggregator.fullname" . }}-pg-app"
-                  key: uri
+            {{- toYaml .Values.extraEnvVars | nindent 12 }}
           envFrom:
             - secretRef:
                 name: {{ .Values.envSecret }}
@@ -57,13 +53,9 @@ spec:
               containerPort: {{ .Values.env.PORT }}
               protocol: TCP
           livenessProbe:
-            httpGet:
-              path: /health
-              port: http
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
-            httpGet:
-              path: /health
-              port: http
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

@@ -29,8 +29,14 @@ service:
   type: ClusterIP
   port: 80
 
-# for a complete list of env variables, including the ones which should be injected via Secrets, see config/.env.prod
-env: {}
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
 
 ingress:
   enabled: false
@@ -43,9 +49,20 @@ ingress:
           pathType: ImplementationSpecific
   tls: []
 
-postgres:
-  backup:
-    enabled: false
-    schedule: ""
-    destinationPath: ""
-    endpointURL: ""
+# for a complete list of env variables, including the ones which should be injected via Secrets, see config/.env.prod
+env: {}
+
+extraEnvVars: []
+# - name: DATABASE_URL
+#   valueFrom:
+#     secretKeyRef:
+#       name: database-url-pg-app
+#       key: uri
+
+resources: {}
+
+securityContext: {}
+podSecurityContext: {}
+nodeSelector: {}
+affinity: []
+tolerations: []
