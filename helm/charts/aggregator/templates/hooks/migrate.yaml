@@ -53,7 +53,9 @@ spec:
               value: {{ $value | quote }}
             {{- end }}
           envFrom:
+            {{- if .Values.extraEnvFrom }}
             {{- toYaml .Values.extraEnvFrom | nindent 12 }}
+            {{- end }}
             - configMapRef:
                 name: {{ include "aggregator.fullname" . }}
           command:
