@@ -1,9 +1,9 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "data_aggregator.fullname" . }}-migrate
+  name: {{ include "aggregator.fullname" . }}-migrate
   labels:
-    {{- include "data_aggregator.labels" . | nindent 4 }}
+    {{- include "aggregator.labels" . | nindent 4 }}
   annotations:
     {{- with .Values.jobAnnotations }}
     {{- toYaml . | nindent 4 }}
@@ -12,14 +12,14 @@ spec:
   activeDeadlineSeconds: 43200
   template:
     metadata:
-      name: {{ include "data_aggregator.fullname" . }}-migrate
+      name: {{ include "aggregator.fullname" . }}-migrate
     spec:
       restartPolicy: Never
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "data_aggregator.serviceAccountName" . }}
+      serviceAccountName: {{ include "aggregator.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -30,12 +30,12 @@ spec:
             - secretRef:
                 name: {{ .Values.envSecret }}
             - configMapRef:
-                name: {{ include "data_aggregator.fullname" . }}
+                name: {{ include "aggregator.fullname" . }}
           env:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: "{{ include "data_aggregator.fullname" . }}-pg-app"
+                  name: "{{ include "aggregator.fullname" . }}-pg-app"
                   key: uri
           command:
             - /bin/sh
@@ -49,7 +49,7 @@ spec:
             - secretRef:
                 name: {{ .Values.envSecret }}
             - configMapRef:
-                name: {{ include "data_aggregator.fullname" . }}
+                name: {{ include "aggregator.fullname" . }}
           command:
             - /bin/sh
           args:

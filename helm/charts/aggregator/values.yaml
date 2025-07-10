@@ -1,11 +1,11 @@
-# Default values for data_aggregator.
+# Default values for aggregator.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: quay.io/zebbra/data_aggregator
+  repository: quay.io/zebbra/aggregator
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
