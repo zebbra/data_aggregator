@@ -447,7 +447,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           :if={CollectionType.visible?(@collection_type, :loc_verbatim_elevation)}
           label={elevation_th_label()}
         >
-          {get_verbatim_elevation(record, @layer)}
+          <.elevation record={record} layer={@layer} />
         </:col>
         <:col
           :let={{_id, record}}
@@ -1161,7 +1161,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   def elevation_th_label(assigns \\ %{}) do
     ~H"""
-    {get_dwc_field(:loc_verbatim_elevation)} (m) <br /> min / max
+    {get_dwc_field(:loc_verbatim_elevation)}<br /> min / max [m]
     """
   end
 
@@ -1263,28 +1263,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
       "RE" -> "text-[#9B4F96]"
       "EW" -> "text-[#542344]"
       "EX" -> "text-[#000000]"
-    end
-  end
-
-  defp get_verbatim_elevation(record, layer) do
-    minimum_elevation_in_meters =
-      encoded_attribute_value(record, :loc_minimum_elevation_in_meters, layer)
-
-    maximum_elevation_in_meters =
-      encoded_attribute_value(record, :loc_maximum_elevation_in_meters, layer)
-
-    verbatim_elevation = encoded_attribute_value(record, :loc_verbatim_elevation, layer)
-
-    cond do
-      minimum_elevation_in_meters != nil and
-          maximum_elevation_in_meters != nil ->
-        "#{format_float(minimum_elevation_in_meters)} / #{format_float(maximum_elevation_in_meters)}"
-
-      is_nil(verbatim_elevation) == false ->
-        "#{format_float(verbatim_elevation)}"
-
-      true ->
-        "-"
     end
   end
 end

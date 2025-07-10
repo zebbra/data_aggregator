@@ -5,6 +5,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   use DataAggregatorWeb, :html
 
   alias DataAggregatorWeb.CollectionLive.Record.ActivityFeed
+  alias DataAggregatorWeb.CollectionLive.Record.Helpers
 
   attr :href, :string, required: true
   attr :title, :string, required: true
@@ -261,6 +262,46 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       >
         {index + 1}
       </a>
+    </div>
+    """
+  end
+
+  attr :record, DataAggregator.Records.Record, required: true
+  attr :layer, :atom, required: true
+
+  def elevation(assigns) do
+    record = assigns.record
+    layer = assigns.layer
+
+    minimum_elevation =
+      Helpers.encoded_attribute_value(record, :loc_minimum_elevation_in_meters, layer)
+
+    maximum_elevation =
+      Helpers.encoded_attribute_value(record, :loc_maximum_elevation_in_meters, layer)
+
+    verbatim_elevation = Helpers.encoded_attribute_value(record, :loc_verbatim_elevation, layer)
+
+    verbatim =
+      if verbatim_elevation == nil do
+        ""
+      else
+        "#{format_float(verbatim_elevation)}"
+      end
+
+    min_max =
+      if minimum_elevation != nil and maximum_elevation != nil do
+        "#{format_float(minimum_elevation)} / #{format_float(maximum_elevation)}"
+      else
+        ""
+      end
+
+    assigns = assign(assigns, :verbatim, verbatim)
+    assigns = assign(assigns, :min_max, min_max)
+
+    ~H"""
+    <div>
+      {@verbatim}<br />
+      {@min_max}
     </div>
     """
   end

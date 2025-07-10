@@ -1516,7 +1516,7 @@ msgid "close"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/components/header.ex:123
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:213
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:214
 #, elixir-autogen, elixir-format
 msgid "Show on GBIF"
 msgstr ""
@@ -3852,31 +3852,31 @@ msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
 msgid "Thank you and welcome!"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:147
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:148
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Not registered"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:160
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:161
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "There is no information about whether this species has been registered by a Swiss species data center. Please run the ‘Encoding’ to update the information."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:166
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:167
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "This species has been registered by the Swiss species data center %{center}"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:163
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:164
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "This species has not been registered by any Swiss species data center"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:146
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:147
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Unknown"
@@ -4955,36 +4955,36 @@ msgid "that hold sensitive information and where publication rules will be appli
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/components/header.ex:142
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:225
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:226
 #, elixir-autogen, elixir-format
 msgid "Show on SwissNatColl"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:297
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:338
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS Level 0 - Bare: Minimal metadata linking a specimen to its digital representation. Consider adding essential details to enhance usability. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:300
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:341
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS Level 1 - Basic: Contains fundamental metadata supporting specimen discoverability and management. Additional details will improve scientific value. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:303
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:344
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS level 2 - IntermediaryIncludes key scientific data essential for research applications. Adding georeferencing and extended metadata will further enhance its utility. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:306
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:347
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS level 3 - Extended: Comprehensive metadata with links to external resources, maximizing interoperability and open data usability."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:294
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:335
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "No MIDS Level: Not enough metadata available. See the guide for recommendations."
