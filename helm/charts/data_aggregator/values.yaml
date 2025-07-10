@@ -26,6 +26,10 @@ serviceAccount:
 podAnnotations: {}
 podLabels: {}
 
+jobAnnotations:
+  helm.sh/hook: post-install,pre-upgrade
+  helm.sh/hook-delete-policy: before-hook-creationd
+
 service:
   type: ClusterIP
   port: 80
