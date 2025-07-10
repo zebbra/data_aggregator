@@ -44,9 +44,16 @@ spec:
         - name: catalog-init
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- if .Values.extraEnvVars }}
+            {{- toYaml .Values.extraEnvVars | nindent 12 }}
+            {{- end }}
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
           envFrom:
-            - secretRef:
-                name: {{ .Values.envSecret }}
+            {{- toYaml .Values.extraEnvFrom | nindent 12 }}
             - configMapRef:
                 name: {{ include "aggregator.fullname" . }}
           command:
