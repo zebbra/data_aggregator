@@ -26,17 +26,16 @@ spec:
         - name: migrate
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-            - secretRef:
-                name: {{ .Values.envSecret }}
-            - configMapRef:
-                name: {{ include "aggregator.fullname" . }}
           env:
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: "{{ include "aggregator.fullname" . }}-pg-app"
-                  key: uri
+            {{- if .Values.extraEnvVars }}
+            {{- toYaml .Values.extraEnvVars | nindent 12 }}
+            {{- end }}
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          envFrom:
+            {{- toYaml .Values.extraEnvFrom | nindent 12 }}
           command:
             - /bin/sh
           args:
