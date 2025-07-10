@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "aggregator.labels" . | nindent 4 }}
   annotations:
-    {{- with .Values.jobAnnotations }}
+    {{- with .Values.jobAnnotations.migration }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:

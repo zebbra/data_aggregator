@@ -1,11 +1,11 @@
-# Default values for aggregator.
+# Default values for data_aggregator.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: quay.io/zebbra/aggregator
+  repository: quay.io/zebbra/data_aggregator
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -27,8 +27,9 @@ podAnnotations: {}
 podLabels: {}
 
 jobAnnotations:
-  helm.sh/hook: post-install,pre-upgrade
-  helm.sh/hook-delete-policy: before-hook-creationd
+  migration:
+    helm.sh/hook: post-install,pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creationd
 
 service:
   type: ClusterIP
