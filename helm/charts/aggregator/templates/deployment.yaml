@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "data_aggregator.fullname" . }}
+  name: {{ include "aggregator.fullname" . }}
   labels:
-    {{- include "data_aggregator.labels" . | nindent 4 }}
+    {{- include "aggregator.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "data_aggregator.selectorLabels" . | nindent 6 }}
+      {{- include "aggregator.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:
-        {{- include "data_aggregator.selectorLabels" . | nindent 8 }}
+        {{- include "aggregator.selectorLabels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -27,7 +27,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "data_aggregator.serviceAccountName" . }}
+      serviceAccountName: {{ include "aggregator.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -38,7 +38,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: DNS_CLUSTER_QUERY
-              value: "{{ include "data_aggregator.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local"
+              value: "{{ include "aggregator.fullname" . }}-headless.{{ .Release.Namespace }}.svc.cluster.local"
             - name: NAMESPACE
               valueFrom:
                 fieldRef:

@@ -26,6 +26,11 @@ serviceAccount:
 podAnnotations: {}
 podLabels: {}
 
+jobAnnotations:
+  migration:
+    helm.sh/hook: post-install,pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
+
 service:
   type: ClusterIP
   port: 80
@@ -52,8 +57,6 @@ ingress:
 
 # for a complete list of env variables, including the ones which should be injected via Secrets, see config/.env.prod
 env: {}
-
-envSecret: {}
 
 # extraEnvVars: []
 # - name: DATABASE_URL

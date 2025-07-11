@@ -3,7 +3,7 @@ name: Helm
 on:
   push:
     paths:
-      - "helm/charts/data_aggregator/**"
+      - "helm/charts/aggregator/**"
 
 jobs:
   publish:
@@ -19,7 +19,7 @@ jobs:
 
       - name: Run Helm lint
         run: |
-          helm lint helm/charts/data_aggregator
+          helm lint helm/charts/aggregator
 
       - name: Login to Quay.io
         run: |
@@ -30,5 +30,5 @@ jobs:
       - name: Package and push Helm chart
         run: |
           echo "Packaging and pushing Helm chart..."
-          CHART_FILE=$(helm package helm/charts/data_aggregator | awk -F': ' '{print $2}')
+          CHART_FILE=$(helm package helm/charts/aggregator | awk -F': ' '{print $2}')
           helm push "$CHART_FILE" oci://quay.io/zebbra/charts
