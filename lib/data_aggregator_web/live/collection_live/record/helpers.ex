@@ -149,6 +149,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     end)
   end
 
+  def no_kingdom_query(publication_query, "import" = _layer) do
+    AshPagify.merge_filters(%AshPagify{filters: publication_query}, %{
+      or: [%{tax_kingdom: %{is_nil: true}}]
+    }).filters
+  end
+
+  def no_kingdom_query(publication_query, _layer) do
+    AshPagify.merge_filters(%AshPagify{filters: publication_query}, %{
+      or: [
+        %{encoded_record: %{tax_kingdom: %{is_nil: true}}}
+      ]
+    }).filters
+  end
+
   def checked_publication_query(publication_query, "import" = _layer) do
     AshPagify.merge_filters(%AshPagify{filters: publication_query}, %{
       or: [
@@ -213,7 +227,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     AshPagify.merge_filters(%AshPagify{filters: publication_query}, %{
       and: [
         %{encoded_record: %{swiss_species: %{center: %{is_nil: false}}}},
-        %{encoded_record: %{loc_country: %{eq: "Switzerland"}}}
+        %{encoded_record: %{loc_country: %{eq: "Switzerland"}}},
+        %{encoded_record: %{tax_kingdom: %{is_nil: false}}}
       ]
     }).filters
   end
@@ -229,11 +244,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
   def encoded_attribute(record, attribute, layer \\ nil)
   def encoded_attribute(record, attribute, "import"), do: Map.get(record, attribute)
 
-  def encoded_attribute(record, attribute, _) do
+  def encoded_attribute(record, attribute, layer) do
+    record |> encoded_attribute_value(attribute, layer) |> sanitized_value_for_record_attribute()
+  end
+
+  def encoded_attribute_value(record, attribute, _) do
     if record.encoded_record == nil do
       Map.get(record, attribute)
     else
-      record.encoded_record |> Map.get(attribute) |> value_for_record_attribute()
+      Map.get(record.encoded_record, attribute)
     end
   end
 
@@ -244,7 +263,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     Schema.dwc_field_from_prefixed_attribute_name(prefixed_attribute_name)
   end
 
-  defp value_for_record_attribute(value) when is_nil(value), do: "-"
-  defp value_for_record_attribute(value) when value === "", do: "-"
-  defp value_for_record_attribute(value), do: value
+  defp sanitized_value_for_record_attribute(nil), do: "-"
+  defp sanitized_value_for_record_attribute(""), do: "-"
+  defp sanitized_value_for_record_attribute(value), do: value
 end

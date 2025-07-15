@@ -352,7 +352,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <:col
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :iucn_redlist)}
-          field={:iucn_redlist}
           label={iucn_redlist_th_label()}
           directions={{:asc, :desc_nils_last}}
         >
@@ -446,18 +445,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <:col
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :loc_verbatim_elevation)}
-          field={:loc_verbatim_elevation}
           label={elevation_th_label()}
         >
-          <div :if={record.loc_verbatim_elevation}>{record.loc_verbatim_elevation}</div>
-          <div :if={record.loc_minimum_elevation_in_meters}>
-            {record.loc_minimum_elevation_in_meters} / {record.loc_maximum_elevation_in_meters}
-          </div>
+          <.elevation record={record} layer={@layer} />
         </:col>
         <:col
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :loc_decimal_latitude)}
-          field={:loc_decimal_latitude}
           label={coordinates_th_label()}
           directions={{:asc, :desc_nils_last}}
         >
@@ -512,7 +506,6 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
         <:col
           :let={{_id, record}}
           :if={CollectionType.visible?(@collection_type, :mids_level)}
-          field={:mids_level}
           label={~t"MIDS Level"m}
           class="text-center"
         >
@@ -1168,7 +1161,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   def elevation_th_label(assigns \\ %{}) do
     ~H"""
-    {get_dwc_field(:loc_verbatim_elevation)}
+    {get_dwc_field(:loc_verbatim_elevation)}<br /> {~t"min / max [m]"}
     """
   end
 

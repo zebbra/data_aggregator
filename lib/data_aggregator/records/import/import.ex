@@ -23,6 +23,7 @@ defmodule DataAggregator.Records.Import do
   alias DataAggregator.Records.Import.Column
   alias DataAggregator.Records.Import.Record, as: ImportRecord
   alias DataAggregator.Records.Record
+  alias Import.Changes.SetRecordsCountAfterTransaction
 
   require Ash.Resource.Change.Builtins
 
@@ -210,7 +211,7 @@ defmodule DataAggregator.Records.Import do
       change Import.Changes.ImportRecords
       change Import.Changes.SetImportedAfterAction
       change Import.Changes.SetFailedOnError
-      change Import.Changes.SetRecordsCountAfterTransaction
+      change SetRecordsCountAfterTransaction
       change load(:records_count)
     end
 
@@ -268,6 +269,7 @@ defmodule DataAggregator.Records.Import do
 
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
+      change SetRecordsCountAfterTransaction
     end
   end
 

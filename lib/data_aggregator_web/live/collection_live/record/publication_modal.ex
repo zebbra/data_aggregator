@@ -13,7 +13,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
       filter_map: 3,
       checked_publication_query: 2,
       publication_rules_query: 1,
-      count_from_query: 2
+      count_from_query: 2,
+      no_kingdom_query: 2
     ]
 
   import DataAggregatorWeb.Components.FieldGroup, only: [radio_group: 1]
@@ -21,6 +22,9 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
   alias AshPhoenix.Form
   alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records.Publication
+  alias DataAggregator.Records.Record
+
+  require Ash.Query
 
   @impl true
   def mount(socket) do
@@ -205,6 +209,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
           {~t"for publication to GBIF, which will make them publicly available. Make sure the layer and filters are corresponding to the selection you’d like to publish."m}
         </p>
 
+        <div :if={@no_kingdom_count > 0} class="flex">
+          <div class="mr-4 flex-shrink-0">
+            <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
+          </div>
+          <p class="text-sm">
+            {~t"There are"m}
+            <span class="text-sm font-bold">
+              {mgettext("%{no_kingdom_count} out of %{total_count} records",
+                no_kingdom_count: format_number(@no_kingdom_count),
+                total_count: format_number(@total_count)
+              )}
+            </span>
+            {~t"that do not have a kingdom, therefore, will not be published."m}
+          </p>
+        </div>
+
         <div :if={@total_count - @checked_publication_count > 0} class="flex">
           <div class="mr-4 flex-shrink-0">
             <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
@@ -229,7 +249,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
             <span class="text-sm font-bold">
               {mgettext("%{publication_rules_count} out of %{total_count} records",
                 publication_rules_count: format_number(@publication_rules_count),
-                total_count: format_number(@total_count - (@total_count - @checked_publication_count))
+                total_count: format_number(@total_count)
               )}
             </span>
             {~t"that hold sensitive information and where publication rules will be applied. These rules will obfuscate the exact location information upon publication."m}
@@ -647,19 +667,28 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
     actor = get_actor(socket)
     collection = Ash.load!(collection, [:publication_query], lazy?: true, actor: actor)
 
-    publication_query =
-      filter_map(ash_pagify, collection.publication_query, socket.assigns.layer)
+    selected_query =
+      filter_map(
+        ash_pagify,
+        Ash.Query.set_tenant(Record, collection.id),
+        socket.assigns.layer
+      )
 
-    total_count = count_from_query(publication_query, collection)
+    total_count = count_from_query(selected_query, collection)
 
-    checked_publication_query = checked_publication_query(publication_query, socket.assigns.layer)
+    no_kingdom_count =
+      selected_query |> no_kingdom_query(socket.assigns.layer) |> count_from_query(collection)
+
+    checked_publication_query = checked_publication_query(selected_query, socket.assigns.layer)
+
     checked_publication_count = count_from_query(checked_publication_query, collection)
 
-    publication_rules_query = publication_rules_query(checked_publication_query)
+    publication_rules_query = publication_rules_query(selected_query)
     publication_rules_count = count_from_query(publication_rules_query, collection)
 
     socket
     |> assign(:total_count, total_count)
+    |> assign(:no_kingdom_count, no_kingdom_count)
     |> assign(:checked_publication_count, checked_publication_count)
     |> assign(:publication_rules_count, publication_rules_count)
   end

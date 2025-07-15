@@ -72,6 +72,19 @@ defmodule DataAggregatorWeb.CollectionLive.ImageUpload.Components.Mapping do
                 placeholder={~t"Select mapping identifier"m}
                 data-portal="image_upload_modal"
               />
+              <div
+                :if={@image_upload.state in [:extraction_queued, :extracting, :mapping]}
+                class="flex"
+              >
+                <div class="mr-4 flex-shrink-0">
+                  <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
+                </div>
+                <div>
+                  <p class="text-sm">
+                    {~t"The images are currently being extracted, and mapping is unavailable during this time. Please wait for the process to finish and then reopen the mapping. Meanwhile DAGI is fully functional."}
+                  </p>
+                </div>
+              </div>
             </.fieldgroup>
           </.fieldset>
         </div>

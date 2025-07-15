@@ -2296,6 +2296,7 @@ defmodule DataAggregator.DarwinCore.Schema do
       loc_maximum_depth_in_meters: &format_float/1,
       loc_minimum_distance_above_surface_in_meters: &format_float/1,
       loc_maximum_elevation_in_meters: &format_float/1,
+      loc_verbatim_elevation: &format_float/1,
       loc_footprint_spatial_fit: &format_float/1,
       loc_point_radius_spatial_fit: &format_float/1,
       loc_coordinate_precision: &format_float/1,
