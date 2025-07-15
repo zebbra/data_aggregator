@@ -4304,202 +4304,202 @@ msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Components"
 msgid "Unknown"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:310
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:308
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "A validation for this dataset is already in process"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:152
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:150
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Actions"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:271
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:285
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:269
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:283
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Are you sure?"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:117
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:214
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:115
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:212
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Center"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:224
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:222
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Created at"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:353
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:351
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Dataset Validations"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:275
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:273
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Delete"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:231
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:229
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Done"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:81
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:79
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Exports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:120
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:217
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:118
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:215
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "File"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:369
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:367
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Get started by validating records."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:93
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:91
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Image Upload"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:80
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:78
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Imports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:368
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:366
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "No validations"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:84
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:82
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Publications"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:97
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:95
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Published Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:79
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:141
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:77
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:139
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Records"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:227
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:225
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Rows"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:158
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:201
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:156
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:199
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Run"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:123
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:121
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Size"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:56
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:54
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Something went wrong"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:129
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:249
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:127
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:247
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Started at"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:135
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:246
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:133
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:244
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Started by"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:114
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:112
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "State"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:189
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:207
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:187
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:205
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "State:"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:171
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:179
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:169
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:177
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Validation"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:323
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:321
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Validation deleted successfully"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:375
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:373
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Validation started in background"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:173
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:171
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Validation status details."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:88
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:86
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Validations"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:286
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:284
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "Yes, delete validation"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:241
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:239
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
 msgid "rows"
