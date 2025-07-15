@@ -1161,7 +1161,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   def elevation_th_label(assigns \\ %{}) do
     ~H"""
-    {get_dwc_field(:loc_verbatim_elevation)}<br /> min / max [m]
+    {get_dwc_field(:loc_verbatim_elevation)}<br /> {~t"min / max [m]"}
     """
   end
 

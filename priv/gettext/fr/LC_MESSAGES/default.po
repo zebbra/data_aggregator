@@ -5091,3 +5091,8 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgid "The images are currently being extracted, and mapping is unavailable during this time. Please wait for the process to finish and then reopen the mapping. Meanwhile DAGI is fully functional."
 msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/index.ex:1164
+#, elixir-autogen, elixir-format
+msgid "min / max [m]"
+msgstr ""

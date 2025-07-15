@@ -63,10 +63,10 @@ defmodule DataAggregatorWeb.Helpers do
   def format_float(float, opts \\ [])
   def format_float(nil, _opts), do: nil
 
-  def format_float(binary, opts) when is_binary(binary) do
-    binary |> String.to_float() |> format_float(opts)
+  def format_float(float_or_binary, opts) when is_binary(float_or_binary) do
+    float_or_binary |> String.to_float() |> format_float(opts)
   rescue
-    _ -> binary
+    _ -> float_or_binary
   end
 
   def format_float(float, nil), do: format_float(float)

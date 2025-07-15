@@ -285,7 +285,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       if verbatim_elevation == nil do
         ""
       else
-        "#{format_float(verbatim_elevation)}"
+        format_float(verbatim_elevation)
       end
 
     min_max =
