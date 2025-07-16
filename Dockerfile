@@ -15,6 +15,8 @@ ARG ELIXIR_VERSION=1.18.3
 ARG OTP_VERSION=27.3.2
 ARG ALPINE_VERSION=3.21.3
 
+ARG APP_VERSION=0.0.42
+
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-alpine-${ALPINE_VERSION}"
 ARG RUNNER_IMAGE="alpine:${ALPINE_VERSION}"
 
@@ -35,6 +37,9 @@ RUN mix local.hex --force && \
 
 # set build ENV
 ENV MIX_ENV="prod"
+
+# set app version
+ENV APP_VERSION=${APP_VERSION}
 
 # install mix dependencies
 COPY mix.exs mix.lock ./

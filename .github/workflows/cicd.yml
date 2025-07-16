@@ -102,6 +102,8 @@ jobs:
         if: always()
 
   build:
+    permissions:
+      contents: write
     name: Build Docker image
     needs: test
     runs-on: hetzner
@@ -145,10 +147,11 @@ jobs:
         uses: marocchino/tool-versions-action@v1
         id: versions
 
-      - name: Build image
+      - name: Build and push image
         uses: docker/build-push-action@v6
         with:
           context: .
+          push: ${{ github.ref == 'refs/heads/develop' || github.ref_type == 'tag' }}
           load: true
           platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
@@ -158,11 +161,22 @@ jobs:
           build-args: |
             OTP_VERSION=${{ steps.versions.outputs.erlang }}
             ELIXIR_VERSION=${{ steps.versions.outputs.elixir }}
+            APP_VERSION=${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
 
-      - name: Push image to quay.io
-        if: github.ref == 'refs/heads/develop' || github.ref_type == 'tag'
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
+      - name: Update Helm chart version and appVersion
+        if: github.ref_type == 'tag'
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+
+          echo "Updating version and appVersion to $VERSION"
+
+          # Use sed to edit file in place
+          sed -i '' "s/^appVersion: .*/appVersion: \"$VERSION\"/" helm/charts/aggregator/Chart.yaml
+          sed -i '' "s/^version: .*/version: $VERSION/" helm/charts/aggregator/Chart.yaml
+
+          git config --local user.email "ci-bot@zebbra.ch"
+          git config --local user.name "ci_bot"
+
+          git add helm/charts/aggregator/Chart.yaml
+          git commit -m "Update Helm chart version and appVersion to $VERSION"
+          git push
