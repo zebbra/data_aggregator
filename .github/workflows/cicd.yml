@@ -161,12 +161,12 @@ jobs:
           build-args: |
             OTP_VERSION=${{ steps.versions.outputs.erlang }}
             ELIXIR_VERSION=${{ steps.versions.outputs.elixir }}
-            APP_VERSION=${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
+            APP_VERSION=${{ github.ref_type == 'tag' && github.ref_name || '0.0.42' }}
 
       - name: Update Helm chart version and appVersion
         if: github.ref_type == 'tag'
         run: |
-          VERSION=${GITHUB_REF#refs/tags/}
+          VERSION=${GITHUB_REF_NAME}
 
           echo "Updating version and appVersion to $VERSION"
 

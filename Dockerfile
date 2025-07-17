@@ -41,6 +41,8 @@ ENV MIX_ENV="prod"
 # set app version
 ENV APP_VERSION=${APP_VERSION}
 
+RUN echo "APP_VERSION=${APP_VERSION}"
+
 # install mix dependencies
 COPY mix.exs mix.lock ./
 RUN mix deps.get --only $MIX_ENV
