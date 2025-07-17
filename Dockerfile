@@ -15,12 +15,12 @@ ARG ELIXIR_VERSION=1.18.3
 ARG OTP_VERSION=27.3.2
 ARG ALPINE_VERSION=3.21.3
 
-ARG APP_VERSION=0.0.42
-
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-alpine-${ALPINE_VERSION}"
 ARG RUNNER_IMAGE="alpine:${ALPINE_VERSION}"
 
 FROM ${BUILDER_IMAGE} AS builder
+
+ARG APP_VERSION=0.0.42
 
 # install build dependencies
 RUN apk add --no-cache build-base openssl ncurses-libs nodejs npm git
