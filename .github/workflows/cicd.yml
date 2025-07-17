@@ -168,15 +168,18 @@ jobs:
         run: |
           VERSION=${GITHUB_REF_NAME}
 
-          echo "Updating version and appVersion to $VERSION"
+          if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Updating version and appVersion to $VERSION"
 
-          # Use sed to edit file in place
-          sed -i '' "s/^appVersion: .*/appVersion: \"$VERSION\"/" helm/charts/aggregator/Chart.yaml
-          sed -i '' "s/^version: .*/version: $VERSION/" helm/charts/aggregator/Chart.yaml
+            sed -i '' "s/^appVersion: .*/appVersion: \"$VERSION\"/" helm/charts/aggregator/Chart.yaml
+            sed -i '' "s/^version: .*/version: $VERSION/" helm/charts/aggregator/Chart.yaml
 
-          git config --local user.email "ci-bot@zebbra.ch"
-          git config --local user.name "ci_bot"
+            git config --local user.email "ci-bot@zebbra.ch"
+            git config --local user.name "ci_bot"
 
-          git add helm/charts/aggregator/Chart.yaml
-          git commit -m "Update Helm chart version and appVersion to $VERSION"
-          git push
+            git add helm/charts/aggregator/Chart.yaml
+            git commit -m "Update Helm chart version and appVersion to $VERSION"
+            git push
+          else
+            echo "No valid version tag $VERSION, must be of format 1.0.42"
+          fi
