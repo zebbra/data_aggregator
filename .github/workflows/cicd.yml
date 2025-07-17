@@ -181,5 +181,5 @@ jobs:
             git commit -m "Update Helm chart version and appVersion to $VERSION"
             git push
           else
-            echo "No valid version tag $VERSION, must be of format 1.0.42"
+            echo "No valid version tag $VERSION, must be of format 1.0.42. Helm Chart will not be updated."
           fi
