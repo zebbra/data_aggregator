@@ -1,12 +1,14 @@
 defmodule DataAggregator.MixProject do
   use Mix.Project
 
-  @version "1.0.0"
+  defp version do
+    System.get_env("APP_VERSION") || "0.0.42"
+  end
 
   def project do
     [
       app: :data_aggregator,
-      version: @version,
+      version: version(),
       elixir: "~> 1.18",
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [ignore_module_conflict: true],

@@ -1,6 +1,10 @@
 name: Helm
 
 on:
+  workflow_run:
+    workflows: ["CI/CD"]
+    types:
+      - completed
   push:
     paths:
       - "helm/charts/aggregator/**"
@@ -9,6 +13,7 @@ jobs:
   publish:
     name: Publish Helm chart
     runs-on: hetzner
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout code
@@ -32,3 +37,16 @@ jobs:
           echo "Packaging and pushing Helm chart..."
           CHART_FILE=$(helm package helm/charts/aggregator | awk -F': ' '{print $2}')
           helm push "$CHART_FILE" oci://quay.io/zebbra/charts
+
+  dispatch:
+    runs-on: hetzner
+    permissions:
+      contents: write
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: dispatch
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.DEPLOYMENT_REPO_DISPATCH_PAT }}
+          repository: zebbra/data_aggregator_deployment
+          event-type: update_helm_chart
