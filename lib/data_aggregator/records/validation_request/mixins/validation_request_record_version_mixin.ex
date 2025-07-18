@@ -43,6 +43,7 @@ defmodule DataAggregator.Records.ValidationRequestRecordMixin do
         domain DataAggregator.Records
 
         define :read
+        define :get_by_id, action: :read, get_by: [:id]
         define :destroy
       end
     end

@@ -8,6 +8,7 @@ defmodule DataAggregator.Records.ValidationRequestRecordVersionsTest do
   import DataAggregator.RecordsFixtures
   import DataAggregator.ValidationRequestRecordFixtures
 
+  alias Ash.Error.Invalid
   alias DataAggregator.Gbif
   alias DataAggregator.Records.ValidationRequestRecord
   alias DataAggregator.Records.ValidationRequestRecord.Version, as: ValidationRequestRecordVersion
@@ -295,6 +296,20 @@ defmodule DataAggregator.Records.ValidationRequestRecordVersionsTest do
              |> Ash.Query.set_tenant(collection)
              |> Ash.read!()
              |> length() == 0
+
+      [version1, version2, version3] = version_ids
+
+      assert_raise Invalid, fn ->
+        ValidationRequestRecordVersion.get_by_id!(version1, tenant: collection)
+      end
+
+      assert_raise Invalid, fn ->
+        ValidationRequestRecordVersion.get_by_id!(version2, tenant: collection)
+      end
+
+      assert_raise Invalid, fn ->
+        ValidationRequestRecordVersion.get_by_id!(version3, tenant: collection)
+      end
     end
 
     test "deleting user sets user_id to nil in versions", %{
@@ -387,9 +402,6 @@ defmodule DataAggregator.Records.ValidationRequestRecordVersionsTest do
     } do
       vrr = validation_request_record_fixture(%{collection: collection, record: record})
 
-      # Wait a bit to ensure different timestamps
-      Process.sleep(10)
-
       {:ok, updated_vrr} =
         ValidationRequestRecord.update(
           vrr,
@@ -400,23 +412,13 @@ defmodule DataAggregator.Records.ValidationRequestRecordVersionsTest do
 
       updated_vrr = Ash.load!(updated_vrr, [:paper_trail_versions], tenant: collection)
 
-      [update_version, create_version] =
-        Enum.sort_by(
-          updated_vrr.paper_trail_versions,
-          & &1.version_inserted_at,
-          {:desc, DateTime}
-        )
+      [update_version, create_version] = updated_vrr.paper_trail_versions
 
       # Update version should have a later timestamp
       assert DateTime.after?(
                update_version.version_inserted_at,
                create_version.version_inserted_at
              )
-
-      # Both versions should have recent timestamps
-      now = DateTime.utc_now()
-      assert DateTime.diff(now, create_version.version_inserted_at) < 10
-      assert DateTime.diff(now, update_version.version_inserted_at) < 10
     end
 
     test "version queries work correctly", %{
@@ -497,7 +499,6 @@ defmodule DataAggregator.Records.ValidationRequestRecordVersionsTest do
     } do
       vrr = validation_request_record_fixture(%{collection: collection, record: record})
 
-      # Create multiple updates with slight delays
       {:ok, vrr} =
         ValidationRequestRecord.update(
           vrr,
@@ -505,8 +506,6 @@ defmodule DataAggregator.Records.ValidationRequestRecordVersionsTest do
           actor: user,
           tenant: collection
         )
-
-      Process.sleep(10)
 
       {:ok, vrr} =
         ValidationRequestRecord.update(

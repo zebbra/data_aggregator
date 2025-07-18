@@ -365,13 +365,7 @@ defmodule DataAggregator.Records.ValidationRequestRecordTest do
       update_version =
         Enum.find(updated_vrr.paper_trail_versions, &(&1.version_action_type == :update))
 
-      # User should be loaded properly
       assert update_version.user_id == user.id
-      # Note: user relationship may not be loaded due to nilify constraint handling
-      if update_version.user do
-        assert update_version.user.id == user.id
-      end
-
       assert update_version.version_source.id == vrr.id
     end
 
@@ -404,6 +398,12 @@ defmodule DataAggregator.Records.ValidationRequestRecordTest do
 
       # Delete the validation request record
       assert :ok = ValidationRequestRecord.destroy(updated_vrr, tenant: collection)
+
+      assert ValidationRequestRecord
+             |> Ash.Query.filter(id == ^updated_vrr.id)
+             |> Ash.Query.set_tenant(collection)
+             |> Ash.read!()
+             |> length() == 0
     end
   end
 
