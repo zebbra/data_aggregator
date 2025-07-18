@@ -1,0 +1,50 @@
+defmodule DataAggregator.Records.ValidationRequestRecordMixin do
+  @moduledoc false
+  defmacro __using__(_) do
+    quote do
+      import AshUUID.Macros
+
+      attributes do
+        uuid_attribute :user_id,
+          prefix: "usr",
+          public?: true,
+          primary_key?: false,
+          allow_nil?: true,
+          writable?: true,
+          default: nil
+      end
+
+      postgres do
+        references do
+          reference :version_source,
+            on_delete: :delete,
+            on_update: :update,
+            index?: true,
+            deferrable: true
+
+          reference :user,
+            on_delete: :nilify,
+            on_update: :update,
+            index?: true,
+            deferrable: true
+        end
+      end
+
+      preparations do
+        prepare build(sort: [version_inserted_at: :desc])
+        prepare DataAggregator.Preparations.Sort
+      end
+
+      actions do
+        defaults [:read, :destroy, create: :*, update: :*]
+      end
+
+      code_interface do
+        domain DataAggregator.Records
+
+        define :read
+        define :destroy
+      end
+    end
+  end
+end

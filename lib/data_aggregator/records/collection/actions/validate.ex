@@ -35,7 +35,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     collection = validation_request.collection
 
     path = FlatFileUtils.create_directory!("validation_request")
-    EmlFile.create(collection, validation_request.license, path)
+    EmlFile.create(collection, nil, path)
     MetaFile.create(collection, path)
 
     {:ok, counter} =
