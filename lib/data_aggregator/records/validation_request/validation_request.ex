@@ -17,7 +17,6 @@ defmodule DataAggregator.Records.ValidationRequest do
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
-  alias DataAggregator.Records.PublicationLicenseType
   alias DataAggregator.Records.ValidationRequest.Changes
 
   @type t :: %ValidationRequest{}
@@ -32,11 +31,6 @@ defmodule DataAggregator.Records.ValidationRequest do
     attribute :processed_rows_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :total_rows_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :center, :atom, allow_nil?: true, public?: true
-
-    attribute :license, PublicationLicenseType,
-      allow_nil?: false,
-      default: :cc_by,
-      public?: true
 
     timestamps public?: true, writable?: false
   end

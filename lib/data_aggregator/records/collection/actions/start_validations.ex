@@ -1,6 +1,6 @@
 defmodule DataAggregator.Records.Collection.Actions.StartValidations do
   @moduledoc """
-  Custom action to start an validation process for a selection of records towards infospecies. It groups all records selected
+  Custom action to start a validation process for a selection of records towards infospecies. It groups all records selected
   by a given query according to their infospecies center creates a ValidationRequest resource and calls the Collection.validate action for
   each group of records to send a DWC-Archive to the infospecies center.
   """
@@ -17,30 +17,29 @@ defmodule DataAggregator.Records.Collection.Actions.StartValidations do
   @impl true
   def run(input, _opts, %{actor: actor, tenant: tenant}) do
     collection = input.arguments.collection
-    query = input.arguments.query
 
     infospecies_centers = InfospeciesCenters.get_center_names()
 
     center_and_record_counts =
       Enum.map(infospecies_centers, fn center ->
-        records_query =
-          AshPagify.merge_filters(%AshPagify{filters: query}, %{
+        filter =
+          %{
             encoded_record: %{swiss_species: %{center: %{eq: center}}}
-          }).filters
+          }
 
-        count_query =
+        query =
           Record
-          |> AshPagify.query_for_filters_map(records_query)
-          |> Ash.Query.set_tenant(tenant)
+          |> Ash.Query.new()
+          |> Ash.Query.filter_input(filter)
 
-        rows_count = Ash.count!(count_query)
+        rows_count = Ash.count!(query, tenant: tenant)
 
         # do only create a validation request if there are records
         if rows_count > 0 do
           %{
             name: "vrq-#{collection.name}-#{:os.system_time()}",
-            records_query: records_query,
             collection: collection,
+            records_query: filter,
             total_rows_count: rows_count,
             center: center
           }

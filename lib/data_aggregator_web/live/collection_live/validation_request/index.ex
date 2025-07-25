@@ -34,8 +34,6 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
       |> assign(:busy_action, busy_action(collection))
       |> subscribe_for_validation_request_updates(connected?(socket))
 
-    # |> subscribe_for_publication_updates(connected?(socket))
-
     {:ok, socket}
   end
 

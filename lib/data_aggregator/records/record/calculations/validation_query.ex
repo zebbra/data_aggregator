@@ -20,8 +20,7 @@ defmodule DataAggregator.Records.Calculations.ValidationQuery do
   defp restriction(id) do
     # TODO: customize to restrict the records to be published
     %{
-      collection: %{id: %{eq: id}},
-      encoded_record: %{tax_kingdom: %{is_nil: false}}
+      collection: %{id: %{eq: id}}
     }
   end
 end

@@ -988,18 +988,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("collection:validation_pub", _params, socket) do
-    %{collection: collection, meta: %{result: %{ash_pagify: ash_pagify}}} = socket.assigns
+    %{collection: collection} = socket.assigns
     actor = get_actor(socket)
-    collection = Ash.load!(collection, [:validation_query], lazy?: true, actor: actor)
 
-    validation_query = filter_map(ash_pagify, collection.validation_query, socket.assigns.layer)
-
-    count_query =
-      Record
-      |> AshPagify.query_for_filters_map(validation_query)
-      |> Ash.Query.set_tenant(collection)
-
-    case create_and_enqueue(collection, validation_query, count_query, :validation, actor) do
+    case create_and_enqueue(collection, actor) do
       {:ok, _} ->
         {:noreply,
          socket
@@ -1051,8 +1043,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     {:noreply, assign(socket, :show_filters, false)}
   end
 
-  defp create_and_enqueue(collection, query, _count_query, :validation, actor) do
-    Collection.start_validations(collection, query, actor: actor, tenant: collection)
+  defp create_and_enqueue(collection, actor) do
+    Collection.start_validations(collection, actor: actor, tenant: collection)
   end
 
   defp apply_action(socket, :index, _params) do

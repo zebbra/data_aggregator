@@ -320,12 +320,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   def icon_lookup(:update_validation_status, content) do
     case content["validation_status"] do
-      "not_validated" -> "hero-question-mark-circle-solid"
-      "validating" -> "hero-cog-6-tooth-solid"
-      "in_validation" -> "hero-check-badge-solid"
+      "unknown" -> "hero-question-mark-circle-solid"
+      "requested" -> "hero-cog-6-tooth-solid"
       "validated" -> "hero-check-solid"
-      "validation_failed" -> "hero-x-mark-solid"
-      "stale" -> "hero-exclamation-triangle-solid"
+      "not_validated" -> "hero-x-mark-solid"
       _ -> "hero-check-badge"
     end
   end
@@ -366,23 +364,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   def icon_tooltip(:update_validation_status, content) do
     case content["validation_status"] do
-      "not_validated" ->
+      "unknown" ->
         ~t"No validation information available. Validate the dataset to see the status"m
 
-      "validating" ->
+      "requested" ->
         ~t"Validation in progress"m
-
-      "in_validation" ->
-        ~t"Record is now in the validation pipeline - no further action required"m
 
       "validated" ->
         ~t"Record validation was successful"m
 
-      "validation_failed" ->
-        ~t"Validation failed. Process should be started again"m
-
-      "stale" ->
-        ~t"Record data changed after validating it and has to be revalidated"m
+      "not_validated" ->
+        ~t"Record was rejected. It will not be validated by InfoSpecies Centers"m
 
       _ ->
         nil
@@ -412,12 +404,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   defp text(:update_validation_status, content) do
     case content["validation_status"] do
-      "not_validated" -> ~t"The validation status is now"m
-      "validating" -> ~t"The validation status is now"m
-      "in_validation" -> ~t"The validation status is now"m
-      "validated" -> ~t"The validation status is now"m
-      "validation_failed" -> ~t"The validation status is now"m
-      "stale" -> ~t"The validation status is now"m
+      "unknown" -> ~t"The validation status is"m
+      "requested" -> ~t"The validation status is"m
+      "validated" -> ~t"The validation status is"m
+      "not_validated" -> ~t"The validation status is"m
       _ -> ~t"Validation status was updated"m
     end
   end
@@ -474,12 +464,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   def badge_color(:update_validation_status, content) do
     case content["validation_status"] do
-      "not_validated" -> "gray"
-      "validating" -> "blue"
-      "in_validation" -> "blue"
+      "unknown" -> "gray"
+      "requested" -> "blue"
       "validated" -> "green"
-      "validation_failed" -> "red"
-      "stale" -> "orange"
+      "not_validated" -> "red"
       _ -> "green"
     end
   end

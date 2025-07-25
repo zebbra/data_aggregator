@@ -36,6 +36,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.PublicationStatusType
   alias DataAggregator.Records.Record.Calculations
   alias DataAggregator.Records.Record.Changes
+  alias DataAggregator.Records.ValidationRequestRecord
   alias DataAggregator.Records.ValidationStatusType
 
   require Ash.Expr
@@ -128,6 +129,11 @@ defmodule DataAggregator.Records.Record do
     end
 
     has_one :published_record, PublishedRecord do
+      public? true
+      filter expr(collection_id == parent(collection_id))
+    end
+
+    has_one :validation_request_record, ValidationRequestRecord do
       public? true
       filter expr(collection_id == parent(collection_id))
     end

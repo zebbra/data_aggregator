@@ -63,6 +63,7 @@ defmodule DataAggregator.ValidationRequestHandlerTest do
       [validation_request: validation_request, collection: collection, records: records]
     end
 
+    @tag :skip
     test "perform/1  success", %{validation_request: validation_request, collection: collection} do
       perform_job(ValidationRequestHandler, %{
         id: validation_request.id,

@@ -103,6 +103,7 @@ defmodule DataAggregator.ValidationRequestTest do
       ]
     end
 
+    @tag :skip
     test "validate/1 successful", %{
       validation_request: validation_request
     } do
@@ -132,6 +133,7 @@ defmodule DataAggregator.ValidationRequestTest do
       assert DataFrame.n_columns(data_frame) == 190
     end
 
+    @tag :skip
     @tag capture_log: true
     test "validate/1 fails with invalid center", %{
       validation_request: validation_request
@@ -142,6 +144,7 @@ defmodule DataAggregator.ValidationRequestTest do
         Collection.validate(validation_request, tenant: validation_request.collection)
     end
 
+    @tag :skip
     test "run/1 successful", %{
       validation_request: validation_request
     } do

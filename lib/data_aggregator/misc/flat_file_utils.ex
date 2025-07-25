@@ -158,7 +158,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   """
   @spec store_local_file(
           any(),
-          map() | [map()],
+          map() | [map()] | list(),
           [String.t()] | [{atom(), String.t()}] | boolean()
         ) :: any()
   def store_local_file(file, data_with_headers, headers) do

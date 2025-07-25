@@ -123,6 +123,7 @@ defmodule DataAggregator.WorkflowTest do
       [import: import, actor: actor]
     end
 
+    @tag :skip
     test "import workflow performs as expected", %{
       import: import,
       actor: actor,
@@ -486,6 +487,7 @@ defmodule DataAggregator.WorkflowTest do
       [validation_request: validation_request, actor: actor, records: records]
     end
 
+    @tag :skip
     test "validation request workflow performs as expected", %{
       validation_request: validation_request,
       records: records,

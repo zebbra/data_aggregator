@@ -6,18 +6,13 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   use Ash.Resource.Actions.Implementation
 
   alias DataAggregator.Counter
-  alias DataAggregator.DarwinCore.Publication.CoreFile
-  alias DataAggregator.DarwinCore.Publication.DwcaFile
-  alias DataAggregator.DarwinCore.Publication.EmlFile
-  alias DataAggregator.DarwinCore.Publication.MaterialSampleFile
-  alias DataAggregator.DarwinCore.Publication.MetaFile
-  alias DataAggregator.DarwinCore.Publication.PreservationFile
-  alias DataAggregator.DarwinCore.Publication.ReleveFile
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.Validation.ValidationFile
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Records.ValidationRequest.InfoSpecies
+  alias DataAggregator.Records.ValidationRequestRecord
 
   require Ash.Query
   require Logger
@@ -29,49 +24,45 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     # these are the new records that will be validated
     query =
       Record
-      |> AshPagify.query_for_filters_map(validation_request.records_query)
+      |> Ash.Query.new()
+      |> Ash.Query.filter_input(validation_request.records_query)
       |> Ash.Query.set_tenant(tenant)
-
-    collection = validation_request.collection
+      |> Ash.Query.load([:encoded_record, :collection, :validation_request_record])
 
     path = FlatFileUtils.create_directory!("validation_request")
-    EmlFile.create(collection, validation_request.license, path)
-    MetaFile.create(collection, path)
 
     {:ok, counter} =
       Counter.start(&ValidationRequest.add_validation_request_progress(validation_request, &1))
 
-    file_metas = [
-      CoreFile.open_file!(path),
-      MaterialSampleFile.open_file!(path),
-      PreservationFile.open_file!(path),
-      ReleveFile.open_file!(path)
-    ]
+    %{
+      file: file,
+      headers: headers,
+      record_attributes: record_attributes,
+      collection_attributes: collection_attributes
+    } = ValidationFile.open_file!(path)
 
-    Enum.each(file_metas, &DwcaFile.write_headers(&1))
+    FlatFileUtils.store_on_disk!(headers, file)
 
     query
     |> stream_query()
-    |> update_validation_status(:validating, ctx)
     |> Stream.chunk_every(1000)
-    |> Stream.flat_map(fn records ->
-      file_metas
-      |> Task.async_stream(
-        &DwcaFile.write_file!(records, &1, collection),
-        timeout: to_timeout(second: 30)
-      )
-      |> Stream.run()
+    |> Stream.map(fn records ->
+      Enum.each(records, fn record ->
+        process_validation_data(record, record_attributes, collection_attributes, file, headers)
+
+        :ok
+      end)
 
       records
     end)
     |> Counter.count_each(counter)
-    |> update_validation_status(:in_validation, ctx)
+    |> update_validation_status(:requested, ctx)
 
-    Enum.each(file_metas, &FlatFileUtils.close_file(&1.file_descriptor))
-
+    FlatFileUtils.close_file(file)
     Counter.stop(counter)
 
     attachment = path |> FlatFileUtils.create_zip!() |> FlatFileUtils.store_on_s3!()
+
     # remove file from local tmp dir, as it is now stored on s3
     File.rm_rf(path)
 
@@ -136,6 +127,20 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     stream
   end
 
+  defp process_validation_data(record, record_attributes, collection_attributes, file, headers) do
+    case data(record, record_attributes, collection_attributes) do
+      {:no_changes, _data} ->
+        :ok
+
+      {:changes, data} ->
+        upsert_validation_request_record(record, data)
+
+        FlatFileUtils.store_on_disk!(data, file, headers)
+
+        :ok
+    end
+  end
+
   defp validate(%ValidationRequest{} = validation_request, query, _ctx) do
     case InfoSpecies.notify(validation_request, query) do
       {:ok, validation_request} ->
@@ -145,6 +150,59 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
         Logger.warning("Error while informing infospecies about new available records for review: #{inspect(error)}")
 
         {:error, error}
+    end
+  end
+
+  # returns {:no_changes, previous_data} if there was no changes and returns {:ok, current_data} if there were
+  # changes in the record data since the last validation
+  defp data(record, record_attributes, collection_attributes) do
+    previous_data = previous_data(record)
+
+    current_data = current_data(record, record_attributes, collection_attributes)
+
+    if previous_data == current_data do
+      {:no_changes, previous_data}
+    else
+      {:changes, current_data}
+    end
+  end
+
+  # returns the data which was previously sent for validation
+  defp previous_data(record) do
+    case record.validation_request_record do
+      nil -> nil
+      previous_data -> previous_data.data |> Map.to_list() |> Enum.sort()
+    end
+  end
+
+  # returns the data which would be sent for validation now
+  defp current_data(record, record_attributes, collection_attributes) do
+    record_data = record |> Map.take(record_attributes) |> Map.to_list() |> Enum.sort()
+
+    collection_data =
+      record.collection |> Map.take(collection_attributes) |> Map.to_list() |> Enum.sort()
+
+    encoded_data =
+      record.encoded_record
+      |> Map.take(record_attributes)
+      |> Map.to_list()
+      |> Enum.sort()
+      |> Enum.map(fn {key, value} -> {"encoded.#{key}", value} end)
+
+    collection_data ++ record_data ++ encoded_data
+  end
+
+  defp upsert_validation_request_record(record, data) do
+    case record.validation_request_record do
+      nil ->
+        ValidationRequestRecord.create!(%{
+          data: data,
+          collection: record.collection,
+          record: record
+        })
+
+      vrr ->
+        ValidationRequestRecord.update!(vrr, %{data: data})
     end
   end
 end

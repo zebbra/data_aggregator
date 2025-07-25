@@ -311,7 +311,6 @@ defmodule DataAggregator.Records.Collection do
     # creates the validation request resources and enqueues it to the validation request queue
     action :start_validations, :map do
       argument :collection, :struct, allow_nil?: false
-      argument :query, :map, allow_nil?: false
 
       run Actions.StartValidations
     end
@@ -353,7 +352,7 @@ defmodule DataAggregator.Records.Collection do
     define :export, action: :export, args: [:export]
     define :publish, args: [:publication]
     define :validate, args: [:validation_request]
-    define :start_validations, args: [:collection, :query]
+    define :start_validations, args: [:collection]
     define :register_at_gbif, args: [:existing_dataset_key]
 
     define :set_mapping
