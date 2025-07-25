@@ -16,7 +16,7 @@ defmodule DataAggregatorWeb.Helpers do
   def format_number(number, opts), do: Cldr.Number.to_string!(number, opts)
 
   @doc ~S"""
-    parses a given float number to a string representation with the given amount of decimals or 6 if omitted
+    parses a given float number to a string representation with the given amount of decimals or 10 if omitted
 
     ## Examples
 
@@ -49,10 +49,26 @@ defmodule DataAggregatorWeb.Helpers do
 
     iex> format_float(nil, nil)
     nil
+
+    iex> format_float("1111", nil)
+    "1111"
+
+    iex> format_float("2.0e3", nil)
+    "2000.0"
+
+    iex> format_float("nil", nil)
+    "nil"
   """
 
   def format_float(float, opts \\ [])
   def format_float(nil, _opts), do: nil
+
+  def format_float(float_or_binary, opts) when is_binary(float_or_binary) do
+    float_or_binary |> String.to_float() |> format_float(opts)
+  rescue
+    _ -> float_or_binary
+  end
+
   def format_float(float, nil), do: format_float(float)
 
   def format_float(float, opts) do

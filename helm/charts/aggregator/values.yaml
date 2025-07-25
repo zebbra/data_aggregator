@@ -1,4 +1,4 @@
-# Default values for aggregator.
+# Default values for data_aggregator.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -24,61 +24,57 @@ serviceAccount:
   name: ""
 
 podAnnotations: {}
+podLabels: {}
 
-podSecurityContext:
-  {}
-  # fsGroup: 2000
-
-securityContext:
-  {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+jobAnnotations:
+  migration:
+    helm.sh/hook: post-install,pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
 
 service:
   type: ClusterIP
   port: 80
 
-env:
-  LISTEN_IP: 0.0.0.0
-  PORT: 4000
-  PHX_SERVER: true
-  POOL_SIZE: 20
-
-envSecret: aggregator
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
 
 ingress:
   enabled: false
   className: ""
-  annotations:
-    {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  annotations: {}
   hosts:
     - host: chart-example.local
       paths:
         - path: /
           pathType: ImplementationSpecific
   tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
 
-resources:
-  {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+# for a complete list of env variables, including the ones which should be injected via Secrets, see config/.env.prod
+env:
+  PORT: 4000
+
+# extraEnvVars: []
+# - name: DATABASE_URL
+#   valueFrom:
+#     secretKeyRef:
+#       name: database-url-pg-app
+#       key: uri
+
+extraEnvFrom: []
+
+resources: {}
+
+securityContext: {}
+podSecurityContext: {}
+nodeSelector: {}
+affinity: []
+tolerations: []
 
 autoscaling:
   enabled: false
@@ -86,9 +82,3 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}

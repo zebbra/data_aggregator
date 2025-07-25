@@ -39,6 +39,8 @@ defmodule DataAggregator.Accounts.User do
       store_all_tokens? true
       token_lifetime {24, :hours}
     end
+
+    session_identifier :jti
   end
 
   attributes do

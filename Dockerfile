@@ -20,6 +20,8 @@ ARG RUNNER_IMAGE="alpine:${ALPINE_VERSION}"
 
 FROM ${BUILDER_IMAGE} AS builder
 
+ARG APP_VERSION=0.0.42
+
 # install build dependencies
 RUN apk add --no-cache build-base openssl ncurses-libs nodejs npm git
 
@@ -35,6 +37,11 @@ RUN mix local.hex --force && \
 
 # set build ENV
 ENV MIX_ENV="prod"
+
+# set app version
+ENV APP_VERSION=${APP_VERSION}
+
+RUN echo "APP_VERSION=${APP_VERSION}"
 
 # install mix dependencies
 COPY mix.exs mix.lock ./

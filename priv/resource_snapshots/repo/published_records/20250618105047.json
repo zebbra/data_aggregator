@@ -45,7 +45,7 @@
       "references": null,
       "scale": null,
       "size": null,
-      "source": "ext_references",
+      "source": "ext_refs",
       "type": "map"
     },
     {
@@ -3713,7 +3713,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "2470DCBDBBF4F3DD3B382375E20F06519AA26DC4A3FA94ED2150A3D811AEFBBF",
+  "hash": "28537444089603B82FAECE7F1FED159089534A9D10258FE15C46981149416965",
   "identities": [
     {
       "all_tenants?": false,

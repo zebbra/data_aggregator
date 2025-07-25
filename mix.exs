@@ -1,12 +1,14 @@
 defmodule DataAggregator.MixProject do
   use Mix.Project
 
-  @version "1.0.0"
+  defp version do
+    System.get_env("APP_VERSION") || "0.0.42"
+  end
 
   def project do
     [
       app: :data_aggregator,
-      version: @version,
+      version: version(),
       elixir: "~> 1.18",
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [ignore_module_conflict: true],
@@ -202,7 +204,7 @@ defmodule DataAggregator.MixProject do
       {:phoenix_ecto, "~> 4.6"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
-      {:phoenix_live_view, "~> 1.0.0-rc.5", override: true},
+      {:phoenix_live_view, "~> 1.0.17"},
       {:phoenix_storybook, "~> 0.8.0"},
       {:tidewave, "~> 0.1", only: :dev},
       {:live_debugger, "~> 0.2.0", only: :dev},
@@ -262,8 +264,7 @@ defmodule DataAggregator.MixProject do
       {:timex, "~> 3.0"},
 
       # HTTP and API Utilities
-      # TODO: Remove when a new release 1.20.2 is available
-      {:hackney, github: "benoitc/hackney", branch: "master", override: true},
+      {:hackney, "~> 1.24"},
       {:jason, "~> 1.4"},
       {:open_api_spex, "~> 3.18"},
       {:redoc_ui_plug, "~> 0.2.1"},

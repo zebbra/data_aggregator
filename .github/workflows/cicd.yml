@@ -16,6 +16,9 @@ permissions:
   contents: read
 
 jobs:
+  check-semver-via-workflow:
+    uses: ./.github/workflows/check-semver-integrity.yml
+
   test:
     name: Run tests
     runs-on: hetzner
@@ -29,7 +32,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15-alpine
+        image: postgres:17-alpine
         ports: ["5432:5432"]
         env:
           POSTGRES_USER: data_aggregator
@@ -99,9 +102,12 @@ jobs:
         if: always()
 
   build:
+    permissions:
+      contents: write
     name: Build Docker image
     needs: test
     runs-on: hetzner
+    if: github.repository == 'zebbra/data_aggregator'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -141,10 +147,11 @@ jobs:
         uses: marocchino/tool-versions-action@v1
         id: versions
 
-      - name: Build image
+      - name: Build and push image
         uses: docker/build-push-action@v6
         with:
           context: .
+          push: ${{ github.ref == 'refs/heads/develop' || github.ref_type == 'tag' }}
           load: true
           platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
@@ -154,49 +161,25 @@ jobs:
           build-args: |
             OTP_VERSION=${{ steps.versions.outputs.erlang }}
             ELIXIR_VERSION=${{ steps.versions.outputs.elixir }}
+            APP_VERSION=${{ github.ref_type == 'tag' && github.ref_name || '0.0.42' }}
 
-      - name: Push image to quay.io
-        if: github.ref == 'refs/heads/develop' || github.ref_type == 'tag'
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
+      - name: Update Helm chart version and appVersion
+        if: github.ref_type == 'tag'
+        run: |
+          VERSION=${GITHUB_REF_NAME}
 
-  deploy:
-    name: Deploy to staging
-    if: github.ref == 'refs/heads/develop'
-    needs: build
-    runs-on: hetzner
+          if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Updating version and appVersion to $VERSION"
 
-    environment:
-      name: staging
-      url: https://staging.aggregator.scnat.zebbra.ch
+            sed -i '' "s/^appVersion: .*/appVersion: \"$VERSION\"/" helm/charts/aggregator/Chart.yaml
+            sed -i '' "s/^version: .*/version: $VERSION/" helm/charts/aggregator/Chart.yaml
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+            git config --local user.email "ci-bot@zebbra.ch"
+            git config --local user.name "ci_bot"
 
-      - name: Helm deployment
-        uses: WyriHaximus/github-action-helm3@v4
-        with:
-          exec: helm upgrade aggregator ./helm/charts/aggregator --install --wait --atomic --namespace scnat -f ./helm/staging.yaml --set image.tag=sha-${GITHUB_SHA::7}
-          kubeconfig: "${{ secrets.KUBECONFIG }}"
-          overrule_existing_kubeconfig: true
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4.4.0
-        with:
-          node-version-file: .tool-versions
-          cache: npm
-          cache-dependency-path: assets/package-lock.json
-
-      - name: Sentry release
-        uses: getsentry/action-release@v3
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: zebbra
-          SENTRY_PROJECT: scnat-data-aggregator
-          SENTRY_URL: https://sentry.zebbra.ch
-        with:
-          environment: staging
+            git add helm/charts/aggregator/Chart.yaml
+            git commit -m "Update Helm chart version and appVersion to $VERSION"
+            git push
+          else
+            echo "No valid version tag $VERSION, must be of format 1.0.42. Helm Chart will not be updated."
+          fi
