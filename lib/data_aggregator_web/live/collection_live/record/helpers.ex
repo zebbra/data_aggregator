@@ -263,7 +263,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     Schema.dwc_field_from_prefixed_attribute_name(prefixed_attribute_name)
   end
 
-  defp sanitized_value_for_record_attribute(nil), do: ""
-  defp sanitized_value_for_record_attribute(""), do: ""
+  defp sanitized_value_for_record_attribute(nil), do: "-"
+  defp sanitized_value_for_record_attribute(""), do: "-"
   defp sanitized_value_for_record_attribute(value), do: value
 end
