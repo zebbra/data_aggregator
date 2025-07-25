@@ -1,0 +1,28 @@
+defmodule DataAggregator.DarwinCore.Publication.VernacularNamesFile do
+  @moduledoc """
+  Module to create a Darwin Core Archive (DwCA) file for the VernacularNames Extension
+   implementing `DataAggregator.DarwinCore.Publication.DwcaFile` behaviour.
+  """
+
+  @behaviour DataAggregator.DarwinCore.Publication.DwcaFile
+
+  alias DataAggregator.DarwinCore.Publication.DwcaFile
+  alias DataAggregator.Misc.FlatFileUtils
+
+  def open_file!(path) do
+    path = "#{path}/vernacular_names.csv"
+    header_fields = DwcaFile.file_mapping(:vernacular_names)
+    headers = DwcaFile.get_only_column_headers(header_fields)
+    record_attributes = DwcaFile.record_attributes(:vernacular_names)
+
+    file = FlatFileUtils.open_file!(path)
+
+    %DwcaFile{
+      file_descriptor: file,
+      header_fields: DwcaFile.reverse_header_fields(headers, header_fields),
+      headers: headers,
+      record_attributes: record_attributes,
+      file_type: :vernacular_names
+    }
+  end
+end

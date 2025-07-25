@@ -1,0 +1,17 @@
+.input {
+  &::-webkit-calendar-picker-indicator {
+    font-size: 16px;
+  }
+
+  &.input-xs::-webkit-calendar-picker-indicator {
+    font-size: 12px;
+  }
+
+  &.input-sm::-webkit-calendar-picker-indicator {
+    font-size: 14px;
+  }
+
+  &.input-lg::-webkit-calendar-picker-indicator {
+    font-size: 18px;
+  }
+}

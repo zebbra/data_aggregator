@@ -1,0 +1,7 @@
+# File Management
+
+Make sure to start the application using the following command then use `dagg@<hostname>` as *Node* below:
+
+```shell
+> iex --sname dagg --cookie secret -S mix phx.server
+```

@@ -1,0 +1,11 @@
+@layer components {
+  .fix-drawer-pointer-events {
+    .drawer-side {
+      pointer-events: none !important;
+
+      > * {
+        pointer-events: auto;
+      }
+    }
+  }
+}

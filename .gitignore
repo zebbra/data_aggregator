@@ -1,0 +1,86 @@
+# The directory Mix will write compiled artifacts to.
+/_build/
+
+# If you run "mix test --cover", coverage assets end up here.
+/cover/
+
+# The directory Mix downloads your dependencies sources to.
+/deps/
+
+# Where 3rd-party dependencies like ExDoc output generated docs.
+/doc/
+
+# Ignore .fetch files in case you like to edit your project deps locally.
+/.fetch
+
+# If the VM crashes, it generates a dump, let's ignore it too.
+erl_crash.dump
+
+# Also ignore archive artifacts (built via "mix archive.build").
+*.ez
+
+# Temporary files, for example, from tests.
+/tmp/
+
+# Ignore package tarball (built via "mix hex.build").
+data_aggregator-*.tar
+
+# Ignore assets that are produced by build tools.
+/priv/static/assets/
+
+# Ignore generated docs
+/priv/static/docs/
+
+# Ignore dializer PLTs
+/priv/plts/*.plt
+/priv/plts/*.plt.hash
+
+# Ignore CLDR locales
+/priv/cldr/locales/*.json
+
+# Ignore waffle storage dir
+/priv/storage/
+
+# Ignore export files
+/priv/export/*
+
+# db data for local docker setup
+/db/data/*
+
+# Ignore digested assets cache.
+/priv/static/assets/
+/priv/static/**/*.gz
+/priv/static/**/*-????????????????????????????????.*
+/priv/static/cache_manifest.json
+/priv/cache/dev/*
+
+# In case you use Node.js/npm, you want to ignore these.
+npm-debug.log
+/assets/node_modules/
+
+# minio
+/minio/data/*
+/data
+
+# Ignore language server artefacts
+.elixir_ls
+.elixir-tools
+
+# ignore local .env
+.env
+
+# Ignore logfiles
+*.log
+
+# Ignore Mac OS files
+.DS_Store
+
+# Ignore database dumps
+priv/repo/dump/*.dump
+
+# Ignore large datasets for testing
+# use `mix data_aggregator.records` to load them
+test/support/fixtures/files/dataset-*.csv
+
+# Ignore test reports
+test/reports/*.xml

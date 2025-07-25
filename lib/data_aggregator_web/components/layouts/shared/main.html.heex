@@ -1,0 +1,14 @@
+<div
+  id="main_wrapper"
+  class="h-dvh overflow-y-auto scroll-smooth"
+  style="-webkit-transform: translateZ(0);"
+  phx-hook="MainScrollListener"
+>
+  <%!-- Static topbar --%>
+  <.appbar current_user={@current_user} />
+
+  <%!-- Main area --%>
+  <main class="isolate">
+    {render_slot(@inner_block)}
+  </main>
+</div>

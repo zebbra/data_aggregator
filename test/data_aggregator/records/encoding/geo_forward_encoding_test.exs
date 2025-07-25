@@ -1,0 +1,184 @@
+defmodule DataAggregator.ForwardGeoEncodingTest do
+  @moduledoc false
+
+  use DataAggregator.DataCase, async: true
+  use Mimic
+
+  import DataAggregator.EncodingFixtures
+
+  alias DataAggregator.Gbif
+  alias DataAggregator.Opencage
+  alias DataAggregator.Records.EncodedRecord
+  alias DataAggregator.Records.Record
+
+  describe "forward encoding of records with " do
+    setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
+
+      record_fixture = record_fixture_for_forward_geo_encoding_correct()
+
+      [
+        record_fixture: record_fixture
+      ]
+    end
+
+    test "encode/2 for :geo_forward catalog - forward geo encoding - successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_forward, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert encoded_record !== nil
+
+      assert_map_includes(encoded_record, %{
+        loc_continent: "Europe",
+        loc_country: "Switzerland",
+        loc_country_code: "CH",
+        loc_state_province: "Bern",
+        loc_municipality: nil
+      })
+
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_forward catalog - forward geo encoding - (with locality) successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_locality: "Niesen",
+          loc_continent: nil,
+          loc_country: "Switzerland",
+          loc_country_code: nil,
+          loc_municipality: nil,
+          loc_state_province: nil
+        })
+
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_forward, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert encoded_record !== nil
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: nil,
+        loc_decimal_longitude: nil,
+        loc_swiss_coordinates_lv03_x: nil,
+        loc_swiss_coordinates_lv03_y: nil,
+        loc_swiss_coordinates_lv95_x: nil,
+        loc_swiss_coordinates_lv95_y: nil,
+        loc_continent: "Europe",
+        loc_country: "Switzerland",
+        loc_country_code: "CH",
+        loc_locality: "Niesen",
+        loc_municipality: nil,
+        loc_state_province: nil
+      })
+
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_forward catalog - forward geo encoding - (no changes) successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_locality: "Europe",
+          loc_continent: "Europe",
+          loc_country: "Switzerland",
+          loc_country_code: "CH",
+          loc_municipality: "Lausanne",
+          loc_state_province: "Vaud"
+        })
+
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_forward, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert encoded_record !== nil
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: nil,
+        loc_decimal_longitude: nil,
+        loc_swiss_coordinates_lv03_x: nil,
+        loc_swiss_coordinates_lv03_y: nil,
+        loc_swiss_coordinates_lv95_x: nil,
+        loc_swiss_coordinates_lv95_y: nil,
+        loc_locality: "Europe",
+        loc_continent: "Europe",
+        loc_country: "Switzerland",
+        loc_country_code: "CH",
+        loc_municipality: "Lausanne",
+        loc_state_province: "Vaud"
+      })
+
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_forward catalog - forward geo encoding - error",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_decimal_latitude: nil,
+          loc_decimal_longitude: nil,
+          loc_swiss_coordinates_lv03_x: nil,
+          loc_swiss_coordinates_lv03_y: nil,
+          loc_swiss_coordinates_lv95_x: nil,
+          loc_swiss_coordinates_lv95_y: nil,
+          loc_continent: nil,
+          loc_country: nil,
+          loc_country_code: nil,
+          loc_state_province: nil,
+          loc_municipality: nil
+        })
+
+      {{:ok, _record}, logs} =
+        with_log(fn ->
+          Record.encode(record_fixture, :geo_forward, tenant: record_fixture.collection_id)
+        end)
+
+      encoded_record =
+        record_fixture.id
+        |> EncodedRecord.get_by_record!(tenant: record_fixture.collection_id)
+        |> Ash.load!([:record])
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: nil,
+        loc_decimal_longitude: nil,
+        loc_swiss_coordinates_lv03_x: nil,
+        loc_swiss_coordinates_lv03_y: nil,
+        loc_swiss_coordinates_lv95_x: nil,
+        loc_swiss_coordinates_lv95_y: nil,
+        loc_continent: nil,
+        loc_country: nil,
+        loc_country_code: nil,
+        loc_state_province: nil,
+        loc_municipality: nil
+      })
+
+      assert encoded_record.record.state === :failed
+
+      assert logs =~
+               "The attributes necessary to forward geo encode were not found on encoded_record"
+    end
+  end
+end

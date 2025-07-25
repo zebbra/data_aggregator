@@ -1,0 +1,32 @@
+{
+  // Based on Elixir formatter's style
+  "editor.formatOnSave": true,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "files.associations": {
+    "*.heex": "phoenix-heex"
+  },
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  // Misc
+  "editor.wordBasedSuggestions": "off",
+  "editor.trimAutoWhitespace": false,
+  // Tailwind
+  "tailwindCSS.includeLanguages": {
+    "phoenix-heex": "html",
+    "elixir": "html"
+  },
+  // Emmet
+  "emmet.includeLanguages": {
+    "elixir": "html",
+    "phoenix-heex": "html"
+  },
+  // Elixir
+  "elixir.credo.strictMode": true,
+  // Classes are sorted using "mix format"
+  "headwind.runOnSave": false,
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": "file:///Users/hw/Projects/data_aggregator/.github/workflows/deploy.yml"
+  }
+}

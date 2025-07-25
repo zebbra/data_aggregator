@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  aggregator:
+    image: quay.io/zebbra/data_aggregator:latest
+    pull_policy: always
+    container_name: data-aggregator
+    depends_on:
+      - db
+    env_file:
+      - config/.env.prod
+    ports:
+      - 4000:4000
+    networks:
+      - aggregator
+
+  # use this setup if you do not have a running postgres instance on your machine already
+  # db:
+  #   image: postgres:14
+  #   healthcheck:
+  #     test: ['CMD', 'pg_isready', '-q', '-d', 'postgres', '-U', 'root']
+  #     timeout: 45s
+  #     interval: 10s
+  #     retries: 10
+  #   restart: always
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - APP_DB_USER=postgres
+  #     - APP_DB_PASS=postgres
+  #     - APP_DB_NAME=aggregator
+  #   volumes:
+  #     - ./db/:/docker-entrypoint-initdb.d/
+  #     - ./db/data:/var/lib/postgresql/data
+  #   ports:
+  #     - 5432:5432
+  #   networks:
+  #     - aggregator
+
+networks:
+  aggregator:
+    driver: bridge

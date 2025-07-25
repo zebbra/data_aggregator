@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "aggregator.fullname" . }}-migrate
+  labels:
+    {{- include "aggregator.labels" . | nindent 4 }}
+  annotations:
+    {{- with .Values.jobAnnotations.migration }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  activeDeadlineSeconds: 43200
+  template:
+    metadata:
+      name: {{ include "aggregator.fullname" . }}-migrate
+    spec:
+      restartPolicy: Never
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "aggregator.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: migrate
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- if .Values.extraEnvVars }}
+            {{- toYaml .Values.extraEnvVars | nindent 12 }}
+            {{- end }}
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          envFrom:
+            {{- toYaml .Values.extraEnvFrom | nindent 12 }}
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - "/app/bin/migrate"
+        - name: catalog-init
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- if .Values.extraEnvVars }}
+            {{- toYaml .Values.extraEnvVars | nindent 12 }}
+            {{- end }}
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.extraEnvFrom }}
+            {{- toYaml .Values.extraEnvFrom | nindent 12 }}
+            {{- end }}
+            - configMapRef:
+                name: {{ include "aggregator.fullname" . }}
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - "/app/bin/catalog_init"

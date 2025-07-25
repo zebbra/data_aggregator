@@ -1,0 +1,244 @@
+defmodule DataAggregatorWeb.Helpers do
+  @moduledoc """
+  Formatting helpers for date, datetime, numbers etc.
+  """
+
+  alias DataAggregator.Accounts.User
+  alias DataAggregatorWeb.Cldr
+  alias Phoenix.LiveView.Socket
+
+  @timezone "Europe/Zurich"
+  @placeholder Phoenix.HTML.raw("&mdash;")
+
+  def format_number(number, opts \\ [])
+  def format_number(%Ash.NotLoaded{}, _opts), do: @placeholder
+  def format_number(nil, _opts), do: @placeholder
+  def format_number(number, opts), do: Cldr.Number.to_string!(number, opts)
+
+  @doc ~S"""
+    parses a given float number to a string representation with the given amount of decimals or 10 if omitted
+
+    ## Examples
+
+    iex> format_float(3000.0)
+    "3000.0"
+
+    iex> format_float(3000.00001)
+    "3000.00001"
+
+    iex> format_float(3000.1234)
+    "3000.1234"
+
+    iex> format_float(nil)
+    nil
+
+    iex> format_float(3000.000010, decimals: 5)
+    "3000.00001"
+
+    iex> format_float(3000.0001, decimals: 5)
+    "3000.0001"
+
+    iex> format_float(3000.56, nil)
+    "3000.56"
+
+    iex> format_float(550000.0, nil)
+    "550000.0"
+
+    iex> format_float(165000.0, nil)
+    "165000.0"
+
+    iex> format_float(nil, nil)
+    nil
+
+    iex> format_float("1111", nil)
+    "1111"
+
+    iex> format_float("2.0e3", nil)
+    "2000.0"
+
+    iex> format_float("nil", nil)
+    "nil"
+  """
+
+  def format_float(float, opts \\ [])
+  def format_float(nil, _opts), do: nil
+
+  def format_float(float_or_binary, opts) when is_binary(float_or_binary) do
+    float_or_binary |> String.to_float() |> format_float(opts)
+  rescue
+    _ -> float_or_binary
+  end
+
+  def format_float(float, nil), do: format_float(float)
+
+  def format_float(float, opts) do
+    {decimals, _opts} = Keyword.pop(opts, :decimals, 10)
+
+    :erlang.float_to_binary(float, [:compact, decimals: decimals])
+  end
+
+  def format_percent(number, opts \\ [])
+  def format_percent(nil, _opts), do: @placeholder
+
+  def format_percent(number, opts) do
+    {precision, opts} = Keyword.pop(opts, :precision, 0)
+
+    number = Float.round(number * 100.0, precision)
+    opts = Keyword.merge([unit: "percent", style: :short], opts)
+    Cldr.Unit.to_string!(number, opts)
+  end
+
+  def format_date(date, opts \\ [])
+  def format_date(nil, _opts), do: @placeholder
+  def format_date(date, opts), do: Cldr.Date.to_string!(date, opts)
+
+  def format_datetime(datetime, opts \\ [])
+  def format_datetime(nil, _opts), do: @placeholder
+
+  def format_datetime(datetime, opts), do: datetime |> DateTime.shift_zone!(@timezone) |> Cldr.DateTime.to_string!(opts)
+
+  def format_weeks(weeks, opts \\ []), do: Cldr.Unit.to_string!(weeks, Keyword.put(opts, :unit, "week"))
+
+  def format_date_interval(from, to, opts \\ []), do: Cldr.Interval.to_string!(from, to, opts)
+
+  # credo:disable-for-next-line Credo.Check.Design.AliasUsage
+  def format_time_ago(value, opts \\ []), do: Cldr.DateTime.Relative.to_string!(value, opts)
+
+  def format_bytes(bytes, opts \\ []) do
+    kb = 1024
+    mb = 1024 * kb
+    gb = 1024 * mb
+
+    {value, unit} =
+      cond do
+        bytes < kb -> {bytes / 1.0, :byte}
+        bytes < mb -> {bytes / kb, :kilobyte}
+        bytes < gb -> {bytes / mb, :megabyte}
+        true -> {bytes / gb, :gigabyte}
+      end
+
+    precision = Keyword.get(opts, :precision, 1)
+    value = Float.round(value, precision)
+
+    opts =
+      opts
+      |> Keyword.put(:unit, unit)
+      |> Keyword.put_new(:style, :short)
+
+    Cldr.Unit.to_string!(value, opts)
+  end
+
+  def format_seconds(nil), do: @placeholder
+
+  def format_seconds(seconds) do
+    hours = div(seconds, 3600)
+    minutes = div(rem(seconds, 3600), 60)
+    seconds = rem(seconds, 60)
+
+    format = &String.pad_leading(Integer.to_string(&1), 2, "0")
+    "#{format.(hours)}:#{format.(minutes)}:#{format.(seconds)}"
+  end
+
+  def format_coordinate(val)
+
+  def format_coordinate(val) when is_float(val) do
+    truncated = trunc(val)
+    if truncated == val, do: truncated, else: val
+  end
+
+  def format_coordinate(val), do: val
+
+  @doc ~S"""
+  Returns a string representation of a map or a value.
+  If the value is a map, it will be inspected. Otherwise, it will be returned as is.
+
+  ## Examples
+
+      iex> DataAggregatorWeb.Helpers.format_map(%{foo: "bar"})
+      "%{foo: \"bar\"}"
+
+      iex> DataAggregatorWeb.Helpers.format_map("foo")
+      "foo"
+
+      iex> DataAggregatorWeb.Helpers.format_map(123)
+      123
+  """
+  def format_map(val)
+  def format_map(%{} = val), do: inspect(val)
+  def format_map(val), do: val
+
+  @doc ~S"""
+  Returns a JSON string representation of a map or a value.
+  If the value is a map, it will be encoded to JSON. Otherwise, it will be returned as is.
+
+  ## Examples
+
+      iex> DataAggregatorWeb.Helpers.format_json(%{foo: "bar"})
+      "{\"foo\":\"bar\"}"
+
+      iex> DataAggregatorWeb.Helpers.format_json("foo")
+      "foo"
+
+      iex> DataAggregatorWeb.Helpers.format_json(123)
+      123
+  """
+  @spec format_json(any()) :: String.t() | any()
+  def format_json(val)
+  def format_json(%{} = val), do: Jason.encode!(val, pretty: false)
+  def format_json(val), do: val
+
+  @doc ~S"""
+  Returns a string of class names from a list of class names.
+
+  ## Examples
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", "bar"])
+      "foo bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", nil, "bar"])
+      "foo bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", "", "bar"])
+      "foo bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", false, "bar"])
+      "foo bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", true, "bar"])
+      "foo true bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", 1, "bar"])
+      "foo 1 bar"
+
+      iex> DataAggregatorWeb.Helpers.class_names(["foo", 0, "bar"])
+      "foo 0 bar"
+  """
+  @spec class_names([String.t()]) :: String.t()
+  def class_names(class_names) do
+    class_names
+    |> Enum.filter(& &1)
+    |> Enum.join(" ")
+    |> String.trim()
+    |> String.replace(~r/\s+/, " ")
+  end
+
+  def gbif_base_url, do: System.get_env("GBIF_BASE_URL")
+  def swiss_nat_coll_base_url, do: System.get_env("SWISS_NAT_COLL_BASE_URL")
+
+  @spec get_actor(Socket.t() | map()) :: User.t()
+  def get_actor(%Socket{assigns: %{current_user: %User{} = actor}}), do: actor
+  def get_actor(%{current_user: %User{} = actor}), do: actor
+
+  @spec get_tenant(Socket.t() | map()) :: String.t()
+  def get_tenant(%Socket{assigns: %{collection: tenant}}), do: tenant
+  def get_tenant(%{collection: tenant}), do: tenant
+
+  def maybe_set_user(%User{first_name: first_name, last_name: last_name}) when first_name != nil and last_name != nil,
+    do: "#{first_name} #{last_name}"
+
+  def maybe_set_user(%User{email: email}) when email != nil, do: email
+  def maybe_set_user(_), do: Phoenix.HTML.raw("&mdash;")
+
+  def blank?(val) when val in [nil, "", []], do: true
+  def blank?(_), do: false
+end

@@ -1,0 +1,40 @@
+<div
+  id="appbar"
+  class="bg-base-100/90 text-base-content border-black-white/10 sticky top-0 isolate z-10 flex h-16 w-full justify-center backdrop-blur transition-shadow duration-100"
+>
+  <div class={"#{env_name_border()} navbar lg:px-4"} id="navbar">
+    <div class="flex flex-1">
+      <span class="tooltip tooltip-bottom before:text-xs" data-tip="Menu">
+        <label
+          aria-label="Open menu"
+          for="main_navigation_drawer"
+          class="btn btn-square btn-ghost drawer-button md:hidden"
+        >
+          <.icon name="hero-bars-3-mini" class="size-5 md:size-6" />
+        </label>
+      </span>
+      <div class="flex items-center gap-1 lg:gap-2">
+        <.link href="/" aria-current="page" aria-label="Dashboard" class="flex-0 btn btn-ghost">
+          <span class="font-title text-base-content text-lg md:text-2xl">Data Aggregator</span>
+        </.link>
+        <div>
+          <div class="font-mono inline-block text-xs max-sm:hidden">{version_tag()}</div>
+          <.env_name_badge />
+        </div>
+      </div>
+    </div>
+    <div class="flex-0 gap-1 lg:gap-2">
+      <.link
+        href="/sign-out"
+        class="btn btn-ghost text-base-content/75 tooltip tooltip-bottom inline-flex max-md:hidden before:text-xs hover:text-base-content"
+        data-tip={~t"Sign out"}
+      >
+        <div :if={@current_user.first_name} class="truncate max-lg:max-w-36">
+          {@current_user.first_name}
+        </div>
+        <.icon name="hero-arrow-right-start-on-rectangle" />
+      </.link>
+      <.theme_select />
+    </div>
+  </div>
+</div>

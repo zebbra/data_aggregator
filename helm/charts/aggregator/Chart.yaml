@@ -1,0 +1,6 @@
+apiVersion: v2
+name: aggregator
+description: Helm Chart for the GBIF data aggregator
+type: application
+version: 1.0.3
+appVersion: "1.0.3"

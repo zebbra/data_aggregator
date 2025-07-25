@@ -1,0 +1,11 @@
+{
+  "ash_functions_version": 5,
+  "installed": [
+    "ash-functions",
+    "uuid-ossp",
+    "citext",
+    "pg_trgm",
+    "btree_gin",
+    "ash-uuid_v2"
+  ]
+}

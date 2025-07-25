@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "jakebecker.elixir-ls",
+    "pantajoe.vscode-elixir-credo",
+    "phoenixframework.phoenix",
+    "bradlc.vscode-tailwindcss"
+  ],
+  "unwantedRecommendations": [
+    "heybourn.headwind"
+  ]
+}

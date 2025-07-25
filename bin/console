@@ -1,0 +1,2 @@
+#!/bin/sh
+iex --sname data-aggregator --cookie secret -S mix phx.server

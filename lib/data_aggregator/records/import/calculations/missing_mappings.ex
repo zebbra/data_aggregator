@@ -1,0 +1,53 @@
+defmodule DataAggregator.Records.Import.Calculations.MissingMappings do
+  @moduledoc """
+  This `Ash.Resource.Calculation` calculates the missing column mappings based on the required attributes
+  using the attribute definitions from `DataAggregator.DarwinCore.Schema`.
+  """
+
+  use Ash.Resource.Calculation
+
+  alias Ash.Resource.Attribute
+  alias DataAggregator.DarwinCore
+  alias DataAggregator.DarwinCore.Schema.Category
+  alias DataAggregator.Records.Import
+
+  require Logger
+
+  @impl Ash.Resource.Calculation
+  def calculate(imports, _opts, _ctx) do
+    Enum.map(imports, &missing_mappings(&1))
+  end
+
+  defp missing_mappings(%Import{columns: columns}) do
+    existing_mappings = Enum.map(columns, & &1.mapped_to)
+
+    categories = DarwinCore.Schema.categories()
+
+    missing_attribute? = fn
+      category, %Attribute{allow_nil?: false} = attr ->
+        prefixed_name = Category.prefixed_attribute_name(category, attr)
+        !Enum.member?(existing_mappings, to_string(prefixed_name))
+
+      _category, %Attribute{allow_nil?: true} ->
+        false
+    end
+
+    filter_missing_attributes = fn category ->
+      %Category{dwc_attributes: dwc_attributes} = category
+
+      missing_attributes =
+        Enum.filter(dwc_attributes, &missing_attribute?.(category, &1.attribute))
+
+      %{category | dwc_attributes: missing_attributes}
+    end
+
+    empty_category? = fn
+      %Category{dwc_attributes: []} -> true
+      %Category{} -> false
+    end
+
+    categories
+    |> Enum.map(filter_missing_attributes)
+    |> Enum.reject(empty_category?)
+  end
+end

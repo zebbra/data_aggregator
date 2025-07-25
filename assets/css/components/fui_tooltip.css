@@ -1,0 +1,39 @@
+.fui-tooltip {
+  --tooltip-color: theme(colors.neutral);
+  --tooltip-text-color: theme(colors.neutral-content);
+}
+
+.fui-tooltip-primary {
+  --tooltip-color: theme(colors.primary);
+  --tooltip-text-color: theme(colors.primary-content);
+}
+
+.fui-tooltip-secondary {
+  --tooltip-color: theme(colors.secondary);
+  --tooltip-text-color: theme(colors.secondary-content);
+}
+
+.fui-tooltip-accent {
+  --tooltip-color: theme(colors.accent);
+  --tooltip-text-color: theme(colors.accent-content);
+}
+
+.fui-tooltip-info {
+  --tooltip-color: theme(colors.info);
+  --tooltip-text-color: theme(colors.info-content);
+}
+
+.fui-tooltip-success {
+  --tooltip-color: theme(colors.success);
+  --tooltip-text-color: theme(colors.success-content);
+}
+
+.fui-tooltip-warning {
+  --tooltip-color: theme(colors.warning);
+  --tooltip-text-color: theme(colors.warning-content);
+}
+
+.fui-tooltip-error {
+  --tooltip-color: theme(colors.error);
+  --tooltip-text-color: theme(colors.error-content);
+}

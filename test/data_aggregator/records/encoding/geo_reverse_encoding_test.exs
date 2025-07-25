@@ -1,0 +1,397 @@
+defmodule DataAggregator.ReverseGeoEncodingTest do
+  @moduledoc false
+
+  use DataAggregator.DataCase, async: true
+  use Mimic
+
+  import DataAggregator.EncodingFixtures
+
+  alias DataAggregator.Gbif
+  alias DataAggregator.Opencage
+  alias DataAggregator.Records.EncodedRecord
+  alias DataAggregator.Records.Record
+
+  describe "reward encoding of records with " do
+    setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
+
+      record_fixture = record_fixture_for_reverse_geo_encoding_correct()
+
+      [
+        record_fixture: record_fixture
+      ]
+    end
+
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with intl coordinates within switzerland - successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: 46.086797,
+        loc_decimal_longitude: 7.104789,
+        loc_swiss_coordinates_lv95_x: 2_574_175.7,
+        loc_swiss_coordinates_lv95_y: 1_103_975.7,
+        loc_swiss_coordinates_lv03_x: 574_175.7,
+        loc_swiss_coordinates_lv03_y: 103_975.7,
+        loc_continent: "Europe",
+        loc_country: "Switzerland",
+        loc_country_code: "CH",
+        loc_state_province: "Wallis",
+        loc_municipality: "Val de Bagnes"
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with intl coordinates within switzerland, don't overwrite intl coords if we have swiss coords - successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_decimal_latitude: 46.086797,
+          loc_decimal_longitude: 7.104789,
+          loc_swiss_coordinates_lv95_x: 2_574_175.7,
+          loc_swiss_coordinates_lv95_y: 1_103_975.7,
+          loc_swiss_coordinates_lv03_x: nil,
+          loc_swiss_coordinates_lv03_y: nil
+        })
+
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: 46.086797,
+        loc_decimal_longitude: 7.104789
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with intl coordinates within switzerland, don't overwrite swiss coordinates lv95 - successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_decimal_latitude: 46.086797,
+          loc_decimal_longitude: 7.104789,
+          loc_swiss_coordinates_lv95_x: 2_574_175.1,
+          loc_swiss_coordinates_lv95_y: 1_103_975.1,
+          loc_swiss_coordinates_lv03_x: nil,
+          loc_swiss_coordinates_lv03_y: nil
+        })
+
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: 46.086797,
+        loc_decimal_longitude: 7.104789,
+        loc_swiss_coordinates_lv95_x: 2_574_175.1,
+        loc_swiss_coordinates_lv95_y: 1_103_975.1,
+        loc_swiss_coordinates_lv03_x: 574_175.7,
+        loc_swiss_coordinates_lv03_y: 103_975.7
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with intl coordinates within switzerland, don't overwrite swiss coordinates lv03 - successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_decimal_latitude: 46.086797,
+          loc_decimal_longitude: 7.104789,
+          loc_swiss_coordinates_lv95_x: nil,
+          loc_swiss_coordinates_lv95_y: nil,
+          loc_swiss_coordinates_lv03_x: 574_175.1,
+          loc_swiss_coordinates_lv03_y: 103_975.1
+        })
+
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: 46.086797,
+        loc_decimal_longitude: 7.104789,
+        loc_swiss_coordinates_lv95_x: 2_574_175.7,
+        loc_swiss_coordinates_lv95_y: 1_103_975.7,
+        loc_swiss_coordinates_lv03_x: 574_175.1,
+        loc_swiss_coordinates_lv03_y: 103_975.1
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with intl coordinates out of switzerland - successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_decimal_latitude: 32.117833,
+          loc_decimal_longitude: 20.082039,
+          loc_swiss_coordinates_lv95_x: nil,
+          loc_swiss_coordinates_lv95_y: nil,
+          loc_swiss_coordinates_lv03_x: nil,
+          loc_swiss_coordinates_lv03_y: nil
+        })
+
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert_map_includes(encoded_record, %{
+        loc_swiss_coordinates_lv95_x: nil,
+        loc_swiss_coordinates_lv95_y: nil,
+        loc_swiss_coordinates_lv03_x: nil,
+        loc_swiss_coordinates_lv03_y: nil,
+        loc_continent: "Africa",
+        loc_country: "Libya",
+        loc_country_code: "LY",
+        loc_decimal_latitude: 32.117833,
+        loc_decimal_longitude: 20.082039,
+        loc_municipality: "Benghazi",
+        loc_state_province: nil
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with swiss lv03 coordinates - successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_decimal_latitude: nil,
+          loc_decimal_longitude: nil,
+          loc_swiss_coordinates_lv95_x: nil,
+          loc_swiss_coordinates_lv95_y: nil,
+          loc_swiss_coordinates_lv03_x: 601_391.156872048,
+          loc_swiss_coordinates_lv03_y: 199_508.5872802814
+        })
+
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: 46.946659,
+        loc_decimal_longitude: 7.456910,
+        loc_swiss_coordinates_lv95_x: 2_601_391.2,
+        loc_swiss_coordinates_lv95_y: 1_199_508.6,
+        loc_swiss_coordinates_lv03_x: 601_391.2,
+        loc_swiss_coordinates_lv03_y: 199_508.6,
+        loc_continent: "Europe",
+        loc_country: "Switzerland",
+        loc_country_code: "CH",
+        loc_state_province: "Bern",
+        loc_municipality: "Bern"
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with swiss lv95 coordinates - successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_decimal_latitude: nil,
+          loc_decimal_longitude: nil,
+          loc_swiss_coordinates_lv95_x: 2_601_391.156872048,
+          loc_swiss_coordinates_lv95_y: 1_199_508.5872802814,
+          loc_swiss_coordinates_lv03_x: nil,
+          loc_swiss_coordinates_lv03_y: nil
+        })
+
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: 46.946659,
+        loc_decimal_longitude: 7.456910,
+        loc_swiss_coordinates_lv95_x: 2_601_391.2,
+        loc_swiss_coordinates_lv95_y: 1_199_508.6,
+        loc_swiss_coordinates_lv03_x: 601_391.2,
+        loc_swiss_coordinates_lv03_y: 199_508.6,
+        loc_continent: "Europe",
+        loc_country: "Switzerland",
+        loc_country_code: "CH",
+        loc_state_province: "Bern",
+        loc_municipality: "Bern"
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with no coordinates - (no changes 1) successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_decimal_latitude: nil,
+          loc_decimal_longitude: nil,
+          loc_swiss_coordinates_lv95_x: nil,
+          loc_swiss_coordinates_lv95_y: nil,
+          loc_swiss_coordinates_lv03_x: nil,
+          loc_swiss_coordinates_lv03_y: nil
+        })
+
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: nil,
+        loc_decimal_longitude: nil,
+        loc_swiss_coordinates_lv95_x: nil,
+        loc_swiss_coordinates_lv95_y: nil,
+        loc_swiss_coordinates_lv03_x: nil,
+        loc_swiss_coordinates_lv03_y: nil,
+        loc_continent: nil,
+        loc_country: nil,
+        loc_country_code: nil,
+        loc_state_province: nil,
+        loc_municipality: nil
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with no coordinates - (no changes 2) successful",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_decimal_latitude: 46.946659297095934,
+          loc_decimal_longitude: nil,
+          loc_swiss_coordinates_lv95_x: nil,
+          loc_swiss_coordinates_lv95_y: nil,
+          loc_swiss_coordinates_lv03_x: 2_601_391.156872048,
+          loc_swiss_coordinates_lv03_y: nil
+        })
+
+      {:ok, record} =
+        Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
+
+      assert record !== nil
+
+      encoded_record =
+        EncodedRecord.get_by_record!(record.id, tenant: record_fixture.collection_id)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: 46.946659297095934,
+        loc_decimal_longitude: nil,
+        loc_swiss_coordinates_lv95_x: nil,
+        loc_swiss_coordinates_lv95_y: nil,
+        loc_swiss_coordinates_lv03_x: 2_601_391.156872048,
+        loc_swiss_coordinates_lv03_y: nil,
+        loc_continent: nil,
+        loc_country: nil,
+        loc_country_code: nil,
+        loc_state_province: nil,
+        loc_municipality: nil
+      })
+
+      assert encoded_record !== nil
+      assert record.state === :encoded
+    end
+
+    test "encode/2 for :geo_reverse catalog - reverse geo encoding with wrong coordinates - error (no result)",
+         %{
+           record_fixture: record_fixture
+         } do
+      record_fixture =
+        update_record_fixtures!(record_fixture, %{
+          loc_decimal_latitude: 4242.4242,
+          loc_decimal_longitude: 2424.2424,
+          loc_swiss_coordinates_lv95_x: nil,
+          loc_swiss_coordinates_lv95_y: nil,
+          loc_swiss_coordinates_lv03_x: nil,
+          loc_swiss_coordinates_lv03_y: nil
+        })
+
+      {{:ok, _record}, logs} =
+        with_log(fn ->
+          Record.encode(record_fixture, :geo_reverse, tenant: record_fixture.collection_id)
+        end)
+
+      encoded_record = Record.get_by_id!(record_fixture.id, tenant: record_fixture.collection_id)
+
+      assert_map_includes(encoded_record, %{
+        loc_decimal_latitude: 4242.4242,
+        loc_decimal_longitude: 2424.2424,
+        loc_swiss_coordinates_lv95_x: nil,
+        loc_swiss_coordinates_lv95_y: nil,
+        loc_swiss_coordinates_lv03_x: nil,
+        loc_swiss_coordinates_lv03_y: nil,
+        loc_continent: nil,
+        loc_country: nil,
+        loc_country_code: nil,
+        loc_state_province: nil,
+        loc_municipality: nil
+      })
+
+      assert encoded_record.state === :failed
+
+      assert logs =~ "No valid response (status 400) from geo api"
+    end
+  end
+end

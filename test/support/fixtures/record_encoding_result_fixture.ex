@@ -1,0 +1,49 @@
+defmodule DataAggregator.RecordEncodingResultFixture do
+  @moduledoc """
+  This module defines test helpers for creating
+  entities via the `DataAggregator.Records` context.
+  """
+
+  use ExUnit.Case, async: true
+  use Mimic
+
+  import DataAggregator.RecordsFixtures
+
+  alias DataAggregator.Records.Encoding.RecordEncodingResult
+
+  @record_encoding_result_defaults %{
+    input: %{
+      "tax_taxon_id" => 1234
+    },
+    output: %{
+      "tax_taxon_id_ch" => 5678,
+      "tax_accepted_name_usage" => "super accepted name",
+      "tax_accepted_name_usage_id" => 1234,
+      "tax_scientific_name" => "my scientific name",
+      "tax_taxon_rank" => "SPECIES"
+    },
+    message: nil,
+    catalog: :swiss_species,
+    state: :success
+  }
+
+  def get_default_attrs, do: @record_encoding_result_defaults
+
+  @doc """
+    Generate a record_encoding_result.
+  """
+  def record_encoding_result_fixture(attrs \\ %{}) do
+    record =
+      if Map.has_key?(attrs, :record) do
+        attrs[:record]
+      else
+        record_fixture()
+      end
+
+    @record_encoding_result_defaults
+    |> Map.merge(attrs)
+    |> Map.put_new_lazy(:record, fn -> record end)
+    |> Map.put_new_lazy(:collection, fn -> record.collection end)
+    |> RecordEncodingResult.create!(tenant: record.collection)
+  end
+end

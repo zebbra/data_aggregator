@@ -1,0 +1,152 @@
+<nav
+  aria-labelledby="main_navigation"
+  class="bg-base-100 border-black-white/10 h-dvh flex flex-col border-r max-md:w-72"
+>
+  <div class="flex h-full flex-col overflow-clip">
+    <h2 id="main_navigation" class="sr-only">Main Navigation</h2>
+
+    <header class="bg-base-100/90 flex h-16 shrink-0 items-center px-4 md:justify-center">
+      <.link
+        navigate={~p"/"}
+        aria-current={if @current === "collections", do: "page", else: nil}
+        aria-label="Datasets"
+        class="avatar btn btn-ghost w-full space-x-2 max-md:justify-start md:btn-circle"
+      >
+        <div class="w-12 rounded-full">
+          <img
+            src="/images/logo-light.png"
+            alt="Data Aggregator"
+            class="[[data-theme=dark]_&]:hidden [[data-theme=light]_&]:block block dark:hidden"
+          />
+          <img
+            src="/images/logo-dark.png"
+            alt="Data Aggregator"
+            class="[[data-theme=dark]_&]:block [[data-theme=light]_&]:hidden hidden dark:block"
+          />
+        </div>
+        <span class="font-title text-base-content text-lg md:hidden">Data Aggregator</span>
+      </.link>
+    </header>
+
+    <ul
+      role="list"
+      class="menu h-fit flex-nowrap gap-1 overflow-y-auto px-4 py-6 md:justify-evenly md:gap-4 lg:px-8"
+    >
+      <li>
+        <.link
+          navigate={~p"/datasets"}
+          class={[
+            "flex active:!bg-primary md:flex-col md:p-3",
+            @current == "collections" && "bg-primary text-primary-content hover:bg-primary"
+          ]}
+          aria-describedby="datasets_tooltip"
+        >
+          <.icon name="hero-squares-2x2" />
+          <span class="md:hidden lg:inline">{~t"Datasets"m}</span>
+          <.fui_tooltip
+            id="datasets_tooltip"
+            content={~t"Datasets"}
+            visibility_class="hidden md:hidden lg:hidden"
+            show_class="md:block"
+            hide_class="md:hidden"
+            placement="right"
+            data-portal="portal_root_static"
+          />
+        </.link>
+      </li>
+      <%= if DataAggregator.Accounts.User.can_update?(@current_user, %DataAggregator.Accounts.User{}) do %>
+        <li>
+          <.link
+            navigate={~p"/administration"}
+            class={[
+              "flex active:!bg-primary md:flex-col md:p-3",
+              @current == "administration" && "bg-primary text-primary-content hover:bg-primary"
+            ]}
+            aria-describedby="administration_tooltip"
+          >
+            <.icon name="hero-wrench-screwdriver" />
+            <span class="md:hidden lg:inline">{~t"Administration"m}</span>
+            <.fui_tooltip
+              id="administration_tooltip"
+              content={~t"Administration"}
+              visibility_class="hidden md:hidden lg:hidden"
+              show_class="md:block"
+              hide_class="md:hidden"
+              placement="right"
+              data-portal="portal_root_static"
+            />
+          </.link>
+        </li>
+      <% end %>
+      <li>
+        <.link
+          href={Application.get_env(:data_aggregator, :guide_url)}
+          class="flex md:flex-col md:p-3"
+          target="_blank"
+          aria-describedby="guide_tooltip"
+        >
+          <.icon name="hero-book-open" />
+          <span class="md:hidden lg:inline">{~t"Guide"m}</span>
+          <.fui_tooltip
+            id="guide_tooltip"
+            content={~t"Guide"}
+            visibility_class="hidden md:hidden lg:hidden"
+            show_class="md:block"
+            hide_class="md:hidden"
+            placement="right"
+            data-portal="portal_root_static"
+          />
+        </.link>
+      </li>
+      <li>
+        <.link
+          href={Application.get_env(:data_aggregator, :tutorials_url)}
+          class="flex md:flex-col md:p-3"
+          target="_blank"
+          aria-describedby="tutorials_tooltip"
+        >
+          <.icon name="hero-video-camera" />
+          <span class="md:hidden lg:inline">{~t"Tutorials"m}</span>
+          <.fui_tooltip
+            id="tutorials_tooltip"
+            content={~t"Tutorials"}
+            visibility_class="hidden md:hidden lg:hidden"
+            show_class="md:block"
+            hide_class="md:hidden"
+            placement="right"
+            data-portal="portal_root_static"
+          />
+        </.link>
+      </li>
+      <li>
+        <.link
+          href={Application.get_env(:data_aggregator, :terms_url)}
+          class="flex md:flex-col md:p-3"
+          target="_blank"
+          aria-describedby="terms_tooltip"
+        >
+          <.icon name="hero-document-check" />
+          <span class="md:hidden lg:inline">{~t"Terms&Conditions"m}</span>
+          <.fui_tooltip
+            id="terms_tooltip"
+            content={~t"Terms&Conditions"}
+            visibility_class="hidden md:hidden lg:hidden"
+            show_class="md:block"
+            hide_class="md:hidden"
+            placement="right"
+            data-portal="portal_root_static"
+          />
+        </.link>
+      </li>
+    </ul>
+
+    <ul role="list" class="menu mt-auto px-4 py-6 md:hidden lg:px-8">
+      <li>
+        <.link navigate={~p"/sign-out"} class="flex">
+          <.icon name="hero-arrow-right-start-on-rectangle" />
+          <span>{~t"Sign out"m}</span>
+        </.link>
+      </li>
+    </ul>
+  </div>
+</nav>

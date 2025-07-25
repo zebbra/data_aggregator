@@ -1,0 +1,63 @@
+defmodule DataAggregator.Records.RecordVersionMixin do
+  @moduledoc false
+  defmacro __using__(_) do
+    quote do
+      import AshUUID.Macros
+
+      attributes do
+        uuid_attribute :user_id,
+          prefix: "usr",
+          public?: true,
+          primary_key?: false,
+          allow_nil?: true,
+          writable?: true,
+          default: nil
+      end
+
+      json_api do
+        type "record_versions"
+
+        routes do
+          base "/datasets/:collection_id/record_versions"
+
+          get :read
+          index :read
+        end
+      end
+
+      postgres do
+        references do
+          reference :version_source,
+            on_delete: :delete,
+            on_update: :update,
+            index?: true,
+            deferrable: true,
+            match_with: [collection_id: :collection_id]
+
+          reference :user,
+            on_delete: :nilify,
+            on_update: :update,
+            index?: true,
+            deferrable: true
+        end
+      end
+
+      preparations do
+        prepare build(sort: [version_inserted_at: :desc])
+        prepare DataAggregator.Preparations.Sort
+      end
+
+      actions do
+        default_accept :*
+        defaults [:create, :read, :update, :destroy]
+      end
+
+      code_interface do
+        domain DataAggregator.Records
+
+        define :read
+        define :destroy
+      end
+    end
+  end
+end
