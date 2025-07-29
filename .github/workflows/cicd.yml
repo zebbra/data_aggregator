@@ -175,9 +175,8 @@ jobs:
 
             echo "Updating version and appVersion to $VERSION"
 
-            # Create a new branch for the PR
-            BRANCH_NAME="update-helm-chart-${VERSION}"
-            git checkout -b "$BRANCH_NAME"
+            git checkout develop
+            git pull origin develop
 
             perl -i -pe "s/^appVersion: .*/appVersion: \"$VERSION\"/" helm/charts/aggregator/Chart.yaml
             perl -i -pe "s/^version: .*/version: $VERSION/" helm/charts/aggregator/Chart.yaml
@@ -188,22 +187,9 @@ jobs:
             git add helm/charts/aggregator/Chart.yaml
             git commit -m "Update Helm chart version and appVersion to $VERSION"
 
-            # Push the branch
-            git push origin "$BRANCH_NAME"
+            git push https://${{ secrets.GH_CICD_PAT }}@github.com/${{ github.repository }}.git develop
 
-            # Create PR with auto-merge using GitHub CLI
-            gh pr create \
-              --title "Update Helm chart version and appVersion to $VERSION" \
-              --body "Automated update of Helm chart version and appVersion to $VERSION from release tag." \
-              --base develop \
-              --head "$BRANCH_NAME"
-
-            # Enable auto-merge (will merge once reviews and checks pass)
-            gh pr merge "$BRANCH_NAME" --auto --squash
-
-            echo "PR created with auto-merge enabled. Will merge automatically once reviews and checks pass."
+            echo "Pushed Helm chart updates to develop branch"
           else
             echo "No valid version tag $VERSION, must be of format 1.0.42. Helm Chart will not be updated."
           fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
