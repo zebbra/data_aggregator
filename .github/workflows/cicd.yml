@@ -175,6 +175,7 @@ jobs:
 
             echo "Updating version and appVersion to $VERSION"
 
+            git fetch origin develop:develop
             git checkout develop
             git pull origin develop
 
