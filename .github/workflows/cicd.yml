@@ -118,7 +118,7 @@ jobs:
           application_private_key: ${{ secrets.GH_RUNNER_APPLICATION_PRIVATE_KEY }}
       - uses: actions/checkout@v4
         with:
-          token: ${{ steps.get_workflow_token.outputs.token }
+          token: ${{ steps.get_workflow_token.outputs.token }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
