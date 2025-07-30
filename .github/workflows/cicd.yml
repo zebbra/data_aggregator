@@ -188,7 +188,7 @@ jobs:
             git add helm/charts/aggregator/Chart.yaml
             git commit -m "Update Helm chart version and appVersion to $VERSION"
 
-            git push https://${{ secrets.GH_CICD_PAT }}@github.com/${{ github.repository }}.git develop
+            git push https://@github.com/${{ github.repository }}.git develop
 
             echo "Pushed Helm chart updates to develop branch"
           else
