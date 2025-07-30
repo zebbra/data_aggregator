@@ -192,6 +192,7 @@ jobs:
             git add helm/charts/aggregator/Chart.yaml
             git commit -m "Update Helm chart version and appVersion to $VERSION"
 
+            git remote set-url origin https://x-access-token:${{ steps.get_workflow_token.outputs.token }}@github.com/zebbra/data_aggregator.git
             git push origin develop
 
             echo "Pushed Helm chart updates to develop branch"
