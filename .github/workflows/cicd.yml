@@ -110,8 +110,15 @@ jobs:
     runs-on: hetzner
     if: github.repository == 'zebbra/data_aggregator'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Get token for gh app Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v4
+        with:
+          application_id: ${{ secrets.GH_RUNNER_APPLICATION_ID }}
+          application_private_key: ${{ secrets.GH_RUNNER_APPLICATION_PRIVATE_KEY }}
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.get_workflow_token.outputs.token }
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -163,16 +170,9 @@ jobs:
       #       OTP_VERSION=${{ steps.versions.outputs.erlang }}
       #       ELIXIR_VERSION=${{ steps.versions.outputs.elixir }}
       #       APP_VERSION=${{ github.ref_type == 'tag' && github.ref_name || '0.0.42' }}
-      - name: Get token for gh app Token
-        id: get_workflow_token
-        uses: peter-murray/workflow-application-token-action@v3
-        with:
-          application_id: ${{ secrets.GH_RUNNER_APPLICATION_ID }}
-          application_private_key: ${{ secrets.GH_RUNNER_APPLICATION_PRIVATE_KEY }}
+
       - name: Update Helm chart version and appVersion
         if: github.ref_type == 'tag'
-        env:
-          GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
         run: |
           VERSION=${GITHUB_REF_NAME}
 
