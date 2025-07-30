@@ -110,8 +110,16 @@ jobs:
     runs-on: hetzner
     if: github.repository == 'zebbra/data_aggregator'
     steps:
+      - name: Get token for gh app Token
+        id: get_autocommit_app_token
+        uses: peter-murray/workflow-application-token-action@v3
+        with:
+          application_id: ${{ vars.AUTOCOMMIT_APP_ID }}
+          application_private_key: ${{ secrets.AUTOCOMMIT_APP_PRIVATE_KEY }}
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ steps.get_autocommit_app_token.outputs.token }
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -166,6 +174,8 @@ jobs:
 
       - name: Update Helm chart version and appVersion
         if: github.ref_type == 'tag'
+        env:
+          GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
         run: |
           VERSION=${GITHUB_REF_NAME}
 
