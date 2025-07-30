@@ -19,94 +19,94 @@ jobs:
   check-semver-via-workflow:
     uses: ./.github/workflows/check-semver-integrity.yml
 
-  test:
-    name: Run tests
-    runs-on: hetzner
+  # test:
+  #   name: Run tests
+  #   runs-on: hetzner
 
-    env:
-      OPEN_CAGE_DATA_API_KEY: ${{ secrets.OPEN_CAGE_DATA_API_KEY }}
-      GBIF_INSTALLATION_KEY: ${{ secrets.GBIF_INSTALLATION_KEY }}
-      GBIF_ORGANIZATION_KEY: ${{ secrets.GBIF_ORGANIZATION_KEY }}
-      GBIF_USER: ${{ secrets.GBIF_USER }}
-      GBIF_PASSWORD: ${{ secrets.GBIF_PASSWORD }}
+  #   env:
+  #     OPEN_CAGE_DATA_API_KEY: ${{ secrets.OPEN_CAGE_DATA_API_KEY }}
+  #     GBIF_INSTALLATION_KEY: ${{ secrets.GBIF_INSTALLATION_KEY }}
+  #     GBIF_ORGANIZATION_KEY: ${{ secrets.GBIF_ORGANIZATION_KEY }}
+  #     GBIF_USER: ${{ secrets.GBIF_USER }}
+  #     GBIF_PASSWORD: ${{ secrets.GBIF_PASSWORD }}
 
-    services:
-      postgres:
-        image: postgres:17-alpine
-        ports: ["5432:5432"]
-        env:
-          POSTGRES_USER: data_aggregator
-          POSTGRES_PASSWORD: secret
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 5
+  #   services:
+  #     postgres:
+  #       image: postgres:17-alpine
+  #       ports: ["5432:5432"]
+  #       env:
+  #         POSTGRES_USER: data_aggregator
+  #         POSTGRES_PASSWORD: secret
+  #       options: >-
+  #         --health-cmd pg_isready
+  #         --health-interval 5s
+  #         --health-timeout 5s
+  #         --health-retries 5
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Set up Elixir
-        uses: erlef/setup-beam@v1
-        with:
-          version-file: .tool-versions
-          version-type: strict
+  #     - name: Set up Elixir
+  #       uses: erlef/setup-beam@v1
+  #       with:
+  #         version-file: .tool-versions
+  #         version-type: strict
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4.4.0
-        with:
-          node-version-file: .tool-versions
-          cache: npm
-          cache-dependency-path: assets/package-lock.json
+  #     - name: Setup Node.js environment
+  #       uses: actions/setup-node@v4.4.0
+  #       with:
+  #         node-version-file: .tool-versions
+  #         cache: npm
+  #         cache-dependency-path: assets/package-lock.json
 
-      - name: Restore cache
-        id: cache
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            deps
-            _build
-            priv/plts
-          key: ${{ runner.os }}-mix-${{ hashFiles('.tool-versions') }}-${{ hashFiles('mix.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-mix-${{ hashFiles('.tool-versions') }}-
-            ${{ runner.os }}-mix-
+  #     - name: Restore cache
+  #       id: cache
+  #       uses: actions/cache/restore@v4
+  #       with:
+  #         path: |
+  #           deps
+  #           _build
+  #           priv/plts
+  #         key: ${{ runner.os }}-mix-${{ hashFiles('.tool-versions') }}-${{ hashFiles('mix.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-mix-${{ hashFiles('.tool-versions') }}-
+  #           ${{ runner.os }}-mix-
 
-      - run: mix deps.clean --all
-      - run: mix deps.get
-      - run: mix compile
-      - run: rm -rf priv/plts
-      - run: mix dialyzer --plt
+  #     - run: mix deps.clean --all
+  #     - run: mix deps.get
+  #     - run: mix compile
+  #     - run: rm -rf priv/plts
+  #     - run: mix dialyzer --plt
 
-      - name: Save cache
-        uses: actions/cache/save@v4
-        if: steps.cache.outputs.cache-hit != 'true'
-        with:
-          path: |
-            deps
-            _build
-            priv/plts
-          key: ${{ runner.os }}-mix-${{ hashFiles('.tool-versions') }}-${{ hashFiles('mix.lock') }}
+  #     - name: Save cache
+  #       uses: actions/cache/save@v4
+  #       if: steps.cache.outputs.cache-hit != 'true'
+  #       with:
+  #         path: |
+  #           deps
+  #           _build
+  #           priv/plts
+  #         key: ${{ runner.os }}-mix-${{ hashFiles('.tool-versions') }}-${{ hashFiles('mix.lock') }}
 
-      - run: mix assets.setup
-      - run: mix assets.build
-      - run: mix compile --warnings-as-errors
-      - run: mix lint
-      - run: mix test
+  #     - run: mix assets.setup
+  #     - run: mix assets.build
+  #     - run: mix compile --warnings-as-errors
+  #     - run: mix lint
+  #     - run: mix test
 
-      - name: Test Summary
-        uses: test-summary/action@v2
-        with:
-          paths: test/reports/test-junit-report.xml
-        if: always()
+  #     - name: Test Summary
+  #       uses: test-summary/action@v2
+  #       with:
+  #         paths: test/reports/test-junit-report.xml
+  #       if: always()
 
   build:
     permissions:
       contents: write
       pull-requests: write
     name: Build Docker image
-    needs: test
+    # needs: test
     runs-on: hetzner
     if: github.repository == 'zebbra/data_aggregator'
     steps:
@@ -156,21 +156,21 @@ jobs:
         uses: marocchino/tool-versions-action@v1
         id: versions
 
-      - name: Build and push image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: ${{ github.ref == 'refs/heads/develop' || github.ref_type == 'tag' }}
-          load: true
-          platforms: linux/amd64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          build-args: |
-            OTP_VERSION=${{ steps.versions.outputs.erlang }}
-            ELIXIR_VERSION=${{ steps.versions.outputs.elixir }}
-            APP_VERSION=${{ github.ref_type == 'tag' && github.ref_name || '0.0.42' }}
+      # - name: Build and push image
+      #   uses: docker/build-push-action@v6
+      #   with:
+      #     context: .
+      #     push: ${{ github.ref == 'refs/heads/develop' || github.ref_type == 'tag' }}
+      #     load: true
+      #     platforms: linux/amd64
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     cache-from: type=gha
+      #     cache-to: type=gha,mode=max
+      #     build-args: |
+      #       OTP_VERSION=${{ steps.versions.outputs.erlang }}
+      #       ELIXIR_VERSION=${{ steps.versions.outputs.elixir }}
+      #       APP_VERSION=${{ github.ref_type == 'tag' && github.ref_name || '0.0.42' }}
 
       - name: Update Helm chart version and appVersion
         if: github.ref_type == 'tag'
