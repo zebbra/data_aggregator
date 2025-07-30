@@ -89,11 +89,11 @@ jobs:
   #           priv/plts
   #         key: ${{ runner.os }}-mix-${{ hashFiles('.tool-versions') }}-${{ hashFiles('mix.lock') }}
 
-  #     # - run: mix assets.setup
-  #     # - run: mix assets.build
-  #     # - run: mix compile --warnings-as-errors
-  #     # - run: mix lint
-  #     # - run: mix test
+  #     - run: mix assets.setup
+  #     - run: mix assets.build
+  #     - run: mix compile --warnings-as-errors
+  #     - run: mix lint
+  #     - run: mix test
 
   #     - name: Test Summary
   #       uses: test-summary/action@v2
@@ -106,7 +106,7 @@ jobs:
       contents: write
       pull-requests: write
     name: Build Docker image
-    # needs: test
+    needs: test
     runs-on: hetzner
     if: github.repository == 'zebbra/data_aggregator'
     steps:
