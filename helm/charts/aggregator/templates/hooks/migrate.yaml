@@ -42,7 +42,7 @@ spec:
             - -c
             - "/app/bin/migrate"
         - name: catalog-init
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             {{- if .Values.extraEnvVars }}
