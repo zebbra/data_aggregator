@@ -104,13 +104,22 @@ jobs:
   build:
     permissions:
       contents: write
+      pull-requests: write
     name: Build Docker image
     needs: test
     runs-on: hetzner
     if: github.repository == 'zebbra/data_aggregator'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Get token for gh app Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v4
+        with:
+          application_id: ${{ secrets.GH_RUNNER_APPLICATION_ID }}
+          application_private_key: ${{ secrets.GH_RUNNER_APPLICATION_PRIVATE_KEY }}
+          revoke_token: true
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.get_workflow_token.outputs.token }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -171,15 +180,22 @@ jobs:
           if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Updating version and appVersion to $VERSION"
 
-            sed -i '' "s/^appVersion: .*/appVersion: \"$VERSION\"/" helm/charts/aggregator/Chart.yaml
-            sed -i '' "s/^version: .*/version: $VERSION/" helm/charts/aggregator/Chart.yaml
+            git fetch origin develop:develop
+            git checkout develop
+            git pull origin develop
+
+            perl -i -pe "s/^appVersion: .*/appVersion: \"$VERSION\"/" helm/charts/aggregator/Chart.yaml
+            perl -i -pe "s/^version: .*/version: $VERSION/" helm/charts/aggregator/Chart.yaml
 
             git config --local user.email "ci-bot@zebbra.ch"
             git config --local user.name "ci_bot"
 
             git add helm/charts/aggregator/Chart.yaml
             git commit -m "Update Helm chart version and appVersion to $VERSION"
-            git push
+
+            git push origin develop
+
+            echo "Pushed Helm chart updates to develop branch"
           else
             echo "No valid version tag $VERSION, must be of format 1.0.42. Helm Chart will not be updated."
           fi
