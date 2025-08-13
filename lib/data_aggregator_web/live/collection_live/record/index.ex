@@ -266,7 +266,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           <.placeholder_stat :if={@records_count_not_validated.loading} title={~t"Not validated"m} />
           <.scope_stat
             :if={@records_count_not_validated.ok?}
-            href={path_helper(@collection, @layer, @meta.result, %{status: :not_validated})}
+            href={path_helper(@collection, @layer, @meta.result, %{status: :unknown})}
             title={~t"Not validated"m}
             value={
               if @records_count_not_validated.result == 0,
@@ -280,7 +280,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
               )
             }
             active={
-              @meta.ok? && AshPagify.active_scope?(@meta.result.ash_pagify, %{status: :not_validated})
+              @meta.ok? && AshPagify.active_scope?(@meta.result.ash_pagify, %{status: :unknown})
             }
           />
         </div>

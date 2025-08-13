@@ -145,7 +145,9 @@ defmodule DataAggregator.Records.ValidationRequest do
         change transition_state(:running)
         change set_attribute(:started_at, &DateTime.utc_now/0)
         change Changes.SendValidationRequest
+        change Changes.SetFailedOnError
         change Changes.SetDoneAfterAction
+        change Changes.SetCollectionIdleAfterTransaction
         change load(:attachment)
       end
 

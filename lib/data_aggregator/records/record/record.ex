@@ -58,7 +58,7 @@ defmodule DataAggregator.Records.Record do
         },
         %{
           name: :not_validated,
-          filter: %{validation_status: %{not_equals: :validated}}
+          filter: %{validation_status: %{equals: :unknown}}
         }
       ]
     },
@@ -84,7 +84,7 @@ defmodule DataAggregator.Records.Record do
 
     attribute :validation_status, ValidationStatusType,
       allow_nil?: false,
-      default: :not_validated,
+      default: :unknown,
       public?: true
 
     attribute :iucn_redlist_category, :string, allow_nil?: true, public?: true
@@ -228,7 +228,7 @@ defmodule DataAggregator.Records.Record do
 
     calculate :not_validated,
               :boolean,
-              expr(validation_status != :validated)
+              expr(validation_status != :unknown)
 
     calculate :changes, :map, Calculations.Changes do
       argument :transform?, :boolean, allow_nil?: true, default: false

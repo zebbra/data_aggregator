@@ -234,8 +234,8 @@ defmodule DataAggregator.MixProject do
       {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:assertions, "~> 0.19", only: :test},
-      {:git_ops, "~> 2.8.0", only: [:dev]},
-      {:git_hooks, "~> 0.8.0", only: [:dev], runtime: false},
+      {:git_ops, "~> 2.8.0", only: [:dev, :test]},
+      {:git_hooks, "~> 0.8.0", only: [:dev, :test], runtime: false},
       {:tailwind_formatter, "~> 0.4.0", only: [:dev, :test], runtime: false},
       {:mimic, "~> 1.11", only: :test},
       {:styler, "~> 1.0", only: [:dev, :test], runtime: false},
@@ -420,6 +420,9 @@ defmodule DataAggregator.MixProject do
         "ash_state_machine.generate_flow_charts --format md",
         "repo.erd",
         "docs"
+      ],
+      "agents.sync": [
+        "usage_rules.sync AGENTS.md --all --link-to-folder usage-rules"
       ]
     ]
   end

@@ -74,12 +74,12 @@ defmodule DataAggregator.WorkflowTest do
   ]
 
   @validation_state_lookup %{
-    :not_published => :not_validated,
-    :publishing => :validating,
-    :in_publication => :in_validation,
+    :not_published => :unknown,
+    :publishing => :unknown,
+    :in_publication => :requested,
     :published => :validated,
-    :publication_failed => :validation_failed,
-    :stale => :stale
+    :publication_failed => :unknown,
+    :stale => :unknown
   }
 
   setup do
@@ -123,7 +123,6 @@ defmodule DataAggregator.WorkflowTest do
       [import: import, actor: actor]
     end
 
-    @tag :skip
     test "import workflow performs as expected", %{
       import: import,
       actor: actor,
@@ -140,29 +139,29 @@ defmodule DataAggregator.WorkflowTest do
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
-        %{state: :imported, publication_status: :not_published, validation_status: :not_validated}
+        %{state: :imported, publication_status: :not_published, validation_status: :unknown}
       ]
 
       # assert that the records are in the correct state
@@ -182,21 +181,21 @@ defmodule DataAggregator.WorkflowTest do
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
-        %{state: :imported, publication_status: :publishing, validation_status: :validating},
+        %{state: :imported, publication_status: :publishing, validation_status: :unknown},
         %{
           state: :imported,
           publication_status: :in_publication,
-          validation_status: :in_validation
+          validation_status: :requested
         },
         %{state: :imported, publication_status: :published, validation_status: :validated},
         %{
           state: :imported,
           publication_status: :publication_failed,
-          validation_status: :validation_failed
+          validation_status: :unknown
         },
-        %{state: :imported, publication_status: :stale, validation_status: :stale}
+        %{state: :imported, publication_status: :stale, validation_status: :unknown}
       ]
 
       # assert that the records are in the correct state
@@ -222,13 +221,15 @@ defmodule DataAggregator.WorkflowTest do
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
-        %{state: :imported, publication_status: :stale, validation_status: :stale},
-        %{state: :imported, publication_status: :stale, validation_status: :stale},
-        %{state: :imported, publication_status: :stale, validation_status: :stale},
-        %{state: :imported, publication_status: :stale, validation_status: :stale},
-        %{state: :imported, publication_status: :stale, validation_status: :stale}
+        %{state: :imported, publication_status: :stale, validation_status: :unknown},
+        %{state: :imported, publication_status: :stale, validation_status: :unknown},
+        # once :validated, it doesn't change back to :unknown with an import
+        %{state: :imported, publication_status: :stale, validation_status: :validated},
+        %{state: :imported, publication_status: :stale, validation_status: :unknown},
+        # once :not_validated, it doesn't change back to :unknown with an import
+        %{state: :imported, publication_status: :stale, validation_status: :unknown}
       ]
 
       assert_states_equal(expected, records)
@@ -274,29 +275,29 @@ defmodule DataAggregator.WorkflowTest do
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
         %{
           state: :imported,
           publication_status: :not_published,
-          validation_status: :not_validated
+          validation_status: :unknown
         },
-        %{state: :imported, publication_status: :not_published, validation_status: :not_validated}
+        %{state: :imported, publication_status: :not_published, validation_status: :unknown}
       ]
 
       # assert that the records are in the correct state
@@ -311,12 +312,12 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated}
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown}
       ]
 
       # assert we detected all changes
@@ -376,12 +377,12 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated}
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown}
       ]
 
       # assert that the records are in the correct state
@@ -406,12 +407,12 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :published, validation_status: :not_validated}
+        %{state: :encoded, publication_status: :published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :published, validation_status: :unknown}
       ]
 
       # assert that the records are in the correct state
@@ -487,7 +488,7 @@ defmodule DataAggregator.WorkflowTest do
       [validation_request: validation_request, actor: actor, records: records]
     end
 
-    @tag :skip
+    @tag :run
     test "validation request workflow performs as expected", %{
       validation_request: validation_request,
       records: records,
@@ -498,12 +499,12 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated},
-        %{state: :encoded, publication_status: :not_published, validation_status: :not_validated}
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown},
+        %{state: :encoded, publication_status: :not_published, validation_status: :unknown}
       ]
 
       # assert that the records are in the correct state
@@ -528,12 +529,12 @@ defmodule DataAggregator.WorkflowTest do
       assert length(records) == 6
 
       expected = [
-        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation},
-        %{state: :encoded, publication_status: :not_published, validation_status: :in_validation}
+        %{state: :encoded, publication_status: :not_published, validation_status: :requested},
+        %{state: :encoded, publication_status: :not_published, validation_status: :requested},
+        %{state: :encoded, publication_status: :not_published, validation_status: :requested},
+        %{state: :encoded, publication_status: :not_published, validation_status: :requested},
+        %{state: :encoded, publication_status: :not_published, validation_status: :requested},
+        %{state: :encoded, publication_status: :not_published, validation_status: :requested}
       ]
 
       # assert that the records are in the correct state
@@ -551,8 +552,8 @@ defmodule DataAggregator.WorkflowTest do
           ])
         )
 
-      # import, validation_updated (2x -> validating, and in_validation)
-      expected_length = 6 * 3
+      # import, validation_updated (12 because it changed twice)
+      expected_length = 6 * 2
       assert length(versions) == expected_length
 
       # Ensure all strategies set the user_id correctly

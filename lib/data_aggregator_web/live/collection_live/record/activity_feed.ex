@@ -433,13 +433,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   def badge_text(:update_validation_status, content) do
     case content["validation_status"] do
-      "not_validated" -> ~t"Not Validated"m
-      "validating" -> ~t"Validating"m
-      "in_validation" -> ~t"In Validation"m
+      "unknown" -> ~t"Unknown"m
+      "requested" -> ~t"Requested"m
       "validated" -> ~t"Validated"m
-      "validation_failed" -> ~t"Failed"m
-      "stale" -> ~t"Stale"m
-      _ -> nil
+      "not_validated" -> ~t"Not Validated"m
+      unhandled_status -> unhandled_status
     end
   end
 
@@ -468,7 +466,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       "requested" -> "blue"
       "validated" -> "green"
       "not_validated" -> "red"
-      _ -> "green"
+      _ -> "gray"
     end
   end
 

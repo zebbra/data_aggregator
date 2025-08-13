@@ -96,8 +96,6 @@ defmodule DataAggregator.StartValidationsTest do
       ]
     end
 
-    # @tag :run continue testing this! mix test --only run
-    @tag :skip
     test "start_validations creates a validation request for each center", %{
       collection: collection,
       actor: actor

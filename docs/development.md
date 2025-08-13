@@ -167,4 +167,4 @@ we expose a mcp server on port 4000 with [tidewave-ai](https://github.com/tidewa
 
 ## Contribution
 
-Contributors are welcome! Please ensure you provide a detailed description of your changes and/or expected behaviour and the reason behind it. If you are unsure, please open an issue first to discuss what you would like to change. For more information checkout the [Contribution Guide](../CONTRIBUTING.md)
+Contributors are welcome! Please ensure you provide a detailed description of your changes and/or expected behaviour and the reason behind it. If you are unsure, please open an issue first to discuss what you would like to change.

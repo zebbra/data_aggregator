@@ -17,7 +17,7 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
 
   @spec notify(ValidationRequest.t(), Ash.Query.t()) ::
           {:ok, ValidationRequest.t()} | {:error, any()}
-  def notify(%ValidationRequest{} = validation_request, query) do
+  def notify(validation_request, query) do
     with {:ok, validation_request} <- Ash.load(validation_request, [:collection, :attachment]),
          {:ok, institution_name} <-
            get_institution_name(validation_request.collection.grscicoll_institution_key) do

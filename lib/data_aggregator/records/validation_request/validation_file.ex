@@ -9,9 +9,9 @@ defmodule DataAggregator.Records.Validation.ValidationFile do
 
   defstruct [
     :path,
-    :headers,
-    :record_attributes,
-    :collection_attributes,
+    :collection_attributes_and_headers,
+    :record_attributes_and_headers,
+    :encoded_attributes_and_headers,
     :file
   ]
 
@@ -128,49 +128,44 @@ defmodule DataAggregator.Records.Validation.ValidationFile do
   def open_file!(path) do
     path = "#{path}/validation.csv"
     file = FlatFileUtils.open_file!(path)
-    headers = @collection_headers ++ @record_headers
 
-    {record_attributes, collection_attributes} = attributes_from_schema!()
+    {collection_attrs_and_headers, record_attrs_and_headers, encoded_attrs_and_headers} =
+      attributes_and_headers_from_schema!()
+
+    # record_attributes = attributes!(record_attrs_and_headers, @record_headers)
+    # collection_attributes = attributes!(collection_attrs_and_headers, @collection_headers)
+    # encoded_attributes = attributes!(encoded_attrs_and_headers, @record_headers)
 
     %ValidationFile{
       path: path,
-      headers: headers,
-      record_attributes: record_attributes,
-      collection_attributes: collection_attributes,
+      collection_attributes_and_headers: collection_attrs_and_headers,
+      record_attributes_and_headers: record_attrs_and_headers,
+      encoded_attributes_and_headers: encoded_attrs_and_headers,
       file: file
     }
   end
 
-  defp attributes_from_schema! do
+  defp attributes_and_headers_from_schema! do
     %{
-      record: record_attributes_and_headers,
-      collection: collection_attributes_and_headers
+      collection: collection_attributes_and_headers,
+      record: record_attributes_and_headers
     } = Schema.prefixed_attribute_names_and_dwc_fields_and_collection_fields()
 
-    record_attributes = attributes!(record_attributes_and_headers, @record_headers)
-    collection_attributes = attributes!(collection_attributes_and_headers, @collection_headers)
+    collection_attributes_and_headers =
+      Enum.filter(collection_attributes_and_headers, fn {_, header} ->
+        header in @collection_headers
+      end)
 
-    {record_attributes, collection_attributes}
+    record_attributes_and_headers =
+      Enum.filter(record_attributes_and_headers, fn {_, header} ->
+        header in @record_headers
+      end)
+
+    encoded_attributes_and_headers =
+      Enum.map(record_attributes_and_headers, fn {key, value} ->
+        {key, "encoded " <> value}
+      end)
+
+    {collection_attributes_and_headers, record_attributes_and_headers, encoded_attributes_and_headers}
   end
-
-  defp attributes!(attributes_and_headers, headers) do
-    Enum.map(headers, fn header ->
-      case must_find_one!(attributes_and_headers, header) do
-        {field, _} -> field
-        _ -> raise "Invalid header: #{header}"
-      end
-    end)
-  end
-
-  defp must_find_one!(attributes_and_headers, header) do
-    count = Enum.count(attributes_and_headers, &find_header(&1, header))
-
-    case count do
-      1 -> Enum.find(attributes_and_headers, &find_header(&1, header))
-      0 -> raise "Missing header: #{header}"
-      _ -> raise "Duplicate header: #{header}"
-    end
-  end
-
-  defp find_header({_attribute, dwc_header}, header), do: dwc_header == header
 end

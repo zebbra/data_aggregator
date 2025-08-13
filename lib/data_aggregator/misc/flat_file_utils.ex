@@ -41,15 +41,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
 
   def map_data_to_headers(record_data, header_fields, transformers) do
     Map.new(header_fields, fn {k, v} ->
-      if Map.has_key?(transformers, k) do
-        {v,
-         record_data
-         |> maybe_from_extra_data(k)
-         |> transformers[k].()
-         |> maybe_remove_linebreaks()}
-      else
-        {v, record_data |> maybe_from_extra_data(k) |> maybe_remove_linebreaks()}
-      end
+      {v, maybe_transform_data(record_data, k, transformers)}
     end)
   end
 
@@ -67,15 +59,19 @@ defmodule DataAggregator.Misc.FlatFileUtils do
 
   def map_data_to_headers_list(record_data, header_fields, transformers) do
     Enum.map(header_fields, fn k ->
-      if Map.has_key?(transformers, k) do
-        record_data
-        |> maybe_from_extra_data(k)
-        |> transformers[k].()
-        |> maybe_remove_linebreaks()
-      else
-        record_data |> maybe_from_extra_data(k) |> maybe_remove_linebreaks()
-      end
+      maybe_transform_data(record_data, k, transformers)
     end)
+  end
+
+  def maybe_transform_data(data, k, transformers) do
+    if Map.has_key?(transformers, k) do
+      data
+      |> maybe_from_extra_data(k)
+      |> transformers[k].()
+      |> maybe_remove_linebreaks()
+    else
+      data |> maybe_from_extra_data(k) |> maybe_remove_linebreaks()
+    end
   end
 
   defp maybe_from_extra_data(record, field) do

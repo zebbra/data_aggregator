@@ -47,13 +47,13 @@ classDiagram
         export(Struct export)
         publish(Struct publication)
         validate(Struct validation_request)
-        start_validations(Struct collection, Map query)
+        start_validations(Struct collection)
     }
     class EncodedRecord {
         Map ext_vernacular_names
         Map ext_species_profile
         Map ext_species_distribution
-        Map ext_references
+        Map ext_refs
         Map ext_resource_relationship
         Map ext_permit
         Map ext_chronometric
@@ -363,7 +363,7 @@ classDiagram
         SwissSpecies[] swiss_species
         Collection collection
         destroy()
-        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
+        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         read()
         create(Struct record, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         add_image_url(Struct image, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
@@ -569,7 +569,7 @@ classDiagram
         Map ext_vernacular_names
         Map ext_species_profile
         Map ext_species_distribution
-        Map ext_references
+        Map ext_refs
         Map ext_resource_relationship
         Map ext_permit
         Map ext_chronometric
@@ -874,15 +874,15 @@ classDiagram
         Publication publication
         Record record
         destroy()
-        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
+        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         read()
-        create(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
+        create(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
     }
     class Record {
         Map ext_vernacular_names
         Map ext_species_profile
         Map ext_species_distribution
-        Map ext_references
+        Map ext_refs
         Map ext_resource_relationship
         Map ext_permit
         Map ext_chronometric
@@ -1205,7 +1205,8 @@ classDiagram
         Attachment[] image_attachments
         EncodedRecord encoded_record
         PublishedRecord published_record
-        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
+        ValidationRequestRecord validation_request_record
+        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         read()
         encoding()
         create(Struct collection, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
@@ -1214,11 +1215,11 @@ classDiagram
         enqueue_publication_verifier(Struct published_record)
         bulk_import(Struct import, Term rows)
         encode(Term record, Atom catalog)
-        check_if_published(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
-        set_imported(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
-        set_encoding(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
-        set_encoded(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
-        set_encoding_failed(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
+        check_if_published(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
+        set_imported(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
+        set_encoding(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
+        set_encoded(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
+        set_encoding_failed(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         update_publication_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         update_validation_status(Atom status, Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, ...)
         update_last_validation_started_at()
@@ -1284,7 +1285,6 @@ classDiagram
         Integer processed_rows_count
         Integer total_rows_count
         Atom center
-        PublicationLicenseType license
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
         UUID collection_id
@@ -1343,7 +1343,7 @@ classDiagram
         Map ext_vernacular_names
         Map ext_species_profile
         Map ext_species_distribution
-        Map ext_references
+        Map ext_refs
         Map ext_resource_relationship
         Map ext_permit
         Map ext_chronometric
@@ -1646,11 +1646,37 @@ classDiagram
         Record record
         Collection collection
         destroy()
-        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_references, ...)
+        update(Map ext_vernacular_names, Map ext_species_profile, Map ext_species_distribution, Map ext_refs, ...)
         read()
         create(Struct record, Struct collection, Map ext_vernacular_names, Map ext_species_profile, ...)
         validate(Struct record, Struct collection, Map ext_vernacular_names, Map ext_species_profile, ...)
         bulk_validate(Term rows)
+    }
+    class ValidationRequestRecord {
+        UUID id
+        Map data
+        UUID record_id
+        UUID collection_id
+        Record record
+        Collection collection
+        update(Map data, UUID record_id, UUID collection_id)
+        destroy()
+        read()
+        create(Struct collection, Struct record, Map data, UUID record_id, ...)
+    }
+    class Version {
+        UUID id
+        Atom version_action_type
+        UUID collection_id
+        UUID version_source_id
+        Map changes
+        UUID user_id
+        ValidationRequestRecord version_source
+        User user
+        update(Atom version_action_type, UUID collection_id, UUID version_source_id, Map changes, ...)
+        create(Atom version_action_type, UUID collection_id, UUID version_source_id, Map changes, ...)
+        destroy()
+        read()
     }
 
     User -- Version
@@ -1660,6 +1686,7 @@ classDiagram
     User -- Publication
     User -- Version
     User -- ValidationRequest
+    User -- Version
     Attachment -- Export
     Attachment -- ImageUpload
     Attachment -- Import
@@ -1679,6 +1706,7 @@ classDiagram
     Collection -- Record
     Collection -- Image
     Collection -- ValidationRequest
+    Collection -- ValidationRequestRecord
     Collection -- ValidationResponse
     Collection -- ValidatedRecord
     EncodedRecord -- Version
@@ -1693,6 +1721,8 @@ classDiagram
     PublishedRecord -- Record
     Record -- Image
     Record -- Version
+    Record -- ValidationRequestRecord
     Record -- ValidatedRecord
+    ValidationRequestRecord -- Version
 
 ```

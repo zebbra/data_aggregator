@@ -2225,8 +2225,8 @@ defmodule DataAggregator.DarwinCore.Schema do
     %{
       record: Enum.flat_map(@categories, &Category.prefixed_attribute_names_and_dwc_fields/1),
       collection:
-        Enum.flat_map(@colleciton_attributes, fn attribute ->
-          {attribute.dwc_field, attribute.collection_field}
+        Enum.map(@colleciton_attributes, fn attribute ->
+          {attribute.collection_field, attribute.dwc_field}
         end)
     }
   end

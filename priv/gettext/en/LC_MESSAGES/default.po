@@ -1516,7 +1516,7 @@ msgid "close"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/components/header.ex:123
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:214
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:212
 #, elixir-autogen, elixir-format
 msgid "Show on GBIF"
 msgstr ""
@@ -2240,7 +2240,6 @@ msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:420
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:428
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:440
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Failed"
@@ -2277,7 +2276,6 @@ msgid "Publishing"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:429
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:441
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Stale"
@@ -3611,19 +3609,13 @@ msgctxt "DataAggregatorWeb.CollectionLive.Helpers"
 msgid "Cancel validation"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:438
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "In Validation"
-msgstr ""
-
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:368
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "No validation information available. Validate the dataset to see the status"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:436
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:439
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Not Validated"
@@ -3635,16 +3627,10 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Record validation was successful"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:439
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:438
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Validated"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:437
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
-msgid "Validating"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:371
@@ -3834,31 +3820,31 @@ msgctxt "DataAggregatorWeb.TermsAndConditionsLive.Index"
 msgid "Thank you and welcome!"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:148
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:146
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Not registered"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:161
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:159
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "There is no information about whether this species has been registered by a Swiss species data center. Please run the ‘Encoding’ to update the information."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:167
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:165
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "This species has been registered by the Swiss species data center %{center}"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:164
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:162
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "This species has not been registered by any Swiss species data center"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:147
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:145
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "Unknown"
@@ -4926,36 +4912,36 @@ msgid "that hold sensitive information and where publication rules will be appli
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/components/header.ex:142
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:226
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:224
 #, elixir-autogen, elixir-format
 msgid "Show on SwissNatColl"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:338
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:336
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS Level 0 - Bare: Minimal metadata linking a specimen to its digital representation. Consider adding essential details to enhance usability. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:341
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:339
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS Level 1 - Basic: Contains fundamental metadata supporting specimen discoverability and management. Additional details will improve scientific value. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:344
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:342
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS level 2 - IntermediaryIncludes key scientific data essential for research applications. Adding georeferencing and extended metadata will further enhance its utility. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:347
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:345
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS level 3 - Extended: Comprehensive metadata with links to external resources, maximizing interoperability and open data usability."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:335
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:333
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "No MIDS Level: Not enough metadata available. See the guide for recommendations."
@@ -5081,4 +5067,16 @@ msgstr ""
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "The validation status is"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:437
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "Requested"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:436
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
+msgid "Unknown"
 msgstr ""

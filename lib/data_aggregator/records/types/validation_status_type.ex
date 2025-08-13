@@ -6,6 +6,7 @@ defmodule DataAggregator.Records.ValidationStatusType do
   use Ash.Type.Enum,
     values: [
       :unknown,
+      :validating,
       :requested,
       :validated,
       :not_validated

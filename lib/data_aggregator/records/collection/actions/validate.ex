@@ -6,6 +6,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   use Ash.Resource.Actions.Implementation
 
   alias DataAggregator.Counter
+  alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
   alias DataAggregator.Records.Record
@@ -35,26 +36,29 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
       Counter.start(&ValidationRequest.add_validation_request_progress(validation_request, &1))
 
     %{
-      file: file,
-      headers: headers,
-      record_attributes: record_attributes,
-      collection_attributes: collection_attributes
-    } = ValidationFile.open_file!(path)
+      file: file
+    } = validation_file = ValidationFile.open_file!(path)
 
-    FlatFileUtils.store_on_disk!(headers, file)
+    header_labels = compose_headers(validation_file)
+
+    FlatFileUtils.store_on_disk!([header_labels], validation_file.file, false)
 
     query
     |> stream_query()
     |> Stream.chunk_every(1000)
     |> Stream.map(fn records ->
       Enum.each(records, fn record ->
-        process_validation_data(record, record_attributes, collection_attributes, file, headers)
+        process_validation_data(
+          record,
+          validation_file
+        )
 
         :ok
       end)
 
       records
     end)
+    |> Stream.flat_map(& &1)
     |> Counter.count_each(counter)
     |> update_validation_status(:requested, ctx)
 
@@ -71,17 +75,17 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
       |> ValidationRequest.update_attachment(attachment)
       |> Ash.load!([:collection, :attachment])
 
-    case validate(validation_request, query, ctx) do
+    case notify(validation_request, query, ctx) do
       {:ok, validation_request} ->
         {:ok, validation_request}
 
       {:error, error} ->
-        Logger.error("Error sending validation request: #{inspect(error)}")
+        Logger.error("Error while validating: #{inspect(error)}")
 
         query
         |> stream_query()
         |> update_validation_status(
-          :validation_failed,
+          :unknown,
           ctx
         )
 
@@ -89,6 +93,8 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     end
   rescue
     e ->
+      Logger.error("Error sending validation request: #{inspect(e)}")
+
       validation_request = input.arguments.validation_request
 
       query =
@@ -96,14 +102,9 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
         |> AshPagify.query_for_filters_map(validation_request.records_query)
         |> Ash.Query.set_tenant(tenant)
 
-      Logger.error("Error sending validation request: #{inspect(e)}")
-
       query
       |> stream_query()
-      |> update_validation_status(
-        :validation_failed,
-        ctx
-      )
+      |> update_validation_status(:unknown, ctx)
 
       {:error, e}
   end
@@ -127,21 +128,39 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     stream
   end
 
-  defp process_validation_data(record, record_attributes, collection_attributes, file, headers) do
-    case data(record, record_attributes, collection_attributes) do
+  defp compose_headers(validation_file) do
+    collection_headers = get_sorted_headers(validation_file.collection_attributes_and_headers)
+
+    record_headers = get_sorted_headers(validation_file.record_attributes_and_headers)
+
+    encoded_headers = get_sorted_headers(validation_file.encoded_attributes_and_headers)
+
+    collection_headers ++ record_headers ++ encoded_headers
+  end
+
+  defp get_sorted_headers(headers_and_attributes) do
+    headers_and_attributes
+    |> Keyword.values()
+    |> Enum.sort(&(&1 <= &2))
+  end
+
+  defp process_validation_data(record, validation_file) do
+    case maybe_changed_data(record, validation_file) do
       {:no_changes, _data} ->
         :ok
 
       {:changes, data} ->
-        upsert_validation_request_record(record, data)
+        upsert_validation_request_record!(record, data)
 
-        FlatFileUtils.store_on_disk!(data, file, headers)
+        data = format_data_for_validation(data)
+
+        FlatFileUtils.store_on_disk!([data], validation_file.file, false)
 
         :ok
     end
   end
 
-  defp validate(%ValidationRequest{} = validation_request, query, _ctx) do
+  defp notify(%ValidationRequest{} = validation_request, query, _ctx) do
     case InfoSpecies.notify(validation_request, query) do
       {:ok, validation_request} ->
         {:ok, validation_request}
@@ -155,14 +174,18 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
   # returns {:no_changes, previous_data} if there was no changes and returns {:ok, current_data} if there were
   # changes in the record data since the last validation
-  defp data(record, record_attributes, collection_attributes) do
+  defp maybe_changed_data(record, validation_file) do
     previous_data = previous_data(record)
 
-    current_data = current_data(record, record_attributes, collection_attributes)
+    current_data = current_data(record, validation_file)
 
     if previous_data == current_data do
+      Logger.info("Validation Request: No changes detected. No data will be sent for validation.")
+
       {:no_changes, previous_data}
     else
+      Logger.info("Validation Request: Changes detected, new data will be sent for validation.")
+
       {:changes, current_data}
     end
   end
@@ -171,38 +194,109 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   defp previous_data(record) do
     case record.validation_request_record do
       nil -> nil
-      previous_data -> previous_data.data |> Map.to_list() |> Enum.sort()
+      previous_data -> previous_data.data
     end
   end
 
-  # returns the data which would be sent for validation now
-  defp current_data(record, record_attributes, collection_attributes) do
-    record_data = record |> Map.take(record_attributes) |> Map.to_list() |> Enum.sort()
+  # returns the attributes, values and headers for further processing towards a validation request
+  defp current_data(record, validation_file) do
+    collection_attributes = Keyword.keys(validation_file.collection_attributes_and_headers)
+    record_attributes = Keyword.keys(validation_file.record_attributes_and_headers)
+    encoded_attributes = Keyword.keys(validation_file.encoded_attributes_and_headers)
+
+    reduced_collection_data = Map.take(record.collection, collection_attributes)
+    reduced_record_data = Map.take(record, record_attributes)
+    reduced_encoded_data = Map.take(record.encoded_record, encoded_attributes)
 
     collection_data =
-      record.collection |> Map.take(collection_attributes) |> Map.to_list() |> Enum.sort()
+      reduced_collection_data
+      |> Enum.map(fn {attr, value} ->
+        value_with_header_and_attribute(
+          value,
+          validation_file.collection_attributes_and_headers[attr],
+          attr
+        )
+      end)
+      |> sort_data_by_header()
+
+    record_data =
+      reduced_record_data
+      |> Enum.map(fn {attr, value} ->
+        value = maybe_transform_value({attr, value})
+
+        value_with_header_and_attribute(
+          value,
+          validation_file.record_attributes_and_headers[attr],
+          attr
+        )
+      end)
+      |> sort_data_by_header()
 
     encoded_data =
-      record.encoded_record
-      |> Map.take(record_attributes)
-      |> Map.to_list()
-      |> Enum.sort()
-      |> Enum.map(fn {key, value} -> {"encoded.#{key}", value} end)
+      reduced_encoded_data
+      |> Enum.map(fn {attr, value} ->
+        value = maybe_transform_value({attr, value})
 
-    collection_data ++ record_data ++ encoded_data
+        value_with_header_and_attribute(
+          value,
+          validation_file.encoded_attributes_and_headers[attr],
+          attr
+        )
+      end)
+      |> sort_data_by_header()
+
+    %{
+      "collection_data" => collection_data,
+      "record_data" => record_data,
+      "encoded_data" => encoded_data
+    }
   end
 
-  defp upsert_validation_request_record(record, data) do
+  defp maybe_transform_value({attr, value}) do
+    [{attr, value}]
+    |> Map.new()
+    |> FlatFileUtils.maybe_transform_data(attr, Schema.dwc_transformers())
+  end
+
+  defp sort_data_by_header(data) do
+    Enum.sort(data, &(&1["header"] <= &2["header"]))
+  end
+
+  defp value_with_header_and_attribute(value, header, attribute) do
+    %{
+      "attr" => to_string(attribute),
+      "value" => value,
+      "header" => header
+    }
+  end
+
+  defp format_data_for_validation(%{
+         "collection_data" => collection_data,
+         "record_data" => record_data,
+         "encoded_data" => encoded_data
+       }) do
+    data =
+      [collection_data, record_data, encoded_data]
+      |> List.flatten()
+      |> Enum.map(& &1["value"])
+
+    data
+  end
+
+  defp upsert_validation_request_record!(record, data) do
     case record.validation_request_record do
       nil ->
-        ValidationRequestRecord.create!(%{
-          data: data,
-          collection: record.collection,
-          record: record
-        })
+        ValidationRequestRecord.create!(
+          %{
+            data: data,
+            collection: record.collection,
+            record: record
+          },
+          tenant: record.collection
+        )
 
       vrr ->
-        ValidationRequestRecord.update!(vrr, %{data: data})
+        ValidationRequestRecord.update!(vrr, %{data: data}, tenant: record.collection)
     end
   end
 end
