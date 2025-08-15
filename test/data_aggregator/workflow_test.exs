@@ -20,6 +20,7 @@ defmodule DataAggregator.WorkflowTest do
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Records.ValidationRequest.Workers.ValidationRequestHandler
   alias DataAggregator.Taxonomy.Catalog
+  alias Explorer.DataFrame
 
   require Ash.Query
 
@@ -520,7 +521,10 @@ defmodule DataAggregator.WorkflowTest do
         user_id: actor.id
       })
 
-      validation_request = ValidationRequest.get_by_id!(validation_request.id, tenant: tenant)
+      validation_request =
+        validation_request.id
+        |> ValidationRequest.get_by_id!(tenant: tenant)
+        |> Ash.load!([:attachment_url, :attachment])
 
       assert validation_request.state == :done
       assert validation_request.processed_rows_count == 6
@@ -562,6 +566,16 @@ defmodule DataAggregator.WorkflowTest do
         assert version.user_id == actor.id
         assert version.version_action_name in [:import, :update_validation_status]
       end
+
+      # Check that the right amount of records were exported to the csv file
+      %{body: body} = Req.get!(validation_request.attachment_url)
+
+      {_, file_content} = Enum.at(body, 0)
+
+      assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(file_content)
+
+      assert DataFrame.n_rows(data_frame) == 6
+      assert DataFrame.n_columns(data_frame) == 202
 
       # no new records versions should have been created
       assert_encode_versions(actor, tenant)

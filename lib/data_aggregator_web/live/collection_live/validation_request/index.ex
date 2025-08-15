@@ -116,7 +116,7 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
           {validation.center}
         </:col>
         <:col :let={{_id, validation}} label={~t"File"m}>
-          <.file_info attachment={validation.attachment} rows={validation.total_rows_count} />
+          <.file_info attachment={validation.attachment} rows={validation.sent_for_validation_count} />
         </:col>
         <:col :let={{_id, validation}} label={~t"Size"m}>
           <.attachment_download_badge
@@ -139,7 +139,7 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
           label={~t"Records"m}
           class="text-right"
         >
-          {format_number(validation.total_rows_count, format: :short)}
+          {format_number(validation.sent_for_validation_count, format: :short)}
         </:col>
 
         <:action
@@ -222,10 +222,18 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
             <:item title={~t"Created at"m}>
               {format_datetime(@selected_validation_request.inserted_at)}
             </:item>
-            <:item title={~t"Rows"m}>
+            <:item title={~t"Total Rows Processed"m}>
               {format_number(@selected_validation_request.total_rows_count)}
             </:item>
-
+            <:item title={~t"Sent for validation"m}>
+              {format_number(@selected_validation_request.sent_for_validation_count)}
+            </:item>
+            <:item title={~t"Not sent (unchanged)"m}>
+              {format_number(
+                @selected_validation_request.total_rows_count -
+                  @selected_validation_request.sent_for_validation_count
+              )}
+            </:item>
             <:item title={~t"Done"m}>
               <div class="flex flex-col">
                 <.progress

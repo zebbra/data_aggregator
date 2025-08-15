@@ -1284,6 +1284,7 @@ classDiagram
         Map records_query
         Integer processed_rows_count
         Integer total_rows_count
+        Integer sent_for_validation_count
         Atom center
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
@@ -1301,6 +1302,7 @@ classDiagram
         create(Struct collection, String name, UtcDatetime started_at, UtcDatetime finished_at, ...)
         enqueue(UUID started_by_id)
         add_validation_request_progress(Integer processed_rows)
+        add_sent_for_validation_progress(Integer processed_rows)
         set_running()
         set_failed(String name, UtcDatetime started_at, UtcDatetime finished_at, Map records_query, ...)
         run()

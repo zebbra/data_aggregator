@@ -61,7 +61,9 @@
         "destination_attribute_generated": null,
         "index?": true,
         "match_type": null,
-        "match_with": null,
+        "match_with": {
+          "collection_id": "collection_id"
+        },
         "multitenancy": {
           "attribute": "collection_id",
           "global": false,
@@ -116,7 +118,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "EADC5A4D2195EAFFB15F594C649123C2BEECB5C0AC7CF4E54F4E23E54FF69CD5",
+  "hash": "4A1C5EB62A5DF69757B395562D7363C4BBFCDBD53EE97C9F74C60AE9D78B78EC",
   "identities": [
     {
       "all_tenants?": false,

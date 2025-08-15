@@ -1290,6 +1290,7 @@ classDiagram
         Map records_query
         Integer processed_rows_count
         Integer total_rows_count
+        Integer sent_for_validation_count
         Atom center
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
@@ -1307,6 +1308,7 @@ classDiagram
         create(Struct collection, String name, UtcDatetime started_at, UtcDatetime finished_at, ...)
         enqueue(UUID started_by_id)
         add_validation_request_progress(Integer processed_rows)
+        add_sent_for_validation_progress(Integer processed_rows)
         set_running()
         set_failed(String name, UtcDatetime started_at, UtcDatetime finished_at, Map records_query, ...)
         run()
@@ -2832,6 +2834,7 @@ erDiagram
         Map records_query
         Integer processed_rows_count
         Integer total_rows_count
+        Integer sent_for_validation_count
         Atom center
         UtcDatetimeUsec inserted_at
         UtcDatetimeUsec updated_at
@@ -4635,6 +4638,7 @@ erDiagram
 | **records_query** | Map |  |
 | **processed_rows_count** | Integer |  |
 | **total_rows_count** | Integer |  |
+| **sent_for_validation_count** | Integer |  |
 | **center** | Atom |  |
 | **inserted_at** | UtcDatetimeUsec |  |
 | **updated_at** | UtcDatetimeUsec |  |
@@ -4647,15 +4651,16 @@ erDiagram
 
 | Name | Type | Input | Description |
 | ---- | ---- | ----- | ----------- |
-| **update** | _update_ | <ul><li><b>name</b> <i>String</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>processed_rows_count</b> <i>Integer</i> attribute</li><li><b>total_rows_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **update** | _update_ | <ul><li><b>name</b> <i>String</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>processed_rows_count</b> <i>Integer</i> attribute</li><li><b>total_rows_count</b> <i>Integer</i> attribute</li><li><b>sent_for_validation_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
 | **active** | _read_ | <ul></ul> |  |
-| **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>name</b> <i>String</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>processed_rows_count</b> <i>Integer</i> attribute</li><li><b>total_rows_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **create** | _create_ | <ul><li><b>collection</b> <i>Struct</i> </li><li><b>name</b> <i>String</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>processed_rows_count</b> <i>Integer</i> attribute</li><li><b>total_rows_count</b> <i>Integer</i> attribute</li><li><b>sent_for_validation_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **enqueue** | _update_ | <ul><li><b>started_by_id</b> <i>UUID</i> attribute</li></ul> |  |
 | **add_validation_request_progress** | _update_ | <ul><li><b>processed_rows</b> <i>Integer</i> </li></ul> |  |
+| **add_sent_for_validation_progress** | _update_ | <ul><li><b>processed_rows</b> <i>Integer</i> </li></ul> |  |
 | **set_running** | _update_ | <ul></ul> |  |
-| **set_failed** | _update_ | <ul><li><b>name</b> <i>String</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>processed_rows_count</b> <i>Integer</i> attribute</li><li><b>total_rows_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
+| **set_failed** | _update_ | <ul><li><b>name</b> <i>String</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>records_query</b> <i>Map</i> attribute</li><li><b>processed_rows_count</b> <i>Integer</i> attribute</li><li><b>total_rows_count</b> <i>Integer</i> attribute</li><li><b>sent_for_validation_count</b> <i>Integer</i> attribute</li><li><b>center</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>started_by_id</b> <i>UUID</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **run** | _update_ | <ul></ul> |  |
 | **set_done** | _update_ | <ul></ul> |  |
 | **update_attachment** | _update_ | <ul><li><b>attachment</b> <i>Struct</i> </li></ul> |  |

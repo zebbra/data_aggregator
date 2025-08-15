@@ -32,11 +32,8 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
     path = FlatFileUtils.create_directory!("validation_request")
 
-    {:ok, total_counter} =
+    {:ok, counter} =
       Counter.start(&ValidationRequest.add_validation_request_progress(validation_request, &1))
-
-    {:ok, sent_counter} =
-      Counter.start(&ValidationRequest.add_sent_for_validation_progress(validation_request, &1))
 
     %{
       file: file
@@ -48,31 +45,20 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
     query
     |> stream_query()
-    |> Stream.chunk_every(1000)
-    |> Stream.map(fn records ->
-      records
-      |> Enum.map(fn record ->
-        {maybe_changes, _data} =
-          process_validation_data(
-            record,
-            validation_file
-          )
+    |> Stream.filter(fn record ->
+      dbg(record)
 
-        {maybe_changes, record}
-      end)
-      |> Counter.count_each(total_counter)
-      |> Enum.filter(fn {maybe_changes, _record} ->
-        maybe_changes == :changed
-      end)
-      |> Enum.map(fn {_, record} -> record end)
+      case process_validation_data(record, validation_file) do
+        {:no_changes, _data} -> dbg(false)
+        {:changes, _data} -> dbg(true)
+      end
     end)
-    |> Stream.flat_map(& &1)
-    |> Counter.count_each(sent_counter)
     |> update_validation_status(:requested, ctx)
+    |> Counter.count_each(counter)
+    |> Stream.run()
 
     FlatFileUtils.close_file(file)
-    Counter.stop(total_counter)
-    Counter.stop(sent_counter)
+    Counter.stop(counter)
 
     attachment = path |> FlatFileUtils.create_zip!() |> FlatFileUtils.store_on_s3!()
 
@@ -155,17 +141,17 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
   defp process_validation_data(record, validation_file) do
     case maybe_changed_data(record, validation_file) do
-      {:not_changed, data} ->
-        {:not_changed, data}
+      {:no_changes, data} ->
+        {:no_changes, data}
 
-      {:changed, data} ->
+      {:changes, data} ->
         upsert_validation_request_record!(record, data)
 
         data = format_data_for_validation(data)
 
         FlatFileUtils.store_on_disk!([data], validation_file.file, false)
 
-        {:changed, data}
+        {:changes, data}
     end
   end
 
@@ -191,11 +177,11 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     if previous_data == current_data do
       Logger.info("Validation Request: No changes detected. No data will be sent for validation.")
 
-      {:not_changed, previous_data}
+      {:no_changes, previous_data}
     else
       Logger.info("Validation Request: Changes detected, new data will be sent for validation.")
 
-      {:changed, current_data}
+      {:changes, current_data}
     end
   end
 
