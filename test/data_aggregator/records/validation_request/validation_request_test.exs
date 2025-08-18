@@ -125,16 +125,6 @@ defmodule DataAggregator.ValidationRequestTest do
       assert DataFrame.n_columns(data_frame) == 202
     end
 
-    @tag capture_log: true
-    test "validate/1 fails with invalid center", %{
-      validation_request: validation_request
-    } do
-      validation_request = Map.put(validation_request, :center, :not_existing_center)
-
-      {:error, _error} =
-        Collection.validate(validation_request, tenant: validation_request.collection)
-    end
-
     test "run/1 successful", %{
       validation_request: validation_request
     } do

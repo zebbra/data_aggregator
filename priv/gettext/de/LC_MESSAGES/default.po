@@ -5075,20 +5075,20 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "Unknown"
 msgstr "Unbekannt"
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:231
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:225
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
-msgid "Not sent (unchanged)"
+msgid "Total Rows Processed"
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:228
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
-msgid "Sent for validation"
+msgid "Changed records (sending for validation)"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:225
+#: lib/data_aggregator_web/live/collection_live/validation_request/index.ex:231
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.ValidationRequest.Index"
-msgid "Total Rows Processed"
+msgid "Unchanged records (not sending for validation)"
 msgstr ""

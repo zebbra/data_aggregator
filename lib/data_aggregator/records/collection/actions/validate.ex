@@ -84,21 +84,26 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
       |> ValidationRequest.update_attachment(attachment)
       |> Ash.load!([:collection, :attachment])
 
-    case notify(validation_request, query, ctx) do
-      {:ok, validation_request} ->
-        {:ok, validation_request}
+    # only notify center if there are more than 0 entries to validate
+    if validation_request.sent_for_validation_count > 0 do
+      case notify(validation_request, query, ctx) do
+        {:ok, validation_request} ->
+          {:ok, validation_request}
 
-      {:error, error} ->
-        Logger.error("Error while validating: #{inspect(error)}")
+        {:error, error} ->
+          Logger.error("Error while validating: #{inspect(error)}")
 
-        query
-        |> stream_query()
-        |> update_validation_status(
-          :unknown,
-          ctx
-        )
+          query
+          |> stream_query()
+          |> update_validation_status(
+            :unknown,
+            ctx
+          )
 
-        {:error, error}
+          {:error, error}
+      end
+    else
+      {:ok, validation_request}
     end
   rescue
     e ->

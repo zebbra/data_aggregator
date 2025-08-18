@@ -225,10 +225,10 @@ defmodule DataAggregatorWeb.CollectionLive.ValidationRequest.Index do
             <:item title={~t"Total Rows Processed"m}>
               {format_number(@selected_validation_request.total_rows_count)}
             </:item>
-            <:item title={~t"Sent for validation"m}>
+            <:item title={~t"Changed records (sending for validation)"m}>
               {format_number(@selected_validation_request.sent_for_validation_count)}
             </:item>
-            <:item title={~t"Not sent (unchanged)"m}>
+            <:item title={~t"Unchanged records (not sending for validation)"m}>
               {format_number(
                 @selected_validation_request.total_rows_count -
                   @selected_validation_request.sent_for_validation_count
