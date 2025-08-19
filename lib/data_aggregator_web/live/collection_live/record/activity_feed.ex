@@ -323,7 +323,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       "unknown" -> "hero-question-mark-circle-solid"
       "requested" -> "hero-cog-6-tooth-solid"
       "validated" -> "hero-check-solid"
-      "not_validated" -> "hero-x-mark-solid"
+      "not_validated" -> "hero-exclamation-triangle-solid"
       _ -> "hero-check-badge"
     end
   end
@@ -465,7 +465,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
       "unknown" -> "gray"
       "requested" -> "blue"
       "validated" -> "green"
-      "not_validated" -> "red"
+      "not_validated" -> "orange"
       _ -> "gray"
     end
   end
