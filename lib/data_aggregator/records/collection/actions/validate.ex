@@ -46,6 +46,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
     FlatFileUtils.store_on_disk!([header_labels], validation_file.file, false)
 
+    # work through the stream of records and prepare chunks of 1000 records for validation
     query
     |> stream_query()
     |> Stream.chunk_every(1000)

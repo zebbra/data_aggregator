@@ -454,15 +454,17 @@ defmodule DataAggregatorWeb.CollectionLive.Record.FilterComponent do
       target={@target}
       options={[
         [key: ~t"Any"m, value: ""],
-        [key: ~t"Endangered"m, value: "endangered"],
-        [key: ~t"Not threatened"m, value: "not_threatened"],
-        [key: ~t"Other"m, value: "other"]
+        [key: ~t"Threatened"m, value: "threatened"],
+        [key: ~t"Less threatened"m, value: "less_threatened"],
+        [key: ~t"Extinct (or nearly)"m, value: "extinct"],
+        [key: ~t"Uncertain data"m, value: "uncertain_data"]
       ]}
       option_descriptions={
         %{
-          "endangered" => ~t"Endangered species according to IUCN Red List"m,
-          "not_threatened" => ~t"Safe species according to IUCN Red List"m,
-          "other" => ~t"Other category according to IUCN Red List"m
+          "threatened" => ~t"Threatened species according to IUCN Red List"m,
+          "less_threatened" => ~t"Less threatened species according to IUCN Red List"m,
+          "extinct" => ~t"Extinct (or nearly) species according to IUCN Red List"m,
+          "uncertain_data" => ~t"Insufficient data for IUCN classification"m
         }
       }
       legend_size="md"
