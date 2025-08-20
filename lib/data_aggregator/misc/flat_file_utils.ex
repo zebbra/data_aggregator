@@ -3,6 +3,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   Utility functions for working with CSV files
   """
   alias DataAggregator.Files.Attachment
+  alias OpenApiSpex.Example
 
   @doc """
   gives you a map of all relevant header fields and the record values
@@ -28,7 +29,23 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   }
 
   map_data_to_headers(record_data, header_fields, transformers)
-  ```
+
+  @doc \"""
+    Maps a given map of data to the given Keyword list of headers to get a map with a label as key and the value as value
+    input:
+
+    ## Example
+    iex> data = %{
+    ...>  a: "A",
+    ...>  b: "B",
+    ...>  c: "C"
+    ...> }
+    ...> headers = [a: "A-Label",
+    ...>  b: "B-Label",
+    ...>  c: "C-Label"
+    ...> ]
+    ...> map_data_to_headers(data, headers, nil)
+    %{"A-Label" => "A", "B-Label" => "B", "C-Label" => "C"}
   """
   @spec map_data_to_headers(map(), list(), map() | nil) :: map()
   def map_data_to_headers(record_data, header_fields, transformers \\ nil)
@@ -46,7 +63,23 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   end
 
   @doc """
-  Same as `map_data_to_headers/3`, but returns a list of values instead of a map
+    Same as `map_data_to_headers/3`, but returns a list of values instead of a map
+
+    ## Example
+    iex> data = %{
+    ...>  a: "A",
+    ...>  b: "B",
+    ...>  c: "C",
+    ...>  extra_data: %{ "blub" => "Blub"}
+    ...> }
+    ...> headers = [
+    ...>  :a,
+    ...>  :b,
+    ...>  :c,
+    ...>  :blub
+    ...> ]
+    ...> map_data_to_headers_list(data, headers, nil)
+    ["A", "B", "C", "Blub"]
   """
   @spec map_data_to_headers_list(map(), list(), map() | nil) :: list()
   def map_data_to_headers_list(record_data, header_fields, transformers \\ nil)
@@ -63,6 +96,38 @@ defmodule DataAggregator.Misc.FlatFileUtils do
     end)
   end
 
+  @doc """
+    if there is a transformer registered for the given key(s), apply it to the data
+
+    ## Example
+
+      iex> data = %{
+      ...>   name: "john doe",
+      ...>   age: 25,
+      ...>   extra_data: %{"city" => "Bern"}
+      ...> }
+      ...> transformers = %{
+      ...>   "city" => fn value -> String.capitalize(value) end,
+      ...>   name: fn value -> String.upcase(value) end
+      ...> }
+      ...> maybe_transform_data(data, :name, transformers)
+      "JOHN DOE"
+
+      iex> data = %{
+      ...>   name: "john doe",
+      ...>   extra_data: %{"city" => "new york"}
+      ...> }
+      ...> transformers = %{
+      ...>   "city" => fn value -> String.capitalize(value) end
+      ...> }
+      ...> maybe_transform_data(data, "city", transformers)
+      "New york"
+
+      iex> data = %{age: 25}
+      ...> transformers = %{name: fn value -> String.upcase(value) end}
+      ...> maybe_transform_data(data, :age, transformers)
+      25
+  """
   def maybe_transform_data(data, k, transformers) do
     if Map.has_key?(transformers, k) do
       data
