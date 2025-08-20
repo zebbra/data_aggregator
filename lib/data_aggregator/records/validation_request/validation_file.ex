@@ -7,6 +7,8 @@ defmodule DataAggregator.Records.Validation.ValidationFile do
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
 
+  @type t() :: %__MODULE__{}
+
   defstruct [
     :path,
     :collection_attributes_and_headers,
@@ -125,16 +127,17 @@ defmodule DataAggregator.Records.Validation.ValidationFile do
     "waterBody"
   ]
 
+  @doc """
+  Opens a validation file at the given path and returns a ValidationFile struct.
+  This describes a wrapper around a csv file with meta information for further record data processing.
+  """
+  @spec open_file!(String.t()) :: t()
   def open_file!(path) do
     path = "#{path}/validation.csv"
     file = FlatFileUtils.open_file!(path)
 
     {collection_attrs_and_headers, record_attrs_and_headers, encoded_attrs_and_headers} =
       attributes_and_headers_from_schema!()
-
-    # record_attributes = attributes!(record_attrs_and_headers, @record_headers)
-    # collection_attributes = attributes!(collection_attrs_and_headers, @collection_headers)
-    # encoded_attributes = attributes!(encoded_attrs_and_headers, @record_headers)
 
     %ValidationFile{
       path: path,
@@ -145,6 +148,8 @@ defmodule DataAggregator.Records.Validation.ValidationFile do
     }
   end
 
+  @spec attributes_and_headers_from_schema!() ::
+          {list({String.t(), String.t()}), list({String.t(), String.t()}), list({String.t(), String.t()})}
   defp attributes_and_headers_from_schema! do
     %{
       collection: collection_attributes_and_headers,

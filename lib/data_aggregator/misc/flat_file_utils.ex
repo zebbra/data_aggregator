@@ -3,7 +3,6 @@ defmodule DataAggregator.Misc.FlatFileUtils do
   Utility functions for working with CSV files
   """
   alias DataAggregator.Files.Attachment
-  alias OpenApiSpex.Example
 
   @doc """
   gives you a map of all relevant header fields and the record values
@@ -128,6 +127,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
       ...> maybe_transform_data(data, :age, transformers)
       25
   """
+  @spec maybe_transform_data(map(), atom() | String.t(), map()) :: any()
   def maybe_transform_data(data, k, transformers) do
     if Map.has_key?(transformers, k) do
       data
@@ -139,6 +139,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
     end
   end
 
+  @spec maybe_from_extra_data(map(), atom() | String.t()) :: any()
   defp maybe_from_extra_data(record, field) do
     if Map.has_key?(record, field) do
       Map.get(record, field)
@@ -164,6 +165,7 @@ defmodule DataAggregator.Misc.FlatFileUtils do
     iex> maybe_remove_linebreaks(1337)
     1337
   """
+  @spec maybe_remove_linebreaks(String.t()) :: String.t()
   def maybe_remove_linebreaks(value) when is_binary(value) do
     String.replace(value, ~r/\r?\n/, " ")
   end

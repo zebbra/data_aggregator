@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
   use Ash.Resource.Actions.Implementation
 
+  alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.Counter
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
@@ -124,8 +125,10 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
       {:error, e}
   end
 
+  @spec stream_query(Ash.Query.t()) :: Enum.t()
   defp stream_query(query), do: Ash.stream!(query, stream_with: :keyset, batch_size: 1000, load: :encoded_record)
 
+  @spec update_validation_status(Enum.t(), atom(), Context.t()) :: Enum.t()
   defp update_validation_status(stream, status, %{actor: actor, tenant: tenant}) do
     max_concurrency = Records.import_max_concurrency()
     batch_size = ceil(Records.import_batch_size() / max_concurrency)
@@ -143,6 +146,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     stream
   end
 
+  @spec compose_headers(ValidationFile.t()) :: list()
   defp compose_headers(validation_file) do
     collection_headers = get_sorted_headers(validation_file.collection_attributes_and_headers)
 
@@ -153,12 +157,15 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     collection_headers ++ record_headers ++ encoded_headers
   end
 
+  @spec get_sorted_headers(Keyword.t()) :: list()
   defp get_sorted_headers(headers_and_attributes) do
     headers_and_attributes
     |> Keyword.values()
     |> Enum.sort(&(&1 <= &2))
   end
 
+  @spec process_validation_data(Record.t(), ValidationFile.t()) ::
+          {:not_changed, map()} | {:changed, map()}
   defp process_validation_data(record, validation_file) do
     case maybe_changed_data(record, validation_file) do
       {:not_changed, data} ->
@@ -175,7 +182,9 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     end
   end
 
-  defp notify(%ValidationRequest{} = validation_request, query, _ctx) do
+  @spec notify(ValidationRequest.t(), Ash.Query.t(), map()) ::
+          {:ok, ValidationRequest.t()} | {:error, any()}
+  defp notify(validation_request, query, _ctx) do
     case InfoSpecies.notify(validation_request, query) do
       {:ok, validation_request} ->
         {:ok, validation_request}
@@ -187,8 +196,10 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     end
   end
 
-  # returns {:no_changes, previous_data} if there was no changes and returns {:ok, current_data} if there were
+  # returns {:not_changed, previous_data} if there was no changes and returns {:changed, current_data} if there were
   # changes in the record data since the last validation
+  @spec maybe_changed_data(Record.t(), ValidationFile.t()) ::
+          {:not_changed, map()} | {:changed, map()}
   defp maybe_changed_data(record, validation_file) do
     previous_data = previous_data(record)
 
@@ -206,6 +217,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   end
 
   # returns the data which was previously sent for validation
+  @spec previous_data(Record.t()) :: map() | nil
   defp previous_data(record) do
     case record.validation_request_record do
       nil -> nil
@@ -214,6 +226,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   end
 
   # returns the attributes, values and headers for further processing towards a validation request
+  @spec current_data(Record.t(), ValidationFile.t()) :: map()
   defp current_data(record, validation_file) do
     collection_attributes = Keyword.keys(validation_file.collection_attributes_and_headers)
     record_attributes = Keyword.keys(validation_file.record_attributes_and_headers)
@@ -267,16 +280,19 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     }
   end
 
+  @spec maybe_transform_value({atom(), any()}) :: any()
   defp maybe_transform_value({attr, value}) do
     [{attr, value}]
     |> Map.new()
     |> FlatFileUtils.maybe_transform_data(attr, Schema.dwc_transformers())
   end
 
+  @spec sort_data_by_header(list(map())) :: list(map())
   defp sort_data_by_header(data) do
     Enum.sort(data, &(&1["header"] <= &2["header"]))
   end
 
+  @spec value_with_header_and_attribute(any(), String.t(), atom() | String.t()) :: map()
   defp value_with_header_and_attribute(value, header, attribute) do
     %{
       "attr" => to_string(attribute),
@@ -285,6 +301,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     }
   end
 
+  @spec format_data_for_validation(map()) :: list()
   defp format_data_for_validation(%{
          "collection_data" => collection_data,
          "record_data" => record_data,
@@ -298,6 +315,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     data
   end
 
+  @spec upsert_validation_request_record!(Record.t(), map()) :: ValidationRequestRecord.t()
   defp upsert_validation_request_record!(record, data) do
     case record.validation_request_record do
       nil ->
