@@ -15,6 +15,9 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
 
   require Logger
 
+  @doc """
+  Notifies the infospecies center by mail about the validation request.
+  """
   @spec notify(ValidationRequest.t(), Ash.Query.t()) ::
           {:ok, ValidationRequest.t()} | {:error, any()}
   def notify(validation_request, query) do
@@ -82,7 +85,6 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
       new()
       |> from(System.get_env("MAILBOX_FROM") || "museums.tovalidate@gbif.ch")
       |> to(to_mails)
-      # |> to(["data@gbif.ch"])
       |> subject("New records available for validation")
       |> text_body(get_message_body(notification))
 
