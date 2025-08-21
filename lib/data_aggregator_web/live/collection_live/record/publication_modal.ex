@@ -507,7 +507,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.PublicationModal do
           <span class="font-bold">
             {mgettext(
               "%{checked_publication_count} records",
-              checked_publication_count: format_number(@checked_publication_count)
+              checked_publication_count: format_number(@checked_publication_count - @no_kingdom_count)
             )}
           </span>
           {~t"to GBIF"m}
