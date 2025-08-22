@@ -23,31 +23,23 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   def run(input, _opts, %{tenant: tenant} = ctx) do
     validation_request = input.arguments.validation_request
 
-    # these are the new records that will be validated
-    query =
-      Record
-      |> Ash.Query.new()
-      |> Ash.Query.filter_input(validation_request.records_query)
-      |> Ash.Query.set_tenant(tenant)
-      |> Ash.Query.load([:encoded_record, :collection, :validation_request_record])
-
-    path = FlatFileUtils.create_directory!("validation_request")
-
     {:ok, total_counter} =
       Counter.start(&ValidationRequest.add_validation_request_progress(validation_request, &1))
 
     {:ok, sent_counter} =
       Counter.start(&ValidationRequest.add_sent_for_validation_progress(validation_request, &1))
 
-    %{
-      file: file
-    } = validation_file = ValidationFile.open_file!(path)
+    path = FlatFileUtils.create_directory!("validation_request")
+
+    %{file: file} = validation_file = ValidationFile.open_file!(path)
 
     header_labels = compose_headers(validation_file)
 
     FlatFileUtils.store_on_disk!([header_labels], validation_file.file, false)
 
     # work through the stream of records and prepare chunks of 1000 records for validation
+    query = build_query(validation_request, tenant)
+
     query
     |> stream_query()
     |> Stream.chunk_every(1000)
@@ -81,19 +73,16 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     # remove file from local tmp dir, as it is now stored on s3
     File.rm_rf(path)
 
-    validation_request =
-      validation_request
-      |> ValidationRequest.update_attachment(attachment)
-      |> Ash.load!([:collection, :attachment])
+    validation_request = ValidationRequest.update_attachment!(validation_request, attachment)
 
     # only notify center if there are more than 0 entries to validate
     if validation_request.sent_for_validation_count > 0 do
-      case notify(validation_request, query, ctx) do
+      case InfoSpecies.notify(validation_request, query) do
         {:ok, validation_request} ->
           {:ok, validation_request}
 
         {:error, error} ->
-          Logger.error("Error while validating: #{inspect(error)}")
+          Logger.error("Error while notifying about validation: #{inspect(error)}")
 
           query
           |> stream_query()
@@ -113,16 +102,20 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
       validation_request = input.arguments.validation_request
 
-      query =
-        Record
-        |> AshPagify.query_for_filters_map(validation_request.records_query)
-        |> Ash.Query.set_tenant(tenant)
-
-      query
+      validation_request
+      |> build_query(tenant)
       |> stream_query()
       |> update_validation_status(:unknown, ctx)
 
       {:error, e}
+  end
+
+  defp build_query(validation_request, tenant) do
+    Record
+    |> Ash.Query.new()
+    |> Ash.Query.filter_input(validation_request.records_query)
+    |> Ash.Query.set_tenant(tenant)
+    |> Ash.Query.load([:encoded_record, :collection, :validation_request_record])
   end
 
   @spec stream_query(Ash.Query.t()) :: Enum.t()
@@ -149,9 +142,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   @spec compose_headers(ValidationFile.t()) :: list()
   defp compose_headers(validation_file) do
     collection_headers = get_sorted_headers(validation_file.collection_attributes_and_headers)
-
     record_headers = get_sorted_headers(validation_file.record_attributes_and_headers)
-
     encoded_headers = get_sorted_headers(validation_file.encoded_attributes_and_headers)
 
     collection_headers ++ record_headers ++ encoded_headers
@@ -182,27 +173,12 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     end
   end
 
-  @spec notify(ValidationRequest.t(), Ash.Query.t(), map()) ::
-          {:ok, ValidationRequest.t()} | {:error, any()}
-  defp notify(validation_request, query, _ctx) do
-    case InfoSpecies.notify(validation_request, query) do
-      {:ok, validation_request} ->
-        {:ok, validation_request}
-
-      {:error, error} ->
-        Logger.warning("Error while informing infospecies about new available records for review: #{inspect(error)}")
-
-        {:error, error}
-    end
-  end
-
   # returns {:not_changed, previous_data} if there was no changes and returns {:changed, current_data} if there were
   # changes in the record data since the last validation
   @spec maybe_changed_data(Record.t(), ValidationFile.t()) ::
           {:not_changed, map()} | {:changed, map()}
   defp maybe_changed_data(record, validation_file) do
     previous_data = previous_data(record)
-
     current_data = current_data(record, validation_file)
 
     if previous_data == current_data do

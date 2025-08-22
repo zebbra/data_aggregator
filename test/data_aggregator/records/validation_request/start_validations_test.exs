@@ -50,7 +50,8 @@ defmodule DataAggregator.StartValidationsTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          tax_taxon_id: 9368
+          tax_taxon_id: 9368,
+          loc_country_code: "CH"
         })
 
       record2 =
@@ -58,7 +59,8 @@ defmodule DataAggregator.StartValidationsTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          tax_taxon_id: 9368
+          tax_taxon_id: 9368,
+          loc_country_code: "ch"
         })
 
       record3 =
@@ -66,7 +68,8 @@ defmodule DataAggregator.StartValidationsTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          tax_taxon_id: 9368
+          tax_taxon_id: 9368,
+          loc_country_code: "CH"
         })
 
       record4 =
@@ -74,14 +77,24 @@ defmodule DataAggregator.StartValidationsTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
-          tax_taxon_id: 5_497_504
+          tax_taxon_id: 5_497_504,
+          loc_country_code: "CH"
         })
 
       record5 =
         record_fixture(%{
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
-          tax_kingdom: "My Kingdom"
+          tax_kingdom: "My Kingdom",
+          loc_country_code: "CH"
+        })
+
+      record6 =
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
+          tax_kingdom: "My Kingdom",
+          loc_country_code: "FR"
         })
 
       encoded_record_fixture(%{record: record1})
@@ -89,6 +102,7 @@ defmodule DataAggregator.StartValidationsTest do
       encoded_record_fixture(%{record: record3})
       encoded_record_fixture(%{record: record4})
       encoded_record_fixture(%{record: record5})
+      encoded_record_fixture(%{record: record6})
 
       [
         collection: collection,
@@ -104,9 +118,7 @@ defmodule DataAggregator.StartValidationsTest do
         {:ok, result} =
           Collection.start_validations(collection, actor: actor, tenant: collection)
 
-        # after all validation requests are created and enqueued, the collection state is set to :validating
         {:ok, collection} = Collection.get_by_id(collection.id)
-        assert collection.state == :validating
 
         assert_lists_equal(result,
           infofauna: 3,

@@ -15,15 +15,9 @@ defmodule DataAggregator.Records.ValidationRequest.Changes.SetCollectionIdleAfte
     Changeset.after_transaction(changeset, &set_collection_idle/2)
   end
 
-  defp set_collection_idle(_changeset, {:error, error}) do
-    {:error, error}
-  end
+  defp set_collection_idle(%{tenant: collection}, result_tuple) do
+    if collection.state != :idle, do: Collection.set_idle!(collection)
 
-  defp set_collection_idle(_changeset, {:ok, vr}) do
-    collection = Collection.get_by_id!(vr.collection_id)
-
-    Collection.set_idle(collection)
-
-    {:ok, vr}
+    result_tuple
   end
 end

@@ -141,7 +141,7 @@ defmodule DataAggregator.Records.Collection do
       transition :set_exporting, from: [:idle], to: :exporting
       transition :set_encoding, from: [:idle], to: :encoding
       transition :set_publishing, from: [:idle], to: :publishing
-      transition :set_validating, from: [:idle, :publishing], to: :validating
+      transition :set_validating, from: [:idle, :publishing, :queued], to: :validating
       transition :set_deleting, from: [:idle], to: :deleting
 
       transition :set_idle,

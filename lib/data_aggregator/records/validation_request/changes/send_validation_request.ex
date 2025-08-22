@@ -34,7 +34,7 @@ defmodule DataAggregator.Records.ValidationRequest.Changes.SendValidationRequest
   defp add_success(changeset, validation_request, tenant) do
     validation_request = ValidationRequest.get_by_id!(validation_request.id, tenant: tenant)
 
-    Logger.info("Successfully sent validation request with #{validation_request.processed_rows_count} records")
+    Logger.info("Successfully sent validation request with #{validation_request.sent_for_validation_count} records")
 
     changeset
   end

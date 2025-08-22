@@ -18,9 +18,11 @@ defmodule DataAggregator.Records.Calculations.ValidationQuery do
   defp map_restriction(%Collection{id: id}), do: restriction(id)
 
   defp restriction(id) do
-    # TODO: customize to restrict the records to be published
     %{
-      collection: %{id: %{eq: id}}
+      collection: %{id: %{eq: id}},
+      encoded_record: %{
+        loc_country_code: %{in: ["CH", "ch"]}
+      }
     }
   end
 end
