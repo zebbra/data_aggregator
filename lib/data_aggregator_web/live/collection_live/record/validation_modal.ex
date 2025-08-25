@@ -39,25 +39,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ValidationModal do
             <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
           </div>
           <p class="text-sm">
-            {~t"In addition to the filters provided, we also add the restriction for all records that the"m}
-            <span class="font-bold">{~t"kingdom  "m}</span>
-            {~t"attribute must be set."m}
-          </p>
-        </div>
-        <div class="flex">
-          <div class="mr-4 flex-shrink-0">
-            <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
-          </div>
-          <p class="text-sm">
-            {~t"Please note that only Swiss specimen will be reviewed. All other specimen will be ignored during the validation process."m}
-          </p>
-        </div>
-        <div class="flex">
-          <div class="mr-4 flex-shrink-0">
-            <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
-          </div>
-          <p class="text-sm">
-            {~t"Please note that the validation process will involve manual work by InfoSpecies, which will review and validate each record for accuracy before publication to GBIF."m}
+            {~t"Please note that only Swiss specimen will be processed. All other specimens will be ignored. Records must have both "m}
+            <span class="font-bold">{~t"kingdom"m}</span>
+            {~t"and"m}
+            <span class="font-bold">{~t"taxonID"m}</span>
+            {~t"attributes set."m}
           </p>
         </div>
         <p class="text-sm">
@@ -81,6 +67,22 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ValidationModal do
           </div>
           <p class="text-sm">
             {~t"There are no Swiss specimen availabe. Either your specimen are outside of Switzerland or you have applied a too restrictive filter."m}
+          </p>
+        </div>
+        <div class="flex">
+          <div class="mr-4 flex-shrink-0">
+            <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
+          </div>
+          <p class="text-sm">
+            {~t"Records that have not changed since the last validation request will be ignored and will not be sent for validation."m}
+          </p>
+        </div>
+        <div class="flex">
+          <div class="mr-4 flex-shrink-0">
+            <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
+          </div>
+          <p class="text-sm">
+            {~t"The validation process involves manual work by InfoSpecies, who will review and validate each record individually before publication to GBIF."m}
           </p>
         </div>
         <p class="text-base-content/60 mt-4 text-sm">
@@ -126,14 +128,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ValidationModal do
     center_and_record_counts =
       Enum.map(infospecies_centers, fn center ->
         records_query =
-          AshPagify.merge_filters(
-            %AshPagify{filters: validation_query},
+          Ash.Helpers.deep_merge_maps(
+            validation_query,
             ValidationRequest.Helpers.center_specific_filter(center)
-          ).filters
+          )
 
         center_count_query =
           Record
-          |> AshPagify.query_for_filters_map(records_query)
+          |> Ash.Query.filter_input(records_query)
           |> Ash.Query.set_tenant(collection)
 
         center_rows_count = Ash.count!(center_count_query)
