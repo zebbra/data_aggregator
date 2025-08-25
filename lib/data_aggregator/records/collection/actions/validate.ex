@@ -35,7 +35,11 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
     header_labels = compose_headers(validation_file)
 
-    FlatFileUtils.store_on_disk!([header_labels], validation_file.file, false)
+    FlatFileUtils.store_on_disk!(
+      [header_labels],
+      validation_file.file,
+      false
+    )
 
     # work through the stream of records and prepare chunks of 1000 records for validation
     query = build_query(validation_request, tenant)
@@ -49,7 +53,8 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
         {maybe_changes, _data} =
           process_validation_data(
             record,
-            validation_file
+            validation_file,
+            validation_request.inserted_at
           )
 
         {maybe_changes, record}
@@ -145,7 +150,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     record_headers = get_sorted_headers(validation_file.record_attributes_and_headers)
     encoded_headers = get_sorted_headers(validation_file.encoded_attributes_and_headers)
 
-    collection_headers ++ record_headers ++ encoded_headers
+    collection_headers ++ record_headers ++ encoded_headers ++ ["dateOfValidation"]
   end
 
   @spec get_sorted_headers(Keyword.t()) :: list()
@@ -155,9 +160,9 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     |> Enum.sort(&(&1 <= &2))
   end
 
-  @spec process_validation_data(Record.t(), ValidationFile.t()) ::
+  @spec process_validation_data(Record.t(), ValidationFile.t(), DateTime.t()) ::
           {:not_changed, map()} | {:changed, map()}
-  defp process_validation_data(record, validation_file) do
+  defp process_validation_data(record, validation_file, date_time) do
     case maybe_changed_data(record, validation_file) do
       {:not_changed, data} ->
         {:not_changed, data}
@@ -165,7 +170,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
       {:changed, data} ->
         upsert_validation_request_record!(record, data)
 
-        data = format_data_for_validation(data)
+        data = format_data_for_validation(data, date_time)
 
         FlatFileUtils.store_on_disk!([data], validation_file.file, false)
 
@@ -277,18 +282,17 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     }
   end
 
-  @spec format_data_for_validation(map()) :: list()
-  defp format_data_for_validation(%{
-         "collection_data" => collection_data,
-         "record_data" => record_data,
-         "encoded_data" => encoded_data
-       }) do
+  @spec format_data_for_validation(map(), DateTime.t()) :: list()
+  defp format_data_for_validation(
+         %{"collection_data" => collection_data, "record_data" => record_data, "encoded_data" => encoded_data},
+         date_time
+       ) do
     data =
       [collection_data, record_data, encoded_data]
       |> List.flatten()
       |> Enum.map(& &1["value"])
 
-    data
+    data ++ [date_time]
   end
 
   @spec upsert_validation_request_record!(Record.t(), map()) :: ValidationRequestRecord.t()

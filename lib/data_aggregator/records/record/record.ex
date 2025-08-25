@@ -57,7 +57,7 @@ defmodule DataAggregator.Records.Record do
           filter: %{publication_status: %{not_equals: :published}}
         },
         %{
-          name: :not_validated,
+          name: :validation_unknown,
           filter: %{validation_status: %{equals: :unknown}}
         }
       ]
@@ -226,9 +226,9 @@ defmodule DataAggregator.Records.Record do
               :boolean,
               expr(publication_status != :published)
 
-    calculate :not_validated,
+    calculate :validation_unknown,
               :boolean,
-              expr(validation_status != :unknown)
+              expr(validation_status == :unknown)
 
     calculate :changes, :map, Calculations.Changes do
       argument :transform?, :boolean, allow_nil?: true, default: false
