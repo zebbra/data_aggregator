@@ -207,7 +207,7 @@ defmodule DataAggregator.MixProject do
       {:phoenix_live_view, "~> 1.0.17"},
       {:phoenix_storybook, "~> 0.8.0"},
       {:tidewave, "~> 0.1", only: :dev},
-      {:live_debugger, "~> 0.2.0", only: :dev},
+      {:live_debugger, "~> 0.3", only: [:dev]},
 
       # Ash Framework
       {:ash, "~> 3.4", override: true},
@@ -420,6 +420,9 @@ defmodule DataAggregator.MixProject do
         "ash_state_machine.generate_flow_charts --format md",
         "repo.erd",
         "docs"
+      ],
+      "agents.sync": [
+        "usage_rules.sync AGENTS.md --all --link-to-folder usage-rules"
       ]
     ]
   end

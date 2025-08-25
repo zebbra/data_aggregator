@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang={to_string(@locale)} class="bg-base-100 [scrollbar-gutter:stable]">
   <head>
+    {Application.get_env(:live_debugger, :live_debugger_tags)}
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta

@@ -1,6 +1,6 @@
 defmodule DataAggregator.Records.Record.Changes.SetPublicationStale do
   @moduledoc """
-  Sets the publication_status and validation_status to :stale if they are not :not_published and :not_validated respectively.
+  Sets the publication_status and validation_status in case of stale event.
   """
 
   use Ash.Resource.Change
@@ -18,7 +18,11 @@ defmodule DataAggregator.Records.Record.Changes.SetPublicationStale do
     )
     |> Changeset.atomic_update(
       :validation_status,
-      expr(if validation_status == :not_validated, do: :not_validated, else: :stale)
+      expr(
+        if validation_status in [:not_validated, :validated],
+          do: validation_status,
+          else: :unknown
+      )
     )
   end
 end

@@ -69,7 +69,11 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
     assign_async(
       socket,
-      [:records_count_not_validated, :records_count_not_encoded, :records_count_not_published],
+      [
+        :records_count_validation_unknown,
+        :records_count_not_encoded,
+        :records_count_not_published
+      ],
       fn ->
         count_not_encoded =
           Record
@@ -83,14 +87,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           |> Ash.Query.filter(expr(not_published == true))
           |> Ash.count!()
 
-        count_not_validated =
+        count_validation_unknown =
           Record
           |> Ash.Query.set_tenant(collection)
-          |> Ash.Query.filter(expr(not_validated == true))
+          |> Ash.Query.filter(expr(validation_unknown == true))
           |> Ash.count!()
 
         stats = %{
-          records_count_not_validated: count_not_validated,
+          records_count_validation_unknown: count_validation_unknown,
           records_count_not_encoded: count_not_encoded,
           records_count_not_published: count_not_published
         }
@@ -263,24 +267,28 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
             }
           />
 
-          <.placeholder_stat :if={@records_count_not_validated.loading} title={~t"Not validated"m} />
-          <.scope_stat
-            :if={@records_count_not_validated.ok?}
-            href={path_helper(@collection, @layer, @meta.result, %{status: :not_validated})}
+          <.placeholder_stat
+            :if={@records_count_validation_unknown.loading}
             title={~t"Not validated"m}
+          />
+          <.scope_stat
+            :if={@records_count_validation_unknown.ok?}
+            href={path_helper(@collection, @layer, @meta.result, %{status: :unknown})}
+            title={~t"Validation unknown"m}
             value={
-              if @records_count_not_validated.result == 0,
+              if @records_count_validation_unknown.result == 0,
                 do: 0,
-                else: @records_count_not_validated.result / @collection.records_count
+                else: @records_count_validation_unknown.result / @collection.records_count
             }
             desc={
-              mgettext("%{records_count_not_validated} of %{records_count} Records",
-                records_count_not_validated: format_number(@records_count_not_validated.result),
+              mgettext("%{records_count_validation_unknown} of %{records_count} Records",
+                records_count_validation_unknown:
+                  format_number(@records_count_validation_unknown.result),
                 records_count: format_number(@collection.records_count)
               )
             }
             active={
-              @meta.ok? && AshPagify.active_scope?(@meta.result.ash_pagify, %{status: :not_validated})
+              @meta.ok? && AshPagify.active_scope?(@meta.result.ash_pagify, %{status: :unknown})
             }
           />
         </div>
@@ -499,9 +507,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
           label={~t"Validation status"m}
           class="text-center"
         >
-          <%= unless record.encoded_record.oth_swiss_species_registered == false do %>
-            <.validation_state_badge state={record.validation_status} />
-          <% end %>
+          <.validation_state_badge state={record.validation_status} />
         </:col>
         <:col
           :let={{_id, record}}
@@ -988,18 +994,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
 
   @impl true
   def handle_event("collection:validation_pub", _params, socket) do
-    %{collection: collection, meta: %{result: %{ash_pagify: ash_pagify}}} = socket.assigns
+    %{collection: collection} = socket.assigns
     actor = get_actor(socket)
-    collection = Ash.load!(collection, [:validation_query], lazy?: true, actor: actor)
 
-    validation_query = filter_map(ash_pagify, collection.validation_query, socket.assigns.layer)
-
-    count_query =
-      Record
-      |> AshPagify.query_for_filters_map(validation_query)
-      |> Ash.Query.set_tenant(collection)
-
-    case create_and_enqueue(collection, validation_query, count_query, :validation, actor) do
+    case create_and_enqueue(collection, actor) do
       {:ok, _} ->
         {:noreply,
          socket
@@ -1051,8 +1049,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
     {:noreply, assign(socket, :show_filters, false)}
   end
 
-  defp create_and_enqueue(collection, query, _count_query, :validation, actor) do
-    Collection.start_validations(collection, query, actor: actor, tenant: collection)
+  defp create_and_enqueue(collection, actor) do
+    Collection.start_validations(collection, actor: actor, tenant: collection)
   end
 
   defp apply_action(socket, :index, _params) do

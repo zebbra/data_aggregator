@@ -3,9 +3,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ValidationModal do
 
   use DataAggregatorWeb, :live_component
 
-  import DataAggregatorWeb.CollectionLive.Record.Helpers, only: [filter_map: 3]
-
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Taxonomy.Catalogs.InfospeciesCenters
 
   @impl true
@@ -109,15 +108,15 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ValidationModal do
   end
 
   defp assign_counts(socket) do
-    %{collection: collection, meta: %{ash_pagify: ash_pagify}} = socket.assigns
+    %{collection: collection} = socket.assigns
     actor = get_actor(socket)
     collection = Ash.load!(collection, [:validation_query], lazy?: true, actor: actor)
 
-    validation_query = filter_map(ash_pagify, collection.validation_query, socket.assigns.layer)
+    validation_query = collection.validation_query
 
     count_query =
       Record
-      |> AshPagify.query_for_filters_map(validation_query)
+      |> Ash.Query.filter_input(validation_query)
       |> Ash.Query.set_tenant(collection)
 
     count = Ash.count!(count_query)
@@ -127,9 +126,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ValidationModal do
     center_and_record_counts =
       Enum.map(infospecies_centers, fn center ->
         records_query =
-          AshPagify.merge_filters(%AshPagify{filters: validation_query}, %{
-            encoded_record: %{swiss_species: %{center: %{eq: center}}}
-          }).filters
+          AshPagify.merge_filters(
+            %AshPagify{filters: validation_query},
+            ValidationRequest.Helpers.center_specific_filter(center)
+          ).filters
 
         center_count_query =
           Record

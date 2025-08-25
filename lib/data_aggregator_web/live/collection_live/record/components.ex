@@ -96,12 +96,10 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   attr :state, :atom,
     required: true,
     values: [
-      :not_validated,
-      :validating,
-      :in_validation,
+      :unknown,
+      :requested,
       :validated,
-      :validation_failed,
-      :stale
+      :not_validated
     ]
 
   attr :tooltip, :boolean, default: true

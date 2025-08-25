@@ -15,16 +15,19 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
 
   require Logger
 
+  @doc """
+  Notifies the infospecies center by mail about the validation request.
+  """
   @spec notify(ValidationRequest.t(), Ash.Query.t()) ::
           {:ok, ValidationRequest.t()} | {:error, any()}
-  def notify(%ValidationRequest{} = validation_request, query) do
+  def notify(validation_request, query) do
     with {:ok, validation_request} <- Ash.load(validation_request, [:collection, :attachment]),
          {:ok, institution_name} <-
            get_institution_name(validation_request.collection.grscicoll_institution_key) do
       notification =
         %{
           count: to_string(Ash.count!(query)),
-          dwca_file_link: Attachment.Helpers.attachment_public_url(validation_request.attachment.id),
+          file_link: Attachment.Helpers.attachment_public_url(validation_request.attachment.id),
           institution: institution_name,
           date: get_date_time_now(),
           # for now we use institution_name as owner, because we don't have this
@@ -53,7 +56,7 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
         {:ok, Map.get(institution, "code", "") <> " - " <> Map.get(institution, "name", "")}
 
       {:error, _error} ->
-        Logger.debug("Error fetching institution with key: #{key}")
+        Logger.warning("Error fetching institution with key: #{key}")
         # we swallow the error here, because we don't want to abort the process
         # of notifying the infospecies centers
         {:ok, "Unknown institution"}
@@ -69,21 +72,19 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
       notification.date <>
       ", count: " <>
       notification.count <>
-      ", link: " <> notification.dwca_file_link
+      ", link: " <> notification.file_link
   end
 
   @spec notify_infospecies(Ash.Query.t(), map()) :: :ok
   defp notify_infospecies(query, notification) do
     Logger.info("Notifying infospecies center: #{inspect(notification)}")
 
-    {:ok, _to_mails} = InfospeciesCenters.get_center_emails(notification.center)
+    {:ok, to_mails} = InfospeciesCenters.get_center_emails(notification.center)
 
     email =
       new()
       |> from(System.get_env("MAILBOX_FROM") || "museums.tovalidate@gbif.ch")
-      # |> to(to_mails) TODO: uncomment this line (and remove the next one) if you
-      #    want to send the email to the infospecies centers directly
-      |> to(["data@gbif.ch"])
+      |> to(to_mails)
       |> subject("New records available for validation")
       |> text_body(get_message_body(notification))
 

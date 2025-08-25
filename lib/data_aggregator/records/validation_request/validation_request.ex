@@ -17,7 +17,6 @@ defmodule DataAggregator.Records.ValidationRequest do
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Collection.Changes.SetCollectionIdleAfterTransaction
-  alias DataAggregator.Records.PublicationLicenseType
   alias DataAggregator.Records.ValidationRequest.Changes
 
   @type t :: %ValidationRequest{}
@@ -31,12 +30,8 @@ defmodule DataAggregator.Records.ValidationRequest do
     attribute :records_query, :map, allow_nil?: false, public?: true
     attribute :processed_rows_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :total_rows_count, :integer, allow_nil?: false, default: 0, public?: true
+    attribute :sent_for_validation_count, :integer, allow_nil?: false, default: 0, public?: true
     attribute :center, :atom, allow_nil?: true, public?: true
-
-    attribute :license, PublicationLicenseType,
-      allow_nil?: false,
-      default: :cc_by,
-      public?: true
 
     timestamps public?: true, writable?: false
   end
@@ -61,8 +56,14 @@ defmodule DataAggregator.Records.ValidationRequest do
     calculate :collection_name, :string, expr(collection.name)
 
     calculate :attachment_url, :string do
-      calculation fn validation_request, _opts ->
-        Enum.map(validation_request, & &1.attachment.url)
+      calculation fn validation_requests, _opts ->
+        Enum.map(validation_requests, fn vr ->
+          if vr.attachment == nil do
+            nil
+          else
+            vr.attachment.url
+          end
+        end)
       end
 
       load attachment: :url
@@ -125,6 +126,18 @@ defmodule DataAggregator.Records.ValidationRequest do
         change ensure_selected(:processed_rows_count)
       end
 
+      update :add_sent_for_validation_progress do
+        accept []
+        argument :processed_rows, :integer, allow_nil?: false
+
+        change atomic_update(
+                 :sent_for_validation_count,
+                 expr(sent_for_validation_count + ^arg(:processed_rows))
+               )
+
+        change ensure_selected(:sent_for_validation_count)
+      end
+
       update :set_running do
         accept []
         require_atomic? false
@@ -151,7 +164,9 @@ defmodule DataAggregator.Records.ValidationRequest do
         change transition_state(:running)
         change set_attribute(:started_at, &DateTime.utc_now/0)
         change Changes.SendValidationRequest
+        change Changes.SetFailedOnError
         change Changes.SetDoneAfterAction
+        change Changes.SetCollectionIdleAfterTransaction
         change load(:attachment)
       end
 
@@ -208,6 +223,7 @@ defmodule DataAggregator.Records.ValidationRequest do
       define :set_failed
       define :update_attachment, action: :update_attachment, args: [:attachment]
       define :add_validation_request_progress, args: [:processed_rows]
+      define :add_sent_for_validation_progress, args: [:processed_rows]
       define :cancel_validation_request
     end
 

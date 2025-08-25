@@ -6,58 +6,64 @@ defmodule DataAggregator.Records.Record.Calculations.IucnRedlistCategoryGroupTes
   alias DataAggregator.Records.Record.Calculations.IucnRedlistCategoryGroup
 
   describe "calculate/3" do
-    test "returns 'endangered' for VU category" do
+    test "returns 'threatened' for VU category" do
       record = %{encoded_record: %{iucn_redlist_category: "VU"}}
       result = IucnRedlistCategoryGroup.calculate([record], [], %{})
-      assert result == ["endangered"]
+      assert result == ["threatened"]
     end
 
-    test "returns 'endangered' for CR category" do
+    test "returns 'threatened' for CR category" do
       record = %{encoded_record: %{iucn_redlist_category: "CR"}}
       result = IucnRedlistCategoryGroup.calculate([record], [], %{})
-      assert result == ["endangered"]
+      assert result == ["threatened"]
     end
 
-    test "returns 'endangered' for EN category" do
+    test "returns 'threatened' for EN category" do
       record = %{encoded_record: %{iucn_redlist_category: "EN"}}
       result = IucnRedlistCategoryGroup.calculate([record], [], %{})
-      assert result == ["endangered"]
+      assert result == ["threatened"]
     end
 
-    test "returns 'not_threatened' for LC category" do
+    test "returns 'less_threatened' for LC category" do
       record = %{encoded_record: %{iucn_redlist_category: "LC"}}
       result = IucnRedlistCategoryGroup.calculate([record], [], %{})
-      assert result == ["not_threatened"]
+      assert result == ["less_threatened"]
     end
 
-    test "returns 'not_threatened' for NT category" do
+    test "returns 'less_threatened' for NT category" do
       record = %{encoded_record: %{iucn_redlist_category: "NT"}}
       result = IucnRedlistCategoryGroup.calculate([record], [], %{})
-      assert result == ["not_threatened"]
+      assert result == ["less_threatened"]
     end
 
-    test "returns 'not_threatened' for EW category" do
+    test "returns 'extinct' for EW category" do
       record = %{encoded_record: %{iucn_redlist_category: "EW"}}
       result = IucnRedlistCategoryGroup.calculate([record], [], %{})
-      assert result == ["not_threatened"]
+      assert result == ["extinct"]
     end
 
-    test "returns 'not_threatened' for EX category" do
+    test "returns 'extinct' for EX category" do
       record = %{encoded_record: %{iucn_redlist_category: "EX"}}
       result = IucnRedlistCategoryGroup.calculate([record], [], %{})
-      assert result == ["not_threatened"]
+      assert result == ["extinct"]
     end
 
-    test "returns 'other' for NE category" do
+    test "returns 'extinct' for RE category" do
+      record = %{encoded_record: %{iucn_redlist_category: "RE"}}
+      result = IucnRedlistCategoryGroup.calculate([record], [], %{})
+      assert result == ["extinct"]
+    end
+
+    test "returns 'uncertain_data' for NE category" do
       record = %{encoded_record: %{iucn_redlist_category: "NE"}}
       result = IucnRedlistCategoryGroup.calculate([record], [], %{})
-      assert result == ["other"]
+      assert result == ["uncertain_data"]
     end
 
-    test "returns 'other' for DD category" do
+    test "returns 'uncertain_data' for DD category" do
       record = %{encoded_record: %{iucn_redlist_category: "DD"}}
       result = IucnRedlistCategoryGroup.calculate([record], [], %{})
-      assert result == ["other"]
+      assert result == ["uncertain_data"]
     end
 
     test "returns nil for unknown category" do
@@ -69,7 +75,7 @@ defmodule DataAggregator.Records.Record.Calculations.IucnRedlistCategoryGroupTes
     test "returns nil when iucn_redlist_category is nil" do
       record = %{encoded_record: %{iucn_redlist_category: nil}}
       result = IucnRedlistCategoryGroup.calculate([record], [], %{})
-      assert result == [nil]
+      assert result == ["uncertain_data"]
     end
 
     test "returns nil when encoded_record is nil" do
@@ -93,7 +99,7 @@ defmodule DataAggregator.Records.Record.Calculations.IucnRedlistCategoryGroupTes
       ]
 
       result = IucnRedlistCategoryGroup.calculate(records, [], %{})
-      assert result == ["endangered", "not_threatened", "other", nil]
+      assert result == ["threatened", "less_threatened", "uncertain_data", nil]
     end
   end
 end

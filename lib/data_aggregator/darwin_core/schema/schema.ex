@@ -2218,6 +2218,20 @@ defmodule DataAggregator.DarwinCore.Schema do
   end
 
   @doc """
+  Returns a list of tuples containging the internal, prefixed attribute name and the dwc_field name including collection based attributes
+  """
+  @spec prefixed_attribute_names_and_dwc_fields_and_collection_fields() :: map()
+  def prefixed_attribute_names_and_dwc_fields_and_collection_fields do
+    %{
+      record: Enum.flat_map(@categories, &Category.prefixed_attribute_names_and_dwc_fields/1),
+      collection:
+        Enum.map(@colleciton_attributes, fn attribute ->
+          {attribute.collection_field, attribute.dwc_field}
+        end)
+    }
+  end
+
+  @doc """
   Returns the dwc_field name for a prefixed attribute name if found, otherwise
   it returns the attribute name.
   """

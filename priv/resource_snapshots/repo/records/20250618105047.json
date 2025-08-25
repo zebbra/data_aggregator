@@ -3626,7 +3626,7 @@
     },
     {
       "allow_nil?": false,
-      "default": "\"not_validated\"",
+      "default": "\"unknown\"",
       "generated?": false,
       "precision": null,
       "primary_key?": false,
@@ -3792,7 +3792,7 @@
   ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "AEC9ED052C5B5CAC2796FF1BB8C2E81D5F04B8264E4D0339B9F0171B2D21E452",
+  "hash": "6735EF3ABAE988BEC0E73B2C4C60D202685526E7196393BDCF584248F8D276C0",
   "identities": [
     {
       "all_tenants?": false,

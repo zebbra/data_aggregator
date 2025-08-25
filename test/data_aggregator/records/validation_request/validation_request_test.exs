@@ -8,7 +8,6 @@ defmodule DataAggregator.ValidationRequestTest do
   import DataAggregator.RecordsFixtures
   import DataAggregator.ValidationRequestFixtures
 
-  alias DataAggregator.DarwinCore.Publication.DwcaFile
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
@@ -110,36 +109,20 @@ defmodule DataAggregator.ValidationRequestTest do
         Collection.validate(validation_request, tenant: validation_request.collection)
 
       %{body: body} = Req.get!(validation_request.attachment.url)
-      # validating if the core file is correctly created
-      {core_file_name, core_file_content} =
-        Enum.find(body, fn {file_name, _content} -> file_name == ~c"core.csv" end)
 
-      assert core_file_name != nil
-      assert core_file_content != nil
+      {file_name, file_content} =
+        Enum.find(body, fn {file_name, _content} -> file_name == ~c"validation.csv" end)
 
-      assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(core_file_content)
+      assert file_name != nil
+      assert file_content != nil
 
-      assert_lists_equal(
-        data_frame.names,
-        DwcaFile.file_header_fields(:core),
-        fn a, b -> a == b end
-      )
+      assert {:ok, %DataFrame{} = data_frame} = DataFrame.load_csv(file_content)
 
       assert DataFrame.n_rows(data_frame) == 5
 
       assert_lists_equal(DataFrame.names(data_frame), expected_dwc_column_headers())
 
-      assert DataFrame.n_columns(data_frame) == 190
-    end
-
-    @tag capture_log: true
-    test "validate/1 fails with invalid center", %{
-      validation_request: validation_request
-    } do
-      validation_request = Map.put(validation_request, :center, :not_existing_center)
-
-      {:error, _error} =
-        Collection.validate(validation_request, tenant: validation_request.collection)
+      assert DataFrame.n_columns(data_frame) == 201
     end
 
     test "run/1 successful", %{

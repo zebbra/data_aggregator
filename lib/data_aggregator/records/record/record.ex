@@ -36,6 +36,7 @@ defmodule DataAggregator.Records.Record do
   alias DataAggregator.Records.PublicationStatusType
   alias DataAggregator.Records.Record.Calculations
   alias DataAggregator.Records.Record.Changes
+  alias DataAggregator.Records.ValidationRequestRecord
   alias DataAggregator.Records.ValidationStatusType
 
   require Ash.Expr
@@ -56,8 +57,8 @@ defmodule DataAggregator.Records.Record do
           filter: %{publication_status: %{not_equals: :published}}
         },
         %{
-          name: :not_validated,
-          filter: %{validation_status: %{not_equals: :validated}}
+          name: :validation_unknown,
+          filter: %{validation_status: %{equals: :unknown}}
         }
       ]
     },
@@ -83,7 +84,7 @@ defmodule DataAggregator.Records.Record do
 
     attribute :validation_status, ValidationStatusType,
       allow_nil?: false,
-      default: :not_validated,
+      default: :unknown,
       public?: true
 
     attribute :iucn_redlist_category, :string, allow_nil?: true, public?: true
@@ -128,6 +129,11 @@ defmodule DataAggregator.Records.Record do
     end
 
     has_one :published_record, PublishedRecord do
+      public? true
+      filter expr(collection_id == parent(collection_id))
+    end
+
+    has_one :validation_request_record, ValidationRequestRecord do
       public? true
       filter expr(collection_id == parent(collection_id))
     end
@@ -220,9 +226,9 @@ defmodule DataAggregator.Records.Record do
               :boolean,
               expr(publication_status != :published)
 
-    calculate :not_validated,
+    calculate :validation_unknown,
               :boolean,
-              expr(validation_status != :validated)
+              expr(validation_status == :unknown)
 
     calculate :changes, :map, Calculations.Changes do
       argument :transform?, :boolean, allow_nil?: true, default: false
