@@ -49,16 +49,13 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
     |> Stream.chunk_every(1000)
     |> Stream.map(fn records ->
       records
-      |> Enum.map(fn record ->
-        {maybe_changes, _data} =
-          process_validation_data(
-            record,
-            validation_file,
-            validation_request.inserted_at
-          )
-
-        {maybe_changes, record}
-      end)
+      |> Enum.map(
+        &process_validation_data(
+          &1,
+          validation_file,
+          validation_request.inserted_at
+        )
+      )
       |> Counter.count_each(total_counter)
       |> Enum.filter(fn {maybe_changes, _record} ->
         maybe_changes == :changed
@@ -161,11 +158,11 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   end
 
   @spec process_validation_data(Record.t(), ValidationFile.t(), DateTime.t()) ::
-          {:not_changed, map()} | {:changed, map()}
+          {:not_changed, Record.t()} | {:changed, Record.t()}
   defp process_validation_data(record, validation_file, date_time) do
     case maybe_changed_data(record, validation_file) do
-      {:not_changed, data} ->
-        {:not_changed, data}
+      {:not_changed, _data} ->
+        {:not_changed, record}
 
       {:changed, data} ->
         upsert_validation_request_record!(record, data)
@@ -174,7 +171,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
         FlatFileUtils.store_on_disk!([data], validation_file.file, false)
 
-        {:changed, data}
+        {:changed, record}
     end
   end
 
