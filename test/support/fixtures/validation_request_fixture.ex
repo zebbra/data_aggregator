@@ -6,11 +6,9 @@ defmodule DataAggregator.ValidationRequestFixtures do
 
   def expected_dwc_column_headers do
     [
-      "collectionCode",
       "collectionID",
       "datasetID",
       "gbifDOI",
-      "institutionCode",
       "institutionID",
       "anatomicalDescription",
       "associatedMedia",
@@ -207,7 +205,8 @@ defmodule DataAggregator.ValidationRequestFixtures do
       "encoded verbatimLocality",
       "encoded verbatimLongitude",
       "encoded waterBody",
-      "encoded year"
+      "encoded year",
+      "dateOfValidation"
     ]
   end
 end
