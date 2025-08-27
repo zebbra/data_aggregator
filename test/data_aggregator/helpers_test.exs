@@ -26,6 +26,7 @@ defmodule DataAggregator.HelpersTest do
   doctest DataAggregator.Misc.FlatFileUtils, import: true
   doctest DataAggregator.Records.Record.ExtractAttributesHelpers, import: true
   doctest DataAggregator.Records.ValidationResponse.Helpers, import: true
+  doctest DataAggregator.Records.Collection.Actions.Publish, import: true
 
   setup do
     stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
