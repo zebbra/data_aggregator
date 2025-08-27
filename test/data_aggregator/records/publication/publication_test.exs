@@ -430,11 +430,11 @@ defmodule DataAggregator.PublicationTest do
       assert_lists_equal(expected, transformed_attributes)
     end
 
-    test "publish/1 succesful with publication rules", %{
+    test "publish/1 succesful with publication rules (coordinate obfuscation)", %{
       publication: publication,
       records: records
     } do
-      expect_correct_swiss_species_api_call(2)
+      expect_correct_swiss_species_api_call(3)
 
       update_record_fixtures!(Enum.at(records, 0), %{
         tax_taxon_id: 4762,
@@ -445,8 +445,15 @@ defmodule DataAggregator.PublicationTest do
       update_record_fixtures!(Enum.at(records, 1), %{
         tax_taxon_id: 4762,
         loc_country: "Switzerland",
-        loc_decimal_latitude: 49.27606815,
-        loc_decimal_longitude: 11.408043484
+        loc_decimal_latitude: 47.585812203,
+        loc_decimal_longitude: 9.166888228
+      })
+
+      update_record_fixtures!(Enum.at(records, 2), %{
+        tax_taxon_id: 4762,
+        loc_country: "Switzerland",
+        loc_decimal_latitude: 47.585812401,
+        loc_decimal_longitude: 9.166874938
       })
 
       update_record_fixtures!(Enum.at(records, 3), %{
@@ -494,16 +501,16 @@ defmodule DataAggregator.PublicationTest do
           "decimalLongitude" => 10.408043484
         },
         %{
-          "decimalLatitude" => 49.28,
-          "decimalLongitude" => 11.41
+          "decimalLatitude" => 47.5898085,
+          "decimalLongitude" => 9.2002562
         },
         %{
-          "decimalLatitude" => 47.27606815,
-          "decimalLongitude" => 9.408043484
+          "decimalLatitude" => 47.5907987,
+          "decimalLongitude" => 9.1338001
         },
         %{
-          "decimalLatitude" => 47.28,
-          "decimalLongitude" => 9.41
+          "decimalLatitude" => 47.2719116,
+          "decimalLongitude" => 9.3880537
         },
         %{
           "decimalLatitude" => nil,
