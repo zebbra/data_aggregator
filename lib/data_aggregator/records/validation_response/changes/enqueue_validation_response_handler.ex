@@ -27,8 +27,8 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.EnqueueValidationRes
     end
   end
 
-  defp insert_job(%ValidationResponse{id: id, collection_id: collection_id}) do
-    %{id: id, collection_id: collection_id}
+  defp insert_job(%ValidationResponse{id: id}) do
+    %{id: id}
     |> ValidationResponse.Workers.ValidationResponseHandler.new()
     |> Oban.insert()
   end

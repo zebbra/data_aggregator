@@ -346,6 +346,7 @@ defmodule DataAggregator.Records.Collection do
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :get_by_grscicoll_reference, action: :read, get_by: [:grscicoll_reference]
+    define :get_by_code, action: :read, get_by: [:code]
     define :touch
     define :enqueue_encoding, args: [:query]
     define :create_endpoint, args: [:collection, :dwca_file_url]

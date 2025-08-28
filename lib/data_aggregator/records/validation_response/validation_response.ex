@@ -10,7 +10,6 @@ defmodule DataAggregator.Records.ValidationResponse do
 
   alias __MODULE__
   alias DataAggregator.Files.Attachment
-  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.ValidationResponse.Changes
 
   @type t :: %ValidationResponse{}
@@ -34,11 +33,6 @@ defmodule DataAggregator.Records.ValidationResponse do
   relationships do
     belongs_to :attachment, Attachment, public?: true
     belongs_to :error_log, Attachment, public?: true
-
-    belongs_to :collection, Collection do
-      public? true
-      allow_nil? false
-    end
   end
 
   calculations do
@@ -79,10 +73,8 @@ defmodule DataAggregator.Records.ValidationResponse do
     create :create do
       primary? true
       accept [:file_url]
-      argument :collection, :struct, allow_nil?: false
 
       change Changes.SetCount
-      change manage_relationship(:collection, type: :append)
     end
 
     update :enqueue do
@@ -110,7 +102,6 @@ defmodule DataAggregator.Records.ValidationResponse do
 
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
-      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :run do
@@ -184,18 +175,13 @@ defmodule DataAggregator.Records.ValidationResponse do
   postgres do
     table "validation_responses"
     repo DataAggregator.Repo
-
-    references do
-      reference :collection, on_delete: :delete, on_update: :update
-      reference :attachment, on_delete: :delete, on_update: :update, index?: true
-    end
   end
 
   json_api do
     type "validation_responses"
 
     routes do
-      base "/datasets/:collection_id/validation_responses"
+      base "/validation_responses"
 
       get :read
       index :read
@@ -205,10 +191,5 @@ defmodule DataAggregator.Records.ValidationResponse do
 
       patch :enqueue, route: "/:id/enqueue"
     end
-  end
-
-  multitenancy do
-    strategy :attribute
-    attribute :collection_id
   end
 end

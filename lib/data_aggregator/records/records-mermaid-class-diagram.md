@@ -1323,15 +1323,13 @@ classDiagram
         UtcDatetimeUsec updated_at
         UUID attachment_id
         UUID error_log_id
-        UUID collection_id
         Atom state
         Attachment attachment
         Attachment error_log
-        Collection collection
         update(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
         destroy()
         read()
-        create(Struct collection, String file_url)
+        create(String file_url)
         enqueue()
         set_running()
         set_failed(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
@@ -1709,7 +1707,6 @@ classDiagram
     Collection -- Image
     Collection -- ValidationRequest
     Collection -- ValidationRequestRecord
-    Collection -- ValidationResponse
     Collection -- ValidatedRecord
     EncodedRecord -- Version
     EncodedRecord -- Record

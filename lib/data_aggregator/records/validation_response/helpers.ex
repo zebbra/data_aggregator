@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.Record.ExtractAttributesHelpers
   alias DataAggregator.Records.ValidationResponse
   alias DataAggregator.Records.ValidationResponse.ValidatedRecord
 
@@ -41,10 +42,10 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   """
   @spec extract_csv_content(binary()) :: binary()
   def extract_csv_content(dwca_zip_file) do
-    {_file_name, csv_content} =
-      Enum.find(dwca_zip_file, fn {file_name, _content} -> file_name == ~c"core.csv" end)
-
-    csv_content
+    case Enum.at(dwca_zip_file, 0) do
+      nil -> nil
+      {_file_name, csv_content} -> csv_content
+    end
   end
 
   @doc """
@@ -78,24 +79,46 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   @doc """
   Adds the raw record to each params map of the chunk
   """
-  @spec add_raw_record_to_chunk({[map()], integer()}, Collection.t()) :: {[map()], integer()}
-  def add_raw_record_to_chunk(chunk, tenant) do
+  @spec add_raw_record_to_chunk({[map()], integer()}) :: {[map()], integer()}
+  def add_raw_record_to_chunk(chunk) do
     {rows, index} = chunk
 
     rows =
       Enum.map(rows, fn row ->
-        case Record.get_by_mte_catalog_number(row.mte_catalog_number, tenant: tenant) do
-          {:ok, record} ->
-            row
-            |> Map.put(:record, record)
-            |> Map.put(:collection_id, record.collection_id)
+        catalog_number = row["catalogNumber"]
+        collection = collection_from_row(row)
 
-          {:error, _} ->
+        case Record.get_by_mte_catalog_number(catalog_number, tenant: collection) do
+          {:ok, record} ->
+            row |> Map.put(:record, record) |> Map.put(:collection_id, collection.id)
+
+          {:error, error} ->
+            Logger.error(error)
+
             row
         end
       end)
 
     {rows, index}
+  end
+
+  # expects a map with record data and returns the extracted collection
+  @spec collection_from_row(map()) :: Collection.t() | nil
+  defp collection_from_row(row) do
+    code = row["collectionCode"]
+
+    case Collection.get_by_code(code) do
+      {:ok, nil} ->
+        nil
+
+      {:ok, collection} ->
+        collection
+
+      {:error, _} ->
+        Logger.error("Validation Response import: Error fetching collection for code: #{code}")
+
+        nil
+    end
   end
 
   @doc """
@@ -144,12 +167,22 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
           {[map()], integer()},
           [{atom(), String.t()}]
         ) :: {[map()], integer()}
-  def reject_collection_attributes_from_chunk(chunk, collection_attributes) do
-    {rows, index} = chunk
-
+  def reject_collection_attributes_from_chunk({rows, index}, collection_attributes) do
     rows =
       Enum.map(rows, fn row ->
         filter_collection_attributes(row, collection_attributes)
+      end)
+
+    {rows, index}
+  end
+
+  @spec maybe_convert_values({[map()], integer()}) :: {[map()], integer()}
+  def maybe_convert_values({rows, index}) do
+    rows =
+      Enum.map(rows, fn row ->
+        Map.new(row, fn {key, value} ->
+          ExtractAttributesHelpers.maybe_convert_values({key, value})
+        end)
       end)
 
     {rows, index}
@@ -166,13 +199,14 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   end
 
   @doc """
-  returns the internal db field name for a given dwc field name
+  returns the internal db field name for a given dwc field name or, if not found, the original field name
   """
   @spec get_attribute_from_pairs([{atom(), String.t()}], String.t()) :: atom()
   def get_attribute_from_pairs(pairs, dwc_field) do
-    {db_attribute, _dwc_field} = Enum.find(pairs, fn {_k, v} -> v == dwc_field end)
-
-    db_attribute
+    case Enum.find(pairs, fn {_k, v} -> v == dwc_field end) do
+      nil -> dwc_field
+      {db_attribute, _dwc_field} -> db_attribute
+    end
   end
 
   @doc """
@@ -295,9 +329,9 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
       end
 
     Map.merge(case_result, %{
-      catalog_number: row["mte_catalog_number"],
-      scientific_name: row["tax_scientific_name"],
-      occurrence_id: row["occ_occurrence_id"]
+      catalog_number: row.mte_catalog_number,
+      scientific_name: row.tax_scientific_name,
+      occurrence_id: row.occ_occurrence_id
     })
   end
 end

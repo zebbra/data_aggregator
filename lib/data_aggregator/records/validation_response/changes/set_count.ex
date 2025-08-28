@@ -17,9 +17,8 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.SetCount do
     if file_url == nil do
       Changeset.add_error(changeset, ":file_url is required")
     else
-      dwca_file = Helpers.fetch_file_from_url(file_url)
-
-      csv_content = Helpers.extract_csv_content(dwca_file)
+      validation_file = Helpers.fetch_file_from_url(file_url)
+      csv_content = Helpers.extract_csv_content(validation_file)
 
       Helpers.count_rows(changeset, csv_content)
     end

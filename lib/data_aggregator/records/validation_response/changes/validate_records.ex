@@ -7,10 +7,10 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
 
   alias Ash.BulkResult
   alias Ash.Changeset
-  alias Ash.Resource.Actions.Implementation.Context
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.ValidationResponse
   alias DataAggregator.Records.ValidationResponse.Helpers
   alias DataAggregator.Records.ValidationResponse.ValidatedRecord
@@ -18,22 +18,21 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, ctx) do
-    Changeset.before_action(changeset, &validate_records(&1, ctx), append?: true)
+  def change(%Changeset{} = changeset, _opts, _ctx) do
+    Changeset.before_action(changeset, &validate_records(&1), append?: true)
   end
 
-  @spec validate_records(Changeset.t(), Context.t()) :: Changeset.t()
-  defp validate_records(changeset, ctx) do
+  @spec validate_records(Changeset.t()) :: Changeset.t()
+  defp validate_records(changeset) do
     file_url = Changeset.get_attribute(changeset, :file_url)
 
-    dwca_file = Helpers.fetch_file_from_url(file_url)
-
-    csv_content = Helpers.extract_csv_content(dwca_file)
+    validation_file = Helpers.fetch_file_from_url(file_url)
+    csv_content = Helpers.extract_csv_content(validation_file)
 
     with {:ok, df} <- Explorer.DataFrame.load_csv(csv_content),
          {:ok, stream} <- stream_from_dataframe(df),
          {:ok, stream} <- ensure_records(stream) do
-      validate_in_chunks(changeset, stream, ctx)
+      validate_in_chunks(changeset, stream)
     else
       {:error, error} ->
         Logger.debug("CSV could not be read or it was empty")
@@ -42,8 +41,8 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
     end
   end
 
-  @spec validate_in_chunks(Changeset.t(), Enum.t(), Context.t()) :: Changeset.t()
-  defp validate_in_chunks(%Changeset{} = changeset, rows, %{tenant: tenant} = ctx) do
+  @spec validate_in_chunks(Changeset.t(), Enum.t()) :: Changeset.t()
+  defp validate_in_chunks(%Changeset{} = changeset, rows) do
     chunk_size = Records.validation_response_batch_size()
 
     Logger.debug("Validating records in chunks of #{chunk_size} rows ...")
@@ -56,17 +55,18 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
     rows
     |> Stream.chunk_every(chunk_size)
     |> Enum.with_index()
-    |> Stream.map(&Helpers.reject_collection_attributes_from_chunk(&1, collection_attributes))
+    |> Stream.map(&Helpers.add_raw_record_to_chunk/1)
     |> Stream.map(&Helpers.convert_headers_of_chunk(&1, attribute_name_pairs))
-    |> Stream.map(&Helpers.add_raw_record_to_chunk(&1, tenant))
-    |> Stream.map(&validate_chunk(&1, ctx))
+    |> Stream.map(&Helpers.reject_collection_attributes_from_chunk(&1, collection_attributes))
+    |> Stream.map(&Helpers.maybe_convert_values/1)
+    |> Stream.map(&validate_chunk/1)
     |> reduce_validation_results(changeset)
     |> notify_infospecies()
   end
 
-  @spec validate_chunk({[map()], integer()}, Context.t()) ::
-          {BulkResult.t(), [map()], [{map(), [Ash.Error.t()]}]}
-  defp validate_chunk({chunk, index}, %{tenant: tenant}) do
+  @spec validate_chunk({[map()], integer()}) ::
+          {[BulkResult.t()], [map()], [{map(), [Ash.Error.t()]}]}
+  defp validate_chunk({chunk, index}) do
     Logger.debug("Validating chunk ##{index} with #{length(chunk)} rows ...")
 
     max_concurrency = Records.import_max_concurrency()
@@ -89,9 +89,21 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
 
     Logger.debug("Validating #{length(valid)} valid rows ...")
 
-    res = ValidatedRecord.bulk_validate!(Enum.reverse(valid), tenant: tenant)
+    results =
+      valid
+      |> Enum.reverse()
+      |> validate_by_tenant!()
 
-    {res, valid, invalid}
+    {results, valid, invalid}
+  end
+
+  defp validate_by_tenant!(rows) do
+    rows
+    |> Enum.group_by(fn row -> get_tenant_from_row(row) end)
+    |> Enum.filter(fn {tenant, _} -> tenant != nil end)
+    |> Enum.map(fn {tenant, rows} ->
+      ValidatedRecord.bulk_validate!(rows, tenant: tenant)
+    end)
   end
 
   defp reduce_validation_results(results, %Changeset{data: validation_response} = changeset) do
@@ -99,18 +111,23 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
 
     changeset =
       Enum.reduce_while(results, changeset, fn
-        {%BulkResult{status: :success}, validated, invalid}, changeset ->
+        {bulk_results, validated, invalid}, changeset ->
           changeset = report_progress(changeset, length(validated), length(invalid))
 
           Helpers.write_error_log_file(error_log_file, invalid)
 
-          {:cont, changeset}
+          # Collect all errors from all BulkResults
+          all_errors = Enum.flat_map(bulk_results, fn %BulkResult{errors: errors} -> errors end)
 
-        {%BulkResult{errors: errors}, validated, invalid}, changeset ->
-          changeset = report_progress(changeset, length(validated), length(invalid))
-
-          changeset = Enum.reduce(errors, changeset, &add_error(&1, &2))
-          {:halt, changeset}
+          if Enum.empty?(all_errors) do
+            # No errors, continue processing
+            {:cont, changeset}
+          else
+            # There are errors, add them and halt, b'cause we do not want to let the
+            # user wait until a erroneous import file is processed
+            changeset = Enum.reduce(all_errors, changeset, &add_error(&2, &1))
+            {:halt, changeset}
+          end
       end)
 
     validation_response = Helpers.upload_error_log_file!(path, changeset.data)
@@ -134,11 +151,26 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
     end
   end
 
-  defp ensure_status(%Req.Response{status: 200}), do: :ok
+  @spec get_tenant_from_row(map()) :: Collection.t() | nil
+  defp get_tenant_from_row(_)
+
+  defp get_tenant_from_row(%{collection: collection}) when collection != nil, do: collection
+
+  defp get_tenant_from_row(%{collection_id: id}) when id != nil, do: Collection.get_by_id!(id)
+
+  defp get_tenant_from_row(row) do
+    Logger.error(
+      "No tenant/collection found for validation in data: #{row}. Ensure that all rows have a valid collection."
+    )
+
+    nil
+  end
+
+  defp ensure_status(%{status: 200}), do: :ok
 
   defp ensure_status(response) do
     msg =
-      "No valid response (status #{response.status}) from Infospecies API while notifying about processed validation response: #{inspect(response.body)}"
+      "No valid response (status #{response.status}) from Infospecies API while notifying about processed validation response: #{inspect(response)}"
 
     {:error, msg}
   end

@@ -489,7 +489,6 @@ defmodule DataAggregator.WorkflowTest do
       [validation_request: validation_request, actor: actor, records: records]
     end
 
-    @tag :run
     test "validation request workflow performs as expected", %{
       validation_request: validation_request,
       records: records,

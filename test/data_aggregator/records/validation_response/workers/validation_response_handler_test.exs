@@ -21,34 +21,39 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHa
       records = [
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "Z-000001287",
+          mte_catalog_number: "GBIFCH00993760",
           tax_kingdom: "Animalia"
         }),
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "Z-000040298",
+          mte_catalog_number: "GBIFCH00993778",
           tax_kingdom: "Animalia"
         }),
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "Z-000040297",
+          mte_catalog_number: "GBIFCH00993789",
           tax_kingdom: "Animalia"
         }),
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "Z-000133354",
+          mte_catalog_number: "GBIFCH00993799",
           tax_kingdom: "Animalia"
         }),
         record_fixture(%{
           collection: collection,
-          mte_catalog_number: "Z-000133355",
+          mte_catalog_number: "GBIFCH00995787",
           tax_kingdom: "Animalia"
+        }),
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "GBIFCH00995788",
+          tax_kingdom: "Plantae"
         })
       ]
 
-      validation_response = validation_response_fixture(%{collection: collection})
+      validation_response = validation_response_fixture()
 
-      [validation_response: validation_response, records: records]
+      [validation_response: validation_response, records: records, collection: collection]
     end
 
     @tag capture_log: true
@@ -56,32 +61,26 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHa
       validation_response: validation_response
     } do
       perform_job(ValidationResponseHandler, %{
-        id: validation_response.id,
-        collection_id: validation_response.collection_id
+        id: validation_response.id
       })
 
       validation_response =
-        ValidationResponse.get_by_id!(validation_response.id,
-          tenant: validation_response.collection
-        )
+        ValidationResponse.get_by_id!(validation_response.id)
 
       assert validation_response.state == :done
     end
 
     @tag capture_log: true
     test "ValidationResponseHandler.perform/1 all ValidatedRecords are created correctly and have the changed values",
-         %{validation_response: validation_response} do
-      collection = validation_response.collection
-
+         %{validation_response: validation_response, collection: collection} do
       {:ok, validation_response} =
         perform_job(ValidationResponseHandler, %{
-          id: validation_response.id,
-          collection_id: collection.id
+          id: validation_response.id
         })
 
       {:ok, validated_records} = ValidatedRecord.read(page: false, tenant: collection)
 
-      assert length(validated_records) == 5
+      assert length(validated_records) == 4
 
       # ensure all records from the validation layer have now the imported value "Plantae" under tax_kingdom
       Enum.all?(validated_records, fn record ->
@@ -93,35 +92,32 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHa
 
     @tag capture_log: true
     test "ValidationResponseHandler.perform/1 only create ValidatedRecords if the input data is valid",
-         %{validation_response: validation_response} do
+         %{validation_response: validation_response, collection: collection} do
       {{:ok, _validation_response}, logs} =
         with_log(fn ->
           perform_job(ValidationResponseHandler, %{
-            id: validation_response.id,
-            collection_id: validation_response.collection_id
+            id: validation_response.id
           })
         end)
 
       {:ok, validated_records} =
-        ValidatedRecord.read(page: false, tenant: validation_response.collection)
+        ValidatedRecord.read(page: false, tenant: collection)
 
-      # we import 25 records but only 5 are valid and raw records exist for them in the db,
+      # we import 23 records but only 5 are valid and raw records exist for them in the db,
       # so the correct amount should be present and the log should warn us appropriate
-      assert length(validated_records) == 5
-      assert logs =~ "18 invalid row(s) dropped from chunk!"
+      assert length(validated_records) == 4
+      assert logs =~ "[warning] 2 invalid row(s) dropped from chunk!"
     end
 
     @tag capture_log: true
     test "ValidationResponseHandler.perform/1 all affected records are in state :validated",
          %{
-           validation_response: validation_response
+           validation_response: validation_response,
+           collection: collection
          } do
-      collection = validation_response.collection
-
       {:ok, validation_response} =
         perform_job(ValidationResponseHandler, %{
-          id: validation_response.id,
-          collection_id: validation_response.collection_id
+          id: validation_response.id
         })
 
       {:ok, validated_records} =
@@ -139,25 +135,21 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHa
     test "ValidationResponseHandler.perform/1 check if error log is present and correct", %{
       validation_response: validation_response
     } do
-      collection = validation_response.collection
-
       {:ok, validation_response} =
         perform_job(ValidationResponseHandler, %{
-          id: validation_response.id,
-          collection_id: collection.id
+          id: validation_response.id
         })
 
       assert {:ok, validation_response} =
                validation_response.id
-               |> ValidationResponse.get_by_id(tenant: collection)
+               |> ValidationResponse.get_by_id()
                |> Ash.load([:error_log])
 
-      assert validation_response.rows_count == 23
-      assert validation_response.rows_invalid_count == 18
-      assert validation_response.rows_validated_count == 5
+      assert validation_response.rows_count == 6
+      assert validation_response.rows_invalid_count == 2
+      assert validation_response.rows_validated_count == 4
 
-      # 18 * 2 (collection_id and record_id are missing) + 1 additional
-      assert validation_response.rows_error_count == 37
+      assert validation_response.rows_error_count == 5
 
       assert validation_response.error_log != nil
 
@@ -165,8 +157,57 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHa
 
       assert Explorer.DataFrame.n_columns(data_frame) == 6
 
-      # 18 * 2 (collection_id and record_id are missing) + 1 additional
-      assert Explorer.DataFrame.n_rows(data_frame) == 37
+      # only 2 invalid rows are in the file, but 5 errors occure:
+      # line 1: missing collectionCode leads to missing tenant (1) -> leads to
+      #   missing record (2) -> leads to missing collection (3)
+      # line 2: missing catalogNumber leads to missing record (4) -> this leads to missing collection (5)
+      assert Explorer.DataFrame.n_rows(data_frame) == 5
+      data_frame |> Explorer.DataFrame.to_rows() |> assert_lists_equal(expected_errors())
     end
+  end
+
+  defp expected_errors do
+    [
+      %{
+        "catalogNumber" => nil,
+        "field" => "collection_id",
+        "message" => "Field is required but was empty.",
+        "occurrenceID" => "occurrenceID6",
+        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
+        "value" => nil
+      },
+      %{
+        "catalogNumber" => nil,
+        "field" => "record_id",
+        "message" => "Field is required but was empty.",
+        "occurrenceID" => "occurrenceID6",
+        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
+        "value" => nil
+      },
+      %{
+        "catalogNumber" => nil,
+        "field" => "mte_catalog_number",
+        "message" => "Field is required but was empty.",
+        "occurrenceID" => "occurrenceID6",
+        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
+        "value" => nil
+      },
+      %{
+        "catalogNumber" => "GBIFCH00995787",
+        "field" => "collection_id",
+        "message" => "Field is required but was empty.",
+        "occurrenceID" => "occurrenceID5",
+        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
+        "value" => nil
+      },
+      %{
+        "catalogNumber" => "GBIFCH00995787",
+        "field" => "record_id",
+        "message" => "Field is required but was empty.",
+        "occurrenceID" => "occurrenceID5",
+        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
+        "value" => nil
+      }
+    ]
   end
 end

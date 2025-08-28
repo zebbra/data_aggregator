@@ -6,10 +6,10 @@ defmodule DataAggregator.ValidationRequestFixtures do
 
   def expected_dwc_column_headers do
     [
-      "collectionID",
+      "collectionCode",
       "datasetID",
       "gbifDOI",
-      "institutionID",
+      "institutionCode",
       "anatomicalDescription",
       "associatedMedia",
       "associatedOccurrences",

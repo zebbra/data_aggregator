@@ -9,7 +9,6 @@ defmodule DataAggregator.ValidationResponseTest do
   alias Ash.Error.Invalid
   alias DataAggregator.Gbif
   alias DataAggregator.Records.ValidationResponse
-  alias DataAggregator.RecordsFixtures
 
   require Logger
 
@@ -25,28 +24,26 @@ defmodule DataAggregator.ValidationResponseTest do
     end
 
     test "read!/0 returns all validation responses" do
-      collection = RecordsFixtures.collection_fixture()
-
       created = [
-        validation_response_fixture(%{collection: collection}),
-        validation_response_fixture(%{collection: collection})
+        validation_response_fixture(),
+        validation_response_fixture()
       ]
 
-      persisted = ValidationResponse.read!(page: false, tenant: collection)
+      persisted = ValidationResponse.read!(page: false)
 
       assert_lists_equal(
         created,
         persisted,
-        &assert_structs_equal(&1, &2, [:id, :collection_id])
+        &assert_structs_equal(&1, &2, [:id])
       )
     end
 
     test "get_by_id!/1 returns the validation response with given id" do
       created = validation_response_fixture()
 
-      persisted = ValidationResponse.get_by_id!(created.id, tenant: created.collection)
+      persisted = ValidationResponse.get_by_id!(created.id)
 
-      assert_structs_equal(created, persisted, [:id, :collection_id])
+      assert_structs_equal(created, persisted, [:id])
     end
 
     test "create/1 with invalid data returns error changeset" do
@@ -76,15 +73,10 @@ defmodule DataAggregator.ValidationResponseTest do
     test "destroy/1 deletes the validation response" do
       validation_response = validation_response_fixture()
 
-      assert :ok =
-               ValidationResponse.destroy(validation_response,
-                 tenant: validation_response.collection
-               )
+      assert :ok = ValidationResponse.destroy(validation_response)
 
       assert_raise Invalid, fn ->
-        ValidationResponse.get_by_id!(validation_response.id,
-          tenant: validation_response.collection
-        )
+        ValidationResponse.get_by_id!(validation_response.id)
       end
     end
 
