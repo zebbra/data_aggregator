@@ -604,16 +604,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                 />
               </:item>
             </.list>
-            <div :if={@selected_record.encoded_record.mte_associated_media} class="p-8">
-              <.image_carousel
-                deletable={true}
-                delete_action="image:delete"
-                data-tip={~t"Delete this image"m}
-                data-confirm={~t"Are you sure you want to delete this image?"m}
-                data-confirm_id="confirm_image_alert"
-                record={@selected_record}
-              />
-            </div>
+            <.image_carousel
+              deletable={true}
+              delete_action="image:delete"
+              data-tip={~t"Delete this image"m}
+              data-confirm={~t"Are you sure you want to delete this image?"m}
+              data-confirm_id="confirm_image_alert"
+              record={@selected_record}
+            />
             <%= for category <- @attrs_in_categories do %>
               <details class="collapse collapse-arrow border-black-white/10 rounded-none border-b px-2 open:first:border-t lg:pl-4">
                 <summary class="collapse-title">
