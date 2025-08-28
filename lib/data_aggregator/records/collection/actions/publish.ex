@@ -18,6 +18,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
   alias DataAggregator.DarwinCore.Publication.ReleveFile
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Misc.Coordinates
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
@@ -190,10 +191,11 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
       {:ok, _result} ->
         Logger.debug("This is a swissSpecies entry. lets use the publication rule to round the data to 2 decimal places")
 
-        # this is a swissSpecies entry. lets use the publication rule
+        {x, y} = obfuscate_coordinates(record.loc_decimal_longitude, record.loc_decimal_latitude)
+
         record
-        |> Map.put(:loc_decimal_latitude, round_coordinates(record.loc_decimal_latitude))
-        |> Map.put(:loc_decimal_longitude, round_coordinates(record.loc_decimal_longitude))
+        |> Map.put(:loc_decimal_longitude, x)
+        |> Map.put(:loc_decimal_latitude, y)
 
       {:error, %NotFound{}} ->
         record
@@ -209,11 +211,35 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
   defp maybe_apply_publication_rules(record), do: record
 
-  defp round_coordinates(value) when is_float(value) do
-    Float.round(value, 2)
+  @doc """
+  Obfuscates the given coordinates to a 5km grid.
+
+  ## Examples
+
+      iex> obfuscate_coordinates(9.166874938, 47.585812401)
+      {9.1338001, 47.5907987}
+
+      iex> obfuscate_coordinates(nil, 47.3769)
+      {nil, 47.3769}
+
+      iex> obfuscate_coordinates(8.5417, nil)
+      {8.5417, nil}
+
+      iex> obfuscate_coordinates(nil, nil)
+      {nil, nil}
+  """
+  def obfuscate_coordinates(x, y) when not is_nil(x) and not is_nil(y) do
+    swiss_coords_lv95 = Coordinates.wgs84_to_lv95!(%Coordinates{e: x, n: y})
+
+    x5 = trunc(swiss_coords_lv95.e / 5000) * 5000 + 2500
+    y5 = trunc(swiss_coords_lv95.n / 5000) * 5000 + 2500
+
+    new_coords = Coordinates.lv95_to_wgs84!(%Coordinates{e: x5, n: y5})
+
+    {Float.round(new_coords.e, 7), Float.round(new_coords.n, 7)}
   end
 
-  defp round_coordinates(value), do: value
+  def obfuscate_coordinates(x, y), do: {x, y}
 
   defp update_count(publication, tenant) do
     # now we update the rows count with the number of records that will be published
