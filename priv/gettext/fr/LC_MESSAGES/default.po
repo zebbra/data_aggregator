@@ -4843,31 +4843,31 @@ msgstr ""
 msgid "Show on SwissNatColl"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:360
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:367
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS Level 0 - Bare: Minimal metadata linking a specimen to its digital representation. Consider adding essential details to enhance usability. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:363
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:370
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS Level 1 - Basic: Contains fundamental metadata supporting specimen discoverability and management. Additional details will improve scientific value. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:366
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:373
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS level 2 - IntermediaryIncludes key scientific data essential for research applications. Adding georeferencing and extended metadata will further enhance its utility. See the guide for recommendations."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:369
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:376
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "MIDS level 3 - Extended: Comprehensive metadata with links to external resources, maximizing interoperability and open data usability."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/components.ex:357
+#: lib/data_aggregator_web/live/collection_live/record/components.ex:364
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.Components"
 msgid "No MIDS Level: Not enough metadata available. See the guide for recommendations."

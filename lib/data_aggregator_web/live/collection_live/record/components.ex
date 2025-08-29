@@ -310,13 +310,13 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     record = Ash.load!(record, [:encoded_record, images: :image_url], lazy?: true)
 
     images = images(record)
-    associated_media = media_urls(record)
+    associated_media = media_urls(record, images)
 
     Enum.with_index(images ++ associated_media)
   end
 
-  @spec media_urls(Record.t()) :: [map()]
-  defp media_urls(record) do
+  @spec media_urls(Record.t(), [map()]) :: [map()]
+  defp media_urls(record, images) do
     media_urls = record.encoded_record.mte_associated_media
 
     if media_urls in [nil, ""] do
@@ -326,7 +326,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
       |> String.split(" | ")
       |> Enum.with_index()
       |> Enum.map(&%{url: elem(&1, 0), id: elem(&1, 1), deletable: false})
+      |> Enum.filter(&filter_out_duplicates(&1, images))
     end
+  end
+
+  defp filter_out_duplicates(%{url: url}, images) do
+    Enum.any?(images, fn %{url: image_url} ->
+      url == image_url
+    end) == false
   end
 
   @spec images(Record.t()) :: [map()]
