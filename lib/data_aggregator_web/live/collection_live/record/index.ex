@@ -633,14 +633,21 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                     id={"#{Macro.underscore(category.label |> String.replace(" ", ""))}_table"}
                     items={category.attributes}
                   >
-                    <:col :let={attribute} label={~t"Name"} class="font-semibold">
+                    <:col :let={attribute} label={~t"Name"} class="font-semibold w-40">
                       {attribute.name}
                     </:col>
-                    <:col :let={attribute} label={~t"Imported"}>
-                      {format_value(attribute.imported, attribute.name)}
-                    </:col>
-                    <:col :let={attribute} label={~t"Encoded"}>
-                      {format_value(attribute.encoded, attribute.name)}
+                    <:col :let={attribute} label={~t"layer"}>
+                      <.list dense dense_vertical grid_cols={4}>
+                        <:item title="Imported">
+                          {format_value(attribute.imported, attribute.name)}
+                        </:item>
+                        <:item title="Encoded">
+                          {format_value(attribute.encoded, attribute.name)}
+                        </:item>
+                        <:item :if={attribute.validated != "-"} title="Validated">
+                          {format_value(attribute.validated, attribute.name)}
+                        </:item>
+                      </.list>
                     </:col>
                   </.table>
                 </div>
