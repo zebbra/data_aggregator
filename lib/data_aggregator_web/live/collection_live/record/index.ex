@@ -637,7 +637,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Index do
                       {attribute.name}
                     </:col>
                     <:col :let={attribute} label={~t"layer"}>
-                      <.list dense dense_vertical grid_cols={4}>
+                      <.list
+                        dense
+                        dense_vertical
+                        grid_cols_class="sm:grid-cols-4"
+                        col_span_class="sm:col-span-3"
+                      >
                         <:item title="Imported">
                           {format_value(attribute.imported, attribute.name)}
                         </:item>
