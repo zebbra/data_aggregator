@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
 
   alias Ash.Changeset
   alias Ash.Error.Changes.Required
+  alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
   alias DataAggregator.Records.Collection
@@ -67,22 +68,33 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   end
 
   @doc """
-  Creates a changeset, validates the data and returns the changeset
+  Creates a changeset, validates the data to update the databese and returns the validitiy and/or errors
   """
-  @spec valid_validation_row(map()) :: {boolean(), [Ash.Error.t()]}
-  def valid_validation_row(row) do
+  @spec valid_validation_row(map(), atom()) :: {boolean(), [Ash.Error.t()]}
+  def valid_validation_row(row, :validated) do
     changeset = ValidatedRecord.changeset_to_validate(row)
 
     {changeset.valid?, changeset.errors}
+  end
+
+  def valid_validation_row(row, :not_validated) do
+    case Map.get(row, :record) do
+      nil ->
+        {false, [%{message: "Record not found"}]}
+
+      record ->
+        changeset =
+          Record.changeset_to_update(record, %{validation_annotation: row["annotation"]})
+
+        {changeset.valid?, changeset.errors}
+    end
   end
 
   @doc """
   Adds the raw record to each params map of the chunk
   """
   @spec add_raw_record_to_chunk({[map()], integer()}) :: {[map()], integer()}
-  def add_raw_record_to_chunk(chunk) do
-    {rows, index} = chunk
-
+  def add_raw_record_to_chunk({rows, index}) do
     rows =
       Enum.map(rows, fn row ->
         catalog_number = row["catalogNumber"]
@@ -101,6 +113,20 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
 
     {rows, index}
   end
+
+  def get_collection_attributes(:not_validated) do
+    ["collectionCode"]
+  end
+
+  def get_collection_attributes(:validated) do
+    Enum.map(Schema.collection_attributes(), & &1.dwc_field)
+  end
+
+  @spec get_header_attribute_name_pairs(atom()) :: [{atom(), String.t()}]
+  def get_header_attribute_name_pairs(:validated), do: Schema.prefixed_attribute_names_and_dwc_fields()
+
+  def get_header_attribute_name_pairs(:not_validated),
+    do: [{:code, "collectionCode"}, {:mte_catalog_number, "catalogNumber"}, {:validation_annotation, "annotation"}]
 
   # expects a map with record data and returns the extracted collection
   @spec collection_from_row(map()) :: Collection.t() | nil
@@ -176,8 +202,8 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
     {rows, index}
   end
 
-  @spec maybe_convert_values({[map()], integer()}) :: {[map()], integer()}
-  def maybe_convert_values({rows, index}) do
+  @spec maybe_convert_values({[map()], integer()}, atom()) :: {[map()], integer()}
+  def maybe_convert_values({rows, index}, :validated) do
     rows =
       Enum.map(rows, fn row ->
         Map.new(row, fn {key, value} ->
@@ -188,14 +214,13 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
     {rows, index}
   end
 
-  defp filter_collection_attributes(row, collection_attributes) do
-    Enum.reduce(row, %{}, fn {dwc_field, value}, acc ->
-      if dwc_field in collection_attributes do
-        acc
-      else
-        Map.put(acc, dwc_field, value)
-      end
-    end)
+  def maybe_convert_values({rows, index}, :not_validated) do
+    rows =
+      Enum.map(rows, fn row ->
+        %{row | validation_annotation: to_string(row.validation_annotation)}
+      end)
+
+    {rows, index}
   end
 
   @doc """
@@ -295,43 +320,105 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
     end
   end
 
+  @doc """
+  Groups rows according to identified tenants and updates records/upserts validated records
+  """
+  @spec upsert_by_tenant!(Enum.t(), atom()) :: Enum.t()
+  def upsert_by_tenant!(rows, type)
+
+  def upsert_by_tenant!(rows, :not_validated) do
+    rows
+    |> Enum.group_by(fn row -> get_tenant_from_row(row) end)
+    |> Enum.filter(fn {tenant, _} -> tenant != nil end)
+    |> Enum.map(&update_records/1)
+    |> List.flatten()
+  end
+
+  def upsert_by_tenant!(rows, :validated) do
+    rows
+    |> Enum.group_by(fn row -> get_tenant_from_row(row) end)
+    |> Enum.filter(fn {tenant, _} -> tenant != nil end)
+    |> Enum.map(fn {tenant, rows} ->
+      ValidatedRecord.bulk_validate!(rows, tenant: tenant)
+    end)
+    |> Enum.flat_map(fn %{errors: errors} -> errors end)
+  end
+
+  @spec get_tenant_from_row(map()) :: Collection.t() | nil
+  defp get_tenant_from_row(_)
+
+  defp get_tenant_from_row(%{collection: collection}) when collection != nil, do: collection
+
+  defp get_tenant_from_row(%{collection_id: id}) when id != nil, do: Collection.get_by_id!(id)
+
+  defp get_tenant_from_row(row) do
+    Logger.error(
+      "No tenant/collection found for validation in data: #{row}. Ensure that all rows have a valid collection."
+    )
+
+    nil
+  end
+
+  @spec update_records({Collection.t(), [map()]}) :: [map()]
+  defp update_records({tenant, rows}) do
+    Enum.reduce(rows, [], fn row, errors ->
+      case Record.update(row.record, %{validation_annotation: row.validation_annotation}, tenant: tenant) do
+        {:ok, _} -> errors
+        {:error, error} -> errors ++ [error]
+      end
+    end)
+  end
+
   @spec map_to_normalized_error(Ash.Error.t(), map()) :: validation_response_error()
   defp map_to_normalized_error(error, row) do
-    case_result =
-      case error do
-        %Required{field: :record} ->
-          %{
-            field: :record,
-            value: nil,
-            message: "There is no record for the given catalog number in the database."
-          }
+    known_error = check_for_known(error)
 
-        %Required{} = error ->
-          %{
-            field: Map.get(error, :field),
-            value: nil,
-            message: "Field is required but was empty."
-          }
-
-        %Ash.Error.Changes.InvalidAttribute{} = error ->
-          %{
-            field: Map.get(error, :field),
-            value: Map.get(error, :value),
-            message: Map.get(error, :message)
-          }
-
-        _ ->
-          %{
-            field: Map.get(error, :field) || "",
-            value: Map.get(error, :value) || "",
-            message: Map.get(error, :message) || "unknown error"
-          }
-      end
-
-    Map.merge(case_result, %{
-      catalog_number: row.mte_catalog_number,
-      scientific_name: row.tax_scientific_name,
-      occurrence_id: row.occ_occurrence_id
+    Map.merge(known_error, %{
+      catalog_number: row[:mte_catalog_number] || "",
+      scientific_name: row[:tax_scientific_name] || "",
+      occurrence_id: row[:occ_occurrence_id] || ""
     })
+  end
+
+  defp filter_collection_attributes(row, collection_attributes) do
+    Enum.reduce(row, %{}, fn {dwc_field, value}, acc ->
+      if dwc_field in collection_attributes do
+        acc
+      else
+        Map.put(acc, dwc_field, value)
+      end
+    end)
+  end
+
+  defp check_for_known(error) do
+    case error do
+      %Required{field: :record} ->
+        %{
+          field: :record,
+          value: nil,
+          message: "There is no record for the given catalog number in the database."
+        }
+
+      %Required{} = error ->
+        %{
+          field: Map.get(error, :field),
+          value: nil,
+          message: "Field is required but was empty."
+        }
+
+      %Ash.Error.Changes.InvalidAttribute{} = error ->
+        %{
+          field: Map.get(error, :field),
+          value: Map.get(error, :value),
+          message: Map.get(error, :message)
+        }
+
+      _ ->
+        %{
+          field: Map.get(error, :field) || "",
+          value: Map.get(error, :value) || "",
+          message: Map.get(error, :message) || "unknown error"
+        }
+    end
   end
 end

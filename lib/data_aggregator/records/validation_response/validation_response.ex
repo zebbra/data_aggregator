@@ -11,6 +11,7 @@ defmodule DataAggregator.Records.ValidationResponse do
   alias __MODULE__
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.ValidationResponse.Changes
+  alias DataAggregator.Records.ValidationResponseType
 
   @type t :: %ValidationResponse{}
 
@@ -18,6 +19,7 @@ defmodule DataAggregator.Records.ValidationResponse do
     uuid_attribute :id, prefix: "app", public?: true
 
     attribute :file_url, :string, allow_nil?: false, public?: true
+    attribute :type, ValidationResponseType, allow_nil?: false, public?: true
 
     attribute :rows_count, :integer, allow_nil?: true, public?: true
     attribute :rows_invalid_count, :integer, allow_nil?: true, public?: true
@@ -72,7 +74,7 @@ defmodule DataAggregator.Records.ValidationResponse do
 
     create :create do
       primary? true
-      accept [:file_url]
+      accept [:file_url, :type]
 
       change Changes.SetCount
     end

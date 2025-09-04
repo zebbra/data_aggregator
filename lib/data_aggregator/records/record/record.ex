@@ -88,6 +88,7 @@ defmodule DataAggregator.Records.Record do
       public?: true
 
     attribute :iucn_redlist_category, :string, allow_nil?: true, public?: true
+    attribute :validation_annotation, :string, allow_nil?: true, public?: true
 
     attribute :last_validation_started_at, :utc_datetime, allow_nil?: true, public?: true
     attribute :last_imported_at, :utc_datetime, allow_nil?: true, public?: true

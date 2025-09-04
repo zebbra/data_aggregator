@@ -1,4 +1,4 @@
-defmodule DataAggregator.ValidationResponseTest do
+defmodule DataAggregator.ValidationResponseValidatedTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
@@ -14,7 +14,8 @@ defmodule DataAggregator.ValidationResponseTest do
 
   describe "validation responses" do
     @invalid_attrs %{
-      file_url: nil
+      file_url: nil,
+      type: nil
     }
 
     setup do

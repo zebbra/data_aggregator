@@ -1,4 +1,4 @@
-defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHandlerTest do
+defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseValidatedHandlerTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
@@ -103,7 +103,7 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHa
       {:ok, validated_records} =
         ValidatedRecord.read(page: false, tenant: collection)
 
-      # we import 23 records but only 5 are valid and raw records exist for them in the db,
+      # we import 6 records but only 4 are valid and raw records exist for them in the db,
       # so the correct amount should be present and the log should warn us appropriate
       assert length(validated_records) == 4
       assert logs =~ "[warning] 2 invalid row(s) dropped from chunk!"
@@ -123,7 +123,7 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHa
       {:ok, validated_records} =
         ValidatedRecord.read(page: false, load: [:record], tenant: collection)
 
-      # ensure all records from the validation_response layer have now the imported value "Plantae" under tax_kingdom
+      # ensure all processed records are now in :validation_status :validated
       Enum.all?(validated_records, fn validated_record ->
         assert validated_record.record.validation_status == :validated
       end)

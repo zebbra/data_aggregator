@@ -1183,6 +1183,7 @@ classDiagram
         PublicationStatusType publication_status
         ValidationStatusType validation_status
         String iucn_redlist_category
+        String validation_annotation
         UtcDatetime last_validation_started_at
         UtcDatetime last_imported_at
         UtcDatetimeUsec inserted_at
@@ -1313,6 +1314,7 @@ classDiagram
     class ValidationResponse {
         UUID id
         String file_url
+        ValidationResponseType type
         Integer rows_count
         Integer rows_invalid_count
         Integer rows_validated_count
@@ -1326,13 +1328,13 @@ classDiagram
         Atom state
         Attachment attachment
         Attachment error_log
-        update(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
+        update(String file_url, ValidationResponseType type, Integer rows_count, Integer rows_invalid_count, ...)
         destroy()
         read()
-        create(String file_url)
+        create(String file_url, ValidationResponseType type)
         enqueue()
         set_running()
-        set_failed(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
+        set_failed(String file_url, ValidationResponseType type, Integer rows_count, Integer rows_invalid_count, ...)
         run()
         set_done()
         update_attachment(Struct attachment)
