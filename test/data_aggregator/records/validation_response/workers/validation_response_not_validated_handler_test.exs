@@ -63,7 +63,6 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
       [validation_response: validation_response, records: records, collection: collection]
     end
 
-    @tag :run
     @tag capture_log: true
     test "ValidationResponseHandler.perform/1 validation response run success", %{
       validation_response: validation_response
@@ -78,7 +77,6 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
       assert validation_response.state == :done
     end
 
-    @tag :run
     @tag capture_log: true
     test "ValidationResponseHandler.perform/1 all ValidatedRecords are created correctly and have the changed values",
          %{validation_response: validation_response, collection: collection} do
@@ -105,7 +103,6 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
       assert validation_response.state == :done
     end
 
-    @tag :run
     @tag capture_log: true
     test "ValidationResponseHandler.perform/1 only update Records if the input data is valid",
          %{validation_response: validation_response, collection: collection} do
@@ -127,7 +124,6 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
       assert logs =~ "[warning] 2 invalid row(s) dropped from chunk!"
     end
 
-    @tag :run
     @tag capture_log: true
     test "ValidationResponseHandler.perform/1 all affected records are in state :not_validated",
          %{
@@ -151,7 +147,6 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
       assert validation_response.state == :done
     end
 
-    @tag :run
     @tag capture_log: true
     test "ValidationResponseHandler.perform/1 check if error log is present and correct", %{
       validation_response: validation_response

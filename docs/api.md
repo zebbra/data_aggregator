@@ -30,6 +30,7 @@ classDiagram
         Export[] exports
         Record[] records
         ImageUpload[] image_uploads
+        Collection[] validation_responses
         update(Integer items_to_digitize, String owner, String name, String code, ...)
         read()
         create(Integer items_to_digitize, String owner, String name, String code, ...)
@@ -1334,9 +1335,11 @@ classDiagram
         Atom state
         Attachment attachment
         Attachment error_log
+        Collection[] affected_collections
         update(String file_url, ValidationResponseType type, Integer rows_count, Integer rows_invalid_count, ...)
         destroy()
         read()
+        add_affected_collection(Struct collection)
         create(String file_url, ValidationResponseType type)
         enqueue()
         set_running()
@@ -1686,6 +1689,11 @@ classDiagram
         destroy()
         read()
     }
+    class ValidationResponseCollection {
+        create()
+        destroy()
+        read()
+    }
 
     User -- Version
     User -- Export
@@ -1703,6 +1711,7 @@ classDiagram
     Attachment -- Image
     Attachment -- ValidationRequest
     Attachment -- ValidationResponse
+    Collection -- Collection
     Collection -- EncodedRecord
     Collection -- RecordEncodingResult
     Collection -- Export
@@ -1715,7 +1724,9 @@ classDiagram
     Collection -- Image
     Collection -- ValidationRequest
     Collection -- ValidationRequestRecord
+    Collection -- ValidationResponse
     Collection -- ValidatedRecord
+    Collection -- ValidationResponseCollection
     EncodedRecord -- Version
     EncodedRecord -- Record
     EncodedRecord -- SwissSpecies
@@ -1731,6 +1742,7 @@ classDiagram
     Record -- ValidationRequestRecord
     Record -- ValidatedRecord
     ValidationRequestRecord -- Version
+    ValidationResponse -- ValidationResponseCollection
 ```
 
 ### ER Diagram
@@ -3178,6 +3190,9 @@ erDiagram
         Map changes
         UUID user_id
     }
+    ValidationResponseCollection {
+
+    }
 
     User ||--|| Version : ""
     User ||--|| Export : ""
@@ -3195,6 +3210,7 @@ erDiagram
     Attachment ||--|| Image : ""
     Attachment ||--|| ValidationRequest : ""
     Attachment ||--|| ValidationResponse : ""
+    Collection ||--|| Collection : ""
     Collection ||--|| EncodedRecord : ""
     Collection ||--|| RecordEncodingResult : ""
     Collection ||--|| Export : ""
@@ -3207,7 +3223,9 @@ erDiagram
     Collection ||--|| Image : ""
     Collection ||--|| ValidationRequest : ""
     Collection ||--|| ValidationRequestRecord : ""
+    Collection ||--|| ValidationResponse : ""
     Collection ||--|| ValidatedRecord : ""
+    Collection ||--|| ValidationResponseCollection : ""
     EncodedRecord ||--|| Version : ""
     EncodedRecord ||--|| Record : ""
     EncodedRecord ||--|| SwissSpecies : ""
@@ -3223,6 +3241,7 @@ erDiagram
     Record ||--|| ValidationRequestRecord : ""
     Record ||--|| ValidatedRecord : ""
     ValidationRequestRecord ||--|| Version : ""
+    ValidationResponse ||--|| ValidationResponseCollection : ""
 ```
 
 ### Resources
@@ -3245,6 +3264,7 @@ erDiagram
 - [ValidatedRecord](#validatedrecord)
 - [ValidationRequestRecord](#validationrequestrecord)
 - [Version](#version)
+- [ValidationResponseCollection](#validationresponsecollection)
 
 ### Collection
 
@@ -4696,6 +4716,7 @@ erDiagram
 | **update** | _update_ | <ul><li><b>file_url</b> <i>String</i> attribute</li><li><b>type</b> <i>ValidationResponseType</i> attribute</li><li><b>rows_count</b> <i>Integer</i> attribute</li><li><b>rows_invalid_count</b> <i>Integer</i> attribute</li><li><b>rows_validated_count</b> <i>Integer</i> attribute</li><li><b>rows_error_count</b> <i>Integer</i> attribute</li><li><b>started_at</b> <i>UtcDatetime</i> attribute</li><li><b>finished_at</b> <i>UtcDatetime</i> attribute</li><li><b>attachment_id</b> <i>UUID</i> attribute</li><li><b>error_log_id</b> <i>UUID</i> attribute</li><li><b>state</b> <i>Atom</i> attribute</li></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
+| **add_affected_collection** | _update_ | <ul><li><b>collection</b> <i>Struct</i> </li></ul> |  |
 | **create** | _create_ | <ul><li><b>file_url</b> <i>String</i> attribute</li><li><b>type</b> <i>ValidationResponseType</i> attribute</li></ul> |  |
 | **enqueue** | _update_ | <ul></ul> |  |
 | **set_running** | _update_ | <ul></ul> |  |
@@ -5076,6 +5097,25 @@ erDiagram
 | ---- | ---- | ----- | ----------- |
 | **update** | _update_ | <ul><li><b>version_action_type</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>version_source_id</b> <i>UUID</i> attribute</li><li><b>changes</b> <i>Map</i> attribute</li><li><b>user_id</b> <i>UUID</i> attribute</li></ul> |  |
 | **create** | _create_ | <ul><li><b>version_action_type</b> <i>Atom</i> attribute</li><li><b>collection_id</b> <i>UUID</i> attribute</li><li><b>version_source_id</b> <i>UUID</i> attribute</li><li><b>changes</b> <i>Map</i> attribute</li><li><b>user_id</b> <i>UUID</i> attribute</li></ul> |  |
+| **destroy** | _destroy_ | <ul></ul> |  |
+| **read** | _read_ | <ul></ul> |  |
+
+### ValidationResponseCollection
+
+
+
+#### Attributes
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| **validation_response_id** | UUID |  |
+| **collection_id** | UUID |  |
+
+#### Actions
+
+| Name | Type | Input | Description |
+| ---- | ---- | ----- | ----------- |
+| **create** | _create_ | <ul></ul> |  |
 | **destroy** | _destroy_ | <ul></ul> |  |
 | **read** | _read_ | <ul></ul> |  |
 

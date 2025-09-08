@@ -1,9 +1,10 @@
-defmodule DataAggregator.ValidationResponseValidatedTest do
+defmodule DataAggregator.ValidationResponseTest do
   @moduledoc false
 
   use DataAggregator.DataCase, async: true
   use Mimic
 
+  import DataAggregator.RecordsFixtures
   import DataAggregator.ValidationResponseFixtures
 
   alias Ash.Error.Invalid
@@ -69,6 +70,55 @@ defmodule DataAggregator.ValidationResponseValidatedTest do
 
       assert {:error, %Invalid{}} =
                ValidationResponse.update(validation_response, @invalid_attrs)
+    end
+
+    test "add_affected_collection/1 adds the collections" do
+      validation_response = validation_response_fixture()
+
+      collection1 = collection_fixture(%{grscicoll_reference: "12345"})
+      collection2 = collection_fixture(%{grscicoll_reference: "23456"})
+      collection3 = collection_fixture(%{grscicoll_reference: "34567"})
+
+      # Ensure an affected_collection is added
+      assert {:ok, %ValidationResponse{} = validation_response} =
+               ValidationResponse.add_affected_collection(validation_response, collection1)
+
+      assert_lists_equal(
+        validation_response.affected_collections,
+        [collection1],
+        &assert_structs_equal(&1, &2, [:id, :name])
+      )
+
+      # Ensure further collections become part of the affected_collections list and do not replace existing ones
+      assert {:ok, %ValidationResponse{} = validation_response} =
+               ValidationResponse.add_affected_collection(validation_response, collection2)
+
+      assert_lists_equal(
+        validation_response.affected_collections,
+        [collection1, collection2],
+        &assert_structs_equal(&1, &2, [:id, :name])
+      )
+
+      assert {:ok, %ValidationResponse{} = validation_response} =
+               ValidationResponse.add_affected_collection(validation_response, collection3)
+
+      assert_lists_equal(
+        validation_response.affected_collections,
+        [collection1, collection2, collection3],
+        &assert_structs_equal(&1, &2, [:id, :name])
+      )
+
+      # Ensure duplicate additions do not change the affected_collections list
+      assert {:ok, %ValidationResponse{} = validation_response} =
+               ValidationResponse.add_affected_collection(validation_response, collection3)
+
+      assert_lists_equal(
+        validation_response.affected_collections,
+        [collection1, collection2, collection3],
+        &assert_structs_equal(&1, &2, [:id, :name])
+      )
+
+      # TODO: more tests here...i.e. deletes.... implement this in the validation_response import process
     end
 
     test "destroy/1 deletes the validation response" do

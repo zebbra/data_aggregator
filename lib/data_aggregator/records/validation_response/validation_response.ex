@@ -10,7 +10,9 @@ defmodule DataAggregator.Records.ValidationResponse do
 
   alias __MODULE__
   alias DataAggregator.Files.Attachment
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.ValidationResponse.Changes
+  alias DataAggregator.Records.ValidationResponseCollection
   alias DataAggregator.Records.ValidationResponseType
 
   @type t :: %ValidationResponse{}
@@ -35,6 +37,13 @@ defmodule DataAggregator.Records.ValidationResponse do
   relationships do
     belongs_to :attachment, Attachment, public?: true
     belongs_to :error_log, Attachment, public?: true
+
+    many_to_many :affected_collections, Collection do
+      through ValidationResponseCollection
+      source_attribute_on_join_resource :validation_response_id
+      destination_attribute_on_join_resource :collection_id
+      public? true
+    end
   end
 
   calculations do
@@ -71,6 +80,16 @@ defmodule DataAggregator.Records.ValidationResponse do
   actions do
     default_accept :*
     defaults [:read, :destroy, :update]
+
+    update :add_affected_collection do
+      require_atomic? false
+      accept []
+      argument :collection, :struct, allow_nil?: false
+
+      change Changes.AddAffectedCollection
+
+      change load(:affected_collections)
+    end
 
     create :create do
       primary? true
@@ -169,9 +188,10 @@ defmodule DataAggregator.Records.ValidationResponse do
     define :set_done
     define :set_running
     define :set_failed
-    define :update_attachment, action: :update_attachment, args: [:attachment]
+    define :update_attachment, args: [:attachment]
     define :add_validation_progress, args: [:validated, :invalid]
     define :update_error_log, args: [:error_log]
+    define :add_affected_collection, args: [:collection]
   end
 
   postgres do

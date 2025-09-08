@@ -11,7 +11,6 @@ defmodule DataAggregator.Records.ValidationResponseType do
   use Ash.Type.Enum, values: Enum.map(validation_response_types, fn {key, _value} -> key end)
 
   @validation_response_types validation_response_types
-
   @doc """
     Returns all possible validation response types.
   """

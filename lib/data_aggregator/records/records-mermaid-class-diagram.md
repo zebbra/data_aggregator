@@ -24,6 +24,7 @@ classDiagram
         Export[] exports
         Record[] records
         ImageUpload[] image_uploads
+        Collection[] validation_responses
         update(Integer items_to_digitize, String owner, String name, String code, ...)
         read()
         create(Integer items_to_digitize, String owner, String name, String code, ...)
@@ -1328,9 +1329,11 @@ classDiagram
         Atom state
         Attachment attachment
         Attachment error_log
+        Collection[] affected_collections
         update(String file_url, ValidationResponseType type, Integer rows_count, Integer rows_invalid_count, ...)
         destroy()
         read()
+        add_affected_collection(Struct collection)
         create(String file_url, ValidationResponseType type)
         enqueue()
         set_running()
@@ -1680,6 +1683,11 @@ classDiagram
         destroy()
         read()
     }
+    class ValidationResponseCollection {
+        create()
+        destroy()
+        read()
+    }
 
     User -- Version
     User -- Export
@@ -1697,6 +1705,7 @@ classDiagram
     Attachment -- Image
     Attachment -- ValidationRequest
     Attachment -- ValidationResponse
+    Collection -- Collection
     Collection -- EncodedRecord
     Collection -- RecordEncodingResult
     Collection -- Export
@@ -1709,7 +1718,9 @@ classDiagram
     Collection -- Image
     Collection -- ValidationRequest
     Collection -- ValidationRequestRecord
+    Collection -- ValidationResponse
     Collection -- ValidatedRecord
+    Collection -- ValidationResponseCollection
     EncodedRecord -- Version
     EncodedRecord -- Record
     EncodedRecord -- SwissSpecies
@@ -1725,5 +1736,6 @@ classDiagram
     Record -- ValidationRequestRecord
     Record -- ValidatedRecord
     ValidationRequestRecord -- Version
+    ValidationResponse -- ValidationResponseCollection
 
 ```

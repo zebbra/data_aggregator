@@ -1,10 +1,14 @@
 defmodule DataAggregator.Records.ValidationResponse.NotificationHelpers do
   @moduledoc false
-  alias Ash.Changeset
-  alias DataAggregator.Api
-  alias DataAggregator.Records.ValidationResponse
-  alias DataAggregator.Types
 
+  import Swoosh.Email
+
+  alias Ash.Changeset
+  alias DataAggregator.Accounts.User
+  alias DataAggregator.Mailer
+  alias DataAggregator.Records.ValidationResponse
+
+  require Ash.Query
   require Logger
 
   @doc """
@@ -12,58 +16,53 @@ defmodule DataAggregator.Records.ValidationResponse.NotificationHelpers do
   """
   @spec notify_infospecies(Changeset.t()) :: Changeset.t()
   def notify_infospecies(changeset) do
-    with {:ok, response} <-
-           notify_infospecies_with_validation_result(changeset.data),
-         :ok <- ensure_status(response) do
-      changeset
-    else
-      {:error, error} ->
-        Logger.error("Could not notify Infospecies about validation response result: #{inspect(error)}")
+    notify(changeset.data)
 
-        # For now we just log the error and return the changeset without adding an error
-        # add_error(changeset, error)
-        changeset
-    end
+    changeset
   end
 
-  @spec notify_infospecies_with_validation_result(ValidationResponse.t()) :: Types.Api.response()
-  defp notify_infospecies_with_validation_result(validation) do
-    Logger.info("Notifying infospecies about validation result")
+  @spec notify(ValidationResponse.t()) :: :ok
+  defp notify(validation) do
+    Logger.debug("Notifying infospecies about validation result")
+    validation = Ash.load!(validation, [:affected_collections], lazy?: true)
 
-    Req.post(
-      url: Api.Helpers.infospecies_validation_notification_url(),
-      json: validation_result_payload(validation)
-    )
+    Enum.each(validation.affected_collections, fn collection ->
+      {:ok, users} =
+        User
+        |> Ash.Query.filter(institution_id == ^collection.grscicoll_institution_key)
+        |> Ash.Query.filter("collection_administrator" in roles)
+        |> Ash.read()
+
+      to_mails = Enum.map(users, & &1.email)
+
+      new()
+      |> from(System.get_env("MAILBOX_FROM") || "museums.tovalidate@gbif.ch")
+      |> to(to_mails)
+      |> subject("Dagi: Your Dataset became validated data")
+      |> text_body(get_message_body(collection, validation.type))
+      |> Mailer.deliver()
+    end)
+
+    :ok
   end
 
-  @spec validation_result_payload(ValidationResponse.t()) :: map()
-  defp validation_result_payload(%ValidationResponse{error_log_id: nil} = validation_response),
-    do: %{
-      "source_file" => validation_response.file_url,
-      "success_count" => validation_response.rows_validated_count,
-      "error_count" => validation_response.rows_invalid_count,
-      "error_log_url" => ""
-    }
-
-  @spec validation_result_payload(ValidationResponse.t()) :: map()
-  defp validation_result_payload(validation_response) do
-    validation_response = Ash.load!(validation_response, [:error_log], lazy?: true)
-    error_log = Ash.load!(validation_response.error_log, [:url], lazy?: true)
-
-    %{
-      "success_count" => validation_response.rows_validated_count,
-      "error_count" => validation_response.rows_invalid_count,
-      "error_log_url" => error_log.url
-    }
+  defp get_message_body(collection, :validated) do
+    "Hi,\n" <>
+      "We reach out to you because your data in the GBIF Dagi project has been updated.\n" <>
+      "Multiple records were annotated with reasons why they were not validated.\n" <>
+      "Your original data remained unchanged.\n" <>
+      "The affected collection '#{collection.code} - #{collection.name}' " <>
+      "of institution '#{collection.grscicoll_institution_name}' can be seen here: " <>
+      System.get_env("BASE_URL") <> "/datasets/#{collection}/records"
   end
 
-  @spec ensure_status(map()) :: :ok | {:error, String.t()}
-  defp ensure_status(%{status: 200}), do: :ok
-
-  defp ensure_status(response) do
-    msg =
-      "No valid response (status #{response.status}) from Infospecies API while notifying about processed validation response: #{inspect(response)}"
-
-    {:error, msg}
+  defp get_message_body(collection, :not_validated) do
+    "Hi,\n" <>
+      "We reach out to you because your data in the GBIF Dagi project has been updated.\n" <>
+      "Multiple records were annotated with reasons why they were not validated.\n" <>
+      "Your original data remained unchanged.\n" <>
+      "The affected collection '#{collection.code} - #{collection.name}' " <>
+      "of institution '#{collection.grscicoll_institution_name}' can be seen here: " <>
+      System.get_env("BASE_URL") <> "/datasets/#{collection}/records"
   end
 end
