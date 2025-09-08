@@ -15,6 +15,7 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
   alias DataAggregator.Records.ValidationRequest
   alias DataAggregator.Records.ValidationRequest.InfoSpecies
   alias DataAggregator.Records.ValidationRequestRecord
+  alias Explorer.DataFrame
 
   require Ash.Query
   require Logger
@@ -72,14 +73,19 @@ defmodule DataAggregator.Records.Collection.Actions.Validate do
 
     attachment = path |> FlatFileUtils.create_zip!() |> FlatFileUtils.store_on_s3!()
 
+    row_count =
+      validation_file.path
+      |> DataFrame.from_csv!()
+      |> DataFrame.n_rows()
+
     # remove file from local tmp dir, as it is now stored on s3
     File.rm_rf(path)
 
     validation_request = ValidationRequest.update_attachment!(validation_request, attachment)
 
     # only notify center if there are more than 0 entries to validate
-    if validation_request.sent_for_validation_count > 0 do
-      case InfoSpecies.notify(validation_request, query) do
+    if row_count > 0 do
+      case InfoSpecies.notify(validation_request, query, row_count) do
         {:ok, validation_request} ->
           {:ok, validation_request}
 
