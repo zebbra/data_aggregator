@@ -120,7 +120,7 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
         |> Ash.Query.set_tenant(validation_request.collection)
 
       {:ok, validation_request} =
-        InfoSpecies.notify(validation_request, query)
+        InfoSpecies.notify(validation_request, query, 2)
 
       assert validation_request.collection_id == collection.id
       assert validation_request.attachment_id != nil
@@ -136,7 +136,7 @@ defmodule DataAggregator.InfoSpeciesNotificationTest do
         |> Ash.Query.set_tenant(validation_request.collection)
 
       {:ok, _validation_request} =
-        InfoSpecies.notify(validation_request, query)
+        InfoSpecies.notify(validation_request, query, 2)
 
       assert {:ok, records} = Record.read(tenant: validation_request.collection)
       assert length(records) == 5
