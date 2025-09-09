@@ -18,20 +18,18 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
   @doc """
   Notifies the infospecies center by mail about the validation request.
   """
-  @spec notify(ValidationRequest.t(), Ash.Query.t()) ::
+  @spec notify(ValidationRequest.t(), Ash.Query.t(), pos_integer()) ::
           {:ok, ValidationRequest.t()} | {:error, any()}
-  def notify(validation_request, query) do
+  def notify(validation_request, query, count) do
     with {:ok, validation_request} <- Ash.load(validation_request, [:collection, :attachment]),
          {:ok, institution_name} <-
            get_institution_name(validation_request.collection.grscicoll_institution_key) do
       notification =
         %{
-          count: to_string(Ash.count!(query)),
+          count: to_string(count),
           file_link: Attachment.Helpers.attachment_public_url(validation_request.attachment.id),
           institution: institution_name,
           date: get_date_time_now(),
-          # for now we use institution_name as owner, because we don't have this
-          # on the grscicoll collection
           owner: institution_name,
           center: validation_request.center
         }
@@ -81,14 +79,22 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
 
     {:ok, to_mails} = InfospeciesCenters.get_center_emails(notification.center)
 
-    email =
-      new()
-      |> from(System.get_env("MAILBOX_FROM") || "museums.tovalidate@gbif.ch")
-      |> to(to_mails)
-      |> subject("New records available for validation")
-      |> text_body(get_message_body(notification))
+    case new()
+         |> from(System.get_env("MAILBOX_FROM") || "museums.tovalidate@gbif.ch")
+         |> to(to_mails)
+         |> subject("New records available for validation")
+         |> text_body(get_message_body(notification))
+         |> Mailer.deliver() do
+      {:ok, result} ->
+        Logger.info(
+          "[Validation request infospecies center notification] Mail sent successful with result: #{inspect(result)}"
+        )
 
-    Mailer.deliver(email)
+      {:error, error} ->
+        Logger.error(
+          "[Validation request infospecies center notification] Mail sending failed with error: #{inspect(error)}"
+        )
+    end
 
     if Records.execute_async?() do
       Task.start(fn -> update_records_validation_started_at(query) end)
@@ -102,11 +108,7 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
   defp update_records_validation_started_at(query) do
     query
     |> Ash.stream!()
-    |> Enum.each(&process_record(&1))
-  end
-
-  defp process_record(record) do
-    Record.update_last_validation_started_at!(record)
+    |> Enum.each(&Record.update_last_validation_started_at!(&1))
   end
 
   defp get_date_time_now do
