@@ -184,7 +184,11 @@ if config_env() == :prod do
     auth: :always,
     port: 587,
     retries: 2,
-    no_mx_lookups: false
+    no_mx_lookups: false,
+    tls_options: [
+      cacerts: :public_key.cacerts_get(),
+      verify: :verify_peer
+    ]
 
   config :data_aggregator, DataAggregatorWeb.Endpoint,
     url: [scheme: base_url.scheme, host: base_url.host, path: base_url.path, port: base_url.port],
