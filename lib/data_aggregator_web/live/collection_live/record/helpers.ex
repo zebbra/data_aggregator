@@ -9,6 +9,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
 
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Records.Record
+  alias DataAggregator.Records.ValidationResponse.ValidatedRecord
   alias DataAggregator.Taxonomy.Catalog
 
   @transformers Schema.dwc_transformers()
@@ -59,6 +60,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
     record = Ash.load!(record, :encoded_record, lazy?: true)
     output_dwc_fields = Catalog.get_all_output_dwc_attributes()
 
+    validated_record =
+      case ValidatedRecord.get_by_record(record.id, tenant: collection) do
+        {:ok, validated_record} -> validated_record
+        _ -> nil
+      end
+
     collection_attributes =
       Schema.collection_attributes()
       |> Enum.map(fn attribute ->
@@ -66,7 +73,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
           name: attribute.dwc_field,
           category_name: "oth",
           imported: Map.get(collection, attribute.collection_field),
-          encoded: "-"
+          encoded: "-",
+          validated: "-"
         }
       end)
       |> Enum.filter(fn %{imported: value} -> value not in ["", nil] end)
@@ -91,11 +99,18 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Helpers do
           encoded_value
         end
 
+      validated_value =
+        case validated_record do
+          nil -> "-"
+          _ -> validated_record |> Map.get(key) |> maybe_transform_value(key)
+        end
+
       %{
         name: get_dwc_field(key),
         category_name: key |> Atom.to_string() |> String.split("_") |> List.first(),
         imported: imported_value,
-        encoded: encoded_value
+        encoded: encoded_value,
+        validated: validated_value
       }
     end)
     |> Enum.concat(collection_attributes)
