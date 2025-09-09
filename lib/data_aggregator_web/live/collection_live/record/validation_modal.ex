@@ -30,7 +30,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ValidationModal do
       <div id={"#{@id}_inner_body"} class="h-full space-y-4 overflow-y-auto p-6">
         <p class="mb-4 text-sm">
           {mgettext(
-            "You are about to send %{count} records for validation by InfoSpecies. These records will be reviewed, validated and then eventually published to GBIForg.",
+            "You are about to send %{count} records for validation by InfoSpecies. These records will be reviewed and validated individually.",
             count: format_number(@count)
           )}
         </p>
@@ -40,7 +40,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ValidationModal do
           </div>
           <p class="text-sm">
             {~t"In addition to the filters provided, we also add the restriction for all records that the"m}
-            <span class="font-bold">{~t"kingdom  "m}</span>
+            <span class="font-bold">{~t"kingdom "m}</span>
             {~t"attribute must be set."m}
           </p>
         </div>
@@ -49,7 +49,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ValidationModal do
             <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
           </div>
           <p class="text-sm">
-            {~t"Please note that only Swiss specimen will be reviewed. All other specimen will be ignored during the validation process."m}
+            {~t"Please note that only Swiss specimens will be processed. All other specimen will be ignored during the validation process."m}
           </p>
         </div>
         <div class="flex">
@@ -57,7 +57,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ValidationModal do
             <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
           </div>
           <p class="text-sm">
-            {~t"Please note that the validation process will involve manual work by InfoSpecies, which will review and validate each record for accuracy before publication to GBIF."m}
+            {~t"Each record will be manually reviewed and validated by the staff at each InfoSpecies center. Their feedback on the records will be available on DAGI at the end of the process."m}
           </p>
         </div>
         <p class="text-sm">
@@ -84,8 +84,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ValidationModal do
           </p>
         </div>
         <p class="text-base-content/60 mt-4 text-sm">
-          {~t"By clicking"m} <span class="text-base-content italic">{~t"Validate"m}</span>
-          {~t"an export will be created and automatically sent to InfoSpecies. No further action is required. Please note that this process may take some time."m}
+          {~t"By clicking on"m}
+          <span class="text-base-content italic">{~t"Validate"m}</span>{~t", the records will be processed. Export files will be created and automatically sent to the specific Swiss data centers. No further action is required. Please note that this process may take some time."m}
         </p>
       </div>
       <.modal_footer id={@id}>
