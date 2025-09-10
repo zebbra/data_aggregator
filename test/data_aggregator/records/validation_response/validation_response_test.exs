@@ -9,7 +9,9 @@ defmodule DataAggregator.ValidationResponseTest do
 
   alias Ash.Error.Invalid
   alias DataAggregator.Gbif
+  alias DataAggregator.Records.Collection
   alias DataAggregator.Records.ValidationResponse
+  alias DataAggregator.Records.ValidationResponseCollection
 
   require Logger
 
@@ -89,6 +91,20 @@ defmodule DataAggregator.ValidationResponseTest do
         &assert_structs_equal(&1, &2, [:id, :name])
       )
 
+      # check if the through table of the many-to-many relationship is updated correctly
+      assert {:ok, vr_2_colls} = Ash.read(ValidationResponseCollection)
+      assert length(vr_2_colls) == 1
+
+      # check if :validation_responses on collections are updated correctly
+      assert {:ok, collection} =
+               collection1.id |> Collection.get_by_id() |> Ash.load([:validation_responses])
+
+      assert_lists_equal(
+        collection.validation_responses,
+        [validation_response],
+        &assert_structs_equal(&1, &2, [:id])
+      )
+
       # Ensure further collections become part of the affected_collections list and do not replace existing ones
       assert {:ok, %ValidationResponse{} = validation_response} =
                ValidationResponse.add_affected_collection(validation_response, collection2)
@@ -99,6 +115,19 @@ defmodule DataAggregator.ValidationResponseTest do
         &assert_structs_equal(&1, &2, [:id, :name])
       )
 
+      # check if the through table of the many-to-many relationship is updated correctly
+      assert {:ok, vr_2_colls} = Ash.read(ValidationResponseCollection)
+      assert length(vr_2_colls) == 2
+
+      # check if :validation_responses on collections are updated correctly
+      assert {:ok, collection} = Ash.load(collection1, [:validation_responses])
+
+      assert_lists_equal(
+        collection.validation_responses,
+        [validation_response],
+        &assert_structs_equal(&1, &2, [:id])
+      )
+
       assert {:ok, %ValidationResponse{} = validation_response} =
                ValidationResponse.add_affected_collection(validation_response, collection3)
 
@@ -106,6 +135,19 @@ defmodule DataAggregator.ValidationResponseTest do
         validation_response.affected_collections,
         [collection1, collection2, collection3],
         &assert_structs_equal(&1, &2, [:id, :name])
+      )
+
+      # check if the through table of the many-to-many relationship is updated correctly
+      assert {:ok, vr_2_colls} = Ash.read(ValidationResponseCollection)
+      assert length(vr_2_colls) == 3
+
+      # check if :validation_responses on collections are updated correctly
+      assert {:ok, collection} = Ash.load(collection1, [:validation_responses])
+
+      assert_lists_equal(
+        collection.validation_responses,
+        [validation_response],
+        &assert_structs_equal(&1, &2, [:id])
       )
 
       # Ensure duplicate additions do not change the affected_collections list
@@ -118,7 +160,35 @@ defmodule DataAggregator.ValidationResponseTest do
         &assert_structs_equal(&1, &2, [:id, :name])
       )
 
-      # TODO: more tests here...i.e. deletes.... implement this in the validation_response import process
+      # check if the through table of the many-to-many relationship is updated correctly
+      assert {:ok, vr_2_colls} = Ash.read(ValidationResponseCollection)
+      assert length(vr_2_colls) == 3
+
+      # check if :validation_responses on collections are updated correctly
+      assert {:ok, collection} = Ash.load(collection1, [:validation_responses])
+
+      assert_lists_equal(
+        collection.validation_responses,
+        [validation_response],
+        &assert_structs_equal(&1, &2, [:id])
+      )
+
+      # check if deletions of collections are handled correctly
+      assert :ok = Collection.destroy(collection2)
+      assert {:ok, validation_response} = Ash.load(validation_response, [:affected_collections])
+
+      assert_lists_equal(
+        validation_response.affected_collections,
+        [collection1, collection3],
+        &assert_structs_equal(&1, &2, [:id, :name])
+      )
+
+      # check if deletions of validation responses are handled correctly
+      assert(:ok = ValidationResponse.destroy(validation_response))
+
+      assert {:ok, collection} = Ash.load(collection1, [:validation_responses])
+
+      assert collection.validation_responses == []
     end
 
     test "destroy/1 deletes the validation response" do

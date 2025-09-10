@@ -344,6 +344,22 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
     |> Enum.flat_map(fn %{errors: errors} -> errors end)
   end
 
+  @doc """
+  Add a collection which was affected by the import of rows of the given ValidationResponse struct
+  """
+  @spec add_affected_collections(Enum.t(), ValidationResponse.t()) :: :ok
+  def add_affected_collections(valid, validation_response)
+
+  def add_affected_collections(valid, validation_response) do
+    Enum.each(valid, fn row ->
+      record = Ash.load!(row.record, [:collection], lazy?: true)
+
+      ValidationResponse.add_affected_collection!(validation_response, record.collection)
+    end)
+
+    :ok
+  end
+
   @spec get_tenant_from_row(map()) :: Collection.t() | nil
   defp get_tenant_from_row(_)
 

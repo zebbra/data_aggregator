@@ -180,6 +180,34 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
       assert Explorer.DataFrame.n_rows(data_frame) == 2
       data_frame |> Explorer.DataFrame.to_rows() |> assert_lists_equal(expected_errors())
     end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 has set the correct :affected_collections on validated_record and :validation_responses on collection",
+         %{
+           validation_response: validation_response,
+           collection: collection
+         } do
+      {:ok, validation_response} =
+        perform_job(ValidationResponseHandler, %{
+          id: validation_response.id
+        })
+
+      assert {:ok, validation_response} = Ash.load(validation_response, [:affected_collections])
+
+      assert_lists_equal(
+        validation_response.affected_collections,
+        [collection],
+        &assert_structs_equal(&1, &2, [:id, :name])
+      )
+
+      assert {:ok, collection} = Ash.load(collection, [:validation_responses])
+
+      assert_lists_equal(
+        collection.validation_responses,
+        [validation_response],
+        &assert_structs_equal(&1, &2, [:id])
+      )
+    end
   end
 
   defp expected_errors do

@@ -61,14 +61,14 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
     |> Stream.map(&Helpers.convert_headers_of_chunk(&1, attribute_name_pairs))
     |> Stream.map(&Helpers.reject_collection_attributes_from_chunk(&1, collection_attributes))
     |> Stream.map(&Helpers.maybe_convert_values(&1, type))
-    |> Stream.map(&import_chunk(&1, type))
+    |> Stream.map(&import_chunk(changeset, &1, type))
     |> reduce_validation_results(changeset)
     |> NotificationHelpers.notify_infospecies()
   end
 
-  @spec import_chunk({[map()], integer()}, atom()) ::
+  @spec import_chunk(Changeset.t(), {[map()], integer()}, atom()) ::
           {[BulkResult.t()], [map()], [{map(), [Ash.Error.t()]}]}
-  defp import_chunk({chunk, index}, type) do
+  defp import_chunk(%Changeset{data: validation_response}, {chunk, index}, type) do
     Logger.debug("Importing valid chunk ##{index} with #{length(chunk)} rows ...")
 
     max_concurrency = Records.import_max_concurrency()
@@ -97,6 +97,8 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
       valid
       |> Enum.reverse()
       |> Helpers.upsert_by_tenant!(type)
+
+    Helpers.add_affected_collections(valid, validation_response)
 
     {errors, valid, invalid}
   end

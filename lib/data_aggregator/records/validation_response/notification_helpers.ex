@@ -53,7 +53,7 @@ defmodule DataAggregator.Records.ValidationResponse.NotificationHelpers do
       "Your original data remained unchanged.\n" <>
       "The affected collection '#{collection.code} - #{collection.name}' " <>
       "of institution '#{collection.grscicoll_institution_name}' can be seen here: " <>
-      System.get_env("BASE_URL") <> "/datasets/#{collection}/records"
+      System.get_env("BASE_URL") <> "/datasets/#{collection.id}/records"
   end
 
   defp get_message_body(collection, :not_validated) do
@@ -63,6 +63,6 @@ defmodule DataAggregator.Records.ValidationResponse.NotificationHelpers do
       "Your original data remained unchanged.\n" <>
       "The affected collection '#{collection.code} - #{collection.name}' " <>
       "of institution '#{collection.grscicoll_institution_name}' can be seen here: " <>
-      System.get_env("BASE_URL") <> "/datasets/#{collection}/records"
+      System.get_env("BASE_URL") <> "/datasets/#{collection.id}/records"
   end
 end

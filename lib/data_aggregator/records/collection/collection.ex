@@ -17,6 +17,7 @@ defmodule DataAggregator.Records.Collection do
   alias DataAggregator.Records.Collection.Actions
   alias DataAggregator.Records.Collection.Changes
   alias DataAggregator.Records.CollectionType
+  alias DataAggregator.Records.ValidationResponse
   alias DataAggregator.Records.ValidationResponseCollection
   alias DataAggregator.Records.Validations
 
@@ -106,7 +107,7 @@ defmodule DataAggregator.Records.Collection do
     has_many :records, DataAggregator.Records.Record, public?: true
     has_many :image_uploads, DataAggregator.Records.ImageUpload, public?: true
 
-    many_to_many :validation_responses, Collection do
+    many_to_many :validation_responses, ValidationResponse do
       through ValidationResponseCollection
       source_attribute_on_join_resource :collection_id
       destination_attribute_on_join_resource :validation_response_id

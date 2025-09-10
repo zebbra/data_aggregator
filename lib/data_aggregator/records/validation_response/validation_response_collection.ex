@@ -49,5 +49,10 @@ defmodule DataAggregator.Records.ValidationResponseCollection do
   postgres do
     table "validation_response_2_collections"
     repo DataAggregator.Repo
+
+    references do
+      reference :validation_response, on_delete: :delete, on_update: :update
+      reference :collection, on_delete: :delete, on_update: :update
+    end
   end
 end

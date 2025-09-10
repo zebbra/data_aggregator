@@ -20,8 +20,8 @@
           "strategy": null
         },
         "name": "validation_response_2_collections_validation_response_id_fkey",
-        "on_delete": null,
-        "on_update": null,
+        "on_delete": "delete",
+        "on_update": "update",
         "primary_key?": true,
         "schema": "public",
         "table": "validation_responses"
@@ -51,8 +51,8 @@
           "strategy": null
         },
         "name": "validation_response_2_collections_collection_id_fkey",
-        "on_delete": null,
-        "on_update": null,
+        "on_delete": "delete",
+        "on_update": "update",
         "primary_key?": true,
         "schema": "public",
         "table": "collections"
@@ -68,7 +68,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "E78D4087331DEB05C289C29DAC034FF3DF70FA87B81CE1FF38B3EE060C97C9A3",
+  "hash": "7CD96E43780BF65DB7EA91AC409187C30EB0C7D8E94FC3CC4740B6C5F830DEC2",
   "identities": [
     {
       "all_tenants?": false,
