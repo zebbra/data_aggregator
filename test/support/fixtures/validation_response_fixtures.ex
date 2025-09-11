@@ -12,19 +12,12 @@ defmodule DataAggregator.ValidationResponseFixtures do
   @doc """
   Generate a validation
   """
-  def validation_response_fixture(attrs \\ %{}) do
-    path = "test/support/fixtures/files/validation_dwca.zip"
+  def validation_response_fixture(attrs \\ %{}, file_path \\ "test/support/fixtures/files/validated.zip") do
+    attachment = Attachment.import_from_path!(file_path)
 
-    attachment = Attachment.import_from_path!(path)
+    params = Map.merge(%{file_url: attachment.url, type: :validated}, attrs)
 
-    params =
-      %{file_url: attachment.url}
-      |> Map.merge(attrs)
-      |> Map.put_new_lazy(:collection, fn ->
-        RecordsFixtures.collection_fixture(%{grscicoll_reference: Ecto.UUID.generate()})
-      end)
-
-    ValidationResponse.create!(params, tenant: params.collection)
+    ValidationResponse.create!(params)
   end
 
   @doc """

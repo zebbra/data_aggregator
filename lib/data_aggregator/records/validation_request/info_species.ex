@@ -75,7 +75,7 @@ defmodule DataAggregator.Records.ValidationRequest.InfoSpecies do
 
   @spec notify_infospecies(Ash.Query.t(), map()) :: :ok
   defp notify_infospecies(query, notification) do
-    Logger.info("Notifying infospecies center: #{inspect(notification)}")
+    Logger.debug("Notifying infospecies center: #{inspect(notification)}")
 
     {:ok, to_mails} = InfospeciesCenters.get_center_emails(notification.center)
 

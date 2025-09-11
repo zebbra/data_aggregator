@@ -4,6 +4,7 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
   """
   use DataAggregatorWeb, :html
 
+  alias DataAggregator.Records.Record
   alias DataAggregatorWeb.CollectionLive.Record.ActivityFeed
   alias DataAggregatorWeb.CollectionLive.Record.Helpers
 
@@ -238,28 +239,25 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     assigns = assign(assigns, images: images)
 
     ~H"""
-    <div class="carousel space-x-4">
-      <div :for={{image, _index} <- @images} class="carousel-item relative" id={"item-#{image.id}"}>
-        <img src={image.image_url} class="max-h-[350px] w-auto" />
-        <button
-          :if={@deletable}
-          class="btn tooltip tooltip-left btn-sm btn-circle btn-ghost absolute right-3 bottom-3 inline-flex bg-black"
-          phx-click={JS.push(@delete_action, value: %{id: image.id})}
-          {@rest}
-        >
-          <.icon name="hero-trash-mini" class="size-5" />
-        </button>
+    <div :if={length(@images) > 0} class="p-8">
+      <div class="carousel space-x-4">
+        <div :for={{image, _} <- @images} class="carousel-item relative" id={"item-#{image.id}"}>
+          <img src={image.url} class="max-h-[350px] w-auto" />
+          <button
+            :if={@deletable and image.deletable}
+            class="btn tooltip tooltip-left btn-sm btn-circle btn-ghost absolute right-3 bottom-3 inline-flex bg-black"
+            phx-click={JS.push(@delete_action, value: %{id: image.id})}
+            {@rest}
+          >
+            <.icon name="hero-trash-mini" class="size-5" />
+          </button>
+        </div>
       </div>
-    </div>
-    <div class="flex w-full justify-center gap-2 py-2">
-      <a
-        :for={{image, index} <- @images}
-        :if={length(@images) > 1}
-        href={"#item-#{image.id}"}
-        class="btn btn-xs"
-      >
-        {index + 1}
-      </a>
+      <div :if={length(@images) > 1} class="flex w-full justify-center gap-2 py-2">
+        <a :for={{image, index} <- @images} href={"#item-#{image.id}"} class="btn btn-xs">
+          {index + 1}
+        </a>
+      </div>
     </div>
     """
   end
@@ -304,10 +302,43 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Components do
     """
   end
 
+  # gets a list of image maps containing url, id, and deletable flag from sources "uploaded images" (record.images) and "imported media" (record.encoded_record.mte_associated_media)
+  @spec build_carousel_items(Record.t()) :: [
+          {{:image, map()} | {:url, String.t()}, pos_integer()}
+        ]
   defp build_carousel_items(record) do
-    record = Ash.load!(record, images: :image_url)
+    record = Ash.load!(record, [:encoded_record, images: :image_url], lazy?: true)
 
-    Enum.with_index(record.images)
+    images = images(record)
+    associated_media = media_urls(record, images)
+
+    Enum.with_index(images ++ associated_media)
+  end
+
+  @spec media_urls(Record.t(), [map()]) :: [map()]
+  defp media_urls(record, images) do
+    media_urls = record.encoded_record.mte_associated_media
+
+    if media_urls in [nil, ""] do
+      []
+    else
+      media_urls
+      |> String.split(" | ")
+      |> Enum.with_index()
+      |> Enum.map(&%{url: elem(&1, 0), id: elem(&1, 1), deletable: false})
+      |> Enum.filter(&filter_out_duplicates(&1, images))
+    end
+  end
+
+  defp filter_out_duplicates(%{url: url}, images) do
+    Enum.any?(images, fn %{url: image_url} ->
+      url == image_url
+    end) == false
+  end
+
+  @spec images(Record.t()) :: [map()]
+  defp images(record) do
+    Enum.map(record.images, &%{url: &1.image_url, id: &1.id, deletable: true})
   end
 
   defp level_indicator(level) do

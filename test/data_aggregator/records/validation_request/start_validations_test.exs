@@ -51,7 +51,8 @@ defmodule DataAggregator.StartValidationsTest do
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
           tax_taxon_id: 9368,
-          loc_country_code: "CH"
+          loc_country_code: "CH",
+          oth_swiss_species_registered: true
         })
 
       record2 =
@@ -60,7 +61,8 @@ defmodule DataAggregator.StartValidationsTest do
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
           tax_taxon_id: 9368,
-          loc_country_code: "ch"
+          loc_country_code: "ch",
+          oth_swiss_species_registered: true
         })
 
       record3 =
@@ -69,7 +71,8 @@ defmodule DataAggregator.StartValidationsTest do
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
           tax_taxon_id: 9368,
-          loc_country_code: "CH"
+          loc_country_code: "CH",
+          oth_swiss_species_registered: true
         })
 
       record4 =
@@ -78,7 +81,8 @@ defmodule DataAggregator.StartValidationsTest do
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "Animalia",
           tax_taxon_id: 5_497_504,
-          loc_country_code: "CH"
+          loc_country_code: "CH",
+          oth_swiss_species_registered: true
         })
 
       record5 =
@@ -86,7 +90,8 @@ defmodule DataAggregator.StartValidationsTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "My Kingdom",
-          loc_country_code: "CH"
+          loc_country_code: "CH",
+          oth_swiss_species_registered: true
         })
 
       record6 =
@@ -94,7 +99,8 @@ defmodule DataAggregator.StartValidationsTest do
           collection: collection,
           mte_catalog_number: "catalog-number-#{Uniq.UUID.uuid7(:slug)}",
           tax_kingdom: "My Kingdom",
-          loc_country_code: "FR"
+          loc_country_code: "FR",
+          oth_swiss_species_registered: false
         })
 
       encoded_record_fixture(%{record: record1})

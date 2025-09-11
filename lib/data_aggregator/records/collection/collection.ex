@@ -17,6 +17,8 @@ defmodule DataAggregator.Records.Collection do
   alias DataAggregator.Records.Collection.Actions
   alias DataAggregator.Records.Collection.Changes
   alias DataAggregator.Records.CollectionType
+  alias DataAggregator.Records.ValidationResponse
+  alias DataAggregator.Records.ValidationResponseCollection
   alias DataAggregator.Records.Validations
 
   @type t :: %Collection{}
@@ -104,6 +106,13 @@ defmodule DataAggregator.Records.Collection do
     has_many :exports, DataAggregator.Records.Export, public?: true
     has_many :records, DataAggregator.Records.Record, public?: true
     has_many :image_uploads, DataAggregator.Records.ImageUpload, public?: true
+
+    many_to_many :validation_responses, ValidationResponse do
+      through ValidationResponseCollection
+      source_attribute_on_join_resource :collection_id
+      destination_attribute_on_join_resource :validation_response_id
+      public? true
+    end
   end
 
   calculations do
@@ -346,6 +355,7 @@ defmodule DataAggregator.Records.Collection do
     define :destroy, action: :destroy
     define :get_by_id, action: :read, get_by: [:id]
     define :get_by_grscicoll_reference, action: :read, get_by: [:grscicoll_reference]
+    define :get_by_code, action: :read, get_by: [:code]
     define :touch
     define :enqueue_encoding, args: [:query]
     define :create_endpoint, args: [:collection, :dwca_file_url]

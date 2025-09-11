@@ -7,74 +7,76 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
 
   alias Ash.BulkResult
   alias Ash.Changeset
-  alias Ash.Resource.Actions.Implementation.Context
-  alias DataAggregator.DarwinCore.Schema
-  alias DataAggregator.Gbif.RestAPI
   alias DataAggregator.Records
   alias DataAggregator.Records.ValidationResponse
   alias DataAggregator.Records.ValidationResponse.Helpers
-  alias DataAggregator.Records.ValidationResponse.ValidatedRecord
+  alias DataAggregator.Records.ValidationResponse.NotificationHelpers
 
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, ctx) do
-    Changeset.before_action(changeset, &validate_records(&1, ctx), append?: true)
+  def change(%Changeset{} = changeset, _opts, _ctx) do
+    Changeset.before_action(changeset, &import_validation_data(&1), append?: true)
   end
 
-  @spec validate_records(Changeset.t(), Context.t()) :: Changeset.t()
-  defp validate_records(changeset, ctx) do
+  defp import_validation_data(%Changeset{} = changeset) do
     file_url = Changeset.get_attribute(changeset, :file_url)
+    type = Changeset.get_attribute(changeset, :type)
 
-    dwca_file = Helpers.fetch_file_from_url(file_url)
+    csv_content =
+      file_url
+      |> Helpers.fetch_file_from_url()
+      |> Helpers.extract_csv_content()
 
-    csv_content = Helpers.extract_csv_content(dwca_file)
+    process(changeset, csv_content, type)
+  end
 
+  @spec process(Changeset.t(), String.t(), atom()) :: Changeset.t()
+  defp process(changeset, csv_content, type) do
     with {:ok, df} <- Explorer.DataFrame.load_csv(csv_content),
          {:ok, stream} <- stream_from_dataframe(df),
          {:ok, stream} <- ensure_records(stream) do
-      validate_in_chunks(changeset, stream, ctx)
+      process_in_chunks(changeset, stream, type)
     else
       {:error, error} ->
-        Logger.debug("CSV could not be read or it was empty")
+        Logger.error("[Import validation records] CSV could not be read or it was empty")
 
         add_error(changeset, error)
     end
   end
 
-  @spec validate_in_chunks(Changeset.t(), Enum.t(), Context.t()) :: Changeset.t()
-  defp validate_in_chunks(%Changeset{} = changeset, rows, %{tenant: tenant} = ctx) do
+  @spec process_in_chunks(Changeset.t(), Enum.t(), atom()) :: Changeset.t()
+  defp process_in_chunks(%Changeset{} = changeset, rows, type) do
     chunk_size = Records.validation_response_batch_size()
 
-    Logger.debug("Validating records in chunks of #{chunk_size} rows ...")
+    Logger.debug("Import validation rows in chunks of #{chunk_size} rows ...")
 
-    collection_attributes = Enum.map(Schema.collection_attributes(), & &1.dwc_field)
-
-    attribute_name_pairs =
-      Schema.prefixed_attribute_names_and_dwc_fields()
+    collection_attributes = Helpers.get_collection_attributes(type)
+    attribute_name_pairs = Helpers.get_header_attribute_name_pairs(type)
 
     rows
     |> Stream.chunk_every(chunk_size)
     |> Enum.with_index()
-    |> Stream.map(&Helpers.reject_collection_attributes_from_chunk(&1, collection_attributes))
+    |> Stream.map(&Helpers.add_raw_record_to_chunk/1)
     |> Stream.map(&Helpers.convert_headers_of_chunk(&1, attribute_name_pairs))
-    |> Stream.map(&Helpers.add_raw_record_to_chunk(&1, tenant))
-    |> Stream.map(&validate_chunk(&1, ctx))
+    |> Stream.map(&Helpers.reject_collection_attributes_from_chunk(&1, collection_attributes))
+    |> Stream.map(&Helpers.maybe_convert_values(&1, type))
+    |> Stream.map(&import_chunk(changeset, &1, type))
     |> reduce_validation_results(changeset)
-    |> notify_infospecies()
+    |> NotificationHelpers.notify_infospecies()
   end
 
-  @spec validate_chunk({[map()], integer()}, Context.t()) ::
-          {BulkResult.t(), [map()], [{map(), [Ash.Error.t()]}]}
-  defp validate_chunk({chunk, index}, %{tenant: tenant}) do
-    Logger.debug("Validating chunk ##{index} with #{length(chunk)} rows ...")
+  @spec import_chunk(Changeset.t(), {[map()], integer()}, atom()) ::
+          {[BulkResult.t()], [map()], [{map(), [Ash.Error.t()]}]}
+  defp import_chunk(%Changeset{data: validation_response}, {chunk, index}, type) do
+    Logger.debug("Importing valid chunk ##{index} with #{length(chunk)} rows ...")
 
     max_concurrency = Records.import_max_concurrency()
 
     # will be in structure {[map()], [{map(), [Ash.Error.t()]}]}
     {valid, invalid} =
       chunk
-      |> Task.async_stream(&{&1, Helpers.valid_validation_row(&1)},
+      |> Task.async_stream(&{&1, Helpers.valid_validation_row(&1, type)},
         max_concurrency: max_concurrency,
         timeout: to_timeout(second: 30)
       )
@@ -83,64 +85,50 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
         {:ok, {row, {false, errors}}}, {valid, invalid} -> {valid, [{row, errors} | invalid]}
       end)
 
-    if length(invalid) > 0 do
-      Logger.warning("#{length(invalid)} invalid row(s) dropped from chunk!")
+    invalid_size = length(invalid)
+
+    if invalid_size > 0 do
+      Logger.warning("#{invalid_size} invalid row(s) dropped from chunk!")
     end
 
-    Logger.debug("Validating #{length(valid)} valid rows ...")
+    Logger.debug("Importing #{length(valid)} rows ...")
 
-    res = ValidatedRecord.bulk_validate!(Enum.reverse(valid), tenant: tenant)
+    errors =
+      valid
+      |> Enum.reverse()
+      |> Helpers.upsert_by_tenant!(type)
 
-    {res, valid, invalid}
+    Helpers.add_affected_collections(valid, validation_response)
+
+    {errors, valid, invalid}
   end
 
+  # For each chunk, we process the errors and update the changeset accordingly
+  @spec reduce_validation_results(Enum.t(), Changeset.t()) :: Changeset.t()
   defp reduce_validation_results(results, %Changeset{data: validation_response} = changeset) do
     {path, error_log_file} = Helpers.open_error_log_file(validation_response)
 
     changeset =
       Enum.reduce_while(results, changeset, fn
-        {%BulkResult{status: :success}, validated, invalid}, changeset ->
+        {errors, validated, invalid}, changeset ->
           changeset = report_progress(changeset, length(validated), length(invalid))
 
           Helpers.write_error_log_file(error_log_file, invalid)
 
-          {:cont, changeset}
-
-        {%BulkResult{errors: errors}, validated, invalid}, changeset ->
-          changeset = report_progress(changeset, length(validated), length(invalid))
-
-          changeset = Enum.reduce(errors, changeset, &add_error(&1, &2))
-          {:halt, changeset}
+          if Enum.empty?(errors) do
+            # No errors, continue processing
+            {:cont, changeset}
+          else
+            # There are errors, add them and halt, b'cause we do not want to let the
+            # user wait until a erroneous import file is processed
+            changeset = Enum.reduce(errors, changeset, &add_error(&2, &1))
+            {:halt, changeset}
+          end
       end)
 
     validation_response = Helpers.upload_error_log_file!(path, changeset.data)
 
     %{changeset | data: validation_response}
-  end
-
-  @spec notify_infospecies(Changeset.t()) :: Changeset.t()
-  defp notify_infospecies(changeset) do
-    with {:ok, response} <-
-           RestAPI.notify_infospecies_with_validation_result(changeset.data),
-         :ok <- ensure_status(response) do
-      changeset
-    else
-      {:error, error} ->
-        Logger.warning("Could not notify Infospecies about validation response result: #{inspect(error)}")
-
-        # For now we just log the error and return the changeset without adding an error
-        # add_error(changeset, error)
-        changeset
-    end
-  end
-
-  defp ensure_status(%Req.Response{status: 200}), do: :ok
-
-  defp ensure_status(response) do
-    msg =
-      "No valid response (status #{response.status}) from Infospecies API while notifying about processed validation response: #{inspect(response.body)}"
-
-    {:error, msg}
   end
 
   @spec report_progress(Changeset.t(), non_neg_integer(), non_neg_integer()) :: Changeset.t()

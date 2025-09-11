@@ -47,7 +47,7 @@ defmodule DataAggregator.Taxonomy.Catalogs.InfospeciesCenters do
 
   def translate_center(center) do
     case center do
-      :infofauna -> "info fauna"
+      :infofauna -> "Info Fauna"
       :vogelwarte -> "Schweizerische Vogelwarte"
       :infoflora -> "InfoFlora"
       :swissbryophytes -> "SwissBryophytes"

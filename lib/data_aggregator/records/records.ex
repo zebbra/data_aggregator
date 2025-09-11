@@ -54,6 +54,7 @@ defmodule DataAggregator.Records do
     resource DataAggregator.Records.ValidationResponse.ValidatedRecord
     resource DataAggregator.Records.ValidationRequestRecord
     resource DataAggregator.Records.ValidationRequestRecord.Version
+    resource DataAggregator.Records.ValidationResponseCollection
   end
 
   json_api do

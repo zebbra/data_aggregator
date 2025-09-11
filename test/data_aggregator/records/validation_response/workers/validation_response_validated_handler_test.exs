@@ -1,0 +1,241 @@
+defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseValidatedHandlerTest do
+  @moduledoc false
+
+  use DataAggregator.DataCase, async: true
+  use Mimic
+
+  import DataAggregator.RecordsFixtures
+  import DataAggregator.ValidationResponseFixtures
+
+  alias DataAggregator.Gbif
+  alias DataAggregator.Records.ValidationResponse
+  alias DataAggregator.Records.ValidationResponse.ValidatedRecord
+  alias DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHandler
+
+  describe "DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHandler.perform/1" do
+    setup do
+      stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+
+      collection = collection_fixture(%{name: "Collection NumberO!+ne"})
+
+      records = [
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "GBIFCH00993760",
+          tax_kingdom: "Animalia"
+        }),
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "GBIFCH00993778",
+          tax_kingdom: "Animalia"
+        }),
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "GBIFCH00993789",
+          tax_kingdom: "Animalia"
+        }),
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "GBIFCH00993799",
+          tax_kingdom: "Animalia"
+        }),
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "GBIFCH00995787",
+          tax_kingdom: "Animalia"
+        }),
+        record_fixture(%{
+          collection: collection,
+          mte_catalog_number: "GBIFCH00995788",
+          tax_kingdom: "Plantae"
+        })
+      ]
+
+      validation_response = validation_response_fixture()
+
+      [validation_response: validation_response, records: records, collection: collection]
+    end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 validation response run success", %{
+      validation_response: validation_response
+    } do
+      perform_job(ValidationResponseHandler, %{
+        id: validation_response.id
+      })
+
+      validation_response =
+        ValidationResponse.get_by_id!(validation_response.id)
+
+      assert validation_response.state == :done
+    end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 all ValidatedRecords are created correctly and have the changed values",
+         %{validation_response: validation_response, collection: collection} do
+      {:ok, validation_response} =
+        perform_job(ValidationResponseHandler, %{
+          id: validation_response.id
+        })
+
+      {:ok, validated_records} = ValidatedRecord.read(page: false, tenant: collection)
+
+      assert length(validated_records) == 4
+
+      # ensure all records from the validation layer have now the imported value "Plantae" under tax_kingdom
+      Enum.all?(validated_records, fn record ->
+        assert record.tax_kingdom == "Plantae"
+      end)
+
+      assert validation_response.state == :done
+    end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 only create ValidatedRecords if the input data is valid",
+         %{validation_response: validation_response, collection: collection} do
+      {{:ok, _validation_response}, logs} =
+        with_log(fn ->
+          perform_job(ValidationResponseHandler, %{
+            id: validation_response.id
+          })
+        end)
+
+      {:ok, validated_records} =
+        ValidatedRecord.read(page: false, tenant: collection)
+
+      # we import 6 records but only 4 are valid and raw records exist for them in the db,
+      # so the correct amount should be present and the log should warn us appropriate
+      assert length(validated_records) == 4
+      assert logs =~ "[warning] 2 invalid row(s) dropped from chunk!"
+    end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 all affected records are in state :validated",
+         %{
+           validation_response: validation_response,
+           collection: collection
+         } do
+      {:ok, validation_response} =
+        perform_job(ValidationResponseHandler, %{
+          id: validation_response.id
+        })
+
+      {:ok, validated_records} =
+        ValidatedRecord.read(page: false, load: [:record], tenant: collection)
+
+      # ensure all processed records are now in :validation_status :validated
+      Enum.all?(validated_records, fn validated_record ->
+        assert validated_record.record.validation_status == :validated
+      end)
+
+      assert validation_response.state == :done
+    end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 check if error log is present and correct", %{
+      validation_response: validation_response
+    } do
+      {:ok, validation_response} =
+        perform_job(ValidationResponseHandler, %{
+          id: validation_response.id
+        })
+
+      assert {:ok, validation_response} =
+               validation_response.id
+               |> ValidationResponse.get_by_id()
+               |> Ash.load([:error_log])
+
+      assert validation_response.rows_count == 6
+      assert validation_response.rows_invalid_count == 2
+      assert validation_response.rows_validated_count == 4
+
+      assert validation_response.rows_error_count == 5
+
+      assert validation_response.error_log != nil
+
+      assert {:ok, data_frame} = Explorer.DataFrame.from_csv(validation_response.error_log.url)
+
+      assert Explorer.DataFrame.n_columns(data_frame) == 6
+
+      # only 2 invalid rows are in the file, but 5 errors occure:
+      # line 1: missing collectionCode leads to missing tenant (1) -> leads to
+      #   missing record (2) -> leads to missing collection (3)
+      # line 2: missing catalogNumber leads to missing record (4) -> this leads to missing collection (5)
+      assert Explorer.DataFrame.n_rows(data_frame) == 5
+      data_frame |> Explorer.DataFrame.to_rows() |> assert_lists_equal(expected_errors())
+    end
+
+    @tag capture_log: true
+    test "ValidationResponseHandler.perform/1 has set the correct :affected_collections on validated_record and :validation_responses on collection",
+         %{
+           validation_response: validation_response,
+           collection: collection
+         } do
+      {:ok, validation_response} =
+        perform_job(ValidationResponseHandler, %{
+          id: validation_response.id
+        })
+
+      assert {:ok, validation_response} = Ash.load(validation_response, [:affected_collections])
+
+      assert_lists_equal(
+        validation_response.affected_collections,
+        [collection],
+        &assert_structs_equal(&1, &2, [:id, :name])
+      )
+
+      assert {:ok, collection} = Ash.load(collection, [:validation_responses])
+
+      assert_lists_equal(
+        collection.validation_responses,
+        [validation_response],
+        &assert_structs_equal(&1, &2, [:id])
+      )
+    end
+  end
+
+  defp expected_errors do
+    [
+      %{
+        "catalogNumber" => nil,
+        "field" => "collection_id",
+        "message" => "Field is required but was empty.",
+        "occurrenceID" => "occurrenceID6",
+        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
+        "value" => nil
+      },
+      %{
+        "catalogNumber" => nil,
+        "field" => "record_id",
+        "message" => "Field is required but was empty.",
+        "occurrenceID" => "occurrenceID6",
+        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
+        "value" => nil
+      },
+      %{
+        "catalogNumber" => nil,
+        "field" => "mte_catalog_number",
+        "message" => "Field is required but was empty.",
+        "occurrenceID" => "occurrenceID6",
+        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
+        "value" => nil
+      },
+      %{
+        "catalogNumber" => "GBIFCH00995787",
+        "field" => "collection_id",
+        "message" => "Field is required but was empty.",
+        "occurrenceID" => "occurrenceID5",
+        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
+        "value" => nil
+      },
+      %{
+        "catalogNumber" => "GBIFCH00995787",
+        "field" => "record_id",
+        "message" => "Field is required but was empty.",
+        "occurrenceID" => "occurrenceID5",
+        "scientificName" => "Aphaenogaster subterranea (Latreille, 1798)",
+        "value" => nil
+      }
+    ]
+  end
+end

@@ -5,7 +5,7 @@ defmodule DataAggregator.Records.Record.ExtractAttributesHelpers do
   alias DataAggregator.DarwinCore.Schema
 
   # add here the (db) schema types that need to be converted
-  @attributes_to_convert [:boolean]
+  @attributes_to_convert [:boolean, :string]
                          |> Enum.map(fn type ->
                            Schema.attributes_of_type(type)
                          end)

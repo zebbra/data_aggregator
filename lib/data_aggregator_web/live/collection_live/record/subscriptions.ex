@@ -146,14 +146,14 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
       |> Ash.Query.filter(expr(not_published == true))
       |> Ash.count!()
 
-    count_not_validated =
+    count_validation_unknown =
       Record
       |> Ash.Query.set_tenant(collection)
-      |> Ash.Query.filter(expr(not_validated == true))
+      |> Ash.Query.filter(expr(validation_unknown == true))
       |> Ash.count!()
 
     %{
-      records_count_not_validated: origin_records_count_not_validated,
+      records_count_validation_unknown: origin_records_validation_unknown,
       records_count_not_encoded: origin_records_count_not_encoded,
       records_count_not_published: origin_records_count_not_published
     } = socket.assigns
@@ -161,8 +161,8 @@ defmodule DataAggregatorWeb.CollectionLive.Record.Subscriptions do
     socket
     |> assign(:collection, collection)
     |> assign(
-      :records_count_not_validated,
-      AsyncResult.ok(origin_records_count_not_validated, count_not_validated)
+      :records_count_validation_unknown,
+      AsyncResult.ok(origin_records_validation_unknown, count_validation_unknown)
     )
     |> assign(
       :records_count_not_encoded,

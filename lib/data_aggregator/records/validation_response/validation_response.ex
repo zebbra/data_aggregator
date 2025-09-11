@@ -12,6 +12,8 @@ defmodule DataAggregator.Records.ValidationResponse do
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.ValidationResponse.Changes
+  alias DataAggregator.Records.ValidationResponseCollection
+  alias DataAggregator.Records.ValidationResponseType
 
   @type t :: %ValidationResponse{}
 
@@ -19,6 +21,7 @@ defmodule DataAggregator.Records.ValidationResponse do
     uuid_attribute :id, prefix: "app", public?: true
 
     attribute :file_url, :string, allow_nil?: false, public?: true
+    attribute :type, ValidationResponseType, allow_nil?: false, public?: true
 
     attribute :rows_count, :integer, allow_nil?: true, public?: true
     attribute :rows_invalid_count, :integer, allow_nil?: true, public?: true
@@ -35,9 +38,11 @@ defmodule DataAggregator.Records.ValidationResponse do
     belongs_to :attachment, Attachment, public?: true
     belongs_to :error_log, Attachment, public?: true
 
-    belongs_to :collection, Collection do
+    many_to_many :affected_collections, Collection do
+      through ValidationResponseCollection
+      source_attribute_on_join_resource :validation_response_id
+      destination_attribute_on_join_resource :collection_id
       public? true
-      allow_nil? false
     end
   end
 
@@ -76,13 +81,21 @@ defmodule DataAggregator.Records.ValidationResponse do
     default_accept :*
     defaults [:read, :destroy, :update]
 
-    create :create do
-      primary? true
-      accept [:file_url]
+    update :add_affected_collection do
+      require_atomic? false
+      accept []
       argument :collection, :struct, allow_nil?: false
 
+      change Changes.AddAffectedCollection
+
+      change load(:affected_collections)
+    end
+
+    create :create do
+      primary? true
+      accept [:file_url, :type]
+
       change Changes.SetCount
-      change manage_relationship(:collection, type: :append)
     end
 
     update :enqueue do
@@ -110,7 +123,6 @@ defmodule DataAggregator.Records.ValidationResponse do
 
       change transition_state(:failed)
       change set_attribute(:finished_at, &DateTime.utc_now/0)
-      change Collection.Changes.SetCollectionIdleAfterTransaction
     end
 
     update :run do
@@ -176,26 +188,22 @@ defmodule DataAggregator.Records.ValidationResponse do
     define :set_done
     define :set_running
     define :set_failed
-    define :update_attachment, action: :update_attachment, args: [:attachment]
+    define :update_attachment, args: [:attachment]
     define :add_validation_progress, args: [:validated, :invalid]
     define :update_error_log, args: [:error_log]
+    define :add_affected_collection, args: [:collection]
   end
 
   postgres do
     table "validation_responses"
     repo DataAggregator.Repo
-
-    references do
-      reference :collection, on_delete: :delete, on_update: :update
-      reference :attachment, on_delete: :delete, on_update: :update, index?: true
-    end
   end
 
   json_api do
     type "validation_responses"
 
     routes do
-      base "/datasets/:collection_id/validation_responses"
+      base "/validation_responses"
 
       get :read
       index :read
@@ -205,10 +213,5 @@ defmodule DataAggregator.Records.ValidationResponse do
 
       patch :enqueue, route: "/:id/enqueue"
     end
-  end
-
-  multitenancy do
-    strategy :attribute
-    attribute :collection_id
   end
 end

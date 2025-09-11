@@ -24,6 +24,7 @@ classDiagram
         Export[] exports
         Record[] records
         ImageUpload[] image_uploads
+        Collection[] validation_responses
         update(Integer items_to_digitize, String owner, String name, String code, ...)
         read()
         create(Integer items_to_digitize, String owner, String name, String code, ...)
@@ -1183,6 +1184,7 @@ classDiagram
         PublicationStatusType publication_status
         ValidationStatusType validation_status
         String iucn_redlist_category
+        String validation_annotation
         UtcDatetime last_validation_started_at
         UtcDatetime last_imported_at
         UtcDatetimeUsec inserted_at
@@ -1313,6 +1315,7 @@ classDiagram
     class ValidationResponse {
         UUID id
         String file_url
+        ValidationResponseType type
         Integer rows_count
         Integer rows_invalid_count
         Integer rows_validated_count
@@ -1323,18 +1326,18 @@ classDiagram
         UtcDatetimeUsec updated_at
         UUID attachment_id
         UUID error_log_id
-        UUID collection_id
         Atom state
         Attachment attachment
         Attachment error_log
-        Collection collection
-        update(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
+        Collection[] affected_collections
+        update(String file_url, ValidationResponseType type, Integer rows_count, Integer rows_invalid_count, ...)
         destroy()
         read()
-        create(Struct collection, String file_url)
+        add_affected_collection(Struct collection)
+        create(String file_url, ValidationResponseType type)
         enqueue()
         set_running()
-        set_failed(String file_url, Integer rows_count, Integer rows_invalid_count, Integer rows_validated_count, ...)
+        set_failed(String file_url, ValidationResponseType type, Integer rows_count, Integer rows_invalid_count, ...)
         run()
         set_done()
         update_attachment(Struct attachment)
@@ -1680,6 +1683,11 @@ classDiagram
         destroy()
         read()
     }
+    class ValidationResponseCollection {
+        create()
+        destroy()
+        read()
+    }
 
     User -- Version
     User -- Export
@@ -1697,6 +1705,7 @@ classDiagram
     Attachment -- Image
     Attachment -- ValidationRequest
     Attachment -- ValidationResponse
+    Collection -- Collection
     Collection -- EncodedRecord
     Collection -- RecordEncodingResult
     Collection -- Export
@@ -1711,6 +1720,7 @@ classDiagram
     Collection -- ValidationRequestRecord
     Collection -- ValidationResponse
     Collection -- ValidatedRecord
+    Collection -- ValidationResponseCollection
     EncodedRecord -- Version
     EncodedRecord -- Record
     EncodedRecord -- SwissSpecies
@@ -1726,5 +1736,6 @@ classDiagram
     Record -- ValidationRequestRecord
     Record -- ValidatedRecord
     ValidationRequestRecord -- Version
+    ValidationResponse -- ValidationResponseCollection
 
 ```

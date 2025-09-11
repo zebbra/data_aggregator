@@ -14,7 +14,6 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHa
   ## Arguments
 
   * `id` - the ID of the ValidationResponse to run
-  * `collection_id` - the ID of the collection to validate
 
   """
 
@@ -26,11 +25,11 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHa
   require Logger
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"id" => id, "collection_id" => collection_id}}) do
+  def perform(%Oban.Job{args: %{"id" => id}}) do
     with {:ok, validation_response} <-
-           ValidationResponse.get_by_id(id, load: :collection, tenant: collection_id) do
+           ValidationResponse.get_by_id(id) do
       Logger.info("Running ValidationResponse #{inspect(validation_response.id)} ...")
-      ValidationResponse.run(validation_response, tenant: validation_response.collection)
+      ValidationResponse.run(validation_response)
     end
   end
 

@@ -47,14 +47,19 @@ Data Aggregator is an open-source tool designed to integrate biodiversity data i
    mix deps.get
    ```
 
-3. Configure the database (copy `config/dev.exs.example` to `config/dev.exs` if available and update settings)
+3. Copy `.env.example` to `.env` and update settings according to your needs)
 
 4. Create and migrate your database and build assets
    ```bash
    mix setup
    ```
 
-5. Start the Phoenix server
+5. create test user
+  ```bash
+  mix users.create
+  ```
+
+6. Start the Phoenix server
    ```bash
    mix phx.server
    ```
