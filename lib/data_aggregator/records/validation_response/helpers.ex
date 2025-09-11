@@ -82,11 +82,21 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
       nil ->
         {false, [%{message: "Record not found"}]}
 
-      record ->
-        changeset =
-          Record.changeset_to_update(record, %{validation_annotation: row["annotation"]})
+      %Record{} ->
+        {true, []}
 
-        {changeset.valid?, changeset.errors}
+      unknown ->
+        message =
+          "[Validation response import :validated] Error while looking for record on validation response import row: #{inspect(row)}, found: #{inspect(unknown)}"
+
+        Logger.error(message)
+
+        {false,
+         [
+           %{
+             message: message
+           }
+         ]}
     end
   end
 
