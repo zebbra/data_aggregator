@@ -54,6 +54,29 @@
           />
         </.link>
       </li>
+      <li>
+        <.link
+          navigate={~p"/validation_responses"}
+          class={[
+            "flex active:!bg-primary md:flex-col md:p-3",
+            @current == "validation_responses" &&
+              "bg-primary text-primary-content hover:bg-primary"
+          ]}
+          aria-describedby="validation_responses_tooltip"
+        >
+          <.icon name="hero-squares-2x2" />
+          <span class="md:hidden lg:inline">{~t"Validation Responses"m}</span>
+          <.fui_tooltip
+            id="validation_responses_tooltip"
+            content={~t"Validation Responses"}
+            visibility_class="hidden md:hidden lg:hidden"
+            show_class="md:block"
+            hide_class="md:hidden"
+            placement="right"
+            data-portal="portal_root_static"
+          />
+        </.link>
+      </li>
       <%= if DataAggregator.Accounts.User.can_update?(@current_user, %DataAggregator.Accounts.User{}) do %>
         <li>
           <.link

@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.ValidationResponse do
     extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine]
 
   alias __MODULE__
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.ValidationResponse.Changes
@@ -37,6 +38,8 @@ defmodule DataAggregator.Records.ValidationResponse do
   relationships do
     belongs_to :attachment, Attachment, public?: true
     belongs_to :error_log, Attachment, public?: true
+    belongs_to :created_by, User, public?: true
+    belongs_to :started_by, User, public?: true
 
     many_to_many :affected_collections, Collection do
       through ValidationResponseCollection
@@ -96,6 +99,15 @@ defmodule DataAggregator.Records.ValidationResponse do
       accept [:file_url, :type]
 
       change Changes.SetCount
+    end
+
+    create :create_from_path do
+      accept [:created_by_id, :type, :file_url]
+      argument :path, :string, allow_nil?: false
+      argument :filename, :string, allow_nil?: true
+      change Changes.CreateAttachment
+      # TODO: change setcount for attachment instead of file_url
+      change load([:attachment_filename, :attachment_byte_size])
     end
 
     update :enqueue do
@@ -192,6 +204,7 @@ defmodule DataAggregator.Records.ValidationResponse do
     define :add_validation_progress, args: [:validated, :invalid]
     define :update_error_log, args: [:error_log]
     define :add_affected_collection, args: [:collection]
+    define :create_from_path, args: [:path, :filename]
   end
 
   postgres do
