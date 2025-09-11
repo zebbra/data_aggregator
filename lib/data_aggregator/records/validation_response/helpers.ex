@@ -87,7 +87,7 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
 
       unknown ->
         message =
-          "[Validation response import :validated] Error while looking for record on validation response import row: #{inspect(row)}, found: #{inspect(unknown)}"
+          "[Validation response import :not_validated] Error while looking for record on validation response import row: #{inspect(row)}, found: #{inspect(unknown)}"
 
         Logger.error(message)
 
