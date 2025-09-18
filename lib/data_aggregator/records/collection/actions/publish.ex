@@ -32,6 +32,8 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
 
   @record_attributes Enum.map(Schema.prefixed_attributes(), &Map.get(&1, :name))
 
+  @uncertainty_in_meters 3535
+
   @impl true
   def run(input, _opts, %{tenant: tenant} = ctx) do
     publication = input.arguments.publication
@@ -196,6 +198,7 @@ defmodule DataAggregator.Records.Collection.Actions.Publish do
         record
         |> Map.put(:loc_decimal_longitude, x)
         |> Map.put(:loc_decimal_latitude, y)
+        |> Map.put(:loc_coordinate_uncertainty_in_meters, @uncertainty_in_meters)
 
       {:error, %NotFound{}} ->
         record
