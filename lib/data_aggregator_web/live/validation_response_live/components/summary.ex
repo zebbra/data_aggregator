@@ -6,9 +6,37 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Summary do
   use DataAggregatorWeb, :live_component
 
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
-  import DataAggregatorWeb.CollectionLive.Import.Helpers, only: [current_step: 1, can_run?: 1]
 
-  alias DataAggregator.Records.ValidationResponse
+  alias DataAggregator.Records.ValidationResponse.Helpers
+
+  @impl true
+  def update(%{validation_response: validation_response} = assigns, socket) do
+    validation_response = Ash.load!(validation_response, [:attachment])
+
+    dataframe =
+      validation_response.attachment.url
+      |> Helpers.fetch_file_from_url()
+      |> Helpers.extract_csv_content()
+      |> Explorer.DataFrame.load_csv!()
+
+    collection_data =
+      dataframe
+      |> Explorer.DataFrame.frequencies(["collectionCode", "datasetName", "institutionCode"])
+      |> Explorer.DataFrame.to_rows(atom_keys: true)
+
+    center_data =
+      dataframe
+      |> Explorer.DataFrame.frequencies(["center"])
+      |> Explorer.DataFrame.to_rows(atom_keys: true)
+
+    socket =
+      socket
+      |> assign(:collection_data, collection_data)
+      |> assign(:center_data, center_data)
+      |> assign(:validation_response, validation_response)
+
+    {:ok, assign(socket, assigns)}
+  end
 
   @impl true
   def render(assigns) do
@@ -51,14 +79,38 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Summary do
             </p>
 
             <div>
-              <.list dense>
-                <:item title={~t"Title"m}>
-                  test
-                </:item>
-                <:item title={~t"Title"m}>
-                  test
-                </:item>
-              </.list>
+              <.table items={@center_data}>
+                <:col :let={data} label={~t"Center"m}>
+                  {data.center}
+                </:col>
+                <:col :let={data} label={~t"Count"m}>
+                  {data.counts}
+                </:col>
+              </.table>
+            </div>
+
+            <p class="text-sm">
+              {mgettext(
+                "You are importing %{type} records to:",
+                type: type(@validation_response.type)
+              )}
+            </p>
+
+            <div>
+              <.table items={@collection_data}>
+                <:col :let={data} label={~t"Dataset"m}>
+                  {data.datasetName}
+                </:col>
+                <:col :let={data} label={~t"Dataset Code"m}>
+                  {data.collectionCode}
+                </:col>
+                <:col :let={data} label={~t"Institution Code"m}>
+                  {data.institutionCode}
+                </:col>
+                <:col :let={data} label={~t"Count"m}>
+                  {data.counts}
+                </:col>
+              </.table>
             </div>
           </div>
         </div>
@@ -80,6 +132,14 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Summary do
       </.modal_footer>
     </div>
     """
+  end
+
+  @impl true
+  def handle_event("validation_response:run", _params, socket) do
+    # TODO: start validation response
+    dbg(socket)
+
+    {:noreply, socket}
   end
 
   defp type(:validated), do: ~t"validated"m

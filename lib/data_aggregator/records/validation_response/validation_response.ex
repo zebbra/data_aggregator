@@ -21,7 +21,6 @@ defmodule DataAggregator.Records.ValidationResponse do
   attributes do
     uuid_attribute :id, prefix: "app", public?: true
 
-    attribute :file_url, :string, allow_nil?: false, public?: true
     attribute :type, ValidationResponseType, allow_nil?: false, public?: true
 
     attribute :rows_count, :integer, allow_nil?: true, public?: true
@@ -96,17 +95,15 @@ defmodule DataAggregator.Records.ValidationResponse do
 
     create :create do
       primary? true
-      accept [:file_url, :type]
-
-      change Changes.SetCount
+      accept [:type]
     end
 
     create :create_from_path do
-      accept [:created_by_id, :type, :file_url]
+      accept [:created_by_id, :type]
       argument :path, :string, allow_nil?: false
       argument :filename, :string, allow_nil?: true
       change Changes.CreateAttachment
-      # TODO: change setcount for attachment instead of file_url
+      # change Changes.SetCount
       change load([:attachment_filename, :attachment_byte_size])
     end
 

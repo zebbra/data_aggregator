@@ -17,7 +17,6 @@ defmodule DataAggregator.ValidationResponseTest do
 
   describe "validation responses" do
     @invalid_attrs %{
-      file_url: nil,
       type: nil
     }
 

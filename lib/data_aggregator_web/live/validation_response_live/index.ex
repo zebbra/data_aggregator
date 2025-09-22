@@ -114,15 +114,6 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
                 <span class="px-1.5">{@selected_validation_response.state}</span>
               </.badge>
             </:item>
-            <:item title={~t"File URL"m}>
-              <a
-                href={@selected_validation_response.file_url}
-                target="_blank"
-                class="text-blue-600 underline hover:text-blue-800"
-              >
-                {@selected_validation_response.file_url}
-              </a>
-            </:item>
             <:item title={~t"Row Counts"m}>
               <div class="space-y-1">
                 <div>Total: {@selected_validation_response.rows_count || 0}</div>
@@ -257,6 +248,4 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
     />
     """
   end
-
-  defp noreply(socket), do: {:noreply, socket}
 end

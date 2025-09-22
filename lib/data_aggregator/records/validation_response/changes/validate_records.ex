@@ -20,11 +20,11 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
   end
 
   defp import_validation_data(%Changeset{} = changeset) do
-    file_url = Changeset.get_attribute(changeset, :file_url)
+    attachment_url = Changeset.get_attribute(changeset, :attachment_url)
     type = Changeset.get_attribute(changeset, :type)
 
     csv_content =
-      file_url
+      attachment_url
       |> Helpers.fetch_file_from_url()
       |> Helpers.extract_csv_content()
 

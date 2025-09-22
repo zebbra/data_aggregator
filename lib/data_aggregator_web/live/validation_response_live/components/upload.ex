@@ -238,7 +238,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Upload do
     ValidationResponse.create_from_path(
       path,
       entry.client_name,
-      %{created_by_id: actor.id, type: type, file_url: "testy"}
+      %{created_by_id: actor.id, type: type}
     )
   end
 
