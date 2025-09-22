@@ -180,6 +180,7 @@ defmodule DataAggregator.Records.Collection do
 
     update :update_import_mapping do
       accept [:import_mapping]
+      require_atomic? false
     end
 
     update :touch do

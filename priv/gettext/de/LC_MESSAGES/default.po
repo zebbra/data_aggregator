@@ -2116,12 +2116,12 @@ msgctxt "DataAggregatorWeb.CollectionLive.Index"
 msgid "Institution Code"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:71
+#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:56
 #, elixir-autogen, elixir-format
 msgid "Center"
 msgstr "Zenter"
 
-#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:74
+#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:59
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Count"
 msgstr "Anzahl"
@@ -3647,26 +3647,26 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.Index"
 msgid "Validation status"
 msgstr "Validierung"
 
-#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:64
+#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:49
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
 msgid "Based on the information provided, we will create exports towards the following centers:"
 msgstr "Anhand der bereitgestellten Informationen werden wir Exporte an die folgenden Zentren erstellen:"
 
-#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:102
+#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:104
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:83
+#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:68
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
 msgid "There are no Swiss specimen availabe. Either your specimen are outside of Switzerland or you have applied a too restrictive filter."
 msgstr "Es sind keine Schweizer Exemplare verfügbar. Entweder sind deine Exemplare ausserhalb der Schweiz oder du hast einen zu restriktiven Filter angewendet."
 
-#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:88
-#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:99
+#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:90
+#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:101
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
 msgid "Validate"
@@ -5062,34 +5062,22 @@ msgstr "Validierung"
 msgid "layer"
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:88
+#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:90
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
 msgid ", the records will be processed. Export files will be created and automatically sent to the specific Swiss data centers. No further action is required. Please note that this process may take some time."
 msgstr ""
 
-#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:87
+#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:89
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
 msgid "By clicking on"
 msgstr "Indem Du auf"
 
-#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:60
+#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:85
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
 msgid "Each record will be manually reviewed and validated by the staff at each InfoSpecies center. Their feedback on the records will be available on DAGI at the end of the process."
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:42
-#, elixir-autogen, elixir-format
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
-msgid "In addition to the filters provided, we also add the restriction for all records that the"
-msgstr ""
-
-#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:52
-#, elixir-autogen, elixir-format, fuzzy
-msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
-msgid "Please note that only Swiss specimens will be processed. All other specimen will be ignored during the validation process."
 msgstr ""
 
 #: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:32
@@ -5098,14 +5086,26 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
 msgid "You are about to send %{count} records for validation by InfoSpecies. These records will be reviewed and validated individually."
 msgstr "Du bist dabei %{count} Einträge zur Genehmigung durch InfoSpecies zu senden. Diese Einträge werden überprüft, validiert und schliesslich auf GBIForg veröffentlicht."
 
+#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:42
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
+msgid "Please note that only Swiss specimens will be processed. All other specimens will be ignored. Records must have both"
+msgstr ""
+
+#: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:77
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
+msgid "Records that have not changed since the last validation request will be ignored and will not be sent for validation."
+msgstr ""
+
 #: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:44
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
-msgid "attribute must be set."
+msgid "attributes set."
 msgstr "Attribut"
 
 #: lib/data_aggregator_web/live/collection_live/record/validation_modal.ex:43
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
-msgid "kingdom "
+msgid "kingdom and taxonID"
 msgstr "Reich"
