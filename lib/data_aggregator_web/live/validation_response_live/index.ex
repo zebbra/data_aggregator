@@ -5,7 +5,14 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
 
   import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
+  import DataAggregatorWeb.ValidationResponseLive.Components,
+    only: [validation_response_state_badge: 1, validation_response_type_badge: 1]
+
+  import DataAggregatorWeb.ValidationResponseLive.Helpers
+
   alias DataAggregator.Records.ValidationResponse
+
+  @load load()
 
   @impl true
   def mount(_params, _session, socket) do
@@ -20,6 +27,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
       {:ok, {validation_responses, meta}} ->
         socket
         |> assign(meta: meta)
+        |> assign(show_error_log_preview: false)
         |> stream(:results, validation_responses, reset: true)
         |> apply_action(socket.assigns.live_action, params)
         |> noreply()
@@ -63,21 +71,32 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
           end
         }
       >
-        <:col :let={{_id, validation_response}} field={:id} label={~t"ID"m}>
-          {validation_response.id}
+        <:col :let={{_id, validation_response}} field={:state} label={~t"State"m}>
+          <.validation_response_state_badge validation_response={validation_response} />
         </:col>
         <:col :let={{_id, validation_response}} field={:type} label={~t"Type"m}>
-          <.badge color="blue" class="mt-0.5">
-            <span class="px-1.5">{validation_response.type}</span>
-          </.badge>
+          <.validation_response_type_badge type={validation_response.type} />
         </:col>
-        <:col :let={{_id, validation_response}} field={:state} label={~t"State"m}>
-          <.badge color={state_color(validation_response.state)} class="mt-0.5">
-            <span class="px-1.5">{validation_response.state}</span>
-          </.badge>
+        <:col :let={{_id, validation_response}} label={~t"File"m}>
+          <.file_info show_rows={false} attachment={validation_response.attachment} />
         </:col>
-        <:col :let={{_id, validation_response}} field={:rows_count} label={~t"Total Rows"m}>
-          {validation_response.rows_count || 0}
+        <:col :let={{_id, validation_response}} label={~t"Size"m}>
+          <.attachment_download_badge attachment={validation_response.attachment} />
+        </:col>
+        <:col :let={{_id, validation_response}} field={:inserted_at} label={~t"Created at"m}>
+          {format_datetime(validation_response.inserted_at, format: :short)}
+        </:col>
+        <:col :let={{_id, validation_response}} field={:created_by} label={~t"Created by"m}>
+          {maybe_set_user(validation_response.created_by)}
+        </:col>
+        <:col :let={{_id, validation_response}} field={:started_at} label={~t"Started at"m}>
+          {format_datetime(validation_response.started_at, format: :short)}
+          <div :if={validation_response.duration} class="text-base-content/60 text-xs">
+            {validation_response.duration}
+          </div>
+        </:col>
+        <:col :let={{_id, validation_response}} field={:started_by} label={~t"Started by"m}>
+          {maybe_set_user(validation_response.started_by)}
         </:col>
         <:col :let={{_id, validation_response}} field={:rows_validated_count} label={~t"Validated"m}>
           {validation_response.rows_validated_count || 0}
@@ -88,66 +107,155 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
         <:col :let={{_id, validation_response}} field={:rows_error_count} label={~t"Errors"m}>
           {validation_response.rows_error_count || 0}
         </:col>
-        <:col :let={{_id, validation_response}} field={:inserted_at} label={~t"Created"m}>
-          {Calendar.strftime(validation_response.inserted_at, "%Y-%m-%d %H:%M")}
-        </:col>
       </.table>
       <.pagination meta={@meta} path={~p"/validation_responses"} />
       <:secondary>
         <.slideover
-          title={validation_response_title(@selected_validation_response)}
+          title={~t"Show Validation Response"}
           open={@selected_validation_response != nil}
           on_cancel={JS.push("validation_response:select", value: %{id: nil})}
           size="xl"
         >
           <.list :if={@selected_validation_response}>
+            <:item title={~t"File"m}>
+              <.file_info
+                show_rows={false}
+                attachment={@selected_validation_response.attachment}
+                badge
+              />
+            </:item>
+            <:item title={~t"Created by"m}>
+              {maybe_set_user(@selected_validation_response.created_by)}
+            </:item>
+            <:item title={~t"Created at"m}>
+              {format_datetime(@selected_validation_response.inserted_at)}
+            </:item>
             <:item title={~t"ID"m}>
               {@selected_validation_response.id}
             </:item>
             <:item title={~t"Type"m}>
-              <.badge color="blue" class="mt-0.5">
-                <span class="px-1.5">{@selected_validation_response.type}</span>
-              </.badge>
+              <.validation_response_type_badge type={@selected_validation_response.type} />
             </:item>
             <:item title={~t"State"m}>
-              <.badge color={state_color(@selected_validation_response.state)} class="mt-0.5">
-                <span class="px-1.5">{@selected_validation_response.state}</span>
-              </.badge>
+              <.validation_response_state_badge validation_response={@selected_validation_response} />
             </:item>
-            <:item title={~t"Row Counts"m}>
-              <div class="space-y-1">
-                <div>Total: {@selected_validation_response.rows_count || 0}</div>
-                <div>Validated: {@selected_validation_response.rows_validated_count || 0}</div>
-                <div>Invalid: {@selected_validation_response.rows_invalid_count || 0}</div>
-                <div>Errors: {@selected_validation_response.rows_error_count || 0}</div>
+            <:item title={~t"Total Rows"}>
+              {@selected_validation_response.rows_count || 0}
+            </:item>
+            <:item title={~t"Valid Rows"}>
+              {@selected_validation_response.rows_validated_count || 0}
+            </:item>
+            <:item title={~t"Invalid Rows"}>
+              {@selected_validation_response.rows_invalid_count || 0}
+            </:item>
+            <:item title={~t"Errors"}>
+              {@selected_validation_response.rows_error_count || 0}
+            </:item>
+            <:item title={~t"Error Log"m}>
+              <div class="flex flex-col">
+                <div :if={@selected_validation_response.rows_invalid_count not in [0, nil]}>
+                  <div class="text-error">
+                    {~t"detected errors:"m} {format_number(
+                      @selected_validation_response.rows_error_count
+                    )}
+                  </div>
+                  <div class="inline-flex gap-1">
+                    <.link
+                      data-tip={~t"Preview error log"m}
+                      class="tooltip gap-x-1 self-center rounded-full bg-blue-100 px-1.5 pb-0.5 text-xs font-medium text-blue-500 opacity-75 hover:opacity-100"
+                      phx-click="show:error_log_preview"
+                      aria-label={~t"Open error log preview"m}
+                    >
+                      <.icon name="hero-eye-mini" class="size-3 shrink-0" />
+                    </.link>
+                    <div class="tooltip flex h-10 self-center" data-tip={~t"Download error log"}>
+                      <.file_info
+                        show_file_name={false}
+                        attachment={@selected_validation_response.error_log}
+                        rows={@selected_validation_response.rows_error_count}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  :if={@selected_validation_response.rows_invalid_count in [0, nil]}
+                  class="text-italic"
+                >
+                  <%= if @selected_validation_response.state == :failed do %>
+                    <div class="text-error">
+                      {~t"An unknown error occurred"m}
+                    </div>
+                  <% else %>
+                    {~t"No errors found"m}
+                  <% end %>
+                </div>
               </div>
             </:item>
-            <:item title={~t"Timestamps"m}>
-              <div class="space-y-1">
-                <div>
-                  Created: {Calendar.strftime(
-                    @selected_validation_response.inserted_at,
-                    "%Y-%m-%d %H:%M:%S"
-                  )}
-                </div>
-                <div :if={@selected_validation_response.started_at}>
-                  Started: {Calendar.strftime(
-                    @selected_validation_response.started_at,
-                    "%Y-%m-%d %H:%M:%S"
-                  )}
-                </div>
-                <div :if={@selected_validation_response.finished_at}>
-                  Finished: {Calendar.strftime(
-                    @selected_validation_response.finished_at,
-                    "%Y-%m-%d %H:%M:%S"
-                  )}
-                </div>
+            <:item title={~t"Started by"m}>
+              {maybe_set_user(@selected_validation_response.started_by)}
+            </:item>
+            <:item title={~t"Started at"m}>
+              <div :if={@selected_validation_response.finished_at == nil}>
+                {format_datetime(@selected_validation_response.started_at)}
               </div>
+              <div :if={@selected_validation_response.finished_at != nil}>
+                {format_date_interval(
+                  @selected_validation_response.started_at,
+                  @selected_validation_response.finished_at
+                )}
+              </div>
+              {@selected_validation_response.duration}
             </:item>
           </.list>
         </.slideover>
       </:secondary>
       <:portal>
+        <.modal
+          :if={
+            @selected_validation_response != nil and @selected_validation_response.error_log != nil
+          }
+          id="import_error_log_preview_modal"
+          show={@show_error_log_preview}
+          title={~t"Import Errors"}
+          responsive
+          on_cancel={JS.push("hide:error_log_preview")}
+          size="5xl"
+        >
+          <.table
+            opts={[
+              container_attrs: [
+                class: "overflow-x-auto -mx-6 lg:-mx-8"
+              ]
+            ]}
+            items={error_log_preview_data(@selected_validation_response.error_log)}
+          >
+            <:col :let={error} label={~t"Catalog Number"m}>
+              {error[:catalogNumber]}
+            </:col>
+            <:col :let={error} label={~t"Scientific Name"m}>
+              {error[:scientificName]}
+            </:col>
+            <:col :let={error} label={~t"Field"}>
+              {error[:field]}
+            </:col>
+            <:col :let={error} label={~t"Value"}>
+              {error[:value]}
+            </:col>
+            <:col :let={error} label={~t"Error message"} class="text-right">
+              {error[:message]}
+            </:col>
+          </.table>
+
+          <:footer reverse={false}>
+            <div class="inline-flex gap-2 py-2">
+              <.attachment_download_badge attachment={@selected_validation_response.error_log} />
+              <span class="text-base/6 self-center text-xs italic">
+                {~t"Only the first 100 rows will be shown. Download the file to have the complete log"}
+              </span>
+            </div>
+          </:footer>
+        </.modal>
+
         <.modal
           id="validation_response_modal"
           show={@live_action in [:new, :summary]}
@@ -172,6 +280,16 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
   end
 
   @impl true
+  def handle_event("show:error_log_preview", _, socket) do
+    {:noreply, assign(socket, :show_error_log_preview, true)}
+  end
+
+  @impl true
+  def handle_event("hide:error_log_preview", _, socket) do
+    {:noreply, assign(socket, :show_error_log_preview, false)}
+  end
+
+  @impl true
   def handle_event("validation_response:select", %{"id" => nil}, socket) do
     {:noreply, assign(socket, :selected_validation_response, nil)}
   end
@@ -183,35 +301,8 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
     {:noreply, assign(socket, :selected_validation_response, validation_response)}
   end
 
-  @impl true
-  def handle_event("save", %{"file_url" => file_url, "type" => type}, socket) do
-    # TODO: Implement actual validation response creation logic
-    {:noreply,
-     socket
-     |> put_flash(
-       :info,
-       "Validation response creation not yet implemented. File URL: #{file_url}, Type: #{type}"
-     )
-     |> push_patch(to: ~p"/validation_responses")}
-  end
-
-  defp validation_response_title(nil), do: ""
-
-  defp validation_response_title(validation_response), do: "Validation Response #{validation_response.id}"
-
   defp get_validation_response(id, actor) do
-    ValidationResponse.get_by_id!(id, actor: actor)
-  end
-
-  defp state_color(state) do
-    case state do
-      :pending -> "yellow"
-      :queued -> "blue"
-      :running -> "purple"
-      :done -> "green"
-      :failed -> "red"
-      _ -> "gray"
-    end
+    ValidationResponse.get_by_id!(id, actor: actor, load: @load)
   end
 
   defp apply_action(socket, :index, _params) do
@@ -227,7 +318,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
   end
 
   defp apply_action(socket, :summary, %{"id" => id}) do
-    validation_response = id |> ValidationResponse.get_by_id!(actor: get_actor(socket)) |> dbg()
+    validation_response = ValidationResponse.get_by_id!(id, actor: get_actor(socket))
 
     socket
     |> assign(:page_title, ~t"Validation Response Summary"m)
@@ -235,8 +326,21 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
   end
 
   defp list_validation_responses(params, actor, opts \\ []) do
-    opts = Keyword.put(opts, :actor, actor)
+    opts = opts |> Keyword.put(:actor, actor) |> Keyword.put(:load, @load)
     AshPagify.validate_and_run(ValidationResponse, params, opts)
+  end
+
+  defp error_log_preview_data(error_log) do
+    error_log = Ash.load!(error_log, [:url], lazy?: true)
+
+    case Explorer.DataFrame.from_csv(error_log.url, max_rows: 100) do
+      {:ok, df} ->
+        Explorer.DataFrame.to_rows(df, atom_keys: true)
+
+      {:error, _} ->
+        # :error happens if the csv file is empty, so we return an empty list
+        []
+    end
   end
 
   def no_results_content(assigns \\ %{}) do

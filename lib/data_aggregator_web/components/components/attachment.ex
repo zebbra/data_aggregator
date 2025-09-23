@@ -68,10 +68,18 @@ defmodule DataAggregatorWeb.Components.Attachment do
     """
   end
 
-  defp maybe_badge_with_rows(%{badge: true, attachment: attachment} = assigns) when attachment != nil do
+  defp maybe_badge_with_rows(%{badge: true, show_rows: true, attachment: attachment} = assigns) when attachment != nil do
     ~H"""
     <div class="text-base-content/60 flex items-center gap-x-2 text-xs">
       <.attachment_download_badge attachment={@attachment} /> {format_number(@rows)} {~t"rows"m}
+    </div>
+    """
+  end
+
+  defp maybe_badge_with_rows(%{badge: true, attachment: attachment} = assigns) when attachment != nil do
+    ~H"""
+    <div class="text-base-content/60 flex items-center gap-x-2 text-xs">
+      <.attachment_download_badge attachment={@attachment} />
     </div>
     """
   end

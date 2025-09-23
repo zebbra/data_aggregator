@@ -172,9 +172,8 @@ defmodule DataAggregator.ValidationResponseTest do
         &assert_structs_equal(&1, &2, [:id])
       )
 
-      dbg(collection2)
       # check if deletions of collections are handled correctly
-      assert :ok = collection2 |> Collection.destroy() |> dbg()
+      assert :ok = Collection.destroy(collection2)
       assert {:ok, validation_response} = Ash.load(validation_response, [:affected_collections])
 
       assert_lists_equal(

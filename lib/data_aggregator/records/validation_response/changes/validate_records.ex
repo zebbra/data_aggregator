@@ -20,11 +20,11 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
   end
 
   defp import_validation_data(%Changeset{} = changeset) do
-    attachment_url = Changeset.get_attribute(changeset, :attachment_url)
+    attachment = changeset.data |> Ash.load!(:attachment) |> Map.get(:attachment)
     type = Changeset.get_attribute(changeset, :type)
 
     csv_content =
-      attachment_url
+      attachment.url
       |> Helpers.fetch_file_from_url()
       |> Helpers.extract_csv_content()
 

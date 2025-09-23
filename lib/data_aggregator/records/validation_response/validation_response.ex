@@ -57,6 +57,8 @@ defmodule DataAggregator.Records.ValidationResponse do
       load attachment: :url
     end
 
+    calculate :duration, :time, expr((finished_at || now()) - started_at)
+
     calculate :attachment_byte_size, :integer, expr(attachment.byte_size)
     calculate :attachment_filename, :string, expr(attachment.filename)
   end
@@ -108,7 +110,7 @@ defmodule DataAggregator.Records.ValidationResponse do
     end
 
     update :enqueue do
-      accept []
+      accept [:started_by_id]
       require_atomic? false
 
       change transition_state(:queued)

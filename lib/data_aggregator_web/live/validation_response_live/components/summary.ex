@@ -181,17 +181,14 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Summary do
 
   @impl true
   def handle_event("validation_response:run", _params, socket) do
-    # TODO: start validation response
-    dbg(socket)
     actor = get_actor(socket)
 
     case ValidationResponse.enqueue(
            socket.assigns.validation_response,
+           %{started_by_id: actor.id},
            actor: actor
          ) do
       {:ok, _} ->
-        dbg("----------- testy")
-
         {:noreply,
          socket
          |> put_flash(:info, ~t"Validation Response ingestion started in background"m)

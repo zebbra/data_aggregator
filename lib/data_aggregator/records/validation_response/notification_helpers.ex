@@ -33,7 +33,7 @@ defmodule DataAggregator.Records.ValidationResponse.NotificationHelpers do
         |> Ash.Query.filter("collection_administrator" in roles)
         |> Ash.read()
 
-      to_mails = Enum.map(users, & &1.email)
+      to_mails = Enum.map(users, &to_string(&1.email))
 
       new()
       |> from(System.get_env("MAILBOX_FROM") || "museums.tovalidate@gbif.ch")
