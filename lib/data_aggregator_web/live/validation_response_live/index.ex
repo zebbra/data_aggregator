@@ -227,7 +227,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
   end
 
   defp apply_action(socket, :summary, %{"id" => id}) do
-    validation_response = ValidationResponse.get_by_id!(id, actor: get_actor(socket))
+    validation_response = id |> ValidationResponse.get_by_id!(actor: get_actor(socket)) |> dbg()
 
     socket
     |> assign(:page_title, ~t"Validation Response Summary"m)

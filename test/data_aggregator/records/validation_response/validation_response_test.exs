@@ -57,13 +57,13 @@ defmodule DataAggregator.ValidationResponseTest do
       validation_response = validation_response_fixture()
 
       update_attrs = %{
-        file_url: "test/support/fixtures/files/NEW-validation_dwca.zip"
+        rows_count: 1
       }
 
       assert {:ok, %ValidationResponse{} = validation_response} =
                ValidationResponse.update(validation_response, update_attrs)
 
-      assert validation_response.file_url == "test/support/fixtures/files/NEW-validation_dwca.zip"
+      assert validation_response.rows_count == 1
     end
 
     test "update/2 with invalid data returns error changeset" do
@@ -172,8 +172,9 @@ defmodule DataAggregator.ValidationResponseTest do
         &assert_structs_equal(&1, &2, [:id])
       )
 
+      dbg(collection2)
       # check if deletions of collections are handled correctly
-      assert :ok = Collection.destroy(collection2)
+      assert :ok = collection2 |> Collection.destroy() |> dbg()
       assert {:ok, validation_response} = Ash.load(validation_response, [:affected_collections])
 
       assert_lists_equal(

@@ -138,6 +138,7 @@ defmodule DataAggregator.Records.ValidationResponse do
       accept []
       require_atomic? false
 
+      change load(:attachment)
       change Changes.SetTimeout
       change Changes.SetRunningBeforeTransaction
       change set_attribute(:started_at, &DateTime.utc_now/0)
