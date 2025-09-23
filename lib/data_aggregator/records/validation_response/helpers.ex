@@ -349,10 +349,6 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
     |> Enum.group_by(fn row -> get_tenant_from_row(row) end)
     |> Enum.filter(fn {tenant, _} -> tenant != nil end)
     |> Enum.map(fn {tenant, rows} ->
-      Enum.each(rows, fn %{record: record} ->
-        Record.update_validation_status!(record, :validated, tenant: tenant)
-      end)
-
       ValidatedRecord.bulk_validate!(rows, tenant: tenant)
     end)
     |> Enum.flat_map(fn %{errors: errors} -> errors end)
