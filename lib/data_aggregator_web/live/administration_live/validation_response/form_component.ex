@@ -1,10 +1,10 @@
-defmodule DataAggregatorWeb.ValidationResponseLive.FormComponent do
+defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.FormComponent do
   @moduledoc """
   Form component for the validation response live view.
   """
   use DataAggregatorWeb, :live_component
 
-  alias DataAggregatorWeb.ValidationResponseLive.Components
+  alias DataAggregatorWeb.AdministrationLive.ValidationResponse.Components
 
   @impl true
   def render(assigns) do

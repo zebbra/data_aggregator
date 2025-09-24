@@ -21,7 +21,7 @@ defmodule DataAggregator.Records.ValidationResponse do
   attributes do
     uuid_attribute :id, prefix: "app", public?: true
 
-    attribute :type, ValidationResponseType, allow_nil?: false, public?: true
+    attribute :type, ValidationResponseType, allow_nil?: false, public?: true, default: :validated
 
     attribute :rows_count, :integer, allow_nil?: true, public?: true
     attribute :rows_invalid_count, :integer, allow_nil?: true, public?: true

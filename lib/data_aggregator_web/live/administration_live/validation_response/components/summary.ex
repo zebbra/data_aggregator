@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.ValidationResponseLive.Components.Summary do
+defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Summary do
   @moduledoc """
   This module contains components for the validation response live view.
   """
@@ -27,7 +27,11 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Summary do
       |> Helpers.extract_csv_content()
       |> Explorer.DataFrame.load_csv!()
 
-    nil_counts = nil_counts(dataframe)
+    nil_counts =
+      dataframe
+      |> nil_counts()
+      |> maybe_add_annotation_nil_count(validation_response.type, dataframe)
+      |> Map.filter(fn {_k, v} -> v > 0 end)
 
     # valid only if all nil_countss are 0
     valid? =
@@ -48,12 +52,29 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Summary do
     socket =
       socket
       |> assign(:collection_data, collection_data)
+      # |> assign(:center_data, center_data)
       |> assign(:nil_counts, nil_counts)
       |> assign(:valid?, valid?)
-      # |> assign(:center_data, center_data)
       |> assign(:validation_response, validation_response)
 
     {:ok, assign(socket, assigns)}
+  end
+
+  defp maybe_add_annotation_nil_count(nil_counts, :validated, _dataframe), do: nil_counts
+
+  defp maybe_add_annotation_nil_count(nil_counts, :not_validated, dataframe) do
+    if dataframe |> Explorer.DataFrame.names() |> Enum.member?("annotation") do
+      Map.merge(
+        nil_counts,
+        dataframe
+        |> Explorer.DataFrame.select(["annotation"])
+        |> Explorer.DataFrame.nil_count()
+        |> Explorer.DataFrame.to_rows(atom_keys: true)
+        |> List.first()
+      )
+    else
+      Map.put(nil_counts, :annotation, Explorer.DataFrame.n_rows(dataframe))
+    end
   end
 
   defp nil_counts(dataframe) do
@@ -171,7 +192,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Summary do
         >
           {~t"Run validation_response"m}
         </button>
-        <.link patch={~p"/validation_responses"} type="button" class="btn btn-ghost">
+        <.link onclick="validation_response_modal.close()" type="button" class="btn btn-ghost">
           {~t"Cancel"m}
         </.link>
       </.modal_footer>
@@ -207,7 +228,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Summary do
   defp close_and_redirect(socket) do
     socket
     |> push_event("submit:close", %{})
-    |> push_navigate(to: ~p"/validation_responses")
+    |> push_navigate(to: ~p"/administration/validation_responses")
   end
 
   defp type(:validated), do: ~t"validated"m

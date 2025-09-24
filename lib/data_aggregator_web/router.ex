@@ -66,7 +66,7 @@ defmodule DataAggregatorWeb.Router do
     ]
 
     ash_authentication_live_session :no_password_set, on_mount: no_password_required_hooks do
-      live "/set_password", AdministrationLive.SetPassword, :index
+      live "/set_password", AdministrationLive.User.SetPassword, :index
     end
 
     ash_authentication_live_session :no_terms_accepted, on_mount: no_terms_required_hooks do
@@ -85,10 +85,6 @@ defmodule DataAggregatorWeb.Router do
       live "/datasets/:id/image_uploads", CollectionLive.ImageUpload.Index, :index
       live "/datasets/:id/published_records", CollectionLive.PublishedRecords.Index, :index
 
-      live "/validation_responses", ValidationResponseLive.Index, :index
-      live "/validation_responses/new", ValidationResponseLive.Index, :new
-      live "/validation_responses/:id/summary", ValidationResponseLive.Index, :summary
-
       @deprecated "is now generated in `DataAggregator.Records.ImageUpload.Changes.CreateUploadLogAfterAction` while mapping images `DataAggregator.Records.ImageUpload.Changes.MapImages`"
       get "/datasets/:id/image_uploads/log/:image_upload_id/download",
           ImageUploadController,
@@ -99,9 +95,21 @@ defmodule DataAggregatorWeb.Router do
       on_mount:
         default_hooks ++
           [{DataAggregatorWeb.LiveUserAuth, :live_collection_administrator_required}] do
-      live "/administration", AdministrationLive.Index, :index
-      live "/administration/new", AdministrationLive.Index, :new
-      live "/administration/:user_id/edit", AdministrationLive.Index, :edit
+      live "/administration/users", AdministrationLive.User.Index, :index
+      live "/administration/users/new", AdministrationLive.User.Index, :new
+      live "/administration/users/:user_id/edit", AdministrationLive.User.Index, :edit
+
+      live "/administration/validation_responses",
+           AdministrationLive.ValidationResponse.Index,
+           :index
+
+      live "/administration/validation_responses/new",
+           AdministrationLive.ValidationResponse.Index,
+           :new
+
+      live "/administration/validation_responses/:id/summary",
+           AdministrationLive.ValidationResponse.Index,
+           :summary
 
       live "/datasets/new", CollectionLive.Index, :new
       live "/datasets/:id/edit", CollectionLive.Index, :edit

@@ -1,14 +1,13 @@
-defmodule DataAggregatorWeb.ValidationResponseLive.Index do
+defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
   @moduledoc false
 
   use DataAggregatorWeb, :live_view
 
-  import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
-
-  import DataAggregatorWeb.ValidationResponseLive.Components,
+  import DataAggregatorWeb.AdministrationLive.ValidationResponse.Components,
     only: [validation_response_state_badge: 1, validation_response_type_badge: 1]
 
-  import DataAggregatorWeb.ValidationResponseLive.Helpers
+  import DataAggregatorWeb.AdministrationLive.ValidationResponse.Helpers
+  import DataAggregatorWeb.Layouts.Secondary, only: [page: 1]
 
   alias DataAggregator.Records.ValidationResponse
 
@@ -33,7 +32,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
         |> noreply()
 
       {:error, _meta} ->
-        {:noreply, push_navigate(socket, to: ~p"/validation_responses")}
+        {:noreply, push_navigate(socket, to: ~p"/administration/validation_responses")}
     end
   end
 
@@ -41,20 +40,31 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
   def render(assigns) do
     ~H"""
     <.page
-      current="validation_responses"
+      current="administration"
       current_user={@current_user}
       open={@selected_validation_response != nil}
     >
       <.page_header class="px-6 pt-1 pb-4 md:py-6 lg:px-8">
         {~t"Validation Responses"m}
         <:actions>
-          <.link patch={~p"/validation_responses/new"} class="btn btn-primary max-sm:btn-sm">
+          <.link
+            patch={~p"/administration/validation_responses/new"}
+            class="btn btn-primary max-sm:btn-sm"
+          >
             <.icon name="hero-plus" class="max-sm:size-4" />
             <span class="max-sm:hidden">{~t"Add Validation Response"m}</span>
             <span class="sm:hidden">{~t"Add"m}</span>
           </.link>
         </:actions>
       </.page_header>
+      <.secondary_navigation class="top-[calc(4rem-1px)] sticky">
+        <.secondary_navigation_item href={~p"/administration/users"} label={~t"Users"m} />
+        <.secondary_navigation_item
+          href={~p"/administration/validation_responses"}
+          label={~t"Validation Responses"m}
+          active
+        />
+      </.secondary_navigation>
       <.table
         opts={[
           container_attrs: [
@@ -62,7 +72,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
           ],
           no_results_content: no_results_content()
         ]}
-        path={~p"/validation_responses"}
+        path={~p"/administration/validation_responses"}
         items={@streams.results}
         meta={@meta}
         row_click={
@@ -108,7 +118,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
           {validation_response.rows_error_count || 0}
         </:col>
       </.table>
-      <.pagination meta={@meta} path={~p"/validation_responses"} />
+      <.pagination meta={@meta} path={~p"/administration/validation_responses"} />
       <:secondary>
         <.slideover
           title={~t"Show Validation Response"}
@@ -262,12 +272,12 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Index do
           size="3xl"
           responsive
           backdrop={false}
-          on_cancel={JS.patch(~p"/validation_responses")}
+          on_cancel={JS.patch(~p"/administration/validation_responses")}
           overflow="manual"
         >
           <.live_component
             :if={@live_action in [:new, :summary]}
-            module={DataAggregatorWeb.ValidationResponseLive.FormComponent}
+            module={DataAggregatorWeb.AdministrationLive.ValidationResponse.FormComponent}
             id={@validation_response.id || :new}
             action={@live_action}
             validation_response={@validation_response}

@@ -13,13 +13,13 @@ defmodule DataAggregator.ValidationResponseFixtures do
   Generate a validation
   """
   def validation_response_fixture(attrs \\ %{}, file_path \\ "test/support/fixtures/files/validated.zip") do
-    attachment = Attachment.import_from_path!(file_path)
-
     params = Map.merge(%{type: :validated}, attrs)
 
-    # ValidationResponse.create!(params)
-
-    ValidationResponse.create_from_path!(file_path, "testFile.zip", params)
+    ValidationResponse.create_from_path!(
+      file_path,
+      "test/support/fixtures/files/validated.zip",
+      params
+    )
   end
 
   @doc """

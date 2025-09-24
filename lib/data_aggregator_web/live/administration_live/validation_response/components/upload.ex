@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.ValidationResponseLive.Components.Upload do
+defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upload do
   @moduledoc """
   Upload component for the validation response live view.
   """
@@ -67,9 +67,24 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Upload do
                 </:action>
                 {@error_message}
               </.collapsible_notification>
-              <p>
-                {}
-              </p>
+              <.field
+                type="radio"
+                field={@form[:type]}
+                id="type_option_1"
+                label={~t"Validated"m}
+                description={~t"Validated records"m}
+                checked={@form[:type].value == :validated}
+                value={:validated}
+              />
+              <.field
+                type="radio"
+                field={@form[:type]}
+                id="type_option_2"
+                label={~t"Not Validated"m}
+                description={~t"Not validated records"m}
+                checked={@form[:type].value == :not_validated}
+                value={:not_validated}
+              />
               <section
                 phx-drop-target={@uploads.file.ref}
                 class="border-black-white/25 flex flex-col rounded-lg border border-dashed px-6 py-10"
@@ -155,8 +170,15 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Upload do
   end
 
   @impl true
-  def handle_event("upload:validate", _params, socket) do
-    {:noreply, check_for_errors(socket)}
+  def handle_event("upload:validate", %{"validation_response" => %{"type" => type}}, socket) do
+    form = Form.validate(socket.assigns.form, %{type: String.to_atom(type)})
+
+    socket =
+      socket
+      |> check_for_errors()
+      |> assign(:form, form)
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -188,7 +210,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Upload do
           :noreply,
           socket
           |> assign(error_message: error_message)
-          |> push_patch(to: ~p"/validation_responses/new")
+          |> push_patch(to: ~p"/administration/validation_responses/new")
         }
 
       %ValidationResponse{} = validation_response ->
@@ -196,7 +218,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Upload do
           :noreply,
           socket
           |> handle_flash(validation_response)
-          |> push_patch(to: ~p"/validation_responses/#{validation_response.id}/summary")
+          |> push_patch(to: ~p"/administration/validation_responses/#{validation_response.id}/summary")
         }
 
       _ ->
@@ -204,7 +226,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Upload do
           :noreply,
           socket
           |> handle_flash(nil)
-          |> push_patch(to: ~p"/validation_responses")
+          |> push_patch(to: ~p"/administration/validation_responses")
         }
     end
   end
@@ -213,7 +235,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components.Upload do
     actor = get_actor(socket)
 
     consume_uploaded_entries(socket, :file, fn %{path: path}, entry ->
-      case handle_upload(path, entry, actor, socket.assigns.type) do
+      case handle_upload(path, entry, actor, socket.assigns.form.params.type) do
         {:ok, validation_response} ->
           {:ok, validation_response}
 

@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.ValidationResponseLive.Helpers do
+defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Helpers do
   @moduledoc """
   This module contains helper functions for the validation response live view
   """

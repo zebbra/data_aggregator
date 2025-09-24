@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.ValidationResponseLive.Components do
+defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components do
   @moduledoc """
   This module contains components for the validation response live view.
   """
@@ -21,7 +21,6 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components do
 
   attr :validation_response, ValidationResponse, required: false
   attr :state, :atom, required: false, values: @states
-  attr :progress, :float, required: false, default: nil
 
   def validation_response_state_badge(%{validation_response: validation_response} = assigns)
       when is_struct(validation_response) do
@@ -35,7 +34,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components do
     ~H"""
     <.badge class="pr-3" color={state_color(@state)}>
       <.validation_response_state_icon state={@state} />
-      <.validation_response_state_badge_label state={@state} progress={@progress} />
+      <.validation_response_state_badge_label state={@state} />
     </.badge>
     """
   end
@@ -89,7 +88,7 @@ defmodule DataAggregatorWeb.ValidationResponseLive.Components do
   end
 
   defp type_color(:validated), do: "blue"
-  defp type_color(:not_validated), do: "red"
+  defp type_color(:not_validated), do: "orange"
 
   defp state_color(state) do
     cond do
