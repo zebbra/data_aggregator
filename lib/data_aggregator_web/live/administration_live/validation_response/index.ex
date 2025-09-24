@@ -45,14 +45,14 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
       open={@selected_validation_response != nil}
     >
       <.page_header class="px-6 pt-1 pb-4 md:py-6 lg:px-8">
-        {~t"Validation Responses"m}
+        {~t"Validation Imports"m}
         <:actions>
           <.link
             patch={~p"/administration/validation_responses/new"}
             class="btn btn-primary max-sm:btn-sm"
           >
             <.icon name="hero-plus" class="max-sm:size-4" />
-            <span class="max-sm:hidden">{~t"Add Validation Response"m}</span>
+            <span class="max-sm:hidden">{~t"Import validation data"m}</span>
             <span class="sm:hidden">{~t"Add"m}</span>
           </.link>
         </:actions>
@@ -61,7 +61,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
         <.secondary_navigation_item href={~p"/administration/users"} label={~t"Users"m} />
         <.secondary_navigation_item
           href={~p"/administration/validation_responses"}
-          label={~t"Validation Responses"m}
+          label={~t"Validation Imports"m}
           active
         />
       </.secondary_navigation>
@@ -117,6 +117,24 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
         <:col :let={{_id, validation_response}} field={:rows_error_count} label={~t"Errors"m}>
           {validation_response.rows_error_count || 0}
         </:col>
+        <:action
+          :let={{_id, validation_response}}
+          tbody_td_attrs={[class: "pr-6 lg:pr-8 whitespace-nowrap text-right w-0"]}
+          col_class="bg-base-300/10 border-l border-black-white/5"
+          label={~t"Actions"m}
+        >
+          <.table_action_button
+            :if={can_edit?(validation_response)}
+            patch={
+              build_path(
+                ~p"/administration/validation_responses/#{validation_response.id}/summary",
+                @meta
+              )
+            }
+            data-tip={~t"summary"m}
+            icon="hero-pencil-square-mini"
+          />
+        </:action>
       </.table>
       <.pagination meta={@meta} path={~p"/administration/validation_responses"} />
       <:secondary>
@@ -317,7 +335,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, ~t"Validation Responses"m)
+    |> assign(:page_title, ~t"Validation Imports"m)
     |> assign(:validation_response, nil)
   end
 
@@ -356,8 +374,8 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
   def no_results_content(assigns \\ %{}) do
     ~H"""
     <.empty_state
-      title={~t"No Validation Responses"m}
-      description={~t"No validation responses have been created yet."m}
+      title={~t"No Validation Imports"m}
+      description={~t"No Validation Imports have been created yet."m}
       icon="hero-squares-2x2"
     />
     """

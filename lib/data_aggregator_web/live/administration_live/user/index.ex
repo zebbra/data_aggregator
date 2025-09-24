@@ -54,7 +54,7 @@ defmodule DataAggregatorWeb.AdministrationLive.User.Index do
         <.secondary_navigation_item href={~p"/administration/users"} label={~t"Users"m} active />
         <.secondary_navigation_item
           href={~p"/administration/validation_responses"}
-          label={~t"Validation Responses"m}
+          label={~t"Validation Imports"m}
         />
       </.secondary_navigation>
       <.table
