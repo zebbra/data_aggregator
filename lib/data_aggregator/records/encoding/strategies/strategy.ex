@@ -40,7 +40,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
   @spec encode(Record.t() | EncodedRecord.t(), atom(), Context.t()) :: EncodingResult.t()
   def encode(record_or_encoded_record, catalog, ctx)
 
-  def encode(%Record{} = record, catalog, %{tenant: tenant} = ctx) when catalog == :gbif_taxonomy do
+  def encode(%Record{} = record, :gbif_taxonomy, %{tenant: tenant} = ctx) do
     attributes =
       [
         :extra_data,
@@ -54,7 +54,7 @@ defmodule DataAggregator.Records.Encoding.Strategy do
       |> Map.put(:record, record)
       |> EncodedRecord.create!(tenant: tenant)
 
-    encode(encoded_record, catalog, ctx)
+    encode(encoded_record, :gbif_taxonomy, ctx)
   end
 
   def encode(%Record{} = record, catalog, %{tenant: tenant} = ctx) do
@@ -62,53 +62,53 @@ defmodule DataAggregator.Records.Encoding.Strategy do
     encode(encoded_record, catalog, ctx)
   end
 
-  def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :gbif_taxonomy do
+  def encode(%EncodedRecord{} = encoded_record, :gbif_taxonomy, ctx) do
     encoded_record
     |> GbifTaxonomyStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog, ctx)
+    |> check_for_changes(encoded_record, :gbif_taxonomy)
+    |> handle_encoding_result(encoded_record, :gbif_taxonomy, ctx)
   end
 
-  def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :swiss_species do
+  def encode(%EncodedRecord{} = encoded_record, :swiss_species, ctx) do
     encoded_record
     |> SwissSpeciesStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog, ctx)
+    |> check_for_changes(encoded_record, :swiss_species)
+    |> handle_encoding_result(encoded_record, :swiss_species, ctx)
   end
 
-  def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :geo_reverse do
+  def encode(%EncodedRecord{} = encoded_record, :geo_reverse, ctx) do
     encoded_record
     |> ReverseGeoEncodingStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog, ctx)
+    |> check_for_changes(encoded_record, :geo_reverse)
+    |> handle_encoding_result(encoded_record, :geo_reverse, ctx)
   end
 
-  def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :geo_forward do
+  def encode(%EncodedRecord{} = encoded_record, :geo_forward, ctx) do
     encoded_record
     |> ForwardGeoEncodingStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog, ctx)
+    |> check_for_changes(encoded_record, :geo_forward)
+    |> handle_encoding_result(encoded_record, :geo_forward, ctx)
   end
 
-  def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :gbif_iucn_redlist do
+  def encode(%EncodedRecord{} = encoded_record, :gbif_iucn_redlist, ctx) do
     encoded_record
     |> IUCNRedlistStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog, ctx)
+    |> check_for_changes(encoded_record, :gbif_iucn_redlist)
+    |> handle_encoding_result(encoded_record, :gbif_iucn_redlist, ctx)
   end
 
-  def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :relate_images do
+  def encode(%EncodedRecord{} = encoded_record, :relate_images, ctx) do
     encoded_record
     |> RelateImagesStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog, ctx)
+    |> check_for_changes(encoded_record, :relate_images)
+    |> handle_encoding_result(encoded_record, :relate_images, ctx)
   end
 
-  def encode(%EncodedRecord{} = encoded_record, catalog, ctx) when catalog == :convert_dates do
+  def encode(%EncodedRecord{} = encoded_record, :convert_dates, ctx) do
     encoded_record
     |> ConvertDatesStrategy.apply_strategy(ctx)
-    |> check_for_changes(encoded_record, catalog)
-    |> handle_encoding_result(encoded_record, catalog, ctx)
+    |> check_for_changes(encoded_record, :convert_dates)
+    |> handle_encoding_result(encoded_record, :convert_dates, ctx)
   end
 
   def encode(%EncodedRecord{} = encoded_record, catalog, _ctx) do

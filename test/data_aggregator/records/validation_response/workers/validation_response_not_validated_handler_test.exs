@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
   import DataAggregator.ValidationResponseFixtures
 
   alias DataAggregator.Gbif
+  alias DataAggregator.Opencage
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.ValidationResponse
   alias DataAggregator.Records.ValidationResponse.ValidatedRecord
@@ -19,6 +20,7 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
   describe "DataAggregator.Records.ValidationResponse.Workers.ValidationResponseHandler.perform/1" do
     setup do
       stub_with(Gbif.RestAPI, Gbif.RestAPIStub)
+      stub_with(Opencage.RestAPI, Opencage.RestAPIStub)
 
       collection = collection_fixture(%{name: "Collection NumberO!+ne"})
 
@@ -72,22 +74,6 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
     end
 
     @tag capture_log: true
-    test "ValidationResponseHandler.perform/1 validation response run success", %{
-      validation_response: validation_response,
-      actor: actor
-    } do
-      perform_job(ValidationResponseHandler, %{
-        id: validation_response.id,
-        user_id: actor.id
-      })
-
-      validation_response =
-        ValidationResponse.get_by_id!(validation_response.id)
-
-      assert validation_response.state == :done
-    end
-
-    @tag capture_log: true
     test "ValidationResponseHandler.perform/1 all ValidatedRecords are created correctly and have the changed values",
          %{validation_response: validation_response, collection: collection, actor: actor} do
       {:ok, validation_response} =
@@ -112,6 +98,11 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
       end)
 
       assert validation_response.state == :done
+
+      # check if all updated records have the correct validation_status
+      Enum.all?(records, fn record ->
+        assert record.validation_status == :not_validated
+      end)
     end
 
     @tag capture_log: true
@@ -134,6 +125,11 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
       # so the correct amount should be present and the log should warn us appropriate
       assert length(records) == 4
       assert logs =~ "[warning] 2 invalid row(s) dropped from chunk!"
+
+      # check if all updated records have the correct validation_status
+      Enum.all?(records, fn record ->
+        assert record.validation_status == :not_validated
+      end)
     end
 
     @tag capture_log: true
@@ -149,21 +145,23 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
           user_id: actor.id
         })
 
+      assert validation_response.state == :done
+
+      # check if all updated records have the correct validation_status
       {:ok, records} =
         Record
-        |> Ash.Query.filter(validation_annotation != nil)
+        |> Ash.Query.filter(not is_nil(validation_annotation))
         |> Ash.read(page: false, tenant: collection)
 
       Enum.all?(records, fn record ->
         assert record.validation_status == :not_validated
       end)
-
-      assert validation_response.state == :done
     end
 
     @tag capture_log: true
     test "ValidationResponseHandler.perform/1 check if error log is present and correct", %{
       validation_response: validation_response,
+      collection: collection,
       actor: actor
     } do
       {:ok, validation_response} =
@@ -195,6 +193,16 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
       # line 2: missing catalogNumber leads to missing record (4) -> this leads to missing collection (5)
       assert Explorer.DataFrame.n_rows(data_frame) == 2
       data_frame |> Explorer.DataFrame.to_rows() |> assert_lists_equal(expected_errors())
+
+      # check if all updated records have the correct validation_status
+      {:ok, records} =
+        Record
+        |> Ash.Query.filter(not is_nil(validation_annotation))
+        |> Ash.read(page: false, tenant: collection)
+
+      Enum.all?(records, fn record ->
+        assert record.validation_status == :not_validated
+      end)
     end
 
     @tag capture_log: true
@@ -225,6 +233,16 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseNo
         [validation_response],
         &assert_structs_equal(&1, &2, [:id])
       )
+
+      # check if all updated records have the correct validation_status
+      {:ok, records} =
+        Record
+        |> Ash.Query.filter(not is_nil(validation_annotation))
+        |> Ash.read(page: false, tenant: collection)
+
+      Enum.all?(records, fn record ->
+        assert record.validation_status == :not_validated
+      end)
     end
   end
 

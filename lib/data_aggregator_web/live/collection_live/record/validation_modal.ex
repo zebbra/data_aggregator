@@ -39,27 +39,12 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ValidationModal do
             <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
           </div>
           <p class="text-sm">
-            {~t"In addition to the filters provided, we also add the restriction for all records that the"m}
-            <span class="font-bold">{~t"kingdom "m}</span>
-            {~t"attribute must be set."m}
+            {~t"Please note that only Swiss specimens will be processed. All other specimens will be ignored. Records must have both"m}
+            <span class="font-bold">{~t"kingdom and taxonID"m}</span>
+            {~t"attributes set."m}
           </p>
         </div>
-        <div class="flex">
-          <div class="mr-4 flex-shrink-0">
-            <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
-          </div>
-          <p class="text-sm">
-            {~t"Please note that only Swiss specimens will be processed. All other specimen will be ignored during the validation process."m}
-          </p>
-        </div>
-        <div class="flex">
-          <div class="mr-4 flex-shrink-0">
-            <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
-          </div>
-          <p class="text-sm">
-            {~t"Each record will be manually reviewed and validated by the staff at each InfoSpecies center. Their feedback on the records will be available on DAGI at the end of the process."m}
-          </p>
-        </div>
+
         <p class="text-sm">
           {~t"Based on the information provided, we will create exports towards the following centers:"m}
         </p>
@@ -81,6 +66,23 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ValidationModal do
           </div>
           <p class="text-sm">
             {~t"There are no Swiss specimen availabe. Either your specimen are outside of Switzerland or you have applied a too restrictive filter."m}
+          </p>
+        </div>
+
+        <div class="flex">
+          <div class="mr-4 flex-shrink-0">
+            <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
+          </div>
+          <p class="text-sm">
+            {~t"Records that have not changed since the last validation request will be ignored and will not be sent for validation."m}
+          </p>
+        </div>
+        <div class="flex">
+          <div class="mr-4 flex-shrink-0">
+            <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
+          </div>
+          <p class="text-sm">
+            {~t"Each record will be manually reviewed and validated by the staff at each InfoSpecies center. Their feedback on the records will be available on DAGI at the end of the process."m}
           </p>
         </div>
         <p class="text-base-content/60 mt-4 text-sm">
