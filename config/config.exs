@@ -57,7 +57,7 @@ config :data_aggregator, DataAggregatorWeb.Gettext, default_locale: "en"
 config :data_aggregator, Oban,
   repo: DataAggregator.Repo,
   plugins: [
-    {Oban.Plugins.Pruner, max_age: 5, limit: 10_000, interval: 1_000 * 60},
+    {Oban.Plugins.Pruner, max_age: 24 * 60 * 60, limit: 10_000, interval: 1_000 * 60},
     {Oban.Plugins.Lifeline, interval: to_timeout(minute: 1), rescue_after: to_timeout(hour: 1)}
   ],
   queues: [
