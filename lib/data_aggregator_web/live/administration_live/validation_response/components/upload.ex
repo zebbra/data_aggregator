@@ -8,6 +8,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upl
   import DataAggregatorWeb.CollectionLive.Collection.Components.Stepper, only: [stepper: 1]
 
   alias AshPhoenix.Form
+  alias DataAggregator.Records.DataFrame
   alias DataAggregator.Records.ValidationResponse
   alias Phoenix.LiveView.UploadEntry
 
@@ -24,7 +25,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upl
      |> assign(:type, :validated)
      |> allow_upload(:file,
        max_entries: 1,
-       accept: ~w(.zip),
+       accept: DataFrame.supported_exts(),
        max_file_size: 800 * 1024 * 1024,
        auto_upload: true,
        progress: &handle_progress/3
@@ -38,13 +39,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upl
     <div class="contents">
       <.modal_header id={@id}>
         <.stepper current={1} steps={2} />
-        <.section_heading
-          text={~t"Import validation layer data"m}
-          description={
-            ~t"Please choose whether to import a file containing successfully validated records or a file containing non-validated records that have been refused by the Swiss species data centers."m
-          }
-          class="mt-4"
-        />
+        <.section_heading text={~t"Import validation layer data"m} class="mt-4" />
       </.modal_header>
       <.simple_form
         for={@form}
@@ -67,12 +62,14 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upl
                 </:action>
                 {@error_message}
               </.collapsible_notification>
+              <p class="text-sm">
+                {~t"Please choose whether to import a file containing successfully validated records or a file containing non-validated records that have been refused by the Swiss species data centers."m}
+              </p>
               <.field
                 type="radio"
                 field={@form[:type]}
                 id="type_option_1"
-                label={~t"Validated"m}
-                description={~t"Validated records"m}
+                label={~t"Import validated records"m}
                 checked={@form[:type].value == :validated}
                 value={:validated}
               />
@@ -80,8 +77,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upl
                 type="radio"
                 field={@form[:type]}
                 id="type_option_2"
-                label={~t"Not Validated"m}
-                description={~t"Not validated records"m}
+                label={~t"Import not validated records"m}
                 checked={@form[:type].value == :not_validated}
                 value={:not_validated}
               />
@@ -139,10 +135,10 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Upl
 
               <div class="flex">
                 <div class="mr-4 flex-shrink-0">
-                  <.icon name="hero-information-circle-mini" class="size-6 text-primary" />
+                  <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
                 </div>
                 <p class="text-sm">
-                  {~t"Please make sure that the provided file has been verified and only contains correct and valid input. DAGI will only run a very simple verification check of the file"m}
+                  {~t"Please make sure that the provided file has been verified and only contains correct and valid input. DAGI will only run a very simple verification check of the file."m}
                 </p>
               </div>
             </.fieldgroup>

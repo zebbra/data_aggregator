@@ -8,7 +8,6 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.SetCount do
   alias Ash.Changeset
   alias Ash.Error.Changes.InvalidArgument
   alias DataAggregator.Records
-  alias DataAggregator.Records.ValidationResponse.Helpers
 
   require Logger
 

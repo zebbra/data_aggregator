@@ -105,7 +105,7 @@ defmodule DataAggregator.Records.ValidationResponse do
       argument :path, :string, allow_nil?: false
       argument :filename, :string, allow_nil?: true
       change Changes.CreateAttachment
-      # change Changes.SetCount
+      change Changes.SetCount
       change load([:attachment_filename, :attachment_byte_size])
     end
 

@@ -24,7 +24,6 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
     dataframe =
       validation_response.attachment.url
       |> Helpers.fetch_file_from_url()
-      |> Helpers.extract_csv_content()
       |> Explorer.DataFrame.load_csv!()
 
     nil_counts =
@@ -44,15 +43,17 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
       |> Explorer.DataFrame.frequencies(["collectionCode", "datasetName", "institutionCode"])
       |> Explorer.DataFrame.to_rows(atom_keys: true)
 
-    # center_data =
-    #   dataframe
-    #   |> Explorer.DataFrame.frequencies(["center"])
-    #   |> Explorer.DataFrame.to_rows(atom_keys: true)
+    center_data =
+      if Enum.member?(Explorer.DataFrame.names(dataframe), "center") do
+        dataframe
+        |> Explorer.DataFrame.frequencies(["center"])
+        |> Explorer.DataFrame.to_rows(atom_keys: true)
+      end
 
     socket =
       socket
       |> assign(:collection_data, collection_data)
-      # |> assign(:center_data, center_data)
+      |> assign(:center_data, center_data)
       |> assign(:nil_counts, nil_counts)
       |> assign(:valid?, valid?)
       |> assign(:validation_response, validation_response)
@@ -91,17 +92,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
     <div class="contents">
       <.modal_header id={@id} title_class="!-mr-4 w-full">
         <.stepper current={2} steps={2} />
-        <.section_heading
-          text={~t"Summary"m}
-          description={~t"Please review the summary of your import."m}
-          class="mt-4"
-        >
-          <:actions>
-            <div class="flex items-center gap-x-2">
-              <span class="text-sm max-sm:hidden">{~t"State:"m}</span>
-            </div>
-          </:actions>
-        </.section_heading>
+        <.section_heading text={~t"Summary"m} class="mt-4" />
       </.modal_header>
       <div class="contents">
         <div class="h-full space-y-12 overflow-y-auto px-6 py-8">
@@ -112,30 +103,31 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
                 <span class="font-bold">
                   {mgettext(
                     "%{count} %{type}",
-                    # TODO: get number
-                    count: format_number(15),
+                    count: format_number(@validation_response.rows_count),
                     type: type(@validation_response.type)
                   )}
                 </span>
                 {~t"records."m}
               </p>
-              <p class="text-sm">
-                {mgettext(
-                  "Based on the file provided, you are importing %{type} records from:",
-                  type: type(@validation_response.type)
-                )}
-              </p>
+              <%= if @center_data do %>
+                <p class="text-sm">
+                  {mgettext(
+                    "Based on the file provided, you are importing %{type} records from:",
+                    type: type(@validation_response.type)
+                  )}
+                </p>
 
-              <div>
-                <%!-- <.table items={@center_data}>
-                <:col :let={data} label={~t"Center"m}>
-                  {data.center}
-                </:col>
-                <:col :let={data} label={~t"Count"m}>
-                  {data.counts}
-                </:col>
-              </.table> --%>
-              </div>
+                <div>
+                  <.table items={@center_data}>
+                    <:col :let={data} label={~t"Center"m}>
+                      {data.center}
+                    </:col>
+                    <:col :let={data} label={~t"Count"m}>
+                      {data.counts}
+                    </:col>
+                  </.table>
+                </div>
+              <% end %>
               <p class="text-sm">
                 {mgettext(
                   "You are importing %{type} records to:",
@@ -162,14 +154,17 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
             <% else %>
               <div class="flex">
                 <div class="mr-4 flex-shrink-0">
-                  <.icon name="hero-exclamation-triangle-mini" class="size-6 text-warning" />
+                  <.icon name="hero-x-circle-mini" class="size-6 text-error" />
                 </div>
                 <p class="text-sm">
-                  {~t"There are invalid rows in the provided file. Some of the required attributes are not set"m}
+                  {mgettext(
+                    "The import file contains invalid rows with missing attributes. The following attributes are required for all rows: %{missing_attributes}.",
+                    missing_attributes: missing_attributes(@nil_counts)
+                  )}
                 </p>
               </div>
               <.table items={@nil_counts}>
-                <:col :let={nil_count} label={~t"Attribute"m}>
+                <:col :let={nil_count} label={~t"Missing attribute"m}>
                   {elem(nil_count, 0)}
                 </:col>
                 <:col :let={nil_count} label={~t"Count"m}>
@@ -190,7 +185,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
           phx-value-id={@validation_response.id}
           phx-target={@myself}
         >
-          {~t"Run validation_response"m}
+          {~t"Import"m}
         </button>
         <.link onclick="validation_response_modal.close()" type="button" class="btn btn-ghost">
           {~t"Cancel"m}
@@ -223,6 +218,10 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Sum
          |> put_flash(:error, ~t"Something went wrong with the Validation Response ingestion"m)
          |> close_and_redirect()}
     end
+  end
+
+  defp missing_attributes(nil_counts) do
+    nil_counts |> Map.keys() |> Enum.join(", ")
   end
 
   defp close_and_redirect(socket) do

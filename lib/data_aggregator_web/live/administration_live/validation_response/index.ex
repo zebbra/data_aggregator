@@ -139,11 +139,24 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
       <.pagination meta={@meta} path={~p"/administration/validation_responses"} />
       <:secondary>
         <.slideover
-          title={~t"Show Validation Response"}
+          title={~t"Show validation import details"m}
           open={@selected_validation_response != nil}
           on_cancel={JS.push("validation_response:select", value: %{id: nil})}
           size="xl"
         >
+          <.section_heading
+            text={~t"Validation Import"m}
+            class="border-black-white/10 border-b px-6 pb-6 lg:px-8"
+            align_items="baseline"
+            size="md"
+          >
+            <:actions>
+              <div class="mt-1 flex items-center gap-x-2">
+                <span class="text-sm">{~t"State:"m}</span>
+                <.validation_response_state_badge validation_response={@selected_validation_response} />
+              </div>
+            </:actions>
+          </.section_heading>
           <.list :if={@selected_validation_response}>
             <:item title={~t"File"m}>
               <.file_info
@@ -158,14 +171,8 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
             <:item title={~t"Created at"m}>
               {format_datetime(@selected_validation_response.inserted_at)}
             </:item>
-            <:item title={~t"ID"m}>
-              {@selected_validation_response.id}
-            </:item>
             <:item title={~t"Type"m}>
               <.validation_response_type_badge type={@selected_validation_response.type} />
-            </:item>
-            <:item title={~t"State"m}>
-              <.validation_response_state_badge validation_response={@selected_validation_response} />
             </:item>
             <:item title={~t"Total Rows"}>
               {@selected_validation_response.rows_count || 0}

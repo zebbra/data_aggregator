@@ -404,11 +404,20 @@ defmodule DataAggregatorWeb.CollectionLive.Record.ActivityFeed do
 
   defp text(:update_validation_status, content) do
     case content["validation_status"] do
-      "unknown" -> ~t"The validation status is"m
-      "requested" -> ~t"The validation status is"m
-      "validated" -> ~t"The validation status is"m
-      "not_validated" -> ~t"The validation status is"m
-      _ -> ~t"Validation status was updated"m
+      "unknown" ->
+        ~t"The validation status is"m
+
+      "requested" ->
+        ~t"The validation status is"m
+
+      "validated" ->
+        ~t"The record has been successfully validated. The validation status of the record has changed to"m
+
+      "not_validated" ->
+        ~t"The validation of the record has been refused. The validation status of the record has changed to"m
+
+      _ ->
+        ~t"Validation status was updated"m
     end
   end
 
