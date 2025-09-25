@@ -1,9 +1,10 @@
 defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseValidatedHandlerTest do
   @moduledoc false
 
-  use DataAggregator.DataCase, async: true
+  use DataAggregator.DataCase, async: false
   use Mimic
 
+  import DataAggregator.AccountsFixtures, only: [user_fixture: 1]
   import DataAggregator.RecordsFixtures
   import DataAggregator.ValidationResponseFixtures
 
@@ -51,17 +52,26 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseVa
         })
       ]
 
+      actor = user_fixture(%{roles: [:admin]})
+
       validation_response = validation_response_fixture()
 
-      [validation_response: validation_response, records: records, collection: collection]
+      [
+        validation_response: validation_response,
+        records: records,
+        collection: collection,
+        actor: actor
+      ]
     end
 
     @tag capture_log: true
     test "ValidationResponseHandler.perform/1 validation response run success", %{
-      validation_response: validation_response
+      validation_response: validation_response,
+      actor: actor
     } do
       perform_job(ValidationResponseHandler, %{
-        id: validation_response.id
+        id: validation_response.id,
+        user_id: actor.id
       })
 
       validation_response =
@@ -72,10 +82,11 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseVa
 
     @tag capture_log: true
     test "ValidationResponseHandler.perform/1 all ValidatedRecords are created correctly and have the changed values",
-         %{validation_response: validation_response, collection: collection} do
+         %{validation_response: validation_response, collection: collection, actor: actor} do
       {:ok, validation_response} =
         perform_job(ValidationResponseHandler, %{
-          id: validation_response.id
+          id: validation_response.id,
+          user_id: actor.id
         })
 
       {:ok, validated_records} = ValidatedRecord.read(page: false, tenant: collection)
@@ -92,11 +103,12 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseVa
 
     @tag capture_log: true
     test "ValidationResponseHandler.perform/1 only create ValidatedRecords if the input data is valid",
-         %{validation_response: validation_response, collection: collection} do
+         %{validation_response: validation_response, collection: collection, actor: actor} do
       {{:ok, _validation_response}, logs} =
         with_log(fn ->
           perform_job(ValidationResponseHandler, %{
-            id: validation_response.id
+            id: validation_response.id,
+            user_id: actor.id
           })
         end)
 
@@ -113,11 +125,13 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseVa
     test "ValidationResponseHandler.perform/1 all affected records are in state :validated",
          %{
            validation_response: validation_response,
-           collection: collection
+           collection: collection,
+           actor: actor
          } do
       {:ok, validation_response} =
         perform_job(ValidationResponseHandler, %{
-          id: validation_response.id
+          id: validation_response.id,
+          user_id: actor.id
         })
 
       {:ok, validated_records} =
@@ -133,11 +147,13 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseVa
 
     @tag capture_log: true
     test "ValidationResponseHandler.perform/1 check if error log is present and correct", %{
-      validation_response: validation_response
+      validation_response: validation_response,
+      actor: actor
     } do
       {:ok, validation_response} =
         perform_job(ValidationResponseHandler, %{
-          id: validation_response.id
+          id: validation_response.id,
+          user_id: actor.id
         })
 
       assert {:ok, validation_response} =
@@ -169,11 +185,13 @@ defmodule DataAggregator.Records.ValidationResponse.Workers.ValidationResponseVa
     test "ValidationResponseHandler.perform/1 has set the correct :affected_collections on validated_record and :validation_responses on collection",
          %{
            validation_response: validation_response,
-           collection: collection
+           collection: collection,
+           actor: actor
          } do
       {:ok, validation_response} =
         perform_job(ValidationResponseHandler, %{
-          id: validation_response.id
+          id: validation_response.id,
+          user_id: actor.id
         })
 
       assert {:ok, validation_response} = Ash.load(validation_response, [:affected_collections])

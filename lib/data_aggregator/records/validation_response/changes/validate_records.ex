@@ -16,13 +16,13 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_action(changeset, &import_validation_data(&1), append?: true)
+  def change(%Changeset{} = changeset, _opts, %{actor: actor}) do
+    Changeset.before_action(changeset, &import_validation_data(&1, actor), append?: true)
   end
 
-  defp import_validation_data(%Changeset{} = changeset) do
+  defp import_validation_data(%Changeset{} = changeset, actor) do
     attachment = changeset.data |> Ash.load!(:attachment) |> Map.get(:attachment)
-    actor = changeset.data |> Ash.load!(:started_by) |> Map.get(:started_by)
+    # actor = changeset.data |> Ash.load!(:started_by) |> Map.get(:started_by)
     type = Changeset.get_attribute(changeset, :type)
 
     csv_content = Helpers.fetch_file_from_url(attachment.url)
