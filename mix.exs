@@ -210,7 +210,7 @@ defmodule DataAggregator.MixProject do
       {:live_debugger, "~> 0.3", only: [:dev]},
 
       # Ash Framework
-      {:ash, "~> 3.4", override: true},
+      {:ash, "~> 3.5", override: true},
       {:ash_json_api, "~> 1.4"},
       {:ash_phoenix, "~> 2.1"},
       {:ash_postgres, "~> 2.4", override: true},

@@ -67,10 +67,23 @@ defmodule DataAggregator.Records.Record.Workers.Encoder do
             {:cont, {:ok, record}}
 
           {:error, error} ->
+            Logger.error(
+              "Encoding for record #{inspect(record)} and collection #{inspect(record.collection)} and catalog #{to_string(catalog)} failed with error #{inspect(error)}"
+            )
+
             {:halt, {:error, error}}
         end
       end
     )
+  rescue
+    e ->
+      Logger.error(Exception.format(:error, e, __STACKTRACE__))
+
+      Logger.error(
+        "Encoding for record #{inspect(record)} and collection #{inspect(record.collection)} failed unexpectedly."
+      )
+
+      reraise e, __STACKTRACE__
   end
 
   @impl Oban.Worker

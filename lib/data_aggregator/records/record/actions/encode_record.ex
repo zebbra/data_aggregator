@@ -38,14 +38,14 @@ defmodule DataAggregator.Records.Encoding.Actions.EncodeRecord do
          |> update_state(previous_state, ctx) do
       {:ok, record} ->
         Logger.debug(
-          "[#{catalog}] Encoding for record #{record.id} with catalog: #{to_string(catalog)} finished with result: #{inspect(record)}"
+          "[#{catalog}] Encoding for record #{inspect(record)} with catalog: #{to_string(catalog)} finished with result: #{inspect(record)}"
         )
 
         {:ok, record}
 
       {:error, error, record} ->
         Logger.warning(
-          "[#{catalog}] Encoding for record #{record.id} with catalog: #{to_string(catalog)} failed, due to: #{inspect(error)}"
+          "[#{catalog}] Encoding for record #{inspect(record)} with catalog: #{to_string(catalog)} failed, due to: #{inspect(error)}"
         )
 
         {:ok, record}
