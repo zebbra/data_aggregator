@@ -83,7 +83,7 @@ defmodule DataAggregator.Records.ValidationResponse do
 
   actions do
     default_accept :*
-    defaults [:read, :destroy, :update]
+    defaults [:read, :update]
 
     update :add_affected_collection do
       require_atomic? false
@@ -93,6 +93,13 @@ defmodule DataAggregator.Records.ValidationResponse do
       change Changes.AddAffectedCollection
 
       change load(:affected_collections)
+    end
+
+    destroy :destroy do
+      primary? true
+      require_atomic? false
+
+      change Changes.DeleteAttachments
     end
 
     create :create do
