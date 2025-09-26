@@ -291,7 +291,7 @@ defmodule DataAggregator.MixProject do
 
       # Monitoring and Tracing
       {:phoenix_live_dashboard, "~> 0.8.4"},
-      {:sentry, "~> 10.6"},
+      {:sentry, "~> 11.0"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:recon, "~> 2.5", only: :dev},
