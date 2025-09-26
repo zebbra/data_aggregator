@@ -14,7 +14,7 @@
     },
     {
       "allow_nil?": false,
-      "default": "nil",
+      "default": "\"validated\"",
       "generated?": false,
       "precision": null,
       "primary_key?": false,
@@ -262,7 +262,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "9D20CC615557B0BC67D62EC787D33FDB8593883EE4B11E120A37E732C67AFD2C",
+  "hash": "174892DD5F964B0EBED3ED911FA72E81C26EB54D6B8E7024610A6FB91CCA318D",
   "identities": [],
   "multitenancy": {
     "attribute": null,

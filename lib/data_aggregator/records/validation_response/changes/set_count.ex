@@ -23,7 +23,7 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.SetCount do
         Changeset.change_attribute(changeset, :rows_count, rows_count)
 
       {:error, error} ->
-        message = if is_exception(error), do: Exception.message(error), else: error
+        message = Exception.message(error)
 
         message = Records.DataFrame.maybe_parse_polaris_error(message)
 
