@@ -1267,37 +1267,37 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.FilterComponent"
 msgid "Location"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:206
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:220
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:285
 #, elixir-autogen, elixir-format
 msgid "Download error log"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:279
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:293
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:420
 #, elixir-autogen, elixir-format
 msgid "Error message"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:273
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:287
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:414
 #, elixir-autogen, elixir-format
 msgid "Field"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:254
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:268
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:395
 #, elixir-autogen, elixir-format
 msgid "Import Errors"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:288
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:302
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:429
 #, elixir-autogen, elixir-format
 msgid "Only the first 100 rows will be shown. Download the file to have the complete log"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:276
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:290
 #: lib/data_aggregator_web/live/collection_live/import/index.ex:417
 #: lib/data_aggregator_web/live/collection_live/record/activity_feed.ex:71
 #: lib/data_aggregator_web/live/collection_live/record/index.ex:680
@@ -4803,29 +4803,14 @@ msgctxt "DataAggregatorWeb.CollectionLive.Record.ValidationModal"
 msgid "kingdom and taxonID"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:186
-#, elixir-autogen, elixir-format
-msgid "Errors"
-msgstr ""
-
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:183
-#, elixir-autogen, elixir-format
-msgid "Invalid Rows"
-msgstr ""
-
 #: lib/data_aggregator_web/live/administration_live/validation_response/components.ex:78
 #, elixir-autogen, elixir-format
 msgid "Not Validated"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:177
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:178
 #, elixir-autogen, elixir-format
 msgid "Total Rows"
-msgstr ""
-
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:180
-#, elixir-autogen, elixir-format
-msgid "Valid Rows"
 msgstr ""
 
 #: lib/data_aggregator_web/live/administration_live/validation_response/components.ex:77
@@ -5423,201 +5408,201 @@ msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Components.Uplo
 msgid "up to %{max_file_size}"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:124
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:125
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Actions"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:56
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:57
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Add"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:221
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:235
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "An unknown error occurred"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:267
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:281
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Catalog Number"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:96
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:171
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:97
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:172
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Created at"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:99
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:168
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:100
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:169
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Created by"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:189
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:203
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Error Log"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:117
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:118
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Errors"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:90
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:161
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:91
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:162
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "File"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:55
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:56
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Import validation data"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:114
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:115
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Invalid"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:351
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:365
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "New Validation Response"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:384
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:398
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "No Validation Imports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:385
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:399
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "No Validation Imports have been created yet."
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:224
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:238
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "No errors found"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:202
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:216
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Open error log preview"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:199
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:213
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Preview error log"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:270
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:284
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Scientific Name"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:142
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:143
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Show validation import details"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:93
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:94
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Size"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:102
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:232
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:103
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:246
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Started at"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:108
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:229
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:109
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:243
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Started by"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:84
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:85
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "State"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:155
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:156
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "State:"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:87
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:174
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:88
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:175
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Type"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:61
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:62
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Users"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:111
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:112
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Validated"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:148
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:149
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Validation Import"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:48
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:64
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:345
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:49
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:65
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:359
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Validation Imports"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:359
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:373
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "Validation Response Summary"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:193
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:207
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "detected errors:"
 msgstr ""
 
-#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:134
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:135
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
 msgid "summary"
@@ -5633,4 +5618,22 @@ msgstr ""
 #, elixir-autogen, elixir-format
 msgctxt "DataAggregatorWeb.CollectionLive.Record.ActivityFeed"
 msgid "The validation of the record has been refused. The validation status of the record has changed to"
+msgstr ""
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:181
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
+msgid "Progress"
+msgstr ""
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:197
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
+msgid "invalid rows:"
+msgstr ""
+
+#: lib/data_aggregator_web/live/administration_live/validation_response/index.ex:191
+#, elixir-autogen, elixir-format
+msgctxt "DataAggregatorWeb.AdministrationLive.ValidationResponse.Index"
+msgid "rows"
 msgstr ""

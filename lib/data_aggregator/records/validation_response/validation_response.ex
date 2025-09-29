@@ -6,7 +6,8 @@ defmodule DataAggregator.Records.ValidationResponse do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     domain: DataAggregator.Records,
-    extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine]
+    extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine],
+    notifiers: [Ash.Notifier.PubSub]
 
   alias __MODULE__
   alias DataAggregator.Accounts.User
@@ -49,6 +50,10 @@ defmodule DataAggregator.Records.ValidationResponse do
   end
 
   calculations do
+    calculate :validation_progress,
+              :float,
+              expr(if rows_count > 0, do: rows_validated_count / rows_count, else: 1.0)
+
     calculate :attachment_url, :string do
       calculation fn publications, _opts ->
         Enum.map(publications, & &1.attachment.url)
@@ -193,6 +198,19 @@ defmodule DataAggregator.Records.ValidationResponse do
       change manage_relationship(:error_log, type: :append)
       change load(:error_log)
     end
+  end
+
+  pub_sub do
+    module DataAggregator.PubSub
+    prefix "validation_response"
+
+    publish_all :create, ["created", [:id, nil]]
+    publish_all :destroy, ["deleted", [:id, nil]]
+    publish :add_validation_progress, ["updated", [:id, nil]]
+    publish :set_failed, ["updated", [:id, nil]]
+    publish :set_done, ["updated", [:id, nil]]
+    publish :set_running, ["updated", [:id, nil]]
+    publish :enqueue, ["updated", [:id, nil]]
   end
 
   code_interface do

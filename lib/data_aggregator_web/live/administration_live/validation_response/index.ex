@@ -2,6 +2,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
   @moduledoc false
 
   use DataAggregatorWeb, :live_view
+  use DataAggregatorWeb.AdministrationLive.ValidationResponse.Subscriptions
 
   import DataAggregatorWeb.AdministrationLive.ValidationResponse.Components,
     only: [validation_response_state_badge: 1, validation_response_type_badge: 1]
@@ -17,7 +18,7 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
   def mount(_params, _session, socket) do
     socket = assign(socket, selected_validation_response: nil)
 
-    {:ok, socket}
+    {:ok, subscribe_for_validation_response_updates(socket, connected?(socket))}
   end
 
   @impl true
@@ -177,14 +178,27 @@ defmodule DataAggregatorWeb.AdministrationLive.ValidationResponse.Index do
             <:item title={~t"Total Rows"}>
               {@selected_validation_response.rows_count || 0}
             </:item>
-            <:item title={~t"Valid Rows"}>
-              {@selected_validation_response.rows_validated_count || 0}
-            </:item>
-            <:item title={~t"Invalid Rows"}>
-              {@selected_validation_response.rows_invalid_count || 0}
-            </:item>
-            <:item title={~t"Errors"}>
-              {@selected_validation_response.rows_error_count || 0}
+            <:item title={~t"Progress"m}>
+              <div class="flex flex-col">
+                <.progress
+                  value={@selected_validation_response.validation_progress}
+                  max={1}
+                  class="progress progress-primary w-full"
+                />
+                <div>
+                  {format_number(@selected_validation_response.rows_validated_count)} / {format_number(
+                    @selected_validation_response.rows_count
+                  )} {~t"rows"m}
+                </div>
+                <div
+                  :if={@selected_validation_response.rows_invalid_count not in [0, nil]}
+                  class="text-error"
+                >
+                  {~t"invalid rows:"m} {format_number(
+                    @selected_validation_response.rows_invalid_count
+                  )}
+                </div>
+              </div>
             </:item>
             <:item title={~t"Error Log"m}>
               <div class="flex flex-col">
