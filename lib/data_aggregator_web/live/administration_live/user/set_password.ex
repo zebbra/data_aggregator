@@ -1,4 +1,4 @@
-defmodule DataAggregatorWeb.AdministrationLive.SetPassword do
+defmodule DataAggregatorWeb.AdministrationLive.User.SetPassword do
   @moduledoc false
 
   use DataAggregatorWeb, :live_view

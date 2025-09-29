@@ -5,6 +5,7 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
 
   alias Ash.Changeset
   alias Ash.Error.Changes.Required
+  alias DataAggregator.Accounts.User
   alias DataAggregator.DarwinCore.Schema
   alias DataAggregator.Misc.FlatFileUtils
   alias DataAggregator.Records
@@ -333,23 +334,23 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
   @doc """
   Groups rows according to identified tenants and updates records/upserts validated records
   """
-  @spec upsert_by_tenant!(Enum.t(), atom()) :: Enum.t()
-  def upsert_by_tenant!(rows, type)
+  @spec upsert_by_tenant!(Enum.t(), atom(), User.t()) :: Enum.t()
+  def upsert_by_tenant!(rows, type, actor)
 
-  def upsert_by_tenant!(rows, :not_validated) do
+  def upsert_by_tenant!(rows, :not_validated, actor) do
     rows
     |> Enum.group_by(fn row -> get_tenant_from_row(row) end)
     |> Enum.filter(fn {tenant, _} -> tenant != nil end)
-    |> Enum.map(&update_records/1)
+    |> Enum.map(&update_records(&1, actor))
     |> List.flatten()
   end
 
-  def upsert_by_tenant!(rows, :validated) do
+  def upsert_by_tenant!(rows, :validated, actor) do
     rows
     |> Enum.group_by(fn row -> get_tenant_from_row(row) end)
     |> Enum.filter(fn {tenant, _} -> tenant != nil end)
     |> Enum.map(fn {tenant, rows} ->
-      ValidatedRecord.bulk_validate!(rows, tenant: tenant)
+      ValidatedRecord.bulk_validate!(rows, tenant: tenant, actor: actor)
     end)
     |> Enum.flat_map(fn %{errors: errors} -> errors end)
   end
@@ -385,19 +386,23 @@ defmodule DataAggregator.Records.ValidationResponse.Helpers do
     nil
   end
 
-  @spec update_records({Collection.t(), [map()]}) :: [map()]
-  defp update_records({tenant, rows}) do
+  @spec update_records({Collection.t(), [map()]}, User.t()) :: [map()]
+  defp update_records({tenant, rows}, actor) do
     Enum.reduce(rows, [], fn row, errors ->
-      case Record.update(
-             row.record,
-             %{
-               validation_annotation: row.validation_annotation,
-               validation_status: :not_validated
-             },
-             tenant: tenant
-           ) do
-        {:ok, _} -> errors
-        {:error, error} -> errors ++ [error]
+      with {:ok, record} <-
+             Record.update(row.record, %{validation_annotation: row.validation_annotation}, %{
+               actor: actor,
+               tenant: tenant
+             }),
+           {:ok, _record} <-
+             Record.update_validation_status(record, :not_validated, %{}, %{
+               actor: actor,
+               tenant: tenant
+             }) do
+        errors
+      else
+        {:error, error} ->
+          errors ++ [error]
       end
     end)
   end

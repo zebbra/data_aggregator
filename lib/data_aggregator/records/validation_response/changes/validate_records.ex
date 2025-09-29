@@ -7,6 +7,7 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
 
   alias Ash.BulkResult
   alias Ash.Changeset
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Records
   alias DataAggregator.Records.ValidationResponse
   alias DataAggregator.Records.ValidationResponse.Helpers
@@ -15,28 +16,25 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_action(changeset, &import_validation_data(&1), append?: true)
+  def change(%Changeset{} = changeset, _opts, %{actor: actor}) do
+    Changeset.before_action(changeset, &import_validation_data(&1, actor), append?: true)
   end
 
-  defp import_validation_data(%Changeset{} = changeset) do
-    file_url = Changeset.get_attribute(changeset, :file_url)
+  defp import_validation_data(%Changeset{} = changeset, actor) do
+    attachment = changeset.data |> Ash.load!(:attachment) |> Map.get(:attachment)
     type = Changeset.get_attribute(changeset, :type)
 
-    csv_content =
-      file_url
-      |> Helpers.fetch_file_from_url()
-      |> Helpers.extract_csv_content()
+    csv_content = Helpers.fetch_file_from_url(attachment.url)
 
-    process(changeset, csv_content, type)
+    process(changeset, csv_content, type, actor)
   end
 
-  @spec process(Changeset.t(), String.t(), atom()) :: Changeset.t()
-  defp process(changeset, csv_content, type) do
+  @spec process(Changeset.t(), String.t(), atom(), User.t()) :: Changeset.t()
+  defp process(changeset, csv_content, type, actor) do
     with {:ok, df} <- Explorer.DataFrame.load_csv(csv_content),
          {:ok, stream} <- stream_from_dataframe(df),
          {:ok, stream} <- ensure_records(stream) do
-      process_in_chunks(changeset, stream, type)
+      process_in_chunks(changeset, stream, type, actor)
     else
       {:error, error} ->
         Logger.error("[Import validation records] CSV could not be read or it was empty")
@@ -45,8 +43,8 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
     end
   end
 
-  @spec process_in_chunks(Changeset.t(), Enum.t(), atom()) :: Changeset.t()
-  defp process_in_chunks(%Changeset{} = changeset, rows, type) do
+  @spec process_in_chunks(Changeset.t(), Enum.t(), atom(), User.t()) :: Changeset.t()
+  defp process_in_chunks(%Changeset{} = changeset, rows, type, actor) do
     chunk_size = Records.validation_response_batch_size()
 
     Logger.debug("Import validation rows in chunks of #{chunk_size} rows ...")
@@ -61,14 +59,14 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
     |> Stream.map(&Helpers.convert_headers_of_chunk(&1, attribute_name_pairs))
     |> Stream.map(&Helpers.reject_collection_attributes_from_chunk(&1, collection_attributes))
     |> Stream.map(&Helpers.maybe_convert_values(&1, type))
-    |> Stream.map(&import_chunk(changeset, &1, type))
+    |> Stream.map(&import_chunk(changeset, &1, type, actor))
     |> reduce_validation_results(changeset)
     |> NotificationHelpers.notify_infospecies()
   end
 
-  @spec import_chunk(Changeset.t(), {[map()], integer()}, atom()) ::
+  @spec import_chunk(Changeset.t(), {[map()], integer()}, atom(), User.t()) ::
           {[BulkResult.t()], [map()], [{map(), [Ash.Error.t()]}]}
-  defp import_chunk(%Changeset{data: validation_response}, {chunk, index}, type) do
+  defp import_chunk(%Changeset{data: validation_response}, {chunk, index}, type, actor) do
     Logger.debug("Importing valid chunk ##{index} with #{length(chunk)} rows ...")
 
     max_concurrency = Records.import_max_concurrency()
@@ -96,7 +94,7 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.ValidateRecords do
     errors =
       valid
       |> Enum.reverse()
-      |> Helpers.upsert_by_tenant!(type)
+      |> Helpers.upsert_by_tenant!(type, actor)
 
     Helpers.add_affected_collections(valid, validation_response)
 

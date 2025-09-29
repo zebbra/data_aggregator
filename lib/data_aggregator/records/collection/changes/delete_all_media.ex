@@ -17,7 +17,6 @@ defmodule DataAggregator.Records.Collection.Changes.DeleteAllMedia do
   alias DataAggregator.Records.Publication
   alias DataAggregator.Records.Record
   alias DataAggregator.Records.ValidationRequest
-  alias DataAggregator.Records.ValidationResponse
 
   require Logger
 
@@ -34,7 +33,6 @@ defmodule DataAggregator.Records.Collection.Changes.DeleteAllMedia do
         collect_exports_media(collection) ++
         collect_publications_media(collection) ++
         collect_validation_requests_media(collection) ++
-        collect_validation_responses_media(collection) ++
         collect_image_uploads_media(collection)
     ]
     |> List.flatten()
@@ -88,18 +86,6 @@ defmodule DataAggregator.Records.Collection.Changes.DeleteAllMedia do
     |> Ash.stream!(load: [:attachment])
     |> Enum.map(fn validation_request ->
       validation_request.attachment
-    end)
-  end
-
-  defp collect_validation_responses_media(collection) do
-    ValidationResponse
-    |> Ash.Query.set_tenant(collection)
-    |> Ash.stream!(load: [:attachment, :error_log])
-    |> Enum.map(fn validation_response ->
-      [
-        validation_response.attachment,
-        validation_response.error_log
-      ]
     end)
   end
 

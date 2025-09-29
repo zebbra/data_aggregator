@@ -6,21 +6,47 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.SetCount do
   use Ash.Resource.Change
 
   alias Ash.Changeset
-  alias DataAggregator.Records.ValidationResponse.Helpers
+  alias Ash.Error.Changes.InvalidArgument
+  alias DataAggregator.Records
 
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    file_url = Changeset.get_attribute(changeset, :file_url)
+  def change(%Changeset{} = changeset, _opts, ctx) do
+    field = Map.get(ctx, :from, :path)
+    filename = Changeset.get_argument_or_attribute(changeset, field)
 
-    if file_url == nil do
-      Changeset.add_error(changeset, ":file_url is required")
-    else
-      validation_file = Helpers.fetch_file_from_url(file_url)
-      csv_content = Helpers.extract_csv_content(validation_file)
+    Records.DataFrame.from_file(filename)
 
-      Helpers.count_rows(changeset, csv_content)
+    case count_rows(filename) do
+      {:ok, rows_count} ->
+        Changeset.change_attribute(changeset, :rows_count, rows_count)
+
+      {:error, error} ->
+        message = Exception.message(error)
+
+        message = Records.DataFrame.maybe_parse_polaris_error(message)
+
+        exception =
+          InvalidArgument.exception(
+            field: field,
+            message: message,
+            value: filename
+          )
+
+        Changeset.add_error(changeset, exception)
+    end
+  end
+
+  defp count_rows(filename) do
+    Logger.debug("Counting rows for file #{inspect(filename)} ...")
+
+    with {:ok, df} <- Explorer.DataFrame.from_csv(filename) do
+      rows_count = Explorer.DataFrame.n_rows(df)
+
+      Logger.debug("Detected #{rows_count} in import file #{inspect(filename)}")
+
+      {:ok, rows_count}
     end
   end
 end

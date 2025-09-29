@@ -9,6 +9,7 @@ defmodule DataAggregator.Records.ValidationResponse do
     extensions: [AshUUID, AshJsonApi.Resource, AshStateMachine]
 
   alias __MODULE__
+  alias DataAggregator.Accounts.User
   alias DataAggregator.Files.Attachment
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.ValidationResponse.Changes
@@ -20,8 +21,7 @@ defmodule DataAggregator.Records.ValidationResponse do
   attributes do
     uuid_attribute :id, prefix: "app", public?: true
 
-    attribute :file_url, :string, allow_nil?: false, public?: true
-    attribute :type, ValidationResponseType, allow_nil?: false, public?: true
+    attribute :type, ValidationResponseType, allow_nil?: false, public?: true, default: :validated
 
     attribute :rows_count, :integer, allow_nil?: true, public?: true
     attribute :rows_invalid_count, :integer, allow_nil?: true, public?: true
@@ -37,6 +37,8 @@ defmodule DataAggregator.Records.ValidationResponse do
   relationships do
     belongs_to :attachment, Attachment, public?: true
     belongs_to :error_log, Attachment, public?: true
+    belongs_to :created_by, User, public?: true
+    belongs_to :started_by, User, public?: true
 
     many_to_many :affected_collections, Collection do
       through ValidationResponseCollection
@@ -54,6 +56,8 @@ defmodule DataAggregator.Records.ValidationResponse do
 
       load attachment: :url
     end
+
+    calculate :duration, :time, expr((finished_at || now()) - started_at)
 
     calculate :attachment_byte_size, :integer, expr(attachment.byte_size)
     calculate :attachment_filename, :string, expr(attachment.filename)
@@ -79,7 +83,7 @@ defmodule DataAggregator.Records.ValidationResponse do
 
   actions do
     default_accept :*
-    defaults [:read, :destroy, :update]
+    defaults [:read, :update]
 
     update :add_affected_collection do
       require_atomic? false
@@ -91,15 +95,29 @@ defmodule DataAggregator.Records.ValidationResponse do
       change load(:affected_collections)
     end
 
+    destroy :destroy do
+      primary? true
+      require_atomic? false
+
+      change Changes.DeleteAttachments
+    end
+
     create :create do
       primary? true
-      accept [:file_url, :type]
+      accept [:type]
+    end
 
+    create :create_from_path do
+      accept [:created_by_id, :type]
+      argument :path, :string, allow_nil?: false
+      argument :filename, :string, allow_nil?: true
+      change Changes.CreateAttachment
       change Changes.SetCount
+      change load([:attachment_filename, :attachment_byte_size])
     end
 
     update :enqueue do
-      accept []
+      accept [:started_by_id]
       require_atomic? false
 
       change transition_state(:queued)
@@ -192,6 +210,7 @@ defmodule DataAggregator.Records.ValidationResponse do
     define :add_validation_progress, args: [:validated, :invalid]
     define :update_error_log, args: [:error_log]
     define :add_affected_collection, args: [:collection]
+    define :create_from_path, args: [:path, :filename]
   end
 
   postgres do
