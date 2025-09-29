@@ -8,6 +8,7 @@ defmodule DataAggregator.ValidationResponseTest do
   import DataAggregator.ValidationResponseFixtures
 
   alias Ash.Error.Invalid
+  alias DataAggregator.Files.Attachment
   alias DataAggregator.Gbif
   alias DataAggregator.Records.Collection
   alias DataAggregator.Records.ValidationResponse
@@ -17,7 +18,6 @@ defmodule DataAggregator.ValidationResponseTest do
 
   describe "validation responses" do
     @invalid_attrs %{
-      file_url: nil,
       type: nil
     }
 
@@ -58,13 +58,13 @@ defmodule DataAggregator.ValidationResponseTest do
       validation_response = validation_response_fixture()
 
       update_attrs = %{
-        file_url: "test/support/fixtures/files/NEW-validation_dwca.zip"
+        rows_count: 1
       }
 
       assert {:ok, %ValidationResponse{} = validation_response} =
                ValidationResponse.update(validation_response, update_attrs)
 
-      assert validation_response.file_url == "test/support/fixtures/files/NEW-validation_dwca.zip"
+      assert validation_response.rows_count == 1
     end
 
     test "update/2 with invalid data returns error changeset" do
@@ -192,12 +192,19 @@ defmodule DataAggregator.ValidationResponseTest do
     end
 
     test "destroy/1 deletes the validation response" do
-      validation_response = validation_response_fixture()
+      validation_response = Ash.load!(validation_response_fixture(), [:attachment])
+
+      attachment = validation_response.attachment
 
       assert :ok = ValidationResponse.destroy(validation_response)
 
       assert_raise Invalid, fn ->
         ValidationResponse.get_by_id!(validation_response.id)
+      end
+
+      # check if deletions of attachments are handled referential correctly
+      assert_raise Invalid, fn ->
+        Attachment.get_by_id!(attachment.id)
       end
     end
 

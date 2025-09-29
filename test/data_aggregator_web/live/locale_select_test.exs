@@ -8,7 +8,7 @@ defmodule DataAggregatorWeb.LocaleSelectTest do
   describe "locale select" do
     @tag authenticated: :admin
     test "applies default locale to en", %{conn: conn} do
-      {:ok, _, html} = live(conn, "/administration")
+      {:ok, _, html} = live(conn, "/administration/users")
       assert html =~ ~s|lang=\"en\"|
       refute html =~ ~s|lang=\"fr-CH\"|
       refute html =~ ~s|lang=\"de-CH\"|
@@ -16,7 +16,7 @@ defmodule DataAggregatorWeb.LocaleSelectTest do
 
     @tag authenticated: :admin
     test "applies en locale if passed as URI query", %{conn: conn} do
-      {:ok, _, html} = live(conn, "/administration?locale=en")
+      {:ok, _, html} = live(conn, "/administration/users?locale=en")
       assert html =~ ~s|lang=\"en\"|
       refute html =~ ~s|lang=\"fr-CH\"|
       refute html =~ ~s|lang=\"de-CH\"|
@@ -24,7 +24,7 @@ defmodule DataAggregatorWeb.LocaleSelectTest do
 
     @tag authenticated: :admin
     test "does not apply de-CH locale if passed as URI query", %{conn: conn} do
-      {:ok, _, html} = live(conn, "/administration?locale=de-CH")
+      {:ok, _, html} = live(conn, "/administration/users?locale=de-CH")
       assert html =~ ~s|lang=\"en\"|
       refute html =~ ~s|lang=\"fr-CH\"|
       refute html =~ ~s|lang=\"de-CH\"|
@@ -32,7 +32,7 @@ defmodule DataAggregatorWeb.LocaleSelectTest do
 
     @tag authenticated: :admin
     test "does not apply fr-CH locale if passed as URI query", %{conn: conn} do
-      {:ok, _, html} = live(conn, "/administration?locale=fr-CH")
+      {:ok, _, html} = live(conn, "/administration/users?locale=fr-CH")
       assert html =~ ~s|lang=\"en\"|
       refute html =~ ~s|lang=\"fr-CH\"|
       refute html =~ ~s|lang=\"de-CH\"|
@@ -40,7 +40,7 @@ defmodule DataAggregatorWeb.LocaleSelectTest do
 
     @tag authenticated: :admin
     test "applies en locale if passed as URI query is not valid", %{conn: conn} do
-      {:ok, _, html} = live(conn, "/administration?locale=ar")
+      {:ok, _, html} = live(conn, "/administration/users?locale=ar")
       assert html =~ ~s|lang=\"en\"|
       refute html =~ ~s|lang=\"fr-CH\"|
       refute html =~ ~s|lang=\"de-CH\"|

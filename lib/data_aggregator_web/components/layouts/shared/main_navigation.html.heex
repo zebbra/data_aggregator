@@ -57,7 +57,7 @@
       <%= if DataAggregator.Accounts.User.can_update?(@current_user, %DataAggregator.Accounts.User{}) do %>
         <li>
           <.link
-            navigate={~p"/administration"}
+            navigate={~p"/administration/users"}
             class={[
               "flex active:!bg-primary md:flex-col md:p-3",
               @current == "administration" && "bg-primary text-primary-content hover:bg-primary"

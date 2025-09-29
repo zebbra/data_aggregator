@@ -11,12 +11,12 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.EnqueueValidationRes
   require Logger
 
   @impl true
-  def change(%Changeset{} = changeset, _opts, _ctx) do
-    Changeset.before_action(changeset, &enqueue/1)
+  def change(%Changeset{} = changeset, _opts, %{actor: actor}) do
+    Changeset.before_action(changeset, &enqueue(&1, actor))
   end
 
-  defp enqueue(%Changeset{data: validation_response} = changeset) do
-    case insert_job(validation_response) do
+  defp enqueue(%Changeset{data: validation_response} = changeset, actor) do
+    case insert_job(validation_response, actor) do
       {:ok, job} ->
         Logger.debug("Enqueued validation response job #{inspect(job.id)}")
         changeset
@@ -27,8 +27,8 @@ defmodule DataAggregator.Records.ValidationResponse.Changes.EnqueueValidationRes
     end
   end
 
-  defp insert_job(%ValidationResponse{id: id}) do
-    %{id: id}
+  defp insert_job(%ValidationResponse{id: id}, actor) do
+    %{id: id, user_id: actor.id}
     |> ValidationResponse.Workers.ValidationResponseHandler.new()
     |> Oban.insert()
   end
